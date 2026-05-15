@@ -1,0 +1,41 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "moe-experiments"
+version = "0.1.0"
+description = "MoE routing dynamics during CoT reasoning — experiments"
+requires-python = ">=3.11"
+dependencies = [
+    # torch is intentionally excluded here — install with CUDA support first:
+    #   pip install torch --index-url https://download.pytorch.org/whl/cu124
+    "transformers>=4.44.0",
+    "accelerate>=0.30.0",
+    "datasets>=2.20.0",
+    "tokenizers>=0.19.0",
+    "numpy>=1.26.0",
+    "pandas>=2.2.0",
+    "tqdm>=4.66.0",
+    "pydantic>=2.7.0",
+    "rich>=13.7.0",
+    "jsonlines>=4.0.0",
+    "huggingface-hub>=0.24.0",
+    "bitsandbytes>=0.46.1",
+]
+
+[project.scripts]
+exp1 = "moe_exp.experiment1.run:main"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "ruff>=0.4.0",
+]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/moe_exp"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
