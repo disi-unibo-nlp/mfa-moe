@@ -1,0 +1,13 @@
+.venv/
+.git/
+.gitignore
+__pycache__/
+**/__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+results/
+slurm_logs/
+*.out
+*.err
+.env
