@@ -1,6 +1,6 @@
 **__init__.py
 **/__pycache__/**
 **.venv
-**results/**
+**/results/**
 slurm_logs/**
 memory/**
