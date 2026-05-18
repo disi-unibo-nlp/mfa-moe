@@ -79,6 +79,17 @@ def main():
         with open(summary_file, "w", encoding="utf-8") as f:
             json.dump(summary, f, indent=2)
         logging.info(f"Recomputed summary written to {summary_file}")
+        
+        from rich.console import Console
+        from rich.table import Table
+        console = Console()
+        cols = summary["columns"]
+        table = Table(title="Recomputed Taxonomy Summary", show_lines=True)
+        for col in cols:
+            table.add_column(col, overflow="fold")
+        for row in summary["rows"]:
+            table.add_row(*[str(row.get(c, "")) for c in cols])
+        console.print(table)
     else:
         logging.info("No rows generated, summary.json not updated.")
 
