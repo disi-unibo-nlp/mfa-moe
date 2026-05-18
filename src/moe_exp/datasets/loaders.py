@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+import json
 from typing import Optional
 
+from huggingface_hub import hf_hub_download
 from rich.console import Console
 
 from moe_exp.utils import extract_gold_answer_gsm8k, extract_model_answer
@@ -125,11 +127,26 @@ def load_prm800k(max_items: Optional[int] = None) -> list[dict]:
     """Load PRM800K (tasksource/PRM800K on HuggingFace).
 
     Uses the public tasksource mirror of the OpenAI PRM800K dataset.
+    The repository stores raw JSONL files with slightly different nested
+    fields across phases, so we read and normalize the records directly
+    instead of relying on `datasets.load_dataset(...)` schema inference.
     Deduplicates by problem text so each unique problem appears once.
     """
     console.print("[blue]Loading PRM800K…")
     try:
-        ds = _hf().load_dataset("tasksource/PRM800K", split="train")
+        records = []
+        for filename in ("phase1_train.jsonl", "phase2_train.jsonl"):
+            path = hf_hub_download(
+                "tasksource/PRM800K",
+                filename,
+                repo_type="dataset",
+            )
+            with open(path, "r", encoding="utf-8") as handle:
+                for line in handle:
+                    line = line.strip()
+                    if not line:
+                        continue
+                    records.append(json.loads(line))
     except Exception as e:
         raise RuntimeError(
             f"Failed to load PRM800K: {e}\n"
@@ -138,14 +155,27 @@ def load_prm800k(max_items: Optional[int] = None) -> list[dict]:
 
     seen: set[str] = set()
     results = []
-    for ex in ds:
+    for ex in records:
         q = ex.get("question") or {}
         if isinstance(q, dict):
             problem = q.get("problem") or q.get("text") or str(q)
-            gold = q.get("ground_truth_answer") or ""
+            gold = (
+                q.get("ground_truth_answer")
+                or q.get("ground_truth_solution")
+                or ""
+            )
         else:
             problem = str(q)
             gold = ex.get("gold_answer") or ""
+
+        if not gold:
+            label = ex.get("label") or {}
+            if isinstance(label, dict):
+                gold = (
+                    label.get("ground_truth_answer")
+                    or label.get("ground_truth_solution")
+                    or ""
+                )
 
         if not problem or problem in seen:
             continue
