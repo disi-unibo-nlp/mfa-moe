@@ -66,8 +66,8 @@ def answers_match(model_answer: str, gold_answer: str) -> Optional[bool]:
     except ValueError:
         pass
 
-    # Substring fallback for non-numeric answers
-    return ga in ma or ma in ga
+    # Exact match only for non-numeric answers (no substring fallback)
+    return ma == ga
 
 
 # ---------------------------------------------------------------------------

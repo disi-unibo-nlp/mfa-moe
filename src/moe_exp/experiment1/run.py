@@ -37,7 +37,7 @@ from moe_exp.analysis.classifier import classify_trace
 from moe_exp.analysis.step_splitter import split_steps
 from moe_exp.datasets.loaders import AVAILABLE_DATASETS, load_dataset_by_name
 from moe_exp.experiment1.taxonomy import build_row, build_summary
-from moe_exp.models.inference import generate_cot
+from moe_exp.models.inference import generate_cot, SYSTEM_PROMPT_SELFCHECK
 from moe_exp.models.loader import QUANTIZATION_CHOICES, load_model_and_tokenizer
 from moe_exp.schemas import TraceRecord
 from moe_exp.utils import answers_match, extract_model_answer, read_json, write_json, write_jsonl
@@ -126,6 +126,17 @@ def _build_parser() -> argparse.ArgumentParser:
             f"Choices: {QUANTIZATION_CHOICES}. Default: none (bf16)."
         ),
     )
+    p.add_argument(
+        "--self-check",
+        action="store_true",
+        default=False,
+        help=(
+            "Also run each dataset with a self-checking prompt that encourages "
+            "the model to verify each step and correct errors. Results are saved "
+            "as a separate dataset (e.g. gsm8k_selfcheck). Can be combined with "
+            "the normal prompt in the same run."
+        ),
+    )
     return p
 
 
@@ -147,6 +158,20 @@ def _model_slug(model_id: str) -> str:
 def run_experiment(args: argparse.Namespace) -> None:
     all_rows: list[dict] = []
 
+    # Build the list of (dataset_name, output_dataset_name, system_prompt) runs.
+    # If --self-check, run ONLY the self-checking prompt variant (stored as
+    # "<dataset>_selfcheck"). Otherwise, run with the normal prompt.
+    run_configs: list[tuple[str, str, str | None]] = []
+    if args.self_check:
+        for ds in args.datasets:
+            # Skip processbench for self-check (it's meta-reasoning, not problem-solving)
+            if ds == "processbench":
+                continue
+            run_configs.append((ds, f"{ds}_selfcheck", SYSTEM_PROMPT_SELFCHECK))
+    else:
+        for ds in args.datasets:
+            run_configs.append((ds, ds, None))  # normal prompt
+
     for model_id in args.models:
         console.rule(f"[bold cyan]Model: {model_id}")
         model, tokenizer = load_model_and_tokenizer(
@@ -156,10 +181,10 @@ def run_experiment(args: argparse.Namespace) -> None:
             quantization=args.quantization,
         )
 
-        for dataset_name in args.datasets:
-            console.rule(f"  [cyan]Dataset: {dataset_name}")
+        for source_dataset, output_name, sys_prompt in run_configs:
+            console.rule(f"  [cyan]Dataset: {output_name}")
 
-            examples = load_dataset_by_name(dataset_name, max_items=args.max_items)
+            examples = load_dataset_by_name(source_dataset, max_items=args.max_items)
             # Drop examples that have no problem text
             examples = [ex for ex in examples if ex.get("prompt")]
             console.print(f"  {len(examples)} examples loaded.")
@@ -171,6 +196,7 @@ def run_experiment(args: argparse.Namespace) -> None:
                 problems,
                 max_new_tokens=args.max_new_tokens,
                 batch_size=args.batch_size,
+                system_prompt=sys_prompt,
             )
 
             traces: list[TraceRecord] = []
@@ -181,14 +207,19 @@ def run_experiment(args: argparse.Namespace) -> None:
                 step_labels = classify_trace(steps, cot_text)
 
                 # For ProcessBench, first_error_step comes from the gold metadata label
-                if dataset_name == "processbench":
+                # (this is actual ground-truth, unlike the heuristic reasoning event)
+                if source_dataset == "processbench":
                     label = ex.get("metadata", {}).get("label")
                     if label is not None:
                         step_labels.first_error_step = label
 
+                # Determine task type: ProcessBench is meta-reasoning (evaluating
+                # someone else's solution), not direct mathematical reasoning
+                task_type = "meta_reasoning" if source_dataset == "processbench" else "reasoning"
+
                 traces.append(
                     TraceRecord(
-                        dataset=dataset_name,
+                        dataset=output_name,
                         problem_id=ex["problem_id"],
                         prompt=ex["prompt"],
                         gold_answer=ex["gold_answer"],
@@ -198,15 +229,16 @@ def run_experiment(args: argparse.Namespace) -> None:
                         cot_text=cot_text,
                         steps=steps,
                         step_labels=step_labels,
+                        task_type=task_type,
                     )
                 )
 
             slug = _model_slug(model_id)
-            trace_path = args.output_dir / slug / dataset_name / "traces.jsonl"
+            trace_path = args.output_dir / slug / output_name / "traces.jsonl"
             write_jsonl(traces, trace_path)
             console.print(f"  Traces → [green]{trace_path}")
 
-            row = build_row(model_id, dataset_name, traces)
+            row = build_row(model_id, output_name, traces)
             all_rows.append(row)
             console.print(
                 f"  Accuracy: [bold]{row.get('accuracy')}[/]  "

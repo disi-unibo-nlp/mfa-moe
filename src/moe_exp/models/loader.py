@@ -74,7 +74,7 @@ def load_model_and_tokenizer(
     if device == "cpu":
         model = AutoModelForCausalLM.from_pretrained(
             model_id,
-            dtype=torch.float32,
+            torch_dtype=torch.float32,
             offload_folder=offload_folder,
             trust_remote_code=trust_remote_code,
         )
@@ -82,7 +82,7 @@ def load_model_and_tokenizer(
     else:
         model = AutoModelForCausalLM.from_pretrained(
             model_id,
-            dtype=torch.bfloat16,
+            torch_dtype=torch.bfloat16,
             device_map="auto",
             offload_folder=offload_folder,
             trust_remote_code=trust_remote_code,
