@@ -1,0 +1,149 @@
+import json
+import logging
+from pathlib import Path
+from typing import Any
+
+import torch
+import torch.nn.functional as F
+from tqdm import tqdm
+
+from moe_exp.schemas import TraceRecord
+from moe_exp.models.loader import load_model_and_tokenizer
+from moe_exp.models.inference import extract_logs_single_pass
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+
+def calculate_expert_entropy(router_logits: torch.Tensor) -> torch.Tensor:
+    """
+    Calculate the entropy of the routing distribution.
+    router_logits: (num_layers, seq_len, num_experts)
+    Returns: (num_layers, seq_len)
+    """
+    log_probs = F.log_softmax(router_logits, dim=-1)
+    probs = log_probs.exp()
+    entropy = -torch.sum(probs * log_probs, dim=-1)
+    entropy = entropy.clamp(min=0.0)
+    return entropy
+
+
+def compute_selected_experts(router_logits: torch.Tensor, top_k: int = 8) -> tuple[torch.Tensor, torch.Tensor]:
+    """
+    Derive selected experts and their weights from router logits.
+
+    Args:
+        router_logits: (num_layers, seq_len, num_experts)
+        top_k: number of experts selected per token (OLMoE uses top-8 of 64)
+
+    Returns:
+        selected_experts: (num_layers, seq_len, top_k) - indices of selected experts
+        expert_weights: (num_layers, seq_len, top_k) - normalized weights for each
+    """
+    # Softmax over experts to get routing probabilities
+    probs = F.softmax(router_logits, dim=-1)
+    # Select top-k experts per token per layer
+    weights, indices = torch.topk(probs, k=top_k, dim=-1)
+    # Normalize weights to sum to 1 over the selected experts
+    weights = weights / weights.sum(dim=-1, keepdim=True)
+    return indices, weights
+
+
+def process_file(
+    input_path: Path,
+    model_id: str,
+    output_path: Path,
+    limit: int | None = None,
+    top_k: int = 8,
+):
+    """
+    Run Experiment 2 offline-extraction loop over traces to compute routing dynamics.
+    Saves per-trace tensors: router_logits, selected_experts, expert_weights.
+    """
+    logger.info(f"Loading model {model_id}")
+    model, tokenizer = load_model_and_tokenizer(model_id, quantization="none")
+    
+    traces: list[dict[str, Any]] = []
+    with open(input_path, "r", encoding="utf-8") as f:
+        for line in f:
+            traces.append(json.loads(line))
+            
+    if limit is not None:
+        traces = traces[:limit]
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    tensor_dir = output_path.parent / "tensors"
+    tensor_dir.mkdir(exist_ok=True, parents=True)
+    
+    logger.info(f"Processing {len(traces)} traces for offline routing metrics computation...")
+    with open(output_path, "w", encoding="utf-8") as out_f:
+        for trace_dict in tqdm(traces, desc="Extracting Routing"):
+            trace = TraceRecord(**trace_dict)
+            
+            if not trace.cot_text.strip():
+                out_f.write(trace.model_dump_json() + "\n")
+                continue
+                
+            router_logits = extract_logs_single_pass(
+                model=model,
+                tokenizer=tokenizer,
+                problem=trace.prompt,
+                cot_text=trace.cot_text,
+            )
+            assert isinstance(router_logits, torch.Tensor)
+            
+            # router_logits is (num_layers, seq_len, num_experts)
+            if router_logits.numel() > 0:
+                # Use safe filename
+                safe_problem_id = trace.problem_id.replace("/", "_").replace("\\", "_")
+                trace_id = f"{trace.dataset}_{safe_problem_id}"
+                
+                # Save router logits
+                logits_path = tensor_dir / f"{trace_id}_logits.pt"
+                torch.save(router_logits.to(torch.float32), logits_path)
+                trace.model_logs.router_logits = str(logits_path)
+                
+                # Compute and save selected experts and weights
+                selected, weights = compute_selected_experts(router_logits, top_k=top_k)
+                
+                experts_path = tensor_dir / f"{trace_id}_experts.pt"
+                torch.save(selected.to(torch.int16), experts_path)
+                trace.model_logs.selected_experts = str(experts_path)
+                
+                weights_path = tensor_dir / f"{trace_id}_weights.pt"
+                torch.save(weights.to(torch.float16), weights_path)
+                trace.model_logs.expert_weights = str(weights_path)
+            else:
+                logger.warning(
+                    f"Empty router logits for {trace.dataset}/{trace.problem_id} — "
+                    "trace written without routing data"
+                )
+            
+            out_f.write(trace.model_dump_json() + "\n")
+
+    logger.info(f"Finished extracting routing context. Output saved to {output_path}")
+
+
+if __name__ == "__main__":
+    import argparse
+    
+    parser = argparse.ArgumentParser(description="Run single forward pass to extract router logits")
+    parser.add_argument("--input", type=str, required=True, help="Path to input traces.jsonl from Exp 1")
+    parser.add_argument("--output", type=str, required=True, help="Path to output jsonl")
+    parser.add_argument("--model_id", type=str, default="allenai/OLMoE-1B-7B-0924-Instruct", help="HuggingFace Model ID")
+    parser.add_argument("--limit", type=int, default=None, help="Process only first N traces")
+    parser.add_argument("--top-k", type=int, default=8, help="Number of top experts per token (default: 8 for OLMoE)")
+    
+    args = parser.parse_args()
+    
+    input_file = Path(args.input)
+    if input_file.exists():
+        process_file(
+            input_path=input_file,
+            model_id=args.model_id,
+            output_path=Path(args.output),
+            limit=args.limit,
+            top_k=args.top_k,
+        )
+    else:
+        logger.error(f"Could not find input file: {input_file}")
