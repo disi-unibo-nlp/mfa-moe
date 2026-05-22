@@ -48,7 +48,7 @@ if [[ -z "$MODEL" || -z "$DATASET" ]]; then
     exit 1
 fi
 
-MODEL_SLUG="${MODEL//\//-​-}"
+MODEL_SLUG="${MODEL////--}"
 BASE_DIR="${OUTPUT_DIR}/${MODEL_SLUG}/${DATASET}"
 
 # Pre-create output dirs
