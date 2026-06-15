@@ -26,7 +26,6 @@ Output
 from __future__ import annotations
 
 import argparse
-import sys
 from pathlib import Path
 
 import torch
@@ -35,7 +34,11 @@ from rich.table import Table
 
 from moe_exp.analysis.classifier import classify_trace
 from moe_exp.analysis.step_splitter import split_steps
-from moe_exp.datasets.loaders import AVAILABLE_DATASETS, load_dataset_by_name
+from moe_exp.datasets.loaders import (
+    AVAILABLE_DATASETS,
+    GIVEN_SOLUTION_DATASETS,
+    load_dataset_by_name,
+)
 from moe_exp.experiment1.taxonomy import build_row, build_summary
 from moe_exp.models.inference import generate_cot, SYSTEM_PROMPT_SELFCHECK
 from moe_exp.models.loader import QUANTIZATION_CHOICES, load_model_and_tokenizer
@@ -131,10 +134,12 @@ def _build_parser() -> argparse.ArgumentParser:
         action="store_true",
         default=False,
         help=(
-            "Also run each dataset with a self-checking prompt that encourages "
-            "the model to verify each step and correct errors. Results are saved "
-            "as a separate dataset (e.g. gsm8k_selfcheck). Can be combined with "
-            "the normal prompt in the same run."
+            "Run each dataset with the self-checking prompt INSTEAD of the normal "
+            "prompt. This prompt encourages the model to verify each step and "
+            "correct errors. Results are saved under a separate dataset name "
+            "(e.g. gsm8k_selfcheck). To get both variants, run twice: once "
+            "without this flag and once with it. ProcessBench is skipped under "
+            "--self-check (it is meta-reasoning, not problem solving)."
         ),
     )
     return p
@@ -164,8 +169,10 @@ def run_experiment(args: argparse.Namespace) -> None:
     run_configs: list[tuple[str, str, str | None]] = []
     if args.self_check:
         for ds in args.datasets:
-            # Skip processbench for self-check (it's meta-reasoning, not problem-solving)
-            if ds == "processbench":
+            # Self-check only applies to datasets we generate CoT for. Given-solution
+            # datasets (ProcessBench/PRM800K) analyze a pre-written chain, so the
+            # self-checking generation prompt does not apply.
+            if ds in GIVEN_SOLUTION_DATASETS:
                 continue
             run_configs.append((ds, f"{ds}_selfcheck", SYSTEM_PROMPT_SELFCHECK))
     else:
@@ -174,12 +181,10 @@ def run_experiment(args: argparse.Namespace) -> None:
 
     for model_id in args.models:
         console.rule(f"[bold cyan]Model: {model_id}")
-        model, tokenizer = load_model_and_tokenizer(
-            model_id,
-            device=args.device,
-            trust_remote_code=args.trust_remote_code,
-            quantization=args.quantization,
-        )
+        # Lazily loaded: given-solution datasets (ProcessBench/PRM800K) need no
+        # generation, so a run over only those never loads the model weights.
+        model = None
+        tokenizer = None
 
         for source_dataset, output_name, sys_prompt in run_configs:
             console.rule(f"  [cyan]Dataset: {output_name}")
@@ -189,49 +194,76 @@ def run_experiment(args: argparse.Namespace) -> None:
             examples = [ex for ex in examples if ex.get("prompt")]
             console.print(f"  {len(examples)} examples loaded.")
 
-            problems = [ex["prompt"] for ex in examples]
-            generated = generate_cot(
-                model,
-                tokenizer,
-                problems,
-                max_new_tokens=args.max_new_tokens,
-                batch_size=args.batch_size,
-                system_prompt=sys_prompt,
-            )
-
             traces: list[TraceRecord] = []
-            for ex, cot_text in zip(examples, generated):
-                model_answer = extract_model_answer(cot_text)
-                is_correct = answers_match(model_answer, ex["gold_answer"])
-                steps = split_steps(cot_text)
+
+            # --- Given-solution examples: analyze the pre-written chain directly ---
+            given = [ex for ex in examples if ex.get("solution_steps")]
+            for ex in given:
+                steps = [s for s in ex["solution_steps"] if s.strip()]
+                if not steps:
+                    continue
+                cot_text = "\n\n".join(steps)
                 step_labels = classify_trace(steps, cot_text)
-
-                # For ProcessBench, first_error_step comes from the gold metadata label
-                # (this is actual ground-truth, unlike the heuristic reasoning event)
-                if source_dataset == "processbench":
-                    label = ex.get("metadata", {}).get("label")
-                    if label is not None:
-                        step_labels.first_error_step = label
-
-                # Determine task type: ProcessBench is meta-reasoning (evaluating
-                # someone else's solution), not direct mathematical reasoning
-                task_type = "meta_reasoning" if source_dataset == "processbench" else "reasoning"
-
+                # Gold first-error step indexes `steps` directly (ProcessBench label
+                # / reconstructed PRM800K chain), so it aligns with this trace.
+                fe = ex.get("first_error_step")
+                if fe is not None and 0 <= fe < len(steps):
+                    step_labels.first_error_step = fe
                 traces.append(
                     TraceRecord(
                         dataset=output_name,
                         problem_id=ex["problem_id"],
                         prompt=ex["prompt"],
-                        gold_answer=ex["gold_answer"],
+                        gold_answer=ex.get("gold_answer", ""),
                         model_id=model_id,
-                        model_answer=model_answer,
-                        is_correct=is_correct,
+                        model_answer=extract_model_answer(cot_text),
+                        is_correct=ex.get("solution_is_correct"),
                         cot_text=cot_text,
                         steps=steps,
                         step_labels=step_labels,
-                        task_type=task_type,
+                        task_type="reasoning",
                     )
                 )
+
+            # --- Generation examples: generate the model's own CoT ---
+            to_generate = [ex for ex in examples if not ex.get("solution_steps")]
+            if to_generate:
+                if model is None:
+                    model, tokenizer = load_model_and_tokenizer(
+                        model_id,
+                        device=args.device,
+                        trust_remote_code=args.trust_remote_code,
+                        quantization=args.quantization,
+                    )
+                problems = [ex["prompt"] for ex in to_generate]
+                generated = generate_cot(
+                    model,
+                    tokenizer,
+                    problems,
+                    max_new_tokens=args.max_new_tokens,
+                    batch_size=args.batch_size,
+                    system_prompt=sys_prompt,
+                )
+                for ex, cot_text in zip(to_generate, generated):
+                    model_answer = extract_model_answer(cot_text)
+                    is_correct = answers_match(model_answer, ex["gold_answer"])
+                    steps = split_steps(cot_text)
+                    step_labels = classify_trace(steps, cot_text)
+                    traces.append(
+                        TraceRecord(
+                            dataset=output_name,
+                            problem_id=ex["problem_id"],
+                            prompt=ex["prompt"],
+                            gold_answer=ex["gold_answer"],
+                            model_id=model_id,
+                            model_answer=model_answer,
+                            is_correct=is_correct,
+                            cot_text=cot_text,
+                            steps=steps,
+                            step_labels=step_labels,
+                            task_type="reasoning",
+                        )
+                    )
 
             slug = _model_slug(model_id)
             trace_path = args.output_dir / slug / output_name / "traces.jsonl"
@@ -247,10 +279,11 @@ def run_experiment(args: argparse.Namespace) -> None:
             )
 
         # Free model memory before loading the next one
-        del model
-        del tokenizer
-        if torch.cuda.is_available():
-            torch.cuda.empty_cache()
+        if model is not None:
+            del model
+            del tokenizer
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
 
     # Write summary — merge with existing summary to preserve previous runs
     summary_path = args.output_dir / "summary.json"

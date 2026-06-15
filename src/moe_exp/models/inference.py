@@ -154,7 +154,6 @@ def extract_logs_single_pass(
         "extract_logs_single_pass only supports batch_size=1"
     )
     inputs = {k: v.to(first_device) for k, v in inputs.items()}
-    seq_len = inputs["input_ids"].shape[1]
 
     # Find the prompt length within the jointly-tokenized sequence
     prompt_len = _find_prompt_length(tokenizer, formatted_prompt, full_text)

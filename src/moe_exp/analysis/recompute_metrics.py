@@ -1,9 +1,7 @@
 import argparse
-import glob
 import json
 import logging
 from pathlib import Path
-from pydantic import RootModel
 
 from moe_exp.schemas import TraceRecord
 from moe_exp.analysis.classifier import classify_trace

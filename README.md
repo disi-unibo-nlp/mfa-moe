@@ -26,7 +26,11 @@ Requires Python ≥ 3.11.
 
 ### Experiment 1 — Failure Taxonomy
 
-**Objective:** Generate CoT traces and classify reasoning events (backtracking, contradiction, self-correction, final-answer reversal). Produces the descriptive foundation table.
+**Objective:** Produce reasoning traces and classify reasoning events (backtracking, contradiction, self-correction, final-answer reversal). Produces the descriptive foundation table.
+
+Two kinds of datasets are handled:
+- **Generation datasets** (GSM8K, MATH): the model generates its own CoT, which is then classified.
+- **Given-solution datasets** (ProcessBench, PRM800K): no generation. The pre-written, gold-labeled solution *is* the reasoning chain we analyze, so `first_error_step` indexes the same chain whose router logits are later extracted. For PRM800K the chain is reconstructed from the per-step ratings (good prefix + first `-1`-rated step). A run over only given-solution datasets never loads the model.
 
 ```bash
 # Standard prompt
@@ -154,4 +158,4 @@ src/moe_exp/
 | `--self-check` | Uses a self-checking prompt that encourages step verification and error correction |
 | `--max-items N` | Limit examples per dataset (for smoke tests) |
 | `--quantization bnb-4bit` | Load model in 4-bit quantization |
-| `--reasoning-only` | Skip meta-reasoning traces (event_routing) |
+| `--reasoning-only` | event_routing: skip any traces tagged `task_type="meta_reasoning"` (none are produced by the current loaders; kept for forward compatibility) |

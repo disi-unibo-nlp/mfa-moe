@@ -15,19 +15,6 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 
-def calculate_expert_entropy(router_logits: torch.Tensor) -> torch.Tensor:
-    """
-    Calculate the entropy of the routing distribution.
-    router_logits: (num_layers, seq_len, num_experts)
-    Returns: (num_layers, seq_len)
-    """
-    log_probs = F.log_softmax(router_logits, dim=-1)
-    probs = log_probs.exp()
-    entropy = -torch.sum(probs * log_probs, dim=-1)
-    entropy = entropy.clamp(min=0.0)
-    return entropy
-
-
 def compute_selected_experts(router_logits: torch.Tensor, top_k: int = 8) -> tuple[torch.Tensor, torch.Tensor]:
     """
     Derive selected experts and their weights from router logits.
@@ -54,15 +41,34 @@ def process_file(
     model_id: str,
     output_path: Path,
     limit: int | None = None,
-    top_k: int = 8,
+    top_k: int | None = None,
 ):
     """
     Run Experiment 2 offline-extraction loop over traces to compute routing dynamics.
     Saves per-trace tensors: router_logits, selected_experts, expert_weights.
+
+    top_k: number of experts selected per token. When None, it is read from the
+    model config (num_experts_per_tok), so it is correct for any MoE model
+    (OLMoE=8, Qwen1.5-MoE=4, …). An explicit value overrides the config.
     """
     logger.info(f"Loading model {model_id}")
     model, tokenizer = load_model_and_tokenizer(model_id, quantization="none")
-    
+
+    config_top_k = getattr(model.config, "num_experts_per_tok", None)
+    if top_k is None:
+        if config_top_k is None:
+            raise ValueError(
+                f"Could not infer top_k from {model_id} config "
+                "(no num_experts_per_tok); pass --top-k explicitly."
+            )
+        top_k = int(config_top_k)
+        logger.info(f"Using top_k={top_k} from model config")
+    elif config_top_k is not None and top_k != config_top_k:
+        logger.warning(
+            f"Requested top_k={top_k} differs from model config "
+            f"num_experts_per_tok={config_top_k}"
+        )
+
     traces: list[dict[str, Any]] = []
     with open(input_path, "r", encoding="utf-8") as f:
         for line in f:
@@ -98,21 +104,24 @@ def process_file(
                 safe_problem_id = trace.problem_id.replace("/", "_").replace("\\", "_")
                 trace_id = f"{trace.dataset}_{safe_problem_id}"
                 
-                # Save router logits
+                # Save router logits.
+                # Store POSIX-style paths so the JSONL stays portable: tensors
+                # are typically written on Windows during dev but re-read inside
+                # the Linux Docker/SLURM pipeline, where backslash paths break.
                 logits_path = tensor_dir / f"{trace_id}_logits.pt"
                 torch.save(router_logits.to(torch.float32), logits_path)
-                trace.model_logs.router_logits = str(logits_path)
-                
+                trace.model_logs.router_logits = logits_path.as_posix()
+
                 # Compute and save selected experts and weights
                 selected, weights = compute_selected_experts(router_logits, top_k=top_k)
-                
+
                 experts_path = tensor_dir / f"{trace_id}_experts.pt"
                 torch.save(selected.to(torch.int16), experts_path)
-                trace.model_logs.selected_experts = str(experts_path)
-                
+                trace.model_logs.selected_experts = experts_path.as_posix()
+
                 weights_path = tensor_dir / f"{trace_id}_weights.pt"
                 torch.save(weights.to(torch.float16), weights_path)
-                trace.model_logs.expert_weights = str(weights_path)
+                trace.model_logs.expert_weights = weights_path.as_posix()
             else:
                 logger.warning(
                     f"Empty router logits for {trace.dataset}/{trace.problem_id} — "
@@ -132,7 +141,7 @@ if __name__ == "__main__":
     parser.add_argument("--output", type=str, required=True, help="Path to output jsonl")
     parser.add_argument("--model_id", type=str, default="allenai/OLMoE-1B-7B-0924-Instruct", help="HuggingFace Model ID")
     parser.add_argument("--limit", type=int, default=None, help="Process only first N traces")
-    parser.add_argument("--top-k", type=int, default=8, help="Number of top experts per token (default: 8 for OLMoE)")
+    parser.add_argument("--top-k", type=int, default=None, help="Number of top experts per token (default: read from model config, e.g. 8 for OLMoE)")
     
     args = parser.parse_args()
     
