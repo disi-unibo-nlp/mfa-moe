@@ -22,9 +22,14 @@ def get_routing_similarity(logits: torch.Tensor) -> np.ndarray:
     Cosine similarity of router probability distributions.
     logits: (N, num_experts)
     Returns: (N, N) numpy array
+
+    Uses a normalized matmul (cosine == dot product of L2-normalized vectors)
+    instead of broadcasting cosine_similarity, which would materialize an
+    (N, N, num_experts) intermediate and OOM for large N.
     """
     probs = F.softmax(logits, dim=-1)
-    sim = F.cosine_similarity(probs.unsqueeze(1), probs.unsqueeze(0), dim=-1)
+    probs_norm = F.normalize(probs, p=2, dim=-1)
+    sim = torch.matmul(probs_norm, probs_norm.transpose(0, 1))
     return sim.cpu().numpy()
 
 
@@ -282,58 +287,68 @@ def process_file(
     layer_results = []
     rnd = np.random.RandomState(42)
 
-    # Stratified sampling: ensure backtracking tokens are well-represented.
-    # If purely random, with <1% backtracking rate, we'd get ~0 backtracking pairs.
-    # Strategy: include ALL backtracking tokens + random sample of the rest.
+    # Two separate samples to avoid biasing population-level statistics:
+    #
+    #   base_indices: a uniform random sample over ALL tokens. Backtracking is
+    #     rare (<1%), so this sample reflects the true population. It is used for
+    #     the overall correlation / Mantel test and the correct/failed splits.
+    #
+    #   bt_indices: a stratified sample that guarantees backtracking tokens are
+    #     present (all BT tokens + a random set of others). It is used ONLY for
+    #     the backtracking-conditional correlation, where a uniform sample would
+    #     contain ~0 BT-BT pairs.
+    #
+    # Mixing the oversampled BT tokens into the overall correlation (as a single
+    # stratified sample would) makes "overall" non-representative of the corpus.
     bt_indices_all = np.where(all_bt_flags)[0]
     non_bt_indices_all = np.where(~all_bt_flags)[0]
 
-    # Budget: use up to num_sampled_tokens total, reserving space for all BT tokens
-    n_bt_to_use = min(len(bt_indices_all), num_sampled_tokens // 4)  # cap at 25% of budget
-    n_non_bt = min(num_sampled_tokens - n_bt_to_use, len(non_bt_indices_all))
+    # --- Representative uniform sample ---
+    all_idx = np.arange(total_tokens)
+    n_base = min(num_sampled_tokens, total_tokens)
+    base_indices = rnd.choice(all_idx, n_base, replace=False) if n_base < total_tokens else all_idx.copy()
+    base_size = len(base_indices)
+    if base_size < 2:
+        logger.error("Not enough tokens to compute correlations.")
+        return
+    base_types = all_types[base_indices]
 
+    # --- Stratified BT sample (for the backtracking-conditional metric only) ---
+    n_bt_to_use = min(len(bt_indices_all), num_sampled_tokens // 4)  # cap BT at 25% of budget
+    n_non_bt = min(num_sampled_tokens - n_bt_to_use, len(non_bt_indices_all))
     if n_bt_to_use > 0:
         bt_sample = rnd.choice(bt_indices_all, n_bt_to_use, replace=False) if n_bt_to_use < len(bt_indices_all) else bt_indices_all
     else:
         bt_sample = np.array([], dtype=np.intp)
-
     non_bt_sample = rnd.choice(non_bt_indices_all, n_non_bt, replace=False) if n_non_bt < len(non_bt_indices_all) else non_bt_indices_all
-    indices = np.concatenate([bt_sample, non_bt_sample])
-    rnd.shuffle(indices)
-
-    sample_size = len(indices)
-    if sample_size < 2:
-        logger.error("Not enough tokens to compute correlations.")
-        return
-
-    sampled_types = all_types[indices]
-    sampled_bt = all_bt_flags[indices]
+    bt_indices = np.concatenate([bt_sample, non_bt_sample]).astype(np.intp)
+    rnd.shuffle(bt_indices)
+    bt_flags_sampled = all_bt_flags[bt_indices]
+    bt_size = len(bt_indices)
 
     logger.info(
-        f"Sampled {sample_size} tokens: {int(sampled_bt.sum())} backtracking, "
-        f"{sample_size - int(sampled_bt.sum())} non-backtracking"
+        f"Base (uniform) sample: {base_size} tokens "
+        f"({int(all_bt_flags[base_indices].sum())} backtracking). "
+        f"BT-stratified sample: {bt_size} tokens "
+        f"({int(bt_flags_sampled.sum())} backtracking)."
     )
+
+    def _cosine_sim(h: torch.Tensor) -> np.ndarray:
+        h_norm = F.normalize(h, p=2, dim=-1)
+        return torch.matmul(h_norm, h_norm.transpose(0, 1)).cpu().numpy()
 
     for layer in range(num_layers):
         # Concatenate all chunks for this layer
         layer_h = torch.cat(layer_h_chunks[layer], dim=0)
         layer_r = torch.cat(layer_r_chunks[layer], dim=0)
 
-        sampled_h = layer_h[indices].to(torch.float32)
-        sampled_r = layer_r[indices].to(torch.float32)
+        # --- Population-level metrics on the uniform sample ---
+        base_h = layer_h[base_indices].to(torch.float32)
+        base_r = layer_r[base_indices].to(torch.float32)
+        h_sim = _cosine_sim(base_h)
+        r_sim = get_routing_similarity(base_r)
 
-        # Free full layer tensors
-        del layer_h, layer_r
-
-        # 1. Cosine similarity of hidden states (N, N)
-        h_norm = F.normalize(sampled_h, p=2, dim=-1)
-        h_sim = torch.matmul(h_norm, h_norm.transpose(0, 1)).cpu().numpy()
-
-        # 2. Cosine similarity of router probabilities (N, N)
-        r_sim = get_routing_similarity(sampled_r)
-
-        # Upper triangle for pairwise comparisons
-        upper_idx = np.triu_indices(sample_size, k=1)
+        upper_idx = np.triu_indices(base_size, k=1)
         h_sim_flat = h_sim[upper_idx]
         r_sim_flat = r_sim[upper_idx]
 
@@ -341,21 +356,33 @@ def process_file(
         # This correctly handles non-independence of pairwise similarities
         corr, p_value = _mantel_test(h_sim, r_sim, n_permutations=1000, rng=rnd)
 
-        # Split by trace type
-        types_i = sampled_types[upper_idx[0]]
-        types_j = sampled_types[upper_idx[1]]
-
+        types_i = base_types[upper_idx[0]]
+        types_j = base_types[upper_idx[1]]
         correct_mask = (types_i == True) & (types_j == True)
         failed_mask = (types_i == False) & (types_j == False)
-
-        # Backtracking: pairs where BOTH tokens are from backtracking steps
-        bt_i = sampled_bt[upper_idx[0]]
-        bt_j = sampled_bt[upper_idx[1]]
-        bt_mask = bt_i & bt_j
-
         corr_correct = _compute_correlation_for_mask(h_sim_flat, r_sim_flat, correct_mask)
         corr_failed = _compute_correlation_for_mask(h_sim_flat, r_sim_flat, failed_mask)
-        corr_bt = _compute_correlation_for_mask(h_sim_flat, r_sim_flat, bt_mask)
+
+        # --- Backtracking-conditional metric on the stratified sample ---
+        if bt_size >= 2:
+            bt_h = layer_h[bt_indices].to(torch.float32)
+            bt_r = layer_r[bt_indices].to(torch.float32)
+            h_sim_bt = _cosine_sim(bt_h)
+            r_sim_bt = get_routing_similarity(bt_r)
+            bt_upper = np.triu_indices(bt_size, k=1)
+            bt_i = bt_flags_sampled[bt_upper[0]]
+            bt_j = bt_flags_sampled[bt_upper[1]]
+            bt_mask = bt_i & bt_j
+            corr_bt = _compute_correlation_for_mask(
+                h_sim_bt[bt_upper], r_sim_bt[bt_upper], bt_mask
+            )
+            num_bt_pairs = int(np.sum(bt_mask))
+        else:
+            corr_bt = float("nan")
+            num_bt_pairs = 0
+
+        # Free full layer tensors
+        del layer_h, layer_r
 
         layer_results.append({
             "layer": layer,
@@ -366,7 +393,7 @@ def process_file(
             "p_value": p_value,
             "num_correct_pairs": int(np.sum(correct_mask)),
             "num_failed_pairs": int(np.sum(failed_mask)),
-            "num_backtracking_pairs": int(np.sum(bt_mask)),
+            "num_backtracking_pairs": num_bt_pairs,
         })
 
         logger.info(

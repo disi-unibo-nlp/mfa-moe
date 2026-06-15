@@ -27,6 +27,7 @@ TOP_K=8
 WINDOW=5
 SAMPLES=1000
 CHUNK_SIZE=20
+SELF_CHECK=false
 
 while [[ $# -gt 0 ]]; do
     case $1 in
@@ -38,27 +39,47 @@ while [[ $# -gt 0 ]]; do
         --window) WINDOW="$2"; shift 2 ;;
         --samples) SAMPLES="$2"; shift 2 ;;
         --chunk-size) CHUNK_SIZE="$2"; shift 2 ;;
+        --self-check) SELF_CHECK=true; shift ;;
         *) echo "Unknown argument: $1"; exit 1 ;;
     esac
 done
 
 if [[ -z "$MODEL" || -z "$DATASET" ]]; then
-    echo "Usage: $0 --model <HF_MODEL_ID> --dataset <DATASET> [--max-items N]"
+    echo "Usage: $0 --model <HF_MODEL_ID> --dataset <DATASET> [--max-items N] [--self-check]"
     echo "  Datasets: gsm8k, math, processbench, prm800k"
+    echo "  --self-check: use the self-checking prompt (generation datasets only;"
+    echo "                runs as <dataset>_selfcheck through all stages)"
     exit 1
 fi
 
+# Self-check uses a verification-encouraging prompt and only applies to generation
+# datasets. Exp1 writes its output under "<dataset>_selfcheck", so the whole
+# downstream chain must use that name for its paths.
+DATASET_DIR="$DATASET"
+SELFCHECK_FLAG=""
+if [[ "$SELF_CHECK" == true ]]; then
+    case "$DATASET" in
+        processbench|prm800k)
+            echo "Error: --self-check does not apply to given-solution dataset '$DATASET'"
+            echo "       (its chain is pre-written; there is nothing to generate)."
+            exit 1 ;;
+    esac
+    DATASET_DIR="${DATASET}_selfcheck"
+    SELFCHECK_FLAG="--self-check"
+fi
+
 MODEL_SLUG="${MODEL////--}"
-BASE_DIR="${OUTPUT_DIR}/${MODEL_SLUG}/${DATASET}"
+BASE_DIR="${OUTPUT_DIR}/${MODEL_SLUG}/${DATASET_DIR}"
 
 # Pre-create output dirs
 mkdir -p "$PHYS_DIR/$BASE_DIR"
 chmod -R 777 "$PHYS_DIR/results"
 
 echo "=== MoE Pipeline ==="
-echo "  Model:   $MODEL"
-echo "  Dataset: $DATASET"
-echo "  Output:  $BASE_DIR"
+echo "  Model:      $MODEL"
+echo "  Dataset:    $DATASET"
+echo "  Self-check: $SELF_CHECK"
+echo "  Output:     $BASE_DIR"
 echo ""
 
 # --- Build common docker run prefix ---
@@ -108,6 +129,7 @@ else
         --model $MODEL \
         --datasets $DATASET \
         --output-dir $OUTPUT_DIR \
+        $SELFCHECK_FLAG \
         $ITEMS_FLAG"
 fi
 echo ""

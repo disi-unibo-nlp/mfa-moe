@@ -24,6 +24,13 @@ def _hf() -> "datasets":  # type: ignore[name-defined]
 
 AVAILABLE_DATASETS = ["gsm8k", "processbench", "prm800k", "math"]
 
+# Datasets that ship a pre-written reasoning chain with gold step-level labels.
+# For these we analyze the GIVEN solution (its steps + first_error_step) rather
+# than generating a fresh CoT, so the first-error label aligns with the chain
+# whose routing we extract. Examples expose: solution_steps, first_error_step,
+# solution_is_correct.
+GIVEN_SOLUTION_DATASETS = {"processbench", "prm800k"}
+
 
 # ---------------------------------------------------------------------------
 # GSM8K
@@ -83,34 +90,26 @@ def load_processbench(max_items: Optional[int] = None) -> list[dict]:
     results = []
     for i, ex in enumerate(ds):
         label = ex.get("label")          # int: first-error step index, -1 = all correct
-        steps: list[str] = ex.get("steps") or []
+        raw_steps: list[str] = ex.get("steps") or []
+        steps = [str(s).strip() for s in raw_steps if str(s).strip()]
         problem = ex.get("problem") or ex.get("question") or ""
 
-        # Build evaluation prompt: show pre-written steps and ask for the first error
-        if steps:
-            steps_text = "\n".join(f"Step {j}: {s}" for j, s in enumerate(steps))
-            prompt = (
-                f"{problem}\n\n"
-                f"The following is a step-by-step solution. "
-                f"Identify the index of the first step that contains an error. "
-                f"Steps are indexed from 0. "
-                f"If all steps are correct, answer -1.\n\n"
-                f"{steps_text}\n\n"
-                f"What is the index of the first erroneous step? "
-                f"Answer with a single integer (-1 if all steps are correct). "
-                f"Final answer:"
-            )
-        else:
-            prompt = problem
-
+        # Given-solution example: analyze the pre-written solution chain itself.
+        # first_error_step indexes `steps` directly (the gold label), so routing
+        # is aligned to the chain we extract logits from. -1 means all correct.
+        if not steps:
+            continue
+        first_error = label if (label is not None and label >= 0 and label < len(steps)) else None
         results.append(
             {
                 "problem_id": f"processbench_{i}",
-                "prompt": prompt,
-                "gold_answer": str(label) if label is not None else "",
+                "prompt": problem,
+                "gold_answer": "",
+                "solution_steps": steps,
+                "first_error_step": first_error,
+                "solution_is_correct": (label == -1) if label is not None else None,
                 "metadata": {
                     "label": label,
-                    "steps": steps,
                     "source": ex.get("source"),
                 },
             }
@@ -123,13 +122,67 @@ def load_processbench(max_items: Optional[int] = None) -> list[dict]:
 # ---------------------------------------------------------------------------
 
 
-def load_prm800k(max_items: Optional[int] = None) -> list[dict]:
-    """Load PRM800K (tasksource/PRM800K on HuggingFace).
+def _prm800k_build_example(rec: dict) -> tuple[str, str, list[str], Optional[int], Optional[bool]]:
+    """Reconstruct a reasoning chain + first-error label from one PRM800K record.
 
-    Uses the public tasksource mirror of the OpenAI PRM800K dataset.
-    The repository stores raw JSONL files with slightly different nested
-    fields across phases, so we read and normalize the records directly
-    instead of relying on `datasets.load_dataset(...)` schema inference.
+    PRM800K rates candidate next-steps (rating -1 bad, 0 neutral, 1 good) at each
+    position rather than storing a single errored solution. To get a chain that is
+    analogous to ProcessBench (correct up to step k, then wrong), we follow the
+    good/chosen path until the first step that offers a (-1)-rated candidate, then
+    append that wrong candidate as the erroneous step. `first_error_step` indexes
+    that wrong step within the returned `steps`. Records with no (-1) candidate
+    yield a fully-correct chain (first_error None).
+
+    Returns: (problem, gold_answer, steps, first_error_step, is_correct).
+    """
+    q = rec.get("question") or {}
+    problem = q.get("problem") or q.get("text") or "" if isinstance(q, dict) else str(q)
+    gold = ""
+    if isinstance(q, dict):
+        gold = q.get("ground_truth_answer") or q.get("ground_truth_solution") or ""
+    steps_data = (rec.get("label") or {}).get("steps") or []
+
+    good_prefix: list[str] = []
+    error_text: Optional[str] = None
+    first_error: Optional[int] = None
+    for i, step in enumerate(steps_data):
+        comps = step.get("completions") or []
+        neg = next(
+            (c for c in comps if c.get("rating") == -1 and (c.get("text") or "").strip()),
+            None,
+        )
+        if neg is not None:
+            error_text = neg["text"].strip()
+            first_error = i
+            break
+        # Follow the good path: a human correction if present, else the chosen completion.
+        human = step.get("human_completion")
+        chosen = step.get("chosen_completion")
+        if isinstance(human, dict):
+            text = human.get("text")
+        elif isinstance(human, str):
+            text = human
+        elif chosen is not None and 0 <= chosen < len(comps):
+            text = comps[chosen].get("text")
+        else:
+            text = None  # give-up / end of solution
+        if not text or not text.strip():
+            break
+        good_prefix.append(text.strip())
+
+    if error_text is not None:
+        return problem, str(gold), good_prefix + [error_text], first_error, False
+    return problem, str(gold), good_prefix, None, (True if good_prefix else None)
+
+
+def load_prm800k(max_items: Optional[int] = None) -> list[dict]:
+    """Load PRM800K (tasksource/PRM800K on HuggingFace) as a given-solution dataset.
+
+    Uses the public tasksource mirror of the OpenAI PRM800K dataset. The repository
+    stores raw JSONL files with nested per-step ratings, so we read the records
+    directly and reconstruct a labeled reasoning chain per problem via
+    `_prm800k_build_example` (see its docstring). Each example exposes the chain
+    `solution_steps`, the gold `first_error_step`, and `solution_is_correct`.
     Deduplicates by problem text so each unique problem appears once.
     """
     console.print("[blue]Loading PRM800K…")
@@ -156,28 +209,8 @@ def load_prm800k(max_items: Optional[int] = None) -> list[dict]:
     seen: set[str] = set()
     results = []
     for ex in records:
-        q = ex.get("question") or {}
-        if isinstance(q, dict):
-            problem = q.get("problem") or q.get("text") or str(q)
-            gold = (
-                q.get("ground_truth_answer")
-                or q.get("ground_truth_solution")
-                or ""
-            )
-        else:
-            problem = str(q)
-            gold = ex.get("gold_answer") or ""
-
-        if not gold:
-            label = ex.get("label") or {}
-            if isinstance(label, dict):
-                gold = (
-                    label.get("ground_truth_answer")
-                    or label.get("ground_truth_solution")
-                    or ""
-                )
-
-        if not problem or problem in seen:
+        problem, gold, steps, first_error, is_correct = _prm800k_build_example(ex)
+        if not problem or not steps or problem in seen:
             continue
         seen.add(problem)
 
@@ -186,7 +219,10 @@ def load_prm800k(max_items: Optional[int] = None) -> list[dict]:
                 "problem_id": f"prm800k_{len(results)}",
                 "prompt": problem,
                 "gold_answer": str(gold),
-                "metadata": {},
+                "solution_steps": steps,
+                "first_error_step": first_error,
+                "solution_is_correct": is_correct,
+                "metadata": {"source": "prm800k"},
             }
         )
         if max_items and len(results) >= max_items:

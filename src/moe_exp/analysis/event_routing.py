@@ -29,7 +29,6 @@ import torch
 import torch.nn.functional as F
 
 from moe_exp.schemas import TraceRecord
-from moe_exp.analysis.step_splitter import split_steps
 from moe_exp.models.inference import _format_prompt, _find_prompt_length
 
 logging.basicConfig(level=logging.INFO)
@@ -51,7 +50,9 @@ def compute_token_entropy(router_logits: torch.Tensor) -> torch.Tensor:
     """
     log_probs = F.log_softmax(router_logits, dim=-1)
     probs = log_probs.exp()
-    entropy = -torch.sum(probs * log_probs, dim=-1).clamp(min=0.0)  # (L, T)
+    # Parenthesize the negation before .clamp(): sum(p*log p) is <= 0, so clamping
+    # it before negating would zero out every value.
+    entropy = (-torch.sum(probs * log_probs, dim=-1)).clamp(min=0.0)  # (L, T)
     return entropy.mean(dim=0)  # (T,)
 
 
@@ -263,6 +264,7 @@ def analyze_trace_events(
         or events.contradiction_steps
         or events.self_correction_steps
         or events.first_error_step is not None
+        or events.first_reasoning_event_step is not None
     )
     if not has_events:
         return None
@@ -275,8 +277,7 @@ def analyze_trace_events(
     margin = compute_router_margin(router_logits)
 
     # Map steps to token ranges
-    from moe_exp.models.inference import _format_prompt as fmt_prompt
-    formatted_prompt = fmt_prompt(tokenizer, trace.prompt)
+    formatted_prompt = _format_prompt(tokenizer, trace.prompt)
     token_ranges = _map_steps_to_token_ranges(
         trace.steps, trace.cot_text, tokenizer, formatted_prompt
     )
@@ -350,6 +351,20 @@ def analyze_trace_events(
                 "margin": _aggregate_window(margin, centers, window, seq_len),
             }
 
+    # First reasoning event: the earliest step where the model SIGNALS an issue
+    # (earliest backtracking/contradiction). Distinct from first_error (gold) and
+    # from the per-type rows, which aggregate all occurrences.
+    if events.first_reasoning_event_step is not None:
+        centers = _step_center_tokens([events.first_reasoning_event_step])
+        if centers:
+            result["events"]["first_reasoning_event"] = {
+                "n_events": len(centers),
+                "entropy": _aggregate_window(entropy, centers, window, seq_len),
+                "switch_rate": _aggregate_window(switch_rate, centers, window, seq_len),
+                "topk_overlap": _aggregate_window(topk_overlap, centers, window, seq_len),
+                "margin": _aggregate_window(margin, centers, window, seq_len),
+            }
+
     # Baseline: metrics for "normal" steps (no events)
     event_step_set = set(
         events.backtracking_steps
@@ -358,6 +373,8 @@ def analyze_trace_events(
     )
     if events.first_error_step is not None:
         event_step_set.add(events.first_error_step)
+    if events.first_reasoning_event_step is not None:
+        event_step_set.add(events.first_reasoning_event_step)
 
     normal_steps = [i for i in range(len(trace.steps)) if i not in event_step_set]
     if normal_steps:
@@ -385,7 +402,10 @@ def build_event_summary(per_trace_results: list[dict]) -> dict:
     Produces the Experiment 2 central table:
         Event type | Entropy before/at/after | Switch rate | Top-k overlap | Margin
     """
-    event_types = ["normal", "backtracking", "contradiction", "self_correction", "first_error"]
+    event_types = [
+        "normal", "backtracking", "contradiction", "self_correction",
+        "first_error", "first_reasoning_event",
+    ]
     metrics = ["entropy", "switch_rate", "topk_overlap", "margin"]
     phases = ["before", "at", "after"]
 
@@ -438,8 +458,8 @@ def main():
         help="Number of tokens before/after event center to aggregate (default: 5)"
     )
     parser.add_argument(
-        "--top-k", type=int, default=8,
-        help="Number of top experts per token (default: 8 for OLMoE)"
+        "--top-k", type=int, default=None,
+        help="Number of top experts per token (default: read from model config, e.g. 8 for OLMoE)"
     )
     parser.add_argument(
         "--model_id", type=str, default="allenai/OLMoE-1B-7B-0924-Instruct",
@@ -455,7 +475,20 @@ def main():
     )
     args = parser.parse_args()
 
-    from transformers import AutoTokenizer
+    from transformers import AutoConfig, AutoTokenizer
+
+    top_k = args.top_k
+    if top_k is None:
+        cfg = AutoConfig.from_pretrained(args.model_id)
+        top_k = getattr(cfg, "num_experts_per_tok", None)
+        if top_k is None:
+            raise ValueError(
+                f"Could not infer top_k from {args.model_id} config "
+                "(no num_experts_per_tok); pass --top-k explicitly."
+            )
+        top_k = int(top_k)
+        logger.info(f"Using top_k={top_k} from model config")
+
     logger.info(f"Loading tokenizer: {args.model_id}")
     tokenizer = AutoTokenizer.from_pretrained(args.model_id)
     tokenizer.padding_side = "left"
@@ -497,7 +530,7 @@ def main():
             router_logits=router_logits,
             tokenizer=tokenizer,
             window=args.window,
-            top_k=args.top_k,
+            top_k=top_k,
         )
         if result is not None:
             per_trace_results.append(result)
@@ -516,7 +549,7 @@ def main():
     output_data = {
         "config": {
             "window": args.window,
-            "top_k": args.top_k,
+            "top_k": top_k,
             "model_id": args.model_id,
             "n_traces_analyzed": len(per_trace_results),
             "n_traces_skipped": skipped,
