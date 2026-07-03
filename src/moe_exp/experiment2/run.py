@@ -95,6 +95,7 @@ def process_file(
                 tokenizer=tokenizer,
                 problem=trace.prompt,
                 cot_text=trace.cot_text,
+                system_prompt=trace.system_prompt,
             )
             assert isinstance(router_logits, torch.Tensor)
             

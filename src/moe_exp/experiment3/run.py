@@ -215,7 +215,9 @@ def process_file(
         chunk_traces: list[TraceRecord] = []
         chunk_router: list[torch.Tensor] = []
         chunk_hidden: list[torch.Tensor] = []
-        chunk_correct: list[bool] = []
+        # Tri-state correctness: 1 = correct, 0 = failed, -1 = unknown
+        # (is_correct is None when answer comparison was ambiguous).
+        chunk_correct: list[int] = []
         formatted_prompts: list[str] = []
 
         for trace_dict in tqdm(chunk_raw, desc=f"Chunk {chunk_start // chunk_size + 1}", leave=False):
@@ -229,14 +231,22 @@ def process_file(
                 problem=trace.prompt,
                 cot_text=trace.cot_text,
                 extract_hidden_states=True,
+                system_prompt=trace.system_prompt,
             )
 
             if router_tensor.numel() > 0:
                 chunk_router.append(router_tensor)
                 chunk_hidden.append(hidden_tensor)
-                chunk_correct.append(bool(trace.is_correct))
+                if trace.is_correct is True:
+                    chunk_correct.append(1)
+                elif trace.is_correct is False:
+                    chunk_correct.append(0)
+                else:
+                    chunk_correct.append(-1)
                 chunk_traces.append(trace)
-                formatted_prompts.append(_format_prompt(tokenizer, trace.prompt))
+                formatted_prompts.append(
+                    _format_prompt(tokenizer, trace.prompt, trace.system_prompt)
+                )
 
         if not chunk_hidden:
             continue
@@ -265,7 +275,7 @@ def process_file(
             bt_set = bt_token_sets[i]
             bt_flags.extend([t in bt_set for t in range(seq_len)])
 
-        token_type_chunks.append(np.array(types))
+        token_type_chunks.append(np.array(types, dtype=np.int8))
         backtrack_flag_chunks.append(np.array(bt_flags))
 
         # Free chunk memory
@@ -356,10 +366,12 @@ def process_file(
         # This correctly handles non-independence of pairwise similarities
         corr, p_value = _mantel_test(h_sim, r_sim, n_permutations=1000, rng=rnd)
 
+        # Unknown correctness (-1) is excluded from both splits rather than
+        # being lumped in with failed traces.
         types_i = base_types[upper_idx[0]]
         types_j = base_types[upper_idx[1]]
-        correct_mask = (types_i == True) & (types_j == True)
-        failed_mask = (types_i == False) & (types_j == False)
+        correct_mask = (types_i == 1) & (types_j == 1)
+        failed_mask = (types_i == 0) & (types_j == 0)
         corr_correct = _compute_correlation_for_mask(h_sim_flat, r_sim_flat, correct_mask)
         corr_failed = _compute_correlation_for_mask(h_sim_flat, r_sim_flat, failed_mask)
 

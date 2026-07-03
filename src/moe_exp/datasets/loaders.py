@@ -61,19 +61,22 @@ def load_gsm8k(max_items: Optional[int] = None) -> list[dict]:
 
 
 def load_processbench(max_items: Optional[int] = None) -> list[dict]:
-    """Load Qwen/ProcessBench (test split).
+    """Load Qwen/ProcessBench (test split) as a given-solution dataset.
 
     ProcessBench is a process-level evaluation benchmark. Each example contains
-    a problem and a pre-written step-by-step solution (which may contain errors).
-    The task is to identify the index of the first erroneous step (-1 = all correct).
+    a problem and a pre-written step-by-step solution (which may contain errors),
+    with a gold label for the first erroneous step (-1 = all correct). We analyze
+    the given solution chain directly rather than generating a fresh CoT.
 
     Fields populated:
-      - prompt:           problem text + numbered steps + evaluation instruction
-      - gold_answer:      str(label) where label is the first-error step index
-                          (0-indexed; -1 means all steps are correct)
-      - metadata.label:   same value as gold_answer, as int
-      - metadata.steps:   the original pre-written steps list
-      - metadata.source:  gsm8k / math / olympiad / omnimath
+      - prompt:               the problem text
+      - gold_answer:          "" (the chain itself is analyzed; no final answer)
+      - solution_steps:       the pre-written steps list
+      - first_error_step:     gold first-error index into solution_steps
+                              (None when all steps are correct)
+      - solution_is_correct:  True when label == -1
+      - metadata.label:       raw label (int; -1 = all correct)
+      - metadata.source:      gsm8k / math / olympiad / omnimath
     """
     console.print("[blue]Loading ProcessBench…")
     try:
