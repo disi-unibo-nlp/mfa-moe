@@ -133,9 +133,15 @@ def extract_logs_single_pass(
     problem: str,
     cot_text: str,
     extract_hidden_states: bool = False,
+    system_prompt: str | None = None,
 ) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
     """
     Run a single forward pass with the full prompt + CoT to extract model logs.
+
+    system_prompt must be the SAME prompt used when the CoT was generated
+    (TraceRecord.system_prompt; None = the default SYSTEM_PROMPT), so the
+    extracted routing is conditioned on the generation-time context.
+
     Returns:
         router_logits: (num_layers, seq_len, num_experts)
         If extract_hidden_states is True, also returns:
@@ -145,7 +151,7 @@ def extract_logs_single_pass(
     """
     first_device = next(model.parameters()).device
     
-    formatted_prompt = _format_prompt(tokenizer, problem)
+    formatted_prompt = _format_prompt(tokenizer, problem, system_prompt)
     full_text = formatted_prompt + cot_text
 
     # Tokenize the full text once to avoid boundary-merge issues

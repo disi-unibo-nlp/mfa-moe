@@ -32,6 +32,10 @@ class TraceRecord(BaseModel):
     dataset: str
     problem_id: str
     prompt: str
+    # System prompt used at generation time (None = the default SYSTEM_PROMPT).
+    # Downstream teacher-forced passes (Exp2/Exp3/event_routing) must rebuild the
+    # prompt with this same value or the routing is conditioned on the wrong context.
+    system_prompt: Optional[str] = None
     gold_answer: str
     model_id: str
     model_answer: str

@@ -276,8 +276,9 @@ def analyze_trace_events(
     topk_overlap = compute_topk_overlap(router_logits, top_k=top_k)
     margin = compute_router_margin(router_logits)
 
-    # Map steps to token ranges
-    formatted_prompt = _format_prompt(tokenizer, trace.prompt)
+    # Map steps to token ranges. Rebuild the prompt with the generation-time
+    # system prompt so token indices line up with the Exp2 extraction.
+    formatted_prompt = _format_prompt(tokenizer, trace.prompt, trace.system_prompt)
     token_ranges = _map_steps_to_token_ranges(
         trace.steps, trace.cot_text, tokenizer, formatted_prompt
     )
@@ -471,7 +472,10 @@ def main():
     )
     parser.add_argument(
         "--reasoning-only", action="store_true", default=False,
-        help="Skip meta-reasoning traces (e.g. ProcessBench)"
+        help=(
+            "Skip traces tagged task_type='meta_reasoning'. No current loader "
+            "produces such traces; kept for forward compatibility."
+        )
     )
     args = parser.parse_args()
 

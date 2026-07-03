@@ -138,8 +138,9 @@ def _build_parser() -> argparse.ArgumentParser:
             "prompt. This prompt encourages the model to verify each step and "
             "correct errors. Results are saved under a separate dataset name "
             "(e.g. gsm8k_selfcheck). To get both variants, run twice: once "
-            "without this flag and once with it. ProcessBench is skipped under "
-            "--self-check (it is meta-reasoning, not problem solving)."
+            "without this flag and once with it. Given-solution datasets "
+            "(ProcessBench, PRM800K) are skipped under --self-check: their "
+            "chain is pre-written, so there is nothing to generate."
         ),
     )
     return p
@@ -214,6 +215,7 @@ def run_experiment(args: argparse.Namespace) -> None:
                         dataset=output_name,
                         problem_id=ex["problem_id"],
                         prompt=ex["prompt"],
+                        system_prompt=sys_prompt,
                         gold_answer=ex.get("gold_answer", ""),
                         model_id=model_id,
                         model_answer=extract_model_answer(cot_text),
@@ -254,6 +256,7 @@ def run_experiment(args: argparse.Namespace) -> None:
                             dataset=output_name,
                             problem_id=ex["problem_id"],
                             prompt=ex["prompt"],
+                            system_prompt=sys_prompt,
                             gold_answer=ex["gold_answer"],
                             model_id=model_id,
                             model_answer=model_answer,

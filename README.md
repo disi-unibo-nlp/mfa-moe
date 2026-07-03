@@ -87,6 +87,19 @@ python -m moe_exp.experiment3.run \
 
 **Output:** Per-layer correlation values with Mantel test p-values.
 
+### Experiment 5 — Expert Behavior Around Reasoning Events
+
+**Objective:** For each expert (per layer), measure over/under-use around reasoning events: activation frequency and weight mass per reasoning phase (normal, backtracking, contradiction, self-correction, first-error, final-answer), expert usage before vs. after the first error and before vs. after successful/failed self-corrections, plus global co-activation and top-1 expert transition matrices. Feeds the expert-usage heatmaps and transition-matrix figures. We deliberately describe experts as associated with reasoning-state regions/transitions, not as "math experts" or "logic experts".
+
+```bash
+python -m moe_exp.experiment5.run \
+    --input results/exp2/allenai--OLMoE-1B-7B-0924-Instruct/gsm8k/traces_with_routing.jsonl \
+    --output results/exp5/allenai--OLMoE-1B-7B-0924-Instruct/gsm8k/expert_events.json \
+    --window 5
+```
+
+**Output:** `expert_events.json` (per-phase and before/after usage statistics) + `expert_arrays.npz` (per-layer co-activation and transition matrices). Offline over Exp2 tensors, no GPU needed.
+
 ### Recompute Taxonomy Metrics
 
 **Objective:** Re-run the classifier on existing traces (useful after updating classification logic).
@@ -102,7 +115,9 @@ Experiment 1 (trace generation)
 │
 ├──► Experiment 2 (router extraction)     [requires: exp1 traces]
 │    │
-│    └──► Event Routing Analysis           [requires: exp2 tensors]
+│    ├──► Event Routing Analysis           [requires: exp2 tensors]
+│    │
+│    └──► Experiment 5 (expert behavior)   [requires: exp2 tensors]
 │
 └──► Experiment 3 (geometry correlation)   [requires: exp1 traces, needs GPU]
 
@@ -111,12 +126,15 @@ Recompute Metrics ◄── exp1 traces (offline, no GPU)
 
 ```
 exp1 ─────► exp2 ─────► event_routing
+  │           │
+  │           └───────► exp5
   │
   └───────► exp3
 ```
 
 - **exp1 → exp2**: Exp2 needs the `traces.jsonl` from Exp1 as input.
 - **exp2 → event_routing**: Event routing analysis loads the `.pt` tensor files saved by Exp2 (no GPU needed).
+- **exp2 → exp5**: Exp5 loads the same `.pt` tensor files (no GPU needed).
 - **exp1 → exp3**: Exp3 re-runs forward passes itself, only needs the trace text from Exp1.
 
 ## Project Structure
@@ -140,8 +158,10 @@ src/moe_exp/
 │   └── taxonomy.py         # Summary table builder
 ├── experiment2/
 │   └── run.py              # Router logit extraction
-└── experiment3/
-    └── run.py              # Geometry-routing correlation
+├── experiment3/
+│   └── run.py              # Geometry-routing correlation
+└── experiment5/
+    └── run.py              # Expert behavior around reasoning events
 ```
 
 ## Models
