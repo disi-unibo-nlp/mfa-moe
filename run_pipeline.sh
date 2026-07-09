@@ -11,9 +11,11 @@
 # Usage:
 #   ./run_pipeline.sh --model allenai/OLMoE-1B-7B-0924-Instruct --dataset gsm8k [--max-items 50]
 #   sbatch run_pipeline.sh --model allenai/OLMoE-1B-7B-0924-Instruct --dataset gsm8k
+#   ./run_pipeline.sh --local --model ... --dataset gsm8k   # no Docker (e.g. vast.ai)
 
 set -euo pipefail
 
+# Cluster paths (Docker mode). In --local mode PHYS_DIR becomes the repo root.
 PHYS_DIR="/home/tassinari/moe-mfaExperiments"
 LLM_CACHE_DIR="/llms"
 IMAGE_NAME="moe-mfa-experiments:latest"
@@ -33,6 +35,7 @@ WINDOW=5
 SAMPLES=1000
 CHUNK_SIZE=20
 SELF_CHECK=false
+LOCAL=false
 
 while [[ $# -gt 0 ]]; do
     case $1 in
@@ -45,16 +48,29 @@ while [[ $# -gt 0 ]]; do
         --samples) SAMPLES="$2"; shift 2 ;;
         --chunk-size) CHUNK_SIZE="$2"; shift 2 ;;
         --self-check) SELF_CHECK=true; shift ;;
+        --local) LOCAL=true; shift ;;
         *) echo "Unknown argument: $1"; exit 1 ;;
     esac
 done
 
 if [[ -z "$MODEL" || -z "$DATASET" ]]; then
-    echo "Usage: $0 --model <HF_MODEL_ID> --dataset <DATASET> [--max-items N] [--self-check]"
+    echo "Usage: $0 --model <HF_MODEL_ID> --dataset <DATASET> [--max-items N] [--self-check] [--local]"
     echo "  Datasets: gsm8k, math, processbench, prm800k"
     echo "  --self-check: use the self-checking prompt (generation datasets only;"
     echo "                runs as <dataset>_selfcheck through all stages)"
+    echo "  --local:      run stages natively instead of in Docker (for environments"
+    echo "                that are already containers, e.g. vast.ai instances)"
     exit 1
+fi
+
+# Local mode: run stages natively from the repo root. Auto-enabled when docker
+# is unavailable (a vast.ai instance is already a container).
+if [[ "$LOCAL" != true ]] && ! command -v docker >/dev/null 2>&1; then
+    echo "docker not found — falling back to --local mode."
+    LOCAL=true
+fi
+if [[ "$LOCAL" == true ]]; then
+    PHYS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 fi
 
 # Self-check uses a verification-encouraging prompt and only applies to generation
@@ -86,25 +102,33 @@ EXP5_DIR="${OUTPUT_DIR}/exp5/${MODEL_SLUG}/${DATASET_DIR}"
 
 # Pre-create output dirs
 mkdir -p "$PHYS_DIR/$EXP1_DIR" "$PHYS_DIR/$EXP2_DIR" "$PHYS_DIR/$EXP3_DIR" "$PHYS_DIR/$EXP5_DIR"
-chmod -R 777 "$PHYS_DIR/$OUTPUT_DIR"
+if [[ "$LOCAL" != true ]]; then
+    # NFS root_squash maps container root → nobody; open up perms so it can write.
+    chmod -R 777 "$PHYS_DIR/$OUTPUT_DIR"
+fi
 
 echo "=== MoE Pipeline ==="
 echo "  Model:      $MODEL"
 echo "  Dataset:    $DATASET"
 echo "  Self-check: $SELF_CHECK"
+echo "  Mode:       $([[ "$LOCAL" == true ]] && echo local || echo docker)"
 echo "  Output:     ${OUTPUT_DIR}/exp{1,2,3,5}/${MODEL_SLUG}/${DATASET_DIR}"
 echo ""
 
-run_in_docker() {
-    docker run \
-        -v "$PHYS_DIR":/workspace \
-        -v "$LLM_CACHE_DIR":"$LLM_CACHE_DIR" \
-        -e HF_HOME="$LLM_CACHE_DIR" \
-        --rm \
-        --memory="30g" \
-        --gpus '"device='"$CUDA_VISIBLE_DEVICES"'"' \
-        "$IMAGE_NAME" \
-        bash -c "cd /workspace && $1"
+run_stage() {
+    if [[ "$LOCAL" == true ]]; then
+        (cd "$PHYS_DIR" && bash -c "$1")
+    else
+        docker run \
+            -v "$PHYS_DIR":/workspace \
+            -v "$LLM_CACHE_DIR":"$LLM_CACHE_DIR" \
+            -e HF_HOME="$LLM_CACHE_DIR" \
+            --rm \
+            --memory="30g" \
+            --gpus '"device='"$CUDA_VISIBLE_DEVICES"'"' \
+            "$IMAGE_NAME" \
+            bash -c "cd /workspace && $1"
+    fi
 }
 
 # --- Build max-items flag ---
@@ -134,7 +158,7 @@ echo ">>> Stage 1/5: Experiment 1 — CoT Trace Generation"
 if [[ -f "$PHYS_DIR/$TRACES_PATH" ]]; then
     echo "    traces.jsonl already exists, skipping. Delete to re-run."
 else
-    run_in_docker "python -m moe_exp.experiment1.run \
+    run_stage "python -m moe_exp.experiment1.run \
         --model $MODEL \
         --datasets $DATASET \
         --output-dir ${OUTPUT_DIR}/exp1 \
@@ -152,7 +176,7 @@ echo ">>> Stage 2/5: Experiment 2 — Router Logit Extraction"
 if [[ -f "$PHYS_DIR/$ROUTING_PATH" ]]; then
     echo "    traces_with_routing.jsonl already exists, skipping. Delete to re-run."
 else
-    run_in_docker "python -m moe_exp.experiment2.run \
+    run_stage "python -m moe_exp.experiment2.run \
         --input $TRACES_PATH \
         --output $ROUTING_PATH \
         --model_id $MODEL \
@@ -170,7 +194,7 @@ echo ">>> Stage 3/5: Event Routing Analysis"
 if [[ -f "$PHYS_DIR/$EVENT_ROUTING_PATH" ]]; then
     echo "    event_routing.json already exists, skipping. Delete to re-run."
 else
-    run_in_docker "python -m moe_exp.analysis.event_routing \
+    run_stage "python -m moe_exp.analysis.event_routing \
         --input $ROUTING_PATH \
         --output $EVENT_ROUTING_PATH \
         --window $WINDOW \
@@ -189,7 +213,7 @@ echo ">>> Stage 4/5: Experiment 3 — Geometric Correlation"
 if [[ -f "$PHYS_DIR/$GEOMETRY_PATH" ]]; then
     echo "    geometry_correlation.json already exists, skipping. Delete to re-run."
 else
-    run_in_docker "python -m moe_exp.experiment3.run \
+    run_stage "python -m moe_exp.experiment3.run \
         --input $TRACES_PATH \
         --output $GEOMETRY_PATH \
         --model_id $MODEL \
@@ -208,7 +232,7 @@ echo ">>> Stage 5/5: Experiment 5 — Expert Behavior Around Events"
 if [[ -f "$PHYS_DIR/$EXPERT_EVENTS_PATH" ]]; then
     echo "    expert_events.json already exists, skipping. Delete to re-run."
 else
-    run_in_docker "python -m moe_exp.experiment5.run \
+    run_stage "python -m moe_exp.experiment5.run \
         --input $ROUTING_PATH \
         --output $EXPERT_EVENTS_PATH \
         --window $WINDOW \
