@@ -13,7 +13,9 @@ The central hypothesis: successful reasoning traces exhibit stable routing traje
 ## Setup
 
 ```bash
-# Install PyTorch with CUDA first
+# Install PyTorch with CUDA first. Pick the wheel index matching your GPU:
+#   cu124 — most current GPUs
+#   cu128 — Blackwell (RTX 5090+) requires CUDA 12.8+ and torch >= 2.7
 pip install torch --index-url https://download.pytorch.org/whl/cu124
 
 # Install the project
@@ -21,6 +23,50 @@ pip install -e .
 ```
 
 Requires Python ≥ 3.11.
+
+## Running the Full Pipeline
+
+`run_pipeline.sh` chains all stages (Exp1 → Exp2 → Event Routing → Exp3 → Exp5) with resume behavior: a stage is skipped when its output file already exists, so re-running after an interruption picks up at the first missing output.
+
+```bash
+# On the SLURM cluster (stages run inside Docker):
+sbatch run_pipeline.sh --model allenai/OLMoE-1B-7B-0924-Instruct --dataset gsm8k
+
+# Natively, without Docker — e.g. on a vast.ai instance (auto-enabled when
+# docker is not installed):
+./run_pipeline.sh --local --model allenai/OLMoE-1B-7B-0924-Instruct --dataset gsm8k
+
+# Smoke test / self-check variant:
+./run_pipeline.sh --local --model ... --dataset gsm8k --max-items 50 --self-check
+```
+
+For Blackwell GPUs (RTX 5090+) the Docker image must be built with the CUDA 12.8 base — see the build args at the top of the `Dockerfile`; the default build targets the cluster.
+
+### Running on vast.ai (RTX 5090)
+
+The 5090 is Blackwell (`sm_120`): it needs CUDA 12.8+ and PyTorch ≥ 2.7 built as cu128. Older wheels (cu121/cu124) fail with "no kernel image is available for execution on the device".
+
+1. **Template:** the official *PyTorch (Vast)* template with the newest CUDA 12.8+ image tag (or a custom template using `pytorch/pytorch:2.7.1-cuda12.8-cudnn9-devel`). When browsing offers, filter **CUDA Version ≥ 12.8**.
+2. **Disk:** allocate ~80–100 GB — OLMoE-1B-7B is ~14 GB of bf16 weights, and Exp2 tensors were ~1.5 GB for the full GSM8K set. 32 GB VRAM is comfortable at batch size 1.
+3. **Setup on the instance:**
+
+```bash
+cd /workspace && git clone <repo-url> moe-mfaExperiments && cd moe-mfaExperiments
+pip install -e .
+# Keep the HF cache on the persistent volume, or the ~14 GB of weights
+# re-download after every instance restart:
+export HF_HOME=/workspace/hf_cache
+# Verify the GPU is usable — should print (12, 0) without errors:
+python -c "import torch; print(torch.cuda.get_device_capability())"
+```
+
+4. **Run** (`--local` is auto-enabled when docker is absent, so it can be omitted):
+
+```bash
+./run_pipeline.sh --local --model allenai/OLMoE-1B-7B-0924-Instruct --dataset gsm8k
+```
+
+If the instance is interrupted, re-run the same command — completed stages are skipped.
 
 ## Experiments
 
