@@ -39,7 +39,7 @@ GIVEN_SOLUTION_DATASETS = {"processbench", "prm800k"}
 
 def load_gsm8k(max_items: Optional[int] = None) -> list[dict]:
     console.print("[blue]Loading GSM8K (test split)…")
-    ds = _hf().load_dataset("gsm8k", "main", split="test")
+    ds = _hf().load_dataset("openai/gsm8k", "main", split="test")
     if max_items:
         ds = ds.select(range(min(max_items, len(ds))))
     results = []
