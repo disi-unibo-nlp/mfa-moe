@@ -276,7 +276,7 @@ def run_experiment(args: argparse.Namespace) -> None:
             row = build_row(model_id, output_name, traces)
             all_rows.append(row)
             console.print(
-                f"  Accuracy: [bold]{row.get('accuracy')}[/]  "
+                f"  Correct traces: [bold]{row.get('pct_correct_traces')}[/]  "
                 f"Backtracking: {row.get('pct_backtracking')}  "
                 f"Contradiction: {row.get('pct_contradiction')}"
             )

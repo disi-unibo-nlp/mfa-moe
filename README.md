@@ -26,7 +26,7 @@ Requires Python ≥ 3.11.
 
 ## Running the Full Pipeline
 
-`run_pipeline.sh` chains all stages (Exp1 → Exp2 → Event Routing → Exp3 → Exp5) with resume behavior: a stage is skipped when its output file already exists, so re-running after an interruption picks up at the first missing output.
+`run_pipeline.sh` chains all stages (Exp1 → Exp2 → Event Routing → Exp3 → Exp4 → Exp5) with resume behavior: a stage is skipped when its output file already exists, so re-running after an interruption picks up at the first missing output. Exp2 saves hidden states by default for the prospective Exp4 probes; pass `--skip-exp4` to omit both hidden-state storage and the probe stage.
 
 ```bash
 # On the SLURM cluster (stages run inside Docker):
@@ -133,6 +133,30 @@ python -m moe_exp.experiment3.run \
 
 **Output:** Per-layer correlation values with Mantel test p-values.
 
+### Experiment 4 — Prospective Prefix-Only Failure Prediction
+
+**Objective:** Test whether failure is decodable before it occurs. At 25%, 50%,
+and 75% of each trace, pool only the hidden/router states already observed and
+compare structure-only, router-only, hidden-only, and hidden+router linear
+probes. Targets are final incorrectness and whether a gold first-error step is
+still in the future. Traces whose first error is already inside the observed
+prefix are excluded from the future-error target.
+
+Experiment 4 requires Exp2 output produced with `--extract-hidden-states` (the
+full pipeline enables this automatically):
+
+```bash
+python -m moe_exp.experiment4.run \
+    --input results/exp2/allenai--OLMoE-1B-7B-0924-Instruct/processbench/traces_with_routing.jsonl \
+    --output results/exp4/allenai--OLMoE-1B-7B-0924-Instruct/processbench/prospective_probes.json \
+    --model-id allenai/OLMoE-1B-7B-0924-Instruct
+```
+
+**Output:** `prospective_probes.json`, containing out-of-fold AUROC, balanced
+accuracy, F1, and trace-bootstrap confidence intervals for every prefix,
+target, source, and layer. This is prospective with respect to the prefix, but
+remains a correlational decoding analysis rather than a causal intervention.
+
 ### Experiment 5 — Expert Behavior Around Reasoning Events
 
 **Objective:** For each expert (per layer), measure over/under-use around reasoning events: activation frequency and weight mass per reasoning phase (normal, backtracking, contradiction, self-correction, first-error, final-answer), expert usage before vs. after the first error and before vs. after successful/failed self-corrections, plus global co-activation and top-1 expert transition matrices. Feeds the expert-usage heatmaps and transition-matrix figures. We deliberately describe experts as associated with reasoning-state regions/transitions, not as "math experts" or "logic experts".
@@ -162,7 +186,7 @@ Experiment 1 (trace generation)
 ├──► Experiment 2 (router extraction)     [requires: exp1 traces]
 │    │
 │    ├──► Event Routing Analysis           [requires: exp2 tensors]
-│    │
+│    ├──► Experiment 4 (prefix probes)     [requires: exp2 hidden + router tensors]
 │    └──► Experiment 5 (expert behavior)   [requires: exp2 tensors]
 │
 └──► Experiment 3 (geometry correlation)   [requires: exp1 traces, needs GPU]
@@ -173,6 +197,7 @@ Recompute Metrics ◄── exp1 traces (offline, no GPU)
 ```
 exp1 ─────► exp2 ─────► event_routing
   │           │
+  │           ├───────► exp4
   │           └───────► exp5
   │
   └───────► exp3
@@ -180,6 +205,7 @@ exp1 ─────► exp2 ─────► event_routing
 
 - **exp1 → exp2**: Exp2 needs the `traces.jsonl` from Exp1 as input.
 - **exp2 → event_routing**: Event routing analysis loads the `.pt` tensor files saved by Exp2 (no GPU needed).
+- **exp2 → exp4**: Exp4 pools prefixes from aligned hidden/router tensors and trains trace-grouped probes (CPU after extraction).
 - **exp2 → exp5**: Exp5 loads the same `.pt` tensor files (no GPU needed).
 - **exp1 → exp3**: Exp3 re-runs forward passes itself, only needs the trace text from Exp1.
 
@@ -206,6 +232,8 @@ src/moe_exp/
 │   └── run.py              # Router logit extraction
 ├── experiment3/
 │   └── run.py              # Geometry-routing correlation
+├── experiment4/
+│   └── run.py              # Prospective prefix-only linear probes
 └── experiment5/
     └── run.py              # Expert behavior around reasoning events
 ```

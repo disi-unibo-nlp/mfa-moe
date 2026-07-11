@@ -7,8 +7,8 @@ For each expert (per layer), measure over/under-use around reasoning events:
   final-answer). Phrasing note: we describe experts as associated with
   reasoning-state regions or transitions, NOT as "math/logic experts".
 - expert usage in a ±window before vs after the first error and before vs
-  after self-correction events (split by whether the correction succeeded,
-  i.e. the trace ended correct).
+  after self-correction events (stratified by final trace outcome; this does
+  not claim that the correction caused that outcome).
 - global co-activation counts (joint top-k membership) and top-1 expert
   transition matrices, per layer, saved as .npz (too large for JSON).
 
@@ -49,7 +49,11 @@ PHASES = [
     "first_error", "final_answer",
 ]
 
-BEFORE_AFTER_GROUPS = ["first_error", "successful_correction", "failed_correction"]
+BEFORE_AFTER_GROUPS = [
+    "first_error",
+    "self_correction_finally_correct",
+    "self_correction_finally_incorrect",
+]
 
 
 # ---------------------------------------------------------------------------
@@ -197,7 +201,11 @@ class _Accumulator:
                 _step_center_tokens([ev.first_error_step], token_ranges, seq_len),
             )
         if ev.self_correction_steps and trace.is_correct is not None:
-            group = "successful_correction" if trace.is_correct else "failed_correction"
+            group = (
+                "self_correction_finally_correct"
+                if trace.is_correct
+                else "self_correction_finally_incorrect"
+            )
             _add_window(
                 group,
                 _step_center_tokens(ev.self_correction_steps, token_ranges, seq_len),
@@ -247,6 +255,13 @@ def main():
     parser.add_argument(
         "--output", type=str, required=True,
         help="Path to output JSON; heavy matrices go to expert_arrays.npz next to it"
+    )
+    parser.add_argument(
+        "--arrays-output", type=str, default=None,
+        help=(
+            "Optional path for co-activation/transition NPZ "
+            "(default: expert_arrays.npz next to --output)"
+        ),
     )
     parser.add_argument(
         "--window", type=int, default=5,
@@ -334,7 +349,12 @@ def main():
 
     # Co-activation / transition matrices are (L, E, E) — store as npz, keep the
     # JSON portable with a POSIX-style relative path (same convention as Exp2).
-    arrays_path = output_path.parent / "expert_arrays.npz"
+    arrays_path = (
+        Path(args.arrays_output)
+        if args.arrays_output is not None
+        else output_path.parent / "expert_arrays.npz"
+    )
+    arrays_path.parent.mkdir(parents=True, exist_ok=True)
     np.savez_compressed(
         arrays_path,
         coactivation=accum.coactivation,
