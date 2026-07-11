@@ -1,0 +1,456 @@
+\documentclass[manuscript,screen,review]{jair}
+
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{xcolor}
+
+% Regular JAIR article submitted for review (not a special track).
+% The Associate Editor and publication metadata are assigned by JAIR.
+\JAIRTrack{}
+\JAIRAE{}
+\acmDOI{}
+\settopmatter{printacmref=false}
+
+\begin{document}
+
+\title{Guiding Mixture-of-Experts Reasoning via Routing Intervention}
+
+\maketitle
+
+\section{Introduction}
+
+\section{Background}
+
+\section{Related Work}
+
+\section{Routing Intervention}
+
+\section{Experimental Setup}
+
+\paragraph{Current experimental scope.}
+All results available at the time of writing use
+\texttt{allenai/OLMoE-1B-7B-0924-Instruct} (16 MoE layers, 64 experts,
+top-$k=8$).  The available corpora are GSM8K (1,319 generated traces),
+PRM800K (10,833 given-solution traces), and ProcessBench (400 given-solution
+traces).  Router tensors are available for every trace.  Geometry--routing
+results are available for GSM8K and ProcessBench; expert-event results are
+also available for these two datasets.  Unless stated otherwise, event
+windows contain five tokens on each side of the event.
+
+\paragraph{Important provenance note.}
+The event-label heuristic was made substantially more conservative after the
+first experimental run.  Taxonomy, event-routing, and expert-event outputs
+have now been regenerated from the corrected labels.  The only stale quantity
+still displayed is the backtracking-conditioned geometry correlation, because
+hidden states were not persisted and must be extracted again on a GPU.
+
+\section{Results}
+
+\subsection{Reasoning outcomes and event taxonomy}
+
+Table~\ref{tab:taxonomy-current} is recomputed directly from the currently
+relabeled routed traces.  Accuracy is final-answer accuracy for GSM8K and the
+stored solution/outcome label for the given-solution datasets.  The main
+descriptive result is that high-precision explicit backtracking is extremely
+rare: one GSM8K trace, two PRM800K traces, and three ProcessBench traces.
+PRM800K retains 87 explicit contradictions, whereas none remain in
+ProcessBench.
+
+\begin{table*}[t]
+\centering
+\caption{Current high-precision trace taxonomy. Percentages are percentages of
+all traces. SC denotes self-correction.}
+\label{tab:taxonomy-current}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lrrrrrr}
+\toprule
+Dataset & $N$ & Accuracy & Backtracking & Contradiction & SC & Final-answer reversal \\
+\midrule
+GSM8K       & 1,319  & 36.85\% & 1 (0.076\%) & 1 (0.076\%)  & 1 (0.076\%) & 0 (0.000\%) \\
+PRM800K     & 10,833 & 60.17\% & 2 (0.018\%) & 87 (0.803\%) & 1 (0.009\%) & 10 (0.092\%) \\
+ProcessBench& 400    & 48.25\% & 3 (0.750\%) & 0 (0.000\%)  & 3 (0.750\%) & 1 (0.250\%) \\
+\bottomrule
+\end{tabular}}
+\end{table*}
+
+The relabelling audit in Table~\ref{tab:relabel-audit} is itself an important
+result: the original phrase matcher had many false positives.  For example,
+GSM8K backtracking labels fell from 10 to 1, ProcessBench from 14 to 3, and
+PRM800K from 112 to 2.  Consequently, claims based on the old backtracking and
+self-correction labels need to be rerun or discarded.  The remaining sample is
+also too small for population-level claims about explicit self-correction.
+
+\begin{table}[t]
+\centering
+\caption{Number of traces carrying each label before and after the
+high-precision relabelling.}
+\label{tab:relabel-audit}
+\begin{tabular}{llrrr}
+\toprule
+Dataset & Version & Backtrack & Contradiction & Self-correction \\
+\midrule
+GSM8K & old & 10 & 5 & 9 \\
+      & current & 1 & 1 & 1 \\
+PRM800K & old & 112 & 145 & 61 \\
+        & current & 2 & 87 & 1 \\
+ProcessBench & old & 14 & 2 & 11 \\
+             & current & 3 & 0 & 3 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Event-centered routing}
+
+The most reliable event-centered result currently available is the
+ProcessBench analysis at the gold first-error step ($n=207$ traces with an
+error).  Table~\ref{tab:first-error-routing} reports the raw trajectory.  All
+changes are small.  The matched within-trace control analysis in
+Table~\ref{tab:first-error-control} confirms the null result: every 95\%
+bootstrap confidence interval includes zero.  Thus, with the present
+layer-averaged metrics, there is no evidence of a discontinuous routing change
+at the first erroneous step.
+
+\begin{table*}[t]
+\centering
+\caption{ProcessBench routing around the gold first-error step. Values are
+averaged across traces and layers.}
+\label{tab:first-error-routing}
+\begin{tabular}{lrrr}
+\toprule
+Metric & Before & At first error & After \\
+\midrule
+Routing entropy    & 3.80839 & 3.80634 & 3.80517 \\
+Expert-switch rate & 0.60405 & 0.59099 & 0.58431 \\
+Top-$k$ overlap    & 0.27352 & 0.28415 & 0.29029 \\
+Router margin      & 0.01986 & 0.01940 & 0.01954 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\begin{table*}[t]
+\centering
+\caption{Matched-control effect at the ProcessBench first-error step. The
+effect is event change minus change at a matched normal position in the same
+trace; $n=207$, 1,000 bootstrap samples.}
+\label{tab:first-error-control}
+\begin{tabular}{lrr}
+\toprule
+Metric & Mean matched-control effect & 95\% bootstrap CI \\
+\midrule
+Routing entropy    &  0.00387  & $[-0.00912,\ 0.01464]$ \\
+Expert-switch rate & -0.00679  & $[-0.03206,\ 0.02077]$ \\
+Top-$k$ overlap    &  0.00625  & $[-0.01618,\ 0.02770]$ \\
+Router margin      & -0.000296 & $[-0.001510,\ 0.000929]$ \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=0.82\textwidth]{paper_figures/processbench_first_error_routing.pdf}
+\caption{Before/at/after trajectories for ProcessBench gold first errors and
+normal-step centers.  The visual differences are descriptive; the controlled
+effects in Table~\ref{tab:first-error-control} are not statistically resolved.}
+\label{fig:first-error-routing}
+\end{figure*}
+
+The relabeled GSM8K event analysis contains only two event-eligible traces.
+For the single backtracking/self-correction occurrence, the matched-control
+effects at the event are $+0.0494$ entropy, $+0.0625$ switch rate,
+$-0.0521$ top-$k$ overlap, and $+0.00306$ margin.  The single contradiction
+has effects $-0.2151$, $-0.1641$, $+0.1378$, and $+0.00293$ respectively.
+These are case studies only: no confidence interval is defined at this sample
+size.
+
+The corrected PRM800K run contains 4,315 gold first-error traces, 87 traces
+with explicit contradictions, 89 first heuristic reasoning events, two
+backtracking traces, and one self-correction trace.  Table~\ref{tab:prm-routing}
+reports matched within-trace effects.  Contradiction and first-reasoning-event
+intervals all include zero.  At the gold first error, however, switching falls,
+top-$k$ overlap rises, and margin rises by small but statistically resolved
+amounts.  The wrong step is therefore associated with slightly \emph{more}
+stable/confident aggregate routing in PRM800K, not a routing disruption.
+
+\begin{table*}[t]
+\centering
+\caption{Corrected PRM800K matched-control effects at the event. Intervals are
+trace-level 95\% bootstrap intervals with 1,000 replicates.}
+\label{tab:prm-routing}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lrrrrr}
+\toprule
+Event & $n$ traces & $\Delta$ entropy & $\Delta$ switch & $\Delta$ overlap & $\Delta$ margin \\
+\midrule
+Contradiction & 87 & $-0.00210$ $[-0.02381,0.01722]$ & $0.00576$ $[-0.03197,0.04148]$ & $-0.00324$ $[-0.03431,0.02971]$ & $0.000146$ $[-0.001789,0.002247]$ \\
+First reasoning event & 89 & $-0.00491$ $[-0.02597,0.01449]$ & $0.00888$ $[-0.02478,0.04288]$ & $-0.00637$ $[-0.03866,0.02663]$ & $0.000511$ $[-0.001572,0.002594]$ \\
+Gold first error & 4,315 & $-0.00187$ $[-0.00485,0.00107]$ & $-0.02120$ $[-0.02687,-0.01577]$ & $0.01980$ $[0.01457,0.02515]$ & $0.000474$ $[0.000158,0.000801]$ \\
+\bottomrule
+\end{tabular}}
+\end{table*}
+
+Backtracking ($n=2$) and self-correction ($n=1$) remain case studies and have
+no bootstrap interval.  Their point estimates are retained in the JSON output
+but are omitted from the inferential table.
+
+\subsection{Hidden-state geometry and routing}
+
+For each layer, we compute the pairwise cosine-similarity matrix of sampled
+token hidden states and the cosine-similarity matrix of their softmax router
+distributions.  Their upper triangles are correlated; the overall
+significance test is a 1,000-permutation Mantel test.  This is a geometry--
+routing correlation analysis, not t-SNE and not a linear-separability probe.
+The exposed hidden state is the input to the transformer layer and is the
+closest available proxy for, but not exactly, the post-attention state seen by
+that layer's router.
+
+Figure~\ref{fig:geometry} and Table~\ref{tab:geometry-summary} show a strong,
+replicated layerwise relationship.  Mean overall correlation is 0.562 on
+GSM8K and 0.561 on ProcessBench.  It rises sharply from approximately 0.24 in
+layer 0 to approximately 0.68 in layers 3--5, then remains around 0.52--0.61
+in later layers.  Every layer reaches the permutation-resolution floor
+$p=1/1001\approx0.000999$.
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=0.96\textwidth]{paper_figures/geometry_correlation.pdf}
+\caption{Layerwise correlation between hidden-state similarity and routing-
+distribution similarity.  The backtracking line uses the old labels and is
+retained only as a record of the preliminary run.}
+\label{fig:geometry}
+\end{figure*}
+
+\begin{table*}[t]
+\centering
+\caption{Summary of geometry--routing correlations across 16 layers.}
+\label{tab:geometry-summary}
+\begin{tabular}{llrrr}
+\toprule
+Dataset & Subset & Mean correlation & Range & Peak layer \\
+\midrule
+GSM8K & Overall & 0.5624 & 0.2489--0.6837 & 5 \\
+       & Correct & 0.5590 & 0.2364--0.6863 & 5 \\
+       & Failed  & 0.5654 & 0.2551--0.6921 & 4 \\
+ProcessBench & Overall & 0.5605 & 0.2399--0.6782 & 3 \\
+             & Correct & 0.5637 & 0.2383--0.6840 & 4 \\
+             & Failed  & 0.5571 & 0.2416--0.6735 & 3 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+Correct-versus-failed differences are very small and reverse sign across
+datasets: failed minus correct is $+0.0064$ on GSM8K and $-0.0066$ on
+ProcessBench when averaged over layers.  Therefore the current evidence
+supports the geometry-driven routing hypothesis, but does not support a
+general claim that failed traces have weaker or stronger geometry--routing
+coupling.  The preliminary backtracking means (0.577 GSM8K, 0.558
+ProcessBench) are not interpretable after the label audit and must be rerun.
+
+\subsection{Expert usage by reasoning phase}
+
+Experiment 5 measures each expert's activation frequency and weight mass by
+phase, before/after event usage, co-activation, and top-1 transition matrices.
+The outputs in Table~\ref{tab:expert-phase} and Figure~\ref{fig:expert-phase}
+have been regenerated after relabelling.  The table reports the mean absolute
+activation-frequency difference over all $16\times64$ layer--expert cells
+relative to normal tokens.  Large shifts for explicit events are based on only
+one GSM8K trace or three ProcessBench traces and remain descriptive.
+
+\begin{table*}[t]
+\centering
+\caption{Expert-activation shifts relative to normal tokens after corrected
+relabelling. A dash means the dataset has no first-error annotation.}
+\label{tab:expert-phase}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lrrrrr}
+\toprule
+Dataset & Backtrack & Contradiction & Self-correction & First error & Final answer \\
+\midrule
+GSM8K (phase tokens)        & 522 & 47 & 522 & --     & 134,593 \\
+GSM8K (mean absolute shift) & 0.0504& 0.0759& 0.0504& --     & 0.0121 \\
+ProcessBench (phase tokens) & 162 & 0   & 162   & 14,539 & 13,210 \\
+ProcessBench (mean absolute shift)&0.0591&--&0.0591&0.0104&0.0185 \\
+\bottomrule
+\end{tabular}}
+\end{table*}
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=0.78\textwidth]{paper_figures/expert_phase_deltas.pdf}
+\caption{Mean absolute expert-activation-frequency shift by reasoning phase.
+Explicit backtracking/self-correction bars have very small trace counts.}
+\label{fig:expert-phase}
+\end{figure*}
+
+The reliable ProcessBench first-error phase has only a 0.0104 mean absolute
+shift from normal expert frequencies.  Comparing the five tokens after each
+gold first error with the five before it gives a mean absolute layer--expert
+change of 0.0138 over 207 events; the largest individual cell change is
+0.0879 (layer 7, expert 35).  This again suggests gradual rather than abrupt
+aggregate routing change, but uncertainty estimates and frequency-matched
+controls are still needed.
+
+As additional descriptive outputs, the global top-1 expert transition matrix
+contains 5,296,128 transitions for GSM8K and 1,681,792 for ProcessBench.  The
+self-transition shares are 19.63\% and 20.53\%, respectively.  These numbers
+show appreciable route persistence, but they are not yet compared with a
+baseline preserving each layer's expert-frequency distribution, so they do
+not by themselves demonstrate specialization or excess stability.
+
+\subsection{Trace-grouped linear routing probes}
+
+We train a separate linear logistic probe at each layer using one pooled
+router-feature vector per trace.  The 197 features comprise router-probability
+means and standard deviations, top-1 expert frequencies, entropy and margin
+statistics, and top-1 switch rate.  Five-fold stratified cross-validation
+produces out-of-fold predictions; 95\% intervals bootstrap traces.  Since each
+trace contributes one sample, token leakage across folds is impossible.  The
+probe pools the \emph{complete} trace, so this is a decoding/separability test,
+not online prediction of a future error.
+
+\begin{figure*}[t]
+\centering
+\includegraphics[width=0.96\textwidth]{paper_figures/router_correctness_probes.pdf}
+\caption{Out-of-fold correctness AUROC by layer. Dashed lines use only log
+token count, log step count, and log character count.}
+\label{fig:router-probes}
+\end{figure*}
+
+\begin{table*}[t]
+\centering
+\caption{Best-layer full-trace router probes. The selected-layer comparison is
+exploratory and is not corrected for selecting the best of 16 layers.}
+\label{tab:router-probes}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{llrrrrrr}
+\toprule
+Dataset & Target & $N$ & Positive & Best layer & Router AUROC [95\% CI] & Balanced acc. & Structure AUROC \\
+\midrule
+GSM8K & Correctness & 1,319 & 486 & 13 & 0.7225 $[0.6944,0.7505]$ & 0.6655 & 0.6917 \\
+PRM800K & Correctness & 10,833 & 6,518 & 5 & 0.9882 $[0.9858,0.9905]$ & 0.9760 & 0.7981 \\
+PRM800K & Gold first error & 10,833 & 4,315 & 5 & 0.9882 $[0.9857,0.9904]$ & 0.9760 & 0.7981 \\
+PRM800K & Contradiction & 10,833 & 87 & 9 & 0.9082 $[0.8702,0.9385]$ & 0.7489 & 0.7573 \\
+ProcessBench & Correctness & 400 & 193 & 13 & 0.6771 $[0.6244,0.7272]$ & 0.6356 & 0.6181 \\
+ProcessBench & Gold first error & 400 & 207 & 13 & 0.6771 $[0.6240,0.7303]$ & 0.6356 & 0.6181 \\
+\bottomrule
+\end{tabular}}
+\end{table*}
+
+Routing improves over the simple structure baseline by 0.031 AUROC on GSM8K,
+0.190 on PRM800K correctness/first-error, 0.151 on PRM800K contradiction, and
+0.059 on ProcessBench.  PRM800K correctness and first-error scores are the same
+because, in these traces, presence of a gold first error is the complement of
+the final correctness label.  The contradiction AUROC is high despite only 87
+positives, but F1 at the AUROC-selected layer is only 0.159 under the natural
+class imbalance.  Backtracking and self-correction probes were correctly
+skipped: their positive counts after relabelling are 1/1 on GSM8K, 2/1 on
+PRM800K, and 3/3 on ProcessBench.
+
+\section{Analysis}
+
+\subsection{Conclusions supported so far}
+
+\begin{enumerate}
+\item Hidden-state geometry strongly predicts router-distribution geometry at
+every layer on both tested datasets.  The effect is strongest in early-middle
+layers and replicates closely across GSM8K and ProcessBench.
+\item Correct and failed traces have nearly identical geometry--routing
+correlations on average.  The direction of the small difference is not stable
+across datasets.
+\item At 207 gold ProcessBench first errors, entropy, switching, overlap, and
+margin do not exhibit a statistically resolved discontinuity relative to a
+matched position in the same trace.  Simple layer-averaged routing metrics are
+therefore not sufficient first-error markers in the current analysis.
+\item PRM800K gives a different first-error signature over 4,315 traces:
+switching decreases, overlap increases, and margin increases relative to the
+matched control.  This is a small stabilization effect rather than the
+hypothesized disruption and does not replicate on ProcessBench.
+\item High-precision explicit backtracking/self-correction is much rarer than
+the original heuristic suggested.  The relabelling invalidates the larger old
+event samples and makes new data collection or broader event annotation
+necessary.
+\item Full-trace router features linearly decode correctness above a simple
+length/structure baseline on all three datasets.  They also decode PRM800K
+contradiction (best-layer AUROC 0.908), although rare-class F1 remains low.
+These probes establish decodability, not advance prediction or causality.
+\item Expert usage varies descriptively across phases and top-1 routes persist
+about 20\% of the time, but explicit event samples remain too small for robust
+event-specific expert claims.
+\end{enumerate}
+
+\subsection{What has not been established}
+
+The present experiments do not identify ``math experts'' or ``failure
+experts'', do not show that routing changes cause reasoning errors, and do not
+show that backtracking forms a linearly separable hidden-state class.  No
+t-SNE/UMAP visualization, hidden-state probe, prospective failure detector,
+or routing intervention has yet been run.  The completed router probes see the
+entire trace; they cannot establish that an error was predictable before it
+occurred.  Correlation and linear decodability should not be read as causal
+evidence.
+
+\section{Discussion}
+
+The strongest current story is geometry-first: routing follows the evolving
+representation space, with a consistent layerwise signature across two very
+different trace sources.  The anticipated story of a universal sharp routing
+disruption at errors is not supported: ProcessBench is null, while PRM800K
+shows a small stabilization.  At the same time, layerwise full-trace probes
+decode outcomes much better than local aggregate discontinuities do.  Future
+prediction models should therefore retain layerwise and temporal structure
+and test only prefixes ending before the annotated error.
+
+The event-label audit also changes the experimental priority.  Explicit
+lexical markers provide high precision but extremely low recall.  Robust
+backtracking conclusions will require either deliberately elicited
+self-checking traces, manual/LLM-assisted span annotation with validation, or
+a benchmark with revision spans.  Until then, the gold ProcessBench error
+analysis and outcome-based correct/failed comparisons are the safest results.
+
+\section{Conclusion}
+
+So far, OLMoE routing is strongly aligned with hidden-state geometry, but
+aggregate routing metrics neither distinguish correct from failed geometry in
+a dataset-invariant way nor provide a consistent first-error discontinuity
+across datasets.  Full-trace router probes nevertheless decode correctness and
+PRM800K contradiction beyond simple structural baselines.  Event-specific
+expert results remain underpowered because a label audit removed most
+backtracking and self-correction cases.  The next phase is GPU extraction of
+hidden states, prefix-only hidden/router probes, better event supervision, and
+only then causal routing intervention.
+
+\appendix
+
+\section{Reproducibility Checklist}
+
+\begin{table*}[h]
+\centering
+\scriptsize
+\caption{Living inventory of completed and pending work.}
+\label{tab:status}
+\begin{tabular}{p{0.22\textwidth}p{0.13\textwidth}p{0.55\textwidth}}
+\toprule
+Item & Status & Note / next action \\
+\midrule
+Trace generation / ingestion & Done for current scope & GSM8K 1,319; PRM800K 10,833; ProcessBench 400; OLMoE only. \\
+Router extraction & Done & Complete routed traces and tensors for all three datasets. \\
+High-precision relabelling & Done & Current routed JSONL files and audit summaries exist for all datasets. \\
+Taxonomy summary file & Done/current & \texttt{results/exp1/summary\_relabelled.json} contains the corrected three-dataset summary. \\
+ProcessBench event routing & Done/current & Gold first error has matched controls and 1,000-sample bootstrap CIs. \\
+GSM8K event routing & Done but underpowered & Only two current event-eligible traces; collect more self-checking traces. \\
+PRM800K event routing & Done/current & Corrected run covers 4,371 event-eligible traces with matched controls and 1,000-sample bootstrap CIs. \\
+Geometry--routing correlation & Mostly done & Overall/correct/failed results are usable for GSM8K and ProcessBench; rerun backtracking subset after relabelling; add PRM800K if compute permits. \\
+Expert-event analysis & Rerun/current & Corrected GSM8K and ProcessBench JSON/NPZ outputs exist; explicit event trace counts remain underpowered. \\
+t-SNE/UMAP & Not done & Optional visualization only; stratify by layer and trace split if added. \\
+Linear router probes & Done & Full-trace, trace-grouped layerwise probes and structure baselines are complete for all three datasets. \\
+Hidden/combined probes & Implemented; awaiting rerun & The full pipeline now extracts aligned hidden states and Experiment 4 compares hidden, router, and combined prefix features. \\
+Prospective failure prediction & Implemented; awaiting rerun & Experiment 4 evaluates 25/50/75\% prefixes for final incorrectness and future gold first error with trace-level splits and bootstrap intervals. \\
+Structural/MFA analysis & Not done & Add trajectory length/curvature, reasoning structures, and optional local-geometry regions after core probes. \\
+Routing intervention & Not done & Title-level intervention claim is not yet supported; run only after stable predictive signals are identified. \\
+Second MoE / robustness & Not done & Run a Qwen MoE or another routing design once the corrected pipeline is frozen. \\
+Figures & Current & Geometry, ProcessBench first-error, corrected expert-phase, and router-probe plots are generated by \texttt{paper\_figures/generate\_figures.py}. \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\end{document}

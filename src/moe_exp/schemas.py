@@ -15,6 +15,10 @@ class StepLabels(BaseModel):
     contradiction_steps: list[int] = Field(default_factory=list)
     backtracking_steps: list[int] = Field(default_factory=list)
     self_correction_steps: list[int] = Field(default_factory=list)
+    # Exact lexical triggers used for automatic labels.  This is empty in
+    # legacy result files and makes new heuristic annotations auditable.
+    backtracking_evidence: list[str] = Field(default_factory=list)
+    contradiction_evidence: list[str] = Field(default_factory=list)
     final_answer_reversal: bool = False
 
 

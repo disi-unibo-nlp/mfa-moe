@@ -8,7 +8,7 @@ import torch.nn.functional as F
 from tqdm import tqdm
 
 from moe_exp.schemas import TraceRecord
-from moe_exp.models.loader import load_model_and_tokenizer
+from moe_exp.models.loader import QUANTIZATION_CHOICES, load_model_and_tokenizer
 from moe_exp.models.inference import extract_logs_single_pass
 
 logging.basicConfig(level=logging.INFO)
@@ -42,17 +42,20 @@ def process_file(
     output_path: Path,
     limit: int | None = None,
     top_k: int | None = None,
+    extract_hidden_states: bool = False,
+    quantization: str = "none",
 ):
     """
     Run Experiment 2 offline-extraction loop over traces to compute routing dynamics.
-    Saves per-trace tensors: router_logits, selected_experts, expert_weights.
+    Saves per-trace tensors: router_logits, selected_experts, expert_weights,
+    and optionally hidden_states for linear probing.
 
     top_k: number of experts selected per token. When None, it is read from the
     model config (num_experts_per_tok), so it is correct for any MoE model
     (OLMoE=8, Qwen1.5-MoE=4, …). An explicit value overrides the config.
     """
     logger.info(f"Loading model {model_id}")
-    model, tokenizer = load_model_and_tokenizer(model_id, quantization="none")
+    model, tokenizer = load_model_and_tokenizer(model_id, quantization=quantization)
 
     config_top_k = getattr(model.config, "num_experts_per_tok", None)
     if top_k is None:
@@ -90,14 +93,21 @@ def process_file(
                 out_f.write(trace.model_dump_json() + "\n")
                 continue
                 
-            router_logits = extract_logs_single_pass(
+            extracted = extract_logs_single_pass(
                 model=model,
                 tokenizer=tokenizer,
                 problem=trace.prompt,
                 cot_text=trace.cot_text,
                 system_prompt=trace.system_prompt,
+                extract_hidden_states=extract_hidden_states,
             )
-            assert isinstance(router_logits, torch.Tensor)
+            if extract_hidden_states:
+                assert isinstance(extracted, tuple)
+                router_logits, hidden_states = extracted
+            else:
+                assert isinstance(extracted, torch.Tensor)
+                router_logits = extracted
+                hidden_states = None
             
             # router_logits is (num_layers, seq_len, num_experts)
             if router_logits.numel() > 0:
@@ -112,6 +122,11 @@ def process_file(
                 logits_path = tensor_dir / f"{trace_id}_logits.pt"
                 torch.save(router_logits.to(torch.float32), logits_path)
                 trace.model_logs.router_logits = logits_path.as_posix()
+
+                if hidden_states is not None and hidden_states.numel() > 0:
+                    hidden_path = tensor_dir / f"{trace_id}_hidden.pt"
+                    torch.save(hidden_states.to(torch.float16), hidden_path)
+                    trace.model_logs.hidden_states = hidden_path.as_posix()
 
                 # Compute and save selected experts and weights
                 selected, weights = compute_selected_experts(router_logits, top_k=top_k)
@@ -143,6 +158,17 @@ if __name__ == "__main__":
     parser.add_argument("--model_id", type=str, default="allenai/OLMoE-1B-7B-0924-Instruct", help="HuggingFace Model ID")
     parser.add_argument("--limit", type=int, default=None, help="Process only first N traces")
     parser.add_argument("--top-k", type=int, default=None, help="Number of top experts per token (default: read from model config, e.g. 8 for OLMoE)")
+    parser.add_argument(
+        "--extract-hidden-states",
+        action="store_true",
+        help="Also save per-layer generated-token hidden states for probing",
+    )
+    parser.add_argument(
+        "--quantization",
+        choices=QUANTIZATION_CHOICES,
+        default="none",
+        help="Model weight quantization used during extraction (default: none)",
+    )
     
     args = parser.parse_args()
     
@@ -154,6 +180,8 @@ if __name__ == "__main__":
             output_path=Path(args.output),
             limit=args.limit,
             top_k=args.top_k,
+            extract_hidden_states=args.extract_hidden_states,
+            quantization=args.quantization,
         )
     else:
         logger.error(f"Could not find input file: {input_file}")

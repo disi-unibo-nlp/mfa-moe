@@ -64,22 +64,21 @@ def compute_expert_switch_rate(router_logits: torch.Tensor, top_k: int = 8) -> t
     Returns:
         (seq_len,) tensor; first token is 0.0 by convention.
     """
-    probs = F.softmax(router_logits, dim=-1)
-    _, top_indices = torch.topk(probs, k=top_k, dim=-1)  # (L, T, k)
+    top_indices = torch.topk(router_logits, k=top_k, dim=-1).indices  # (L, T, k)
+    seq_len = top_indices.shape[1]
+    switch_rates = torch.zeros(seq_len, dtype=torch.float32)
+    if seq_len < 2:
+        return switch_rates
 
-    num_layers, seq_len, _ = top_indices.shape
-    switch_rates = torch.zeros(seq_len)
-
-    for t in range(1, seq_len):
-        layer_switches = []
-        for layer in range(num_layers):
-            prev_set = set(top_indices[layer, t - 1].tolist())
-            curr_set = set(top_indices[layer, t].tolist())
-            # Fraction of current experts not in previous set
-            switched = len(curr_set - prev_set) / top_k
-            layer_switches.append(switched)
-        switch_rates[t] = sum(layer_switches) / num_layers
-
+    # Each top-k list contains unique expert IDs.  Compare every current expert
+    # with every previous expert, then count current IDs with no previous match.
+    # This is exactly the set-difference definition above, but avoids Python
+    # loops over every token and layer.
+    previous = top_indices[:, :-1, :, None]       # (L, T-1, k, 1)
+    current = top_indices[:, 1:, None, :]         # (L, T-1, 1, k)
+    current_was_present = (previous == current).any(dim=2)  # (L, T-1, k)
+    per_layer = 1.0 - current_was_present.float().mean(dim=-1)
+    switch_rates[1:] = per_layer.mean(dim=0)
     return switch_rates
 
 
@@ -91,22 +90,17 @@ def compute_topk_overlap(router_logits: torch.Tensor, top_k: int = 8) -> torch.T
     Returns:
         (seq_len,) tensor; first token is 1.0 by convention.
     """
-    probs = F.softmax(router_logits, dim=-1)
-    _, top_indices = torch.topk(probs, k=top_k, dim=-1)  # (L, T, k)
+    top_indices = torch.topk(router_logits, k=top_k, dim=-1).indices  # (L, T, k)
+    seq_len = top_indices.shape[1]
+    overlaps = torch.ones(seq_len, dtype=torch.float32)
+    if seq_len < 2:
+        return overlaps
 
-    num_layers, seq_len, _ = top_indices.shape
-    overlaps = torch.ones(seq_len)
-
-    for t in range(1, seq_len):
-        layer_overlaps = []
-        for layer in range(num_layers):
-            prev_set = set(top_indices[layer, t - 1].tolist())
-            curr_set = set(top_indices[layer, t].tolist())
-            intersection = len(prev_set & curr_set)
-            union = len(prev_set | curr_set)
-            layer_overlaps.append(intersection / union if union > 0 else 1.0)
-        overlaps[t] = sum(layer_overlaps) / num_layers
-
+    previous = top_indices[:, :-1, :, None]       # (L, T-1, k, 1)
+    current = top_indices[:, 1:, None, :]         # (L, T-1, 1, k)
+    intersection = (previous == current).any(dim=2).sum(dim=-1).float()
+    union = 2 * top_k - intersection
+    overlaps[1:] = (intersection / union).mean(dim=0)
     return overlaps
 
 
@@ -239,6 +233,48 @@ def _aggregate_window(
     }
 
 
+def _matched_control_at(
+    metric: torch.Tensor | np.ndarray,
+    event_centers: list[int],
+    normal_centers: list[int],
+) -> dict[str, float] | None:
+    """Compare each event token with the nearest normal step in the same trace.
+
+    This produces one within-trace control per event, avoiding a comparison that
+    is confounded by a trace's length or its overall routing profile.  Values are
+    aggregated by trace later, rather than treating event tokens as independent.
+    """
+    if not event_centers or not normal_centers:
+        return None
+    if isinstance(metric, torch.Tensor):
+        metric = metric.numpy()
+
+    controls = [
+        min(normal_centers, key=lambda center: (abs(center - event), center))
+        for event in event_centers
+    ]
+    event_values = np.asarray([metric[center] for center in event_centers], dtype=float)
+    control_values = np.asarray([metric[center] for center in controls], dtype=float)
+    return {
+        "n_events": len(event_centers),
+        "event_at": float(event_values.mean()),
+        "control_at": float(control_values.mean()),
+        "delta_at": float((event_values - control_values).mean()),
+    }
+
+
+def _has_reasoning_events(trace: TraceRecord) -> bool:
+    """Whether a trace contains an event that Experiment 2 can analyse."""
+    events = trace.step_labels
+    return bool(
+        events.backtracking_steps
+        or events.contradiction_steps
+        or events.self_correction_steps
+        or events.first_error_step is not None
+        or events.first_reasoning_event_step is not None
+    )
+
+
 # ---------------------------------------------------------------------------
 # Main analysis
 # ---------------------------------------------------------------------------
@@ -259,14 +295,7 @@ def analyze_trace_events(
         return None
 
     events = trace.step_labels
-    has_events = (
-        events.backtracking_steps
-        or events.contradiction_steps
-        or events.self_correction_steps
-        or events.first_error_step is not None
-        or events.first_reasoning_event_step is not None
-    )
-    if not has_events:
+    if not _has_reasoning_events(trace):
         return None
 
     # Compute per-token metrics
@@ -294,6 +323,18 @@ def analyze_trace_events(
                     if center < seq_len:
                         centers.append(center)
         return centers
+
+    event_step_set = set(
+        events.backtracking_steps
+        + events.contradiction_steps
+        + events.self_correction_steps
+    )
+    if events.first_error_step is not None:
+        event_step_set.add(events.first_error_step)
+    if events.first_reasoning_event_step is not None:
+        event_step_set.add(events.first_reasoning_event_step)
+    normal_steps = [i for i in range(len(trace.steps)) if i not in event_step_set]
+    normal_centers = _step_center_tokens(normal_steps)
 
     result: dict[str, Any] = {
         "problem_id": trace.problem_id,
@@ -366,20 +407,9 @@ def analyze_trace_events(
                 "margin": _aggregate_window(margin, centers, window, seq_len),
             }
 
-    # Baseline: metrics for "normal" steps (no events)
-    event_step_set = set(
-        events.backtracking_steps
-        + events.contradiction_steps
-        + events.self_correction_steps
-    )
-    if events.first_error_step is not None:
-        event_step_set.add(events.first_error_step)
-    if events.first_reasoning_event_step is not None:
-        event_step_set.add(events.first_reasoning_event_step)
-
-    normal_steps = [i for i in range(len(trace.steps)) if i not in event_step_set]
-    if normal_steps:
-        centers = _step_center_tokens(normal_steps)
+    # Baseline: normal steps from the same event-containing trace.
+    if normal_centers:
+        centers = normal_centers
         if centers:
             result["events"]["normal"] = {
                 "n_events": len(centers),
@@ -389,6 +419,37 @@ def analyze_trace_events(
                 "margin": _aggregate_window(margin, centers, window, seq_len),
             }
 
+    # Report a matched within-trace contrast as well as the descriptive normal
+    # baseline.  Each event is paired with the nearest non-event reasoning step.
+    event_steps_by_type = {
+        "backtracking": events.backtracking_steps,
+        "contradiction": events.contradiction_steps,
+        "self_correction": events.self_correction_steps,
+        "first_error": [events.first_error_step] if events.first_error_step is not None else [],
+        "first_reasoning_event": (
+            [events.first_reasoning_event_step]
+            if events.first_reasoning_event_step is not None
+            else []
+        ),
+    }
+    metrics = {
+        "entropy": entropy,
+        "switch_rate": switch_rate,
+        "topk_overlap": topk_overlap,
+        "margin": margin,
+    }
+    for event_type, step_indices in event_steps_by_type.items():
+        if event_type not in result["events"]:
+            continue
+        event_centers = _step_center_tokens(step_indices)
+        matched_control = {
+            name: comparison
+            for name, metric in metrics.items()
+            if (comparison := _matched_control_at(metric, event_centers, normal_centers)) is not None
+        }
+        if matched_control:
+            result["events"][event_type]["matched_control"] = matched_control
+
     return result if result["events"] else None
 
 
@@ -397,7 +458,21 @@ def analyze_trace_events(
 # ---------------------------------------------------------------------------
 
 
-def build_event_summary(per_trace_results: list[dict]) -> dict:
+def _bootstrap_mean_ci(
+    values: list[float], rng: np.random.Generator, n_bootstrap: int
+) -> list[float] | None:
+    """Return a trace-level percentile bootstrap interval for a mean effect."""
+    if len(values) < 5:
+        return None
+    array = np.asarray(values, dtype=float)
+    draws = rng.choice(array, size=(n_bootstrap, len(array)), replace=True).mean(axis=1)
+    low, high = np.quantile(draws, [0.025, 0.975])
+    return [float(low), float(high)]
+
+
+def build_event_summary(
+    per_trace_results: list[dict], n_bootstrap: int = 2000, seed: int = 42
+) -> dict:
     """Aggregate event-centered metrics across all analyzed traces.
 
     Produces the Experiment 2 central table:
@@ -409,29 +484,49 @@ def build_event_summary(per_trace_results: list[dict]) -> dict:
     ]
     metrics = ["entropy", "switch_rate", "topk_overlap", "margin"]
     phases = ["before", "at", "after"]
+    rng = np.random.default_rng(seed)
 
     summary: dict[str, dict] = {}
 
     for etype in event_types:
         values: dict[str, list[float]] = {f"{m}_{p}": [] for m in metrics for p in phases}
         n_traces = 0
+        n_event_occurrences = 0
+        matched_deltas: dict[str, list[float]] = {metric: [] for metric in metrics}
 
         for result in per_trace_results:
             if etype in result.get("events", {}):
                 n_traces += 1
                 event_data = result["events"][etype]
+                n_event_occurrences += int(event_data["n_events"])
                 for m in metrics:
                     for p in phases:
                         v = event_data[m][p]
                         if not np.isnan(v):
                             values[f"{m}_{p}"].append(v)
+                    matched = event_data.get("matched_control", {}).get(m)
+                    if matched is not None:
+                        matched_deltas[m].append(float(matched["delta_at"]))
 
         if n_traces == 0:
             continue
 
-        row: dict[str, Any] = {"n_traces": n_traces}
+        row: dict[str, Any] = {
+            "n_traces": n_traces,
+            "n_event_occurrences": n_event_occurrences,
+        }
         for key, vals in values.items():
             row[key] = float(np.mean(vals)) if vals else None
+        paired_summary: dict[str, dict[str, Any]] = {}
+        for metric, deltas in matched_deltas.items():
+            if deltas:
+                paired_summary[metric] = {
+                    "n_traces": len(deltas),
+                    "mean_delta_at": float(np.mean(deltas)),
+                    "bootstrap_ci_95": _bootstrap_mean_ci(deltas, rng, n_bootstrap),
+                }
+        if paired_summary:
+            row["matched_control"] = paired_summary
         summary[etype] = row
 
     return summary
@@ -477,6 +572,15 @@ def main():
             "produces such traces; kept for forward compatibility."
         )
     )
+    parser.add_argument(
+        "--bootstrap-samples",
+        type=int,
+        default=2000,
+        help="Trace-level bootstrap replicates for matched-control intervals (default: 2000)",
+    )
+    parser.add_argument(
+        "--seed", type=int, default=42, help="Random seed for bootstrap intervals"
+    )
     args = parser.parse_args()
 
     from transformers import AutoConfig, AutoTokenizer
@@ -508,23 +612,33 @@ def main():
     if args.limit:
         traces_raw = traces_raw[:args.limit]
 
-    logger.info(f"Analyzing {len(traces_raw)} traces...")
+    logger.info(f"Scanning {len(traces_raw)} traces for labelled events...")
     per_trace_results: list[dict] = []
-    skipped = 0
+    meta_reasoning_skipped = 0
+    no_event_traces = 0
+    missing_router_logits = 0
 
     for trace_dict in traces_raw:
         trace = TraceRecord(**trace_dict)
 
         # Skip meta-reasoning if requested
         if args.reasoning_only and trace.task_type == "meta_reasoning":
-            skipped += 1
+            meta_reasoning_skipped += 1
+            continue
+
+        # Event-free traces cannot contribute to an event-centred statistic, so
+        # avoid loading their potentially large tensors from disk.
+        if not _has_reasoning_events(trace):
+            no_event_traces += 1
             continue
 
         # Load router logits tensor
         if not trace.model_logs.router_logits:
+            missing_router_logits += 1
             continue
         logits_path = Path(trace.model_logs.router_logits)
         if not logits_path.exists():
+            missing_router_logits += 1
             continue
 
         router_logits = torch.load(logits_path, map_location="cpu", weights_only=True)
@@ -541,11 +655,17 @@ def main():
 
     logger.info(
         f"Analyzed {len(per_trace_results)} traces with events "
-        f"(skipped {skipped} meta-reasoning)"
+        f"from {len(traces_raw)} inputs; {no_event_traces} had no labelled event, "
+        f"{missing_router_logits} lacked router logits, and "
+        f"{meta_reasoning_skipped} were skipped as meta-reasoning."
     )
 
     # Build summary
-    summary = build_event_summary(per_trace_results)
+    summary = build_event_summary(
+        per_trace_results,
+        n_bootstrap=args.bootstrap_samples,
+        seed=args.seed,
+    )
 
     output_path = Path(args.output)
     output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -555,8 +675,17 @@ def main():
             "window": args.window,
             "top_k": top_k,
             "model_id": args.model_id,
+            "n_input_traces": len(traces_raw),
+            "n_event_eligible_traces": len(per_trace_results),
+            "n_traces_without_labelled_events": no_event_traces,
+            "n_missing_router_logits": missing_router_logits,
+            "n_meta_reasoning_skipped": meta_reasoning_skipped,
             "n_traces_analyzed": len(per_trace_results),
-            "n_traces_skipped": skipped,
+            # Retained for readers of earlier result files. It now has the
+            # narrower meaning stated by n_meta_reasoning_skipped.
+            "n_traces_skipped": meta_reasoning_skipped,
+            "bootstrap_samples": args.bootstrap_samples,
+            "bootstrap_seed": args.seed,
         },
         "summary": summary,
         "per_trace": per_trace_results,

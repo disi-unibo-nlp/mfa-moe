@@ -7,7 +7,7 @@
 #SBATCH --time=48:00:00
 #SBATCH --nodelist=faretra
 
-# Full pipeline: Exp1 → Exp2 → Event Routing → Exp3 → Exp5
+# Full pipeline: Exp1 → Exp2 → Event Routing → Exp3 → Exp4 → Exp5
 # Usage:
 #   ./run_pipeline.sh --model allenai/OLMoE-1B-7B-0924-Instruct --dataset gsm8k [--max-items 50]
 #   sbatch run_pipeline.sh --model allenai/OLMoE-1B-7B-0924-Instruct --dataset gsm8k
@@ -36,6 +36,9 @@ SAMPLES=1000
 CHUNK_SIZE=20
 SELF_CHECK=false
 LOCAL=false
+SKIP_EXP4=false
+PROBE_FOLDS=5
+PROBE_BOOTSTRAP=500
 
 while [[ $# -gt 0 ]]; do
     case $1 in
@@ -49,6 +52,9 @@ while [[ $# -gt 0 ]]; do
         --chunk-size) CHUNK_SIZE="$2"; shift 2 ;;
         --self-check) SELF_CHECK=true; shift ;;
         --local) LOCAL=true; shift ;;
+        --skip-exp4) SKIP_EXP4=true; shift ;;
+        --probe-folds) PROBE_FOLDS="$2"; shift 2 ;;
+        --probe-bootstrap) PROBE_BOOTSTRAP="$2"; shift 2 ;;
         *) echo "Unknown argument: $1"; exit 1 ;;
     esac
 done
@@ -60,6 +66,9 @@ if [[ -z "$MODEL" || -z "$DATASET" ]]; then
     echo "                runs as <dataset>_selfcheck through all stages)"
     echo "  --local:      run stages natively instead of in Docker (for environments"
     echo "                that are already containers, e.g. vast.ai instances)"
+    echo "  --skip-exp4:  skip hidden-state storage and prospective prefix probes"
+    echo "  --probe-folds N: cross-validation folds for Experiment 4 (default: 5)"
+    echo "  --probe-bootstrap N: trace-bootstrap replicates for Experiment 4 (default: 500)"
     exit 1
 fi
 
@@ -94,14 +103,16 @@ MODEL_SLUG="${MODEL////--}"
 #   results/exp1/<model>/<dataset>/traces.jsonl
 #   results/exp2/<model>/<dataset>/traces_with_routing.jsonl + event_routing.json
 #   results/exp3/<model>/<dataset>/geometry_correlation.json
+#   results/exp4/<model>/<dataset>/prospective_probes.json
 #   results/exp5/<model>/<dataset>/expert_events.json + expert_arrays.npz
 EXP1_DIR="${OUTPUT_DIR}/exp1/${MODEL_SLUG}/${DATASET_DIR}"
 EXP2_DIR="${OUTPUT_DIR}/exp2/${MODEL_SLUG}/${DATASET_DIR}"
 EXP3_DIR="${OUTPUT_DIR}/exp3/${MODEL_SLUG}/${DATASET_DIR}"
+EXP4_DIR="${OUTPUT_DIR}/exp4/${MODEL_SLUG}/${DATASET_DIR}"
 EXP5_DIR="${OUTPUT_DIR}/exp5/${MODEL_SLUG}/${DATASET_DIR}"
 
 # Pre-create output dirs
-mkdir -p "$PHYS_DIR/$EXP1_DIR" "$PHYS_DIR/$EXP2_DIR" "$PHYS_DIR/$EXP3_DIR" "$PHYS_DIR/$EXP5_DIR"
+mkdir -p "$PHYS_DIR/$EXP1_DIR" "$PHYS_DIR/$EXP2_DIR" "$PHYS_DIR/$EXP3_DIR" "$PHYS_DIR/$EXP4_DIR" "$PHYS_DIR/$EXP5_DIR"
 if [[ "$LOCAL" != true ]]; then
     # NFS root_squash maps container root → nobody; open up perms so it can write.
     chmod -R 777 "$PHYS_DIR/$OUTPUT_DIR"
@@ -112,7 +123,8 @@ echo "  Model:      $MODEL"
 echo "  Dataset:    $DATASET"
 echo "  Self-check: $SELF_CHECK"
 echo "  Mode:       $([[ "$LOCAL" == true ]] && echo local || echo docker)"
-echo "  Output:     ${OUTPUT_DIR}/exp{1,2,3,5}/${MODEL_SLUG}/${DATASET_DIR}"
+echo "  Exp4:       $([[ "$SKIP_EXP4" == true ]] && echo skipped || echo enabled)"
+echo "  Output:     ${OUTPUT_DIR}/exp{1,2,3,4,5}/${MODEL_SLUG}/${DATASET_DIR}"
 echo ""
 
 run_stage() {
@@ -149,12 +161,19 @@ if [[ -n "$TOP_K" ]]; then
     TOPK_FLAG="--top-k $TOP_K"
 fi
 
+# Experiment 4 needs token-level hidden states aligned with the router tensors.
+# Keep this optional because hidden tensors require substantial disk space.
+HIDDEN_FLAG="--extract-hidden-states"
+if [[ "$SKIP_EXP4" == true ]]; then
+    HIDDEN_FLAG=""
+fi
+
 # ==========================================================================
 # Stage 1: Experiment 1 — CoT trace generation
 # ==========================================================================
 TRACES_PATH="${EXP1_DIR}/traces.jsonl"
 
-echo ">>> Stage 1/5: Experiment 1 — CoT Trace Generation"
+echo ">>> Stage 1/6: Experiment 1 — CoT Trace Generation"
 if [[ -f "$PHYS_DIR/$TRACES_PATH" ]]; then
     echo "    traces.jsonl already exists, skipping. Delete to re-run."
 else
@@ -172,7 +191,7 @@ echo ""
 # ==========================================================================
 ROUTING_PATH="${EXP2_DIR}/traces_with_routing.jsonl"
 
-echo ">>> Stage 2/5: Experiment 2 — Router Logit Extraction"
+echo ">>> Stage 2/6: Experiment 2 — Router/Hidden-State Extraction"
 if [[ -f "$PHYS_DIR/$ROUTING_PATH" ]]; then
     echo "    traces_with_routing.jsonl already exists, skipping. Delete to re-run."
 else
@@ -180,6 +199,7 @@ else
         --input $TRACES_PATH \
         --output $ROUTING_PATH \
         --model_id $MODEL \
+        $HIDDEN_FLAG \
         $TOPK_FLAG \
         $LIMIT_FLAG"
 fi
@@ -190,7 +210,7 @@ echo ""
 # ==========================================================================
 EVENT_ROUTING_PATH="${EXP2_DIR}/event_routing.json"
 
-echo ">>> Stage 3/5: Event Routing Analysis"
+echo ">>> Stage 3/6: Event Routing Analysis"
 if [[ -f "$PHYS_DIR/$EVENT_ROUTING_PATH" ]]; then
     echo "    event_routing.json already exists, skipping. Delete to re-run."
 else
@@ -209,7 +229,7 @@ echo ""
 # ==========================================================================
 GEOMETRY_PATH="${EXP3_DIR}/geometry_correlation.json"
 
-echo ">>> Stage 4/5: Experiment 3 — Geometric Correlation"
+echo ">>> Stage 4/6: Experiment 3 — Geometric Correlation"
 if [[ -f "$PHYS_DIR/$GEOMETRY_PATH" ]]; then
     echo "    geometry_correlation.json already exists, skipping. Delete to re-run."
 else
@@ -224,11 +244,32 @@ fi
 echo ""
 
 # ==========================================================================
-# Stage 5: Experiment 5 — Expert behavior around reasoning events
-# ==========================================================================
+# Stage 5: Experiment 4 — Prospective prefix-only failure prediction
+# ========================================================================== 
+PROSPECTIVE_PATH="${EXP4_DIR}/prospective_probes.json"
+
+echo ">>> Stage 5/6: Experiment 4 — Prospective Prefix Probes"
+if [[ "$SKIP_EXP4" == true ]]; then
+    echo "    skipped by --skip-exp4"
+elif [[ -f "$PHYS_DIR/$PROSPECTIVE_PATH" ]]; then
+    echo "    prospective_probes.json already exists, skipping. Delete to re-run."
+else
+    run_stage "python -m moe_exp.experiment4.run \
+        --input $ROUTING_PATH \
+        --output $PROSPECTIVE_PATH \
+        --model-id $MODEL \
+        --folds $PROBE_FOLDS \
+        --bootstrap-samples $PROBE_BOOTSTRAP \
+        $LIMIT_FLAG"
+fi
+echo ""
+
+# ========================================================================== 
+# Stage 6: Experiment 5 — Expert behavior around reasoning events
+# ========================================================================== 
 EXPERT_EVENTS_PATH="${EXP5_DIR}/expert_events.json"
 
-echo ">>> Stage 5/5: Experiment 5 — Expert Behavior Around Events"
+echo ">>> Stage 6/6: Experiment 5 — Expert Behavior Around Events"
 if [[ -f "$PHYS_DIR/$EXPERT_EVENTS_PATH" ]]; then
     echo "    expert_events.json already exists, skipping. Delete to re-run."
 else
@@ -247,4 +288,5 @@ echo "  Outputs:"
 echo "    $PHYS_DIR/$EXP1_DIR"
 echo "    $PHYS_DIR/$EXP2_DIR"
 echo "    $PHYS_DIR/$EXP3_DIR"
+echo "    $PHYS_DIR/$EXP4_DIR"
 echo "    $PHYS_DIR/$EXP5_DIR"
