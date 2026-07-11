@@ -38,6 +38,29 @@ results are available for GSM8K and ProcessBench; expert-event results are
 also available for these two datasets.  Unless stated otherwise, event
 windows contain five tokens on each side of the event.
 
+\paragraph{Implemented analysis pipeline.}
+The repository implements trace generation or ingestion (Experiment 1),
+token-level router and optional hidden-state extraction (Experiment 2),
+event-centered routing with matched within-trace controls, geometry--routing
+correlation (Experiment 3), prospective prefix probes (Experiment 4), and
+expert phase/co-activation/transition analysis (Experiment 5).  Offline tools
+also support high-precision relabelling, rebuilding multi-dataset taxonomy
+summaries, full-trace layerwise linear probes over router, hidden, or combined
+features, and a trace-length/structure baseline.  The full pipeline runs
+Experiments 1--5 and extracts hidden states by default; the latter and
+Experiment 4 can be disabled together when storage is constrained.
+
+\paragraph{Prospective probe design and status.}
+Experiment 4 pools only the first 25\%, 50\%, or 75\% of each trace and trains
+separate trace-grouped logistic probes from structure-only, router-only,
+hidden-only, and combined hidden/router features.  It evaluates final
+incorrectness and whether a gold first error remains beyond the observed
+prefix, excluding traces whose error has already occurred for the latter
+target.  Outputs include out-of-fold AUROC, balanced accuracy, F1, and
+trace-bootstrap confidence intervals.  This pipeline is implemented and
+tested, but its GPU-dependent hidden-state extraction and empirical probe run
+are not yet complete; consequently no Experiment 4 result is reported below.
+
 \paragraph{Important provenance note.}
 The event-label heuristic was made substantially more conservative after the
 first experimental run.  Taxonomy, event-routing, and expert-event outputs

@@ -24,6 +24,11 @@ pip install -e .
 
 Requires Python ≥ 3.11.
 
+The editable install includes the CPU analysis dependencies used by Experiments
+4 and the linear probes, including scikit-learn. PyTorch remains the only
+dependency that must be installed separately so that its CUDA build matches the
+host GPU.
+
 ## Running the Full Pipeline
 
 `run_pipeline.sh` chains all stages (Exp1 → Exp2 → Event Routing → Exp3 → Exp4 → Exp5) with resume behavior: a stage is skipped when its output file already exists, so re-running after an interruption picks up at the first missing output. Exp2 saves hidden states by default for the prospective Exp4 probes; pass `--skip-exp4` to omit both hidden-state storage and the probe stage.
@@ -178,6 +183,45 @@ python -m moe_exp.experiment5.run \
 python -m moe_exp.analysis.recompute_metrics --results-dir results/exp1
 ```
 
+### Relabel Existing Traces and Rebuild the Taxonomy
+
+Reapply the current high-precision event classifier without regenerating traces
+or router tensors. Gold first-error annotations are preserved.
+
+```bash
+python -m moe_exp.analysis.relabel_traces \
+    --input results/exp2/allenai--OLMoE-1B-7B-0924-Instruct/gsm8k/traces_with_routing.jsonl \
+    --output results/exp2/allenai--OLMoE-1B-7B-0924-Instruct/gsm8k/traces_with_routing_relabelled.jsonl
+
+python -m moe_exp.analysis.summarize_taxonomy \
+    --input results/exp2/allenai--OLMoE-1B-7B-0924-Instruct/gsm8k/traces_with_routing_relabelled.jsonl \
+            results/exp2/allenai--OLMoE-1B-7B-0924-Instruct/processbench/traces_with_routing_relabelled.jsonl \
+    --output results/exp1/summary_relabelled.json
+```
+
+### Full-Trace Linear Probes and Structure Baseline
+
+These offline analyses train trace-grouped logistic probes over pooled router,
+hidden-state, or combined features and compare them with a three-feature trace
+length/structure baseline. Unlike Experiment 4, they pool the complete trace
+and therefore measure decodability rather than prospective prediction.
+
+```bash
+python -m moe_exp.analysis.linear_probe \
+    --input results/exp2/allenai--OLMoE-1B-7B-0924-Instruct/gsm8k/traces_with_routing.jsonl \
+    --output results/probes/allenai--OLMoE-1B-7B-0924-Instruct/gsm8k/router_probe.json \
+    --feature-source router \
+    --targets correctness first_error contradiction
+
+python -m moe_exp.analysis.structure_probe \
+    --input results/exp2/allenai--OLMoE-1B-7B-0924-Instruct/gsm8k/traces_with_routing.jsonl \
+    --output results/probes/allenai--OLMoE-1B-7B-0924-Instruct/gsm8k/structure_probe.json \
+    --targets correctness first_error contradiction
+```
+
+Hidden and combined full-trace probes require Exp2 tensors generated with
+`--extract-hidden-states`, just like Experiment 4.
+
 ## Dependency Graph
 
 ```
@@ -224,7 +268,11 @@ src/moe_exp/
 │   ├── classifier.py       # Backtracking/contradiction/reversal detection
 │   ├── step_splitter.py    # CoT text → reasoning steps
 │   ├── event_routing.py    # Event-centered routing metrics
-│   └── recompute_metrics.py
+│   ├── linear_probe.py      # Full-trace router/hidden/combined probes
+│   ├── structure_probe.py   # Non-routing trace-structure baseline
+│   ├── relabel_traces.py    # Refresh labels on existing trace files
+│   ├── summarize_taxonomy.py # Summarize labelled trace files
+│   └── recompute_metrics.py # Refresh Exp1 taxonomy summaries in place
 ├── experiment1/
 │   ├── run.py              # Trace generation + taxonomy
 │   └── taxonomy.py         # Summary table builder
