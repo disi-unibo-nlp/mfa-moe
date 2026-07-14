@@ -184,16 +184,22 @@ def process_file(
     Run Experiment 3 offline-extraction loop over traces to compute geometric routing relations.
     Processes traces in chunks to limit memory usage.
     """
-    logger.info(f"Loading model {model_id}")
-    model, tokenizer = load_model_and_tokenizer(model_id, quantization="none")
-
     traces_raw: list[dict[str, Any]] = []
     with open(input_path, "r", encoding="utf-8") as f:
         for line in f:
-            traces_raw.append(json.loads(line))
+            if line.strip():
+                traces_raw.append(json.loads(line))
 
     if limit is not None:
         traces_raw = traces_raw[:limit]
+
+    if not traces_raw:
+        raise RuntimeError(
+            f"Input {input_path} contains zero traces; refusing to load {model_id}."
+        )
+
+    logger.info(f"Loading model {model_id}")
+    model, tokenizer = load_model_and_tokenizer(model_id, quantization="none")
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -282,8 +288,7 @@ def process_file(
         del chunk_router, chunk_hidden
 
     if num_layers is None:
-        logger.error("No valid traces extracted.")
-        return
+        raise RuntimeError("No valid traces were available for geometry extraction.")
 
     # Concatenate metadata
     all_types = np.concatenate(token_type_chunks)
@@ -319,8 +324,7 @@ def process_file(
     base_indices = rnd.choice(all_idx, n_base, replace=False) if n_base < total_tokens else all_idx.copy()
     base_size = len(base_indices)
     if base_size < 2:
-        logger.error("Not enough tokens to compute correlations.")
-        return
+        raise RuntimeError("Not enough tokens to compute geometry correlations.")
     base_types = all_types[base_indices]
 
     # --- Stratified BT sample (for the backtracking-conditional metric only) ---

@@ -583,6 +583,20 @@ def main():
     )
     args = parser.parse_args()
 
+    input_path = Path(args.input)
+    traces_raw: list[dict] = []
+    with open(input_path, "r", encoding="utf-8") as f:
+        for line in f:
+            if line.strip():
+                traces_raw.append(json.loads(line))
+
+    if args.limit:
+        traces_raw = traces_raw[:args.limit]
+    if not traces_raw:
+        raise RuntimeError(
+            f"Input {input_path} contains zero traces; event-routing analysis aborted."
+        )
+
     from transformers import AutoConfig, AutoTokenizer
 
     top_k = args.top_k
@@ -602,15 +616,6 @@ def main():
     tokenizer.padding_side = "left"
     if tokenizer.pad_token_id is None:
         tokenizer.pad_token_id = tokenizer.eos_token_id
-
-    input_path = Path(args.input)
-    traces_raw: list[dict] = []
-    with open(input_path, "r", encoding="utf-8") as f:
-        for line in f:
-            traces_raw.append(json.loads(line))
-
-    if args.limit:
-        traces_raw = traces_raw[:args.limit]
 
     logger.info(f"Scanning {len(traces_raw)} traces for labelled events...")
     per_trace_results: list[dict] = []

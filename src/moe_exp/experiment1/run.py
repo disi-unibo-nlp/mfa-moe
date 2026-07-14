@@ -180,6 +180,9 @@ def run_experiment(args: argparse.Namespace) -> None:
         for ds in args.datasets:
             run_configs.append((ds, ds, None))  # normal prompt
 
+    if not run_configs:
+        raise ValueError("No runnable dataset configuration was selected.")
+
     for model_id in args.models:
         console.rule(f"[bold cyan]Model: {model_id}")
         # Lazily loaded: given-solution datasets (ProcessBench/PRM800K) need no
@@ -267,6 +270,12 @@ def run_experiment(args: argparse.Namespace) -> None:
                             task_type="reasoning",
                         )
                     )
+
+            if not traces:
+                raise RuntimeError(
+                    f"Dataset '{source_dataset}' produced zero valid traces; "
+                    "refusing to create an empty Experiment 1 output."
+                )
 
             slug = _model_slug(model_id)
             trace_path = args.output_dir / slug / output_name / "traces.jsonl"
