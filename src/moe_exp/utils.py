@@ -76,10 +76,17 @@ def answers_match(model_answer: str, gold_answer: str) -> Optional[bool]:
 
 
 def write_jsonl(records: list, path: Path) -> None:
+    """Write JSONL atomically so an interrupted run is never a completion marker."""
     path.parent.mkdir(parents=True, exist_ok=True)
-    with jsonlines.open(path, mode="w") as writer:
-        for rec in records:
-            writer.write(rec.model_dump() if hasattr(rec, "model_dump") else rec)
+    tmp_path = path.with_name(f".{path.name}.tmp")
+    try:
+        with jsonlines.open(tmp_path, mode="w") as writer:
+            for rec in records:
+                writer.write(rec.model_dump() if hasattr(rec, "model_dump") else rec)
+        tmp_path.replace(path)
+    except Exception:
+        tmp_path.unlink(missing_ok=True)
+        raise
 
 
 def read_json(path: Path) -> dict | list | None:

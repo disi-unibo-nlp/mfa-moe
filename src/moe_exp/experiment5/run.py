@@ -281,6 +281,18 @@ def main():
     )
     args = parser.parse_args()
 
+    traces_raw: list[dict] = []
+    with open(args.input, "r", encoding="utf-8") as f:
+        for line in f:
+            if line.strip():
+                traces_raw.append(json.loads(line))
+    if args.limit:
+        traces_raw = traces_raw[:args.limit]
+    if not traces_raw:
+        raise RuntimeError(
+            f"Input {args.input} contains zero traces; expert analysis aborted."
+        )
+
     from transformers import AutoConfig, AutoTokenizer
 
     top_k = args.top_k
@@ -297,13 +309,6 @@ def main():
 
     logger.info(f"Loading tokenizer: {args.model_id}")
     tokenizer = AutoTokenizer.from_pretrained(args.model_id)
-
-    traces_raw: list[dict] = []
-    with open(args.input, "r", encoding="utf-8") as f:
-        for line in f:
-            traces_raw.append(json.loads(line))
-    if args.limit:
-        traces_raw = traces_raw[:args.limit]
 
     logger.info(f"Analyzing {len(traces_raw)} traces...")
     accum: _Accumulator | None = None
@@ -339,8 +344,7 @@ def main():
         n_analyzed += 1
 
     if accum is None:
-        logger.error("No traces with routing tensors found; nothing to analyze.")
-        return
+        raise RuntimeError("No traces with routing tensors were available to analyze.")
 
     logger.info(f"Analyzed {n_analyzed} traces")
 

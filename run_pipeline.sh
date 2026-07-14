@@ -143,6 +143,15 @@ run_stage() {
     fi
 }
 
+require_nonempty_output() {
+    local path="$1"
+    local stage="$2"
+    if [[ ! -s "$PHYS_DIR/$path" ]]; then
+        echo "ERROR: $stage did not produce a non-empty output: $PHYS_DIR/$path" >&2
+        return 1
+    fi
+}
+
 # --- Build max-items flag ---
 ITEMS_FLAG=""
 if [[ -n "$MAX_ITEMS" ]]; then
@@ -174,9 +183,12 @@ fi
 TRACES_PATH="${EXP1_DIR}/traces.jsonl"
 
 echo ">>> Stage 1/6: Experiment 1 — CoT Trace Generation"
-if [[ -f "$PHYS_DIR/$TRACES_PATH" ]]; then
+if [[ -s "$PHYS_DIR/$TRACES_PATH" ]]; then
     echo "    traces.jsonl already exists, skipping. Delete to re-run."
 else
+    if [[ -e "$PHYS_DIR/$TRACES_PATH" ]]; then
+        echo "    existing traces.jsonl is empty; rerunning Experiment 1."
+    fi
     run_stage "python -m moe_exp.experiment1.run \
         --model $MODEL \
         --datasets $DATASET \
@@ -184,6 +196,7 @@ else
         $SELFCHECK_FLAG \
         $ITEMS_FLAG"
 fi
+require_nonempty_output "$TRACES_PATH" "Experiment 1"
 echo ""
 
 # ==========================================================================
@@ -192,7 +205,7 @@ echo ""
 ROUTING_PATH="${EXP2_DIR}/traces_with_routing.jsonl"
 
 echo ">>> Stage 2/6: Experiment 2 — Router/Hidden-State Extraction"
-if [[ -f "$PHYS_DIR/$ROUTING_PATH" ]]; then
+if [[ -s "$PHYS_DIR/$ROUTING_PATH" && "$PHYS_DIR/$ROUTING_PATH" -nt "$PHYS_DIR/$TRACES_PATH" ]]; then
     echo "    traces_with_routing.jsonl already exists, skipping. Delete to re-run."
 else
     run_stage "python -m moe_exp.experiment2.run \
@@ -203,6 +216,7 @@ else
         $TOPK_FLAG \
         $LIMIT_FLAG"
 fi
+require_nonempty_output "$ROUTING_PATH" "Experiment 2"
 echo ""
 
 # ==========================================================================
@@ -211,7 +225,7 @@ echo ""
 EVENT_ROUTING_PATH="${EXP2_DIR}/event_routing.json"
 
 echo ">>> Stage 3/6: Event Routing Analysis"
-if [[ -f "$PHYS_DIR/$EVENT_ROUTING_PATH" ]]; then
+if [[ -s "$PHYS_DIR/$EVENT_ROUTING_PATH" && "$PHYS_DIR/$EVENT_ROUTING_PATH" -nt "$PHYS_DIR/$ROUTING_PATH" ]]; then
     echo "    event_routing.json already exists, skipping. Delete to re-run."
 else
     run_stage "python -m moe_exp.analysis.event_routing \
@@ -222,6 +236,7 @@ else
         $TOPK_FLAG \
         $LIMIT_FLAG"
 fi
+require_nonempty_output "$EVENT_ROUTING_PATH" "event-routing analysis"
 echo ""
 
 # ==========================================================================
@@ -230,7 +245,7 @@ echo ""
 GEOMETRY_PATH="${EXP3_DIR}/geometry_correlation.json"
 
 echo ">>> Stage 4/6: Experiment 3 — Geometric Correlation"
-if [[ -f "$PHYS_DIR/$GEOMETRY_PATH" ]]; then
+if [[ -s "$PHYS_DIR/$GEOMETRY_PATH" && "$PHYS_DIR/$GEOMETRY_PATH" -nt "$PHYS_DIR/$TRACES_PATH" ]]; then
     echo "    geometry_correlation.json already exists, skipping. Delete to re-run."
 else
     run_stage "python -m moe_exp.experiment3.run \
@@ -241,6 +256,7 @@ else
         --chunk-size $CHUNK_SIZE \
         $LIMIT_FLAG"
 fi
+require_nonempty_output "$GEOMETRY_PATH" "Experiment 3"
 echo ""
 
 # ==========================================================================
@@ -251,7 +267,7 @@ PROSPECTIVE_PATH="${EXP4_DIR}/prospective_probes.json"
 echo ">>> Stage 5/6: Experiment 4 — Prospective Prefix Probes"
 if [[ "$SKIP_EXP4" == true ]]; then
     echo "    skipped by --skip-exp4"
-elif [[ -f "$PHYS_DIR/$PROSPECTIVE_PATH" ]]; then
+elif [[ -s "$PHYS_DIR/$PROSPECTIVE_PATH" && "$PHYS_DIR/$PROSPECTIVE_PATH" -nt "$PHYS_DIR/$ROUTING_PATH" ]]; then
     echo "    prospective_probes.json already exists, skipping. Delete to re-run."
 else
     run_stage "python -m moe_exp.experiment4.run \
@@ -262,6 +278,9 @@ else
         --bootstrap-samples $PROBE_BOOTSTRAP \
         $LIMIT_FLAG"
 fi
+if [[ "$SKIP_EXP4" != true ]]; then
+    require_nonempty_output "$PROSPECTIVE_PATH" "Experiment 4"
+fi
 echo ""
 
 # ========================================================================== 
@@ -270,7 +289,7 @@ echo ""
 EXPERT_EVENTS_PATH="${EXP5_DIR}/expert_events.json"
 
 echo ">>> Stage 6/6: Experiment 5 — Expert Behavior Around Events"
-if [[ -f "$PHYS_DIR/$EXPERT_EVENTS_PATH" ]]; then
+if [[ -s "$PHYS_DIR/$EXPERT_EVENTS_PATH" && "$PHYS_DIR/$EXPERT_EVENTS_PATH" -nt "$PHYS_DIR/$ROUTING_PATH" ]]; then
     echo "    expert_events.json already exists, skipping. Delete to re-run."
 else
     run_stage "python -m moe_exp.experiment5.run \
@@ -281,6 +300,7 @@ else
         $TOPK_FLAG \
         $LIMIT_FLAG"
 fi
+require_nonempty_output "$EXPERT_EVENTS_PATH" "Experiment 5"
 echo ""
 
 echo "=== Pipeline complete ==="

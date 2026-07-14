@@ -108,7 +108,6 @@ def run_experiment(
     seed: int,
     limit: int | None = None,
 ) -> None:
-    tokenizer = AutoTokenizer.from_pretrained(model_id)
     traces: list[TraceRecord] = []
     with input_path.open(encoding="utf-8") as handle:
         for line in handle:
@@ -116,6 +115,12 @@ def run_experiment(
                 traces.append(TraceRecord.model_validate_json(line))
     if limit is not None:
         traces = traces[:limit]
+    if not traces:
+        raise RuntimeError(
+            f"Input {input_path} contains zero traces; refusing to load {model_id}."
+        )
+
+    tokenizer = AutoTokenizer.from_pretrained(model_id)
 
     # Compact pooled features only: no raw token-level tensors are copied.
     rows: dict[float, dict[str, list[Any]]] = {
@@ -226,6 +231,12 @@ def run_experiment(
                 )
             fraction_result[target] = target_result
         results[f"{fraction:.2f}"] = fraction_result
+
+    if not results:
+        raise RuntimeError(
+            "No traces with both router and hidden-state tensors were available "
+            "for prospective probes."
+        )
 
     output = {
         "config": {

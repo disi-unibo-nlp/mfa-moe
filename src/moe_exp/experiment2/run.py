@@ -54,6 +54,20 @@ def process_file(
     model config (num_experts_per_tok), so it is correct for any MoE model
     (OLMoE=8, Qwen1.5-MoE=4, …). An explicit value overrides the config.
     """
+    traces: list[dict[str, Any]] = []
+    with open(input_path, "r", encoding="utf-8") as f:
+        for line in f:
+            if line.strip():
+                traces.append(json.loads(line))
+
+    if limit is not None:
+        traces = traces[:limit]
+
+    if not traces:
+        raise RuntimeError(
+            f"Input {input_path} contains zero traces; refusing to load {model_id}."
+        )
+
     logger.info(f"Loading model {model_id}")
     model, tokenizer = load_model_and_tokenizer(model_id, quantization=quantization)
 
@@ -72,20 +86,14 @@ def process_file(
             f"num_experts_per_tok={config_top_k}"
         )
 
-    traces: list[dict[str, Any]] = []
-    with open(input_path, "r", encoding="utf-8") as f:
-        for line in f:
-            traces.append(json.loads(line))
-            
-    if limit is not None:
-        traces = traces[:limit]
-
     output_path.parent.mkdir(parents=True, exist_ok=True)
     tensor_dir = output_path.parent / "tensors"
     tensor_dir.mkdir(exist_ok=True, parents=True)
     
     logger.info(f"Processing {len(traces)} traces for offline routing metrics computation...")
-    with open(output_path, "w", encoding="utf-8") as out_f:
+    tmp_output_path = output_path.with_name(f".{output_path.name}.tmp")
+    n_with_routing = 0
+    with open(tmp_output_path, "w", encoding="utf-8") as out_f:
         for trace_dict in tqdm(traces, desc="Extracting Routing"):
             trace = TraceRecord(**trace_dict)
             
@@ -138,6 +146,7 @@ def process_file(
                 weights_path = tensor_dir / f"{trace_id}_weights.pt"
                 torch.save(weights.to(torch.float16), weights_path)
                 trace.model_logs.expert_weights = weights_path.as_posix()
+                n_with_routing += 1
             else:
                 logger.warning(
                     f"Empty router logits for {trace.dataset}/{trace.problem_id} — "
@@ -145,6 +154,13 @@ def process_file(
                 )
             
             out_f.write(trace.model_dump_json() + "\n")
+
+    if n_with_routing == 0:
+        tmp_output_path.unlink(missing_ok=True)
+        raise RuntimeError(
+            f"No routing tensors were extracted from {len(traces)} input traces."
+        )
+    tmp_output_path.replace(output_path)
 
     logger.info(f"Finished extracting routing context. Output saved to {output_path}")
 
