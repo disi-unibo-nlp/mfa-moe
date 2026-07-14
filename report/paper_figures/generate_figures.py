@@ -21,11 +21,11 @@ def load_json(path: Path):
 
 
 def geometry_plot() -> None:
-    fig, axes = plt.subplots(1, 2, figsize=(10.0, 3.7), sharey=True)
+    fig, axes = plt.subplots(1, 3, figsize=(12.0, 3.7), sharey=True)
     for ax, dataset, title in zip(
         axes,
-        ("gsm8k", "processbench"),
-        ("GSM8K", "ProcessBench"),
+        ("gsm8k", "math", "processbench"),
+        ("GSM8K", "MATH", "ProcessBench"),
     ):
         rows = load_json(
             RESULTS / "exp3" / MODEL / dataset / "geometry_correlation.json"
@@ -35,7 +35,6 @@ def geometry_plot() -> None:
             ("overall_correlation", "overall", "-"),
             ("correct_correlation", "correct", "--"),
             ("failed_correlation", "failed", ":"),
-            ("backtracking_correlation", "backtracking (old labels)", "-."),
         ):
             ax.plot(layers, [row[key] for row in rows], style, marker="o", ms=3,
                     linewidth=1.4, label=label)
@@ -44,7 +43,7 @@ def geometry_plot() -> None:
         ax.set_xticks(range(0, 16, 2))
         ax.grid(alpha=0.25)
     axes[0].set_ylabel("Pearson/Mantel correlation")
-    axes[1].legend(fontsize=8, frameon=False, loc="lower right")
+    axes[-1].legend(fontsize=8, frameon=False, loc="lower right")
     fig.suptitle("Hidden-state similarity predicts routing similarity")
     fig.tight_layout()
     fig.savefig(OUT / "geometry_correlation.pdf", bbox_inches="tight")
@@ -53,7 +52,7 @@ def geometry_plot() -> None:
 
 def processbench_event_plot() -> None:
     data = load_json(
-        RESULTS / "exp2" / MODEL / "processbench" / "event_routing_relabelled.json"
+        RESULTS / "exp2" / MODEL / "processbench" / "event_routing.json"
     )["summary"]
     phases = ("before", "at", "after")
     metrics = (
@@ -82,13 +81,14 @@ def processbench_event_plot() -> None:
 
 
 def expert_phase_plot() -> None:
-    datasets = ("gsm8k", "processbench")
+    datasets = ("gsm8k", "gsm8k_selfcheck", "math", "math_selfcheck", "processbench")
+    dataset_labels = ("GSM8K", "GSM8K + SC", "MATH", "MATH + SC", "ProcessBench")
     phases = ("backtracking", "contradiction", "self_correction", "first_error", "final_answer")
     labels = ("backtrack", "contradiction", "self-correct", "first error", "final answer")
     values: dict[str, list[float]] = {}
     for dataset in datasets:
         data = load_json(
-            RESULTS / "exp5" / MODEL / dataset / "expert_events_relabelled.json"
+            RESULTS / "exp5" / MODEL / dataset / "expert_events.json"
         )
         normal = np.asarray(data["phases"]["normal"]["activation_frequency"])
         values[dataset] = []
@@ -100,10 +100,11 @@ def expert_phase_plot() -> None:
                 phase_frequency = np.asarray(row["activation_frequency"])
                 values[dataset].append(float(np.mean(np.abs(phase_frequency - normal))))
     x = np.arange(len(phases))
-    width = 0.36
-    fig, ax = plt.subplots(figsize=(8.5, 3.8))
-    ax.bar(x - width / 2, values["gsm8k"], width, label="GSM8K")
-    ax.bar(x + width / 2, values["processbench"], width, label="ProcessBench")
+    width = 0.16
+    fig, ax = plt.subplots(figsize=(10.0, 4.0))
+    offsets = (np.arange(len(datasets)) - (len(datasets) - 1) / 2) * width
+    for offset, dataset, dataset_label in zip(offsets, datasets, dataset_labels):
+        ax.bar(x + offset, values[dataset], width, label=dataset_label)
     ax.set_xticks(x, labels, rotation=15, ha="right")
     ax.set_ylabel("Mean |activation-frequency delta|\nvs. normal tokens")
     ax.set_title("Expert-use shifts by reasoning phase (corrected labels)")
