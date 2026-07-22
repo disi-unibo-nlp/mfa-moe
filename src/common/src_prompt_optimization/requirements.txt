@@ -1,0 +1,7 @@
+dspy>=3.0.0
+gepa>=0.0.27
+datasets>=3.0.0
+pandas>=2.0.0
+python-dotenv>=1.0.0
+wandb>=0.17.0
+vllm>=0.18.1

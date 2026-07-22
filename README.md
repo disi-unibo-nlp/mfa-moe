@@ -75,6 +75,16 @@ If the instance is interrupted, re-run the same command — completed stages are
 
 ## Experiments
 
+### Experiment 0a — GEPA-Optimized Schoenfeld Episode Judge
+
+**Objective:** Optimize the prompt of a local llama.cpp-served judge to label
+the paragraph- and sentence-level reasoning episodes from the gold corpus of
+Li et al. Agreement is measured with Cohen's kappa and Kendall's tau-b, with a
+response-grouped train/validation/test split.
+
+See [`src/moe_exp/experiment0a/README.md`](src/moe_exp/experiment0a/README.md)
+for setup, metric conventions, and run commands.
+
 ### Experiment 1 — Failure Taxonomy
 
 **Objective:** Produce reasoning traces and classify reasoning events (backtracking, contradiction, self-correction, final-answer reversal). Produces the descriptive foundation table.

@@ -1,0 +1,56 @@
+prompt:
+  system_prompt: |
+    Given the fields `question`, `contexts`, produce the fields `proof`, `answer`.  
+
+    **Task Description:**  
+    1. **Input Format:**  
+      - `question`: A query about factual relationships (e.g., comparing dates, identifying attributes, or linking entities).  
+      - `contexts`: A list of contextual statements, each labeled with a unique index (e.g., [1], [2]), containing factual claims.  
+
+    2. **Output Format:**  
+      - **`proof`**: A structured logical derivation using **First-Order Logic (FOL)** formulas.  
+        - Use `<logic>` delimiters to enclose FOL statements.  
+        - Each fact from the contexts must be explicitly stated as a FOL proposition (e.g., `birth_date(ernst_hegar, 1830)`).  
+        - Deductions must follow strict logical rules (e.g., `before(date1, date2)` to compare dates).  
+        - Avoid natural language explanations, bullet points, or markdown.  
+      - **`answer`**: A single, unambiguous conclusion derived from the `proof`.  
+
+    3. **Key Requirements:**  
+      - **FOL Syntax:** Use predicate logic with clear subject-predicate-object structure (e.g., `director(film, person)`, `death_date(person, date)`).  
+      - **Inference Rules:** Apply logical inference (e.g., transitivity for dates, equivalence for entity matching).  
+      - **Entity Linking:** Match entities (e.g., film names, people) from the question to contexts using explicit identifiers (e.g., `director("La Vendedora De Rosas", "Víctor Gaviria")`).  
+      - **Date Comparison:** Use `before(date1, date2)` to determine chronological order (e.g., `before(1963, 1991)`).  
+      - **Avoid Ambiguity:** Ensure all claims in `proof` are directly supported by the contexts.  
+
+    4. **Example Guidance:**  
+      - For a question like *"Who is older, A or B?"*, derive `birth_date(A, D1)` and `birth_date(B, D2)` from contexts, then conclude `before(D1, D2)` → `A is older`.  
+      - For a question like *"What is the birthplace of X?"*, extract `birth_place(X, Y)` from contexts and state `Y` as the answer.  
+
+    5. **Domain-Specific Notes:**  
+      - Film directors: Link film names to directors via `director(film, person)` and verify via contexts.  
+      - Date comparisons: Use `before/after` predicates to resolve temporal order.  
+      - Entity resolution: Match names (e.g., "Slatan Dudow" vs. "Slatan Theodor Dudow") using context details (e.g., death dates, birthplaces).
+
+  user_prompt: |
+    Question: {question}
+
+    Contexts: 
+    {context}
+
+  context_mode: "all"     # "first" | "all"
+  context_sep: "\n"     # Required if mode != "first"
+  context_shuffle: false   # shuffle contexts before applying them (both modes)
+
+  assistant_prompt: null   # optional, can be used in case the target response is included
+
+parsing:
+  logic_present: true
+  logic_start: "<logic>"
+  logic_end: "</logic>"
+  facts_proof_divided: false
+  facts_start: null
+  facts_end: null
+  proof_start: null
+  proof_end: null
+  answer_present: true
+  answer_start: "answer:"

@@ -34,6 +34,10 @@ dev = [
     "pytest>=8.0.0",
     "ruff>=0.4.0",
 ]
+exp0a = [
+    "dspy>=3.0.0,<4",
+    "gepa>=0.0.27",
+]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/moe_exp"]

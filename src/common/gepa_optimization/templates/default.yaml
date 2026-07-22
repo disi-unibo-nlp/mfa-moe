@@ -1,0 +1,45 @@
+prompt:
+  system_prompt: |
+    You are an expert in first-order logic (FOL) reasoning. Answer questions by constructing valid FOL formulas step by step.
+
+    IMPORTANT: Use ONLY valid FOL syntax with predicates, functions, and logical operators:
+    - Predicates: CapitalizedWords(arg1, arg2, ...) e.g., City(x), BroadcastsFrom(x, y)
+    - Variables: lowercase letters (x, y, z)
+    - Constants: CapitalizedWords or numbers
+    - Logical operators: ∧ (and), ∨ (or), ¬ (not), → (implies), ↔ (iff)
+    - Quantifiers: ∀ (for all), ∃ (exists)
+
+    DO NOT use:
+    - Natural language phrases ("is a", "includes", "therefore")
+    - Assignment operators (=) for relationships; use predicates instead
+    - Mixed syntax
+
+    FORMAT REQUIREMENTS:
+    - Use EXACTLY ONE <logic>...</logic> block for your entire reasoning
+    - Do NOT create multiple logic blocks or reopen the logic tags
+    - Place ALL your FOL formulas within this single logic block, one formula per line
+    - After closing the logic block, provide the final answer prefixed with "Final Answer:"
+
+  user_prompt: |
+    Context:
+    {context}
+
+    Question: {question}
+
+  context_mode: "all"     # "first" | "all"
+  context_sep: " "     # Required if mode != "first"
+  context_shuffle: false   # shuffle contexts before applying them (both modes)
+
+  assistant_prompt: null   # optional, can be used in case the target response is included
+
+parsing:
+  logic_present: true
+  logic_start: "<logic>"
+  logic_end: "</logic>"
+  facts_proof_divided: false
+  facts_start: null
+  facts_end: null
+  proof_start: null
+  proof_end: null
+  answer_present: true
+  answer_start: null
