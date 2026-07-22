@@ -1,0 +1,62 @@
+# GEPA Prompt Optimization - Quick Test Configuration
+# This config is designed for quick testing with minimal resources
+
+# Models
+fol_model: unsloth/Qwen3-4B-Instruct-2507-unsloth-bnb-4bit  # Small model for FOL generation
+judge_model: Qwen/Qwen3-8B-AWQ  # Int4 judge model
+
+# Template
+initial_template: qwen3_4B/uni_logic_answer  # Template that works well with Qwen 3-4B
+
+# Dataset
+dataset:
+  - hotpotqa
+  - 2wiki
+split: train
+downsample: 0.5
+
+# Dataset splits for GEPA
+num_train_samples: 8000
+num_val_samples: 2000
+
+# Server configuration
+vllm_url: http://localhost
+fol_port: 8000
+judge_port: 8001
+
+# vLLM server parameters (for GPU memory management)
+fol_max_len: 4096        # Max sequence length for FOL model
+fol_gpu_mem: 0.30        # GPU memory utilization for FOL model (~10GB on 24GB GPU)
+judge_max_len: 5120      # Max sequence length for judge model
+judge_gpu_mem: 0.60      # GPU memory utilization for judge model (~9GB on 24GB GPU)
+
+# Generation parameters (FOL model)
+temperature: 0.8
+max_tokens: 1024
+
+# Judge parameters
+judge_temperature: 0.6
+judge_max_tokens: 2048  # Increased for thinking mode (includes <think> tokens)
+judge_enable_thinking: true  # Enable Qwen3 thinking mode
+
+# Metric weighting
+standard_weight: 0.5  # Weight for parsing + logic evaluation
+judge_weight: 0.5     # Weight for LLM judge
+
+# GEPA optimization budget (use one of these)
+gepa_auto: light  # Light mode for longer test
+# max_full_evals: 2  # Very short for testing
+
+# Alternative budget options (comment out gepa_auto to use):
+# max_full_evals: 5      # Or specify max evaluations
+# max_metric_calls: 50   # Or specify max metric calls
+
+# Performance
+num_threads: 4  # Parallel evaluation threads
+
+# Output and logging
+facts_proof_divided: false
+output_dir: gepa_uni_logic_long
+use_wandb: false  # Disable W&B for quick local tests
+log_level: INFO
+seed: 42

@@ -39,7 +39,7 @@ RUN pip install --no-cache-dir torch --index-url ${TORCH_INDEX}
 COPY pyproject.toml .
 COPY src/ src/
 
-RUN pip install --no-cache-dir ".[dev]"
+RUN pip install --no-cache-dir ".[dev,exp0a]"
 
 # Copy the rest of the project
 COPY . .

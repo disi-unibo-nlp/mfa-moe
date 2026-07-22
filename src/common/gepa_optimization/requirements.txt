@@ -1,0 +1,29 @@
+# Core prompt optimization
+dspy==3.0.3
+
+# Dataset loading from HuggingFace
+datasets
+huggingface_hub
+
+# Config and data handling
+pyyaml
+pandas
+python-dotenv
+
+# FOL parsing
+ply==3.11
+nltk==3.9.2
+
+# Logic metrics
+Levenshtein
+numpy
+rouge-score==0.1.2
+
+# Optional: W&B logging (set use_wandb: true in config to enable)
+# wandb==0.22.2
+
+# NOTE: vLLM is NOT listed here — install it separately:
+#   pip install vllm==0.11.0
+# vLLM bundles torch, so torch is not listed explicitly either.
+# If running without vLLM (e.g., testing metrics locally), add:
+#   torch>=2.0.0
