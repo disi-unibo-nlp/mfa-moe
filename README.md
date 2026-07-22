@@ -13,10 +13,8 @@ The central hypothesis: successful reasoning traces exhibit stable routing traje
 ## Setup
 
 ```bash
-# Install PyTorch with CUDA first. Pick the wheel index matching your GPU:
-#   cu124 — most current GPUs
-#   cu128 — Blackwell (RTX 5090+) requires CUDA 12.8+ and torch >= 2.7
-pip install torch --index-url https://download.pytorch.org/whl/cu124
+# Install PyTorch built for CUDA 12.8 first.
+pip install torch --index-url https://download.pytorch.org/whl/cu128
 
 # Install the project
 pip install -e .
@@ -45,7 +43,9 @@ sbatch run_pipeline.sh --model allenai/OLMoE-1B-7B-0924-Instruct --dataset gsm8k
 ./run_pipeline.sh --local --model ... --dataset gsm8k --max-items 50 --self-check
 ```
 
-For Blackwell GPUs (RTX 5090+) the Docker image must be built with the CUDA 12.8 base — see the build args at the top of the `Dockerfile`; the default build targets the cluster.
+The Docker image defaults to CUDA 12.8 with cu128 PyTorch wheels. The
+`CUDA_BASE` and `TORCH_INDEX` build arguments can still be overridden for a
+different deployment target.
 
 ### Running on vast.ai (RTX 5090)
 
