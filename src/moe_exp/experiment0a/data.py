@@ -1,13 +1,12 @@
 from __future__ import annotations
 
-import json
 import random
+import json
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any, Iterable
 
 
-PARAGRAPH_LABELS = ("General", "Explore", "Verify")
 SENTENCE_LABELS = (
     "Read",
     "Analyze",
@@ -22,76 +21,26 @@ SENTENCE_LABELS = (
 @dataclass(frozen=True)
 class EpisodeUnit:
     text: str
-    paragraph_label: str
     sentence_label: str
 
 
 @dataclass(frozen=True)
 class EpisodeDocument:
     question_id: str
-    problem: str
     units: tuple[EpisodeUnit, ...]
 
-    def response_json(self) -> str:
-        return json.dumps(
-            [{"id": index, "text": unit.text} for index, unit in enumerate(self.units)],
-            ensure_ascii=False,
-        )
 
-    def gold_annotations_json(self) -> str:
-        return json.dumps(
-            [
-                {
-                    "id": index,
-                    "paragraph_label": unit.paragraph_label,
-                    "sentence_label": unit.sentence_label,
-                }
-                for index, unit in enumerate(self.units)
-            ],
-            ensure_ascii=False,
-        )
-
-
-def _resolve_dataset_paths(dataset_dir: Path) -> tuple[Path, Path | None]:
+def _resolve_labels_dir(dataset_dir: Path) -> Path:
     dataset_dir = dataset_dir.resolve()
     if dataset_dir.name == "responses_labeled":
         labels_dir = dataset_dir
-        sat_path = dataset_dir.parent / "SAT.json"
     else:
         labels_dir = dataset_dir / "responses_labeled"
-        sat_path = dataset_dir / "SAT.json"
     if not labels_dir.is_dir():
         raise FileNotFoundError(
             f"Expected responses_labeled under {dataset_dir}, or pass that directory directly."
         )
-    return labels_dir, sat_path if sat_path.is_file() else None
-
-
-def _load_problems(sat_path: Path | None) -> dict[str, str]:
-    if sat_path is None:
-        return {}
-    rows = json.loads(sat_path.read_text(encoding="utf-8"))
-    if not isinstance(rows, list):
-        raise ValueError(f"{sat_path} must contain a JSON array")
-
-    problems: dict[str, str] = {}
-    fields = (
-        "Item Stem",
-        "Question",
-        "Choice A",
-        "Choice B",
-        "Choice C",
-        "Choice D",
-        "Table",
-        "Figure",
-    )
-    for row in rows:
-        question_id = str(row.get("Question ID", "")).strip()
-        if not question_id:
-            continue
-        parts = [f"{field}: {row[field]}" for field in fields if str(row.get(field, "")).strip()]
-        problems[question_id] = "\n".join(parts)
-    return problems
+    return labels_dir
 
 
 def _natural_json_key(path: Path) -> tuple[int, str]:
@@ -102,9 +51,8 @@ def _natural_json_key(path: Path) -> tuple[int, str]:
 
 
 def load_documents(dataset_dir: Path) -> list[EpisodeDocument]:
-    """Load and validate the paper's gold annotations, one document per response."""
-    labels_dir, sat_path = _resolve_dataset_paths(dataset_dir)
-    problems = _load_problems(sat_path)
+    """Load sentence-level gold labels, retaining response membership for splitting."""
+    labels_dir = _resolve_labels_dir(dataset_dir)
     documents: list[EpisodeDocument] = []
 
     for path in sorted(labels_dir.glob("*.json"), key=_natural_json_key):
@@ -117,22 +65,16 @@ def load_documents(dataset_dir: Path) -> list[EpisodeDocument]:
         units: list[EpisodeUnit] = []
         for index, row in enumerate(raw_units):
             text = str(row.get("text", "")).strip()
-            paragraph_label = str(row.get("gt-class-1", "")).strip()
             sentence_label = str(row.get("gt-class-2", "")).strip()
             if not text:
                 raise ValueError(f"Empty text in {path}, unit {index}")
-            if paragraph_label not in PARAGRAPH_LABELS:
-                raise ValueError(
-                    f"Unknown paragraph label {paragraph_label!r} in {path}, unit {index}"
-                )
             if sentence_label not in SENTENCE_LABELS:
                 raise ValueError(
                     f"Unknown sentence label {sentence_label!r} in {path}, unit {index}"
                 )
-            units.append(EpisodeUnit(text, paragraph_label, sentence_label))
+            units.append(EpisodeUnit(text, sentence_label))
 
-        problem = problems.get(question_id, f"Question ID: {question_id}")
-        documents.append(EpisodeDocument(question_id, problem, tuple(units)))
+        documents.append(EpisodeDocument(question_id, tuple(units)))
 
     if not documents:
         raise RuntimeError(f"No annotation JSON files found in {labels_dir}")
@@ -162,13 +104,16 @@ def split_documents(
 
 
 def documents_to_dspy_examples(documents: Iterable[EpisodeDocument], dspy: Any) -> list[Any]:
-    """Convert documents lazily so data/metric tests do not require DSPy."""
-    return [
-        dspy.Example(
-            question_id=document.question_id,
-            problem=document.problem,
-            response=document.response_json(),
-            gold_annotations=document.gold_annotations_json(),
-        ).with_inputs("problem", "response")
-        for document in documents
-    ]
+    """Flatten split documents into sentence examples without crossing split boundaries."""
+    examples = []
+    for document in documents:
+        for unit_id, unit in enumerate(document.units):
+            examples.append(
+                dspy.Example(
+                    question_id=document.question_id,
+                    unit_id=unit_id,
+                    sentence=unit.text,
+                    gold_label=unit.sentence_label,
+                ).with_inputs("sentence")
+            )
+    return examples

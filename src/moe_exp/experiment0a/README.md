@@ -1,118 +1,56 @@
-# Experiment 0a — GEPA-optimized episode judge
+# Experiment 0a — GEPA-optimized sentence judge
 
-This experiment optimizes the instruction prompt used by a local LLM to assign
-the two annotation levels from Li et al., *Understanding the Thinking Process of
-Reasoning Models: A Perspective from Schoenfeld's Episode Theory*:
+Experiment 0a optimizes the instruction prompt used by Qwen 3.6 27B to assign
+one of the seven sentence-level categories from the adapted Schoenfeld Episode
+Theory:
 
-- paragraph level: `General`, `Explore`, `Verify`
-- sentence level: `Read`, `Analyze`, `Plan`, `Implement`, `Explore`, `Verify`, `Monitor`
+`Read`, `Analyze`, `Plan`, `Implement`, `Explore`, `Verify`, `Monitor`.
 
-The official 38-response gold corpus is split by complete response (26 train,
-6 validation, 6 held-out test by default), preventing sentences from the same
-response from leaking across splits. GEPA sees train and validation only. The
-test set is evaluated once after optimization.
+Each classification request contains exactly one sentence. It does not contain
+the full response or neighboring reasoning. The official 38-response corpus is
+split by complete response (26 train, 6 validation, 6 held-out test by default)
+before its sentences are flattened, so sentences from one response cannot leak
+between splits.
 
 Official corpus: <https://github.com/MingLiiii/Schoenfeld_Reasoning>
 
-## Setup
+## Optimization and evaluation
 
-Install the project and Experiment 0a dependencies:
+GEPA requires a score for each individual example. Cohen's kappa and Kendall's
+tau-b are not defined for one sentence, so GEPA receives exact-match reward:
+`1` for the correct class and `0` otherwise, plus explicit gold-versus-predicted
+feedback for reflection.
 
-```bash
-pip install -e '.[exp0a]'
-git clone https://github.com/MingLiiii/Schoenfeld_Reasoning.git data/Schoenfeld_Reasoning
-```
+After optimization, reviewer agreement is computed globally across all
+validation or test sentences:
 
-Build and launch the llama.cpp server already provided in `src/common`:
+- Cohen's kappa;
+- Kendall's tau-b, using the guidebook label order shown above;
+- exact accuracy and valid-output coverage.
 
-```bash
-cd src/common/llamacpp
-docker build -t llama.cpp:localcuda .
-./serve_llamacpp.sh
-```
+Raw agreement coefficients are preserved. The optional composite reporting
+score rescales each coefficient from `[-1, 1]` to `[0, 1]` before averaging;
+negative agreement is not clipped.
 
-`serve_llamacpp.sh` currently defaults to the locally stored
-`Qwen3.6-27B-UD-Q4_K_XL.gguf`, served as `local-llamacpp` on port 8080.
+## Prompt variants
 
-Then run from the repository root:
-
-```bash
-bash ./src/moe_exp/experiment0a/run_gepa.sh
-```
-
-The default `base` variant uses the guidebook-derived seed instructions. The
-`few-shot` variant appends short gold excerpts selected deterministically from
-the training documents only:
+`base` contains the seven definitions and distinctions. `few-shot` appends
+individual gold training sentences, selecting one example for every class when
+seven examples are requested. Validation and test sentences are never eligible.
 
 ```bash
 python -m moe_exp.experiment0a.run \
   --dataset-dir data/Schoenfeld_Reasoning \
   --prompt-variant few-shot \
-  --few-shot-examples 3 \
-  --few-shot-units 8 \
+  --few-shot-examples 7 \
   --gepa-auto light
 ```
 
-Selection prioritizes one contiguous excerpt for each paragraph-level class
-(`General`, `Explore`, and `Verify`) and sentence-label diversity. Validation
-and test documents are never eligible. Both the constructed seed prompt and
-the optimized prompt are saved with the results.
-
-## SLURM with Docker
-
-On the cluster, build both images once from the repository root:
+For a plumbing check only:
 
 ```bash
-docker build -t llama.cpp:localcuda src/common/llamacpp
-docker build -t moe-mfa-experiments:latest .
-mkdir -p slurm_logs
-```
-
-The launcher defaults to the same cluster paths as `run_pipeline.sh`:
-
-- repository: `/home/tassinari/moe-mfaExperiments`
-- dataset: `/home/tassinari/moe-mfaExperiments/data/Schoenfeld_Reasoning`
-- model: `/llms/Qwen3.6-27B-UD-Q4_K_XL.gguf`
-
-Submit a full run with a light GEPA budget:
-
-```bash
-sbatch run_experiment0a.sh --gepa-auto light
-```
-
-For the few-shot condition, use a separate output directory so its summary is
-easy to compare with the base condition:
-
-```bash
-sbatch run_experiment0a.sh \
-  --prompt-variant few-shot \
-  --few-shot-examples 3 \
-  --few-shot-units 8 \
-  --output-dir results/exp0a/qwen3.6-27b-few-shot \
-  --gepa-auto light
-```
-
-Or specify paths and a fixed optimization budget:
-
-```bash
-sbatch run_experiment0a.sh \
-  --dataset-dir /path/to/Schoenfeld_Reasoning \
-  --model-dir /llms \
-  --model-name Qwen3.6-27B-UD-Q4_K_XL.gguf \
-  --max-full-evals 10 \
-  --seed 42
-```
-
-The job starts llama.cpp and GEPA in separate containers on a private Docker
-network, waits for the model server to become healthy, and removes the server
-container when the job exits. Only llama.cpp receives the allocated GPU. With
-the conservative defaults there is one server slot and one evaluator thread;
-raise `--parallel` and `--num-threads` together only if GPU memory allows it.
-
-For a fast end-to-end SLURM plumbing check:
-
-```bash
-sbatch run_experiment0a.sh \
+python -m moe_exp.experiment0a.run \
+  --dataset-dir data/Schoenfeld_Reasoning \
   --train-documents 1 \
   --val-documents 1 \
   --test-documents 1 \
@@ -120,42 +58,41 @@ sbatch run_experiment0a.sh \
   --max-full-evals 1
 ```
 
-Monitor it with `tail -f slurm_logs/<job-id>.out` and inspect results under
-`results/exp0a/qwen3.6-27b`.
+## SLURM with Docker
 
-For a small plumbing check:
+Build the two images once:
 
 ```bash
-python -m moe_exp.experiment0a.run \
-  --dataset-dir data/Schoenfeld_Reasoning \
-  --train-documents 1 \
-  --val-documents 1 \
-  --test-documents 1 \
-  --max-units-per-document 2 \
-  --max-full-evals 1 \
-  --num-threads 1
+docker build -t llama.cpp:localcuda src/common/llamacpp
+docker build -t moe-mfa-experiments:latest .
+mkdir -p slurm_logs
 ```
 
-The two limiting flags are plumbing checks only. Do not use them for reported
-experimental results.
+Run the base and few-shot conditions separately with the same seed and budget:
 
-Exactly one GEPA budget is required: `--gepa-auto`, `--max-full-evals`, or
-`--max-metric-calls`.
+```bash
+sbatch run_experiment0a.sh \
+  --prompt-variant base \
+  --output-dir results/exp0a/qwen3.6-27b-base \
+  --gepa-auto light \
+  --seed 42
 
-## Metric
+sbatch run_experiment0a.sh \
+  --prompt-variant few-shot \
+  --few-shot-examples 7 \
+  --output-dir results/exp0a/qwen3.6-27b-few-shot \
+  --gepa-auto light \
+  --seed 42
+```
 
-For each complete response, the scorer computes Cohen's kappa and Kendall's
-tau-b independently for both annotation levels. The default GEPA reward is the
-equal-weight mean of the four coefficients after clipping negative values to
-zero. Raw coefficients and exact accuracies are preserved in result files.
+The launcher defaults to:
 
-The label orders used for tau-b are the guidebook presentation orders shown
-above. These labels are nominal rather than ordinal, so this tau interpretation
-must be treated as an explicitly requested experimental convention; Cohen's
-kappa is the statistically natural reviewer-agreement measure. Undefined
-constant-sequence agreement is defined as 1 for identical sequences and 0
-otherwise.
+- repository: `/home/tassinari/moe-mfaExperiments`;
+- dataset: `/home/tassinari/moe-mfaExperiments/data/Schoenfeld_Reasoning`;
+- model: `/llms/Qwen3.6-27B-UD-Q4_K_XL.gguf`;
+- one llama.cpp slot and one evaluator thread;
+- an 8192-token server context, sufficient for one sentence plus few-shot examples.
 
-Outputs under `results/exp0a` include the optimized prompt, serialized DSPy
-program when supported, split IDs, validation scores, held-out predictions,
-corpus-level test agreement, and an append-only CSV summary.
+Outputs contain the constructed seed prompt, optimized prompt, split response
+IDs, sentence predictions, corpus-level validation/test agreement, and an
+append-only CSV summary.
