@@ -31,18 +31,19 @@ API_KEY="${LLAMA_API_KEY:-local-llamacpp-key}"
 
 # Conservative one-GPU defaults. Increase PARALLEL and NUM_THREADS together
 # only when the GPU has enough memory for multiple KV-cache slots.
-CTX_SIZE="${CTX_SIZE:-32768}"
+CTX_SIZE="${CTX_SIZE:-8192}"
 PARALLEL="${PARALLEL:-1}"
 BATCH_SIZE="${BATCH_SIZE:-512}"
 GPU_LAYERS="${GPU_LAYERS:-999}"
 NUM_THREADS="${NUM_THREADS:-1}"
-MAX_TOKENS="${MAX_TOKENS:-8192}"
+MAX_TOKENS="${MAX_TOKENS:-64}"
+REFLECTION_MAX_TOKENS="${REFLECTION_MAX_TOKENS:-2048}"
+REFLECTION_TEMPERATURE="${REFLECTION_TEMPERATURE:-0.7}"
 TRAIN_DOCUMENTS="${TRAIN_DOCUMENTS:-26}"
 VAL_DOCUMENTS="${VAL_DOCUMENTS:-6}"
 SEED="${SEED:-42}"
 PROMPT_VARIANT="${PROMPT_VARIANT:-base}"
-FEW_SHOT_EXAMPLES="${FEW_SHOT_EXAMPLES:-3}"
-FEW_SHOT_UNITS="${FEW_SHOT_UNITS:-8}"
+FEW_SHOT_EXAMPLES="${FEW_SHOT_EXAMPLES:-7}"
 RUNNER_MEMORY="${RUNNER_MEMORY:-16g}"
 CUDA_VISIBLE_DEVICES="${CUDA_VISIBLE_DEVICES:-0}"
 
@@ -70,13 +71,14 @@ Experiment options:
   --val-documents N           Default: 6
   --seed N                    Default: 42
   --prompt-variant NAME       base or few-shot (default: base)
-  --few-shot-examples N       Training excerpts for few-shot (default: 3)
-  --few-shot-units N          Maximum units per excerpt (default: 8)
+  --few-shot-examples N       Gold training sentences (default: 7)
   --num-threads N             Concurrent evaluator calls (default: 1)
-  --max-tokens N              Per-request generation cap (default: 8192)
+  --max-tokens N              Classification generation cap (default: 64)
+  --reflection-max-tokens N   GEPA reflection cap (default: 2048)
+  --reflection-temperature X  GEPA reflection sampling (default: 0.7)
 
 llama.cpp options:
-  --ctx-size N                Total server context (default: 32768)
+  --ctx-size N                Total server context (default: 8192)
   --parallel N                Server slots (default: 1)
   --batch-size N              Default: 512
   --gpu-layers N              Default: 999 (full offload)
@@ -101,9 +103,10 @@ while [[ $# -gt 0 ]]; do
         --seed) SEED="$2"; shift 2 ;;
         --prompt-variant) PROMPT_VARIANT="$2"; shift 2 ;;
         --few-shot-examples) FEW_SHOT_EXAMPLES="$2"; shift 2 ;;
-        --few-shot-units) FEW_SHOT_UNITS="$2"; shift 2 ;;
         --num-threads) NUM_THREADS="$2"; shift 2 ;;
         --max-tokens) MAX_TOKENS="$2"; shift 2 ;;
+        --reflection-max-tokens) REFLECTION_MAX_TOKENS="$2"; shift 2 ;;
+        --reflection-temperature) REFLECTION_TEMPERATURE="$2"; shift 2 ;;
         --ctx-size) CTX_SIZE="$2"; shift 2 ;;
         --parallel) PARALLEL="$2"; shift 2 ;;
         --batch-size) BATCH_SIZE="$2"; shift 2 ;;
@@ -237,9 +240,10 @@ RUN_ARGS=(
     --seed "$SEED"
     --prompt-variant "$PROMPT_VARIANT"
     --few-shot-examples "$FEW_SHOT_EXAMPLES"
-    --few-shot-units "$FEW_SHOT_UNITS"
     --num-threads "$NUM_THREADS"
     --max-tokens "$MAX_TOKENS"
+    --reflection-max-tokens "$REFLECTION_MAX_TOKENS"
+    --reflection-temperature "$REFLECTION_TEMPERATURE"
     --output-dir "/workspace/$OUTPUT_DIR"
     "--$BUDGET_KIND" "$BUDGET_VALUE"
 )

@@ -77,10 +77,10 @@ If the instance is interrupted, re-run the same command — completed stages are
 
 ### Experiment 0a — GEPA-Optimized Schoenfeld Episode Judge
 
-**Objective:** Optimize the prompt of a local llama.cpp-served judge to label
-the paragraph- and sentence-level reasoning episodes from the gold corpus of
-Li et al. Agreement is measured with Cohen's kappa and Kendall's tau-b, with a
-response-grouped train/validation/test split.
+**Objective:** Optimize the prompt of a local llama.cpp-served judge to assign
+the seven sentence-level reasoning episodes from the gold corpus of Li et al.
+GEPA uses per-sentence exact-match feedback; corpus-level Cohen's kappa and
+Kendall's tau-b are reported on response-grouped validation/test splits.
 
 See [`src/moe_exp/experiment0a/README.md`](src/moe_exp/experiment0a/README.md)
 for setup, metric conventions, and run commands.

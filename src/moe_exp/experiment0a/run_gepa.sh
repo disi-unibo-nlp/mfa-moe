@@ -12,7 +12,9 @@ python -m moe_exp.experiment0a.run \
   --api-base "${API_BASE}" \
   --output-dir "${OUTPUT_DIR}" \
   --prompt-variant "${PROMPT_VARIANT:-base}" \
-  --few-shot-examples "${FEW_SHOT_EXAMPLES:-3}" \
-  --few-shot-units "${FEW_SHOT_UNITS:-8}" \
+  --few-shot-examples "${FEW_SHOT_EXAMPLES:-7}" \
+  --max-tokens "${MAX_TOKENS:-64}" \
+  --reflection-max-tokens "${REFLECTION_MAX_TOKENS:-2048}" \
+  --reflection-temperature "${REFLECTION_TEMPERATURE:-0.7}" \
   --gepa-auto "${GEPA_AUTO:-light}" \
-  --num-threads "${NUM_THREADS:-3}"
+  --num-threads "${NUM_THREADS:-1}"
