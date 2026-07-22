@@ -3,12 +3,17 @@ from pathlib import Path
 
 import pytest
 
-from moe_exp.experiment0a.data import load_documents, split_documents
+from moe_exp.experiment0a.data import EpisodeDocument, EpisodeUnit, load_documents, split_documents
 from moe_exp.experiment0a.metrics import (
     Annotation,
     AnnotationParseError,
     compute_agreement,
     parse_annotations,
+)
+from moe_exp.experiment0a.prompts import (
+    SEED_INSTRUCTIONS,
+    build_few_shot_instructions,
+    select_few_shot_windows,
 )
 
 
@@ -67,3 +72,32 @@ def test_load_and_split_documents_without_cross_document_leakage(tmp_path: Path)
     assert not (split_ids[0] & split_ids[1])
     assert not (split_ids[0] & split_ids[2])
     assert not (split_ids[1] & split_ids[2])
+
+
+def test_few_shot_prompt_selects_label_diverse_training_windows() -> None:
+    documents = [
+        EpisodeDocument(
+            question_id=f"q{index}",
+            problem=f"Problem {index}",
+            units=tuple(
+                EpisodeUnit(
+                    text=f"{paragraph_label} unit {unit_index}",
+                    paragraph_label=paragraph_label,
+                    sentence_label=sentence_label,
+                )
+                for unit_index, sentence_label in enumerate(
+                    ("Read", "Analyze", "Plan", "Implement", "Monitor")
+                )
+            ),
+        )
+        for index, paragraph_label in enumerate(("General", "Explore", "Verify"))
+    ]
+
+    windows = select_few_shot_windows(documents, count=3, max_units=3)
+    prompt = build_few_shot_instructions(windows)
+
+    assert {window.paragraph_label for window in windows} == {"General", "Explore", "Verify"}
+    assert all(len(window.units) == 3 for window in windows)
+    assert prompt.startswith(SEED_INSTRUCTIONS)
+    assert prompt.count("Worked example ") == 3
+    assert '"paragraph_label": "Verify"' in prompt

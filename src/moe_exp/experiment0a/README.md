@@ -40,6 +40,24 @@ Then run from the repository root:
 bash ./src/moe_exp/experiment0a/run_gepa.sh
 ```
 
+The default `base` variant uses the guidebook-derived seed instructions. The
+`few-shot` variant appends short gold excerpts selected deterministically from
+the training documents only:
+
+```bash
+python -m moe_exp.experiment0a.run \
+  --dataset-dir data/Schoenfeld_Reasoning \
+  --prompt-variant few-shot \
+  --few-shot-examples 3 \
+  --few-shot-units 8 \
+  --gepa-auto light
+```
+
+Selection prioritizes one contiguous excerpt for each paragraph-level class
+(`General`, `Explore`, and `Verify`) and sentence-label diversity. Validation
+and test documents are never eligible. Both the constructed seed prompt and
+the optimized prompt are saved with the results.
+
 ## SLURM with Docker
 
 On the cluster, build both images once from the repository root:
@@ -60,6 +78,18 @@ Submit a full run with a light GEPA budget:
 
 ```bash
 sbatch run_experiment0a.sh --gepa-auto light
+```
+
+For the few-shot condition, use a separate output directory so its summary is
+easy to compare with the base condition:
+
+```bash
+sbatch run_experiment0a.sh \
+  --prompt-variant few-shot \
+  --few-shot-examples 3 \
+  --few-shot-units 8 \
+  --output-dir results/exp0a/qwen3.6-27b-few-shot \
+  --gepa-auto light
 ```
 
 Or specify paths and a fixed optimization budget:
