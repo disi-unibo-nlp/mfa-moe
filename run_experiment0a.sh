@@ -40,6 +40,9 @@ MAX_TOKENS="${MAX_TOKENS:-8192}"
 TRAIN_DOCUMENTS="${TRAIN_DOCUMENTS:-26}"
 VAL_DOCUMENTS="${VAL_DOCUMENTS:-6}"
 SEED="${SEED:-42}"
+PROMPT_VARIANT="${PROMPT_VARIANT:-base}"
+FEW_SHOT_EXAMPLES="${FEW_SHOT_EXAMPLES:-3}"
+FEW_SHOT_UNITS="${FEW_SHOT_UNITS:-8}"
 RUNNER_MEMORY="${RUNNER_MEMORY:-16g}"
 CUDA_VISIBLE_DEVICES="${CUDA_VISIBLE_DEVICES:-0}"
 
@@ -66,6 +69,9 @@ Experiment options:
   --train-documents N         Default: 26
   --val-documents N           Default: 6
   --seed N                    Default: 42
+  --prompt-variant NAME       base or few-shot (default: base)
+  --few-shot-examples N       Training excerpts for few-shot (default: 3)
+  --few-shot-units N          Maximum units per excerpt (default: 8)
   --num-threads N             Concurrent evaluator calls (default: 1)
   --max-tokens N              Per-request generation cap (default: 8192)
 
@@ -93,6 +99,9 @@ while [[ $# -gt 0 ]]; do
         --train-documents) TRAIN_DOCUMENTS="$2"; shift 2 ;;
         --val-documents) VAL_DOCUMENTS="$2"; shift 2 ;;
         --seed) SEED="$2"; shift 2 ;;
+        --prompt-variant) PROMPT_VARIANT="$2"; shift 2 ;;
+        --few-shot-examples) FEW_SHOT_EXAMPLES="$2"; shift 2 ;;
+        --few-shot-units) FEW_SHOT_UNITS="$2"; shift 2 ;;
         --num-threads) NUM_THREADS="$2"; shift 2 ;;
         --max-tokens) MAX_TOKENS="$2"; shift 2 ;;
         --ctx-size) CTX_SIZE="$2"; shift 2 ;;
@@ -108,6 +117,10 @@ done
 
 if (( BUDGET_COUNT > 1 )); then
     echo "Choose only one GEPA budget option." >&2
+    exit 1
+fi
+if [[ "$PROMPT_VARIANT" != "base" && "$PROMPT_VARIANT" != "few-shot" ]]; then
+    echo "--prompt-variant must be base or few-shot" >&2
     exit 1
 fi
 case "$BUDGET_KIND:$BUDGET_VALUE" in
@@ -166,6 +179,7 @@ echo "  Dataset:    $DATASET_DIR"
 echo "  Model:      $MODEL_DIR/$MODEL_NAME"
 echo "  GPU:        $CUDA_VISIBLE_DEVICES"
 echo "  GEPA:       --$BUDGET_KIND $BUDGET_VALUE"
+echo "  Prompt:     $PROMPT_VARIANT"
 echo "  Split:      train=$TRAIN_DOCUMENTS, val=$VAL_DOCUMENTS, test=remainder"
 echo "  Concurrency: evaluator=$NUM_THREADS, server slots=$PARALLEL"
 echo "  Output:     $PHYS_DIR/$OUTPUT_DIR"
@@ -221,6 +235,9 @@ RUN_ARGS=(
     --train-documents "$TRAIN_DOCUMENTS"
     --val-documents "$VAL_DOCUMENTS"
     --seed "$SEED"
+    --prompt-variant "$PROMPT_VARIANT"
+    --few-shot-examples "$FEW_SHOT_EXAMPLES"
+    --few-shot-units "$FEW_SHOT_UNITS"
     --num-threads "$NUM_THREADS"
     --max-tokens "$MAX_TOKENS"
     --output-dir "/workspace/$OUTPUT_DIR"

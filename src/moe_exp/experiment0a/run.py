@@ -18,17 +18,21 @@ from .metrics import (
     concatenate_annotations,
     parse_annotations,
 )
-from .prompts import SEED_INSTRUCTIONS
+from .prompts import (
+    SEED_INSTRUCTIONS,
+    build_few_shot_instructions,
+    select_few_shot_windows,
+)
 
 
 class EpisodeJudge(dspy.Module):
     """The single prompt-bearing module optimized by GEPA."""
 
-    def __init__(self) -> None:
+    def __init__(self, instructions: str = SEED_INSTRUCTIONS) -> None:
         super().__init__()
         signature = dspy.Signature(
             "problem, response -> annotations",
-            instructions=SEED_INSTRUCTIONS,
+            instructions=instructions,
         )
         self.annotate = dspy.Predict(signature)
 
@@ -241,6 +245,24 @@ def parse_args() -> argparse.Namespace:
         help="Truncate each response to its first N units; intended only for smoke tests.",
     )
     parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument(
+        "--prompt-variant",
+        choices=("base", "few-shot"),
+        default="base",
+        help="Use the guidebook seed alone or append train-only gold demonstrations.",
+    )
+    parser.add_argument(
+        "--few-shot-examples",
+        type=int,
+        default=3,
+        help="Number of gold training excerpts appended by the few-shot variant.",
+    )
+    parser.add_argument(
+        "--few-shot-units",
+        type=int,
+        default=8,
+        help="Maximum contiguous units in each few-shot excerpt.",
+    )
 
     parser.add_argument("--api-base", default="http://127.0.0.1:8080/v1")
     parser.add_argument("--api-key", default=os.getenv("LLAMA_API_KEY", "local-llamacpp-key"))
@@ -302,7 +324,23 @@ def main() -> None:
     lm = _make_lm(args)
     _configure_lm(lm)
     metric = create_metric(args.kappa_weight, args.paragraph_weight)
-    seed_program = EpisodeJudge()
+    few_shot_windows = ()
+    seed_instructions = SEED_INSTRUCTIONS
+    if args.prompt_variant == "few-shot":
+        few_shot_windows = select_few_shot_windows(
+            train_docs,
+            count=args.few_shot_examples,
+            max_units=args.few_shot_units,
+        )
+        seed_instructions = build_few_shot_instructions(few_shot_windows)
+        print(
+            "Few-shot demonstrations: "
+            + ", ".join(
+                f"{window.question_id}[{window.start}:{window.start + len(window.units)}]"
+                for window in few_shot_windows
+            )
+        )
+    seed_program = EpisodeJudge(seed_instructions)
 
     Evaluate = _evaluate_class()
     evaluator = Evaluate(
@@ -323,6 +361,12 @@ def main() -> None:
         "reflection_lm": lm,
         "log_dir": str(args.output_dir / "gepa_logs"),
         "seed": args.seed,
+        "prompt_variant": args.prompt_variant,
+        "few_shot": {
+            "requested_examples": args.few_shot_examples,
+            "max_units_per_example": args.few_shot_units,
+            "selected_examples": [window.metadata() for window in few_shot_windows],
+        },
     }
     if args.gepa_auto:
         gepa_kwargs["auto"] = args.gepa_auto
@@ -382,6 +426,7 @@ def main() -> None:
         for row in predictions:
             handle.write(json.dumps(row, ensure_ascii=False) + "\n")
     (args.output_dir / f"optimized_prompt_{stem}.txt").write_text(instructions, encoding="utf-8")
+    (args.output_dir / f"seed_prompt_{stem}.txt").write_text(seed_instructions, encoding="utf-8")
     try:
         optimized.save(args.output_dir / f"optimized_program_{stem}.json")
     except Exception as exc:

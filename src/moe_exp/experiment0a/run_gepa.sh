@@ -11,6 +11,8 @@ python -m moe_exp.experiment0a.run \
   --model "${MODEL}" \
   --api-base "${API_BASE}" \
   --output-dir "${OUTPUT_DIR}" \
+  --prompt-variant "${PROMPT_VARIANT:-base}" \
+  --few-shot-examples "${FEW_SHOT_EXAMPLES:-3}" \
+  --few-shot-units "${FEW_SHOT_UNITS:-8}" \
   --gepa-auto "${GEPA_AUTO:-light}" \
   --num-threads "${NUM_THREADS:-3}"
-
