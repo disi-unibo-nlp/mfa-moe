@@ -9,7 +9,7 @@ description = "MoE routing dynamics during CoT reasoning — experiments"
 requires-python = ">=3.11"
 dependencies = [
     # torch is intentionally excluded here — install with CUDA support first:
-    #   pip install torch --index-url https://download.pytorch.org/whl/cu124
+    #   pip install torch --index-url https://download.pytorch.org/whl/cu128
     "transformers>=4.44.0",
     "accelerate>=0.30.0",
     "datasets>=2.20.0",

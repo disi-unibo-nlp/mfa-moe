@@ -1,12 +1,6 @@
-# Base image and torch wheel index are parametrized so the same file builds
-# for both targets:
-#   cluster (default):      CUDA 12.2 base + cu121 torch (host driver limit)
-#   Blackwell (RTX 5090+):  needs CUDA 12.8+ and torch >= 2.7 cu128 wheels:
-#     docker build \
-#       --build-arg CUDA_BASE=12.8.1-devel-ubuntu22.04 \
-#       --build-arg TORCH_INDEX=https://download.pytorch.org/whl/cu128 \
-#       -t moe-mfa-experiments:blackwell .
-ARG CUDA_BASE=12.2.0-devel-ubuntu22.04
+# CUDA 12.8 is the project default, including cu128 PyTorch wheels required
+# by Blackwell GPUs. Both values remain build arguments for custom deployments.
+ARG CUDA_BASE=12.8.1-devel-ubuntu22.04
 FROM nvidia/cuda:${CUDA_BASE}
 LABEL maintainer="Leonardo Tassinari"
 
@@ -37,9 +31,8 @@ RUN update-alternatives --install /usr/bin/python python /usr/bin/python3.11 1 &
 RUN pip install wrapt --upgrade --ignore-installed
 RUN pip install gdown
 
-# Install PyTorch from the wheel index matching the CUDA base
-# (cu121 is the closest stable wheel to the default CUDA 12.2 base).
-ARG TORCH_INDEX=https://download.pytorch.org/whl/cu121
+# Install PyTorch from the wheel index matching the CUDA base.
+ARG TORCH_INDEX=https://download.pytorch.org/whl/cu128
 RUN pip install --no-cache-dir torch --index-url ${TORCH_INDEX}
 
 # Copy project metadata and install dependencies
