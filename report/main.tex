@@ -40,6 +40,10 @@ JSONL is empty, and downstream stages produced zero-input placeholder files.
 Older, corrected-label PRM800K event and full-trace probe outputs over 10,833
 traces are retained as explicitly marked legacy evidence.  Unless stated
 otherwise, event windows contain five tokens on each side of the event.
+In addition, Experiment~0a is a completed auxiliary judge-validation study:
+it optimizes a Qwen3.6-27B prompt for sentence-level Schoenfeld episode
+classification.  This judge experiment evaluates annotation capability and is
+not evidence about Qwen router dynamics.
 
 \paragraph{Implemented analysis pipeline.}
 The repository implements trace generation or ingestion (Experiment 1),
@@ -52,6 +56,9 @@ summaries, full-trace layerwise linear probes over router, hidden, or combined
 features, and a trace-length/structure baseline.  The full pipeline runs
 Experiments 1--5 and extracts hidden states by default; the latter and
 Experiment 4 can be disabled together when storage is constrained.
+Experiment~0a is run separately: a local \texttt{llama.cpp} server supplies
+Qwen3.6-27B predictions while GEPA optimizes the instruction using
+sentence-level exact-match feedback.
 
 \paragraph{Prospective probe design and status.}
 Experiment 4 pools only the first 25\%, 50\%, or 75\% of each trace and trains
@@ -76,12 +83,75 @@ pipeline run and are never pooled with current estimates.  SLURM's printed
 ``Pipeline complete'' banner is not treated as evidence of success: both
 PRM800K logs contain explicit zero-input errors even though the shell script
 continued to that banner.  Historical logs also include a CUDA out-of-memory
-failure and several OLMoE/Qwen generations whose logs end mid-progress; no
-Qwen result artifacts are present, so these are excluded rather than counted
-as robustness runs.  Repeated cgroup swap-limit warnings also appear in the
-successful jobs and are treated as environmental warnings, not failures.
+failure and several OLMoE/Qwen MoE-generation logs that end mid-progress; no
+Qwen routing-result artifacts are present, so these are excluded rather than
+counted as robustness runs.  The separate Qwen judge artifacts from
+Experiment~0a are complete.  Repeated cgroup swap-limit warnings also appear
+in the successful jobs and are treated as environmental warnings, not
+failures.
 
 \section{Results}
+
+\subsection{GEPA-optimized episode judge}
+
+Experiment~0a evaluates whether prompt optimization improves a local judge for
+the seven adapted Schoenfeld episode labels: Read, Analyze, Plan, Implement,
+Explore, Verify, and Monitor.  The model was the Q4\_K\_XL quantization of
+Qwen3.6-27B served by \texttt{llama.cpp} on one RTX 3090.  With seed 42, the
+38 source responses were split by complete response into 26 training, 6
+validation, and 6 held-out test documents before sentence flattening.  These
+partitions contain 2,382, 407, and 336 sentences, respectively, preventing
+sentences from the same response from crossing splits.  GEPA used its
+\texttt{light} budget and per-sentence exact match; no few-shot examples were
+selected in this base-prompt condition.
+
+\begin{table}[t]
+\centering
+\caption{Experiment~0a judge agreement.  The composite rescales Cohen's
+$\kappa$ and Kendall's $\tau_b$ from $[-1,1]$ to $[0,1]$ and averages them.
+Coverage was 100\% in every row.}
+\label{tab:exp0a-judge}
+\begin{tabular}{lrrrr}
+\toprule
+Evaluation & Accuracy & $\kappa$ & $\tau_b$ & Composite \\
+\midrule
+Seed validation      & 0.6388 & 0.5581 & 0.4810 & 0.7598 \\
+Optimized validation & 0.6855 & 0.6074 & 0.5847 & 0.7980 \\
+Optimized test       & 0.6607 & 0.5710 & 0.6066 & 0.7944 \\
+Few-shot validation  & 0.6806 & 0.6078 & 0.5830 & 0.7977 \\
+Few-shot test        & \textbf{0.6994} & \textbf{0.6178} &
+\textbf{0.6667} & \textbf{0.8211} \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Optimization raises validation accuracy by 4.67 percentage points and the
+composite score by 0.0383.  The optimized test composite is only 0.0036 below
+validation, although test accuracy is 2.48 points lower.  The class breakdown
+shows that the remaining errors are not uniform: Plan reaches 8/20 (40.0\%)
+and Explore 7/15 (46.7\%), versus 77/106 (72.6\%) for Analyze and 18/25
+(72.0\%) for Implement.  The dominant confusions are Analyze predicted as
+Verify (16 cases), Verify as Analyze (14), and Read as Analyze (12), indicating
+that interpretation-versus-checking remains the central boundary problem.
+
+The matched few-shot run used the same seed, document split, model, and GEPA
+budget, adding seven gold training examples to the instruction.  It performs
+better than the optimized base condition on the held-out test set: accuracy
+rises from 66.07\% to 69.94\% (+3.87 percentage points), Cohen's $\kappa$ from
+0.5710 to 0.6178, Kendall's $\tau_b$ from 0.6066 to 0.6667, and composite
+agreement from 0.7944 to 0.8211.  GEPA itself does not improve the few-shot
+validation result: the seed and selected optimized prompts both score 68.06\%
+accuracy.  The current comparison therefore favors few-shot prompting for
+held-out generalization, whereas the measurable GEPA optimization gain is
+confined to the base-prompt condition.
+
+These results establish a functioning, fully covered optimized judge, but not
+yet a stable population estimate.  Only one optimization seed and one
+six-document test split have been run, and the unoptimized prompt was not
+evaluated on the held-out test set.  Consequently, the observed optimization
+gain is a validation-set comparison.  Repeated response-grouped splits and
+seeds are required before using the judge as an automatic replacement for
+validated episode annotation.
 
 \subsection{Reasoning outcomes and event taxonomy}
 
@@ -627,6 +697,7 @@ Prospective failure prediction & Partially established & Final incorrectness is 
 Structural/MFA analysis & Not done & Add trajectory length/curvature, reasoning structures, and optional local-geometry regions after core probes. \\
 Routing intervention & Not done & Title-level intervention claim is not yet supported; run only after stable predictive signals are identified. \\
 Second MoE / robustness & Not done & Run a Qwen MoE or another routing design once the corrected pipeline is frozen. \\
+GEPA episode judge (Experiment 0a) & Done, single split & Qwen3.6-27B, seed 42: optimized base test accuracy is 66.07\%; matched seven-example few-shot reaches 69.94\% and 0.821 composite agreement, but GEPA does not improve its 68.06\% validation accuracy. Repeat across response-level splits and seeds. \\
 Pipeline status handling & Defective & The shell script prints completion after zero-input stage errors; add nonzero exits, output validation, and atomic JSONL writes. \\
 Figures & Current after regeneration & Geometry, ProcessBench first-error, expert-phase, and legacy router-probe plots are generated by \texttt{paper\_figures/generate\_figures.py}. \\
 \bottomrule
