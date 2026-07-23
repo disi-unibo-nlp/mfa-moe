@@ -82,6 +82,51 @@ the seven sentence-level reasoning episodes from the gold corpus of Li et al.
 GEPA uses per-sentence exact-match feedback; corpus-level Cohen's kappa and
 Kendall's tau-b are reported on response-grouped validation/test splits.
 
+The first completed run used the base prompt, seed 42, GEPA's `light` budget,
+and a Q4_K_XL quantization of Qwen3.6-27B on one RTX 3090. The 38 documents
+were split before sentence flattening into 26 train, 6 validation, and 6 test
+documents (2,382/407/336 sentences). All 407 validation and 336 test requests
+returned a valid class.
+
+| Evaluation | Accuracy | Cohen's kappa | Kendall's tau-b | Composite score |
+|---|---:|---:|---:|---:|
+| Seed validation prompt | 63.88% | 0.558 | 0.481 | 0.760 |
+| GEPA-optimized validation prompt | 68.55% | 0.607 | 0.585 | 0.798 |
+| Held-out test, optimized prompt | 66.07% | 0.571 | 0.607 | 0.794 |
+| Few-shot validation (seed and optimized) | 68.06% | 0.608 | 0.583 | 0.798 |
+| Held-out test, few-shot prompt | **69.94%** | **0.618** | **0.667** | **0.821** |
+
+GEPA improved validation accuracy by 4.67 percentage points. The close
+validation and held-out composite scores are encouraging, but this is a
+single seed with only six held-out documents; repeated response-level splits
+are needed before treating the difference as stable. On the test set, the
+weakest classes were `Plan` (8/20, 40%) and `Explore` (7/15, 46.7%). The
+largest confusions were `Analyze`→`Verify` (16), `Verify`→`Analyze` (14), and
+`Read`→`Analyze` (12).
+
+On the same seed and response split, the seven-example few-shot condition
+performed better on the held-out test set than the optimized base condition:
+69.94% versus 66.07% accuracy, and 0.821 versus 0.794 composite agreement.
+However, GEPA did not improve the few-shot validation accuracy: both its seed
+and selected optimized prompt scored 68.06%. Thus the current result favors
+few-shot prompting for held-out generalization, while the measurable GEPA gain
+is confined to the base condition.
+
+```bash
+sbatch run_experiment0a.sh \
+  --prompt-variant base \
+  --output-dir results/exp0a/qwen3.6-27b-base \
+  --gepa-auto light \
+  --seed 42
+```
+
+The completed run is under `results/exp0a/qwen3.6-27b-base/`. In particular:
+
+- `optimized_prompt_20260723_102019.txt` is the deployable optimized prompt;
+- `results_20260723_102019.json` contains split IDs and aggregate metrics;
+- `test_predictions_20260723_102019.jsonl` contains held-out predictions;
+- `stats.csv` is the append-only summary.
+
 See [`src/moe_exp/experiment0a/README.md`](src/moe_exp/experiment0a/README.md)
 for setup, metric conventions, and run commands.
 
