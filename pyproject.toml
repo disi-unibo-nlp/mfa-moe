@@ -27,6 +27,8 @@ dependencies = [
 ]
 
 [project.scripts]
+exp0a = "moe_exp.experiment0a.run:main"
+exp0a-audit = "moe_exp.experiment0a.audit:main"
 exp1 = "moe_exp.experiment1.run:main"
 
 [project.optional-dependencies]

@@ -77,12 +77,45 @@ If the instance is interrupted, re-run the same command — completed stages are
 
 ### Experiment 0a — GEPA-Optimized Schoenfeld Episode Judge
 
-**Objective:** Optimize the prompt of a local llama.cpp-served judge to assign
-the seven sentence-level reasoning episodes from the gold corpus of Li et al.
-GEPA uses per-sentence exact-match feedback; corpus-level Cohen's kappa and
-Kendall's tau-b are reported on response-grouped validation/test splits.
+**Objective:** Optimize a local llama.cpp-served judge to assign the seven
+sentence-level reasoning episodes from the gold corpus of Li et al. The judge
+now receives the SAT problem plus previous/current/next response units so it
+can distinguish given facts from deductions and checks. GEPA uses
+class-balanced exact-match feedback by default, and final selection is based on
+validation balanced accuracy with a per-class recall safety gate.
 
-The first completed run used the base prompt, seed 42, GEPA's `light` budget,
+The default few-shot prompt contains 21 audited synthetic contrastive examples
+(three per class). Nested response-grouped cross-validation is available for
+configuration selection and excludes six locked-test responses entirely. A
+normal final-fit run no longer evaluates the locked test unless
+`--evaluate-locked-test` is explicitly supplied.
+
+```bash
+# Select a configuration without touching the locked test.
+sbatch run_experiment0a.sh \
+  --prompt-variant few-shot \
+  --few-shot-examples 21 \
+  --gepa-reward balanced \
+  --selection-metric balanced_accuracy \
+  --cv-folds 5 \
+  --gepa-auto light \
+  --output-dir results/exp0a/context-balanced-cv-s42
+
+# Fit the selected configuration, still without test evaluation.
+sbatch run_experiment0a.sh \
+  --prompt-variant few-shot \
+  --few-shot-examples 21 \
+  --gepa-reward balanced \
+  --gepa-auto light \
+  --output-dir results/exp0a/context-balanced-final-s42
+```
+
+Every run writes an annotation audit for multi-line, multi-sentence, and mixed
+structural/substantive units. Reports include accuracy, balanced accuracy,
+macro-F1, per-class metrics, Cohen's kappa, and Kendall's tau-b.
+
+The following are legacy single-sentence results, retained for provenance. The
+first completed run used the base prompt, seed 42, GEPA's `light` budget,
 and a Q4_K_XL quantization of Qwen3.6-27B on one RTX 3090. The 38 documents
 were split before sentence flattening into 26 train, 6 validation, and 6 test
 documents (2,382/407/336 sentences). All 407 validation and 336 test requests
@@ -111,21 +144,6 @@ However, GEPA did not improve the few-shot validation accuracy: both its seed
 and selected optimized prompt scored 68.06%. Thus the current result favors
 few-shot prompting for held-out generalization, while the measurable GEPA gain
 is confined to the base condition.
-
-```bash
-sbatch run_experiment0a.sh \
-  --prompt-variant base \
-  --output-dir results/exp0a/qwen3.6-27b-base \
-  --gepa-auto light \
-  --seed 42
-```
-
-The completed run is under `results/exp0a/qwen3.6-27b-base/`. In particular:
-
-- `optimized_prompt_20260723_102019.txt` is the deployable optimized prompt;
-- `results_20260723_102019.json` contains split IDs and aggregate metrics;
-- `test_predictions_20260723_102019.jsonl` contains held-out predictions;
-- `stats.csv` is the append-only summary.
 
 See [`src/moe_exp/experiment0a/README.md`](src/moe_exp/experiment0a/README.md)
 for setup, metric conventions, and run commands.

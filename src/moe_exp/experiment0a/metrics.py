@@ -4,8 +4,9 @@ import json
 import math
 import re
 from collections import Counter
+from collections.abc import Sequence
 from dataclasses import asdict, dataclass
-from typing import Any, Sequence
+from typing import Any
 
 from scipy.stats import kendalltau
 
@@ -115,3 +116,48 @@ def compute_sentence_agreement(
     scaled_kendall = (kendall + 1.0) / 2.0
     score = kappa_weight * scaled_kappa + (1.0 - kappa_weight) * scaled_kendall
     return SentenceAgreement(kappa, kendall, accuracy, score)
+
+
+def compute_classification_metrics(
+    gold: Sequence[str],
+    predicted: Sequence[str | None],
+) -> dict[str, Any]:
+    """Compute strict nominal metrics, treating invalid predictions as incorrect."""
+    if len(gold) != len(predicted) or not gold:
+        raise ValueError("gold and predicted must be non-empty and have equal length")
+    unknown_gold = set(gold) - set(SENTENCE_LABELS)
+    unknown_predicted = {label for label in predicted if label is not None} - set(SENTENCE_LABELS)
+    if unknown_gold or unknown_predicted:
+        raise ValueError(f"unknown sentence labels: {sorted(unknown_gold | unknown_predicted)}")
+
+    per_class: dict[str, dict[str, float | int]] = {}
+    recalls: list[float] = []
+    f1_scores: list[float] = []
+    for label in SENTENCE_LABELS:
+        support = sum(item == label for item in gold)
+        predicted_count = sum(item == label for item in predicted)
+        true_positive = sum(
+            expected == label and actual == label for expected, actual in zip(gold, predicted)
+        )
+        precision = true_positive / predicted_count if predicted_count else 0.0
+        recall = true_positive / support if support else 0.0
+        f1 = 2.0 * precision * recall / (precision + recall) if precision + recall else 0.0
+        per_class[label] = {
+            "support": support,
+            "predicted": predicted_count,
+            "true_positive": true_positive,
+            "precision": precision,
+            "recall": recall,
+            "f1": f1,
+        }
+        if support:
+            recalls.append(recall)
+            f1_scores.append(f1)
+
+    accuracy = sum(expected == actual for expected, actual in zip(gold, predicted)) / len(gold)
+    return {
+        "accuracy": accuracy,
+        "balanced_accuracy": sum(recalls) / len(recalls),
+        "macro_f1": sum(f1_scores) / len(f1_scores),
+        "per_class": per_class,
+    }

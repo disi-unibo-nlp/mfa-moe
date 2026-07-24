@@ -1,62 +1,114 @@
-# Experiment 0a — GEPA-optimized sentence judge
+# Experiment 0a — context-aware GEPA episode judge
 
-Experiment 0a optimizes the instruction prompt used by Qwen 3.6 27B to assign
-one of the seven sentence-level categories from the adapted Schoenfeld Episode
-Theory:
+Experiment 0a optimizes the prompt used by Qwen 3.6 27B to assign one of seven
+adapted Schoenfeld Episode Theory labels:
 
 `Read`, `Analyze`, `Plan`, `Implement`, `Explore`, `Verify`, `Monitor`.
 
-Each classification request contains exactly one sentence. It does not contain
-the full response or neighboring reasoning. The official 38-response corpus is
-split by complete response (26 train, 6 validation, 6 held-out test by default)
-before its sentences are flattened, so sentences from one response cannot leak
-between splits.
+## Context and data isolation
 
-Official corpus: <https://github.com/MingLiiii/Schoenfeld_Reasoning>
+Each target unit is classified with:
 
-## Optimization and evaluation
+- the SAT problem statement, choices, table, and figure description from
+  `SAT.json`;
+- the previous response unit;
+- the current target unit;
+- the next response unit.
 
-GEPA requires a score for each individual example. Cohen's kappa and Kendall's
-tau-b are not defined for one sentence, so GEPA receives exact-match reward:
-`1` for the correct class and `0` otherwise, plus explicit gold-versus-predicted
-feedback for reflection.
+Correct answers and rationales are never copied into model-visible context.
+Documents are split before units are flattened, so no response crosses train,
+validation, outer-CV, or locked-test boundaries.
 
-After optimization, reviewer agreement is computed globally across all
-validation or test sentences:
+The prompt defines a whole-unit precedence rule for compound annotations such
+as a `**Final Answer**` marker combined with a boxed answer. Gold labels are
+never silently modified. Every run writes `annotation_audit_*.json`, and the
+same audit can be run without a model:
 
-- Cohen's kappa;
-- Kendall's tau-b, using the guidebook label order shown above;
-- exact accuracy and valid-output coverage.
+```bash
+python -m moe_exp.experiment0a.audit \
+  --dataset-dir data/Schoenfeld_Reasoning \
+  --output results/exp0a/annotation_audit.json
+```
 
-Raw agreement coefficients are preserved. The optional composite reporting
-score rescales each coefficient from `[-1, 1]` to `[0, 1]` before averaging;
-negative agreement is not clipped.
+## Prompt and optimization
 
-## Prompt variants
+The default `few-shot` prompt uses 21 hand-audited synthetic contrastive
+examples: three per class. They target the recurring boundaries
+`Read`/`Analyze`, `Analyze`/`Verify`, `Analyze`/`Implement`, `Plan`/`Monitor`,
+and `Explore`/`Analyze`. Because the examples are synthetic, validation and
+test annotations cannot leak into the prompt.
 
-`base` contains the seven definitions and distinctions. `few-shot` appends
-individual gold training sentences, selecting one example for every class when
-seven examples are requested. Validation and test sentences are never eligible.
+GEPA receives inverse-frequency weighted exact-match reward by default. Within
+each split, the mean reward equals balanced accuracy. Plain exact match remains
+available with `--gepa-reward exact`.
+
+After optimization, a safety gate compares the seed and optimized prompts on
+validation balanced accuracy. The optimized prompt is rejected if it fails to
+improve the selection metric or lowers any class recall by more than 0.10.
+Configure this with:
+
+```bash
+--selection-metric balanced_accuracy
+--max-class-recall-drop 0.10
+```
+
+Reports include strict accuracy, balanced accuracy, macro-F1, per-class
+precision/recall/F1, Cohen's kappa, Kendall's tau-b, and valid-output coverage.
+Kendall's tau-b is retained for comparability but should not be treated as the
+primary metric unless the configured label ordering is substantively justified.
+
+## Recommended workflow
+
+First compare configurations using nested response-grouped cross-validation:
 
 ```bash
 python -m moe_exp.experiment0a.run \
   --dataset-dir data/Schoenfeld_Reasoning \
   --prompt-variant few-shot \
-  --few-shot-examples 7 \
+  --few-shot-examples 21 \
+  --gepa-reward balanced \
+  --selection-metric balanced_accuracy \
+  --cv-folds 5 \
+  --locked-test-documents 6 \
   --gepa-auto light
 ```
 
-For a plumbing check only:
+For each outer fold, GEPA uses only an inner training and validation split. The
+selected fold prompt is then evaluated on an untouched outer fold. The six
+locked-test responses are excluded from the entire process. Cross-validation
+does not produce one deployable prompt; use it to choose the configuration.
+
+Fit the chosen configuration without evaluating the locked test:
 
 ```bash
 python -m moe_exp.experiment0a.run \
   --dataset-dir data/Schoenfeld_Reasoning \
-  --train-documents 1 \
-  --val-documents 1 \
-  --test-documents 1 \
-  --max-units-per-document 2 \
-  --max-full-evals 1
+  --prompt-variant few-shot \
+  --few-shot-examples 21 \
+  --gepa-reward balanced \
+  --selection-metric balanced_accuracy \
+  --gepa-auto light \
+  --output-dir results/exp0a/context-balanced-final
 ```
+
+Only after configuration and prompt-selection rules are frozen, explicitly
+authorize the one-time locked-test evaluation:
+
+```bash
+python -m moe_exp.experiment0a.run \
+  --dataset-dir data/Schoenfeld_Reasoning \
+  --prompt-variant few-shot \
+  --few-shot-examples 21 \
+  --gepa-reward balanced \
+  --selection-metric balanced_accuracy \
+  --gepa-auto light \
+  --evaluate-locked-test \
+  --output-dir results/exp0a/context-balanced-locked-test
+```
+
+The current historical test split has already been inspected in earlier
+experiments. A genuinely final result requires newly held-out responses or an
+external evaluation corpus.
 
 ## SLURM with Docker
 
@@ -68,31 +120,31 @@ docker build -t moe-mfa-experiments:latest .
 mkdir -p slurm_logs
 ```
 
-Run the base and few-shot conditions separately with the same seed and budget:
+Run five-fold nested cross-validation:
 
 ```bash
 sbatch run_experiment0a.sh \
-  --prompt-variant base \
-  --output-dir results/exp0a/qwen3.6-27b-base \
-  --gepa-auto light \
-  --seed 42
-
-sbatch run_experiment0a.sh \
   --prompt-variant few-shot \
-  --few-shot-examples 7 \
-  --output-dir results/exp0a/qwen3.6-27b-few-shot \
+  --few-shot-examples 21 \
+  --gepa-reward balanced \
+  --cv-folds 5 \
   --gepa-auto light \
-  --seed 42
+  --output-dir results/exp0a/context-balanced-cv-s42
 ```
 
-The launcher defaults to:
+Run the final fit, still without test evaluation:
 
-- repository: `/home/tassinari/moe-mfaExperiments`;
-- dataset: `/home/tassinari/moe-mfaExperiments/data/Schoenfeld_Reasoning`;
-- model: `/llms/Qwen3.6-27B-UD-Q4_K_XL.gguf`;
-- one llama.cpp slot and one evaluator thread;
-- an 8192-token server context, sufficient for one sentence plus few-shot examples.
+```bash
+sbatch run_experiment0a.sh \
+  --prompt-variant few-shot \
+  --few-shot-examples 21 \
+  --gepa-reward balanced \
+  --gepa-auto light \
+  --output-dir results/exp0a/context-balanced-final-s42
+```
 
-Outputs contain the constructed seed prompt, optimized prompt, split response
-IDs, sentence predictions, corpus-level validation/test agreement, and an
-append-only CSV summary.
+Add `--evaluate-locked-test` only to the frozen final evaluation job.
+
+Outputs include the seed, GEPA-optimized, and safety-selected prompts/programs;
+validation or outer-fold predictions; split response IDs; annotation audit;
+aggregate and per-class metrics; and an append-only `stats.csv`.

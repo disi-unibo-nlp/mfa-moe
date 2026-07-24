@@ -42,8 +42,15 @@ REFLECTION_TEMPERATURE="${REFLECTION_TEMPERATURE:-0.7}"
 TRAIN_DOCUMENTS="${TRAIN_DOCUMENTS:-26}"
 VAL_DOCUMENTS="${VAL_DOCUMENTS:-6}"
 SEED="${SEED:-42}"
-PROMPT_VARIANT="${PROMPT_VARIANT:-base}"
-FEW_SHOT_EXAMPLES="${FEW_SHOT_EXAMPLES:-7}"
+PROMPT_VARIANT="${PROMPT_VARIANT:-few-shot}"
+FEW_SHOT_EXAMPLES="${FEW_SHOT_EXAMPLES:-21}"
+GEPA_REWARD="${GEPA_REWARD:-balanced}"
+SELECTION_METRIC="${SELECTION_METRIC:-balanced_accuracy}"
+MAX_CLASS_RECALL_DROP="${MAX_CLASS_RECALL_DROP:-0.10}"
+CV_FOLDS="${CV_FOLDS:-0}"
+CV_INNER_VAL_DOCUMENTS="${CV_INNER_VAL_DOCUMENTS:-5}"
+LOCKED_TEST_DOCUMENTS="${LOCKED_TEST_DOCUMENTS:-6}"
+EVALUATE_LOCKED_TEST=false
 RUNNER_MEMORY="${RUNNER_MEMORY:-16g}"
 CUDA_VISIBLE_DEVICES="${CUDA_VISIBLE_DEVICES:-0}"
 
@@ -70,8 +77,15 @@ Experiment options:
   --train-documents N         Default: 26
   --val-documents N           Default: 6
   --seed N                    Default: 42
-  --prompt-variant NAME       base or few-shot (default: base)
-  --few-shot-examples N       Gold training sentences (default: 7)
+  --prompt-variant NAME       base or few-shot (default: few-shot)
+  --few-shot-examples N       Curated contrastive examples (default: 21)
+  --gepa-reward NAME          balanced or exact (default: balanced)
+  --selection-metric NAME     balanced_accuracy, macro_f1, or accuracy
+  --max-class-recall-drop X   Validation safety threshold (default: 0.10)
+  --cv-folds N                Nested grouped CV folds; 0 runs a final fit
+  --cv-inner-val-documents N  Inner validation responses per CV fold (default: 5)
+  --locked-test-documents N   Responses excluded from CV (default: 6)
+  --evaluate-locked-test      Explicitly evaluate locked test after final selection
   --num-threads N             Concurrent evaluator calls (default: 1)
   --max-tokens N              Classification generation cap (default: 64)
   --reflection-max-tokens N   GEPA reflection cap (default: 2048)
@@ -103,6 +117,13 @@ while [[ $# -gt 0 ]]; do
         --seed) SEED="$2"; shift 2 ;;
         --prompt-variant) PROMPT_VARIANT="$2"; shift 2 ;;
         --few-shot-examples) FEW_SHOT_EXAMPLES="$2"; shift 2 ;;
+        --gepa-reward) GEPA_REWARD="$2"; shift 2 ;;
+        --selection-metric) SELECTION_METRIC="$2"; shift 2 ;;
+        --max-class-recall-drop) MAX_CLASS_RECALL_DROP="$2"; shift 2 ;;
+        --cv-folds) CV_FOLDS="$2"; shift 2 ;;
+        --cv-inner-val-documents) CV_INNER_VAL_DOCUMENTS="$2"; shift 2 ;;
+        --locked-test-documents) LOCKED_TEST_DOCUMENTS="$2"; shift 2 ;;
+        --evaluate-locked-test) EVALUATE_LOCKED_TEST=true; shift ;;
         --num-threads) NUM_THREADS="$2"; shift 2 ;;
         --max-tokens) MAX_TOKENS="$2"; shift 2 ;;
         --reflection-max-tokens) REFLECTION_MAX_TOKENS="$2"; shift 2 ;;
@@ -124,6 +145,22 @@ if (( BUDGET_COUNT > 1 )); then
 fi
 if [[ "$PROMPT_VARIANT" != "base" && "$PROMPT_VARIANT" != "few-shot" ]]; then
     echo "--prompt-variant must be base or few-shot" >&2
+    exit 1
+fi
+if [[ "$GEPA_REWARD" != "balanced" && "$GEPA_REWARD" != "exact" ]]; then
+    echo "--gepa-reward must be balanced or exact" >&2
+    exit 1
+fi
+case "$SELECTION_METRIC" in
+    balanced_accuracy|macro_f1|accuracy) ;;
+    *) echo "--selection-metric must be balanced_accuracy, macro_f1, or accuracy" >&2; exit 1 ;;
+esac
+if (( CV_FOLDS == 1 )); then
+    echo "--cv-folds must be 0 or at least 2" >&2
+    exit 1
+fi
+if (( CV_FOLDS > 0 )) && [[ "$EVALUATE_LOCKED_TEST" == true ]]; then
+    echo "Nested CV never evaluates the locked test." >&2
     exit 1
 fi
 case "$BUDGET_KIND:$BUDGET_VALUE" in
@@ -183,6 +220,8 @@ echo "  Model:      $MODEL_DIR/$MODEL_NAME"
 echo "  GPU:        $CUDA_VISIBLE_DEVICES"
 echo "  GEPA:       --$BUDGET_KIND $BUDGET_VALUE"
 echo "  Prompt:     $PROMPT_VARIANT"
+echo "  Reward:     $GEPA_REWARD; selection=$SELECTION_METRIC"
+echo "  CV:         folds=$CV_FOLDS; locked-test=$LOCKED_TEST_DOCUMENTS"
 echo "  Split:      train=$TRAIN_DOCUMENTS, val=$VAL_DOCUMENTS, test=remainder"
 echo "  Concurrency: evaluator=$NUM_THREADS, server slots=$PARALLEL"
 echo "  Output:     $PHYS_DIR/$OUTPUT_DIR"
@@ -240,6 +279,12 @@ RUN_ARGS=(
     --seed "$SEED"
     --prompt-variant "$PROMPT_VARIANT"
     --few-shot-examples "$FEW_SHOT_EXAMPLES"
+    --gepa-reward "$GEPA_REWARD"
+    --selection-metric "$SELECTION_METRIC"
+    --max-class-recall-drop "$MAX_CLASS_RECALL_DROP"
+    --cv-folds "$CV_FOLDS"
+    --cv-inner-val-documents "$CV_INNER_VAL_DOCUMENTS"
+    --locked-test-documents "$LOCKED_TEST_DOCUMENTS"
     --num-threads "$NUM_THREADS"
     --max-tokens "$MAX_TOKENS"
     --reflection-max-tokens "$REFLECTION_MAX_TOKENS"
@@ -247,6 +292,9 @@ RUN_ARGS=(
     --output-dir "/workspace/$OUTPUT_DIR"
     "--$BUDGET_KIND" "$BUDGET_VALUE"
 )
+if [[ "$EVALUATE_LOCKED_TEST" == true ]]; then
+    RUN_ARGS+=(--evaluate-locked-test)
+fi
 if [[ -n "$TEST_DOCUMENTS" ]]; then
     RUN_ARGS+=(--test-documents "$TEST_DOCUMENTS")
 fi
