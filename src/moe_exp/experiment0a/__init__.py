@@ -1,1 +1,1 @@
-"""Experiment 0a: GEPA optimization of a Schoenfeld episode judge."""
+"""Experiment 0a: context-aware GEPA optimization of a Schoenfeld episode judge."""
