@@ -104,6 +104,15 @@ EOF
 }
 
 while [[ $# -gt 0 ]]; do
+    # A backslash followed by spaces at the end of a multiline sbatch command
+    # can reach this script as a whitespace-only argument. Treat it like the
+    # shell formatting artifact it is instead of rejecting an otherwise valid
+    # experiment invocation.
+    if [[ -z "${1//[[:space:]]/}" ]]; then
+        shift
+        continue
+    fi
+
     case "$1" in
         --gepa-auto) BUDGET_KIND="gepa-auto"; BUDGET_VALUE="$2"; BUDGET_COUNT=$((BUDGET_COUNT + 1)); shift 2 ;;
         --max-full-evals) BUDGET_KIND="max-full-evals"; BUDGET_VALUE="$2"; BUDGET_COUNT=$((BUDGET_COUNT + 1)); shift 2 ;;
@@ -135,7 +144,11 @@ while [[ $# -gt 0 ]]; do
         --test-documents) TEST_DOCUMENTS="$2"; shift 2 ;;
         --max-units-per-document) MAX_UNITS="$2"; shift 2 ;;
         -h|--help) usage; exit 0 ;;
-        *) echo "Unknown argument: $1" >&2; usage >&2; exit 1 ;;
+        *)
+            printf 'Unknown argument: %q\n' "$1" >&2
+            usage >&2
+            exit 1
+            ;;
     esac
 done
 
