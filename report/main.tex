@@ -40,10 +40,11 @@ JSONL is empty, and downstream stages produced zero-input placeholder files.
 Older, corrected-label PRM800K event and full-trace probe outputs over 10,833
 traces are retained as explicitly marked legacy evidence.  Unless stated
 otherwise, event windows contain five tokens on each side of the event.
-In addition, Experiment~0a is a completed auxiliary judge-validation study:
-it optimizes a Qwen3.6-27B prompt for sentence-level Schoenfeld episode
-classification.  This judge experiment evaluates annotation capability and is
-not evidence about Qwen router dynamics.
+In addition, Experiment~0a is an auxiliary judge-validation study: completed
+static-reward baselines optimize a Qwen3.6-27B prompt for sentence-level
+Schoenfeld episode classification, while a new LLM-as-a-judge reward
+configuration awaits rerunning.  This judge experiment evaluates annotation
+capability and is not evidence about Qwen router dynamics.
 
 \paragraph{Implemented analysis pipeline.}
 The repository implements trace generation or ingestion (Experiment 1),
@@ -57,8 +58,12 @@ features, and a trace-length/structure baseline.  The full pipeline runs
 Experiments 1--5 and extracts hidden states by default; the latter and
 Experiment 4 can be disabled together when storage is constrained.
 Experiment~0a is run separately: a local \texttt{llama.cpp} server supplies
-Qwen3.6-27B predictions while GEPA optimizes the instruction using
-sentence-level exact-match feedback.
+Qwen3.6-27B predictions while GEPA optimizes the instruction.  The current
+version supplies the problem statement and previous/current/next response
+units, uses 21 audited synthetic contrastive demonstrations, supports
+an informative same-model LLM-as-a-judge reward alongside the earlier static
+rewards, and evaluates prompt-selection rules with nested response-grouped
+cross-validation.
 
 \paragraph{Prospective probe design and status.}
 Experiment 4 pools only the first 25\%, 50\%, or 75\% of each trace and trains
@@ -97,17 +102,17 @@ failures.
 Experiment~0a evaluates whether prompt optimization improves a local judge for
 the seven adapted Schoenfeld episode labels: Read, Analyze, Plan, Implement,
 Explore, Verify, and Monitor.  The model was the Q4\_K\_XL quantization of
-Qwen3.6-27B served by \texttt{llama.cpp} on one RTX 3090.  With seed 42, the
-38 source responses were split by complete response into 26 training, 6
-validation, and 6 held-out test documents before sentence flattening.  These
-partitions contain 2,382, 407, and 336 sentences, respectively, preventing
-sentences from the same response from crossing splits.  GEPA used its
-\texttt{light} budget and per-sentence exact match; no few-shot examples were
-selected in this base-prompt condition.
+Qwen3.6-27B served by \texttt{llama.cpp} on one RTX 3090.  All splits preserve
+complete responses, preventing neighboring units from crossing partitions.
+
+\paragraph{Preliminary single-split runs.}
+With seed 42, the 38 responses were divided into 26 training, 6 validation,
+and 6 test documents (2,382/407/336 units).  These first runs classified the
+current unit without neighboring context and optimized per-unit exact match.
 
 \begin{table}[t]
 \centering
-\caption{Experiment~0a judge agreement.  The composite rescales Cohen's
+\caption{Preliminary Experiment~0a judge agreement.  The composite rescales Cohen's
 $\kappa$ and Kendall's $\tau_b$ from $[-1,1]$ to $[0,1]$ and averages them.
 Coverage was 100\% in every row.}
 \label{tab:exp0a-judge}
@@ -125,15 +130,6 @@ Few-shot test        & \textbf{0.6994} & \textbf{0.6178} &
 \end{tabular}
 \end{table}
 
-Optimization raises validation accuracy by 4.67 percentage points and the
-composite score by 0.0383.  The optimized test composite is only 0.0036 below
-validation, although test accuracy is 2.48 points lower.  The class breakdown
-shows that the remaining errors are not uniform: Plan reaches 8/20 (40.0\%)
-and Explore 7/15 (46.7\%), versus 77/106 (72.6\%) for Analyze and 18/25
-(72.0\%) for Implement.  The dominant confusions are Analyze predicted as
-Verify (16 cases), Verify as Analyze (14), and Read as Analyze (12), indicating
-that interpretation-versus-checking remains the central boundary problem.
-
 The matched few-shot run used the same seed, document split, model, and GEPA
 budget, adding seven gold training examples to the instruction.  It performs
 better than the optimized base condition on the held-out test set: accuracy
@@ -145,13 +141,111 @@ accuracy.  The current comparison therefore favors few-shot prompting for
 held-out generalization, whereas the measurable GEPA optimization gain is
 confined to the base-prompt condition.
 
-These results establish a functioning, fully covered optimized judge, but not
-yet a stable population estimate.  Only one optimization seed and one
-six-document test split have been run, and the unoptimized prompt was not
-evaluated on the held-out test set.  Consequently, the observed optimization
-gain is a validation-set comparison.  Repeated response-grouped splits and
-seeds are required before using the judge as an automatic replacement for
-validated episode annotation.
+\paragraph{Context-aware nested cross-validation.}
+The revised protocol excludes the same six responses from model selection and
+runs five outer folds over the remaining 32 responses.  Within each fold,
+five responses form the inner validation set and all others outside the outer
+fold form the GEPA training set.  Each request includes the problem statement,
+previous unit, current unit, and next unit.  The seed instruction includes 21
+audited synthetic contrastive demonstrations.  GEPA receives inverse-frequency
+weighted exact match, whose split mean is balanced accuracy; the safety
+selector compares either balanced accuracy or macro-F1 and rejects any
+candidate whose class recall falls by more than the configured threshold.
+
+\paragraph{New informative reward (implementation complete; run pending).}
+The current implementation replaces the default static GEPA reward with an
+LLM-as-a-judge call to the same Qwen3.6-27B model.  For each candidate label,
+the judge returns a short free-text explanation plus four diagnostic scores
+from 1 to 5: gold agreement, functional fit, contextual coherence, and boundary
+precision.  Their normalized weighted mean is used only as GEPA's optimization
+signal, with respective weights 0.40, 0.25, 0.15, and 0.20.  Gold-label
+accuracy, balanced accuracy, macro-F1, and per-class recall remain the
+independent selection and reporting criteria.  The judge currently runs
+deterministically with model reasoning disabled; reasoning-enabled evaluation
+is deferred to a 5090 run because it substantially increases inference time.
+Every judge call is persisted as JSONL with its component scores, normalized
+score, and free-text explanation, permitting a direct audit of feedback
+quality.  The pending rerun uses GEPA's heavy budget and a 4096-token
+reflection cap while retaining the existing one-GPU, 64\,GB, 48-hour SLURM
+allocation.
+All numerical results below precede this change and therefore remain
+static-reward baselines rather than evidence for the new judge.
+
+\begin{table}[t]
+\centering
+\caption{Aggregate selected-prompt outer-fold results over 2,789 units.
+``Balanced light'' is the earlier 0.10 recall-gate run; the macro-F1 runs use a
+0.05 gate.  The six excluded responses were not evaluated.}
+\label{tab:exp0a-cv}
+\begin{tabular}{lrrrr}
+\toprule
+Selection / budget & Accuracy & Balanced acc. & Macro-F1 & Composite \\
+\midrule
+Balanced / light & 0.6701 & 0.6753 & 0.6480 & 0.8031 \\
+Macro-F1 / light & \textbf{0.6734} & \textbf{0.6796} &
+\textbf{0.6505} & \textbf{0.8063} \\
+Macro-F1 / heavy & 0.6669 & 0.6737 & 0.6437 & 0.8030 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Macro-F1 selection with the light budget is the strongest cross-validated
+configuration, but its advantage over balanced-accuracy selection is small:
++0.32 accuracy points, +0.43 balanced-accuracy points, and +0.24 macro-F1
+points.  At the response level it wins on 15 documents, loses on 13, and ties
+on 4, so the observed gain is not stable across documents.  The light run
+selects a GEPA-optimized prompt in three of five folds; the recall gate retains
+the seed prompt in the other two because Plan or Monitor recall falls too far.
+
+Increasing the budget does not help.  The heavy run selects an optimized
+prompt in only two folds and is 0.65 accuracy points and 0.68 macro-F1 points
+below the light run.  Paired predictions show 38 units correct only under
+light versus 20 correct only under heavy.  This difference is concentrated in
+fold 5, where light discovers and selects a strong candidate whereas heavy
+retains the seed after its candidate violates the Analyze recall gate.
+Independent heavy search is therefore not a superset of light search and can
+discard a better prompt found by a smaller run.
+
+\begin{table}[t]
+\centering
+\caption{Per-class outer-fold performance for the best current configuration,
+macro-F1 selection with the light GEPA budget.}
+\label{tab:exp0a-classes}
+\begin{tabular}{lrrrr}
+\toprule
+Class & Support & Precision & Recall & F1 \\
+\midrule
+Read      & 318 & 0.798 & 0.770 & 0.784 \\
+Analyze   & 685 & 0.757 & 0.632 & 0.689 \\
+Plan      & 205 & 0.524 & 0.590 & 0.555 \\
+Implement & 650 & 0.880 & 0.722 & 0.793 \\
+Explore   & 193 & 0.679 & 0.492 & 0.571 \\
+Verify    & 538 & 0.669 & 0.606 & 0.636 \\
+Monitor   & 200 & 0.364 & 0.945 & 0.526 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The revised objective improves overall balance only marginally and does not
+resolve Monitor overprediction.  The model emits Monitor 519 times for 200
+gold Monitor units; the leading errors are Verify$\rightarrow$Monitor (127),
+Plan$\rightarrow$Monitor (65), and Explore$\rightarrow$Monitor (42).  The
+annotation audit flags 180/3,125 units (5.76\%), including 145 multiline units
+and 49 structural/control markers such as \texttt{</think>} and ``Final
+Answer.''  These artifacts plausibly inflate Monitor recall while depressing
+precision and should be reviewed before further optimization.
+
+All runs retain 100\% final-output coverage and complete without OOM failures,
+but the light and heavy jobs log 31 and 28 truncated LM responses during
+optimization.  Moreover, the outer folds currently evaluate only the
+safety-selected prompt, not both seed and optimized prompts, so they do not
+directly estimate GEPA's paired outer-fold gain.  Finally, the six responses
+excluded from current CV were inspected in the preliminary experiments; they
+are locked from the current code path but no longer constitute a pristine
+research holdout.  The judge should therefore not replace validated annotation
+until structural artifacts are adjudicated, decoding is constrained, paired
+outer evaluation is added, and a genuinely unseen external test set is
+designated.
 
 \subsection{Reasoning outcomes and event taxonomy}
 
@@ -664,9 +758,14 @@ accuracy, and prospective representation probes seldom beat simple structure
 baselines on generated math.  ProcessBench shows a moderate late-prefix
 signal but no resolved discontinuity at its gold first error.  Expert routes
 are more persistent than their marginal frequencies predict, yet event-
-specific expert claims remain underpowered.  The next priorities are a clean
-PRM800K rerun, prespecified/paired prospective evaluation, stronger event
-supervision, and only then causal routing intervention.
+specific expert claims remain underpowered.  The auxiliary episode-judge study
+likewise favors conservative conclusions: context-aware light-budget GEPA with
+macro-F1 selection reaches 0.650 cross-validated macro-F1, but its improvement
+over the prior selector is small, a heavy budget is worse, and Monitor
+overprediction remains substantial.  The next priorities are a clean PRM800K
+rerun, adjudication of episode-unit artifacts, paired seed-versus-GEPA outer
+evaluation, stronger event supervision, and only then causal routing
+intervention.
 
 \appendix
 
@@ -697,7 +796,7 @@ Prospective failure prediction & Partially established & Final incorrectness is 
 Structural/MFA analysis & Not done & Add trajectory length/curvature, reasoning structures, and optional local-geometry regions after core probes. \\
 Routing intervention & Not done & Title-level intervention claim is not yet supported; run only after stable predictive signals are identified. \\
 Second MoE / robustness & Not done & Run a Qwen MoE or another routing design once the corrected pipeline is frozen. \\
-GEPA episode judge (Experiment 0a) & Done, single split & Qwen3.6-27B, seed 42: optimized base test accuracy is 66.07\%; matched seven-example few-shot reaches 69.94\% and 0.821 composite agreement, but GEPA does not improve its 68.06\% validation accuracy. Repeat across response-level splits and seeds. \\
+GEPA episode judge (Experiment 0a) & CV complete; validation pending & Context-aware five-fold grouped CV over 2,789 units gives 67.34\% accuracy and 65.05\% macro-F1 for light-budget GEPA with macro-F1 selection. Heavy is worse (66.69\%, 64.37\%). Review 180 flagged units, constrain decoding, evaluate seed and optimized prompts on every outer fold, and designate a genuinely unseen test set. \\
 Pipeline status handling & Defective & The shell script prints completion after zero-input stage errors; add nonzero exits, output validation, and atomic JSONL writes. \\
 Figures & Current after regeneration & Geometry, ProcessBench first-error, expert-phase, and legacy router-probe plots are generated by \texttt{paper\_figures/generate\_figures.py}. \\
 \bottomrule
