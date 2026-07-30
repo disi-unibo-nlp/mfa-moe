@@ -10,8 +10,9 @@
 # Experiment 0a: start the local llama.cpp judge and run GEPA in two Docker
 # containers inside one SLURM allocation.
 #
-# Required host files (defaults match the other launchers in this repository):
+# Required host dataset (the model is downloaded automatically when absent):
 #   /home/tassinari/moe-mfaExperiments/data/Schoenfeld_Reasoning
+# Default model destination:
 #   /llms/Qwen3.6-27B-UD-Q4_K_XL.gguf
 #
 # Example:
@@ -24,6 +25,8 @@ PHYS_DIR="${PHYS_DIR:-/home/tassinari/moe-mfaExperiments}"
 DATASET_DIR="${DATASET_DIR:-${PHYS_DIR}/data/Schoenfeld_Reasoning}"
 MODEL_DIR="${MODEL_DIR:-/llms}"
 MODEL_NAME="${MODEL_NAME:-Qwen3.6-27B-UD-Q4_K_XL.gguf}"
+MODEL_REPO="${MODEL_REPO:-unsloth/Qwen3.6-27B-GGUF}"
+MODEL_REVISION="${MODEL_REVISION:-main}"
 PROJECT_IMAGE="${PROJECT_IMAGE:-moe-mfa-experiments:latest}"
 LLAMACPP_IMAGE="${LLAMACPP_IMAGE:-llama.cpp:localcuda}"
 OUTPUT_DIR="${OUTPUT_DIR:-results/exp0a/qwen3.6-27b}"
@@ -73,6 +76,7 @@ Experiment options:
   --dataset-dir PATH          Host path to Schoenfeld_Reasoning
   --model-dir PATH            Host directory containing the GGUF
   --model-name FILE           GGUF filename
+  --model-repo REPO           Hugging Face repo used if GGUF is missing
   --output-dir PATH           Path relative to the repository
   --train-documents N         Default: 26
   --val-documents N           Default: 6
@@ -120,6 +124,7 @@ while [[ $# -gt 0 ]]; do
         --dataset-dir) DATASET_DIR="$2"; shift 2 ;;
         --model-dir) MODEL_DIR="$2"; shift 2 ;;
         --model-name) MODEL_NAME="$2"; shift 2 ;;
+        --model-repo) MODEL_REPO="$2"; shift 2 ;;
         --output-dir) OUTPUT_DIR="$2"; shift 2 ;;
         --train-documents) TRAIN_DOCUMENTS="$2"; shift 2 ;;
         --val-documents) VAL_DOCUMENTS="$2"; shift 2 ;;
@@ -190,9 +195,49 @@ if [[ ! -d "$DATASET_DIR" ]]; then
     echo "Clone https://github.com/MingLiiii/Schoenfeld_Reasoning there first." >&2
     exit 1
 fi
+
+download_model() {
+    local target="$MODEL_DIR/$MODEL_NAME"
+    local partial="${target}.part"
+    local url="https://huggingface.co/${MODEL_REPO}/resolve/${MODEL_REVISION}/${MODEL_NAME}?download=true"
+    local -a curl_args=(
+        --fail
+        --location
+        --retry 5
+        --retry-delay 5
+        --continue-at -
+        --output "$partial"
+    )
+
+    if ! mkdir -p "$MODEL_DIR"; then
+        echo "Cannot create model directory: $MODEL_DIR" >&2
+        return 1
+    fi
+    if ! command -v curl >/dev/null 2>&1; then
+        echo "Cannot download the missing GGUF: curl is not installed on the host." >&2
+        return 1
+    fi
+    if [[ -n "${HF_TOKEN:-}" ]]; then
+        curl_args+=(--header "Authorization: Bearer ${HF_TOKEN}")
+    fi
+
+    echo "GGUF is missing or empty; downloading it from $MODEL_REPO..."
+    echo "  URL:    $url"
+    echo "  Target: $target"
+    if ! curl "${curl_args[@]}" "$url"; then
+        echo "Model download failed. The partial download was kept at: $partial" >&2
+        return 1
+    fi
+    if [[ ! -s "$partial" ]]; then
+        echo "Model download produced an empty file: $partial" >&2
+        return 1
+    fi
+    mv -f -- "$partial" "$target"
+    echo "Model download complete: $target"
+}
+
 if [[ ! -s "$MODEL_DIR/$MODEL_NAME" ]]; then
-    echo "GGUF model does not exist or is empty: $MODEL_DIR/$MODEL_NAME" >&2
-    exit 1
+    download_model
 fi
 if ! docker image inspect "$PROJECT_IMAGE" >/dev/null 2>&1; then
     echo "Missing Docker image: $PROJECT_IMAGE" >&2

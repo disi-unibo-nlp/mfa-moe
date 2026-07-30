@@ -110,6 +110,12 @@ sbatch run_experiment0a.sh \
   --output-dir results/exp0a/context-balanced-final-s42
 ```
 
+If the default GGUF is absent, the launcher downloads the 17.6 GB
+`Qwen3.6-27B-UD-Q4_K_XL.gguf` artifact from
+`unsloth/Qwen3.6-27B-GGUF` into `/llms`. Interrupted transfers are retained as
+`.part` files and resumed by the next run. Use `--model-dir`, `--model-name`,
+and `--model-repo` to override those defaults.
+
 Every run writes an annotation audit for multi-line, multi-sentence, and mixed
 structural/substantive units. Reports include accuracy, balanced accuracy,
 macro-F1, per-class metrics, Cohen's kappa, and Kendall's tau-b.
