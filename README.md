@@ -81,8 +81,16 @@ If the instance is interrupted, re-run the same command — completed stages are
 sentence-level reasoning episodes from the gold corpus of Li et al. The judge
 now receives the SAT problem plus previous/current/next response units so it
 can distinguish given facts from deductions and checks. GEPA uses
-class-balanced exact-match feedback by default, and final selection is based on
-validation balanced accuracy with a per-class recall safety gate.
+a same-model LLM-as-a-judge by default. For every candidate completion, the
+judge returns brief free-text feedback and four 1-5 diagnostic scores: gold
+agreement, functional fit, contextual coherence, and boundary precision.
+Reasoning is disabled for this first judge configuration. Final selection
+remains based on gold-label balanced accuracy with a per-class recall safety
+gate, so the judge dimensions do not replace the task metrics.
+Per-call scores and free-text feedback are written to
+`judge_feedback_*.jsonl` for audit.
+The launcher uses GEPA's `heavy` budget and a 4096-token reflection cap by
+default, without changing its SLURM allocation.
 
 The default few-shot prompt contains 21 audited synthetic contrastive examples
 (three per class). Nested response-grouped cross-validation is available for
@@ -95,19 +103,19 @@ normal final-fit run no longer evaluates the locked test unless
 sbatch run_experiment0a.sh \
   --prompt-variant few-shot \
   --few-shot-examples 21 \
-  --gepa-reward balanced \
+  --gepa-reward llm-judge \
   --selection-metric balanced_accuracy \
   --cv-folds 5 \
-  --gepa-auto light \
-  --output-dir results/exp0a/context-balanced-cv-s42
+  --gepa-auto heavy \
+  --output-dir results/exp0a/context-llmjudge-cv-s42
 
 # Fit the selected configuration, still without test evaluation.
 sbatch run_experiment0a.sh \
   --prompt-variant few-shot \
   --few-shot-examples 21 \
-  --gepa-reward balanced \
-  --gepa-auto light \
-  --output-dir results/exp0a/context-balanced-final-s42
+  --gepa-reward llm-judge \
+  --gepa-auto heavy \
+  --output-dir results/exp0a/context-llmjudge-final-s42
 ```
 
 If the default GGUF is absent, the launcher downloads the 17.6 GB

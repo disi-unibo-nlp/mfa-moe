@@ -16,7 +16,7 @@
 #   /llms/Qwen3.6-27B-UD-Q4_K_XL.gguf
 #
 # Example:
-#   sbatch run_experiment0a.sh --gepa-auto light
+#   sbatch run_experiment0a.sh --gepa-auto heavy
 #   sbatch run_experiment0a.sh --max-full-evals 10 --seed 23
 
 set -euo pipefail
@@ -29,7 +29,7 @@ MODEL_REPO="${MODEL_REPO:-unsloth/Qwen3.6-27B-GGUF}"
 MODEL_REVISION="${MODEL_REVISION:-main}"
 PROJECT_IMAGE="${PROJECT_IMAGE:-moe-mfa-experiments:latest}"
 LLAMACPP_IMAGE="${LLAMACPP_IMAGE:-llama.cpp:localcuda}"
-OUTPUT_DIR="${OUTPUT_DIR:-results/exp0a/qwen3.6-27b}"
+OUTPUT_DIR="${OUTPUT_DIR:-results/exp0a/qwen3.6-27b-llm-judge}"
 API_KEY="${LLAMA_API_KEY:-local-llamacpp-key}"
 
 # Conservative one-GPU defaults. Increase PARALLEL and NUM_THREADS together
@@ -40,14 +40,16 @@ BATCH_SIZE="${BATCH_SIZE:-512}"
 GPU_LAYERS="${GPU_LAYERS:-999}"
 NUM_THREADS="${NUM_THREADS:-1}"
 MAX_TOKENS="${MAX_TOKENS:-64}"
-REFLECTION_MAX_TOKENS="${REFLECTION_MAX_TOKENS:-2048}"
+JUDGE_MAX_TOKENS="${JUDGE_MAX_TOKENS:-512}"
+JUDGE_TEMPERATURE="${JUDGE_TEMPERATURE:-0.0}"
+REFLECTION_MAX_TOKENS="${REFLECTION_MAX_TOKENS:-4096}"
 REFLECTION_TEMPERATURE="${REFLECTION_TEMPERATURE:-0.7}"
 TRAIN_DOCUMENTS="${TRAIN_DOCUMENTS:-26}"
 VAL_DOCUMENTS="${VAL_DOCUMENTS:-6}"
 SEED="${SEED:-42}"
 PROMPT_VARIANT="${PROMPT_VARIANT:-few-shot}"
 FEW_SHOT_EXAMPLES="${FEW_SHOT_EXAMPLES:-21}"
-GEPA_REWARD="${GEPA_REWARD:-balanced}"
+GEPA_REWARD="${GEPA_REWARD:-llm-judge}"
 SELECTION_METRIC="${SELECTION_METRIC:-balanced_accuracy}"
 MAX_CLASS_RECALL_DROP="${MAX_CLASS_RECALL_DROP:-0.10}"
 CV_FOLDS="${CV_FOLDS:-0}"
@@ -58,7 +60,7 @@ RUNNER_MEMORY="${RUNNER_MEMORY:-16g}"
 CUDA_VISIBLE_DEVICES="${CUDA_VISIBLE_DEVICES:-0}"
 
 BUDGET_KIND="gepa-auto"
-BUDGET_VALUE="light"
+BUDGET_VALUE="heavy"
 BUDGET_COUNT=0
 TEST_DOCUMENTS=""
 MAX_UNITS=""
@@ -67,7 +69,7 @@ usage() {
     cat <<'EOF'
 Usage: sbatch run_experiment0a.sh [options]
 
-GEPA budget (choose at most one; default: --gepa-auto light):
+GEPA budget (choose at most one; default: --gepa-auto heavy):
   --gepa-auto light|medium|heavy
   --max-full-evals N
   --max-metric-calls N
@@ -83,7 +85,7 @@ Experiment options:
   --seed N                    Default: 42
   --prompt-variant NAME       base or few-shot (default: few-shot)
   --few-shot-examples N       Curated contrastive examples (default: 21)
-  --gepa-reward NAME          balanced or exact (default: balanced)
+  --gepa-reward NAME          llm-judge, balanced, or exact (default: llm-judge)
   --selection-metric NAME     balanced_accuracy, macro_f1, or accuracy
   --max-class-recall-drop X   Validation safety threshold (default: 0.10)
   --cv-folds N                Nested grouped CV folds; 0 runs a final fit
@@ -92,7 +94,9 @@ Experiment options:
   --evaluate-locked-test      Explicitly evaluate locked test after final selection
   --num-threads N             Concurrent evaluator calls (default: 1)
   --max-tokens N              Classification generation cap (default: 64)
-  --reflection-max-tokens N   GEPA reflection cap (default: 2048)
+  --judge-max-tokens N        LLM-judge response cap (default: 512)
+  --judge-temperature X       LLM-judge sampling (default: 0.0)
+  --reflection-max-tokens N   GEPA reflection cap (default: 4096)
   --reflection-temperature X  GEPA reflection sampling (default: 0.7)
 
 llama.cpp options:
@@ -140,6 +144,8 @@ while [[ $# -gt 0 ]]; do
         --evaluate-locked-test) EVALUATE_LOCKED_TEST=true; shift ;;
         --num-threads) NUM_THREADS="$2"; shift 2 ;;
         --max-tokens) MAX_TOKENS="$2"; shift 2 ;;
+        --judge-max-tokens) JUDGE_MAX_TOKENS="$2"; shift 2 ;;
+        --judge-temperature) JUDGE_TEMPERATURE="$2"; shift 2 ;;
         --reflection-max-tokens) REFLECTION_MAX_TOKENS="$2"; shift 2 ;;
         --reflection-temperature) REFLECTION_TEMPERATURE="$2"; shift 2 ;;
         --ctx-size) CTX_SIZE="$2"; shift 2 ;;
@@ -165,8 +171,8 @@ if [[ "$PROMPT_VARIANT" != "base" && "$PROMPT_VARIANT" != "few-shot" ]]; then
     echo "--prompt-variant must be base or few-shot" >&2
     exit 1
 fi
-if [[ "$GEPA_REWARD" != "balanced" && "$GEPA_REWARD" != "exact" ]]; then
-    echo "--gepa-reward must be balanced or exact" >&2
+if [[ "$GEPA_REWARD" != "llm-judge" && "$GEPA_REWARD" != "balanced" && "$GEPA_REWARD" != "exact" ]]; then
+    echo "--gepa-reward must be llm-judge, balanced, or exact" >&2
     exit 1
 fi
 case "$SELECTION_METRIC" in
@@ -279,6 +285,7 @@ echo "  GPU:        $CUDA_VISIBLE_DEVICES"
 echo "  GEPA:       --$BUDGET_KIND $BUDGET_VALUE"
 echo "  Prompt:     $PROMPT_VARIANT"
 echo "  Reward:     $GEPA_REWARD; selection=$SELECTION_METRIC"
+echo "  Judge:      same model; reasoning=off; max-tokens=$JUDGE_MAX_TOKENS"
 echo "  CV:         folds=$CV_FOLDS; locked-test=$LOCKED_TEST_DOCUMENTS"
 echo "  Split:      train=$TRAIN_DOCUMENTS, val=$VAL_DOCUMENTS, test=remainder"
 echo "  Concurrency: evaluator=$NUM_THREADS, server slots=$PARALLEL"
@@ -345,6 +352,8 @@ RUN_ARGS=(
     --locked-test-documents "$LOCKED_TEST_DOCUMENTS"
     --num-threads "$NUM_THREADS"
     --max-tokens "$MAX_TOKENS"
+    --judge-max-tokens "$JUDGE_MAX_TOKENS"
+    --judge-temperature "$JUDGE_TEMPERATURE"
     --reflection-max-tokens "$REFLECTION_MAX_TOKENS"
     --reflection-temperature "$REFLECTION_TEMPERATURE"
     --output-dir "/workspace/$OUTPUT_DIR"

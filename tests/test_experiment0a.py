@@ -24,6 +24,7 @@ from moe_exp.experiment0a.prompts import (
     build_few_shot_instructions,
     select_few_shot_sentences,
 )
+from moe_exp.experiment0a.run import create_metric, parse_llm_judge_response
 
 
 def test_parse_sentence_label_is_case_tolerant_but_strict() -> None:
@@ -33,6 +34,90 @@ def test_parse_sentence_label_is_case_tolerant_but_strict() -> None:
 
     with pytest.raises(LabelParseError, match="invalid label"):
         parse_sentence_label("The answer is Read because it repeats the problem.")
+
+
+def test_parse_llm_judge_response_requires_all_dimensions() -> None:
+    response = """REASONING: The candidate is adjacent to the gold label, but it performs
+the derivation rather than checking it. Analyze is therefore the closest alternative.
+GOLD_AGREEMENT: 2
+FUNCTIONAL_FIT: 3
+CONTEXTUAL_COHERENCE: 4
+BOUNDARY_PRECISION: 2"""
+    parsed = parse_llm_judge_response(response)
+    assert parsed == {
+        "reasoning": (
+            "The candidate is adjacent to the gold label, but it performs\n"
+            "the derivation rather than checking it. Analyze is therefore the closest "
+            "alternative."
+        ),
+        "gold_agreement": 2,
+        "functional_fit": 3,
+        "contextual_coherence": 4,
+        "boundary_precision": 2,
+    }
+
+    with pytest.raises(ValueError, match="BOUNDARY_PRECISION"):
+        parse_llm_judge_response(response.rsplit("\n", 1)[0])
+
+
+def test_llm_judge_metric_returns_weighted_score_and_feedback(tmp_path: Path) -> None:
+    class FakeLM:
+        def __init__(self) -> None:
+            self.prompt = ""
+
+        def __call__(self, prompt: str) -> list[str]:
+            self.prompt = prompt
+            return [
+                """REASONING: The unit recomputes an earlier result, so Verify is the
+decisive label rather than Analyze.
+GOLD_AGREEMENT: 5
+FUNCTIONAL_FIT: 4
+CONTEXTUAL_COHERENCE: 3
+BOUNDARY_PRECISION: 4"""
+            ]
+
+    class Example:
+        problem_statement = "Find x."
+        previous_sentence = "We obtained x = 2."
+        sentence = "Substituting 2 confirms the equation."
+        next_sentence = "<END OF RESPONSE>"
+        gold_label = "Verify"
+        class_weight = 1.0
+
+    fake_lm = FakeLM()
+    audit_path = tmp_path / "judge_feedback.jsonl"
+    metric = create_metric(
+        reward_mode="llm-judge",
+        evaluation_lm=fake_lm,
+        judge_audit_path=audit_path,
+    )
+    result = metric(Example(), "Verify")
+
+    expected = 0.40 * 1.0 + 0.25 * 0.75 + 0.15 * 0.50 + 0.20 * 0.75
+    assert result.score == pytest.approx(expected)
+    assert result.gold_agreement == 5
+    assert "GOLD_AGREEMENT=5/5" in result.feedback
+    assert "CANDIDATE LABEL: Verify" in fake_lm.prompt
+    assert "GOLD LABEL: Verify" in fake_lm.prompt
+    audit_record = json.loads(audit_path.read_text(encoding="utf-8"))
+    assert audit_record["candidate_label"] == "Verify"
+    assert audit_record["gold_agreement"] == 5
+    assert audit_record["score"] == pytest.approx(expected)
+
+
+def test_llm_judge_metric_rejects_invalid_classifier_output_without_calling_judge() -> None:
+    class FailingLM:
+        def __call__(self, prompt: str) -> str:
+            raise AssertionError(f"judge must not be called: {prompt}")
+
+    class Example:
+        gold_label = "Read"
+        class_weight = 1.0
+
+    metric = create_metric(reward_mode="llm-judge", evaluation_lm=FailingLM())
+    result = metric(Example(), "This could be Read or Analyze.")
+    assert result.score == 0.0
+    assert "OUTPUT CONTRACT ERROR" in result.feedback
 
 
 def test_exact_sentence_agreement_scores_one_for_constant_sequences() -> None:
