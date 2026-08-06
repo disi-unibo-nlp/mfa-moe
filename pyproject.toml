@@ -10,7 +10,7 @@ requires-python = ">=3.11"
 dependencies = [
     # torch is intentionally excluded here — install with CUDA support first:
     #   pip install torch --index-url https://download.pytorch.org/whl/cu128
-    "transformers>=4.44.0",
+    "transformers>=4.57.1",
     "accelerate>=0.30.0",
     "datasets>=2.20.0",
     "tokenizers>=0.19.0",
@@ -24,12 +24,14 @@ dependencies = [
     "bitsandbytes>=0.46.1",
     "scipy>=1.13.0",
     "scikit-learn>=1.5.0",
+    "matplotlib>=3.8.0",
 ]
 
 [project.scripts]
 exp0a = "moe_exp.experiment0a.run:main"
 exp0a-audit = "moe_exp.experiment0a.audit:main"
 exp1 = "moe_exp.experiment1.run:main"
+probe-test = "moe_exp.probeTest.run:main"
 
 [project.optional-dependencies]
 dev = [
