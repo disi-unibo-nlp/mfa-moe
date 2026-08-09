@@ -98,23 +98,31 @@ else
     if [[ "$INCLUDE_THINK_BOUNDARY" == true ]]; then
         DOCKER_EXTRA+=(--include-think-boundary-units)
     fi
-    # Docker drops supplementary groups when --user is used.  Shared HPC
-    # filesystems commonly grant write access through one of those groups.
     HOST_UID="$(id -u)"
     HOST_GID="$(id -g)"
-    read -r -a HOST_GROUP_IDS <<< "$(id -G)"
+    DOCKER_USER=(--user "$HOST_UID:$HOST_GID")
     DOCKER_GROUPS=()
-    for group_id in "${HOST_GROUP_IDS[@]}"; do
-        if [[ "$group_id" != "$HOST_GID" ]]; then
-            DOCKER_GROUPS+=(--group-add "$group_id")
-        fi
-    done
+    if [[ "$(docker info --format '{{json .SecurityOptions}}')" == *rootless* ]]; then
+        # Root in a rootless container maps to the unprivileged daemon user on
+        # the host.  Using the host's numeric UID here would map a different,
+        # unprivileged container user and make bind mounts appear root-owned.
+        DOCKER_USER=(--user 0:0)
+    else
+        # Rootful Docker drops supplementary groups when --user is used.
+        # Shared HPC filesystems may grant access through one of those groups.
+        read -r -a HOST_GROUP_IDS <<< "$(id -G)"
+        for group_id in "${HOST_GROUP_IDS[@]}"; do
+            if [[ "$group_id" != "$HOST_GID" ]]; then
+                DOCKER_GROUPS+=(--group-add "$group_id")
+            fi
+        done
+    fi
     DOCKER_RESOURCE_ARGS=()
     if [[ -z "${SLURM_JOB_ID:-}" ]]; then
         DOCKER_RESOURCE_ARGS+=(--memory=64g)
     fi
     docker run --rm \
-        --user "$HOST_UID:$HOST_GID" \
+        "${DOCKER_USER[@]}" \
         "${DOCKER_GROUPS[@]}" \
         --gpus "device=$CUDA_VISIBLE_DEVICES" \
         --ipc=host \
