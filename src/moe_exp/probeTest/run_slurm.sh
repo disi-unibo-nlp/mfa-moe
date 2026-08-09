@@ -46,6 +46,13 @@ if [[ ! -d "$DATASET_DIR" ]]; then
     exit 1
 fi
 mkdir -p "$HF_CACHE_DIR" "$OUTPUT_DIR" "$PHYS_DIR/slurm_logs"
+for writable_dir in "$HF_CACHE_DIR" "$OUTPUT_DIR"; do
+    if [[ ! -w "$writable_dir" ]]; then
+        echo "Directory is not writable by $(id -un) (uid=$(id -u)): $writable_dir" >&2
+        echo "Fix its ownership/permissions or choose another path before submitting." >&2
+        exit 1
+    fi
+done
 export HF_HOME="$HF_CACHE_DIR"
 
 echo "=== Schoenfeld gold boundary probes ==="
@@ -91,11 +98,27 @@ else
     if [[ "$INCLUDE_THINK_BOUNDARY" == true ]]; then
         DOCKER_EXTRA+=(--include-think-boundary-units)
     fi
+    # Docker drops supplementary groups when --user is used.  Shared HPC
+    # filesystems commonly grant write access through one of those groups.
+    HOST_UID="$(id -u)"
+    HOST_GID="$(id -g)"
+    read -r -a HOST_GROUP_IDS <<< "$(id -G)"
+    DOCKER_GROUPS=()
+    for group_id in "${HOST_GROUP_IDS[@]}"; do
+        if [[ "$group_id" != "$HOST_GID" ]]; then
+            DOCKER_GROUPS+=(--group-add "$group_id")
+        fi
+    done
+    DOCKER_RESOURCE_ARGS=()
+    if [[ -z "${SLURM_JOB_ID:-}" ]]; then
+        DOCKER_RESOURCE_ARGS+=(--memory=64g)
+    fi
     docker run --rm \
-        --user "$(id -u):$(id -g)" \
+        --user "$HOST_UID:$HOST_GID" \
+        "${DOCKER_GROUPS[@]}" \
         --gpus "device=$CUDA_VISIBLE_DEVICES" \
         --ipc=host \
-        --memory=64g \
+        "${DOCKER_RESOURCE_ARGS[@]}" \
         -v "$PHYS_DIR":/workspace:ro \
         -v "$DATASET_DIR":/data/schoenfeld:ro \
         -v "$HF_CACHE_DIR":/hf_home \
