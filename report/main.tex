@@ -44,7 +44,13 @@ In addition, Experiment~0a is an auxiliary judge-validation study: completed
 static-reward baselines optimize a Qwen3.6-27B prompt for sentence-level
 Schoenfeld episode classification, while a new LLM-as-a-judge reward
 configuration awaits rerunning.  This judge experiment evaluates annotation
-capability and is not evidence about Qwen router dynamics.
+capability and is not evidence about Qwen router dynamics.  Experiment~0b is
+a separate representation-probe replication: it teacher-forces the 38
+released DeepSeek-R1 Schoenfeld traces through the official GPTQ 4-bit
+\texttt{Qwen/Qwen3.5-35B-A3B-GPTQ-Int4} checkpoint and asks whether the label
+of the next sentence is linearly decodable at its causal pre-sentence
+boundary.  It is an auxiliary hidden-state experiment rather than a routing
+result from the OLMoE pipeline.
 
 \paragraph{Implemented analysis pipeline.}
 The repository implements trace generation or ingestion (Experiment 1),
@@ -65,6 +71,13 @@ an informative same-model LLM-as-a-judge reward alongside the earlier static
 rewards, and evaluates prompt-selection rules with nested response-grouped
 cross-validation.
 
+Experiment~0b separately aligns the released sentence annotations to their
+original responses, extracts one 2,048-dimensional boundary vector at each of
+41 hidden-state indices, trains layerwise episode probes, and applies their
+selected layers to reference or supplied solutions from four external math
+benchmarks.  Only the boundary vectors are stored; Qwen does not regenerate
+the released or benchmark solutions.
+
 \paragraph{Prospective probe design and status.}
 Experiment 4 pools only the first 25\%, 50\%, or 75\% of each trace and trains
 separate trace-grouped logistic probes from structure-only, router-only,
@@ -77,6 +90,28 @@ has completed for all five current conditions.  Final-incorrectness probes are
 available everywhere.  Future-first-error probes are available only for
 ProcessBench because the generated datasets do not have gold error-step
 annotations.
+
+\paragraph{Schoenfeld boundary-probe design.}
+Experiment~0b starts from 3,125 annotated units in 38 released DeepSeek-R1 SAT
+responses.  It excludes the 38 synthetic \texttt{</think>} closing units,
+which are all labelled Monitor, leaving the paper-matched 3,087 units.  Qwen
+receives each SAT instruction as the user message and the released response as
+a teacher-forced assistant continuation.  For a target unit, the feature is
+the hidden state immediately before its first token, so the probe sees the
+problem and preceding response but cannot read the target sentence.  Hidden-
+state index 0 is the embedding output and indices 1--40 are the successive
+language-model layers.
+
+At each index, seven separate target-versus-rest logistic regressions use raw
+activations, balanced class weights, L2 regularization with $C=1$, and no
+standardization or PCA.  The paper-matched protocol uses a target-stratified
+80/20 sentence split with seed 42.  This is a replication choice rather than
+a strong generalization design: all 38 response IDs occur in both partitions.
+The reported layer for each target maximizes accuracy on that same test split.
+For qualitative transfer inspection, the selected probes are then applied to
+20 examples each from GSM8K, MATH, PRM800K, and ProcessBench.  The seven binary
+scores are independently trained and uncalibrated; their argmax is an
+inspection label, not a multiclass probability or new gold annotation.
 
 \paragraph{Important provenance note.}
 The event-label heuristic was made substantially more conservative after the
@@ -91,9 +126,9 @@ continued to that banner.  Historical logs also include a CUDA out-of-memory
 failure and several OLMoE/Qwen MoE-generation logs that end mid-progress; no
 Qwen routing-result artifacts are present, so these are excluded rather than
 counted as robustness runs.  The separate Qwen judge artifacts from
-Experiment~0a are complete.  Repeated cgroup swap-limit warnings also appear
-in the successful jobs and are treated as environmental warnings, not
-failures.
+Experiment~0a and the Qwen3.5 boundary-probe artifacts from Experiment~0b are
+complete.  Repeated cgroup swap-limit warnings also appear in the successful
+jobs and are treated as environmental warnings, not failures.
 
 \section{Results}
 
@@ -246,6 +281,136 @@ research holdout.  The judge should therefore not replace validated annotation
 until structural artifacts are adjudicated, decoding is constrained, paired
 outer evaluation is added, and a genuinely unseen external test set is
 designated.
+
+\subsection{Schoenfeld episode-boundary probes}
+
+Experiment~0b tests a different annotation mechanism from the generative
+judge in Experiment~0a.  It asks whether Qwen's representation of the prefix
+immediately before a sentence contains linearly accessible information about
+the upcoming Schoenfeld episode.  It therefore measures prospective
+prefix-state decodability, not semantic classification after reading the
+sentence and not the latent dynamics of a Qwen-generated trace.
+
+\paragraph{Within-corpus results.}
+Table~\ref{tab:schoenfeld-boundary-probes} reports the accuracy-selected layer
+for each one-versus-rest target.  AUROC is 0.835--0.934 and balanced accuracy
+is 0.740--0.862, demonstrating substantial within-split ranking signal.
+Implement is strongest at the natural threshold (F1 0.771), followed by
+Verify (0.726) and Read (0.704).  Analyze is intermediate.  Plan, Explore, and
+Monitor have F1 below 0.50.  Their nominal accuracies are also 0.96--1.06
+percentage points below an always-negative majority classifier, so accuracy
+alone gives a misleading impression for these rare targets.
+
+\begin{table*}[t]
+\centering
+\caption{Accuracy-selected Schoenfeld boundary probes on the sentence-level
+test split.  Prevalence is over all 3,087 units.  $\Delta$Maj. subtracts the
+always-negative accuracy.  Balanced accuracy is derived from the saved test
+confusion matrix.  Layer selection and evaluation use the same test split and
+are therefore selection-optimistic.}
+\label{tab:schoenfeld-boundary-probes}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lrrrrrrr}
+\toprule
+Target & Prevalence & Layer & Accuracy & $\Delta$Maj. & Balanced acc. & F1 & AUROC \\
+\midrule
+Read      & 12.21\% & 34 & 0.9239 & +0.0461 & 0.8476 & 0.7044 & 0.9338 \\
+Analyze   & 25.62\% & 36 & 0.8107 & +0.0669 & 0.7669 & 0.6465 & 0.8348 \\
+Plan      &  7.29\% & 39 & 0.9175 & -0.0096 & 0.7405 & 0.4848 & 0.8551 \\
+Implement & 21.87\% & 38 & 0.8964 & +0.1151 & 0.8617 & 0.7714 & 0.9305 \\
+Explore   &  6.74\% & 40 & 0.9223 & -0.0103 & 0.7486 & 0.4894 & 0.8884 \\
+Verify    & 20.38\% & 27 & 0.8754 & +0.0792 & 0.8509 & 0.7260 & 0.9122 \\
+Monitor   &  5.90\% & 35 & 0.9304 & -0.0106 & 0.7546 & 0.4819 & 0.9031 \\
+\bottomrule
+\end{tabular}}
+\end{table*}
+
+The signal emerges rapidly and is not maximal at the model output.  Mean
+one-versus-rest AUROC across targets rises from 0.624 at the embedding output
+to 0.873 at layer 10 and 0.892 at layer 20, peaks at 0.899 at layer 30, and
+falls to 0.867 at layer 40.  Mean F1 peaks at layer 28.  Accuracy-based target
+selection sometimes obscures this profile: for Plan, the selected layer 39
+has AUROC 0.855 whereas layer 21 reaches 0.922.  AUROC or balanced accuracy,
+chosen inside a validation fold, better matches the scientific question of
+decodability.
+
+The fits are numerically stable---none of the 287 regressions reports a
+convergence warning---but statistical overfitting remains visible.  At the
+selected layers, train--test accuracy gaps are 16.7 points for Analyze, 10.1
+for Implement, approximately 7.8 for Plan and Explore, and 4.5--5.5 for the
+other targets.  Explore reaches 100\% training accuracy.  With 2,048 features,
+2,469 training units, strong within-response dependence, and only 38 distinct
+responses, the effective independent sample size is much closer to the number
+of responses than to the number of sentences.  Test-based layer selection
+adds further optimism.
+
+\paragraph{External benchmark inspection.}
+All 80 requested examples complete without omitted units, yielding 581
+sentence boundaries.  Table~\ref{tab:schoenfeld-external-labels} shows that
+the seven-way inspection behavior collapses mainly to Implement, Read, and
+Monitor.  Implement alone receives 49.2\% of argmax assignments, whereas
+Explore is never selected.  The transfer distribution also differs sharply
+from training: Analyze falls from 25.6\% of gold units to 7.7\% of predictions
+and Verify from 20.4\% to 3.3\%.
+
+\begin{table*}[t]
+\centering
+\caption{Argmax inspection-label counts on unannotated external reasoning
+units.  These are prediction frequencies, not accuracies; no compatible
+Schoenfeld labels are available for these examples.}
+\label{tab:schoenfeld-external-labels}
+\begin{tabular}{lrrrrrrrr}
+\toprule
+Dataset & Units & Read & Analyze & Plan & Implement & Explore & Verify & Monitor \\
+\midrule
+GSM8K        &  96 &   0 &  2 &  3 &  53 & 0 &  0 & 38 \\
+MATH         &  88 &  23 &  7 &  1 &  45 & 0 &  1 & 11 \\
+PRM800K      & 139 &  34 & 18 &  0 &  71 & 0 &  1 & 15 \\
+ProcessBench & 258 &  69 & 18 & 12 & 117 & 0 & 17 & 25 \\
+\midrule
+Total        & 581 & 126 & 45 & 16 & 286 & 0 & 19 & 89 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+The independent binary scores do not form a clean multiclass decision rule.
+Seventy-four units (12.7\%) have no score above 0.5 but are still assigned an
+argmax label, while 180 (31.0\%) activate more than one probe and 99 (17.0\%)
+have a top-two margin below 0.1.  A conservative display rule requiring a top
+score of at least 0.8 and a margin of at least 0.2 retains only 318/581 units
+(54.7\%), mostly Implement, Read, and Monitor.  This threshold is a useful
+abstention heuristic, not a calibrated guarantee of correctness.
+
+Pragmatically, Implement is the most coherent transferred label: it marks
+long calculation, substitution, and algebra runs.  Read often marks givens or
+restatements, particularly near the start of MATH and PRM800K solutions.
+Monitor behaves primarily as a solution-boundary or opening-state detector:
+all 20 GSM8K first units and 18/20 ProcessBench first units receive Monitor,
+whereas 19/20 MATH and 17/20 PRM800K first units receive Read.  Because the
+target sentence is unseen at this point, this source dependence must arise
+from the problem, prefix position, and formatting rather than the displayed
+unit's semantics.  Analyze and Plan appear plausibly on some explanatory or
+phase-change boundaries but have low coverage.  Explore is unusable for
+external tagging in the present model.
+
+Verify has a narrower but potentially useful role as a review or
+reconsideration flag.  All 17 ProcessBench Verify predictions occur at or
+after the benchmark's annotated first error, including six within one trace
+that repeatedly reinterprets the question before ending with the wrong sign.
+This is not an error detector: errors generally occur early, Verify may merely
+mark late position or reflective language, and no PRM800K post-error unit is
+labelled Verify.  It can prioritize passages for inspection but cannot judge
+correctness.
+
+The qualitative stage also exposes an input problem independent of the
+classifier.  Thirteen units are split immediately after abbreviations such as
+``Mr.'', producing fragments including ``Therefore, Mr.'' and inconsistent
+scores.  External use should first adopt abbreviation- and LaTeX-aware
+segmentation.  With the current outputs, the defensible practical
+representation is a coarse three-phase view---setup (Read and opening
+Monitor), execution (Analyze, Plan, and Implement), and review (Verify)---plus
+an explicit unknown/ambiguous state.  The seven raw argmax labels should not
+be used as automatic cognitive annotations.
 
 \subsection{Reasoning outcomes and event taxonomy}
 
@@ -706,6 +871,16 @@ advance detector has not been established.
 \item Top-1 routes persist more than a marginal-frequency independence
 baseline in every current condition, but event-specific expert shifts remain
 descriptive and explicit-event trace counts remain small.
+\item The auxiliary Qwen3.5 boundary probes show substantial sentence-split
+decodability of upcoming Schoenfeld episodes (selected-layer AUROC
+0.835--0.934), with the strongest thresholded results for Implement, Verify,
+and Read.  This establishes accessible prefix-state signal within familiar
+responses, not generalization to unseen reasoning traces.
+\item External application of the episode probes is best interpreted as
+coarse phase inspection.  Predictions collapse toward Implement, Read, and
+Monitor; Explore is never selected, 12.7\% of units activate no probe, and no
+external gold episode labels exist.  ProcessBench Verify predictions identify
+review-heavy passages after errors but do not identify correctness.
 \item The current PRM800K run failed with zero input despite completion
 banners.  Its earlier first-error stabilization and near-perfect full-trace
 decoding results are legacy evidence and require a clean prospective rerun.
@@ -722,7 +897,13 @@ No t-SNE/UMAP visualization or routing intervention has been run.  The
 geometry significance test does not supply trace-level uncertainty, event
 analyses are not multiplicity-corrected, and the expert transition baseline
 does not control token content.  Correlation and linear decodability should
-not be read as causal evidence.
+not be read as causal evidence.  The Schoenfeld boundary-probe run also does
+not establish response-grouped generalization, calibrated seven-way episode
+classification, or the cognitive states of Qwen's own generations.  It uses
+Qwen to encode teacher-forced DeepSeek-R1 text, shares all 38 response IDs
+between train and test, and selects layers on the reported test set.  Its
+external argmax outputs have no episode ground truth and should not be called
+transfer accuracy.
 
 \section{Discussion}
 
@@ -741,6 +922,26 @@ late in ProcessBench.  Future work should use paired model comparisons,
 prespecified layers, trace-level uncertainty, and targets defined strictly
 after the observed prefix.  A clean PRM800K rerun is necessary before treating
 its unusually high legacy decoding score as a model-level phenomenon.
+
+The auxiliary episode probes add a complementary representation-level result:
+the prefix before a sentence often encodes the phase likely to follow, and the
+signal is strongest in middle-to-late layers rather than at the final model
+output.  The current split cannot determine whether this reflects a portable
+episode representation, trace-specific transition regularities, position, or
+formatting.  A response-grouped nested evaluation should select both layer and
+regularization on inner folds, evaluate once on unseen responses, repeat over
+seeds, and report response-bootstrap intervals.  Standardized or norm-matched
+features and simple position/previous-unit/format baselines are needed to
+separate hidden-state information from layer scale and trace structure.
+
+For external use, the probe outputs should be treated as abstaining phase
+suggestions rather than annotations.  Abbreviation- and LaTeX-aware
+segmentation should precede evaluation; independent one-versus-rest scores
+should either be calibrated on a common multiclass validation set or retain
+multiple labels; and a manually labelled, benchmark-stratified sample is
+required before reporting transfer accuracy.  It would also be useful to
+separate cross-model recognition, as studied here, from Qwen's own generation
+by running the same protocol on Qwen-generated traces.
 
 The event-label audit also changes the experimental priority.  Explicit
 lexical markers provide high precision but extremely low recall.  Robust
@@ -762,10 +963,17 @@ specific expert claims remain underpowered.  The auxiliary episode-judge study
 likewise favors conservative conclusions: context-aware light-budget GEPA with
 macro-F1 selection reaches 0.650 cross-validated macro-F1, but its improvement
 over the prior selector is small, a heavy budget is worse, and Monitor
-overprediction remains substantial.  The next priorities are a clean PRM800K
-rerun, adjudication of episode-unit artifacts, paired seed-versus-GEPA outer
-evaluation, stronger event supervision, and only then causal routing
-intervention.
+overprediction remains substantial.  The separate Qwen3.5 boundary probes
+show strong within-split linear access to upcoming episode labels, especially
+for Implement, Verify, and Read, but their sentence split leaks every response
+across train and test and their external outputs collapse to a coarse
+setup/execution/review taxonomy.  They therefore support prospective
+within-trace phase decodability, not unseen-trace generalization, automatic
+seven-way annotation, error detection, or claims about Qwen's own generated
+cognition.  The next priorities are a clean PRM800K rerun, adjudication of
+episode-unit artifacts, paired seed-versus-GEPA outer evaluation,
+response-grouped nested boundary probes with validated external labels,
+stronger event supervision, and only then causal routing intervention.
 
 \appendix
 
@@ -797,6 +1005,7 @@ Structural/MFA analysis & Not done & Add trajectory length/curvature, reasoning 
 Routing intervention & Not done & Title-level intervention claim is not yet supported; run only after stable predictive signals are identified. \\
 Second MoE / robustness & Not done & Run a Qwen MoE or another routing design once the corrected pipeline is frozen. \\
 GEPA episode judge (Experiment 0a) & CV complete; validation pending & Context-aware five-fold grouped CV over 2,789 units gives 67.34\% accuracy and 65.05\% macro-F1 for light-budget GEPA with macro-F1 selection. Heavy is worse (66.69\%, 64.37\%). Review 180 flagged units, constrain decoding, evaluate seed and optimized prompts on every outer fold, and designate a genuinely unseen test set. \\
+Schoenfeld boundary probes (Experiment 0b) & Done & Qwen3.5 GPTQ probes cover 3,087 units, seven targets, and 41 hidden-state indices; selected-layer AUROC is 0.835--0.934.  External inspection covers 581 units but has no episode ground truth and never selects Explore.  Grouped CV remains pending; add nested layer selection, common multiclass calibration, robust segmentation, and a manually labelled transfer set. \\
 Pipeline status handling & Defective & The shell script prints completion after zero-input stage errors; add nonzero exits, output validation, and atomic JSONL writes. \\
 Figures & Current after regeneration & Geometry, ProcessBench first-error, expert-phase, and legacy router-probe plots are generated by \texttt{paper\_figures/generate\_figures.py}. \\
 \bottomrule
