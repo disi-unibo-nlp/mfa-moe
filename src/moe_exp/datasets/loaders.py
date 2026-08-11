@@ -49,6 +49,7 @@ def load_gsm8k(max_items: Optional[int] = None) -> list[dict]:
                 "problem_id": f"gsm8k_{i}",
                 "prompt": ex["question"],
                 "gold_answer": extract_gold_answer_gsm8k(ex["answer"]),
+                "reference_solution": ex["answer"],
                 "metadata": {},
             }
         )
@@ -282,6 +283,7 @@ def load_math(max_items: Optional[int] = None) -> list[dict]:
                 "problem_id": f"math_{i}",
                 "prompt": problem,
                 "gold_answer": str(gold),
+                "reference_solution": ex.get("solution") or "",
                 "metadata": {
                     "level": ex.get("level"),
                     "type": ex.get("type") or ex.get("subject"),

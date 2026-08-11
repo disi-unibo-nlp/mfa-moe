@@ -12,7 +12,7 @@ docker build -t llama.cpp:localcuda .
 
 ## 2. Launch one model server
 
-For the existing local Qwen3.6 GGUF under `/llms`:
+For the local `Qwen3.6-35B-A3B-UD-Q4_K_XL.gguf` under `/llms`:
 
 ```bash
 ./serve_llamacpp.sh
@@ -77,12 +77,15 @@ For a more deterministic smoke test, override them:
 ```bash
 ./generate_llamacpp.py \
   --question 'Answer with JSON: what is 2 + 2?' \
-  --max-tokens 64 \
+  --max-tokens 1024 \
   --temperature 0 \
   --top-p 1 \
   --top-k 0 \
   --min-p 0
 ```
+
+The larger smoke-test limit leaves room for Qwen's `reasoning_content` before
+the final JSON appears in `content`.
 
 The script prints:
 

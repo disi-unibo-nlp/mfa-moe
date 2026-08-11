@@ -75,14 +75,16 @@ If the instance is interrupted, re-run the same command — completed stages are
 
 ## Experiments
 
-### probeTest — Qwen3.6 gold Schoenfeld episode probes
+### probeTest — Qwen3.5 gold Schoenfeld episode probes
 
 `src/moe_exp/probeTest` teacher-forces the 38 released DeepSeek-R1 gold traces
-through `Qwen/Qwen3.6-35B-A3B`, extracts the hidden state immediately before
-each annotated sentence, and trains seven layer-wise one-vs-rest logistic
-probes using the ACL 2026 protocol. The Slurm launcher caches models under
-`/gringotts/hf_home` and writes the run below
-`/gringotts/home/tassinari/results/probeTest` by default. See
+through the official `Qwen/Qwen3.5-35B-A3B-GPTQ-Int4` checkpoint, extracts the
+hidden state immediately before each annotated sentence, and trains seven
+layer-wise one-vs-rest logistic probes using the ACL 2026 protocol. The Slurm
+launcher then applies the trained probes to 20 reference/given reasoning traces
+from each of GSM8K, MATH, PRM800K, and ProcessBench, writing JSONL and Markdown
+for manual inspection. It caches models under `/llms` and writes the run below
+`results/probeTest` by default. See
 [`src/moe_exp/probeTest/README.md`](src/moe_exp/probeTest/README.md) for the
 exact protocol, run commands, resume behavior, and output layout.
 

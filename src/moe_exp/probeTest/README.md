@@ -1,7 +1,10 @@
 # probeTest — gold Schoenfeld episode probes
 
 This experiment asks whether the seven sentence-level categories released by
-Li et al. are linearly decodable from `Qwen/Qwen3.6-35B-A3B` hidden states.
+Li et al. are linearly decodable from
+`Qwen/Qwen3.5-35B-A3B-GPTQ-Int4` hidden states. This is the official Qwen
+GPTQ 4-bit checkpoint; unlike on-load bitsandbytes conversion, its fused MoE
+expert weights are already quantized and fit on a 32 GiB RTX 5090.
 It combines the [Schoenfeld gold corpus](https://arxiv.org/abs/2509.14662) with
 the layer-wise probe protocol from
 [LLM Reasoning as Trajectories](https://aclanthology.org/2026.acl-long.1237/)
@@ -47,15 +50,39 @@ response can occur in both train and test. Each saved split contains response
 IDs so this limitation is auditable. A response-grouped generalization study
 would be a separate protocol, not a silent change to this replication.
 
+## Benchmark inspection stage
+
+After training, the `all` command applies the saved probes to 20 examples from
+each of GSM8K, MATH, PRM800K, and ProcessBench. This stage is also available by
+itself through the `label` command or the launcher's `--label-only` flag.
+
+This inspection stage does not generate new solutions:
+
+- GSM8K uses the benchmark's reference rationale;
+- MATH uses the benchmark's reference solution;
+- ProcessBench uses its supplied step-by-step solution;
+- PRM800K uses the reconstructed rated path already defined by the project
+  loader (good prefix followed by the first negatively rated completion).
+
+Reference reasoning is split conservatively at sentence punctuation and line
+boundaries. Each resulting unit is teacher-forced through the same Qwen
+checkpoint, using the same causal pre-unit boundary definition as probe
+training. For every unit, the stage saves all seven best-layer one-vs-rest
+scores, all probes above their binary 0.5 threshold, and an inspection label
+chosen by the largest score. Because these classifiers were trained
+independently with balanced class weights, the scores are not calibrated
+multiclass probabilities. The argmax labels are review candidates, not new
+ground truth.
+
 ## Cluster run
 
 The launcher defaults to:
 
 ```text
-model       Qwen/Qwen3.6-35B-A3B
-HF_HOME     /gringotts/hf_home
-results     /gringotts/home/tassinari/results/probeTest/qwen3.6-35b-a3b
-precision   bitsandbytes NF4 weights, bfloat16 forward
+model       Qwen/Qwen3.5-35B-A3B-GPTQ-Int4
+HF_HOME     /llms
+results     results/probeTest/qwen3.5-35b-a3b-gptq-int4
+precision   checkpoint-native GPTQ 4-bit weights
 ```
 
 Submit from the repository root. The launcher defaults to `faretra`, matching
@@ -80,35 +107,65 @@ For an environment with CUDA PyTorch and the project already installed:
 sbatch src/moe_exp/probeTest/run_slurm.sh --local
 ```
 
+The local environment also needs the `probe` extra (GPTQModel) and a
+torchvision build matching its CUDA-enabled PyTorch installation. The
+project Docker image installs the CUDA 12.8 build of torchvision automatically.
+The launcher persists GPTQModel's compiled CUDA kernels below `/llms/.cache`,
+so their one-time compilation is reused by later runs.
+
+To run only the benchmark stage from the already completed probes:
+
+```bash
+CUDA_VISIBLE_DEVICES=0 bash src/moe_exp/probeTest/run_slurm.sh --label-only
+```
+
+The direct equivalent is:
+
+```bash
+python -m moe_exp.probeTest.run label \
+  --probe-results results/probeTest/qwen3.5-35b-a3b-gptq-int4/probes/results.json \
+  --output-dir results/probeTest/qwen3.5-35b-a3b-gptq-int4/benchmark_labels \
+  --examples-per-benchmark 20
+```
+
 To test only the alignment and forward path on one response, do not use the
 `all` command—the subset may not contain enough instances of every class:
 
 ```bash
-export HF_HOME=/gringotts/hf_home
+export HF_HOME=/llms
 python -m moe_exp.probeTest.run extract \
   --dataset-dir data/Schoenfeld_Reasoning \
-  --output-dir /gringotts/home/tassinari/results/probeTest/smoke/activations \
-  --model Qwen/Qwen3.6-35B-A3B \
-  --quantization bnb-4bit \
+  --output-dir results/probeTest/smoke/activations \
+  --model Qwen/Qwen3.5-35B-A3B-GPTQ-Int4 \
+  --quantization gptq-4bit \
   --max-documents 1
 ```
 
 ## Outputs
 
 ```text
-probeTest/qwen3.6-35b-a3b/
+probeTest/qwen3.5-35b-a3b-gptq-int4/
 ├── activations/
 │   ├── manifest.json
 │   └── shards/
 │       ├── 01-<response-id>.pt
 │       └── 01-<response-id>.json
-└── probes/
+├── probes/
     ├── classifiers/<label>_layer_<index>.pkl
     ├── splits/<label>.npz
     ├── unit_index.jsonl
     ├── results.json
     ├── layerwise_metrics.csv
     └── layerwise_accuracy.png
+└── benchmark_labels/
+    ├── manifest.json
+    ├── gsm8k/
+    │   ├── inspection.md
+    │   ├── predictions.jsonl
+    │   └── records/*.json
+    ├── math/...
+    ├── prm800k/...
+    └── processbench/...
 ```
 
 Only boundary vectors are persisted, not token-by-token hidden states. At
