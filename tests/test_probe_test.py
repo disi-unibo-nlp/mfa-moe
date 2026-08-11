@@ -6,14 +6,24 @@ from pathlib import Path
 from types import SimpleNamespace
 
 import numpy as np
+import pytest
 import torch
 
 from moe_exp.probeTest.data import EPISODE_LABELS, load_gold_responses
 from moe_exp.probeTest.extract import (
     PreparedResponse,
+    _validate_quantization_request,
     extract_boundary_activations,
     prepare_response,
+    prepare_text_boundaries,
     token_containing_char,
+)
+from moe_exp.probeTest.label import (
+    ProbeSuite,
+    _truncate_prepared,
+    build_benchmark_trace,
+    predict_probe_labels,
+    segment_reasoning_text,
 )
 from moe_exp.probeTest.probe import train_binary_probe, train_layerwise_probes
 
@@ -62,6 +72,16 @@ class _FakeModel(torch.nn.Module):
         positions = torch.arange(input_ids.shape[1], dtype=torch.float32).view(1, -1, 1)
         hidden_states = tuple(positions.expand(-1, -1, 4) + layer * 100 for layer in range(3))
         return SimpleNamespace(hidden_states=hidden_states)
+
+
+class _FeatureClassifier:
+    def __init__(self, feature_index: int, offset: float = 0.0) -> None:
+        self.feature_index = feature_index
+        self.offset = offset
+
+    def predict_proba(self, features):
+        positive = np.clip(features[:, self.feature_index] + self.offset, 0.0, 1.0)
+        return np.column_stack((1.0 - positive, positive))
 
 
 def _write_synthetic_gold(root: Path) -> None:
@@ -149,6 +169,96 @@ def test_forward_selects_only_pre_unit_positions() -> None:
     assert activations[:, 0, 0].tolist() == [1.0, 3.0]
     assert activations[:, 2, 0].tolist() == [201.0, 203.0]
     assert model.logits_to_keep == 1
+
+
+def test_benchmark_segmentation_preserves_exact_spans_and_source_steps() -> None:
+    example = {
+        "problem_id": "processbench_0",
+        "prompt": "Compute it.",
+        "gold_answer": "",
+        "solution_steps": ["First sentence. Second sentence!", "Final step."],
+        "first_error_step": 1,
+        "solution_is_correct": False,
+        "metadata": {"source": "test"},
+    }
+    trace = build_benchmark_trace("processbench", example)
+    assert [unit.text for unit in trace.units] == [
+        "First sentence.",
+        "Second sentence!",
+        "Final step.",
+    ]
+    assert [unit.source_step_index for unit in trace.units] == [0, 0, 1]
+    for unit in trace.units:
+        assert trace.reasoning_text[unit.char_start : unit.char_end] == unit.text
+
+    reference = segment_reasoning_text("Alpha.\nBeta? Gamma")
+    assert [unit.text for unit in reference] == ["Alpha.", "Beta?", "Gamma"]
+
+
+def test_generic_boundaries_and_token_limit() -> None:
+    tokenizer = _FakeTokenizer()
+    prepared = prepare_text_boundaries(
+        tokenizer,
+        instruction="Compute something.",
+        response_text="Alpha sentence. Beta sentence. Gamma sentence.",
+        unit_char_starts=(0, 16, 31),
+        response_id="synthetic",
+    )
+    assert prepared.boundary_positions == (1, 3, 5)
+    truncated, kept_units = _truncate_prepared(prepared, max_input_tokens=5)
+    assert kept_units == 2
+    assert len(truncated.input_ids) == 5
+    assert truncated.boundary_positions == (1, 3)
+
+
+def test_probe_inference_uses_all_best_layer_classifiers() -> None:
+    layers = {label: index % 2 for index, label in enumerate(EPISODE_LABELS)}
+    classifiers = {
+        label: _FeatureClassifier(0, offset=index / 20)
+        for index, label in enumerate(EPISODE_LABELS)
+    }
+    suite = ProbeSuite(
+        model_id="synthetic/model",
+        model_revision="main",
+        quantization="none",
+        boundary_definition="pre-unit",
+        feature_size=2,
+        layers=layers,
+        classifiers=classifiers,
+        validation_metrics={},
+        results_sha256="abc",
+    )
+    activations = torch.tensor(
+        [
+            [[0.10, 0.0], [0.20, 0.0]],
+            [[0.70, 0.0], [0.60, 0.0]],
+        ],
+        dtype=torch.float32,
+    )
+    predictions = predict_probe_labels(suite, activations)
+    assert len(predictions) == 2
+    assert predictions[0]["predicted_label"] == "Verify"
+    assert set(predictions[0]["scores"]) == set(EPISODE_LABELS)
+    assert predictions[1]["top_score"] == 1.0
+
+
+def test_gptq_mode_requires_matching_embedded_checkpoint_metadata() -> None:
+    matching = SimpleNamespace(quantization_config={"quant_method": "gptq", "bits": 4})
+    _validate_quantization_request(matching, "gptq-4bit")
+
+    missing = SimpleNamespace(quantization_config=None)
+    with pytest.raises(ValueError, match="embedded GPTQ metadata"):
+        _validate_quantization_request(missing, "gptq-4bit")
+
+    wrong_bits = SimpleNamespace(quantization_config={"quant_method": "gptq", "bits": 8})
+    with pytest.raises(ValueError, match="does not match"):
+        _validate_quantization_request(wrong_bits, "gptq-4bit")
+
+
+def test_embedded_quantization_cannot_be_relabelled_as_bitsandbytes() -> None:
+    config = SimpleNamespace(quantization_config={"quant_method": "gptq", "bits": 4})
+    with pytest.raises(ValueError, match="matching mode"):
+        _validate_quantization_request(config, "bnb-4bit")
 
 
 def test_binary_probe_uses_paper_configuration() -> None:

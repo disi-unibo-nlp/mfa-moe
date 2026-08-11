@@ -13,11 +13,14 @@ ENV APP_PATH=/workspace
 
 # Install general-purpose dependencies
 RUN apt-get update -y && \
-    apt-get install -y curl \
+    apt-get install -y build-essential \
+                        curl \
                         git \
                         bash \
                         nano \
+                        ninja-build \
                         python3.11 \
+                        python3.11-dev \
                         python3.11-distutils \
                         python3-pip && \
     apt-get autoremove -y && \
@@ -34,12 +37,13 @@ RUN pip install gdown
 # Install PyTorch from the wheel index matching the CUDA base.
 ARG TORCH_INDEX=https://download.pytorch.org/whl/cu128
 RUN pip install --no-cache-dir torch --index-url ${TORCH_INDEX}
+RUN pip install --no-cache-dir torchvision==0.26.0 --index-url ${TORCH_INDEX}
 
 # Copy project metadata and install dependencies
 COPY pyproject.toml .
 COPY src/ src/
 
-RUN pip install --no-cache-dir ".[dev,exp0a]"
+RUN pip install --no-cache-dir ".[dev,exp0a,probe]"
 
 # Copy the rest of the project
 COPY . .

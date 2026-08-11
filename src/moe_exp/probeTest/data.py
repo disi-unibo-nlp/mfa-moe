@@ -7,7 +7,6 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-
 EPISODE_LABELS = (
     "Read",
     "Analyze",
@@ -124,7 +123,7 @@ def load_gold_responses(
 
     originals = _load_json(originals_path)
     if not isinstance(originals, list):
-        raise ValueError(f"Expected a JSON list in {originals_path}")
+        raise TypeError(f"Expected a JSON list in {originals_path}")
     by_id: dict[str, dict[str, Any]] = {}
     for row in originals:
         response_id = row.get("Question ID")

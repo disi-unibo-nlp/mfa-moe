@@ -6,7 +6,12 @@ import argparse
 import logging
 from pathlib import Path
 
-from moe_exp.probeTest.extract import DEFAULT_MODEL_ID, extract_gold_corpus
+from moe_exp.probeTest.extract import (
+    DEFAULT_MODEL_ID,
+    DEFAULT_QUANTIZATION,
+    extract_gold_corpus,
+)
+from moe_exp.probeTest.label import BENCHMARK_DATASETS, label_benchmark_examples
 from moe_exp.probeTest.probe import train_layerwise_probes
 
 
@@ -16,8 +21,8 @@ def _add_extraction_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--model-revision", default="main")
     parser.add_argument(
         "--quantization",
-        choices=("none", "bnb-4bit", "bnb-8bit"),
-        default="bnb-4bit",
+        choices=("gptq-4bit", "none", "bnb-4bit", "bnb-8bit"),
+        default=DEFAULT_QUANTIZATION,
     )
     parser.add_argument("--trust-remote-code", action="store_true")
     parser.add_argument(
@@ -40,6 +45,22 @@ def _add_probe_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--skip-plot", action="store_true")
 
 
+def _add_benchmark_arguments(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument(
+        "--benchmark-datasets",
+        nargs="+",
+        choices=BENCHMARK_DATASETS,
+        default=list(BENCHMARK_DATASETS),
+    )
+    parser.add_argument("--examples-per-benchmark", type=int, default=20)
+    parser.add_argument(
+        "--max-benchmark-input-tokens",
+        type=int,
+        default=4096,
+        help="Truncate very long traces after this many prompt+reasoning tokens.",
+    )
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--log-level", choices=("DEBUG", "INFO", "WARNING"), default="INFO")
@@ -58,9 +79,21 @@ def build_parser() -> argparse.ArgumentParser:
     probe_parser.add_argument("--output-dir", type=Path, required=True)
     _add_probe_arguments(probe_parser)
 
-    all_parser = subparsers.add_parser("all", help="Run extraction and then all probes")
+    label_parser = subparsers.add_parser(
+        "label", help="Apply trained probes to benchmark reasoning for manual inspection"
+    )
+    label_parser.add_argument("--probe-results", type=Path, required=True)
+    label_parser.add_argument("--output-dir", type=Path, required=True)
+    label_parser.add_argument("--trust-remote-code", action="store_true")
+    _add_benchmark_arguments(label_parser)
+
+    all_parser = subparsers.add_parser(
+        "all", help="Run extraction, train probes, then label benchmark examples"
+    )
     _add_extraction_arguments(all_parser)
     _add_probe_arguments(all_parser)
+    _add_benchmark_arguments(all_parser)
+    all_parser.add_argument("--skip-benchmark-labeling", action="store_true")
     all_parser.add_argument(
         "--output-dir",
         type=Path,
@@ -105,6 +138,18 @@ def main() -> None:
         print(f"Probe results: {results}")
         return
 
+    if args.command == "label":
+        manifest = label_benchmark_examples(
+            probe_results_path=args.probe_results,
+            output_dir=args.output_dir,
+            datasets=args.benchmark_datasets,
+            examples_per_dataset=args.examples_per_benchmark,
+            max_input_tokens=args.max_benchmark_input_tokens,
+            trust_remote_code=args.trust_remote_code,
+        )
+        print(f"Benchmark-label manifest: {manifest}")
+        return
+
     activation_dir = args.output_dir / "activations"
     probe_dir = args.output_dir / "probes"
     manifest = extract_gold_corpus(
@@ -126,8 +171,20 @@ def main() -> None:
         max_iter=args.max_iter,
         make_plot=not args.skip_plot,
     )
+    benchmark_manifest = None
+    if not args.skip_benchmark_labeling:
+        benchmark_manifest = label_benchmark_examples(
+            probe_results_path=results,
+            output_dir=args.output_dir / "benchmark_labels",
+            datasets=args.benchmark_datasets,
+            examples_per_dataset=args.examples_per_benchmark,
+            max_input_tokens=args.max_benchmark_input_tokens,
+            trust_remote_code=args.trust_remote_code,
+        )
     print(f"Activation manifest: {manifest}")
     print(f"Probe results: {results}")
+    if benchmark_manifest is not None:
+        print(f"Benchmark-label manifest: {benchmark_manifest}")
 
 
 if __name__ == "__main__":

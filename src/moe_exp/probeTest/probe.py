@@ -26,7 +26,6 @@ from sklearn.model_selection import train_test_split
 
 from moe_exp.probeTest.data import EPISODE_LABELS
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -145,8 +144,8 @@ def train_binary_probe(
         "test_precision": float(precision_score(y_test, test_predictions, zero_division=0)),
         "train_recall": float(recall_score(y_train, train_predictions, zero_division=0)),
         "test_recall": float(recall_score(y_test, test_predictions, zero_division=0)),
-        "n_train_samples": int(len(y_train)),
-        "n_test_samples": int(len(y_test)),
+        "n_train_samples": len(y_train),
+        "n_test_samples": len(y_test),
         "n_positive_train": int(y_train.sum()),
         "n_positive_test": int(y_test.sum()),
         "n_negative_train": int((y_train == 0).sum()),
@@ -297,8 +296,8 @@ def train_layerwise_probes(
         split_summaries[target] = {
             "positive": int(class_counts[1]),
             "negative": int(class_counts[0]),
-            "train_samples": int(len(train_indices)),
-            "test_samples": int(len(test_indices)),
+            "train_samples": len(train_indices),
+            "test_samples": len(test_indices),
             "responses_shared_between_train_and_test": shared_responses,
         }
 

@@ -3,7 +3,7 @@ set -euo pipefail
 
 IMAGE="${IMAGE:-llama.cpp:localcuda}"
 MODEL_DIR="${MODEL_DIR:-/llms}"
-MODEL_NAME="${MODEL_NAME:-Qwen3.6-27B-UD-Q4_K_XL.gguf}"
+MODEL_NAME="${MODEL_NAME:-Qwen3.6-35B-A3B-UD-Q4_K_XL.gguf}"
 HOST="${HOST:-127.0.0.1}"
 PORT="${PORT:-8080}"
 GPU_DEVICE="${GPU_DEVICE:-${CUDA_VISIBLE_DEVICES:-0}}"

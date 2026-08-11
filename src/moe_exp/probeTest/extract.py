@@ -8,18 +8,20 @@ import inspect
 import json
 import logging
 import os
+from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
+from itertools import pairwise
 from pathlib import Path
-from typing import Any, Iterable, Sequence
+from typing import Any
 
 import torch
 
 from moe_exp.probeTest.data import GoldResponse, label_counts, load_gold_responses
 
-
 logger = logging.getLogger(__name__)
 
-DEFAULT_MODEL_ID = "Qwen/Qwen3.6-35B-A3B"
+DEFAULT_MODEL_ID = "Qwen/Qwen3.5-35B-A3B-GPTQ-Int4"
+DEFAULT_QUANTIZATION = "gptq-4bit"
 BOUNDARY_DEFINITION = "hidden state immediately preceding the first token of the gold unit"
 
 
@@ -77,10 +79,32 @@ def prepare_response(
     system_prompt: str | None = None,
 ) -> PreparedResponse:
     """Build prompt+gold-response token IDs and causal pre-unit positions."""
+    return prepare_text_boundaries(
+        tokenizer,
+        instruction=response.instruction,
+        response_text=response.response_text,
+        unit_char_starts=[unit.char_start for unit in response.units],
+        system_prompt=system_prompt,
+        response_id=response.response_id,
+    )
+
+
+def prepare_text_boundaries(
+    tokenizer: Any,
+    *,
+    instruction: str,
+    response_text: str,
+    unit_char_starts: Sequence[int],
+    system_prompt: str | None = None,
+    response_id: str = "response",
+) -> PreparedResponse:
+    """Build causal pre-unit positions for arbitrary reasoning text."""
+    if not unit_char_starts:
+        raise ValueError(f"{response_id}: reasoning trace has no unit boundaries")
     messages: list[dict[str, str]] = []
     if system_prompt:
         messages.append({"role": "system", "content": system_prompt})
-    messages.append({"role": "user", "content": response.instruction})
+    messages.append({"role": "user", "content": instruction})
 
     try:
         prompt_encoded = tokenizer.apply_chat_template(
@@ -93,11 +117,11 @@ def prepare_response(
         fallback = ""
         if system_prompt:
             fallback += f"System: {system_prompt}\n\n"
-        fallback += f"User: {response.instruction}\n\nAssistant:"
+        fallback += f"User: {instruction}\n\nAssistant:"
         prompt_ids = _flat_token_ids(tokenizer(fallback, add_special_tokens=True))
 
     encoded_response = tokenizer(
-        response.response_text,
+        response_text,
         add_special_tokens=False,
         return_offsets_mapping=True,
     )
@@ -113,16 +137,14 @@ def prepare_response(
             f"Token/offset length mismatch: {len(response_ids)} IDs vs {len(offsets)} offsets"
         )
 
-    response_token_indices = tuple(
-        token_containing_char(offsets, unit.char_start) for unit in response.units
-    )
+    response_token_indices = tuple(token_containing_char(offsets, start) for start in unit_char_starts)
     boundary_positions = tuple(
         len(prompt_ids) + token_index - 1 for token_index in response_token_indices
     )
     if not prompt_ids or min(boundary_positions) < 0:
-        raise ValueError(f"{response.response_id}: no prompt token precedes the first gold unit")
-    if any(left > right for left, right in zip(boundary_positions, boundary_positions[1:])):
-        raise ValueError(f"{response.response_id}: token boundaries are not monotonic")
+        raise ValueError(f"{response_id}: no prompt token precedes the first reasoning unit")
+    if any(left > right for left, right in pairwise(boundary_positions)):
+        raise ValueError(f"{response_id}: token boundaries are not monotonic")
 
     return PreparedResponse(
         input_ids=tuple(prompt_ids + response_ids),
@@ -165,7 +187,7 @@ def _response_digest(response: GoldResponse) -> str:
 
 
 def _make_quantization_config(name: str) -> Any | None:
-    if name == "none":
+    if name in ("none", "gptq-4bit"):
         return None
     from transformers import BitsAndBytesConfig
 
@@ -180,15 +202,70 @@ def _make_quantization_config(name: str) -> Any | None:
     raise ValueError(f"Unknown quantization mode: {name}")
 
 
+def _validate_quantization_request(config: Any, requested: str) -> None:
+    """Require CLI metadata to match any quantization embedded in the checkpoint."""
+    embedded = getattr(config, "quantization_config", None)
+    if requested == "gptq-4bit":
+        if embedded is None:
+            raise ValueError(
+                "--quantization gptq-4bit requires a checkpoint with embedded GPTQ metadata"
+            )
+        payload = embedded.to_dict() if hasattr(embedded, "to_dict") else dict(embedded)
+        method = str(payload.get("quant_method", "")).lower()
+        bits = payload.get("bits", payload.get("w_bit"))
+        if method != "gptq" or bits != 4:
+            raise ValueError(
+                "--quantization gptq-4bit does not match the checkpoint metadata "
+                f"(quant_method={method!r}, bits={bits!r})"
+            )
+        return
+
+    if embedded is not None:
+        raise ValueError(
+            f"Checkpoint contains embedded quantization metadata, so it cannot be loaded as "
+            f"--quantization {requested}. Select the matching mode instead."
+        )
+
+
+def _validate_gptq_expert_modules(model: Any) -> int:
+    """Ensure GPTQModel replaced every routed expert projection with a 4-bit kernel."""
+    from gptqmodel.nn_modules.qlinear import BaseQuantLinear
+
+    projection_suffixes = (".gate_proj", ".up_proj", ".down_proj")
+    expert_projections = [
+        (name, module)
+        for name, module in model.named_modules()
+        if ".mlp.experts." in name and name.endswith(projection_suffixes)
+    ]
+    if not expert_projections:
+        raise RuntimeError(
+            "GPTQModel loaded no routed MoE expert projections; refusing to extract "
+            "activations from a partially initialized model"
+        )
+
+    unquantized = [
+        (name, type(module).__name__)
+        for name, module in expert_projections
+        if not isinstance(module, BaseQuantLinear)
+    ]
+    if unquantized:
+        preview = ", ".join(f"{name} ({class_name})" for name, class_name in unquantized[:5])
+        raise RuntimeError(
+            f"GPTQModel left {len(unquantized)}/{len(expert_projections)} routed expert "
+            f"projections unquantized; first entries: {preview}"
+        )
+    return len(expert_projections)
+
+
 def load_model_and_tokenizer(
     model_id: str,
     *,
     revision: str = "main",
-    quantization: str = "bnb-4bit",
+    quantization: str = DEFAULT_QUANTIZATION,
     trust_remote_code: bool = False,
     offload_dir: Path | None = None,
 ) -> tuple[Any, Any]:
-    """Load Qwen3.6 as an image-text model, using text-only inputs."""
+    """Load Qwen as an image-text model, using text-only inputs."""
     from transformers import (
         AutoConfig,
         AutoModelForCausalLM,
@@ -217,33 +294,48 @@ def load_model_and_tokenizer(
     )
     model_class = AutoModelForImageTextToText if is_conditional_generation else AutoModelForCausalLM
 
-    quantization_config = _make_quantization_config(quantization)
-    if getattr(config, "quantization_config", None) is not None:
-        if quantization_config is not None:
-            logger.warning(
-                "Model config already contains quantization settings; ignoring --quantization %s",
-                quantization,
-            )
-        quantization_config = None
+    _validate_quantization_request(config, quantization)
+    if quantization == "gptq-4bit":
+        if not torch.cuda.is_available():
+            raise RuntimeError("GPTQ activation extraction requires a CUDA GPU")
+        from gptqmodel import GPTQModel
+        from gptqmodel.utils.backend import BACKEND
 
-    if offload_dir is not None:
-        offload_dir.mkdir(parents=True, exist_ok=True)
-    logger.info(
-        "Loading %s with %s (quantization=%s)",
-        model_id,
-        model_class.__name__,
-        quantization,
-    )
-    model = model_class.from_pretrained(
-        model_id,
-        revision=revision,
-        trust_remote_code=trust_remote_code,
-        dtype=torch.bfloat16,
-        device_map="auto",
-        low_cpu_mem_usage=True,
-        offload_folder=str(offload_dir) if offload_dir is not None else None,
-        quantization_config=quantization_config,
-    )
+        # GPTQModel understands Qwen3.5's dynamic exclusions and defuses its packed
+        # MoE experts before choosing kernels. Transformers' generic GPTQ path does
+        # not currently do this reliably for this checkpoint.
+        logger.info("Loading %s with GPTQModel (quantization=%s)", model_id, quantization)
+        wrapper = GPTQModel.load(
+            model_id,
+            revision=revision,
+            trust_remote_code=trust_remote_code,
+            device="cuda:0",
+            backend=BACKEND.AUTO,
+        )
+        model = wrapper.model
+        quantized_expert_count = _validate_gptq_expert_modules(model)
+        logger.info("Verified %d quantized routed-expert projections", quantized_expert_count)
+    else:
+        quantization_config = _make_quantization_config(quantization)
+        if offload_dir is not None:
+            offload_dir.mkdir(parents=True, exist_ok=True)
+        logger.info(
+            "Loading %s with %s (quantization=%s)",
+            model_id,
+            model_class.__name__,
+            quantization,
+        )
+        model_kwargs: dict[str, Any] = {
+            "revision": revision,
+            "trust_remote_code": trust_remote_code,
+            "dtype": torch.bfloat16,
+            "device_map": "auto",
+            "low_cpu_mem_usage": True,
+            "offload_folder": str(offload_dir) if offload_dir is not None else None,
+        }
+        if quantization_config is not None:
+            model_kwargs["quantization_config"] = quantization_config
+        model = model_class.from_pretrained(model_id, **model_kwargs)
     model.eval()
     return model, tokenizer
 
@@ -275,7 +367,7 @@ def extract_boundary_activations(model: Any, prepared: PreparedResponse) -> torc
     }
     signature = inspect.signature(model.forward)
     if "logits_to_keep" in signature.parameters:
-        # Qwen3.6 has a 248k vocabulary.  Computing logits for every gold token
+        # Qwen3.5 has a 248k vocabulary.  Computing logits for every gold token
         # would dominate memory while being irrelevant to the hidden-state probe.
         forward_kwargs["logits_to_keep"] = 1
 
@@ -381,7 +473,7 @@ def extract_gold_corpus(
     output_dir: Path,
     model_id: str = DEFAULT_MODEL_ID,
     revision: str = "main",
-    quantization: str = "bnb-4bit",
+    quantization: str = DEFAULT_QUANTIZATION,
     trust_remote_code: bool = False,
     system_prompt: str | None = None,
     include_think_boundary_units: bool = False,
