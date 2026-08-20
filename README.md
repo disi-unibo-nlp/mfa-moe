@@ -75,6 +75,38 @@ If the instance is interrupted, re-run the same command — completed stages are
 
 ## Experiments
 
+### Correlation pipeline — llama.cpp generation and forward replay
+
+`src/moe_exp/correlation_pipeline` implements the new benchmark correlation
+workflow. It generates answers through the common llama.cpp server for the
+eight SPIRAL benchmarks (MATH500, AIME24/25, OlympiadBench, AMC23, Minerva Math,
+GPQA-Diamond, and MMLU-Pro) plus GSM8K, MATH, PRM800K, and ProcessBench. Saved
+answers are then replayed through the matching Hugging Face MoE checkpoint in a
+single forward pass to extract router and hidden-state tensors. The offline
+stage analyzes correctness and reasoning-event correlations while clustering
+repeated `avg@32` attempts by source problem.
+
+The default pilot is `unsloth/Qwen3.5-35B-A3B`. Generation uses Unsloth's
+`UD-Q4_K_XL` GGUF with embedded native-MTP weights; teacher-forced replay uses
+Unsloth `FastModel` to quantize the matching BF16 Transformers checkpoint to
+4-bit at load time. Replay uses `text_only=True` so the unused vision tower is
+not loaded; `FastLanguageModel` delegates Qwen3.5 to the same `FastModel` path.
+Instrumented replay calls the decoder backbone directly, avoiding the unused LM
+head and its memory-heavy auxiliary router loss. The current Torch 2.11 image
+uses Transformers' pure-Torch gated-delta path because Unsloth's vendored FLA
+kernel crashes on this stack.
+
+See [`src/moe_exp/correlation_pipeline/README.md`](src/moe_exp/correlation_pipeline/README.md)
+for the benchmark sources, SPIRAL sampling settings, run commands, resume
+behavior, scoring rules, and output layout.
+On the current host, use its Docker launcher rather than `pip install -e .`:
+host Python is 3.10, while the project image provides the required Python 3.11.
+The complete recommended pilot is one command:
+
+```bash
+src/moe_exp/correlation_pipeline/run_all.sh
+```
+
 ### probeTest — Qwen3.5 gold Schoenfeld episode probes
 
 `src/moe_exp/probeTest` teacher-forces the 38 released DeepSeek-R1 gold traces
@@ -141,12 +173,93 @@ Every run writes an annotation audit for multi-line, multi-sentence, and mixed
 structural/substantive units. Reports include accuracy, balanced accuracy,
 macro-F1, per-class metrics, Cohen's kappa, and Kendall's tau-b.
 
-The following are legacy single-sentence results, retained for provenance. The
-first completed run used the base prompt, seed 42, GEPA's `light` budget,
-and a Q4_K_XL quantization of Qwen3.6-27B on one RTX 3090. The 38 documents
-were split before sentence flattening into 26 train, 6 validation, and 6 test
-documents (2,382/407/336 sentences). All 407 validation and 336 test requests
-returned a valid class.
+#### Current context-aware final-fit result
+
+The August 11, 2026 final-fit run used seed 42, the 21-example few-shot seed
+prompt, and the same-model LLM-judge reward. The 38 responses were split before
+unit flattening into 26 training, 6 validation, and 6 locked-test responses
+(2,382/407/336 units). Both validation prompts returned a valid class for all
+407 units. Full results, optimization logs, and predictions are in
+[`results/exp0a/context-llmjudge-20k-s42`](results/exp0a/context-llmjudge-20k-s42).
+
+| Validation prompt | Accuracy | Balanced accuracy | Macro-F1 | Cohen's kappa | Kendall's tau-b |
+|---|---:|---:|---:|---:|---:|
+| 21-example seed | 66.83% | 67.65% | 0.613 | 0.599 | 0.590 |
+| GEPA optimized | **75.43%** | **77.69%** | **0.727** | **0.697** | **0.683** |
+| Absolute change | **+8.60 pp** | **+10.03 pp** | **+0.114** | **+0.098** | **+0.093** |
+
+The optimized prompt fixed 49 seed errors while regressing on 14 previously
+correct units, for a net gain of 35. All six validation responses improved;
+response-level accuracy gains ranged from 2.0 to 13.8 percentage points. The
+main change was a reduction in the seed prompt's overuse of `Monitor`:
+`Monitor` predictions fell from 74 to 43, primarily correcting true `Plan`
+and `Verify` units.
+
+| Gold class | Support | Seed recall | Optimized recall | Optimized F1 |
+|---|---:|---:|---:|---:|
+| `Read` | 45 | 77.78% | 75.56% | 0.791 |
+| `Analyze` | 122 | 59.84% | 68.03% | 0.744 |
+| `Plan` | 32 | 53.13% | 81.25% | 0.722 |
+| `Implement` | 103 | 78.64% | 82.52% | 0.825 |
+| `Explore` | 17 | 47.06% | 70.59% | 0.686 |
+| `Verify` | 70 | 57.14% | 71.43% | 0.763 |
+| `Monitor` | 18 | 100.00% | 94.44% | 0.557 |
+
+The largest recall gains were for `Plan` (+28.13 pp), `Explore` (+23.53 pp),
+and `Verify` (+14.29 pp). `Monitor` recall declined slightly, but its precision
+rose from 0.243 to 0.395 because false-positive `Monitor` predictions were
+substantially reduced. `Implement` was the only class whose F1 declined
+slightly (0.839 to 0.825), reflecting additional false-positive `Implement`
+assignments. The main remaining errors are boundaries among `Analyze`,
+`Implement`, and `Verify`, plus `Verify`→`Monitor`; `Monitor` precision and
+`Analyze` recall remain the weakest parts of the selected prompt.
+
+GEPA's same-model judge score rose from 0.7264 for the seed to 0.8196 for the
+selected candidate. The optimization trace contains 145 candidates, 144 full
+validation evaluations, 60,767 recorded judge calls, and 148 judge-output
+errors. A text audit of the feedback found 37 validation units for which the
+judge explicitly disputed the corpus gold label in at least one evaluation,
+confirming that some class boundaries are annotation-sensitive. Of the 29
+validation units flagged by the structural/segmentation audit, accuracy was
+unchanged at 72.4%; the measured gain came from otherwise unflagged units.
+
+The improvement also has a deployment cost. The selected prompt grew from 21
+to 40 examples and from 7,648 to 32,717 characters. Many additions encode
+corpus-specific boundary cases, so prompt compression and rule/example
+ablations are needed before attributing the gain to a portable taxonomy rather
+than memorized annotation conventions.
+
+These numbers are selection-set results, not a generalization estimate. GEPA
+used the same six-response validation set repeatedly to develop and score its
+candidates, and final selection again used validation balanced accuracy. The
+336-unit locked test was deliberately not evaluated: the result records
+`locked_test_evaluated: false` and `test: null`. There is also only one
+optimization seed. The selected prompt should therefore be frozen before a
+one-time locked-test evaluation, and uncertainty should be computed over
+responses rather than treating the 407 correlated units as independent.
+
+#### Relation to the external probe evaluation
+
+The benchmark-label result is a downstream evaluation of causal linear probes,
+not a direct test of the GEPA classifier. Across 581 external units, the probes
+achieved 50.3% strict agreement, 60.8% accepted-set agreement, 0.330 macro-F1,
+and 0.306 balanced accuracy against the pragmatic review. They never selected
+`Explore`; only `Implement` transferred strongly (F1 0.729). See the
+[`pragmatic LLM-judge evaluation`](results/probeTest/qwen3.5-35b-a3b-gptq-int4/benchmark_labels/pragmatic_llm_judge_evaluation.md).
+
+This does not contradict the 75.43% GEPA validation result: the two evaluations
+measure different models, prediction points, domains, and reference labels.
+It does show that improved in-domain sentence classification does not by itself
+make the seven states reliably recoverable from Qwen's pre-unit hidden states.
+The next clean comparison is to apply the frozen GEPA classifier directly to
+the same 581 external units, then compare its predictions with both the
+pragmatic review and the hidden-state probes.
+
+#### Earlier single-sentence runs (provenance)
+
+The earlier protocol used the base prompt and a seven-example few-shot
+condition. Its historical results are retained below, but they are not directly
+comparable with the current context-aware 21-example run.
 
 | Evaluation | Accuracy | Cohen's kappa | Kendall's tau-b | Composite score |
 |---|---:|---:|---:|---:|
@@ -156,21 +269,10 @@ returned a valid class.
 | Few-shot validation (seed and optimized) | 68.06% | 0.608 | 0.583 | 0.798 |
 | Held-out test, few-shot prompt | **69.94%** | **0.618** | **0.667** | **0.821** |
 
-GEPA improved validation accuracy by 4.67 percentage points. The close
-validation and held-out composite scores are encouraging, but this is a
-single seed with only six held-out documents; repeated response-level splits
-are needed before treating the difference as stable. On the test set, the
-weakest classes were `Plan` (8/20, 40%) and `Explore` (7/15, 46.7%). The
-largest confusions were `Analyze`→`Verify` (16), `Verify`→`Analyze` (14), and
-`Read`→`Analyze` (12).
-
-On the same seed and response split, the seven-example few-shot condition
-performed better on the held-out test set than the optimized base condition:
-69.94% versus 66.07% accuracy, and 0.821 versus 0.794 composite agreement.
-However, GEPA did not improve the few-shot validation accuracy: both its seed
-and selected optimized prompt scored 68.06%. Thus the current result favors
-few-shot prompting for held-out generalization, while the measurable GEPA gain
-is confined to the base condition.
+In that older split, the few-shot test prompt outperformed the optimized base
+prompt (69.94% versus 66.07% accuracy). The weakest test classes were `Plan`
+(40.0% recall) and `Explore` (46.7%), and the largest confusions were
+`Analyze`→`Verify`, `Verify`→`Analyze`, and `Read`→`Analyze`.
 
 See [`src/moe_exp/experiment0a/README.md`](src/moe_exp/experiment0a/README.md)
 for setup, metric conventions, and run commands.
