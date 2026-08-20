@@ -1,5 +1,7 @@
+import hashlib
 import json
 import logging
+import os
 from pathlib import Path
 from typing import Any
 
@@ -7,12 +9,18 @@ import torch
 import torch.nn.functional as F
 from tqdm import tqdm
 
-from moe_exp.schemas import TraceRecord
-from moe_exp.models.loader import QUANTIZATION_CHOICES, load_model_and_tokenizer
 from moe_exp.models.inference import extract_logs_single_pass
+from moe_exp.models.loader import QUANTIZATION_CHOICES, load_model_and_tokenizer
+from moe_exp.schemas import TraceRecord
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+
+def _save_tensor_atomic(tensor: torch.Tensor, path: Path) -> None:
+    temporary = path.with_name(f".{path.name}.tmp")
+    torch.save(tensor, temporary)
+    os.replace(temporary, path)
 
 
 def compute_selected_experts(router_logits: torch.Tensor, top_k: int = 8) -> tuple[torch.Tensor, torch.Tensor]:
@@ -44,6 +52,9 @@ def process_file(
     top_k: int | None = None,
     extract_hidden_states: bool = False,
     quantization: str = "none",
+    model: Any | None = None,
+    tokenizer: Any | None = None,
+    strict_top_k: bool = False,
 ):
     """
     Run Experiment 2 offline-extraction loop over traces to compute routing dynamics.
@@ -68,10 +79,18 @@ def process_file(
             f"Input {input_path} contains zero traces; refusing to load {model_id}."
         )
 
-    logger.info(f"Loading model {model_id}")
-    model, tokenizer = load_model_and_tokenizer(model_id, quantization=quantization)
+    if (model is None) != (tokenizer is None):
+        raise ValueError("model and tokenizer must be provided together")
+    if model is None:
+        logger.info(f"Loading model {model_id}")
+        model, tokenizer = load_model_and_tokenizer(model_id, quantization=quantization)
+    else:
+        logger.info("Using preloaded model %s", model_id)
 
+    text_config = getattr(model.config, "text_config", None)
     config_top_k = getattr(model.config, "num_experts_per_tok", None)
+    if config_top_k is None and text_config is not None:
+        config_top_k = getattr(text_config, "num_experts_per_tok", None)
     if top_k is None:
         if config_top_k is None:
             raise ValueError(
@@ -81,6 +100,11 @@ def process_file(
         top_k = int(config_top_k)
         logger.info(f"Using top_k={top_k} from model config")
     elif config_top_k is not None and top_k != config_top_k:
+        if strict_top_k:
+            raise ValueError(
+                f"Requested top_k={top_k} differs from model config "
+                f"num_experts_per_tok={config_top_k}"
+            )
         logger.warning(
             f"Requested top_k={top_k} differs from model config "
             f"num_experts_per_tok={config_top_k}"
@@ -101,12 +125,58 @@ def process_file(
                 out_f.write(trace.model_dump_json() + "\n")
                 continue
                 
+            safe_problem_id = trace.problem_id.replace("/", "_").replace("\\", "_")
+            trace_id = f"{trace.dataset}_{safe_problem_id}"
+            logits_path = tensor_dir / f"{trace_id}_logits.pt"
+            hidden_path = tensor_dir / f"{trace_id}_hidden.pt"
+            experts_path = tensor_dir / f"{trace_id}_experts.pt"
+            weights_path = tensor_dir / f"{trace_id}_weights.pt"
+            checkpoint_path = tensor_dir / f"{trace_id}_extraction.json"
+            trace_digest = hashlib.sha256(
+                json.dumps(
+                    {
+                        "prompt": trace.prompt,
+                        "system_prompt": trace.system_prompt,
+                        "generation_messages": trace.generation_messages,
+                        "cot_text": trace.cot_text,
+                    },
+                    sort_keys=True,
+                    ensure_ascii=False,
+                ).encode("utf-8")
+            ).hexdigest()
+            expected_checkpoint = {
+                "trace_sha256": trace_digest,
+                "model_id": model_id,
+                "quantization": quantization,
+                "top_k": top_k,
+                "hidden_states": extract_hidden_states,
+            }
+            checkpoint = None
+            if checkpoint_path.is_file():
+                try:
+                    checkpoint = json.loads(checkpoint_path.read_text(encoding="utf-8"))
+                except (OSError, json.JSONDecodeError):
+                    checkpoint = None
+            required_paths = [logits_path, experts_path, weights_path]
+            if extract_hidden_states:
+                required_paths.append(hidden_path)
+            if checkpoint == expected_checkpoint and all(path.is_file() for path in required_paths):
+                trace.model_logs.router_logits = logits_path.as_posix()
+                trace.model_logs.selected_experts = experts_path.as_posix()
+                trace.model_logs.expert_weights = weights_path.as_posix()
+                if extract_hidden_states:
+                    trace.model_logs.hidden_states = hidden_path.as_posix()
+                n_with_routing += 1
+                out_f.write(trace.model_dump_json() + "\n")
+                continue
+
             extracted = extract_logs_single_pass(
                 model=model,
                 tokenizer=tokenizer,
                 problem=trace.prompt,
                 cot_text=trace.cot_text,
                 system_prompt=trace.system_prompt,
+                messages=trace.generation_messages,
                 extract_hidden_states=extract_hidden_states,
             )
             if extract_hidden_states:
@@ -119,33 +189,31 @@ def process_file(
             
             # router_logits is (num_layers, seq_len, num_experts)
             if router_logits.numel() > 0:
-                # Use safe filename
-                safe_problem_id = trace.problem_id.replace("/", "_").replace("\\", "_")
-                trace_id = f"{trace.dataset}_{safe_problem_id}"
-                
                 # Save router logits.
                 # Store POSIX-style paths so the JSONL stays portable: tensors
                 # are typically written on Windows during dev but re-read inside
                 # the Linux Docker/SLURM pipeline, where backslash paths break.
-                logits_path = tensor_dir / f"{trace_id}_logits.pt"
-                torch.save(router_logits.to(torch.float32), logits_path)
+                _save_tensor_atomic(router_logits.to(torch.float32), logits_path)
                 trace.model_logs.router_logits = logits_path.as_posix()
 
                 if hidden_states is not None and hidden_states.numel() > 0:
-                    hidden_path = tensor_dir / f"{trace_id}_hidden.pt"
-                    torch.save(hidden_states.to(torch.float16), hidden_path)
+                    _save_tensor_atomic(hidden_states.to(torch.bfloat16), hidden_path)
                     trace.model_logs.hidden_states = hidden_path.as_posix()
 
                 # Compute and save selected experts and weights
                 selected, weights = compute_selected_experts(router_logits, top_k=top_k)
 
-                experts_path = tensor_dir / f"{trace_id}_experts.pt"
-                torch.save(selected.to(torch.int16), experts_path)
+                _save_tensor_atomic(selected.to(torch.int16), experts_path)
                 trace.model_logs.selected_experts = experts_path.as_posix()
 
-                weights_path = tensor_dir / f"{trace_id}_weights.pt"
-                torch.save(weights.to(torch.float16), weights_path)
+                _save_tensor_atomic(weights.to(torch.float16), weights_path)
                 trace.model_logs.expert_weights = weights_path.as_posix()
+                temporary_checkpoint = checkpoint_path.with_name(f".{checkpoint_path.name}.tmp")
+                temporary_checkpoint.write_text(
+                    json.dumps(expected_checkpoint, indent=2) + "\n",
+                    encoding="utf-8",
+                )
+                os.replace(temporary_checkpoint, checkpoint_path)
                 n_with_routing += 1
             else:
                 logger.warning(

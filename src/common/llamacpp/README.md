@@ -18,6 +18,34 @@ For the local `Qwen3.6-35B-A3B-UD-Q4_K_XL.gguf` under `/llms`:
 ./serve_llamacpp.sh
 ```
 
+For the recommended correlation run, launch Unsloth Qwen3.5 with integrated
+native MTP:
+
+```bash
+./serve_qwen3_5_35b_a3b_mtp.sh
+```
+
+This downloads `Qwen3.5-35B-A3B-UD-Q4_K_XL.gguf` resumably from
+`unsloth/Qwen3.5-35B-A3B-MTP-GGUF` into `/llms`, then uses llama.cpp's
+`draft-mtp` backend. MTP is embedded in the single GGUF, so no separate draft
+model is loaded. Current llama.cpp MTP support requires one parallel server
+slot.
+
+The earlier Qwen3.6 DFlash launcher remains available:
+
+```bash
+./serve_qwen3_6_35b_a3b_dflash.sh
+```
+
+This uses llama.cpp's native `draft-dflash` backend. If either GGUF is missing,
+the launcher downloads it resumably into the same shared `/llms` folder used by
+the other experiments: the target comes from
+`unsloth/Qwen3.6-35B-A3B-GGUF`, and the Q8_0 0.4B draft comes from
+`Alittlehammmer/Qwen3.6-35B-A3B-DFlash-GGUF-llama.cpp`. Interrupted downloads
+remain as `.part` files and resume on the next run. DFlash is not standalone:
+the target verifies every proposed token. The server advertises the stable API
+alias `qwen3.6-35b-a3b-dflash`.
+
 For a smaller non-MTP Qwen model downloaded through Hugging Face:
 
 ```bash
@@ -27,13 +55,13 @@ For a smaller non-MTP Qwen model downloaded through Hugging Face:
 Launch only one server at a time on port `8080`. The 4B script is intentionally
 the plain Qwen3-4B-Instruct-2507 non-thinking model, not an MTP example.
 
-Both scripts expose the OpenAI-compatible llama.cpp server at:
+The scripts expose the OpenAI-compatible llama.cpp server at:
 
 ```text
 http://127.0.0.1:8080/v1/chat/completions
 ```
 
-Both scripts use the default API key:
+The scripts use the default API key:
 
 ```text
 local-llamacpp-key

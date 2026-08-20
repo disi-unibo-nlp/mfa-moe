@@ -41,10 +41,10 @@ Older, corrected-label PRM800K event and full-trace probe outputs over 10,833
 traces are retained as explicitly marked legacy evidence.  Unless stated
 otherwise, event windows contain five tokens on each side of the event.
 In addition, Experiment~0a is an auxiliary judge-validation study: completed
-static-reward baselines optimize a Qwen3.6-27B prompt for sentence-level
-Schoenfeld episode classification, while a new LLM-as-a-judge reward
-configuration awaits rerunning.  This judge experiment evaluates annotation
-capability and is not evidence about Qwen router dynamics.  Experiment~0b is
+static-reward baselines and a completed same-model LLM-as-a-judge final fit
+optimize a Qwen3.6-27B prompt for sentence-level Schoenfeld episode
+classification.  This judge experiment evaluates annotation capability and is
+not evidence about Qwen router dynamics.  Experiment~0b is
 a separate representation-probe replication: it teacher-forces the 38
 released DeepSeek-R1 Schoenfeld traces through the official GPTQ 4-bit
 \texttt{Qwen/Qwen3.5-35B-A3B-GPTQ-Int4} checkpoint and asks whether the label
@@ -187,24 +187,21 @@ weighted exact match, whose split mean is balanced accuracy; the safety
 selector compares either balanced accuracy or macro-F1 and rejects any
 candidate whose class recall falls by more than the configured threshold.
 
-\paragraph{New informative reward (implementation complete; run pending).}
-The current implementation replaces the default static GEPA reward with an
+\paragraph{Informative same-model reward.}
+The current implementation can replace the static GEPA reward with an
 LLM-as-a-judge call to the same Qwen3.6-27B model.  For each candidate label,
 the judge returns a short free-text explanation plus four diagnostic scores
 from 1 to 5: gold agreement, functional fit, contextual coherence, and boundary
 precision.  Their normalized weighted mean is used only as GEPA's optimization
 signal, with respective weights 0.40, 0.25, 0.15, and 0.20.  Gold-label
 accuracy, balanced accuracy, macro-F1, and per-class recall remain the
-independent selection and reporting criteria.  The judge currently runs
-deterministically with model reasoning disabled; reasoning-enabled evaluation
-is deferred to a 5090 run because it substantially increases inference time.
-Every judge call is persisted as JSONL with its component scores, normalized
-score, and free-text explanation, permitting a direct audit of feedback
-quality.  The pending rerun uses GEPA's heavy budget and a 4096-token
-reflection cap while retaining the existing one-GPU, 64\,GB, 48-hour SLURM
-allocation.
-All numerical results below precede this change and therefore remain
-static-reward baselines rather than evidence for the new judge.
+independent selection and reporting criteria.  The judge runs deterministically
+with model reasoning disabled.  Every judge call is persisted as JSONL with
+its component scores, normalized score, and free-text explanation, permitting
+a direct audit of feedback quality.  Tables~\ref{tab:exp0a-cv} and
+\ref{tab:exp0a-classes} remain static-reward cross-validation baselines; the
+completed LLM-judge final fit is reported separately below because its reused
+validation set is a prompt-development set rather than an outer-fold estimate.
 
 \begin{table}[t]
 \centering
@@ -282,6 +279,89 @@ until structural artifacts are adjudicated, decoding is constrained, paired
 outer evaluation is added, and a genuinely unseen external test set is
 designated.
 
+\paragraph{Completed LLM-judge final fit.}
+The August 11, 2026 run uses seed 42, the 21-example context-aware few-shot
+prompt, and the same-model informative reward on the original response-grouped
+26/6/6 split (2,382/407/336 units).  Seed and optimized prompts both return a
+valid label for all 407 validation units.  Table~\ref{tab:exp0a-llmjudge}
+reports exact gold-label metrics rather than the LLM judge's diagnostic score.
+
+\begin{table*}[t]
+\centering
+\caption{Context-aware LLM-judge final-fit results on the 407-unit
+prompt-development validation set.  Coverage is 100\% in both rows.  The locked test
+is not evaluated.}
+\label{tab:exp0a-llmjudge}
+\begin{tabular}{lrrrrr}
+\toprule
+Prompt & Accuracy & Balanced acc. & Macro-F1 & $\kappa$ & $\tau_b$ \\
+\midrule
+21-example seed & 0.6683 & 0.6765 & 0.6132 & 0.5988 & 0.5904 \\
+GEPA optimized  & \textbf{0.7543} & \textbf{0.7769} & \textbf{0.7270} &
+\textbf{0.6968} & \textbf{0.6832} \\
+\midrule
+Absolute change & +0.0860 & +0.1003 & +0.1138 & +0.0980 & +0.0929 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+The optimized prompt fixes 49 seed errors and regresses on 14 previously
+correct units, a net gain of 35.  All six validation responses improve, with
+response-level accuracy gains from 2.0 to 13.8 percentage points.  Its primary
+effect is to curb the seed prompt's overuse of Monitor: Monitor predictions
+fall from 74 to 43, including nine corrections from Monitor to true Plan and
+15 from Monitor to true Verify.  Recall rises most for Plan (+28.13 points),
+Explore (+23.53), Verify (+14.29), and Analyze (+8.20).  Monitor recall falls
+slightly from 1.000 to 0.944, but precision rises from 0.243 to 0.395.  The
+selected prompt still has weak Monitor precision and Analyze recall, and the
+remaining errors concentrate at the Analyze/Implement/Verify boundaries and
+Verify$\rightarrow$Monitor.  Implement is the only class whose F1 decreases,
+from 0.839 to 0.825, because its additional predictions include more false
+positives.
+
+\begin{table}[t]
+\centering
+\caption{Per-class recall and optimized F1 for the completed LLM-judge final
+fit.}
+\label{tab:exp0a-llmjudge-classes}
+\begin{tabular}{lrrrr}
+\toprule
+Class & Support & Seed recall & Opt. recall & Opt. F1 \\
+\midrule
+Read      &  45 & 0.778 & 0.756 & 0.791 \\
+Analyze   & 122 & 0.598 & 0.680 & 0.744 \\
+Plan      &  32 & 0.531 & 0.813 & 0.722 \\
+Implement & 103 & 0.786 & 0.825 & 0.825 \\
+Explore   &  17 & 0.471 & 0.706 & 0.686 \\
+Verify    &  70 & 0.571 & 0.714 & 0.763 \\
+Monitor   &  18 & 1.000 & 0.944 & 0.557 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The internal same-model reward rises from 0.7264 for the seed to 0.8196 for
+the selected candidate.  The optimization trace contains 145 candidates, 144
+full validation evaluations, and 60,767 persisted judge calls, of which 148
+are judge-output errors.  A text audit finds 37 validation units for which the
+judge explicitly disputes the corpus gold label in at least one evaluation,
+showing that the reward itself detects annotation-sensitive boundaries rather
+than consistently treating gold as semantically authoritative.  The structural
+audit flags 29 validation units; their accuracy remains 72.4\% under both
+prompts, so the gain comes entirely from otherwise unflagged units.
+
+GEPA expands the instruction from 21 to 40 demonstrations and from 7,648 to
+32,717 characters.  The extra rules and examples target observed corpus edge
+cases, raising inference cost and the risk of learning annotation conventions
+rather than a portable episode taxonomy.  More importantly, GEPA evaluates
+145 candidates against the same six-response validation set used for final
+selection.  The nominal 407 units are also correlated within responses, and
+only one optimization seed is available.  The result files explicitly record
+\texttt{locked\_test\_evaluated: false} and \texttt{test: null}.  The observed
+gain is therefore strong evidence of successful prompt optimization on the
+development distribution, but not a held-out generalization estimate.  The
+prompt should be frozen and compressed or ablated before a one-time test on
+genuinely unseen responses.
+
 \subsection{Schoenfeld episode-boundary probes}
 
 Experiment~0b tests a different annotation mechanism from the generative
@@ -355,9 +435,9 @@ and Verify from 20.4\% to 3.3\%.
 
 \begin{table*}[t]
 \centering
-\caption{Argmax inspection-label counts on unannotated external reasoning
-units.  These are prediction frequencies, not accuracies; no compatible
-Schoenfeld labels are available for these examples.}
+\caption{Argmax inspection-label counts on external reasoning units.  These
+are raw prediction frequencies, not accuracies.  Table~\ref{tab:schoenfeld-pragmatic-transfer}
+compares them with the subsequent provisional pragmatic review.}
 \label{tab:schoenfeld-external-labels}
 \begin{tabular}{lrrrrrrrr}
 \toprule
@@ -380,6 +460,78 @@ have a top-two margin below 0.1.  A conservative display rule requiring a top
 score of at least 0.8 and a margin of at least 0.2 retains only 318/581 units
 (54.7\%), mostly Implement, Read, and Monitor.  This threshold is a useful
 abstention heuristic, not a calibrated guarantee of correctness.
+
+\paragraph{Provisional pragmatic adjudication.}
+To make the qualitative inspection measurable, every displayed unit was
+subsequently reviewed using the problem, the current unit, its neighbors, and
+the adapted Schoenfeld precedence rule.  The annotation is a hybrid
+rule-assisted Codex pragmatic review, not human consensus or authoritative
+benchmark gold.  It records one primary label for conventional single-label
+statistics and, where two functions are genuinely defensible, an accepted
+set containing both labels.  This occurs for 187/581 units (32.2\%), mostly
+at boundaries where a unit both announces and executes an operation or where
+a structural marker also carries a direct result.  Of the annotations, 394
+have high, 150 medium, and 37 low confidence; the low-confidence cases remain
+priority items for human review.
+
+The probe agrees with the primary pragmatic choice on 292/581 units (50.3\%)
+and with at least one accepted label on 353/581 (60.8\%).  Thus recognizing
+genuine taxonomy overlap recovers 61 additional compatible decisions, but it
+does not make the reference authoritative.  ProcessBench has the strongest
+compatible agreement (68.6\%), followed by GSM8K (62.5\%); MATH has the
+lowest strict agreement (40.9\%).  Table~\ref{tab:schoenfeld-pragmatic-transfer}
+reports the complete dataset-level results.
+
+\begin{table*}[t]
+\centering
+\caption{Agreement with the provisional pragmatic review.  Primary accuracy
+requires the preferred label; compatible accuracy accepts either label on a
+multi-label unit.  Macro-F1 and macro recall treat each accepted label as a
+positive reference membership.}
+\label{tab:schoenfeld-pragmatic-transfer}
+\begin{tabular}{lrrrrrr}
+\toprule
+Dataset & Units & Primary acc. & Compatible acc. & Multi-label & Macro-F1 & Macro recall \\
+\midrule
+GSM8K        &  96 & 49.0\% & 62.5\% & 20 & 0.136 & 0.129 \\
+MATH         &  88 & 40.9\% & 53.4\% & 36 & 0.211 & 0.228 \\
+PRM800K      & 139 & 46.0\% & 49.6\% & 44 & 0.241 & 0.302 \\
+ProcessBench & 258 & 56.2\% & 68.6\% & 87 & 0.396 & 0.350 \\
+\midrule
+Total        & 581 & 50.3\% & 60.8\% & 187 & 0.330 & 0.306 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+The class-level comparison in Table~\ref{tab:schoenfeld-pragmatic-labels}
+sharpens the interpretation.  Implement is the only operationally strong
+external label (precision 0.804, recall 0.667, F1 0.729).  Read is moderately
+useful (F1 0.524).  Analyze and Plan are severely under-produced, while
+Verify and Monitor have low recall.  Explore has 11 accepted reference
+memberships but is never predicted, hence zero recall.  Because multi-label
+units contribute to two reference classes, accepted supports overlap and do
+not sum to 581.
+
+\begin{table*}[t]
+\centering
+\caption{Per-label comparison with accepted pragmatic memberships.  Support
+counts every unit for which the label is accepted, including secondary labels
+on ambiguous units.}
+\label{tab:schoenfeld-pragmatic-labels}
+\begin{tabular}{lrrrrr}
+\toprule
+Label & Accepted support & Probe predictions & Precision & Recall & F1 \\
+\midrule
+Read      &  84 & 126 & 0.437 & 0.655 & 0.524 \\
+Analyze   &  84 &  45 & 0.356 & 0.190 & 0.248 \\
+Plan      &  90 &  16 & 0.375 & 0.067 & 0.113 \\
+Implement & 345 & 286 & 0.804 & 0.667 & 0.729 \\
+Explore   &  11 &   0 & 0.000 & 0.000 & 0.000 \\
+Verify    &  51 &  19 & 0.632 & 0.235 & 0.343 \\
+Monitor   & 103 &  89 & 0.382 & 0.330 & 0.354 \\
+\bottomrule
+\end{tabular}
+\end{table*}
 
 Pragmatically, Implement is the most coherent transferred label: it marks
 long calculation, substitution, and algebra runs.  Read often marks givens or
@@ -878,9 +1030,12 @@ and Read.  This establishes accessible prefix-state signal within familiar
 responses, not generalization to unseen reasoning traces.
 \item External application of the episode probes is best interpreted as
 coarse phase inspection.  Predictions collapse toward Implement, Read, and
-Monitor; Explore is never selected, 12.7\% of units activate no probe, and no
-external gold episode labels exist.  ProcessBench Verify predictions identify
-review-heavy passages after errors but do not identify correctness.
+Monitor; Explore is never selected and 12.7\% of units activate no probe.  A
+provisional hybrid pragmatic review gives 50.3\% strict and 60.8\% compatible
+agreement, with 187/581 multi-label units.  Implement is strongest (F1 0.729),
+whereas Analyze, Plan, Explore, Verify, and Monitor remain incomplete external
+tags.  ProcessBench Verify predictions identify review-heavy passages after
+errors but do not identify correctness.
 \item The current PRM800K run failed with zero input despite completion
 banners.  Its earlier first-error stabilization and near-perfect full-trace
 decoding results are legacy evidence and require a clean prospective rerun.
@@ -902,8 +1057,9 @@ not establish response-grouped generalization, calibrated seven-way episode
 classification, or the cognitive states of Qwen's own generations.  It uses
 Qwen to encode teacher-forced DeepSeek-R1 text, shares all 38 response IDs
 between train and test, and selects layers on the reported test set.  Its
-external argmax outputs have no episode ground truth and should not be called
-transfer accuracy.
+external argmax outputs have no authoritative human or benchmark episode
+ground truth.  Agreement with the provisional hybrid review is diagnostic and
+should not be called validated transfer accuracy.
 
 \section{Discussion}
 
@@ -938,8 +1094,10 @@ For external use, the probe outputs should be treated as abstaining phase
 suggestions rather than annotations.  Abbreviation- and LaTeX-aware
 segmentation should precede evaluation; independent one-versus-rest scores
 should either be calibrated on a common multiclass validation set or retain
-multiple labels; and a manually labelled, benchmark-stratified sample is
-required before reporting transfer accuracy.  It would also be useful to
+multiple labels.  The pragmatic review confirms substantial ambiguity and
+only 60.8\% compatible agreement; independent human annotators should resolve
+the 37 low-confidence units and assess inter-annotator agreement before any
+transfer-accuracy claim.  It would also be useful to
 separate cross-model recognition, as studied here, from Qwen's own generation
 by running the same protocol on Qwen-generated traces.
 
@@ -960,14 +1118,22 @@ baselines on generated math.  ProcessBench shows a moderate late-prefix
 signal but no resolved discontinuity at its gold first error.  Expert routes
 are more persistent than their marginal frequencies predict, yet event-
 specific expert claims remain underpowered.  The auxiliary episode-judge study
-likewise favors conservative conclusions: context-aware light-budget GEPA with
-macro-F1 selection reaches 0.650 cross-validated macro-F1, but its improvement
-over the prior selector is small, a heavy budget is worse, and Monitor
-overprediction remains substantial.  The separate Qwen3.5 boundary probes
+likewise favors conservative conclusions.  Static-reward, context-aware
+light-budget GEPA reaches 0.650 cross-validated macro-F1, with only a small
+advantage over the prior selector and worse performance under the heavy search.
+The completed same-model LLM-judge final fit raises development-set balanced
+accuracy from 0.677 to 0.777 and macro-F1 from 0.613 to 0.727, primarily by
+reducing Monitor overprediction, but it selects among 145 candidates on those
+same six responses and does not evaluate the locked test.  This is
+prompt-optimization evidence rather than a generalization estimate.  The separate
+Qwen3.5 boundary probes
 show strong within-split linear access to upcoming episode labels, especially
 for Implement, Verify, and Read, but their sentence split leaks every response
 across train and test and their external outputs collapse to a coarse
-setup/execution/review taxonomy.  They therefore support prospective
+setup/execution/review taxonomy.  Provisional pragmatic adjudication yields
+50.3\% primary and 60.8\% compatible agreement; only Implement transfers
+strongly at class level (F1 0.729), and 32.2\% of units admit two defensible
+labels.  They therefore support prospective
 within-trace phase decodability, not unseen-trace generalization, automatic
 seven-way annotation, error detection, or claims about Qwen's own generated
 cognition.  The next priorities are a clean PRM800K rerun, adjudication of
@@ -1004,8 +1170,9 @@ Prospective failure prediction & Partially established & Final incorrectness is 
 Structural/MFA analysis & Not done & Add trajectory length/curvature, reasoning structures, and optional local-geometry regions after core probes. \\
 Routing intervention & Not done & Title-level intervention claim is not yet supported; run only after stable predictive signals are identified. \\
 Second MoE / robustness & Not done & Run a Qwen MoE or another routing design once the corrected pipeline is frozen. \\
-GEPA episode judge (Experiment 0a) & CV complete; validation pending & Context-aware five-fold grouped CV over 2,789 units gives 67.34\% accuracy and 65.05\% macro-F1 for light-budget GEPA with macro-F1 selection. Heavy is worse (66.69\%, 64.37\%). Review 180 flagged units, constrain decoding, evaluate seed and optimized prompts on every outer fold, and designate a genuinely unseen test set. \\
-Schoenfeld boundary probes (Experiment 0b) & Done & Qwen3.5 GPTQ probes cover 3,087 units, seven targets, and 41 hidden-state indices; selected-layer AUROC is 0.835--0.934.  External inspection covers 581 units but has no episode ground truth and never selects Explore.  Grouped CV remains pending; add nested layer selection, common multiclass calibration, robust segmentation, and a manually labelled transfer set. \\
+GEPA episode judge (Experiment 0a) & CV and final-fit validation complete; test pending & Static-reward grouped CV over 2,789 units gives 67.34\% accuracy and 65.05\% macro-F1 for light-budget GEPA; heavy is worse.  The same-model LLM-judge final fit improves validation accuracy from 66.83\% to 75.43\% and macro-F1 from 0.613 to 0.727, but reuses six responses across 145 candidate evaluations and does not evaluate the 336-unit locked test. Freeze and ablate the 40-example prompt, report response-level uncertainty, and evaluate on genuinely unseen responses. \\
+Schoenfeld boundary probes (Experiment 0b) & Done; human validation pending & Qwen3.5 GPTQ probes cover 3,087 units, seven targets, and 41 hidden-state indices; selected-layer AUROC is 0.835--0.934.  A provisional hybrid review of 581 external units gives 50.3\% primary and 60.8\% compatible agreement, with 187 multi-label and 37 low-confidence units; Explore is never predicted.  Grouped CV, robust segmentation, multiclass calibration, and independent human adjudication remain pending. \\
+Correlation pipeline & Smoke validated; full study pending & The named \texttt{correlation\_pipeline} defaults to Unsloth Qwen3.5-35B-A3B.  Generation uses the \texttt{UD-Q4\_K\_XL} GGUF with embedded native-MTP speculative weights; replay quantizes the matching BF16 Transformers checkpoint to 4-bit with Unsloth \texttt{FastModel}, skips the unused vision tower and CausalLM auxiliary loss, disables KV caching, and retains router and hidden-state outputs.  On 2026-08-20 the complete generation--replay--analysis command succeeded for one MATH500, one AIME24, and one Minerva trace, extracting all 40 layers over 8,196, 6,575, and 7,712 generated tokens, respectively.  This operational smoke test is not statistical evidence: the full eight-SPIRAL-plus-repository benchmark execution and inferential analysis remain pending.  Generation and replay use different 4-bit formats. \\
 Pipeline status handling & Defective & The shell script prints completion after zero-input stage errors; add nonzero exits, output validation, and atomic JSONL writes. \\
 Figures & Current after regeneration & Geometry, ProcessBench first-error, expert-phase, and legacy router-probe plots are generated by \texttt{paper\_figures/generate\_figures.py}. \\
 \bottomrule

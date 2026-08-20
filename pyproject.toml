@@ -25,6 +25,7 @@ dependencies = [
     "scipy>=1.13.0",
     "scikit-learn>=1.5.0",
     "matplotlib>=3.8.0",
+    "math-verify[antlr4_13_2]>=0.9.0,<1",
 ]
 
 [project.scripts]
@@ -32,6 +33,9 @@ exp0a = "moe_exp.experiment0a.run:main"
 exp0a-audit = "moe_exp.experiment0a.audit:main"
 exp1 = "moe_exp.experiment1.run:main"
 probe-test = "moe_exp.probeTest.run:main"
+correlation-generate = "moe_exp.correlation_pipeline.generate:main"
+correlation-forward = "moe_exp.correlation_pipeline.extract:main"
+correlation-analyze = "moe_exp.correlation_pipeline.analyze:main"
 
 [project.optional-dependencies]
 dev = [
@@ -45,6 +49,9 @@ exp0a = [
 probe = [
     "gptqmodel==7.3.1",
     "torchvision==0.26.0",
+]
+unsloth = [
+    "unsloth==2026.8.18",
 ]
 
 [tool.hatch.build.targets.wheel]

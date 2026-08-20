@@ -43,7 +43,7 @@ RUN pip install --no-cache-dir torchvision==0.26.0 --index-url ${TORCH_INDEX}
 COPY pyproject.toml .
 COPY src/ src/
 
-RUN pip install --no-cache-dir ".[dev,exp0a,probe]"
+RUN pip install --no-cache-dir ".[dev,exp0a,probe,unsloth]"
 
 # Copy the rest of the project
 COPY . .
