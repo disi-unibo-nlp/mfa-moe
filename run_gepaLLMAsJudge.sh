@@ -1,5 +1,5 @@
 #!/bin/bash
-#SBATCH --job-name=exp0a-gepa
+#SBATCH --job-name=gepa-llm-judge
 #SBATCH --output=slurm_logs/%j.out
 #SBATCH --error=slurm_logs/%j.err
 #SBATCH --gres=gpu:1
@@ -7,7 +7,7 @@
 #SBATCH --time=48:00:00
 #SBATCH --nodelist=faretra
 
-# Experiment 0a: start the local llama.cpp judge and run GEPA in two Docker
+# GEPA LLM-as-judge: start the local llama.cpp judge and run GEPA in two Docker
 # containers inside one SLURM allocation.
 #
 # Required host dataset (the model is downloaded automatically when absent):
@@ -16,8 +16,8 @@
 #   /llms/Qwen3.6-27B-UD-Q4_K_XL.gguf
 #
 # Example:
-#   sbatch run_experiment0a.sh --gepa-auto heavy
-#   sbatch run_experiment0a.sh --max-full-evals 10 --seed 23
+#   sbatch run_gepaLLMAsJudge.sh --gepa-auto heavy
+#   sbatch run_gepaLLMAsJudge.sh --max-full-evals 10 --seed 23
 
 set -euo pipefail
 
@@ -29,7 +29,7 @@ MODEL_REPO="${MODEL_REPO:-unsloth/Qwen3.6-27B-GGUF}"
 MODEL_REVISION="${MODEL_REVISION:-main}"
 PROJECT_IMAGE="${PROJECT_IMAGE:-moe-mfa-experiments:latest}"
 LLAMACPP_IMAGE="${LLAMACPP_IMAGE:-llama.cpp:localcuda}"
-OUTPUT_DIR="${OUTPUT_DIR:-results/exp0a/qwen3.6-27b-llm-judge}"
+OUTPUT_DIR="${OUTPUT_DIR:-results/gepaLLMAsJudge/qwen3.6-27b-llm-judge}"
 API_KEY="${LLAMA_API_KEY:-local-llamacpp-key}"
 
 # Conservative one-GPU defaults. Increase PARALLEL and NUM_THREADS together
@@ -67,7 +67,7 @@ MAX_UNITS=""
 
 usage() {
     cat <<'EOF'
-Usage: sbatch run_experiment0a.sh [options]
+Usage: sbatch run_gepaLLMAsJudge.sh [options]
 
 GEPA budget (choose at most one; default: --gepa-auto heavy):
   --gepa-auto light|medium|heavy
@@ -266,8 +266,8 @@ mkdir -p "$PHYS_DIR/$OUTPUT_DIR"
 chmod -R 777 "$PHYS_DIR/$OUTPUT_DIR"
 
 JOB_TAG="${SLURM_JOB_ID:-manual}-$$"
-NETWORK_NAME="exp0a-${JOB_TAG}"
-SERVER_CONTAINER="exp0a-llamacpp-${JOB_TAG}"
+NETWORK_NAME="gepa-llm-judge-${JOB_TAG}"
+SERVER_CONTAINER="gepa-llm-judge-llamacpp-${JOB_TAG}"
 
 cleanup() {
     docker rm -f "$SERVER_CONTAINER" >/dev/null 2>&1 || true
@@ -334,7 +334,7 @@ if [[ "$SERVER_READY" != true ]]; then
 fi
 
 RUN_ARGS=(
-    python -m moe_exp.experiment0a.run
+    python -m moe_exp.gepaLLMAsJudge.run
     --dataset-dir /data/schoenfeld
     --api-base "http://${SERVER_CONTAINER}:8080/v1"
     --api-key "$API_KEY"

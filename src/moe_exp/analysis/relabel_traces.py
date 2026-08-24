@@ -6,8 +6,8 @@ routing tensors. Gold first-error labels are retained exactly.
 Usage
 -----
     python -m moe_exp.analysis.relabel_traces \
-        --input results/exp2/.../traces_with_routing.jsonl \
-        --output results/exp2/.../traces_with_routing_relabelled.jsonl
+        --input results/old/exp2/.../traces_with_routing.jsonl \
+        --output results/old/exp2/.../traces_with_routing_relabelled.jsonl
 """
 
 from __future__ import annotations

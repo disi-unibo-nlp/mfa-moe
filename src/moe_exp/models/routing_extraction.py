@@ -1,3 +1,4 @@
+import argparse
 import hashlib
 import json
 import logging
@@ -59,7 +60,7 @@ def process_file(
     save_expert_weights: bool = True,
 ):
     """
-    Run Experiment 2 offline-extraction loop over traces to compute routing dynamics.
+    Run the offline extraction loop over traces to compute routing dynamics.
     Saves per-trace tensors: router_logits, selected_experts, expert_weights,
     and optionally hidden_states for linear probing.
 
@@ -278,11 +279,14 @@ def process_file(
     logger.info(f"Finished extracting routing context. Output saved to {output_path}")
 
 
-if __name__ == "__main__":
-    import argparse
-    
+def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description="Run single forward pass to extract router logits")
-    parser.add_argument("--input", type=str, required=True, help="Path to input traces.jsonl from Exp 1")
+    parser.add_argument(
+        "--input",
+        type=str,
+        required=True,
+        help="Path to generated traces.jsonl",
+    )
     parser.add_argument("--output", type=str, required=True, help="Path to output jsonl")
     parser.add_argument("--model_id", type=str, default="allenai/OLMoE-1B-7B-0924-Instruct", help="HuggingFace Model ID")
     parser.add_argument("--limit", type=int, default=None, help="Process only first N traces")
@@ -299,8 +303,12 @@ if __name__ == "__main__":
         help="Model weight quantization used during extraction (default: none)",
     )
     
-    args = parser.parse_args()
-    
+    return parser
+
+
+def main(argv: list[str] | None = None) -> None:
+    args = build_parser().parse_args(argv)
+
     input_file = Path(args.input)
     if input_file.exists():
         process_file(
@@ -313,4 +321,8 @@ if __name__ == "__main__":
             quantization=args.quantization,
         )
     else:
-        logger.error(f"Could not find input file: {input_file}")
+        raise FileNotFoundError(f"Could not find input file: {input_file}")
+
+
+if __name__ == "__main__":
+    main()

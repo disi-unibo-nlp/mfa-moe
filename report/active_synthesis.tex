@@ -1,0 +1,113 @@
+\section{Analysis}
+
+\subsection{Conclusions supported so far}
+
+\begin{enumerate}
+\item The static-reward, context-aware GEPA study reaches 0.650 cross-validated
+macro-F1 with the light budget.  The advantage over balanced-accuracy
+selection is small and the heavy search is worse.  In the separate completed
+same-model LLM-judge final fit, development-set balanced accuracy rises from
+0.677 to 0.777 and macro-F1 from 0.613 to 0.727, primarily through reduced
+Monitor overprediction.  This establishes successful prompt optimization on
+the development distribution, not held-out generalization.
+\item The boundary probes show substantial sentence-split decodability of
+upcoming Schoenfeld episodes, with selected-layer AUROC of 0.835--0.934 and
+the strongest thresholded performance for Implement, Verify, and Read.  This
+establishes accessible prefix-state signal within familiar responses, not
+generalization to unseen reasoning traces.  External application is best
+interpreted as coarse phase inspection: a provisional pragmatic review gives
+50.3\% strict and 60.8\% compatible agreement, with 187/581 multi-label units.
+Implement is strongest (F1 0.729), while the remaining labels are incomplete
+external tags.  ProcessBench Verify predictions identify review-heavy
+post-error passages but do not identify correctness.
+\item In the completed 500-problem Qwen MATH-500 correlation run, correctness
+is associated with lower mean router entropy ($r=-0.555$, 95\% CI
+$[-0.614,-0.500]$) and larger mean router margin ($r=0.301$,
+$[0.231,0.376]$).  Correct traces are also substantially shorter
+($r=-0.520$), while backtracking and self-correction are most strongly
+associated with greater length.  These are marginal trace-level associations;
+the single-attempt design cannot isolate routing from length, token content,
+or problem difficulty.
+\end{enumerate}
+
+\subsection{What has not been established}
+
+The GEPA final fit does not provide an unbiased test estimate.  It selects
+among 145 candidates on the same six-response validation set, has only one
+optimization seed, and leaves the locked 336-unit test unevaluated.  The result
+does not establish that the expanded 40-demonstration prompt transfers to new
+responses or that the same-model reward is an independent evaluator.
+
+The boundary-probe run does not establish response-grouped generalization,
+calibrated seven-way episode classification, or the cognitive states of Qwen's
+own generations.  It uses Qwen to encode teacher-forced DeepSeek-R1 text,
+shares all 38 response IDs between train and test, and selects layers on the
+reported test set.  Its external argmax outputs have no authoritative human or
+benchmark episode ground truth.  Agreement with the provisional hybrid review
+is diagnostic and should not be called validated transfer accuracy.
+
+The Qwen MATH-500 correlations do not establish an independent routing
+predictor or a causal mechanism.  No length-conditioned model has been fit,
+only one attempt is available per problem, and the other planned benchmarks
+have not yet been analyzed.  Layerwise maxima are exploratory comparisons
+without selection-adjusted uncertainty.  Across all three workflows,
+correlation and linear decodability should not be read as causal evidence.
+
+\section{Discussion}
+
+The completed GEPA final fit demonstrates that same-model informative feedback
+can guide a large prompt toward the development labels: it fixes 49 seed
+errors while introducing 14 regressions and improves every validation
+response.  Its optimization trace also shows the central risk.  The prompt
+expands from 21 to 40 demonstrations and is selected after 145 candidate
+evaluations on those same six responses.  The next defensible test is therefore
+to freeze and ablate or compress the prompt, quantify response-level
+uncertainty, and evaluate it once on genuinely unseen responses.
+
+The episode probes add a complementary representation-level result: the
+prefix before a sentence often encodes the phase likely to follow, and the
+signal is strongest in middle-to-late layers rather than at the final model
+output.  The current split cannot determine whether this reflects a portable
+episode representation, trace-specific transition regularities, position, or
+formatting.  A response-grouped nested evaluation should select both layer
+and regularization on inner folds, evaluate once on unseen responses, repeat
+over seeds, and report response-bootstrap intervals.  Standardized or
+norm-matched features and simple position, previous-unit, and formatting
+baselines are needed to separate hidden-state information from layer scale and
+trace structure.
+
+For external use, the probe outputs should be treated as abstaining phase
+suggestions rather than annotations.  Abbreviation- and LaTeX-aware
+segmentation should precede evaluation; independent one-versus-rest scores
+should either be calibrated on a common multiclass validation set or retain
+multiple labels.  The pragmatic review confirms substantial ambiguity and
+only 60.8\% compatible agreement.  Independent human annotators should resolve
+the 37 low-confidence units and assess inter-annotator agreement before any
+transfer-accuracy claim.  Cross-model recognition, as studied here, should
+also be separated from Qwen's own generation by running the protocol on
+Qwen-generated traces.
+
+The Qwen MATH-500 run reinforces the need for structural controls.  Lower
+entropy and higher margin accompany correct answers, but incorrect and
+revision-bearing traces are also longer.  The appropriate next test is the
+planned repeated-attempt analysis: compare correct and incorrect samples of
+the same problem, condition on trace length and token composition, and check
+whether the aggregate entropy and margin effects replicate across datasets.
+
+\section{Conclusion}
+
+The three active workflows support deliberately limited claims.  GEPA improves
+the same-model-judge development result substantially but has not been tested
+on an untouched response set.  The boundary probes reveal strong within-split
+linear access to upcoming episode labels, especially for Implement, Verify,
+and Read, but their sentence split leaks every response across train and test
+and their external outputs collapse toward a coarse setup, execution, and
+review taxonomy.  The Qwen MATH-500 study adds a robust descriptive
+association---correct traces have lower router entropy and higher margin---but
+co-occurring length effects and the single-attempt design prevent an
+independent or causal routing claim.
+
+The immediate evidential requirements are a frozen-prompt GEPA evaluation on
+unseen responses, response-grouped nested boundary probes with independently
+validated external labels, and repeated-attempt benchmark generation enabling
+within-problem routing contrasts.

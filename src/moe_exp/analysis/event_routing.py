@@ -11,8 +11,8 @@ the paper:
 Usage
 -----
     python -m moe_exp.analysis.event_routing \
-        --input results/exp2/allenai--OLMoE-1B-7B-0924-Instruct/gsm8k/traces_with_routing.jsonl \
-        --output results/exp2/allenai--OLMoE-1B-7B-0924-Instruct/gsm8k/event_routing.json \
+        --input results/old/exp2/allenai--OLMoE-1B-7B-0924-Instruct/gsm8k/traces_with_routing.jsonl \
+        --output results/old/exp2/allenai--OLMoE-1B-7B-0924-Instruct/gsm8k/event_routing.json \
         --window 5
 """
 

@@ -1,6 +1,6 @@
 import numpy as np
 
-from moe_exp.experiment4.run import _evaluate_source, _labels_for_prefix
+from moe_exp.old.experiment4.run import _evaluate_source, _labels_for_prefix
 from moe_exp.schemas import StepLabels, TraceRecord
 
 

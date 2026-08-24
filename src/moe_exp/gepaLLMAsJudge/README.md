@@ -1,9 +1,16 @@
-# Experiment 0a — context-aware GEPA episode judge
+# gepaLLMAsJudge
 
-Experiment 0a optimizes the prompt used by Qwen 3.6 27B to assign one of seven
+`gepaLLMAsJudge` optimizes the prompt used by Qwen 3.6 27B to assign one of seven
 adapted Schoenfeld Episode Theory labels:
 
 `Read`, `Analyze`, `Plan`, `Implement`, `Explore`, `Verify`, `Monitor`.
+
+Install its optional dependencies from the repository root before running the
+optimizer or its tests:
+
+```bash
+pip install -e ".[dev,gepa-llm-as-judge]"
+```
 
 ## Context and data isolation
 
@@ -25,9 +32,9 @@ never silently modified. Every run writes `annotation_audit_*.json`, and the
 same audit can be run without a model:
 
 ```bash
-python -m moe_exp.experiment0a.audit \
+python -m moe_exp.gepaLLMAsJudge.audit \
   --dataset-dir data/Schoenfeld_Reasoning \
-  --output results/exp0a/annotation_audit.json
+  --output results/gepaLLMAsJudge/annotation_audit.json
 ```
 
 ## Prompt and optimization
@@ -79,7 +86,7 @@ primary metric unless the configured label ordering is substantively justified.
 First compare configurations using nested response-grouped cross-validation:
 
 ```bash
-python -m moe_exp.experiment0a.run \
+python -m moe_exp.gepaLLMAsJudge.run \
   --dataset-dir data/Schoenfeld_Reasoning \
   --prompt-variant few-shot \
   --few-shot-examples 21 \
@@ -88,7 +95,7 @@ python -m moe_exp.experiment0a.run \
   --cv-folds 5 \
   --locked-test-documents 6 \
   --gepa-auto heavy \
-  --output-dir results/exp0a/context-llmjudge-cv
+  --output-dir results/gepaLLMAsJudge/context-llmjudge-cv
 ```
 
 For each outer fold, GEPA uses only an inner training and validation split. The
@@ -99,21 +106,21 @@ does not produce one deployable prompt; use it to choose the configuration.
 Fit the chosen configuration without evaluating the locked test:
 
 ```bash
-python -m moe_exp.experiment0a.run \
+python -m moe_exp.gepaLLMAsJudge.run \
   --dataset-dir data/Schoenfeld_Reasoning \
   --prompt-variant few-shot \
   --few-shot-examples 21 \
   --gepa-reward llm-judge \
   --selection-metric balanced_accuracy \
   --gepa-auto heavy \
-  --output-dir results/exp0a/context-llmjudge-final
+  --output-dir results/gepaLLMAsJudge/context-llmjudge-final
 ```
 
 Only after configuration and prompt-selection rules are frozen, explicitly
 authorize the one-time locked-test evaluation:
 
 ```bash
-python -m moe_exp.experiment0a.run \
+python -m moe_exp.gepaLLMAsJudge.run \
   --dataset-dir data/Schoenfeld_Reasoning \
   --prompt-variant few-shot \
   --few-shot-examples 21 \
@@ -121,7 +128,7 @@ python -m moe_exp.experiment0a.run \
   --selection-metric balanced_accuracy \
   --gepa-auto heavy \
   --evaluate-locked-test \
-  --output-dir results/exp0a/context-llmjudge-locked-test
+  --output-dir results/gepaLLMAsJudge/context-llmjudge-locked-test
 ```
 
 The current historical test split has already been inspected in earlier
@@ -141,24 +148,24 @@ mkdir -p slurm_logs
 Run five-fold nested cross-validation:
 
 ```bash
-sbatch run_experiment0a.sh \
+sbatch run_gepaLLMAsJudge.sh \
   --prompt-variant few-shot \
   --few-shot-examples 21 \
   --gepa-reward llm-judge \
   --cv-folds 5 \
   --gepa-auto heavy \
-  --output-dir results/exp0a/context-llmjudge-cv-s42
+  --output-dir results/gepaLLMAsJudge/context-llmjudge-cv-s42
 ```
 
 Run the final fit, still without test evaluation:
 
 ```bash
-sbatch run_experiment0a.sh \
+sbatch run_gepaLLMAsJudge.sh \
   --prompt-variant few-shot \
   --few-shot-examples 21 \
   --gepa-reward llm-judge \
   --gepa-auto heavy \
-  --output-dir results/exp0a/context-llmjudge-final-s42
+  --output-dir results/gepaLLMAsJudge/context-llmjudge-final-s42
 ```
 
 Add `--evaluate-locked-test` only to the frozen final evaluation job. Each

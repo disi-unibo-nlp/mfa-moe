@@ -714,7 +714,9 @@ def parse_args() -> argparse.Namespace:
     budget.add_argument("--gepa-auto", choices=("light", "medium", "heavy"))
     budget.add_argument("--max-full-evals", type=int)
     budget.add_argument("--max-metric-calls", type=int)
-    parser.add_argument("--output-dir", type=Path, default=Path("results/exp0a"))
+    parser.add_argument(
+        "--output-dir", type=Path, default=Path("results/gepaLLMAsJudge")
+    )
     args = parser.parse_args()
     if not 0.0 <= args.max_class_recall_drop <= 1.0:
         parser.error("--max-class-recall-drop must be in [0, 1]")

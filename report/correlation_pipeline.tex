@@ -1,0 +1,64 @@
+\section{Qwen Correlation Pipeline}
+
+The correlation pipeline completed all 500 MATH-500 problems with one sampled
+trace per problem.  Qwen3.5-35B-A3B answered 387 correctly (77.4\%).  The
+lexical detectors marked 133 traces with backtracking, 97 with
+self-correction, and 70 with contradiction.  The analysis contains 59 trace
+features, including prespecified summaries across the six router layers
+selected by the independent Schoenfeld probe run.  Table~\ref{tab:qwen-corr}
+reports point-biserial correlations; intervals resample source problems.
+Because there is exactly one trace per problem, the 500 bootstrap clusters are
+also the 500 observations.
+
+\begin{table*}[t]
+\centering
+\caption{Prespecified Qwen MATH-500 trace-level correlations.  Positive $r$
+means larger feature values in traces for which the binary target is present.
+Intervals are 95\% problem-cluster bootstrap intervals.
+\modelmetrics{Qwen3.5-35B-A3B (\texttt{UD-Q4\_K\_XL} GGUF generation and
+matching \texttt{unsloth/Qwen3.5-35B-A3B} routing replay with runtime 4-bit
+quantization)}{point-biserial $r$ between each binary trace target and the
+listed continuous feature, with problem-cluster bootstrap 95\% confidence
+intervals}}
+\label{tab:qwen-corr}
+\begin{tabular}{llrr}
+\toprule
+Target & Feature & $r$ & 95\% CI \\
+\midrule
+Correct answer & Mean router entropy & $-0.555$ & $[-0.614,-0.500]$ \\
+Correct answer & Token count & $-0.520$ & $[-0.562,-0.480]$ \\
+Correct answer & Mean hidden-state norm & $-0.488$ & $[-0.554,-0.419]$ \\
+Correct answer & Mean router margin & $0.301$ & $[0.231,0.376]$ \\
+Correct answer & Mean hidden/router geometry & $-0.238$ & $[-0.307,-0.164]$ \\
+Backtracking & Token count & $0.453$ & $[0.399,0.501]$ \\
+Backtracking & Mean router entropy & $0.364$ & $[0.268,0.452]$ \\
+Self-correction & Token count & $0.382$ & $[0.336,0.429]$ \\
+Self-correction & Mean router entropy & $0.325$ & $[0.224,0.411]$ \\
+Contradiction & Mean hidden-state norm & $0.329$ & $[0.259,0.393]$ \\
+Contradiction & Token count & $0.247$ & $[0.189,0.302]$ \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+Correct traces are shorter and exhibit lower mean router entropy, smaller
+hidden-state norms and trajectory steps, less top-1 switching, greater top-$k$
+overlap, and larger router margins.  The entropy association is the largest
+prespecified routing result.  Exploratory layerwise screening yields similar
+or slightly larger magnitudes---entropy at layer 27 has $r=-0.574$, and
+hidden-state step distance at layer 39 has $r=-0.572$---but these maxima do not
+have selection-adjusted intervals and should not be treated as confirmed
+layer localization.
+
+The same direction recurs for the lexical reasoning-event targets: traces
+with backtracking or self-correction tend to be longer, higher-entropy, and
+lower-margin.  However, token count is itself strongly associated with
+correctness and is the largest correlate of backtracking and self-correction.
+The present analysis reports marginal correlations and does not condition
+routing features on length, problem difficulty, or token content.  It
+therefore cannot distinguish a routing-specific signal from longer or harder
+failed solutions having more opportunities for revision markers and different
+activation statistics.  With one attempt per problem, problem-level pass-rate
+correlations and within-problem correct-minus-incorrect contrasts are empty;
+the repeated-attempt design is required for those stronger controls.
+
+

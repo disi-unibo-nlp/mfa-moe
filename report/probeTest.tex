@@ -1,0 +1,217 @@
+\section{probeTest}
+
+The \texttt{probeTest} workflow tests a different annotation mechanism from
+the generative judge in \texttt{gepaLLMAsJudge}.  It asks whether Qwen's
+representation of the prefix
+immediately before a sentence contains linearly accessible information about
+the upcoming Schoenfeld episode.  It therefore measures prospective
+prefix-state decodability, not semantic classification after reading the
+sentence and not the latent dynamics of a Qwen-generated trace.
+
+\paragraph{Within-corpus results.}
+Table~\ref{tab:schoenfeld-boundary-probes} reports the accuracy-selected layer
+for each one-versus-rest target.  AUROC is 0.835--0.934 and balanced accuracy
+is 0.740--0.862, demonstrating substantial within-split ranking signal.
+Implement is strongest at the natural threshold (F1 0.771), followed by
+Verify (0.726) and Read (0.704).  Analyze is intermediate.  Plan, Explore, and
+Monitor have F1 below 0.50.  Their nominal accuracies are also 0.96--1.06
+percentage points below an always-negative majority classifier, so accuracy
+alone gives a misleading impression for these rare targets.
+
+\begin{table*}[t]
+\centering
+\caption{Accuracy-selected Schoenfeld boundary probes on the sentence-level
+test split.  Prevalence is over all 3,087 units.  $\Delta$Maj. subtracts the
+always-negative accuracy.  Balanced accuracy is derived from the saved test
+confusion matrix.  Layer selection and evaluation use the same test split and
+are therefore selection-optimistic.  \modelmetrics{
+\texttt{Qwen/Qwen3.5-35B-A3B-GPTQ-Int4} as a frozen hidden-state encoder, with
+one-versus-rest logistic probes}{target prevalence, selected hidden-state
+layer, accuracy, accuracy minus the majority baseline, balanced accuracy, F1,
+and AUROC}}
+\label{tab:schoenfeld-boundary-probes}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lrrrrrrr}
+\toprule
+Target & Prevalence & Layer & Accuracy & $\Delta$Maj. & Balanced acc. & F1 & AUROC \\
+\midrule
+Read      & 12.21\% & 34 & 0.9239 & +0.0461 & 0.8476 & 0.7044 & 0.9338 \\
+Analyze   & 25.62\% & 36 & 0.8107 & +0.0669 & 0.7669 & 0.6465 & 0.8348 \\
+Plan      &  7.29\% & 39 & 0.9175 & -0.0096 & 0.7405 & 0.4848 & 0.8551 \\
+Implement & 21.87\% & 38 & 0.8964 & +0.1151 & 0.8617 & 0.7714 & 0.9305 \\
+Explore   &  6.74\% & 40 & 0.9223 & -0.0103 & 0.7486 & 0.4894 & 0.8884 \\
+Verify    & 20.38\% & 27 & 0.8754 & +0.0792 & 0.8509 & 0.7260 & 0.9122 \\
+Monitor   &  5.90\% & 35 & 0.9304 & -0.0106 & 0.7546 & 0.4819 & 0.9031 \\
+\bottomrule
+\end{tabular}}
+\end{table*}
+
+The signal emerges rapidly and is not maximal at the model output.  Mean
+one-versus-rest AUROC across targets rises from 0.624 at the embedding output
+to 0.873 at layer 10 and 0.892 at layer 20, peaks at 0.899 at layer 30, and
+falls to 0.867 at layer 40.  Mean F1 peaks at layer 28.  Accuracy-based target
+selection sometimes obscures this profile: for Plan, the selected layer 39
+has AUROC 0.855 whereas layer 21 reaches 0.922.  AUROC or balanced accuracy,
+chosen inside a validation fold, better matches the scientific question of
+decodability.
+
+The fits are numerically stable---none of the 287 regressions reports a
+convergence warning---but statistical overfitting remains visible.  At the
+selected layers, train--test accuracy gaps are 16.7 points for Analyze, 10.1
+for Implement, approximately 7.8 for Plan and Explore, and 4.5--5.5 for the
+other targets.  Explore reaches 100\% training accuracy.  With 2,048 features,
+2,469 training units, strong within-response dependence, and only 38 distinct
+responses, the effective independent sample size is much closer to the number
+of responses than to the number of sentences.  Test-based layer selection
+adds further optimism.
+
+\paragraph{External benchmark inspection.}
+All 80 requested examples complete without omitted units, yielding 581
+sentence boundaries.  Table~\ref{tab:schoenfeld-external-labels} shows that
+the seven-way inspection behavior collapses mainly to Implement, Read, and
+Monitor.  Implement alone receives 49.2\% of argmax assignments, whereas
+Explore is never selected.  The transfer distribution also differs sharply
+from training: Analyze falls from 25.6\% of gold units to 7.7\% of predictions
+and Verify from 20.4\% to 3.3\%.
+
+\begin{table*}[t]
+\centering
+\caption{Argmax inspection-label counts on external reasoning units.  These
+are raw prediction frequencies, not accuracies.  Table~\ref{tab:schoenfeld-pragmatic-transfer}
+compares them with the subsequent provisional pragmatic review.
+\modelmetrics{\texttt{Qwen/Qwen3.5-35B-A3B-GPTQ-Int4} as a frozen encoder,
+with the seven selected one-versus-rest logistic probes}{unit counts and
+seven-way argmax prediction counts}}
+\label{tab:schoenfeld-external-labels}
+\begin{tabular}{lrrrrrrrr}
+\toprule
+Dataset & Units & Read & Analyze & Plan & Implement & Explore & Verify & Monitor \\
+\midrule
+GSM8K        &  96 &   0 &  2 &  3 &  53 & 0 &  0 & 38 \\
+MATH         &  88 &  23 &  7 &  1 &  45 & 0 &  1 & 11 \\
+PRM800K      & 139 &  34 & 18 &  0 &  71 & 0 &  1 & 15 \\
+ProcessBench & 258 &  69 & 18 & 12 & 117 & 0 & 17 & 25 \\
+\midrule
+Total        & 581 & 126 & 45 & 16 & 286 & 0 & 19 & 89 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+The independent binary scores do not form a clean multiclass decision rule.
+Seventy-four units (12.7\%) have no score above 0.5 but are still assigned an
+argmax label, while 180 (31.0\%) activate more than one probe and 99 (17.0\%)
+have a top-two margin below 0.1.  A conservative display rule requiring a top
+score of at least 0.8 and a margin of at least 0.2 retains only 318/581 units
+(54.7\%), mostly Implement, Read, and Monitor.  This threshold is a useful
+abstention heuristic, not a calibrated guarantee of correctness.
+
+\paragraph{Provisional pragmatic adjudication.}
+To make the qualitative inspection measurable, every displayed unit was
+subsequently reviewed using the problem, the current unit, its neighbors, and
+the adapted Schoenfeld precedence rule.  The annotation is a hybrid
+rule-assisted Codex pragmatic review, not human consensus or authoritative
+benchmark gold.  It records one primary label for conventional single-label
+statistics and, where two functions are genuinely defensible, an accepted
+set containing both labels.  This occurs for 187/581 units (32.2\%), mostly
+at boundaries where a unit both announces and executes an operation or where
+a structural marker also carries a direct result.  Of the annotations, 394
+have high, 150 medium, and 37 low confidence; the low-confidence cases remain
+priority items for human review.
+
+The probe agrees with the primary pragmatic choice on 292/581 units (50.3\%)
+and with at least one accepted label on 353/581 (60.8\%).  Thus recognizing
+genuine taxonomy overlap recovers 61 additional compatible decisions, but it
+does not make the reference authoritative.  ProcessBench has the strongest
+compatible agreement (68.6\%), followed by GSM8K (62.5\%); MATH has the
+lowest strict agreement (40.9\%).  Table~\ref{tab:schoenfeld-pragmatic-transfer}
+reports the complete dataset-level results.
+
+\begin{table*}[t]
+\centering
+\caption{Agreement with the provisional pragmatic review.  Primary accuracy
+requires the preferred label; compatible accuracy accepts either label on a
+multi-label unit.  Macro-F1 and macro recall treat each accepted label as a
+positive reference membership.  \modelmetrics{
+\texttt{Qwen/Qwen3.5-35B-A3B-GPTQ-Int4} as a frozen encoder, with the seven
+selected one-versus-rest logistic probes}{unit count, primary accuracy,
+compatible accuracy, multi-label count, accepted-membership macro-F1, and
+macro recall}}
+\label{tab:schoenfeld-pragmatic-transfer}
+\begin{tabular}{lrrrrrr}
+\toprule
+Dataset & Units & Primary acc. & Compatible acc. & Multi-label & Macro-F1 & Macro recall \\
+\midrule
+GSM8K        &  96 & 49.0\% & 62.5\% & 20 & 0.136 & 0.129 \\
+MATH         &  88 & 40.9\% & 53.4\% & 36 & 0.211 & 0.228 \\
+PRM800K      & 139 & 46.0\% & 49.6\% & 44 & 0.241 & 0.302 \\
+ProcessBench & 258 & 56.2\% & 68.6\% & 87 & 0.396 & 0.350 \\
+\midrule
+Total        & 581 & 50.3\% & 60.8\% & 187 & 0.330 & 0.306 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+The class-level comparison in Table~\ref{tab:schoenfeld-pragmatic-labels}
+sharpens the interpretation.  Implement is the only operationally strong
+external label (precision 0.804, recall 0.667, F1 0.729).  Read is moderately
+useful (F1 0.524).  Analyze and Plan are severely under-produced, while
+Verify and Monitor have low recall.  Explore has 11 accepted reference
+memberships but is never predicted, hence zero recall.  Because multi-label
+units contribute to two reference classes, accepted supports overlap and do
+not sum to 581.
+
+\begin{table*}[t]
+\centering
+\caption{Per-label comparison with accepted pragmatic memberships.  Support
+counts every unit for which the label is accepted, including secondary labels
+on ambiguous units.  \modelmetrics{
+\texttt{Qwen/Qwen3.5-35B-A3B-GPTQ-Int4} as a frozen encoder, with the seven
+selected one-versus-rest logistic probes}{accepted-label support, argmax
+prediction count, precision, recall, and F1}}
+\label{tab:schoenfeld-pragmatic-labels}
+\begin{tabular}{lrrrrr}
+\toprule
+Label & Accepted support & Probe predictions & Precision & Recall & F1 \\
+\midrule
+Read      &  84 & 126 & 0.437 & 0.655 & 0.524 \\
+Analyze   &  84 &  45 & 0.356 & 0.190 & 0.248 \\
+Plan      &  90 &  16 & 0.375 & 0.067 & 0.113 \\
+Implement & 345 & 286 & 0.804 & 0.667 & 0.729 \\
+Explore   &  11 &   0 & 0.000 & 0.000 & 0.000 \\
+Verify    &  51 &  19 & 0.632 & 0.235 & 0.343 \\
+Monitor   & 103 &  89 & 0.382 & 0.330 & 0.354 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+Pragmatically, Implement is the most coherent transferred label: it marks
+long calculation, substitution, and algebra runs.  Read often marks givens or
+restatements, particularly near the start of MATH and PRM800K solutions.
+Monitor behaves primarily as a solution-boundary or opening-state detector:
+all 20 GSM8K first units and 18/20 ProcessBench first units receive Monitor,
+whereas 19/20 MATH and 17/20 PRM800K first units receive Read.  Because the
+target sentence is unseen at this point, this source dependence must arise
+from the problem, prefix position, and formatting rather than the displayed
+unit's semantics.  Analyze and Plan appear plausibly on some explanatory or
+phase-change boundaries but have low coverage.  Explore is unusable for
+external tagging in the present model.
+
+Verify has a narrower but potentially useful role as a review or
+reconsideration flag.  All 17 ProcessBench Verify predictions occur at or
+after the benchmark's annotated first error, including six within one trace
+that repeatedly reinterprets the question before ending with the wrong sign.
+This is not an error detector: errors generally occur early, Verify may merely
+mark late position or reflective language, and no PRM800K post-error unit is
+labelled Verify.  It can prioritize passages for inspection but cannot judge
+correctness.
+
+The qualitative stage also exposes an input problem independent of the
+classifier.  Thirteen units are split immediately after abbreviations such as
+``Mr.'', producing fragments including ``Therefore, Mr.'' and inconsistent
+scores.  External use should first adopt abbreviation- and LaTeX-aware
+segmentation.  With the current outputs, the defensible practical
+representation is a coarse three-phase view---setup (Read and opening
+Monitor), execution (Analyze, Plan, and Implement), and review (Verify)---plus
+an explicit unknown/ambiguous state.  The seven raw argmax labels should not
+be used as automatic cognitive annotations.
+

@@ -5,14 +5,19 @@ from pathlib import Path
 
 from moe_exp.schemas import TraceRecord
 from moe_exp.analysis.classifier import classify_trace
-from moe_exp.experiment1.taxonomy import build_row, build_summary
+from moe_exp.old.experiment1.taxonomy import build_row, build_summary
 
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 
 
 def main():
     parser = argparse.ArgumentParser(description="Recompute taxonomy metrics over existing traces")
-    parser.add_argument("--results-dir", type=str, default="results/exp1", help="Base results directory (e.g. results/exp1)")
+    parser.add_argument(
+        "--results-dir",
+        type=str,
+        default="results/old/exp1",
+        help="Base archived results directory (default: results/old/exp1)",
+    )
     args = parser.parse_args()
 
     results_dir = Path(args.results_dir)
@@ -23,7 +28,7 @@ def main():
     summary_file = results_dir / "summary.json"
     rows = []
 
-    # Expected folder structure: results/exp1/<model_id...>/<dataset>/traces.jsonl
+    # Expected folder structure: results/old/exp1/<model_id...>/<dataset>/traces.jsonl
     # Note: model_id might contain slashes (e.g. allenai/OLMoE...)
     # So we search for any traces.jsonl files
     trace_files = list(results_dir.rglob("traces.jsonl"))

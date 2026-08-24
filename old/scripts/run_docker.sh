@@ -26,4 +26,4 @@ docker run \
     --memory="30g" \
     --gpus '"device='"$CUDA_VISIBLE_DEVICES"'"' \
     "$IMAGE_NAME" \
-    bash -c "cd /workspace && python -m moe_exp.experiment1.run ${*}"
+    bash -c "cd /workspace && python -m moe_exp.old.experiment1.run ${*}"

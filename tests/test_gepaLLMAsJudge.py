@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pytest
 
-from moe_exp.experiment0a.data import (
+from moe_exp.gepaLLMAsJudge.data import (
     SENTENCE_LABELS,
     EpisodeDocument,
     EpisodeUnit,
@@ -13,18 +13,18 @@ from moe_exp.experiment0a.data import (
     make_nested_group_folds,
     split_documents,
 )
-from moe_exp.experiment0a.metrics import (
+from moe_exp.gepaLLMAsJudge.metrics import (
     LabelParseError,
     compute_classification_metrics,
     compute_sentence_agreement,
     parse_sentence_label,
 )
-from moe_exp.experiment0a.prompts import (
+from moe_exp.gepaLLMAsJudge.prompts import (
     SEED_INSTRUCTIONS,
     build_few_shot_instructions,
     select_few_shot_sentences,
 )
-from moe_exp.experiment0a.run import create_metric, parse_llm_judge_response
+from moe_exp.gepaLLMAsJudge.run import create_metric, parse_llm_judge_response
 
 
 def test_parse_sentence_label_is_case_tolerant_but_strict() -> None:

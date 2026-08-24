@@ -19,9 +19,9 @@ Runs offline over Exp2 outputs (router-logit tensors); no GPU needed.
 
 Usage
 -----
-    python -m moe_exp.experiment5.run \
-        --input results/exp2/allenai--OLMoE-1B-7B-0924-Instruct/gsm8k/traces_with_routing.jsonl \
-        --output results/exp5/allenai--OLMoE-1B-7B-0924-Instruct/gsm8k/expert_events.json \
+    python -m moe_exp.old.experiment5.run \
+        --input results/old/exp2/allenai--OLMoE-1B-7B-0924-Instruct/gsm8k/traces_with_routing.jsonl \
+        --output results/old/exp5/allenai--OLMoE-1B-7B-0924-Instruct/gsm8k/expert_events.json \
         --window 5
 """
 

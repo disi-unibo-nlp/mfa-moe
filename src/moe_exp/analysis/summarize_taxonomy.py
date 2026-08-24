@@ -6,7 +6,7 @@ import argparse
 import json
 from pathlib import Path
 
-from moe_exp.experiment1.taxonomy import build_row, build_summary
+from moe_exp.old.experiment1.taxonomy import build_row, build_summary
 from moe_exp.schemas import TraceRecord
 
 
