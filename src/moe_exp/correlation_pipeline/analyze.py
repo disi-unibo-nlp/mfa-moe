@@ -104,6 +104,7 @@ def _layer_features(
     selected_experts: torch.Tensor | None,
     *,
     max_geometry_tokens: int,
+    layer_indices: list[int] | None = None,
 ) -> dict[str, float]:
     features: dict[str, float] = {}
     num_layers, token_count, num_experts = router_logits.shape
@@ -115,8 +116,13 @@ def _layer_features(
     if selected_experts is not None and selected_experts.shape[:2] != router_logits.shape[:2]:
         raise ValueError("Selected-expert and router tensor shapes do not align")
 
+    if layer_indices is None:
+        layer_indices = list(range(num_layers))
+    if len(layer_indices) != num_layers:
+        raise ValueError("Saved layer_indices do not match tensor dimension 0")
+
     aggregate: dict[str, list[float]] = {}
-    for layer in range(num_layers):
+    for layer, original_layer in enumerate(layer_indices):
         probabilities = F.softmax(router_logits[layer].to(torch.float32), dim=-1)
         entropy = -(probabilities * probabilities.clamp_min(1e-12).log()).sum(dim=-1)
         top_two = torch.topk(probabilities, k=min(2, num_experts), dim=-1).values
@@ -164,7 +170,7 @@ def _layer_features(
             )
 
         for name, value in layer_values.items():
-            features[f"{name}_l{layer:02d}"] = value
+            features[f"{name}_l{original_layer:02d}"] = value
             aggregate.setdefault(name, []).append(value)
 
     for name, values in aggregate.items():
@@ -220,6 +226,7 @@ def extract_trace_features(
             hidden_states,
             selected_experts,
             max_geometry_tokens=max_geometry_tokens,
+            layer_indices=trace.model_logs.layer_indices,
         )
     )
     episode_features = trace.metadata.get("episode_features")

@@ -143,8 +143,13 @@ src/moe_exp/correlation_pipeline/run_docker.sh forward \
 ```
 
 Hidden states are extracted by default. `--router-only` saves space but removes
-hidden trajectory and hidden/router geometry features. The output mirrors the
-existing Experiment 2 structure:
+hidden trajectory and hidden/router geometry features. By default, extraction
+reads `results/probeTest/qwen3.5-35b-a3b-gptq-int4/probes/results.json` and
+retains only the union of its `best_by_target` layers. Pass `--probe-results`
+to use another completed probe run. Probe hidden-state indices without a
+corresponding router layer (currently index 40) are reported and excluded.
+The original layer numbers are stored in each trace and preserved in analysis
+column names. The output mirrors the existing Experiment 2 structure:
 
 ```text
 results/correlation_pipeline/forward/<hf-model>/<dataset>/
@@ -152,9 +157,11 @@ results/correlation_pipeline/forward/<hf-model>/<dataset>/
   tensors/*_logits.pt
   tensors/*_hidden.pt
   tensors/*_experts.pt
-  tensors/*_weights.pt
   tensors/*_extraction.json
 ```
+
+The correlation forward stage does not save normalized expert-weight tensors;
+its analyses use router logits and selected expert IDs directly.
 
 The GGUF and Hugging Face checkpoints represent the same post-trained model but
 use different 4-bit formats, so their numerical activations are not identical.

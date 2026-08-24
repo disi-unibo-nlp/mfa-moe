@@ -29,6 +29,9 @@ class ModelLogs(BaseModel):
     router_logits: str | None = None
     selected_experts: str | None = None    # path to saved tensor (num_layers, seq_len, top_k)
     expert_weights: str | None = None      # path to saved tensor (num_layers, seq_len, top_k)
+    # Original model-layer indices represented by dimension 0 of the saved
+    # tensors. None means the tensors contain every layer in natural order.
+    layer_indices: list[int] | None = None
     attention_maps_optional: str | None = None
 
 
