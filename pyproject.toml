@@ -29,9 +29,9 @@ dependencies = [
 ]
 
 [project.scripts]
-exp0a = "moe_exp.experiment0a.run:main"
-exp0a-audit = "moe_exp.experiment0a.audit:main"
-exp1 = "moe_exp.experiment1.run:main"
+gepa-llm-as-judge = "moe_exp.gepaLLMAsJudge.run:main"
+gepa-llm-as-judge-audit = "moe_exp.gepaLLMAsJudge.audit:main"
+old-exp1 = "moe_exp.old.experiment1.run:main"
 probe-test = "moe_exp.probeTest.run:main"
 correlation-generate = "moe_exp.correlation_pipeline.generate:main"
 correlation-forward = "moe_exp.correlation_pipeline.extract:main"
@@ -42,7 +42,7 @@ dev = [
     "pytest>=8.0.0",
     "ruff>=0.4.0",
 ]
-exp0a = [
+gepa-llm-as-judge = [
     "dspy>=3.0.0,<4",
     "gepa>=0.0.27",
 ]

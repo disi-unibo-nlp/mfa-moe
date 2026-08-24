@@ -12,8 +12,8 @@ import torch
 
 from moe_exp.correlation_pipeline.benchmarks import BENCHMARKS, DEFAULT_BENCHMARKS
 from moe_exp.correlation_pipeline.defaults import DEFAULT_FORWARD_MODEL, DEFAULT_GENERATION_MODEL
-from moe_exp.experiment2.run import process_file
 from moe_exp.models.loader import QUANTIZATION_CHOICES, load_model_and_tokenizer
+from moe_exp.models.routing_extraction import process_file
 
 logger = logging.getLogger(__name__)
 _SAFE_FILENAME = re.compile(r"[^A-Za-z0-9_.-]+")

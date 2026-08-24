@@ -37,7 +37,7 @@ from moe_exp.correlation_pipeline.extract import (
     load_probe_layers,
 )
 from moe_exp.correlation_pipeline.scoring import score_completion
-from moe_exp.experiment2.run import process_file
+from moe_exp.models.routing_extraction import process_file
 from moe_exp.models.inference import _find_prompt_length, _format_prompt, extract_logs_single_pass
 from moe_exp.models.loader import _is_conditional_generation_config, load_model_and_tokenizer
 from moe_exp.schemas import ModelLogs, TraceRecord
@@ -586,7 +586,7 @@ def test_forward_extraction_reuses_content_addressed_tensor_checkpoint(
         hidden = torch.randn(2, 4, 5)
         return router, hidden
 
-    monkeypatch.setattr("moe_exp.experiment2.run.extract_logs_single_pass", fake_extract)
+    monkeypatch.setattr("moe_exp.models.routing_extraction.extract_logs_single_pass", fake_extract)
     model = SimpleNamespace(
         config=SimpleNamespace(
             text_config=SimpleNamespace(num_experts_per_tok=2),
@@ -645,7 +645,7 @@ def test_forward_extraction_saves_only_requested_layers(tmp_path, monkeypatch) -
         hidden = torch.arange(4 * 3 * 5).reshape(4, 3, 5).to(torch.float32)
         return router, hidden
 
-    monkeypatch.setattr("moe_exp.experiment2.run.extract_logs_single_pass", fake_extract)
+    monkeypatch.setattr("moe_exp.models.routing_extraction.extract_logs_single_pass", fake_extract)
     model = SimpleNamespace(config=SimpleNamespace(num_experts_per_tok=1))
     process_file(
         input_path=input_path,

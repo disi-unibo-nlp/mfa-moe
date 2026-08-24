@@ -2,14 +2,18 @@ from pathlib import Path
 
 import pytest
 
-from moe_exp.experiment2 import run as experiment2
-from moe_exp.experiment3 import run as experiment3
+from moe_exp.old.experiment2 import run as experiment2
+from moe_exp.old.experiment3 import run as experiment3
+from moe_exp.models import routing_extraction
 from moe_exp.utils import write_jsonl
 
 
-@pytest.mark.parametrize("module", [experiment2, experiment3])
+@pytest.mark.parametrize(
+    ("module", "loader_owner"),
+    [(experiment2, routing_extraction), (experiment3, experiment3)],
+)
 def test_gpu_stages_reject_empty_input_before_loading_model(
-    module, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
+    module, loader_owner, monkeypatch: pytest.MonkeyPatch, tmp_path: Path
 ) -> None:
     input_path = tmp_path / "empty.jsonl"
     input_path.write_text("", encoding="utf-8")
@@ -17,7 +21,7 @@ def test_gpu_stages_reject_empty_input_before_loading_model(
     def unexpected_model_load(*args, **kwargs):
         raise AssertionError("the model must not be loaded for an empty input")
 
-    monkeypatch.setattr(module, "load_model_and_tokenizer", unexpected_model_load)
+    monkeypatch.setattr(loader_owner, "load_model_and_tokenizer", unexpected_model_load)
 
     kwargs = {
         "input_path": input_path,

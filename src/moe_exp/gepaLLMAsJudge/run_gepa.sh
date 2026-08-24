@@ -4,10 +4,10 @@ set -euo pipefail
 DATASET_DIR="${DATASET_DIR:-data/Schoenfeld_Reasoning}"
 MODEL="${MODEL:-local-llamacpp}"
 API_BASE="${API_BASE:-http://127.0.0.1:8080/v1}"
-OUTPUT_DIR="${OUTPUT_DIR:-results/exp0a}"
+OUTPUT_DIR="${OUTPUT_DIR:-results/gepaLLMAsJudge}"
 
 RUN_ARGS=(
-  python -m moe_exp.experiment0a.run
+  python -m moe_exp.gepaLLMAsJudge.run
   --dataset-dir "${DATASET_DIR}"
   --model "${MODEL}"
   --api-base "${API_BASE}"

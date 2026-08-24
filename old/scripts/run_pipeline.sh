@@ -7,11 +7,10 @@
 #SBATCH --time=48:00:00
 #SBATCH --nodelist=faretra
 
-# Full pipeline: Exp1 → Exp2 → Event Routing → Exp3 → Exp4 → Exp5
+# Archived pipeline: Exp1 → Exp2 → Event Routing → Exp3 → Exp4 → Exp5
 # Usage:
-#   ./run_pipeline.sh --model allenai/OLMoE-1B-7B-0924-Instruct --dataset gsm8k [--max-items 50]
-#   sbatch run_pipeline.sh --model allenai/OLMoE-1B-7B-0924-Instruct --dataset gsm8k
-#   ./run_pipeline.sh --local --model ... --dataset gsm8k   # no Docker (e.g. vast.ai)
+#   old/scripts/run_pipeline.sh --model allenai/OLMoE-1B-7B-0924-Instruct --dataset gsm8k
+#   sbatch old/scripts/run_pipeline.sh --model allenai/OLMoE-1B-7B-0924-Instruct --dataset gsm8k
 
 set -euo pipefail
 
@@ -27,7 +26,7 @@ CUDA_VISIBLE_DEVICES="${CUDA_VISIBLE_DEVICES:-0}"
 MODEL=""
 DATASET=""
 MAX_ITEMS=""
-OUTPUT_DIR="results"
+OUTPUT_DIR="results/old"
 # Empty = let each stage infer top-k from the model config (num_experts_per_tok),
 # so Exp2 and event_routing always agree (OLMoE=8, Qwen1.5-MoE=4, ...).
 TOP_K=""
@@ -79,7 +78,7 @@ if [[ "$LOCAL" != true ]] && ! command -v docker >/dev/null 2>&1; then
     LOCAL=true
 fi
 if [[ "$LOCAL" == true ]]; then
-    PHYS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    PHYS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)"
 fi
 
 # Self-check uses a verification-encouraging prompt and only applies to generation
@@ -100,11 +99,11 @@ fi
 
 MODEL_SLUG="${MODEL////--}"
 # Per-experiment layout, matching the README and manual runs:
-#   results/exp1/<model>/<dataset>/traces.jsonl
-#   results/exp2/<model>/<dataset>/traces_with_routing.jsonl + event_routing.json
-#   results/exp3/<model>/<dataset>/geometry_correlation.json
-#   results/exp4/<model>/<dataset>/prospective_probes.json
-#   results/exp5/<model>/<dataset>/expert_events.json + expert_arrays.npz
+#   results/old/exp1/<model>/<dataset>/traces.jsonl
+#   results/old/exp2/<model>/<dataset>/traces_with_routing.jsonl + event_routing.json
+#   results/old/exp3/<model>/<dataset>/geometry_correlation.json
+#   results/old/exp4/<model>/<dataset>/prospective_probes.json
+#   results/old/exp5/<model>/<dataset>/expert_events.json + expert_arrays.npz
 EXP1_DIR="${OUTPUT_DIR}/exp1/${MODEL_SLUG}/${DATASET_DIR}"
 EXP2_DIR="${OUTPUT_DIR}/exp2/${MODEL_SLUG}/${DATASET_DIR}"
 EXP3_DIR="${OUTPUT_DIR}/exp3/${MODEL_SLUG}/${DATASET_DIR}"
@@ -189,7 +188,7 @@ else
     if [[ -e "$PHYS_DIR/$TRACES_PATH" ]]; then
         echo "    existing traces.jsonl is empty; rerunning Experiment 1."
     fi
-    run_stage "python -m moe_exp.experiment1.run \
+    run_stage "python -m moe_exp.old.experiment1.run \
         --model $MODEL \
         --datasets $DATASET \
         --output-dir ${OUTPUT_DIR}/exp1 \
@@ -208,7 +207,7 @@ echo ">>> Stage 2/6: Experiment 2 — Router/Hidden-State Extraction"
 if [[ -s "$PHYS_DIR/$ROUTING_PATH" && "$PHYS_DIR/$ROUTING_PATH" -nt "$PHYS_DIR/$TRACES_PATH" ]]; then
     echo "    traces_with_routing.jsonl already exists, skipping. Delete to re-run."
 else
-    run_stage "python -m moe_exp.experiment2.run \
+    run_stage "python -m moe_exp.old.experiment2.run \
         --input $TRACES_PATH \
         --output $ROUTING_PATH \
         --model_id $MODEL \
@@ -248,7 +247,7 @@ echo ">>> Stage 4/6: Experiment 3 — Geometric Correlation"
 if [[ -s "$PHYS_DIR/$GEOMETRY_PATH" && "$PHYS_DIR/$GEOMETRY_PATH" -nt "$PHYS_DIR/$TRACES_PATH" ]]; then
     echo "    geometry_correlation.json already exists, skipping. Delete to re-run."
 else
-    run_stage "python -m moe_exp.experiment3.run \
+    run_stage "python -m moe_exp.old.experiment3.run \
         --input $TRACES_PATH \
         --output $GEOMETRY_PATH \
         --model_id $MODEL \
@@ -270,7 +269,7 @@ if [[ "$SKIP_EXP4" == true ]]; then
 elif [[ -s "$PHYS_DIR/$PROSPECTIVE_PATH" && "$PHYS_DIR/$PROSPECTIVE_PATH" -nt "$PHYS_DIR/$ROUTING_PATH" ]]; then
     echo "    prospective_probes.json already exists, skipping. Delete to re-run."
 else
-    run_stage "python -m moe_exp.experiment4.run \
+    run_stage "python -m moe_exp.old.experiment4.run \
         --input $ROUTING_PATH \
         --output $PROSPECTIVE_PATH \
         --model-id $MODEL \
@@ -292,7 +291,7 @@ echo ">>> Stage 6/6: Experiment 5 — Expert Behavior Around Events"
 if [[ -s "$PHYS_DIR/$EXPERT_EVENTS_PATH" && "$PHYS_DIR/$EXPERT_EVENTS_PATH" -nt "$PHYS_DIR/$ROUTING_PATH" ]]; then
     echo "    expert_events.json already exists, skipping. Delete to re-run."
 else
-    run_stage "python -m moe_exp.experiment5.run \
+    run_stage "python -m moe_exp.old.experiment5.run \
         --input $ROUTING_PATH \
         --output $EXPERT_EVENTS_PATH \
         --window $WINDOW \

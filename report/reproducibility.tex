@@ -1,0 +1,43 @@
+\appendix
+
+\section{Reproducibility Checklist}
+
+\begin{table*}[ht]
+\centering
+\scriptsize
+\caption{Living inventory for the three active workflows.
+\modelmetrics{Qwen3.6-27B \texttt{Q4\_K\_XL},
+\texttt{Qwen/Qwen3.5-35B-A3B-GPTQ-Int4}, and Qwen3.5-35B-A3B correlation-run
+variants}{workflow status, sample counts, headline metrics, and next actions;
+this is an inventory rather than a common-metric evaluation}}
+\label{tab:status}
+\begin{tabular}{p{0.22\textwidth}p{0.16\textwidth}p{0.52\textwidth}}
+\toprule
+Item & Status & Note / next action \\
+\midrule
+\texttt{gepaLLMAsJudge} & Cross-validation and final-fit validation complete;
+test pending & Static-reward grouped cross-validation over 2,789 units gives
+67.34\% accuracy and 65.05\% macro-F1 for light-budget GEPA; heavy is worse.
+The same-model LLM-judge final fit improves validation accuracy from 66.83\%
+to 75.43\% and macro-F1 from 0.613 to 0.727, but reuses six responses across
+145 candidate evaluations and does not evaluate the 336-unit locked test.
+Freeze and ablate the 40-example prompt, report response-level uncertainty,
+and evaluate on genuinely unseen responses. \\
+\texttt{probeTest} & Complete; grouped and human validation pending &
+Qwen3.5 GPTQ probes cover 3,087 units, seven targets, and 41 hidden-state
+indices; selected-layer AUROC is 0.835--0.934.  A provisional hybrid review of
+581 external units gives 50.3\% primary and 60.8\% compatible agreement, with
+187 multi-label and 37 low-confidence units; Explore is never predicted.
+Grouped cross-validation, robust segmentation, multiclass calibration, and
+independent human adjudication remain pending. \\
+\texttt{correlation\_pipeline} & MATH-500 complete; broader study pending &
+Generation, replay, and analysis are complete for all 500 MATH-500 problems
+(one attempt each; 387 correct).  Prespecified aggregate correlations use
+problem-cluster bootstrap intervals, but repeated-attempt problem-level and
+within-problem analyses are unavailable under this design.  The other planned
+benchmarks remain pending.  Generation uses the \texttt{UD-Q4\_K\_XL} GGUF;
+replay uses the matching checkpoint with runtime 4-bit quantization, so the
+two stages use different 4-bit formats. \\
+\bottomrule
+\end{tabular}
+\end{table*}

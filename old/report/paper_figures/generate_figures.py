@@ -9,8 +9,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-ROOT = Path(__file__).resolve().parents[2]
-RESULTS = ROOT / "results"
+ROOT = Path(__file__).resolve().parents[3]
+RESULTS = ROOT / "results" / "old"
 MODEL = "allenai--OLMoE-1B-7B-0924-Instruct"
 OUT = Path(__file__).resolve().parent
 

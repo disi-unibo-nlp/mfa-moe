@@ -2,23 +2,23 @@
 
 Usage
 -----
-    python -m moe_exp.experiment1.run \\
+    python -m moe_exp.old.experiment1.run \\
         --model allenai/OLMoE-1B-7B-0924-Instruct \\
         --datasets gsm8k processbench \\
         --max-items 20 \\
-        --output-dir results/exp1
+        --output-dir results/old/exp1
 
     # Multiple models:
-    python -m moe_exp.experiment1.run \\
+    python -m moe_exp.old.experiment1.run \\
         --model allenai/OLMoE-1B-7B-0924-Instruct \\
         --model Qwen/Qwen1.5-MoE-A2.7B-Chat \\
         --datasets gsm8k \\
         --max-items 50 \\
-        --output-dir results/exp1
+        --output-dir results/old/exp1
 
 Output
 ------
-    results/exp1/
+    results/old/exp1/
         <model-slug>/<dataset>/traces.jsonl   — one TraceRecord per example
         summary.json                          — aggregate taxonomy table
 """
@@ -39,7 +39,7 @@ from moe_exp.datasets.loaders import (
     GIVEN_SOLUTION_DATASETS,
     load_dataset_by_name,
 )
-from moe_exp.experiment1.taxonomy import build_row, build_summary
+from moe_exp.old.experiment1.taxonomy import build_row, build_summary
 from moe_exp.models.inference import generate_cot, SYSTEM_PROMPT_SELFCHECK
 from moe_exp.models.loader import QUANTIZATION_CHOICES, load_model_and_tokenizer
 from moe_exp.schemas import TraceRecord
@@ -89,9 +89,9 @@ def _build_parser() -> argparse.ArgumentParser:
     p.add_argument(
         "--output-dir",
         type=Path,
-        default=Path("results/exp1"),
+        default=Path("results/old/exp1"),
         metavar="DIR",
-        help="Root output directory. Default: results/exp1.",
+        help="Root output directory. Default: results/old/exp1.",
     )
     p.add_argument(
         "--device",
