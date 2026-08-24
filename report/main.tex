@@ -5,6 +5,8 @@
 \usepackage{graphicx}
 \usepackage{xcolor}
 
+\newcommand{\modelmetrics}[2]{\textit{Model(s):} #1. \textit{Metrics:} #2.}
+
 % Regular JAIR article submitted for review (not a special track).
 % The Associate Editor and publication metadata are assigned by JAIR.
 \JAIRTrack{}
@@ -78,6 +80,30 @@ selected layers to reference or supplied solutions from four external math
 benchmarks.  Only the boundary vectors are stored; Qwen does not regenerate
 the released or benchmark solutions.
 
+The separate correlation pipeline now has one completed benchmark-scale run:
+500 single-sample MATH-500 generations from Qwen3.5-35B-A3B, replayed through
+the matching checkpoint with router and hidden-state features.  Results from
+this run are reported separately because they use a different model and
+protocol from the five OLMoE conditions above.  The remaining correlation
+benchmarks and repeated-attempt evaluations are still pending.
+
+\paragraph{Table model and metric conventions.}
+Every table caption identifies the evaluated model or models and the metrics
+shown.  For classification, accuracy is the fraction of exact label matches,
+balanced accuracy is the unweighted mean of class recalls, precision and
+recall have their standard true-positive definitions, macro-F1 is the
+unweighted mean of per-class F1, and AUROC measures score ranking across the
+positive and negative classes.  Cohen's $\kappa$ is chance-corrected nominal
+agreement, Kendall's $\tau_b$ is rank agreement under the fixed episode-label
+ordering, and the Experiment~0a composite averages their equal-weight
+$[0,1]$ rescalings.  Routing entropy is Shannon entropy of the softmax router
+distribution; switch rate is the fraction of top-$k$ experts replaced from
+the preceding token; top-$k$ overlap is adjacent-token Jaccard overlap; and
+router margin is the top-1 minus top-2 router probability.  Unless a caption
+states otherwise, $N$ and support are observation counts, $r$ is a Pearson-
+family correlation coefficient, and confidence intervals are percentile
+bootstrap intervals.
+
 \paragraph{Prospective probe design and status.}
 Experiment 4 pools only the first 25\%, 50\%, or 75\% of each trace and trains
 separate trace-grouped logistic probes from structure-only, router-only,
@@ -149,7 +175,10 @@ current unit without neighboring context and optimized per-unit exact match.
 \centering
 \caption{Preliminary Experiment~0a judge agreement.  The composite rescales Cohen's
 $\kappa$ and Kendall's $\tau_b$ from $[-1,1]$ to $[0,1]$ and averages them.
-Coverage was 100\% in every row.}
+Coverage was 100\% in every row.  \modelmetrics{Qwen3.6-27B
+\texttt{Q4\_K\_XL}, used as the episode-label judge}{exact-match accuracy,
+Cohen's $\kappa$, Kendall's $\tau_b$, their rescaled composite, and valid-output
+coverage}}
 \label{tab:exp0a-judge}
 \begin{tabular}{lrrrr}
 \toprule
@@ -207,7 +236,10 @@ validation set is a prompt-development set rather than an outer-fold estimate.
 \centering
 \caption{Aggregate selected-prompt outer-fold results over 2,789 units.
 ``Balanced light'' is the earlier 0.10 recall-gate run; the macro-F1 runs use a
-0.05 gate.  The six excluded responses were not evaluated.}
+0.05 gate.  The six excluded responses were not evaluated.
+\modelmetrics{Qwen3.6-27B \texttt{Q4\_K\_XL}, used as the episode-label
+judge}{exact-match accuracy, balanced accuracy, macro-F1, and the rescaled
+$\kappa$/$\tau_b$ composite}}
 \label{tab:exp0a-cv}
 \begin{tabular}{lrrrr}
 \toprule
@@ -241,7 +273,9 @@ discard a better prompt found by a smaller run.
 \begin{table}[t]
 \centering
 \caption{Per-class outer-fold performance for the best current configuration,
-macro-F1 selection with the light GEPA budget.}
+macro-F1 selection with the light GEPA budget.  \modelmetrics{Qwen3.6-27B
+\texttt{Q4\_K\_XL}, used as the episode-label judge}{class support, precision,
+recall, and F1}}
 \label{tab:exp0a-classes}
 \begin{tabular}{lrrrr}
 \toprule
@@ -290,7 +324,10 @@ reports exact gold-label metrics rather than the LLM judge's diagnostic score.
 \centering
 \caption{Context-aware LLM-judge final-fit results on the 407-unit
 prompt-development validation set.  Coverage is 100\% in both rows.  The locked test
-is not evaluated.}
+is not evaluated.  \modelmetrics{Qwen3.6-27B \texttt{Q4\_K\_XL}, used both
+for episode-label prediction and the same-model GEPA reward}{exact-match
+accuracy, balanced accuracy, macro-F1, Cohen's $\kappa$, Kendall's $\tau_b$,
+absolute change, and valid-output coverage}}
 \label{tab:exp0a-llmjudge}
 \begin{tabular}{lrrrrr}
 \toprule
@@ -322,7 +359,9 @@ positives.
 \begin{table}[t]
 \centering
 \caption{Per-class recall and optimized F1 for the completed LLM-judge final
-fit.}
+fit.  \modelmetrics{Qwen3.6-27B \texttt{Q4\_K\_XL}, used both for
+episode-label prediction and the same-model GEPA reward}{class support, seed
+and optimized recall, and optimized per-class F1}}
 \label{tab:exp0a-llmjudge-classes}
 \begin{tabular}{lrrrr}
 \toprule
@@ -387,7 +426,11 @@ alone gives a misleading impression for these rare targets.
 test split.  Prevalence is over all 3,087 units.  $\Delta$Maj. subtracts the
 always-negative accuracy.  Balanced accuracy is derived from the saved test
 confusion matrix.  Layer selection and evaluation use the same test split and
-are therefore selection-optimistic.}
+are therefore selection-optimistic.  \modelmetrics{
+\texttt{Qwen/Qwen3.5-35B-A3B-GPTQ-Int4} as a frozen hidden-state encoder, with
+one-versus-rest logistic probes}{target prevalence, selected hidden-state
+layer, accuracy, accuracy minus the majority baseline, balanced accuracy, F1,
+and AUROC}}
 \label{tab:schoenfeld-boundary-probes}
 \resizebox{\textwidth}{!}{%
 \begin{tabular}{lrrrrrrr}
@@ -437,7 +480,10 @@ and Verify from 20.4\% to 3.3\%.
 \centering
 \caption{Argmax inspection-label counts on external reasoning units.  These
 are raw prediction frequencies, not accuracies.  Table~\ref{tab:schoenfeld-pragmatic-transfer}
-compares them with the subsequent provisional pragmatic review.}
+compares them with the subsequent provisional pragmatic review.
+\modelmetrics{\texttt{Qwen/Qwen3.5-35B-A3B-GPTQ-Int4} as a frozen encoder,
+with the seven selected one-versus-rest logistic probes}{unit counts and
+seven-way argmax prediction counts}}
 \label{tab:schoenfeld-external-labels}
 \begin{tabular}{lrrrrrrrr}
 \toprule
@@ -487,7 +533,11 @@ reports the complete dataset-level results.
 \caption{Agreement with the provisional pragmatic review.  Primary accuracy
 requires the preferred label; compatible accuracy accepts either label on a
 multi-label unit.  Macro-F1 and macro recall treat each accepted label as a
-positive reference membership.}
+positive reference membership.  \modelmetrics{
+\texttt{Qwen/Qwen3.5-35B-A3B-GPTQ-Int4} as a frozen encoder, with the seven
+selected one-versus-rest logistic probes}{unit count, primary accuracy,
+compatible accuracy, multi-label count, accepted-membership macro-F1, and
+macro recall}}
 \label{tab:schoenfeld-pragmatic-transfer}
 \begin{tabular}{lrrrrrr}
 \toprule
@@ -516,7 +566,10 @@ not sum to 581.
 \centering
 \caption{Per-label comparison with accepted pragmatic memberships.  Support
 counts every unit for which the label is accepted, including secondary labels
-on ambiguous units.}
+on ambiguous units.  \modelmetrics{
+\texttt{Qwen/Qwen3.5-35B-A3B-GPTQ-Int4} as a frozen encoder, with the seven
+selected one-versus-rest logistic probes}{accepted-label support, argmax
+prediction count, precision, recall, and F1}}
 \label{tab:schoenfeld-pragmatic-labels}
 \begin{tabular}{lrrrrr}
 \toprule
@@ -579,7 +632,11 @@ all nine MATH-self-check traces labelled as self-corrections end incorrect.
 \centering
 \caption{High-precision trace taxonomy. Percentages are of all traces. SC
 denotes self-correction; the PRM800K row is a corrected legacy output rather
-than part of the current five-condition run.}
+than part of the current five-condition run.  \modelmetrics{
+\texttt{allenai/OLMoE-1B-7B-0924-Instruct}; PRM800K uses a separately retained
+legacy run of the same model}{trace count, final-answer/stored-outcome
+accuracy, and trace-level counts and percentages for backtracking,
+contradiction, self-correction, and final-answer reversal}}
 \label{tab:taxonomy-current}
 \resizebox{\textwidth}{!}{%
 \begin{tabular}{lrrrrrr}
@@ -617,7 +674,10 @@ self-corrections are too small for broad claims.
 \begin{table}[t]
 \centering
 \caption{Number of traces carrying each label before and after the
-high-precision relabelling.}
+high-precision relabelling.  \modelmetrics{
+\texttt{allenai/OLMoE-1B-7B-0924-Instruct}; PRM800K is legacy}{trace-level
+incidence counts for backtracking, contradiction, and self-correction under
+the old and current label rules}}
 \label{tab:relabel-audit}
 \begin{tabular}{llrrr}
 \toprule
@@ -647,7 +707,10 @@ at the first erroneous step.
 \begin{table*}[t]
 \centering
 \caption{ProcessBench routing around the gold first-error step. Values are
-averaged across traces and layers.}
+averaged across traces and layers.  \modelmetrics{
+\texttt{allenai/OLMoE-1B-7B-0924-Instruct}}{mean routing entropy, top-$k$
+expert switch rate, top-$k$ Jaccard overlap, and top-1--top-2 router margin in
+the before, event, and after windows}}
 \label{tab:first-error-routing}
 \begin{tabular}{lrrr}
 \toprule
@@ -665,7 +728,10 @@ Router margin      & 0.01986 & 0.01940 & 0.01953 \\
 \centering
 \caption{Matched-control effect at the ProcessBench first-error step. The
 effect is event change minus change at a matched normal position in the same
-trace; $n=207$, 2,000 bootstrap samples.}
+trace; $n=207$, 2,000 bootstrap samples.  \modelmetrics{
+\texttt{allenai/OLMoE-1B-7B-0924-Instruct}}{mean matched-control differences
+in routing entropy, top-$k$ switch rate, top-$k$ Jaccard overlap, and router
+margin, with trace-bootstrap 95\% confidence intervals}}
 \label{tab:first-error-control}
 \begin{tabular}{lrr}
 \toprule
@@ -705,7 +771,10 @@ evidence of a universal event signature.
 \centering
 \caption{Current generated-data matched-control effects. Values are event
 change minus change at a matched normal position; intervals are trace-level
-95\% bootstrap intervals with 2,000 replicates.}
+95\% bootstrap intervals with 2,000 replicates.  \modelmetrics{
+\texttt{allenai/OLMoE-1B-7B-0924-Instruct}}{eligible-trace count and mean
+matched-control differences in routing entropy, top-$k$ switch rate, top-$k$
+Jaccard overlap, and router margin, each with a 95\% confidence interval}}
 \label{tab:generated-routing}
 \resizebox{\textwidth}{!}{%
 \begin{tabular}{llrrrrr}
@@ -732,7 +801,11 @@ legacy evidence: the current PRM800K pipeline did not regenerate it.
 \begin{table*}[t]
 \centering
 \caption{Legacy corrected PRM800K matched-control effects at the event.
-Intervals are trace-level 95\% bootstrap intervals with 1,000 replicates.}
+Intervals are trace-level 95\% bootstrap intervals with 1,000 replicates.
+\modelmetrics{\texttt{allenai/OLMoE-1B-7B-0924-Instruct}, legacy PRM800K
+run}{eligible-trace count and mean matched-control differences in routing
+entropy, top-$k$ switch rate, top-$k$ Jaccard overlap, and router margin, each
+with a 95\% confidence interval}}
 \label{tab:prm-routing}
 \resizebox{\textwidth}{!}{%
 \begin{tabular}{lrrrrr}
@@ -777,7 +850,11 @@ distribution similarity for three representative current conditions.}
 
 \begin{table*}[t]
 \centering
-\caption{Summary of geometry--routing correlations across 16 layers.}
+\caption{Summary of geometry--routing correlations across 16 layers.
+\modelmetrics{\texttt{allenai/OLMoE-1B-7B-0924-Instruct}}{Pearson correlation
+between the upper triangles of hidden-state and router-distribution pairwise
+cosine-similarity matrices; the table gives the layer mean, layer range, peak
+layer, and correct- versus failed-subset means}}
 \label{tab:geometry-summary}
 \resizebox{\textwidth}{!}{%
 \begin{tabular}{lrrrrr}
@@ -820,7 +897,11 @@ trace structure a major confound, not merely a weak baseline.
 \caption{Prospective final-incorrectness AUROC from prefix-only features.
 Representation entries select the best of 16 layers (shown in parentheses),
 so their comparison is exploratory and selection-optimistic.  ``Positive''
-is the number of finally incorrect traces.}
+is the number of finally incorrect traces.  \modelmetrics{
+\texttt{allenai/OLMoE-1B-7B-0924-Instruct}, with trace-grouped logistic
+probes}{prefix fraction, trace and positive counts, and out-of-fold AUROC for
+structure-only, router-only, hidden-only, and combined features; parentheses
+give the selected layer}}
 \label{tab:prospective-final}
 \resizebox{\textwidth}{!}{%
 \begin{tabular}{lrrrrrrr}
@@ -871,7 +952,10 @@ by only 1--9 traces per condition.
 \begin{table*}[t]
 \centering
 \caption{Expert-activation shifts relative to normal tokens. Parentheses give
-phase-token counts; a dash indicates no tokens for that phase.}
+phase-token counts; a dash indicates no tokens for that phase.
+\modelmetrics{\texttt{allenai/OLMoE-1B-7B-0924-Instruct}}{mean absolute
+activation-frequency difference from normal tokens across all
+$16\times64$ layer--expert cells, plus phase-token counts}}
 \label{tab:expert-phase}
 \resizebox{\textwidth}{!}{%
 \begin{tabular}{lrrrrr}
@@ -919,7 +1003,11 @@ imbalance.
 \begin{table}[t]
 \centering
 \caption{Global top-1 expert transition persistence and a marginal-frequency
-independence baseline.}
+independence baseline.  \modelmetrics{
+\texttt{allenai/OLMoE-1B-7B-0924-Instruct}}{adjacent-token transition count,
+observed top-1 self-transition percentage, and expected self-transition
+percentage under independent source/destination draws with observed
+marginals}}
 \label{tab:transition-persistence}
 \begin{tabular}{lrrr}
 \toprule
@@ -933,6 +1021,69 @@ ProcessBench & 1,681,792 & 20.54\% & 10.19\% \\
 \bottomrule
 \end{tabular}
 \end{table}
+
+\subsection{Qwen MATH-500 correlation experiment}
+
+The correlation pipeline completed all 500 MATH-500 problems with one sampled
+trace per problem.  Qwen3.5-35B-A3B answered 387 correctly (77.4\%).  The
+lexical detectors marked 133 traces with backtracking, 97 with
+self-correction, and 70 with contradiction.  The analysis contains 59 trace
+features, including prespecified summaries across the six router layers
+selected by the independent Schoenfeld probe run.  Table~\ref{tab:qwen-corr}
+reports point-biserial correlations; intervals resample source problems.
+Because there is exactly one trace per problem, the 500 bootstrap clusters are
+also the 500 observations.
+
+\begin{table*}[t]
+\centering
+\caption{Prespecified Qwen MATH-500 trace-level correlations.  Positive $r$
+means larger feature values in traces for which the binary target is present.
+Intervals are 95\% problem-cluster bootstrap intervals.
+\modelmetrics{Qwen3.5-35B-A3B (\texttt{UD-Q4\_K\_XL} GGUF generation and
+matching \texttt{unsloth/Qwen3.5-35B-A3B} routing replay with runtime 4-bit
+quantization)}{point-biserial $r$ between each binary trace target and the
+listed continuous feature, with problem-cluster bootstrap 95\% confidence
+intervals}}
+\label{tab:qwen-corr}
+\begin{tabular}{llrr}
+\toprule
+Target & Feature & $r$ & 95\% CI \\
+\midrule
+Correct answer & Mean router entropy & $-0.555$ & $[-0.614,-0.500]$ \\
+Correct answer & Token count & $-0.520$ & $[-0.562,-0.480]$ \\
+Correct answer & Mean hidden-state norm & $-0.488$ & $[-0.554,-0.419]$ \\
+Correct answer & Mean router margin & $0.301$ & $[0.231,0.376]$ \\
+Correct answer & Mean hidden/router geometry & $-0.238$ & $[-0.307,-0.164]$ \\
+Backtracking & Token count & $0.453$ & $[0.399,0.501]$ \\
+Backtracking & Mean router entropy & $0.364$ & $[0.268,0.452]$ \\
+Self-correction & Token count & $0.382$ & $[0.336,0.429]$ \\
+Self-correction & Mean router entropy & $0.325$ & $[0.224,0.411]$ \\
+Contradiction & Mean hidden-state norm & $0.329$ & $[0.259,0.393]$ \\
+Contradiction & Token count & $0.247$ & $[0.189,0.302]$ \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+Correct traces are shorter and exhibit lower mean router entropy, smaller
+hidden-state norms and trajectory steps, less top-1 switching, greater top-$k$
+overlap, and larger router margins.  The entropy association is the largest
+prespecified routing result.  Exploratory layerwise screening yields similar
+or slightly larger magnitudes---entropy at layer 27 has $r=-0.574$, and
+hidden-state step distance at layer 39 has $r=-0.572$---but these maxima do not
+have selection-adjusted intervals and should not be treated as confirmed
+layer localization.
+
+The same direction recurs for the lexical reasoning-event targets: traces
+with backtracking or self-correction tend to be longer, higher-entropy, and
+lower-margin.  However, token count is itself strongly associated with
+correctness and is the largest correlate of backtracking and self-correction.
+The present analysis reports marginal correlations and does not condition
+routing features on length, problem difficulty, or token content.  It
+therefore cannot distinguish a routing-specific signal from longer or harder
+failed solutions having more opportunities for revision markers and different
+activation statistics.  With one attempt per problem, problem-level pass-rate
+correlations and within-problem correct-minus-incorrect contrasts are empty;
+the repeated-attempt design is required for those stronger controls.
 
 \subsection{Legacy full-trace linear routing probes}
 
@@ -961,7 +1112,10 @@ token count, log step count, and log character count.}
 \centering
 \caption{Legacy best-layer full-trace router probes. The selected-layer
 comparison is exploratory and is not corrected for selecting the best of 16
-layers.}
+layers.  \modelmetrics{\texttt{allenai/OLMoE-1B-7B-0924-Instruct}, with
+five-fold trace-level logistic probes; PRM800K is legacy}{trace and positive
+counts, selected layer, out-of-fold router-feature AUROC with trace-bootstrap
+95\% confidence interval, balanced accuracy, and structure-baseline AUROC}}
 \label{tab:router-probes}
 \resizebox{\textwidth}{!}{%
 \begin{tabular}{llrrrrrr}
@@ -1023,6 +1177,14 @@ advance detector has not been established.
 \item Top-1 routes persist more than a marginal-frequency independence
 baseline in every current condition, but event-specific expert shifts remain
 descriptive and explicit-event trace counts remain small.
+\item In the completed 500-problem Qwen MATH-500 correlation run, correctness
+is associated with lower mean router entropy ($r=-0.555$, 95\% CI
+$[-0.614,-0.500]$) and larger mean router margin ($r=0.301$,
+$[0.231,0.376]$).  Correct traces are also substantially shorter
+($r=-0.520$), while backtracking and self-correction are most strongly
+associated with greater length.  These are marginal trace-level associations;
+the current single-attempt design cannot isolate routing from length or
+problem difficulty.
 \item The auxiliary Qwen3.5 boundary probes show substantial sentence-split
 decodability of upcoming Schoenfeld episodes (selected-layer AUROC
 0.835--0.934), with the strongest thresholded results for Implement, Verify,
@@ -1059,7 +1221,12 @@ Qwen to encode teacher-forced DeepSeek-R1 text, shares all 38 response IDs
 between train and test, and selects layers on the reported test set.  Its
 external argmax outputs have no authoritative human or benchmark episode
 ground truth.  Agreement with the provisional hybrid review is diagnostic and
-should not be called validated transfer accuracy.
+should not be called validated transfer accuracy.  The Qwen MATH-500
+correlations likewise do not establish an independent routing predictor or a
+causal mechanism: no length-conditioned model has been fit, only one attempt
+is available per problem, and the other planned benchmarks have not yet been
+analyzed.  Layerwise maxima are exploratory comparisons without
+selection-adjusted uncertainty.
 
 \section{Discussion}
 
@@ -1078,6 +1245,13 @@ late in ProcessBench.  Future work should use paired model comparisons,
 prespecified layers, trace-level uncertainty, and targets defined strictly
 after the observed prefix.  A clean PRM800K rerun is necessary before treating
 its unusually high legacy decoding score as a model-level phenomenon.
+
+The Qwen MATH-500 run reinforces this structural caution on a larger model.
+Lower entropy and higher margin accompany correct answers, but incorrect and
+revision-bearing traces are also longer.  The appropriate next test is the
+planned repeated-attempt analysis: compare correct and incorrect samples of
+the same problem, condition on trace length and token composition, and check
+whether the aggregate entropy and margin effects replicate across datasets.
 
 The auxiliary episode probes add a complementary representation-level result:
 the prefix before a sentence often encodes the phase likely to follow, and the
@@ -1140,6 +1314,11 @@ cognition.  The next priorities are a clean PRM800K rerun, adjudication of
 episode-unit artifacts, paired seed-versus-GEPA outer evaluation,
 response-grouped nested boundary probes with validated external labels,
 stronger event supervision, and only then causal routing intervention.
+The new Qwen MATH-500 result adds a robust descriptive association---correct
+traces have lower router entropy and higher margin---but its co-occurring
+length effects and single-attempt design prevent an independent or causal
+routing claim.  Completing the repeated-attempt benchmarks and within-problem
+contrasts is the immediate requirement for that line of evidence.
 
 \appendix
 
@@ -1148,7 +1327,12 @@ stronger event supervision, and only then causal routing intervention.
 \begin{table*}[h]
 \centering
 \scriptsize
-\caption{Living inventory of completed and pending work.}
+\caption{Living inventory of completed and pending work.
+\modelmetrics{All models in the report: Qwen3.6-27B \texttt{Q4\_K\_XL},
+\texttt{Qwen/Qwen3.5-35B-A3B-GPTQ-Int4}, Qwen3.5-35B-A3B correlation-run
+variants, and \texttt{allenai/OLMoE-1B-7B-0924-Instruct}}{workflow status,
+run/sample counts, and selected headline metrics stated per row; this is an
+inventory rather than a common-metric evaluation}}
 \label{tab:status}
 \begin{tabular}{p{0.22\textwidth}p{0.13\textwidth}p{0.55\textwidth}}
 \toprule
@@ -1172,7 +1356,7 @@ Routing intervention & Not done & Title-level intervention claim is not yet supp
 Second MoE / robustness & Not done & Run a Qwen MoE or another routing design once the corrected pipeline is frozen. \\
 GEPA episode judge (Experiment 0a) & CV and final-fit validation complete; test pending & Static-reward grouped CV over 2,789 units gives 67.34\% accuracy and 65.05\% macro-F1 for light-budget GEPA; heavy is worse.  The same-model LLM-judge final fit improves validation accuracy from 66.83\% to 75.43\% and macro-F1 from 0.613 to 0.727, but reuses six responses across 145 candidate evaluations and does not evaluate the 336-unit locked test. Freeze and ablate the 40-example prompt, report response-level uncertainty, and evaluate on genuinely unseen responses. \\
 Schoenfeld boundary probes (Experiment 0b) & Done; human validation pending & Qwen3.5 GPTQ probes cover 3,087 units, seven targets, and 41 hidden-state indices; selected-layer AUROC is 0.835--0.934.  A provisional hybrid review of 581 external units gives 50.3\% primary and 60.8\% compatible agreement, with 187 multi-label and 37 low-confidence units; Explore is never predicted.  Grouped CV, robust segmentation, multiclass calibration, and independent human adjudication remain pending. \\
-Correlation pipeline & Smoke validated; full study pending & The named \texttt{correlation\_pipeline} defaults to Unsloth Qwen3.5-35B-A3B.  Generation uses the \texttt{UD-Q4\_K\_XL} GGUF with embedded native-MTP speculative weights; replay quantizes the matching BF16 Transformers checkpoint to 4-bit with Unsloth \texttt{FastModel}, skips the unused vision tower and CausalLM auxiliary loss, disables KV caching, and retains router and hidden-state outputs.  On 2026-08-20 the complete generation--replay--analysis command succeeded for one MATH500, one AIME24, and one Minerva trace, extracting all 40 layers over 8,196, 6,575, and 7,712 generated tokens, respectively.  This operational smoke test is not statistical evidence: the full eight-SPIRAL-plus-repository benchmark execution and inferential analysis remain pending.  Generation and replay use different 4-bit formats. \\
+Correlation pipeline & MATH-500 complete; broader study pending & The named \texttt{correlation\_pipeline} defaults to Unsloth Qwen3.5-35B-A3B.  In addition to the earlier three-trace operational smoke test, generation, replay, and analysis are complete for all 500 MATH-500 problems (one attempt each; 387 correct).  Prespecified aggregate correlations use problem-cluster bootstrap intervals, but repeated-attempt problem-level and within-problem analyses are unavailable under this design.  The other SPIRAL and repository benchmarks remain pending.  Generation uses the \texttt{UD-Q4\_K\_XL} GGUF with embedded native-MTP speculative weights; replay uses the matching BF16 checkpoint with runtime 4-bit quantization, so the two stages use different 4-bit formats. \\
 Pipeline status handling & Defective & The shell script prints completion after zero-input stage errors; add nonzero exits, output validation, and atomic JSONL writes. \\
 Figures & Current after regeneration & Geometry, ProcessBench first-error, expert-phase, and legacy router-probe plots are generated by \texttt{paper\_figures/generate\_figures.py}. \\
 \bottomrule

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import os
 import subprocess
 import sys
@@ -31,7 +32,10 @@ from moe_exp.correlation_pipeline.defaults import (
     DEFAULT_GENERATION_MODEL,
     DEFAULT_MTP_MODEL,
 )
-from moe_exp.correlation_pipeline.extract import build_parser as build_extract_parser
+from moe_exp.correlation_pipeline.extract import (
+    build_parser as build_extract_parser,
+    load_probe_layers,
+)
 from moe_exp.correlation_pipeline.scoring import score_completion
 from moe_exp.experiment2.run import process_file
 from moe_exp.models.inference import _find_prompt_length, _format_prompt, extract_logs_single_pass
@@ -192,6 +196,17 @@ def test_single_pass_avoids_full_vocabulary_logits() -> None:
     assert hidden.shape == (2, 6, 4)
     expected_probabilities = torch.tensor([0.7, 0.2, 0.1]).expand_as(router)
     assert torch.allclose(router.softmax(dim=-1), expected_probabilities)
+
+    selected_router, selected_hidden = extract_logs_single_pass(
+        model,
+        Tokenizer(),
+        problem="ignored",
+        cot_text="answer",
+        extract_hidden_states=True,
+        layer_indices=[1],
+    )
+    assert selected_router.shape == (1, 6, 3)
+    assert selected_hidden.shape == (1, 6, 4)
 
 
 def test_single_pass_bypasses_causal_lm_auxiliary_router_loss() -> None:
@@ -591,6 +606,66 @@ def test_forward_extraction_reuses_content_addressed_tensor_checkpoint(
     assert calls == 1
     assert output_path.is_file()
     assert len(list((output_path.parent / "tensors").glob("*_extraction.json"))) == 1
+
+
+def test_probe_layers_are_loaded_as_a_unique_router_compatible_union(tmp_path) -> None:
+    path = tmp_path / "results.json"
+    path.write_text(
+        json.dumps(
+            {
+                "best_by_target": {
+                    "Read": {"layer_idx": 34},
+                    "Plan": {"layer_idx": 39},
+                    "Explore": {"layer_idx": 40},
+                    "Monitor": {"layer_idx": 34},
+                }
+            }
+        ),
+        encoding="utf-8",
+    )
+    assert load_probe_layers(path, 40) == ([34, 39], [40])
+
+
+def test_forward_extraction_saves_only_requested_layers(tmp_path, monkeypatch) -> None:
+    trace = TraceRecord(
+        dataset="synthetic",
+        problem_id="problem",
+        prompt="Prompt",
+        gold_answer="1",
+        model_id="generator",
+        model_answer="1",
+        cot_text="Reasoning.",
+    )
+    input_path = tmp_path / "traces.jsonl"
+    input_path.write_text(trace.model_dump_json() + "\n", encoding="utf-8")
+    output_path = tmp_path / "forward" / "traces_with_routing.jsonl"
+
+    def fake_extract(**kwargs):
+        router = torch.arange(4 * 3 * 2).reshape(4, 3, 2).to(torch.float32)
+        hidden = torch.arange(4 * 3 * 5).reshape(4, 3, 5).to(torch.float32)
+        return router, hidden
+
+    monkeypatch.setattr("moe_exp.experiment2.run.extract_logs_single_pass", fake_extract)
+    model = SimpleNamespace(config=SimpleNamespace(num_experts_per_tok=1))
+    process_file(
+        input_path=input_path,
+        model_id="hf/model",
+        output_path=output_path,
+        extract_hidden_states=True,
+        layer_indices=[1, 3],
+        save_expert_weights=False,
+        model=model,
+        tokenizer=object(),
+    )
+
+    saved = TraceRecord(**json.loads(output_path.read_text(encoding="utf-8")))
+    assert saved.model_logs.layer_indices == [1, 3]
+    assert saved.model_logs.expert_weights is None
+    router = torch.load(saved.model_logs.router_logits, weights_only=True)
+    hidden = torch.load(saved.model_logs.hidden_states, weights_only=True)
+    assert router.shape == (2, 3, 2)
+    assert hidden.shape == (2, 3, 5)
+    assert not list((output_path.parent / "tensors").glob("*_weights.pt"))
 
 
 def test_correlation_forward_rejects_wrong_top_k(tmp_path) -> None:

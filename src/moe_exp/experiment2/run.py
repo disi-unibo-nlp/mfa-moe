@@ -55,6 +55,8 @@ def process_file(
     model: Any | None = None,
     tokenizer: Any | None = None,
     strict_top_k: bool = False,
+    layer_indices: list[int] | None = None,
+    save_expert_weights: bool = True,
 ):
     """
     Run Experiment 2 offline-extraction loop over traces to compute routing dynamics.
@@ -64,6 +66,11 @@ def process_file(
     top_k: number of experts selected per token. When None, it is read from the
     model config (num_experts_per_tok), so it is correct for any MoE model
     (OLMoE=8, Qwen1.5-MoE=4, …). An explicit value overrides the config.
+    layer_indices: optional original layer indices to retain in every saved
+    tensor. The forward pass still computes all layers, but unselected tensors
+    are discarded before CPU storage and serialization.
+    save_expert_weights: whether to serialize the normalized top-k routing
+    weights. Selected expert IDs are saved regardless.
     """
     traces: list[dict[str, Any]] = []
     with open(input_path, "r", encoding="utf-8") as f:
@@ -86,6 +93,11 @@ def process_file(
         model, tokenizer = load_model_and_tokenizer(model_id, quantization=quantization)
     else:
         logger.info("Using preloaded model %s", model_id)
+
+    if layer_indices is not None:
+        layer_indices = sorted(set(layer_indices))
+        if not layer_indices or layer_indices[0] < 0:
+            raise ValueError("layer_indices must contain non-negative layer indices")
 
     text_config = getattr(model.config, "text_config", None)
     config_top_k = getattr(model.config, "num_experts_per_tok", None)
@@ -150,6 +162,8 @@ def process_file(
                 "quantization": quantization,
                 "top_k": top_k,
                 "hidden_states": extract_hidden_states,
+                "layer_indices": layer_indices,
+                "expert_weights": save_expert_weights,
             }
             checkpoint = None
             if checkpoint_path.is_file():
@@ -157,15 +171,20 @@ def process_file(
                     checkpoint = json.loads(checkpoint_path.read_text(encoding="utf-8"))
                 except (OSError, json.JSONDecodeError):
                     checkpoint = None
-            required_paths = [logits_path, experts_path, weights_path]
+            required_paths = [logits_path, experts_path]
+            if save_expert_weights:
+                required_paths.append(weights_path)
             if extract_hidden_states:
                 required_paths.append(hidden_path)
             if checkpoint == expected_checkpoint and all(path.is_file() for path in required_paths):
                 trace.model_logs.router_logits = logits_path.as_posix()
                 trace.model_logs.selected_experts = experts_path.as_posix()
-                trace.model_logs.expert_weights = weights_path.as_posix()
+                trace.model_logs.expert_weights = (
+                    weights_path.as_posix() if save_expert_weights else None
+                )
                 if extract_hidden_states:
                     trace.model_logs.hidden_states = hidden_path.as_posix()
+                trace.model_logs.layer_indices = layer_indices
                 n_with_routing += 1
                 out_f.write(trace.model_dump_json() + "\n")
                 continue
@@ -178,6 +197,7 @@ def process_file(
                 system_prompt=trace.system_prompt,
                 messages=trace.generation_messages,
                 extract_hidden_states=extract_hidden_states,
+                layer_indices=layer_indices,
             )
             if extract_hidden_states:
                 assert isinstance(extracted, tuple)
@@ -186,6 +206,21 @@ def process_file(
                 assert isinstance(extracted, torch.Tensor)
                 router_logits = extracted
                 hidden_states = None
+
+            if layer_indices is not None:
+                # Current extraction filters before moving activations to CPU.
+                # Accept full-layer tensors too for custom extractors and tests.
+                if router_logits.shape[0] != len(layer_indices):
+                    invalid = [index for index in layer_indices if index >= router_logits.shape[0]]
+                    if invalid:
+                        raise ValueError(
+                            f"Requested layer indices {invalid} are unavailable in an extractor "
+                            f"output with {router_logits.shape[0]} layers"
+                        )
+                    selection = torch.tensor(layer_indices, dtype=torch.long)
+                    router_logits = router_logits.index_select(0, selection)
+                    if hidden_states is not None:
+                        hidden_states = hidden_states.index_select(0, selection)
             
             # router_logits is (num_layers, seq_len, num_experts)
             if router_logits.numel() > 0:
@@ -195,19 +230,29 @@ def process_file(
                 # the Linux Docker/SLURM pipeline, where backslash paths break.
                 _save_tensor_atomic(router_logits.to(torch.float32), logits_path)
                 trace.model_logs.router_logits = logits_path.as_posix()
+                trace.model_logs.layer_indices = layer_indices
 
                 if hidden_states is not None and hidden_states.numel() > 0:
                     _save_tensor_atomic(hidden_states.to(torch.bfloat16), hidden_path)
                     trace.model_logs.hidden_states = hidden_path.as_posix()
 
-                # Compute and save selected experts and weights
-                selected, weights = compute_selected_experts(router_logits, top_k=top_k)
+                # Compute selected experts. Only materialize normalized weights
+                # when this run is configured to persist them.
+                if save_expert_weights:
+                    selected, weights = compute_selected_experts(router_logits, top_k=top_k)
+                else:
+                    selected = torch.topk(router_logits, k=top_k, dim=-1).indices
+                    weights = None
 
                 _save_tensor_atomic(selected.to(torch.int16), experts_path)
                 trace.model_logs.selected_experts = experts_path.as_posix()
 
-                _save_tensor_atomic(weights.to(torch.float16), weights_path)
-                trace.model_logs.expert_weights = weights_path.as_posix()
+                if save_expert_weights:
+                    assert weights is not None
+                    _save_tensor_atomic(weights.to(torch.float16), weights_path)
+                    trace.model_logs.expert_weights = weights_path.as_posix()
+                else:
+                    trace.model_logs.expert_weights = None
                 temporary_checkpoint = checkpoint_path.with_name(f".{checkpoint_path.name}.tmp")
                 temporary_checkpoint.write_text(
                     json.dumps(expected_checkpoint, indent=2) + "\n",

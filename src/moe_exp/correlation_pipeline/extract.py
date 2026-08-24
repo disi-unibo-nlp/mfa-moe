@@ -17,6 +17,9 @@ from moe_exp.models.loader import QUANTIZATION_CHOICES, load_model_and_tokenizer
 
 logger = logging.getLogger(__name__)
 _SAFE_FILENAME = re.compile(r"[^A-Za-z0-9_.-]+")
+DEFAULT_PROBE_RESULTS = Path(
+    "results/probeTest/qwen3.5-35b-a3b-gptq-int4/probes/results.json"
+)
 
 
 def _model_slug(model: str) -> str:
@@ -28,6 +31,28 @@ def _write_json_atomic(payload: dict[str, Any], path: Path) -> None:
     temporary = path.with_name(f".{path.name}.tmp")
     temporary.write_text(json.dumps(payload, indent=2) + "\n", encoding="utf-8")
     os.replace(temporary, path)
+
+
+def load_probe_layers(path: Path, num_router_layers: int) -> tuple[list[int], list[int]]:
+    """Load the union of accuracy-selected probe indices compatible with routers."""
+    if not path.is_file():
+        raise FileNotFoundError(f"Missing probe results: {path}")
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    best = payload.get("best_by_target")
+    if not isinstance(best, dict) or not best:
+        raise ValueError(f"Probe results have no non-empty best_by_target mapping: {path}")
+    try:
+        requested = sorted({int(row["layer_idx"]) for row in best.values()})
+    except (KeyError, TypeError, ValueError) as error:
+        raise ValueError(f"Invalid best_by_target layer entries in {path}") from error
+    compatible = [index for index in requested if 0 <= index < num_router_layers]
+    excluded = [index for index in requested if index not in compatible]
+    if not compatible:
+        raise ValueError(
+            f"None of the probe-selected indices {requested} match router layers "
+            f"0..{num_router_layers - 1}"
+        )
+    return compatible, excluded
 
 
 def extract_all(args: argparse.Namespace) -> list[dict[str, Any]]:
@@ -61,6 +86,21 @@ def extract_all(args: argparse.Namespace) -> list[dict[str, Any]]:
         trust_remote_code=args.trust_remote_code,
         quantization=args.quantization,
     )
+    text_config = getattr(model.config, "text_config", None)
+    num_router_layers = getattr(text_config, "num_hidden_layers", None)
+    if num_router_layers is None:
+        num_router_layers = getattr(model.config, "num_hidden_layers", None)
+    if num_router_layers is None:
+        raise ValueError("Could not determine the forward model's number of layers")
+    layer_indices, excluded_probe_indices = load_probe_layers(
+        args.probe_results, int(num_router_layers)
+    )
+    logger.info("Retaining probe-selected router-compatible layers: %s", layer_indices)
+    if excluded_probe_indices:
+        logger.warning(
+            "Excluding probe hidden-state indices without a corresponding router layer: %s",
+            excluded_probe_indices,
+        )
     summaries: list[dict[str, Any]] = []
     try:
         for dataset, input_path, output_path in inputs:
@@ -76,6 +116,8 @@ def extract_all(args: argparse.Namespace) -> list[dict[str, Any]]:
                 model=model,
                 tokenizer=tokenizer,
                 strict_top_k=True,
+                layer_indices=layer_indices,
+                save_expert_weights=False,
             )
             if not output_path.is_file() or output_path.stat().st_size == 0:
                 raise RuntimeError(f"Forward extraction produced no output for {dataset}")
@@ -105,6 +147,10 @@ def extract_all(args: argparse.Namespace) -> list[dict[str, Any]]:
         "generation_model": args.generation_model,
         "quantization": args.quantization,
         "router_only": args.router_only,
+        "probe_results": args.probe_results.as_posix(),
+        "layer_indices": layer_indices,
+        "excluded_probe_indices": excluded_probe_indices,
+        "expert_weights_saved": False,
         "datasets": summaries,
     }
     _write_json_atomic(summary, output_root / "summary.json")
@@ -141,6 +187,12 @@ def build_parser() -> argparse.ArgumentParser:
     )
     parser.add_argument("--device", default="cuda")
     parser.add_argument("--trust-remote-code", action="store_true")
+    parser.add_argument(
+        "--probe-results",
+        type=Path,
+        default=DEFAULT_PROBE_RESULTS,
+        help="Probe results.json used to retain the union of best_by_target layers",
+    )
     parser.add_argument(
         "--router-only",
         action="store_true",

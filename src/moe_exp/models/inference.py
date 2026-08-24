@@ -158,6 +158,7 @@ def extract_logs_single_pass(
     extract_hidden_states: bool = False,
     system_prompt: str | None = None,
     messages: list[dict[str, str]] | None = None,
+    layer_indices: list[int] | None = None,
 ) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
     """
     Run a single forward pass with the full prompt + CoT to extract model logs.
@@ -217,7 +218,10 @@ def extract_logs_single_pass(
     )
     
     if hasattr(outputs, "router_logits") and outputs.router_logits is not None:
-        for layer_logits in outputs.router_logits:
+        requested_layers = None if layer_indices is None else set(layer_indices)
+        for layer_index, layer_logits in enumerate(outputs.router_logits):
+            if requested_layers is not None and layer_index not in requested_layers:
+                continue
             # Hugging Face usually outputs router logits as a tuple of length num_layers.
             # Depending on the model, it might be flattened (batch_size * seq_len, num_experts).
             
@@ -259,7 +263,9 @@ def extract_logs_single_pass(
             # We take hidden_states[:-1] to get indices [0..L-1], matching the
             # L router logit tensors.
             layer_hidden = outputs.hidden_states[:-1]
-            for h in layer_hidden:
+            for layer_index, h in enumerate(layer_hidden):
+                if requested_layers is not None and layer_index not in requested_layers:
+                    continue
                 gen_h = h[0, prompt_len:, :].cpu()
                 extracted_hidden.append(gen_h)
         if extracted_hidden:
