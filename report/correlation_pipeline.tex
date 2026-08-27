@@ -10,6 +10,19 @@ reports point-biserial correlations; intervals resample source problems.
 Because there is exactly one trace per problem, the 500 bootstrap clusters are
 also the 500 observations.
 
+For subsequent runs, these per-trace statistics are reduced during the
+teacher-forced forward pass rather than reconstructed from serialized raw
+activations.  The default artifact retains compact scalar features and top-$k$
+expert identifiers, while full hidden-state and router tensors are available
+only for a small explicit audit run.  Each trace records projected raw bytes
+and actual persisted bytes.  This storage change preserves the existing
+features and adds normalized router confidence, selected probability mass,
+the $p_k-p_{k+1}$ boundary margin, and the mean top-$k$ versus non-top-$k$
+probability gap.
+Entropy and normalized confidence are not both entered as correlation evidence:
+new analyses report the confidence orientation, which is an affine transform of
+normalized entropy and therefore contains the same Pearson information.
+
 \begin{table*}[t]
 \centering
 \caption{Prespecified Qwen MATH-500 trace-level correlations.  Positive $r$
@@ -60,5 +73,3 @@ failed solutions having more opportunities for revision markers and different
 activation statistics.  With one attempt per problem, problem-level pass-rate
 correlations and within-problem correct-minus-incorrect contrasts are empty;
 the repeated-attempt design is required for those stronger controls.
-
-

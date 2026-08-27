@@ -12,9 +12,9 @@ import pandas as pd
 import pytest
 import torch
 
-from moe_exp.models import loader as loader_module
 from moe_exp.correlation_pipeline import generate as generation_module
 from moe_exp.correlation_pipeline.analyze import (
+    _feature_columns,
     _repeated_problem_analysis,
     extract_trace_features,
 )
@@ -34,12 +34,20 @@ from moe_exp.correlation_pipeline.defaults import (
 )
 from moe_exp.correlation_pipeline.extract import (
     build_parser as build_extract_parser,
+)
+from moe_exp.correlation_pipeline.extract import (
     load_probe_layers,
 )
+from moe_exp.correlation_pipeline.features import (
+    FEATURE_SCHEMA_VERSION,
+    compute_layer_features,
+    json_safe_features,
+)
 from moe_exp.correlation_pipeline.scoring import score_completion
-from moe_exp.models.routing_extraction import process_file
+from moe_exp.models import loader as loader_module
 from moe_exp.models.inference import _find_prompt_length, _format_prompt, extract_logs_single_pass
 from moe_exp.models.loader import _is_conditional_generation_config, load_model_and_tokenizer
+from moe_exp.models.routing_extraction import process_file
 from moe_exp.schemas import ModelLogs, TraceRecord
 
 
@@ -82,6 +90,8 @@ def test_pipeline_defaults_to_unsloth_qwen35_mtp_pair() -> None:
     assert extraction_args.model_id == DEFAULT_FORWARD_MODEL
     assert extraction_args.generation_model == DEFAULT_GENERATION_MODEL
     assert extraction_args.quantization == "unsloth-4bit"
+    assert extraction_args.max_geometry_tokens == 128
+    assert extraction_args.save_raw_tensors is False
     assert build_analysis_parser().parse_args([]).model_id == DEFAULT_FORWARD_MODEL
 
 
@@ -550,10 +560,17 @@ def test_tensor_features_include_router_hidden_and_geometry(tmp_path) -> None:
     row = extract_trace_features(trace, input_path=input_path, max_geometry_tokens=4)
     assert row["token_count"] == 4
     assert np.isfinite(row["router_entropy_l00"])
+    assert np.isfinite(row["router_confidence_l00"])
+    assert np.isfinite(row["router_selected_mass_l00"])
+    assert np.isfinite(row["router_boundary_margin_l00"])
+    assert np.isfinite(row["router_topk_non_topk_gap_l00"])
     assert np.isfinite(row["router_topk_overlap_l01"])
     assert np.isfinite(row["hidden_step_distance_l00"])
     assert np.isfinite(row["hidden_router_geometry_l01"])
     assert np.isfinite(row["hidden_router_geometry_mean_layers"])
+    correlation_features = _feature_columns(pd.DataFrame([row]))
+    assert "router_confidence_mean_layers" in correlation_features
+    assert "router_entropy_mean_layers" not in correlation_features
 
 
 def test_forward_extraction_reuses_content_addressed_tensor_checkpoint(
@@ -606,6 +623,93 @@ def test_forward_extraction_reuses_content_addressed_tensor_checkpoint(
     assert calls == 1
     assert output_path.is_file()
     assert len(list((output_path.parent / "tensors").glob("*_extraction.json"))) == 1
+
+
+def test_correlation_features_are_reduced_on_the_fly_without_raw_tensors(
+    tmp_path,
+    monkeypatch,
+) -> None:
+    trace = TraceRecord(
+        dataset="synthetic",
+        problem_id="problem__sample_00",
+        source_problem_id="problem",
+        prompt="Prompt",
+        gold_answer="1",
+        model_id="generator",
+        model_answer="1",
+        is_correct=True,
+        cot_text="Reasoning. \\boxed{1}",
+        steps=["Reasoning.", "\\boxed{1}"],
+    )
+    input_path = tmp_path / "traces.jsonl"
+    input_path.write_text(trace.model_dump_json() + "\n", encoding="utf-8")
+    output_path = tmp_path / "forward" / "traces_with_routing.jsonl"
+    calls = 0
+
+    def fake_extract(**kwargs):
+        nonlocal calls
+        calls += 1
+        router = torch.tensor(
+            [
+                [[2.0, 1.0, 0.0], [1.0, 2.0, 0.0], [0.0, 1.0, 2.0]],
+                [[0.0, 2.0, 1.0], [2.0, 0.0, 1.0], [1.0, 0.0, 2.0]],
+            ]
+        )
+        hidden = torch.arange(30, dtype=torch.float32).reshape(2, 3, 5) + 1
+        return router, hidden
+
+    def reduce_features(router, hidden, selected, layers):
+        return json_safe_features(
+            compute_layer_features(
+                router,
+                hidden,
+                selected,
+                max_geometry_tokens=3,
+                layer_indices=layers,
+            )
+        )
+
+    monkeypatch.setattr("moe_exp.models.routing_extraction.extract_logs_single_pass", fake_extract)
+    model = SimpleNamespace(config=SimpleNamespace(num_experts_per_tok=2))
+    for run_index in range(2):
+        process_file(
+            input_path=input_path,
+            model_id="hf/model",
+            output_path=output_path,
+            extract_hidden_states=True,
+            layer_indices=[4, 7],
+            save_expert_weights=False,
+            feature_reducer=reduce_features,
+            feature_schema_version=FEATURE_SCHEMA_VERSION,
+            feature_config={"max_geometry_tokens": 3},
+            save_raw_tensors=False,
+            model=model,
+            tokenizer=object(),
+        )
+        if run_index == 0:
+            tensor_dir = output_path.parent / "tensors"
+            (tensor_dir / "synthetic_problem__sample_00_logits.pt").write_bytes(b"stale")
+            (tensor_dir / "synthetic_problem__sample_00_hidden.pt").write_bytes(b"stale")
+            (tensor_dir / "synthetic_problem__sample_00_weights.pt").write_bytes(b"stale")
+
+    assert calls == 1
+    saved = TraceRecord(**json.loads(output_path.read_text(encoding="utf-8")))
+    assert saved.model_logs.router_logits is None
+    assert saved.model_logs.hidden_states is None
+    assert saved.model_logs.selected_experts is not None
+    assert Path(saved.model_logs.selected_experts).is_file()
+    assert saved.metadata["correlation_features"]["schema_version"] == FEATURE_SCHEMA_VERSION
+    assert saved.metadata["correlation_features"]["token_count"] == 3
+    assert saved.metadata["correlation_storage"]["projected_raw_payload_bytes"] == 132
+    assert saved.metadata["correlation_storage"]["persisted_raw_tensor_bytes"] == 0
+    assert not list((output_path.parent / "tensors").glob("*_logits.pt"))
+    assert not list((output_path.parent / "tensors").glob("*_hidden.pt"))
+    assert not list((output_path.parent / "tensors").glob("*_weights.pt"))
+
+    row = extract_trace_features(saved, input_path=output_path, max_geometry_tokens=128)
+    assert row["token_count"] == 3
+    assert np.isfinite(row["router_confidence_l04"])
+    assert np.isfinite(row["hidden_router_geometry_l07"])
 
 
 def test_probe_layers_are_loaded_as_a_unique_router_compatible_union(tmp_path) -> None:

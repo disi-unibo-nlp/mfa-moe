@@ -31,6 +31,7 @@ PROJECT_IMAGE="${PROJECT_IMAGE:-moe-mfa-experiments:latest}"
 LLAMACPP_IMAGE="${LLAMACPP_IMAGE:-llama.cpp:localcuda}"
 OUTPUT_DIR="${OUTPUT_DIR:-results/gepaLLMAsJudge/qwen3.6-27b-llm-judge}"
 API_KEY="${LLAMA_API_KEY:-local-llamacpp-key}"
+SEED_PROMPT_FILE=""
 
 # Conservative one-GPU defaults. Increase PARALLEL and NUM_THREADS together
 # only when the GPU has enough memory for multiple KV-cache slots.
@@ -56,6 +57,8 @@ CV_FOLDS="${CV_FOLDS:-0}"
 CV_INNER_VAL_DOCUMENTS="${CV_INNER_VAL_DOCUMENTS:-5}"
 LOCKED_TEST_DOCUMENTS="${LOCKED_TEST_DOCUMENTS:-6}"
 EVALUATE_LOCKED_TEST=false
+ENABLE_THINKING=false
+REASONING_EFFORT="medium"
 RUNNER_MEMORY="${RUNNER_MEMORY:-16g}"
 CUDA_VISIBLE_DEVICES="${CUDA_VISIBLE_DEVICES:-0}"
 
@@ -67,7 +70,8 @@ MAX_UNITS=""
 
 usage() {
     cat <<'EOF'
-Usage: sbatch run_gepaLLMAsJudge.sh [options]
+Usage: bash run_gepaLLMAsJudge.sh [options]
+       sbatch run_gepaLLMAsJudge.sh [options]
 
 GEPA budget (choose at most one; default: --gepa-auto heavy):
   --gepa-auto light|medium|heavy
@@ -85,6 +89,7 @@ Experiment options:
   --seed N                    Default: 42
   --prompt-variant NAME       base or few-shot (default: few-shot)
   --few-shot-examples N       Curated contrastive examples (default: 21)
+  --seed-prompt-file PATH     Existing optimized prompt, relative to the repository
   --gepa-reward NAME          llm-judge, balanced, or exact (default: llm-judge)
   --selection-metric NAME     balanced_accuracy, macro_f1, or accuracy
   --max-class-recall-drop X   Validation safety threshold (default: 0.10)
@@ -98,6 +103,8 @@ Experiment options:
   --judge-temperature X       LLM-judge sampling (default: 0.0)
   --reflection-max-tokens N   GEPA reflection cap (default: 4096)
   --reflection-temperature X  GEPA reflection sampling (default: 0.7)
+  --enable-thinking           Enable thinking for classifier, judge, and reflection calls
+  --reasoning-effort NAME     low, medium, or xhigh (default: medium)
 
 llama.cpp options:
   --ctx-size N                Total server context (default: 8192)
@@ -135,6 +142,7 @@ while [[ $# -gt 0 ]]; do
         --seed) SEED="$2"; shift 2 ;;
         --prompt-variant) PROMPT_VARIANT="$2"; shift 2 ;;
         --few-shot-examples) FEW_SHOT_EXAMPLES="$2"; shift 2 ;;
+        --seed-prompt-file) SEED_PROMPT_FILE="$2"; shift 2 ;;
         --gepa-reward) GEPA_REWARD="$2"; shift 2 ;;
         --selection-metric) SELECTION_METRIC="$2"; shift 2 ;;
         --max-class-recall-drop) MAX_CLASS_RECALL_DROP="$2"; shift 2 ;;
@@ -148,6 +156,8 @@ while [[ $# -gt 0 ]]; do
         --judge-temperature) JUDGE_TEMPERATURE="$2"; shift 2 ;;
         --reflection-max-tokens) REFLECTION_MAX_TOKENS="$2"; shift 2 ;;
         --reflection-temperature) REFLECTION_TEMPERATURE="$2"; shift 2 ;;
+        --enable-thinking) ENABLE_THINKING=true; shift ;;
+        --reasoning-effort) REASONING_EFFORT="$2"; shift 2 ;;
         --ctx-size) CTX_SIZE="$2"; shift 2 ;;
         --parallel) PARALLEL="$2"; shift 2 ;;
         --batch-size) BATCH_SIZE="$2"; shift 2 ;;
@@ -179,6 +189,10 @@ case "$SELECTION_METRIC" in
     balanced_accuracy|macro_f1|accuracy) ;;
     *) echo "--selection-metric must be balanced_accuracy, macro_f1, or accuracy" >&2; exit 1 ;;
 esac
+case "$REASONING_EFFORT" in
+    low|medium|xhigh) ;;
+    *) echo "--reasoning-effort must be low, medium, or xhigh" >&2; exit 1 ;;
+esac
 if (( CV_FOLDS == 1 )); then
     echo "--cv-folds must be 0 or at least 2" >&2
     exit 1
@@ -200,6 +214,16 @@ if [[ ! -d "$DATASET_DIR" ]]; then
     echo "Dataset directory does not exist: $DATASET_DIR" >&2
     echo "Clone https://github.com/MingLiiii/Schoenfeld_Reasoning there first." >&2
     exit 1
+fi
+if [[ -n "$SEED_PROMPT_FILE" ]]; then
+    if [[ "$SEED_PROMPT_FILE" = /* ]]; then
+        echo "--seed-prompt-file must be relative to the repository: $SEED_PROMPT_FILE" >&2
+        exit 1
+    fi
+    if [[ ! -s "$PHYS_DIR/$SEED_PROMPT_FILE" ]]; then
+        echo "Seed prompt file does not exist or is empty: $PHYS_DIR/$SEED_PROMPT_FILE" >&2
+        exit 1
+    fi
 fi
 
 download_model() {
@@ -284,12 +308,31 @@ echo "  Model:      $MODEL_DIR/$MODEL_NAME"
 echo "  GPU:        $CUDA_VISIBLE_DEVICES"
 echo "  GEPA:       --$BUDGET_KIND $BUDGET_VALUE"
 echo "  Prompt:     $PROMPT_VARIANT"
+echo "  Seed file:  ${SEED_PROMPT_FILE:-generated}"
 echo "  Reward:     $GEPA_REWARD; selection=$SELECTION_METRIC"
-echo "  Judge:      same model; reasoning=off; max-tokens=$JUDGE_MAX_TOKENS"
+echo "  Judge:      same model; reasoning=$ENABLE_THINKING; effort=$REASONING_EFFORT; max-tokens=$JUDGE_MAX_TOKENS"
 echo "  CV:         folds=$CV_FOLDS; locked-test=$LOCKED_TEST_DOCUMENTS"
 echo "  Split:      train=$TRAIN_DOCUMENTS, val=$VAL_DOCUMENTS, test=remainder"
 echo "  Concurrency: evaluator=$NUM_THREADS, server slots=$PARALLEL"
 echo "  Output:     $PHYS_DIR/$OUTPUT_DIR"
+
+LLAMACPP_ARGS=(
+    --model "/models/$MODEL_NAME"
+    --host 0.0.0.0
+    --port 8080
+    --api-key "$API_KEY"
+    --ctx-size "$CTX_SIZE"
+    --parallel "$PARALLEL"
+    --batch-size "$BATCH_SIZE"
+    --n-gpu-layers "$GPU_LAYERS"
+    --flash-attn on
+    --jinja
+)
+# reasoning_effort is a Qwen chat-template kwarg sent per request by the Python
+# runner. Older llama.cpp servers reject it as a top-level command-line flag.
+if [[ "$ENABLE_THINKING" != true ]]; then
+    LLAMACPP_ARGS+=(--reasoning-budget 0)
+fi
 
 docker run --detach \
     --name "$SERVER_CONTAINER" \
@@ -298,16 +341,7 @@ docker run --detach \
     --ipc=host \
     -v "$MODEL_DIR":/models:ro \
     "$LLAMACPP_IMAGE" \
-    --model "/models/$MODEL_NAME" \
-    --host 0.0.0.0 \
-    --port 8080 \
-    --api-key "$API_KEY" \
-    --ctx-size "$CTX_SIZE" \
-    --parallel "$PARALLEL" \
-    --batch-size "$BATCH_SIZE" \
-    --n-gpu-layers "$GPU_LAYERS" \
-    --flash-attn on \
-    --reasoning-budget 0 >/dev/null
+    "${LLAMACPP_ARGS[@]}" >/dev/null
 
 echo "Waiting for llama.cpp to become healthy..."
 SERVER_READY=false
@@ -359,6 +393,12 @@ RUN_ARGS=(
     --output-dir "/workspace/$OUTPUT_DIR"
     "--$BUDGET_KIND" "$BUDGET_VALUE"
 )
+if [[ -n "$SEED_PROMPT_FILE" ]]; then
+    RUN_ARGS+=(--seed-prompt-file "/workspace/$SEED_PROMPT_FILE")
+fi
+if [[ "$ENABLE_THINKING" == true ]]; then
+    RUN_ARGS+=(--enable-thinking --reasoning-effort "$REASONING_EFFORT")
+fi
 if [[ "$EVALUATE_LOCKED_TEST" == true ]]; then
     RUN_ARGS+=(--evaluate-locked-test)
 fi
@@ -373,6 +413,7 @@ echo "llama.cpp is ready; starting GEPA."
 docker run --rm \
     --network "$NETWORK_NAME" \
     --memory="$RUNNER_MEMORY" \
+    -e PYTHONPATH=/workspace/src \
     -v "$PHYS_DIR":/workspace \
     -v "$DATASET_DIR":/data/schoenfeld:ro \
     "$PROJECT_IMAGE" \

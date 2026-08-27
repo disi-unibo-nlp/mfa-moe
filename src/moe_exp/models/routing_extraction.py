@@ -3,6 +3,7 @@ import hashlib
 import json
 import logging
 import os
+from collections.abc import Callable
 from pathlib import Path
 from typing import Any
 
@@ -22,6 +23,25 @@ def _save_tensor_atomic(tensor: torch.Tensor, path: Path) -> None:
     temporary = path.with_name(f".{path.name}.tmp")
     torch.save(tensor, temporary)
     os.replace(temporary, path)
+
+
+def _tensor_audit(
+    tensor: torch.Tensor,
+    *,
+    persisted_dtype: torch.dtype,
+    path: Path | None,
+) -> dict[str, Any]:
+    element_count = int(tensor.numel())
+    projected_bytes = element_count * torch.empty((), dtype=persisted_dtype).element_size()
+    return {
+        "shape": list(tensor.shape),
+        "source_dtype": str(tensor.dtype).removeprefix("torch."),
+        "persisted_dtype": str(persisted_dtype).removeprefix("torch."),
+        "element_count": element_count,
+        "projected_serialized_payload_bytes": projected_bytes,
+        "persisted": path is not None,
+        "serialized_bytes": path.stat().st_size if path is not None and path.is_file() else 0,
+    }
 
 
 def compute_selected_experts(router_logits: torch.Tensor, top_k: int = 8) -> tuple[torch.Tensor, torch.Tensor]:
@@ -58,6 +78,14 @@ def process_file(
     strict_top_k: bool = False,
     layer_indices: list[int] | None = None,
     save_expert_weights: bool = True,
+    feature_reducer: Callable[
+        [torch.Tensor, torch.Tensor | None, torch.Tensor, list[int] | None],
+        dict[str, Any],
+    ]
+    | None = None,
+    feature_schema_version: int | None = None,
+    feature_config: dict[str, Any] | None = None,
+    save_raw_tensors: bool = True,
 ):
     """
     Run the offline extraction loop over traces to compute routing dynamics.
@@ -72,7 +100,19 @@ def process_file(
     are discarded before CPU storage and serialization.
     save_expert_weights: whether to serialize the normalized top-k routing
     weights. Selected expert IDs are saved regardless.
+    feature_reducer: optional callback that reduces raw tensors to compact,
+    JSON-serializable per-trace features before the tensors are released.
+    feature_schema_version: required with feature_reducer and included in the
+    content-addressed checkpoint.
+    feature_config: JSON-serializable reducer settings that must invalidate a
+    checkpoint when changed (for example, a geometry sampling limit).
+    save_raw_tensors: whether to persist router logits and hidden states. Set
+    this to False only with feature_reducer; selected expert IDs remain saved.
     """
+    if not save_raw_tensors and feature_reducer is None:
+        raise ValueError("save_raw_tensors=False requires a feature_reducer")
+    if feature_reducer is not None and feature_schema_version is None:
+        raise ValueError("feature_schema_version is required with feature_reducer")
     traces: list[dict[str, Any]] = []
     with open(input_path, "r", encoding="utf-8") as f:
         for line in f:
@@ -166,26 +206,61 @@ def process_file(
                 "layer_indices": layer_indices,
                 "expert_weights": save_expert_weights,
             }
+            if feature_reducer is not None:
+                expected_checkpoint.update(
+                    {
+                        "feature_schema_version": feature_schema_version,
+                        "feature_config": feature_config or {},
+                        "save_raw_tensors": save_raw_tensors,
+                    }
+                )
             checkpoint = None
             if checkpoint_path.is_file():
                 try:
                     checkpoint = json.loads(checkpoint_path.read_text(encoding="utf-8"))
                 except (OSError, json.JSONDecodeError):
                     checkpoint = None
-            required_paths = [logits_path, experts_path]
+            required_paths = [experts_path]
+            if save_raw_tensors:
+                required_paths.append(logits_path)
             if save_expert_weights:
                 required_paths.append(weights_path)
-            if extract_hidden_states:
+            if extract_hidden_states and save_raw_tensors:
                 required_paths.append(hidden_path)
-            if checkpoint == expected_checkpoint and all(path.is_file() for path in required_paths):
-                trace.model_logs.router_logits = logits_path.as_posix()
+            checkpoint_config_matches = checkpoint == expected_checkpoint
+            if feature_reducer is not None and isinstance(checkpoint, dict):
+                checkpoint_config_matches = checkpoint.get("config") == expected_checkpoint
+            checkpoint_has_features = feature_reducer is None or (
+                isinstance(checkpoint, dict)
+                and isinstance(checkpoint.get("correlation_features"), dict)
+                and isinstance(checkpoint.get("correlation_storage"), dict)
+            )
+            if (
+                checkpoint_config_matches
+                and checkpoint_has_features
+                and all(path.is_file() for path in required_paths)
+            ):
+                if not save_raw_tensors:
+                    logits_path.unlink(missing_ok=True)
+                    hidden_path.unlink(missing_ok=True)
+                if not save_expert_weights:
+                    weights_path.unlink(missing_ok=True)
+                trace.model_logs.router_logits = (
+                    logits_path.as_posix() if save_raw_tensors else None
+                )
                 trace.model_logs.selected_experts = experts_path.as_posix()
                 trace.model_logs.expert_weights = (
                     weights_path.as_posix() if save_expert_weights else None
                 )
-                if extract_hidden_states:
-                    trace.model_logs.hidden_states = hidden_path.as_posix()
+                trace.model_logs.hidden_states = (
+                    hidden_path.as_posix()
+                    if extract_hidden_states and save_raw_tensors
+                    else None
+                )
                 trace.model_logs.layer_indices = layer_indices
+                if feature_reducer is not None:
+                    trace.metadata["correlation_features"] = checkpoint["correlation_features"]
+                    trace.metadata["correlation_storage"] = checkpoint["correlation_storage"]
                 n_with_routing += 1
                 out_f.write(trace.model_dump_json() + "\n")
                 continue
@@ -208,34 +283,23 @@ def process_file(
                 router_logits = extracted
                 hidden_states = None
 
-            if layer_indices is not None:
+            if layer_indices is not None and router_logits.shape[0] != len(layer_indices):
                 # Current extraction filters before moving activations to CPU.
                 # Accept full-layer tensors too for custom extractors and tests.
-                if router_logits.shape[0] != len(layer_indices):
-                    invalid = [index for index in layer_indices if index >= router_logits.shape[0]]
-                    if invalid:
-                        raise ValueError(
-                            f"Requested layer indices {invalid} are unavailable in an extractor "
-                            f"output with {router_logits.shape[0]} layers"
-                        )
-                    selection = torch.tensor(layer_indices, dtype=torch.long)
-                    router_logits = router_logits.index_select(0, selection)
-                    if hidden_states is not None:
-                        hidden_states = hidden_states.index_select(0, selection)
+                invalid = [index for index in layer_indices if index >= router_logits.shape[0]]
+                if invalid:
+                    raise ValueError(
+                        f"Requested layer indices {invalid} are unavailable in an extractor "
+                        f"output with {router_logits.shape[0]} layers"
+                    )
+                selection = torch.tensor(layer_indices, dtype=torch.long)
+                router_logits = router_logits.index_select(0, selection)
+                if hidden_states is not None:
+                    hidden_states = hidden_states.index_select(0, selection)
             
             # router_logits is (num_layers, seq_len, num_experts)
             if router_logits.numel() > 0:
-                # Save router logits.
-                # Store POSIX-style paths so the JSONL stays portable: tensors
-                # are typically written on Windows during dev but re-read inside
-                # the Linux Docker/SLURM pipeline, where backslash paths break.
-                _save_tensor_atomic(router_logits.to(torch.float32), logits_path)
-                trace.model_logs.router_logits = logits_path.as_posix()
                 trace.model_logs.layer_indices = layer_indices
-
-                if hidden_states is not None and hidden_states.numel() > 0:
-                    _save_tensor_atomic(hidden_states.to(torch.bfloat16), hidden_path)
-                    trace.model_logs.hidden_states = hidden_path.as_posix()
 
                 # Compute selected experts. Only materialize normalized weights
                 # when this run is configured to persist them.
@@ -244,6 +308,18 @@ def process_file(
                 else:
                     selected = torch.topk(router_logits, k=top_k, dim=-1).indices
                     weights = None
+
+                if save_raw_tensors:
+                    # Store POSIX-style paths so the JSONL stays portable across
+                    # Windows development and Linux Docker/SLURM analysis.
+                    _save_tensor_atomic(router_logits.to(torch.float32), logits_path)
+                    trace.model_logs.router_logits = logits_path.as_posix()
+                    if hidden_states is not None and hidden_states.numel() > 0:
+                        _save_tensor_atomic(hidden_states.to(torch.bfloat16), hidden_path)
+                        trace.model_logs.hidden_states = hidden_path.as_posix()
+                else:
+                    trace.model_logs.router_logits = None
+                    trace.model_logs.hidden_states = None
 
                 _save_tensor_atomic(selected.to(torch.int16), experts_path)
                 trace.model_logs.selected_experts = experts_path.as_posix()
@@ -254,12 +330,90 @@ def process_file(
                     trace.model_logs.expert_weights = weights_path.as_posix()
                 else:
                     trace.model_logs.expert_weights = None
+
+                correlation_features = None
+                if feature_reducer is not None:
+                    values = feature_reducer(
+                        router_logits,
+                        hidden_states,
+                        selected,
+                        layer_indices,
+                    )
+                    correlation_features = {
+                        "schema_version": feature_schema_version,
+                        "config": feature_config or {},
+                        "token_count": int(router_logits.shape[1]),
+                        "layer_indices": layer_indices,
+                        "num_layers": int(router_logits.shape[0]),
+                        "num_experts": int(router_logits.shape[2]),
+                        "top_k": int(top_k),
+                        "values": values,
+                    }
+                    trace.metadata["correlation_features"] = correlation_features
+
+                tensor_audit = {
+                    "router_logits": _tensor_audit(
+                        router_logits,
+                        persisted_dtype=torch.float32,
+                        path=logits_path if save_raw_tensors else None,
+                    ),
+                    "selected_experts": _tensor_audit(
+                        selected,
+                        persisted_dtype=torch.int16,
+                        path=experts_path,
+                    ),
+                }
+                if hidden_states is not None and hidden_states.numel() > 0:
+                    tensor_audit["hidden_states"] = _tensor_audit(
+                        hidden_states,
+                        persisted_dtype=torch.bfloat16,
+                        path=hidden_path if save_raw_tensors else None,
+                    )
+                if weights is not None:
+                    tensor_audit["expert_weights"] = _tensor_audit(
+                        weights,
+                        persisted_dtype=torch.float16,
+                        path=weights_path,
+                    )
+                correlation_storage = {
+                    "tokens_retained": int(router_logits.shape[1]),
+                    "layer_indices": layer_indices,
+                    "tensors": tensor_audit,
+                    "projected_raw_payload_bytes": sum(
+                        item["projected_serialized_payload_bytes"]
+                        for name, item in tensor_audit.items()
+                        if name in {"router_logits", "hidden_states"}
+                    ),
+                    "persisted_tensor_bytes": sum(
+                        item["serialized_bytes"] for item in tensor_audit.values()
+                    ),
+                    "persisted_raw_tensor_bytes": sum(
+                        item["serialized_bytes"]
+                        for name, item in tensor_audit.items()
+                        if name in {"router_logits", "hidden_states"}
+                    ),
+                }
+                if feature_reducer is not None:
+                    trace.metadata["correlation_storage"] = correlation_storage
+
                 temporary_checkpoint = checkpoint_path.with_name(f".{checkpoint_path.name}.tmp")
+                checkpoint_payload: dict[str, Any] = expected_checkpoint
+                if feature_reducer is not None:
+                    checkpoint_payload = {
+                        "config": expected_checkpoint,
+                        "correlation_features": correlation_features,
+                        "correlation_storage": correlation_storage,
+                    }
                 temporary_checkpoint.write_text(
-                    json.dumps(expected_checkpoint, indent=2) + "\n",
+                    json.dumps(checkpoint_payload, indent=2, allow_nan=False) + "\n",
                     encoding="utf-8",
                 )
                 os.replace(temporary_checkpoint, checkpoint_path)
+                if not save_raw_tensors:
+                    logits_path.unlink(missing_ok=True)
+                    hidden_path.unlink(missing_ok=True)
+                if not save_expert_weights:
+                    weights_path.unlink(missing_ok=True)
                 n_with_routing += 1
             else:
                 logger.warning(
@@ -272,7 +426,7 @@ def process_file(
     if n_with_routing == 0:
         tmp_output_path.unlink(missing_ok=True)
         raise RuntimeError(
-            f"No routing tensors were extracted from {len(traces)} input traces."
+            f"No routing data were extracted from {len(traces)} input traces."
         )
     tmp_output_path.replace(output_path)
 

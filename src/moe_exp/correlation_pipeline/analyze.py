@@ -11,12 +11,12 @@ from typing import Any
 import numpy as np
 import pandas as pd
 import torch
-import torch.nn.functional as F
 from scipy.stats import pointbiserialr, spearmanr
 from tqdm import tqdm
 
 from moe_exp.correlation_pipeline.benchmarks import BENCHMARKS, DEFAULT_BENCHMARKS
 from moe_exp.correlation_pipeline.defaults import DEFAULT_FORWARD_MODEL
+from moe_exp.correlation_pipeline.features import compute_layer_features, restore_features
 from moe_exp.schemas import TraceRecord
 
 logger = logging.getLogger(__name__)
@@ -26,8 +26,11 @@ _PRIMARY_FEATURES = {
     "token_count",
     "step_count",
     "character_count",
-    "router_entropy_mean_layers",
+    "router_confidence_mean_layers",
     "router_margin_mean_layers",
+    "router_selected_mass_mean_layers",
+    "router_boundary_margin_mean_layers",
+    "router_topk_non_topk_gap_mean_layers",
     "router_switch_rate_mean_layers",
     "router_topk_overlap_mean_layers",
     "hidden_norm_mean_layers",
@@ -69,142 +72,15 @@ def _resolve_tensor(path_value: str | None, input_path: Path) -> Path | None:
     raise FileNotFoundError(f"Tensor referenced by {input_path} does not exist: {path_value}")
 
 
-def _mean_or_nan(values: torch.Tensor) -> float:
-    return float(values.mean().item()) if values.numel() else float("nan")
-
-
-def _geometry_correlation(
-    hidden: torch.Tensor,
-    probabilities: torch.Tensor,
-    *,
-    max_tokens: int,
-) -> float:
-    token_count = hidden.shape[0]
-    if token_count < 3:
-        return float("nan")
-    if token_count > max_tokens:
-        indices = torch.linspace(0, token_count - 1, max_tokens).round().long().unique()
-        hidden = hidden.index_select(0, indices)
-        probabilities = probabilities.index_select(0, indices)
-    hidden = F.normalize(hidden.to(torch.float32), p=2, dim=-1)
-    probabilities = F.normalize(probabilities.to(torch.float32), p=2, dim=-1)
-    hidden_similarity = hidden @ hidden.transpose(0, 1)
-    router_similarity = probabilities @ probabilities.transpose(0, 1)
-    upper = torch.triu_indices(hidden.shape[0], hidden.shape[0], offset=1)
-    hidden_values = hidden_similarity[upper[0], upper[1]].numpy()
-    router_values = router_similarity[upper[0], upper[1]].numpy()
-    if np.std(hidden_values) == 0 or np.std(router_values) == 0:
-        return float("nan")
-    return float(np.corrcoef(hidden_values, router_values)[0, 1])
-
-
-def _layer_features(
-    router_logits: torch.Tensor,
-    hidden_states: torch.Tensor | None,
-    selected_experts: torch.Tensor | None,
-    *,
-    max_geometry_tokens: int,
-    layer_indices: list[int] | None = None,
-) -> dict[str, float]:
-    features: dict[str, float] = {}
-    num_layers, token_count, num_experts = router_logits.shape
-    if hidden_states is not None and hidden_states.shape[:2] != router_logits.shape[:2]:
-        raise ValueError(
-            f"Hidden/router shape mismatch: {tuple(hidden_states.shape)} vs "
-            f"{tuple(router_logits.shape)}"
-        )
-    if selected_experts is not None and selected_experts.shape[:2] != router_logits.shape[:2]:
-        raise ValueError("Selected-expert and router tensor shapes do not align")
-
-    if layer_indices is None:
-        layer_indices = list(range(num_layers))
-    if len(layer_indices) != num_layers:
-        raise ValueError("Saved layer_indices do not match tensor dimension 0")
-
-    aggregate: dict[str, list[float]] = {}
-    for layer, original_layer in enumerate(layer_indices):
-        probabilities = F.softmax(router_logits[layer].to(torch.float32), dim=-1)
-        entropy = -(probabilities * probabilities.clamp_min(1e-12).log()).sum(dim=-1)
-        top_two = torch.topk(probabilities, k=min(2, num_experts), dim=-1).values
-        margin = top_two[:, 0] - top_two[:, 1] if num_experts > 1 else top_two[:, 0]
-        top_one = probabilities.argmax(dim=-1)
-        switch_rate = (
-            _mean_or_nan((top_one[1:] != top_one[:-1]).to(torch.float32))
-            if token_count > 1
-            else float("nan")
-        )
-        if selected_experts is not None and token_count > 1:
-            previous = selected_experts[layer, :-1].to(torch.long)
-            current = selected_experts[layer, 1:].to(torch.long)
-            intersection = (
-                previous.unsqueeze(-1) == current.unsqueeze(-2)
-            ).any(dim=-1).sum(dim=-1)
-            topk_overlap = _mean_or_nan(intersection.to(torch.float32) / previous.shape[-1])
-        else:
-            topk_overlap = float("nan")
-
-        layer_values = {
-            "router_entropy": _mean_or_nan(entropy),
-            "router_margin": _mean_or_nan(margin),
-            "router_switch_rate": switch_rate,
-            "router_topk_overlap": topk_overlap,
-        }
-        if hidden_states is not None:
-            hidden = hidden_states[layer].to(torch.float32)
-            hidden_norm = hidden.norm(dim=-1)
-            if token_count > 1:
-                trajectory_distance = 1.0 - F.cosine_similarity(hidden[1:], hidden[:-1], dim=-1)
-                hidden_step_distance = _mean_or_nan(trajectory_distance)
-            else:
-                hidden_step_distance = float("nan")
-            layer_values.update(
-                {
-                    "hidden_norm": _mean_or_nan(hidden_norm),
-                    "hidden_step_distance": hidden_step_distance,
-                    "hidden_router_geometry": _geometry_correlation(
-                        hidden,
-                        probabilities,
-                        max_tokens=max_geometry_tokens,
-                    ),
-                }
-            )
-
-        for name, value in layer_values.items():
-            features[f"{name}_l{original_layer:02d}"] = value
-            aggregate.setdefault(name, []).append(value)
-
-    for name, values in aggregate.items():
-        array = np.asarray(values, dtype=np.float64)
-        features[f"{name}_mean_layers"] = float(np.nanmean(array)) if np.isfinite(array).any() else float("nan")
-        features[f"{name}_std_layers"] = float(np.nanstd(array)) if np.isfinite(array).any() else float("nan")
-    return features
-
-
 def extract_trace_features(
     trace: TraceRecord,
     *,
     input_path: Path,
     max_geometry_tokens: int,
 ) -> dict[str, Any]:
-    router_path = _resolve_tensor(trace.model_logs.router_logits, input_path)
-    if router_path is None:
-        raise ValueError(f"{trace.dataset}/{trace.problem_id} has no router tensor")
-    hidden_path = _resolve_tensor(trace.model_logs.hidden_states, input_path)
-    experts_path = _resolve_tensor(trace.model_logs.selected_experts, input_path)
-    router_logits = torch.load(router_path, map_location="cpu", weights_only=True)
-    hidden_states = (
-        torch.load(hidden_path, map_location="cpu", weights_only=True)
-        if hidden_path is not None
-        else None
-    )
-    selected_experts = (
-        torch.load(experts_path, map_location="cpu", weights_only=True)
-        if experts_path is not None
-        else None
-    )
-    if router_logits.ndim != 3 or router_logits.numel() == 0:
-        raise ValueError(f"Invalid router tensor at {router_path}: {tuple(router_logits.shape)}")
-
+    compact = trace.metadata.get("correlation_features")
+    compact_values = compact.get("values") if isinstance(compact, dict) else None
+    compact_token_count = compact.get("token_count") if isinstance(compact, dict) else None
     row: dict[str, Any] = {
         "dataset": trace.dataset,
         "problem_id": trace.problem_id,
@@ -216,19 +92,43 @@ def extract_trace_features(
         "has_backtracking": int(bool(trace.step_labels.backtracking_steps)),
         "has_contradiction": int(bool(trace.step_labels.contradiction_steps)),
         "has_self_correction": int(bool(trace.step_labels.self_correction_steps)),
-        "token_count": int(router_logits.shape[1]),
+        "token_count": int(compact_token_count) if compact_token_count is not None else 0,
         "step_count": len(trace.steps),
         "character_count": len(trace.cot_text),
     }
-    row.update(
-        _layer_features(
-            router_logits,
-            hidden_states,
-            selected_experts,
-            max_geometry_tokens=max_geometry_tokens,
-            layer_indices=trace.model_logs.layer_indices,
+    if isinstance(compact_values, dict):
+        row.update(restore_features(compact_values))
+    else:
+        router_path = _resolve_tensor(trace.model_logs.router_logits, input_path)
+        if router_path is None:
+            raise ValueError(
+                f"{trace.dataset}/{trace.problem_id} has neither compact features nor a router tensor"
+            )
+        hidden_path = _resolve_tensor(trace.model_logs.hidden_states, input_path)
+        experts_path = _resolve_tensor(trace.model_logs.selected_experts, input_path)
+        router_logits = torch.load(router_path, map_location="cpu", weights_only=True)
+        hidden_states = (
+            torch.load(hidden_path, map_location="cpu", weights_only=True)
+            if hidden_path is not None
+            else None
         )
-    )
+        selected_experts = (
+            torch.load(experts_path, map_location="cpu", weights_only=True)
+            if experts_path is not None
+            else None
+        )
+        if router_logits.ndim != 3 or router_logits.numel() == 0:
+            raise ValueError(f"Invalid router tensor at {router_path}: {tuple(router_logits.shape)}")
+        row["token_count"] = int(router_logits.shape[1])
+        row.update(
+            compute_layer_features(
+                router_logits,
+                hidden_states,
+                selected_experts,
+                max_geometry_tokens=max_geometry_tokens,
+                layer_indices=trace.model_logs.layer_indices,
+            )
+        )
     episode_features = trace.metadata.get("episode_features")
     if isinstance(episode_features, dict):
         for name, value in episode_features.items():
@@ -238,11 +138,18 @@ def extract_trace_features(
 
 
 def _feature_columns(frame: pd.DataFrame) -> list[str]:
-    return [
-        column
-        for column in frame.columns
-        if column not in _IDENTIFIERS and pd.api.types.is_numeric_dtype(frame[column])
-    ]
+    columns: list[str] = []
+    for column in frame.columns:
+        if column in _IDENTIFIERS or not pd.api.types.is_numeric_dtype(frame[column]):
+            continue
+        # Confidence is 1 - normalized entropy, so reporting correlations for
+        # both would duplicate the same evidence with the opposite sign.
+        if column.startswith("router_entropy_"):
+            confidence = column.replace("router_entropy_", "router_confidence_", 1)
+            if confidence in frame.columns:
+                continue
+        columns.append(column)
+    return columns
 
 
 def _correlation(x: np.ndarray, y: np.ndarray) -> tuple[float, float]:

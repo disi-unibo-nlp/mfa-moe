@@ -142,26 +142,41 @@ src/moe_exp/correlation_pipeline/run_docker.sh forward \
   --quantization unsloth-4bit
 ```
 
-Hidden states are extracted by default. `--router-only` saves space but removes
-hidden trajectory and hidden/router geometry features. By default, extraction
-reads `results/probeTest/qwen3.5-35b-a3b-gptq-int4/probes/results.json` and
-retains only the union of its `best_by_target` layers. Pass `--probe-results`
-to use another completed probe run. Probe hidden-state indices without a
-corresponding router layer (currently index 40) are reported and excluded.
-The original layer numbers are stored in each trace and preserved in analysis
-column names. The output mirrors the existing Experiment 2 structure:
+Hidden states are extracted by default. `--router-only` removes hidden
+trajectory and hidden/router geometry features. By default, extraction reads
+`results/probeTest/qwen3.5-35b-a3b-gptq-int4/probes/results.json` and retains
+only the union of its `best_by_target` layers. Pass `--probe-results` to use
+another completed probe run. Probe hidden-state indices without a corresponding
+router layer (currently index 40) are reported and excluded. The original layer
+numbers are stored in each trace and preserved in analysis column names.
+
+The forward stage now reduces router and hidden tensors on the fly. Normalized
+confidence (derived from entropy), top-k confidence measures, switching, overlap, hidden
+norm, trajectory distance, and hidden/router geometry are written into each
+trace as compact scalar features. Full router and hidden tensors are released
+without serialization. Top-k expert IDs remain on disk because expert-identity
+and expert-combination analyses need them and they are small. The default output
+is:
 
 ```text
 results/correlation_pipeline/forward/<hf-model>/<dataset>/
   traces_with_routing.jsonl
-  tensors/*_logits.pt
-  tensors/*_hidden.pt
   tensors/*_experts.pt
   tensors/*_extraction.json
 ```
 
-The correlation forward stage does not save normalized expert-weight tensors;
-its analyses use router logits and selected expert IDs directly.
+Each trace contains a storage audit with tensor shapes, dtypes, element counts,
+projected raw bytes, and actual persisted bytes. The model-level `summary.json`
+aggregates these values and reports the raw payload avoided. The geometry metric
+uses at most 128 uniformly sampled tokens by default; change this contract with
+`--max-geometry-tokens`.
+
+Use `--save-raw-tensors` only for a small audit or ablation run. It additionally
+writes `*_logits.pt` and `*_hidden.pt` while retaining the same compact
+features. The correlation stage never saves normalized expert-weight tensors.
+Entropy is retained in the compact audit values, but the analyzer reports its
+normalized confidence transform instead of treating both affine-equivalent
+quantities as separate correlation evidence.
 
 The GGUF and Hugging Face checkpoints represent the same post-trained model but
 use different 4-bit formats, so their numerical activations are not identical.
@@ -192,7 +207,8 @@ src/moe_exp/correlation_pipeline/run_docker.sh analyze \
   --bootstrap-samples 500
 ```
 
-This writes:
+This reads the compact features directly (and remains backward-compatible with
+older raw-tensor runs) and writes:
 
 ```text
 results/correlation_pipeline/analysis/<hf-model>/
