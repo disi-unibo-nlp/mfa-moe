@@ -1,4 +1,5 @@
 import json
+from argparse import Namespace
 from pathlib import Path
 
 import pytest
@@ -24,7 +25,11 @@ from moe_exp.gepaLLMAsJudge.prompts import (
     build_few_shot_instructions,
     select_few_shot_sentences,
 )
-from moe_exp.gepaLLMAsJudge.run import create_metric, parse_llm_judge_response
+from moe_exp.gepaLLMAsJudge.run import (
+    _seed_configuration,
+    create_metric,
+    parse_llm_judge_response,
+)
 
 
 def test_parse_sentence_label_is_case_tolerant_but_strict() -> None:
@@ -235,6 +240,26 @@ def test_few_shot_prompt_covers_all_sentence_labels() -> None:
     )
     assert "Previous unit:" in prompt
     assert "Next unit:" in prompt
+
+
+def test_external_seed_prompt_is_loaded_verbatim(tmp_path: Path) -> None:
+    seed_path = tmp_path / "optimized_prompt.txt"
+    seed_path.write_text("  Previously optimized instructions.\n", encoding="utf-8")
+    args = Namespace(seed_prompt_file=seed_path)
+
+    examples, prompt = _seed_configuration(args, documents=[])
+
+    assert examples == ()
+    assert prompt == "Previously optimized instructions."
+
+
+def test_external_seed_prompt_must_not_be_empty(tmp_path: Path) -> None:
+    seed_path = tmp_path / "empty_prompt.txt"
+    seed_path.write_text("  \n", encoding="utf-8")
+    args = Namespace(seed_prompt_file=seed_path)
+
+    with pytest.raises(ValueError, match="seed prompt file is empty"):
+        _seed_configuration(args, documents=[])
 
 
 def test_strict_classification_metrics_include_invalid_predictions() -> None:

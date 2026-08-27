@@ -306,6 +306,16 @@ def _make_lm(
     temperature: float,
 ) -> dspy.LM:
     model = args.model if args.model.startswith("openai/") else f"openai/{args.model}"
+    chat_template_kwargs: dict[str, Any] = {
+        "enable_thinking": args.enable_thinking,
+    }
+    if args.enable_thinking:
+        chat_template_kwargs.update(
+            {
+                "reasoning_effort": args.reasoning_effort,
+                "preserve_thinking": False,
+            }
+        )
     return dspy.LM(
         model=model,
         api_base=args.api_base,
@@ -313,7 +323,7 @@ def _make_lm(
         max_tokens=max_tokens,
         temperature=temperature,
         cache=False,
-        extra_body={"chat_template_kwargs": {"enable_thinking": False}},
+        extra_body={"chat_template_kwargs": chat_template_kwargs},
     )
 
 
@@ -649,6 +659,15 @@ def parse_args() -> argparse.Namespace:
         help="Number of balanced examples drawn from the 21-example curated bank.",
     )
     parser.add_argument(
+        "--seed-prompt-file",
+        type=Path,
+        default=None,
+        help=(
+            "Use this existing optimized prompt verbatim as GEPA's seed instead of "
+            "constructing the base/few-shot seed prompt."
+        ),
+    )
+    parser.add_argument(
         "--gepa-reward",
         choices=("llm-judge", "balanced", "exact"),
         default="llm-judge",
@@ -703,6 +722,17 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--reflection-temperature", type=float, default=0.7)
     parser.add_argument("--reflection-max-tokens", type=int, default=2048)
     parser.add_argument("--num-threads", type=int, default=1)
+    parser.add_argument(
+        "--enable-thinking",
+        action="store_true",
+        help="Enable the model's thinking mode for classifier, judge, and reflection calls.",
+    )
+    parser.add_argument(
+        "--reasoning-effort",
+        choices=("low", "medium", "xhigh"),
+        default="medium",
+        help="Qwen chat-template reasoning effort when --enable-thinking is set.",
+    )
 
     parser.add_argument(
         "--kappa-weight",
@@ -778,6 +808,23 @@ def _few_shot_configuration(
     return examples, build_few_shot_instructions(examples)
 
 
+def _seed_configuration(
+    args: argparse.Namespace,
+    documents: Sequence[EpisodeDocument],
+) -> tuple[tuple[Any, ...], str]:
+    if args.seed_prompt_file is None:
+        return _few_shot_configuration(args, documents)
+
+    seed_prompt_file = Path(args.seed_prompt_file)
+    if not seed_prompt_file.is_file():
+        raise FileNotFoundError(f"seed prompt file does not exist: {seed_prompt_file}")
+    seed_instructions = seed_prompt_file.read_text(encoding="utf-8").strip()
+    if not seed_instructions:
+        raise ValueError(f"seed prompt file is empty: {seed_prompt_file}")
+    print(f"Using external GEPA seed prompt: {seed_prompt_file}")
+    return (), seed_instructions
+
+
 def _common_result_metadata(
     args: argparse.Namespace,
     *,
@@ -797,8 +844,14 @@ def _common_result_metadata(
             "next_sentence",
         ],
         "prompt_variant": args.prompt_variant,
+        "seed_prompt": {
+            "source": str(args.seed_prompt_file) if args.seed_prompt_file else "generated",
+            "external": args.seed_prompt_file is not None,
+        },
         "few_shot": {
-            "requested_examples": args.few_shot_examples,
+            "requested_examples": (
+                0 if args.seed_prompt_file is not None else args.few_shot_examples
+            ),
             "selected_examples": [example.metadata() for example in few_shot_examples],
         },
         "metric_definition": {
@@ -814,7 +867,8 @@ def _common_result_metadata(
                     else "per-unit exact match"
                 )
             ),
-            "judge_reasoning_enabled": False,
+            "judge_reasoning_enabled": args.enable_thinking,
+            "reasoning_effort": args.reasoning_effort if args.enable_thinking else None,
             "judge_score_weights": (
                 JUDGE_SCORE_WEIGHTS if args.gepa_reward == "llm-judge" else None
             ),
@@ -997,7 +1051,7 @@ def main() -> None:
         evaluation_lm=judge_lm,
         judge_audit_path=judge_audit_path,
     )
-    few_shot_examples, seed_instructions = _few_shot_configuration(args, documents)
+    few_shot_examples, seed_instructions = _seed_configuration(args, documents)
     (args.output_dir / f"seed_prompt_{timestamp}.txt").write_text(
         seed_instructions,
         encoding="utf-8",

@@ -12,6 +12,11 @@ import torch
 
 from moe_exp.correlation_pipeline.benchmarks import BENCHMARKS, DEFAULT_BENCHMARKS
 from moe_exp.correlation_pipeline.defaults import DEFAULT_FORWARD_MODEL, DEFAULT_GENERATION_MODEL
+from moe_exp.correlation_pipeline.features import (
+    FEATURE_SCHEMA_VERSION,
+    compute_layer_features,
+    json_safe_features,
+)
 from moe_exp.models.loader import QUANTIZATION_CHOICES, load_model_and_tokenizer
 from moe_exp.models.routing_extraction import process_file
 
@@ -53,6 +58,35 @@ def load_probe_layers(path: Path, num_router_layers: int) -> tuple[list[int], li
             f"0..{num_router_layers - 1}"
         )
     return compatible, excluded
+
+
+def _storage_summary(output_path: Path) -> dict[str, int]:
+    records = [
+        json.loads(line)
+        for line in output_path.read_text(encoding="utf-8").splitlines()
+        if line.strip()
+    ]
+    projected_raw = 0
+    persisted_tensors = 0
+    persisted_raw = 0
+    retained_tokens = 0
+    for record in records:
+        audit = record.get("metadata", {}).get("correlation_storage", {})
+        projected_raw += int(audit.get("projected_raw_payload_bytes", 0))
+        persisted_tensors += int(audit.get("persisted_tensor_bytes", 0))
+        persisted_raw += int(audit.get("persisted_raw_tensor_bytes", 0))
+        retained_tokens += int(audit.get("tokens_retained", 0))
+    dataset_files = sum(
+        path.stat().st_size for path in output_path.parent.rglob("*") if path.is_file()
+    )
+    return {
+        "retained_tokens": retained_tokens,
+        "projected_raw_payload_bytes": projected_raw,
+        "persisted_tensor_bytes": persisted_tensors,
+        "persisted_raw_tensor_bytes": persisted_raw,
+        "dataset_files_bytes": dataset_files,
+        "raw_payload_bytes_avoided": max(projected_raw - persisted_raw, 0),
+    }
 
 
 def extract_all(args: argparse.Namespace) -> list[dict[str, Any]]:
@@ -102,6 +136,23 @@ def extract_all(args: argparse.Namespace) -> list[dict[str, Any]]:
             excluded_probe_indices,
         )
     summaries: list[dict[str, Any]] = []
+
+    def reduce_features(
+        router_logits: torch.Tensor,
+        hidden_states: torch.Tensor | None,
+        selected_experts: torch.Tensor,
+        selected_layers: list[int] | None,
+    ) -> dict[str, Any]:
+        return json_safe_features(
+            compute_layer_features(
+                router_logits,
+                hidden_states,
+                selected_experts,
+                max_geometry_tokens=args.max_geometry_tokens,
+                layer_indices=selected_layers,
+            )
+        )
+
     try:
         for dataset, input_path, output_path in inputs:
             logger.info("Extracting %s", dataset)
@@ -118,6 +169,10 @@ def extract_all(args: argparse.Namespace) -> list[dict[str, Any]]:
                 strict_top_k=True,
                 layer_indices=layer_indices,
                 save_expert_weights=False,
+                feature_reducer=reduce_features,
+                feature_schema_version=FEATURE_SCHEMA_VERSION,
+                feature_config={"max_geometry_tokens": args.max_geometry_tokens},
+                save_raw_tensors=args.save_raw_tensors,
             )
             if not output_path.is_file() or output_path.stat().st_size == 0:
                 raise RuntimeError(f"Forward extraction produced no output for {dataset}")
@@ -133,6 +188,7 @@ def extract_all(args: argparse.Namespace) -> list[dict[str, Any]]:
                     "traces": trace_count,
                     "input": input_path.as_posix(),
                     "output": output_path.as_posix(),
+                    "storage": _storage_summary(output_path),
                 }
             )
     finally:
@@ -147,6 +203,9 @@ def extract_all(args: argparse.Namespace) -> list[dict[str, Any]]:
         "generation_model": args.generation_model,
         "quantization": args.quantization,
         "router_only": args.router_only,
+        "feature_schema_version": FEATURE_SCHEMA_VERSION,
+        "max_geometry_tokens": args.max_geometry_tokens,
+        "raw_tensors_saved": args.save_raw_tensors,
         "probe_results": args.probe_results.as_posix(),
         "layer_indices": layer_indices,
         "excluded_probe_indices": excluded_probe_indices,
@@ -188,6 +247,17 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--device", default="cuda")
     parser.add_argument("--trust-remote-code", action="store_true")
     parser.add_argument(
+        "--max-geometry-tokens",
+        type=int,
+        default=128,
+        help="Maximum uniformly sampled tokens used for hidden/router geometry",
+    )
+    parser.add_argument(
+        "--save-raw-tensors",
+        action="store_true",
+        help="Also persist full router/hidden tensors for a small audit run",
+    )
+    parser.add_argument(
         "--probe-results",
         type=Path,
         default=DEFAULT_PROBE_RESULTS,
@@ -204,6 +274,8 @@ def build_parser() -> argparse.ArgumentParser:
 def main(argv: list[str] | None = None) -> None:
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
     args = build_parser().parse_args(argv)
+    if args.max_geometry_tokens < 3:
+        raise ValueError("--max-geometry-tokens must be at least 3")
     extract_all(args)
 
 

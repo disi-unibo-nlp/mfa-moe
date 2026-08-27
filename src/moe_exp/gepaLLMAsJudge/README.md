@@ -168,6 +168,22 @@ sbatch run_gepaLLMAsJudge.sh \
   --output-dir results/gepaLLMAsJudge/context-llmjudge-final-s42
 ```
 
+To realign an already optimized prompt with a different model, start a fresh
+output directory and pass the previous prompt as the new seed:
+
+```bash
+bash run_gepaLLMAsJudge.sh \
+  --seed-prompt-file results/exp0a/context-llmjudge-20k-s42/gepa_optimized_prompt_20260811_135905.txt \
+  --enable-thinking \
+  --reasoning-effort medium \
+  --output-dir results/gepaLLMAsJudge/qwen3.8-27b-medium-final-s42 \
+  --gepa-auto heavy
+```
+
+The seed path is relative to the repository because the launcher maps it into
+the project container. A fresh output directory prevents GEPA from resuming
+model-specific candidates and evaluation scores from an earlier run.
+
 Add `--evaluate-locked-test` only to the frozen final evaluation job. Each
 candidate evaluation now requires both a classifier call and a judge call, so
 budgeted runs are substantially slower. Keep judge reasoning disabled on the
