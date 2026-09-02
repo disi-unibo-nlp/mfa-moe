@@ -26,6 +26,25 @@ def _limit(rows: list[dict[str, Any]], max_items: int | None) -> list[dict[str, 
     return rows if max_items is None else rows[:max_items]
 
 
+def _extract_boxed_answer(text: Any) -> str:
+    """Extract the last balanced ``\\boxed{...}`` expression from a solution."""
+    solution = str(text or "")
+    marker = "\\boxed{"
+    start = solution.rfind(marker)
+    if start < 0:
+        return ""
+    content_start = start + len(marker)
+    depth = 1
+    for index in range(content_start, len(solution)):
+        if solution[index] == "{":
+            depth += 1
+        elif solution[index] == "}":
+            depth -= 1
+            if depth == 0:
+                return solution[content_start:index].strip()
+    return ""
+
+
 def _normalize_math_rows(
     rows: Any,
     *,
@@ -36,9 +55,19 @@ def _normalize_math_rows(
     normalized: list[dict[str, Any]] = []
     for index, row in enumerate(rows):
         question = next((row.get(field) for field in question_fields if row.get(field)), "")
-        answer = next((row.get(field) for field in answer_fields if row.get(field) is not None), "")
+        answer: Any = ""
+        for field in answer_fields:
+            candidate = row.get(field)
+            if candidate is None:
+                continue
+            if isinstance(candidate, (str, list, tuple)) and not candidate:
+                continue
+            answer = candidate
+            break
         if isinstance(answer, list):
             answer = answer[0] if answer else ""
+        if not str(answer).strip():
+            answer = _extract_boxed_answer(row.get("solution"))
         if not str(question).strip():
             continue
         source_id = row.get("unique_id", row.get("id", index))
@@ -81,12 +110,48 @@ def load_amc23(max_items: int | None = None) -> list[dict[str, Any]]:
 
 
 def load_olympiad(max_items: int | None = None) -> list[dict[str, Any]]:
-    rows = _hf().load_dataset(
-        "Hothan/OlympiadBench",
-        "OE_TO_maths_en_COMP",
-        split="train",
+    rows = list(
+        _hf().load_dataset(
+            "Hothan/OlympiadBench",
+            "OE_TO_maths_en_COMP",
+            split="train",
+        )
     )
+    # SPIRAL's frozen evaluator contains problem 1965, which is absent from the
+    # current Hub conversion. Restore it so this remains the paper's 675-item set.
+    if not any(str(row.get("id")) == "1965" for row in rows):
+        insert_at = next(
+            (index for index, row in enumerate(rows) if int(row.get("id", 0)) > 1965),
+            len(rows),
+        )
+        rows.insert(insert_at, _SPIRAL_OLYMPIAD_1965)
     return _limit(_normalize_math_rows(rows, dataset="olympiad"), max_items)
+
+
+_SPIRAL_OLYMPIAD_1965 = {
+    "id": 1965,
+    "subfield": "Number Theory",
+    "question": r"""For every positive integer $n$ with prime factorization $n=\prod_{i=1}^{k} p_{i}^{\alpha_{i}}$, define
+
+$$
+\mho(n)=\sum_{i: p_{i}>10^{100}} \alpha_{i}\tag{1}
+$$
+
+That is, $\mho(n)$ is the number of prime factors of $n$ greater than $10^{100}$, counted with multiplicity.
+
+Find all strictly increasing functions $f: \mathbb{Z} \rightarrow \mathbb{Z}$ such that
+
+$$
+\mho(f(a)-f(b)) \leqslant \mho(a-b) \quad \text { for all integers } a \text { and } b \text { with } a>b \text {. }
+$$""",
+    "final_answer": [
+        (
+            r"$f(x)=a x+b$, where $b$ is an arbitrary integer, and $a$ is an arbitrary "
+            r"positive integer with $\mho(a)=0$"
+        )
+    ],
+    "answer_type": "Expression",
+}
 
 
 def load_minerva(max_items: int | None = None) -> list[dict[str, Any]]:
@@ -100,6 +165,7 @@ def load_gpqa_diamond(max_items: int | None = None) -> list[dict[str, Any]]:
     url = "https://openaipublic.blob.core.windows.net/simple-evals/gpqa_diamond.csv"
     rows = pd.read_csv(url).to_dict(orient="records")
     normalized: list[dict[str, Any]] = []
+    source_size = len(rows)
     for index, row in enumerate(rows):
         choices = [
             str(row["Correct Answer"]),
@@ -107,7 +173,7 @@ def load_gpqa_diamond(max_items: int | None = None) -> list[dict[str, Any]]:
             str(row["Incorrect Answer 2"]),
             str(row["Incorrect Answer 3"]),
         ]
-        permutation = random.Random(f"{index}:0").sample(range(4), 4)
+        permutation = _gpqa_permutation(index, source_size, sample_id=0)
         options = [choices[position] for position in permutation]
         correct_index = options.index(str(row["Correct Answer"]))
         record_id = str(row.get("Record ID") or index)
@@ -122,11 +188,24 @@ def load_gpqa_diamond(max_items: int | None = None) -> list[dict[str, Any]]:
                     "source_id": record_id,
                     "domain": row.get("High-level domain"),
                     "subdomain": row.get("Subdomain"),
+                    "prompt_style": "gpqa",
+                    "source_index": index,
+                    "source_size": source_size,
                     "option_permutation": permutation,
                 },
             }
         )
     return _limit(normalized, max_items)
+
+
+def _gpqa_permutation(source_index: int, source_size: int, sample_id: int) -> list[int]:
+    """Reproduce SPIRAL Simple Evals' seed-0 permutation stream."""
+    rng = random.Random(0)
+    target_position = sample_id * source_size + source_index
+    permutation: list[int] = []
+    for _ in range(target_position + 1):
+        permutation = rng.sample(range(4), 4)
+    return permutation
 
 
 def sample_variant(
@@ -140,7 +219,14 @@ def sample_variant(
     if dataset != "gpqa_diamond":
         return variant
     canonical_options = list(example["_canonical_options"])
-    permutation = random.Random(f"{example['problem_id']}:{sample_id}").sample(range(4), 4)
+    metadata = variant["metadata"]
+    source_index = metadata.get("source_index")
+    source_size = metadata.get("source_size")
+    if source_index is None or source_size is None:
+        # Retain deterministic behavior for hand-built/custom GPQA records.
+        permutation = random.Random(f"{example['problem_id']}:{sample_id}").sample(range(4), 4)
+    else:
+        permutation = _gpqa_permutation(int(source_index), int(source_size), sample_id)
     options = [canonical_options[position] for position in permutation]
     variant["options"] = options
     variant["gold_answer"] = "ABCD"[options.index(canonical_options[0])]
@@ -205,7 +291,17 @@ BENCHMARKS: dict[str, BenchmarkSpec] = {
     ),
 }
 
-DEFAULT_BENCHMARKS = tuple(BENCHMARKS)
+SPIRAL_BENCHMARKS = (
+    "math500",
+    "aime24",
+    "aime25",
+    "olympiad",
+    "amc23",
+    "minerva",
+    "gpqa_diamond",
+    "mmlu_pro",
+)
+DEFAULT_BENCHMARKS = SPIRAL_BENCHMARKS
 
 
 def format_user_prompt(example: dict[str, Any]) -> str:
@@ -215,11 +311,16 @@ def format_user_prompt(example: dict[str, Any]) -> str:
         option_lines = "\n".join(
             f"{letter}) {option}" for letter, option in zip(letters, options, strict=True)
         )
+        question = str(example["prompt"])
+        if (example.get("metadata") or {}).get("prompt_style") == "gpqa":
+            body = f"Question: {question}\n\nOptions:\n{option_lines}"
+        else:
+            body = f"{question}\n\n{option_lines}"
         return (
             "Please reason step by step, and put your final answer within \\boxed{}. "
             "Your final answer should be of the following format: \\boxed{LETTER} "
             f"where LETTER is one of {letters}.\n\n"
-            f"{example['prompt']}\n\n{option_lines}"
+            f"{body}"
         )
     return (
         "Please reason step by step, and put your final answer within \\boxed{}.\n"

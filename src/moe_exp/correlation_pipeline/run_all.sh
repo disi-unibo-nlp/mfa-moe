@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# One-command correlation pilot:
+# One-command SPIRAL-suite correlation experiment:
 #   native-MTP llama.cpp server -> generation -> cleanup -> Unsloth forward -> analysis
 
 PHYS_DIR="${PHYS_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)}"
@@ -18,7 +18,7 @@ QUANTIZATION="${QUANTIZATION:-unsloth-4bit}"
 BOOTSTRAP_SAMPLES="${BOOTSTRAP_SAMPLES:-500}"
 DRY_RUN="${DRY_RUN:-false}"
 
-DATASETS=(math500 aime24 minerva)
+DATASETS=(math500 aime24 aime25 olympiad amc23 minerva gpqa_diamond mmlu_pro)
 MAX_ITEMS=""
 SAMPLES_PER_PROBLEM=""
 SKIP_GENERATE=false
@@ -29,14 +29,14 @@ usage() {
     cat <<'EOF'
 Usage: src/moe_exp/correlation_pipeline/run_all.sh [options]
 
-Runs the complete Unsloth Qwen3.5 + native-MTP correlation pilot in one command.
+Runs the complete Unsloth Qwen3.5 + native-MTP correlation experiment in one command.
 
 Options:
-  --datasets NAME...          Datasets to run (default: math500 aime24 minerva)
-    --workers N                 Concurrent llama.cpp requests (default: 1 for MTP)
+  --datasets NAME...          Datasets to run (default: the eight-benchmark SPIRAL suite)
+  --workers N                 Concurrent llama.cpp requests (default: 1 for MTP)
   --max-items N               Limit problems per dataset (smoke test)
   --samples-per-problem N     Override benchmark sampling counts (smoke test)
-    --quantization MODE         Forward quantization (default: unsloth-4bit)
+  --quantization MODE         Forward quantization (default: unsloth-4bit)
   --bootstrap-samples N       Analysis cluster bootstraps (default: 500)
   --skip-generate             Reuse existing generated traces
   --skip-forward              Reuse existing forward tensors
@@ -162,7 +162,7 @@ run_stage() {
     update "Stage ${stage_number}/${TOTAL_STAGES} complete"
 }
 
-echo "=== Unsloth Qwen3.5 + native-MTP correlation pilot ==="
+echo "=== Unsloth Qwen3.5 + native-MTP SPIRAL correlation experiment ==="
 echo "  Datasets:           ${DATASETS[*]}"
 echo "  GPU:                $CUDA_VISIBLE_DEVICES"
 echo "  Generation workers: $WORKERS"
@@ -265,7 +265,7 @@ fi
 
 trap - EXIT INT TERM
 stop_server
-update "Correlation pilot complete"
+update "Correlation experiment complete"
 echo "  Generation: results/correlation_pipeline/generation/"
 echo "  Forward:    results/correlation_pipeline/forward/"
 echo "  Analysis:   results/correlation_pipeline/analysis/"

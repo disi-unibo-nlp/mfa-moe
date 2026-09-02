@@ -21,7 +21,10 @@ from moe_exp.correlation_pipeline.analyze import (
 from moe_exp.correlation_pipeline.analyze import build_parser as build_analysis_parser
 from moe_exp.correlation_pipeline.benchmarks import (
     BENCHMARKS,
+    DEFAULT_BENCHMARKS,
     BenchmarkSpec,
+    _extract_boxed_answer,
+    _gpqa_permutation,
     _normalize_math_rows,
     format_user_prompt,
     sample_variant,
@@ -33,11 +36,10 @@ from moe_exp.correlation_pipeline.defaults import (
     DEFAULT_MTP_MODEL,
 )
 from moe_exp.correlation_pipeline.extract import (
-    build_parser as build_extract_parser,
-)
-from moe_exp.correlation_pipeline.extract import (
+    _storage_summary,
     load_probe_layers,
 )
+from moe_exp.correlation_pipeline.extract import build_parser as build_extract_parser
 from moe_exp.correlation_pipeline.features import (
     FEATURE_SCHEMA_VERSION,
     compute_layer_features,
@@ -51,12 +53,52 @@ from moe_exp.models.routing_extraction import process_file
 from moe_exp.schemas import ModelLogs, TraceRecord
 
 
+def test_storage_summary_preserves_unicode_line_separators_inside_json(tmp_path) -> None:
+    output_path = tmp_path / "traces_with_routing.jsonl"
+    records = [
+        {
+            "prompt": "before\u2028after",
+            "metadata": {
+                "correlation_storage": {
+                    "tokens_retained": 3,
+                    "projected_raw_payload_bytes": 100,
+                    "persisted_tensor_bytes": 20,
+                    "persisted_raw_tensor_bytes": 0,
+                }
+            },
+        },
+        {"prompt": "second", "metadata": {}},
+    ]
+    output_path.write_text(
+        "".join(json.dumps(record, ensure_ascii=False) + "\n" for record in records),
+        encoding="utf-8",
+    )
+
+    trace_count, storage = _storage_summary(output_path)
+
+    assert trace_count == 2
+    assert storage["retained_tokens"] == 3
+    assert storage["projected_raw_payload_bytes"] == 100
+    assert storage["persisted_tensor_bytes"] == 20
+    assert storage["raw_payload_bytes_avoided"] == 100
+
+
 def test_spiral_benchmark_defaults_and_prompts() -> None:
     assert BENCHMARKS["aime24"].default_samples == 32
     assert BENCHMARKS["aime25"].default_samples == 32
     assert BENCHMARKS["amc23"].default_samples == 32
     assert BENCHMARKS["math500"].default_samples == 1
     assert BENCHMARKS["gpqa_diamond"].default_samples == 10
+    assert DEFAULT_BENCHMARKS == (
+        "math500",
+        "aime24",
+        "aime25",
+        "olympiad",
+        "amc23",
+        "minerva",
+        "gpqa_diamond",
+        "mmlu_pro",
+    )
     assert set(BENCHMARKS) >= {
         "math500",
         "aime24",
@@ -76,6 +118,14 @@ def test_spiral_benchmark_defaults_and_prompts() -> None:
     assert "\\boxed{}" in math_prompt
     assert "\\boxed{LETTER}" in choice_prompt
     assert "A) one" in choice_prompt and "B) two" in choice_prompt
+    gpqa_prompt = format_user_prompt(
+        {
+            "prompt": "Choose.",
+            "options": ["one", "two", "three", "four"],
+            "metadata": {"prompt_style": "gpqa"},
+        }
+    )
+    assert "Question: Choose.\n\nOptions:\nA) one" in gpqa_prompt
 
 
 def test_pipeline_defaults_to_unsloth_qwen35_mtp_pair() -> None:
@@ -86,6 +136,11 @@ def test_pipeline_defaults_to_unsloth_qwen35_mtp_pair() -> None:
     assert generation_args.model == DEFAULT_GENERATION_MODEL
     assert generation_args.target_model_id == DEFAULT_FORWARD_MODEL
     assert generation_args.draft_model_id == DEFAULT_MTP_MODEL
+    assert generation_args.datasets == DEFAULT_BENCHMARKS
+    assert generation_args.max_tokens == 8192
+    assert generation_args.temperature == 0.6
+    assert generation_args.top_p == 0.95
+    assert generation_args.seed == 0
     extraction_args = build_extract_parser().parse_args([])
     assert extraction_args.model_id == DEFAULT_FORWARD_MODEL
     assert extraction_args.generation_model == DEFAULT_GENERATION_MODEL
@@ -331,6 +386,11 @@ def test_correlation_docker_launcher_routes_stages() -> None:
     assert 'MODULE="moe_exp.correlation_pipeline.extract"' in text
     assert 'MODULE="moe_exp.correlation_pipeline.analyze"' in text
     assert 'PYTHONPATH=/workspace/src' in text
+    assert (
+        'HF_DATASETS_CACHE_DIR="${HF_DATASETS_CACHE_DIR:-${HF_CACHE_DIR}/datasets-${HOST_UID}}"'
+        in text
+    )
+    assert '-e "HF_DATASETS_CACHE=$HF_DATASETS_CACHE_DIR"' in text
 
 
 def test_one_command_orchestrator_orders_server_and_stages() -> None:
@@ -342,7 +402,10 @@ def test_one_command_orchestrator_orders_server_and_stages() -> None:
         / "run_all.sh"
     )
     text = script.read_text(encoding="utf-8")
-    assert "DATASETS=(math500 aime24 minerva)" in text
+    assert (
+        "DATASETS=(math500 aime24 aime25 olympiad amc23 minerva gpqa_diamond mmlu_pro)"
+        in text
+    )
     assert "Waiting for llama.cpp health" in text
     assert text.index('STAGE_LAUNCHER\" generate') < text.index('STAGE_LAUNCHER\" forward')
     assert text.index('STAGE_LAUNCHER\" forward') < text.index('STAGE_LAUNCHER\" analyze')
@@ -362,7 +425,7 @@ def test_gpqa_attempts_permute_choices_and_recompute_gold_letter() -> None:
         "gold_answer": "A",
         "options": ["correct", "wrong 1", "wrong 2", "wrong 3"],
         "_canonical_options": ["correct", "wrong 1", "wrong 2", "wrong 3"],
-        "metadata": {},
+        "metadata": {"source_index": 0, "source_size": 1},
     }
     variants = [sample_variant("gpqa_diamond", example, sample_id) for sample_id in range(10)]
     assert len({tuple(variant["options"]) for variant in variants}) > 1
@@ -370,6 +433,9 @@ def test_gpqa_attempts_permute_choices_and_recompute_gold_letter() -> None:
         variant["options"]["ABCD".index(variant["gold_answer"])] == "correct"
         for variant in variants
     )
+    assert [variant["metadata"]["option_permutation"] for variant in variants] == [
+        _gpqa_permutation(0, 1, sample_id) for sample_id in range(10)
+    ]
 
 
 def test_math_row_normalization_preserves_source_metadata() -> None:
@@ -385,6 +451,13 @@ def test_math_row_normalization_preserves_source_metadata() -> None:
     normalized = _normalize_math_rows(rows, dataset="math500")
     assert normalized[0]["problem_id"] == "math500_test/algebra/1.json"
     assert normalized[0]["metadata"]["source_id"] == "test/algebra/1.json"
+
+
+def test_math_row_normalization_extracts_missing_answer_from_solution() -> None:
+    rows = [{"id": 60, "problem": "AIME problem", "solution": r"Thus, \boxed{204}."}]
+    normalized = _normalize_math_rows(rows, dataset="aime24")
+    assert normalized[0]["gold_answer"] == "204"
+    assert _extract_boxed_answer(r"Result: \boxed{\frac{1}{2}}") == r"\frac{1}{2}"
 
 
 def test_llamacpp_client_preserves_reasoning_content(monkeypatch) -> None:

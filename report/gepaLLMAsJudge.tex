@@ -242,3 +242,80 @@ development distribution, but not a held-out generalization estimate.  The
 prompt should be frozen and compressed or ablated before a one-time test on
 genuinely unseen responses.
 
+\paragraph{Final Qwen3.8 model-alignment pass.}
+The August 27--28, 2026 alignment run uses Qwen3.8-27B
+\texttt{UD-Q4\_K\_XL}, seed 42, the heavy GEPA budget, and medium reasoning
+effort for the same-model judge.  It keeps the same response-grouped
+2,382/407/336 train/validation/locked-test split.  Rather than drawing new
+few-shot examples, it imports the previous 40-example Qwen3.6 optimized prompt
+as its external seed.  Gold-label agreement supplies 40\% of the internal
+judge reward; functional fit, contextual coherence, and boundary precision
+supply the remaining 60\%.  Final selection uses exact balanced accuracy with
+a maximum allowed per-class recall drop of 0.10.
+
+\begin{table*}[t]
+\centering
+\caption{Final Qwen3.8 model-alignment results on the 407-unit development
+validation set.  Both prompts have 100\% valid-output coverage; the 336-unit
+locked test is not evaluated.  \modelmetrics{Qwen3.8-27B
+\texttt{UD-Q4\_K\_XL}, used for both classification and the same-model GEPA
+reward}{exact-match accuracy, balanced accuracy, macro-F1, Cohen's $\kappa$,
+and Kendall's $\tau_b$}}
+\label{tab:exp0a-qwen38-final}
+\begin{tabular}{lrrrrr}
+\toprule
+Prompt & Accuracy & Balanced acc. & Macro-F1 & $\kappa$ & $\tau_b$ \\
+\midrule
+Imported 40-example seed & \textbf{0.7174} & \textbf{0.7400} &
+\textbf{0.6938} & \textbf{0.6523} & \textbf{0.6122} \\
+GEPA optimized & 0.7125 & 0.7288 & 0.6743 & 0.6475 & 0.6009 \\
+\midrule
+Absolute change & $-0.0049$ & $-0.0112$ & $-0.0196$ & $-0.0049$ & $-0.0113$ \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\begin{table}[t]
+\centering
+\caption{Per-class recall in the final Qwen3.8 alignment.  The selection gate
+rejects any candidate whose recall drops by more than 0.10 for any class.
+\modelmetrics{Qwen3.8-27B \texttt{UD-Q4\_K\_XL}}{class support and seed versus
+GEPA-optimized recall}}
+\label{tab:exp0a-qwen38-classes}
+\begin{tabular}{lrrr}
+\toprule
+Class & Support & Seed recall & Opt. recall \\
+\midrule
+Read      &  45 & 0.778 & 0.756 \\
+Analyze   & 122 & 0.549 & 0.533 \\
+Plan      &  32 & 0.750 & 0.563 \\
+Implement & 103 & 0.874 & 0.874 \\
+Explore   &  17 & 0.529 & 0.647 \\
+Verify    &  70 & 0.700 & 0.786 \\
+Monitor   &  18 & 1.000 & 0.944 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The optimized candidate changes 49 labels: it fixes 17 seed errors, breaks 19
+seed-correct cases, and changes 13 errors to other errors.  Its largest failure
+is Plan recall, which falls by 0.188 and therefore breaches the recall gate;
+the selected prompt is byte-identical to the imported seed.  An unclustered
+exact McNemar test on the 17 versus 19 discordant correctness outcomes gives
+$p=0.868$, offering no evidence of an aggregate improvement, although this
+unit-level calculation understates response clustering.
+
+This negative exact-label result contrasts with the internal GEPA objective,
+whose best candidate reward rises from 0.7684 to 0.7762.  Because only 40\% of
+that reward is gold agreement, the discrepancy is consistent with optimizing
+the judge's broader functional criteria without improving corpus-label
+classification.  The optimized instruction is shorter (2,591 versus 5,201
+words) but internally inconsistent: an early rule treats ``Let me compute
+that'' as Monitor while a later rule treats ``Let me calculate'' as Plan.
+Plan-to-Monitor errors rise from 6 to 10, consistent with that boundary
+confusion.  The best internal candidate appears by iteration 3 and remains the
+best through iteration 19, so the remaining heavy search adds roughly 14.5
+hours without a better candidate.  The appropriate conclusion is that the
+final alignment completed correctly and the safety gate worked: GEPA found no
+safe improvement over the existing seed.  The complete artifact is stored at
+\path{results/gepaLLMAsJudge/qwen3.8-27b-medium-final-s42-v3}.

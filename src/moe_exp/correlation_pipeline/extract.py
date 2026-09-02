@@ -17,6 +17,7 @@ from moe_exp.correlation_pipeline.features import (
     compute_layer_features,
     json_safe_features,
 )
+from moe_exp.jsonl import iter_jsonl
 from moe_exp.models.loader import QUANTIZATION_CHOICES, load_model_and_tokenizer
 from moe_exp.models.routing_extraction import process_file
 
@@ -60,17 +61,14 @@ def load_probe_layers(path: Path, num_router_layers: int) -> tuple[list[int], li
     return compatible, excluded
 
 
-def _storage_summary(output_path: Path) -> dict[str, int]:
-    records = [
-        json.loads(line)
-        for line in output_path.read_text(encoding="utf-8").splitlines()
-        if line.strip()
-    ]
+def _storage_summary(output_path: Path) -> tuple[int, dict[str, int]]:
     projected_raw = 0
     persisted_tensors = 0
     persisted_raw = 0
     retained_tokens = 0
-    for record in records:
+    trace_count = 0
+    for record in iter_jsonl(output_path):
+        trace_count += 1
         audit = record.get("metadata", {}).get("correlation_storage", {})
         projected_raw += int(audit.get("projected_raw_payload_bytes", 0))
         persisted_tensors += int(audit.get("persisted_tensor_bytes", 0))
@@ -79,7 +77,7 @@ def _storage_summary(output_path: Path) -> dict[str, int]:
     dataset_files = sum(
         path.stat().st_size for path in output_path.parent.rglob("*") if path.is_file()
     )
-    return {
+    return trace_count, {
         "retained_tokens": retained_tokens,
         "projected_raw_payload_bytes": projected_raw,
         "persisted_tensor_bytes": persisted_tensors,
@@ -176,11 +174,7 @@ def extract_all(args: argparse.Namespace) -> list[dict[str, Any]]:
             )
             if not output_path.is_file() or output_path.stat().st_size == 0:
                 raise RuntimeError(f"Forward extraction produced no output for {dataset}")
-            trace_count = sum(
-                1
-                for line in output_path.read_text(encoding="utf-8").splitlines()
-                if line.strip()
-            )
+            trace_count, storage = _storage_summary(output_path)
             summaries.append(
                 {
                     "dataset": dataset,
@@ -188,7 +182,7 @@ def extract_all(args: argparse.Namespace) -> list[dict[str, Any]]:
                     "traces": trace_count,
                     "input": input_path.as_posix(),
                     "output": output_path.as_posix(),
-                    "storage": _storage_summary(output_path),
+                    "storage": storage,
                 }
             )
     finally:
