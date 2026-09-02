@@ -71,7 +71,8 @@ test policy.
 ## Correlation Pipeline
 
 The current Qwen MoE benchmark workflow is self-contained under
-`src/moe_exp/correlation_pipeline`. The recommended resumable pilot is:
+`src/moe_exp/correlation_pipeline`. The default resumable run executes the
+eight-benchmark SPIRAL evaluation suite:
 
 ```bash
 src/moe_exp/correlation_pipeline/run_all.sh

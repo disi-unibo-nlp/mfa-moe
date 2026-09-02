@@ -17,6 +17,7 @@ from tqdm import tqdm
 from moe_exp.correlation_pipeline.benchmarks import BENCHMARKS, DEFAULT_BENCHMARKS
 from moe_exp.correlation_pipeline.defaults import DEFAULT_FORWARD_MODEL
 from moe_exp.correlation_pipeline.features import compute_layer_features, restore_features
+from moe_exp.jsonl import iter_jsonl
 from moe_exp.schemas import TraceRecord
 
 logger = logging.getLogger(__name__)
@@ -330,11 +331,7 @@ def analyze(args: argparse.Namespace) -> dict[str, Any]:
         input_path = forward_root / dataset / "traces_with_routing.jsonl"
         if not input_path.is_file() or input_path.stat().st_size == 0:
             raise FileNotFoundError(f"Missing forward traces for {dataset}: {input_path}")
-        traces = [
-            TraceRecord(**json.loads(line))
-            for line in input_path.read_text(encoding="utf-8").splitlines()
-            if line.strip()
-        ]
+        traces = [TraceRecord(**record) for record in iter_jsonl(input_path)]
         if args.limit is not None:
             traces = traces[: args.limit]
         dataset_counts[dataset] = len(traces)

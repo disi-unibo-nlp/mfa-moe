@@ -6,7 +6,7 @@ import json
 import os
 import re
 import threading
-from collections.abc import Callable, Sequence
+from collections.abc import Callable, Mapping, Sequence
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
@@ -152,7 +152,11 @@ def _call_lm(lm: Any, prompt: str) -> str:
         if not response:
             raise ValueError("judge returned an empty response list")
         response = response[0]
-    if hasattr(response, "text"):
+    if isinstance(response, Mapping):
+        if "text" not in response:
+            raise ValueError("judge response mapping is missing a text field")
+        response = response["text"]
+    elif hasattr(response, "text"):
         response = response.text
     text = str(response).strip()
     if not text:
