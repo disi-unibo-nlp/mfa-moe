@@ -1,0 +1,129 @@
+%%%%%%%%%%%%%
+% THESIS TEMPLATE
+% Keep the thesis text in this file.
+%%%%%%%%%%%%%
+
+\documentclass[12pt,a4paper,twoside,openright]{book}
+
+%  ----------
+% | PACKAGES |
+%  ----------
+
+\input{custom_import}
+
+\hypersetup{
+    pdfpagemode={UseOutlines},
+    bookmarksopen,
+    pdfstartview={FitH},
+    colorlinks,
+    linkcolor={black},
+    citecolor={black},
+    urlcolor={black}
+}
+
+\input{style/settings.tex}
+
+% Fix fancyhdr headheight warning.
+\setlength{\headheight}{14.49998pt}
+
+% Improve line breaking.
+\setlength{\emergencystretch}{3em}
+\setlength{\tolerance}{2000}
+\setlength{\hfuzz}{1pt}
+
+%  ------------------
+% | COVER INFORMATION |
+%  ------------------
+
+\universita{Alma Mater Studiorum}
+\campus{Università di Bologna}
+\scuola{Department of Computer Science and Engineering}
+\corsodilaurea{Artificial Intelligence}
+\materia{Big Data Analytics and Text Mining}
+
+\titolo{Guiding MoE Reasoning via Routing Intervention}
+\laureando{Leonardo Tassinari}
+
+\relatore[Prof.]{Gianluca Moro}
+\correlatoreA[Dr.]{Giacomo Frisoni}
+\correlatoreB[Dr.]{Lorenzo Molfetta}
+
+\sessione{Second}
+\annoaccademico{2025 -- 2026}
+
+\parolechiave
+{Keyword 1}
+{Keyword 2}
+{Keyword 3}
+{Keyword 4}
+{Keyword 5}
+
+% Uncomment and edit to add a dedication.
+% \dedica{Dedication}
+
+\makeindex
+\linespread{1.25}
+
+\begin{document}
+
+\frontmatter
+
+\maketitle
+
+\chapter*{Abstract}
+\markboth{Abstract}{Abstract}
+
+% Write the abstract here.
+
+\chapter*{Introduction}
+\markboth{Introduction}{Introduction}
+
+% Write the introduction and chapter outline here.
+
+\newpage
+\tableofcontents
+
+\newpage
+\listoffigures
+
+\newpage
+\listoftables
+
+\mainmatter
+
+\pagestyle{fancy}
+\fancyhead[LO]{\nouppercase{\rightmark}}
+\fancyhead[RE]{\nouppercase{\leftmark}}
+\fancyhead[LE,RO]{\thepage}
+\fancyfoot{}
+
+\chapter{Theoretical Framework}
+
+% Add the theoretical background here.
+
+\chapter{Related Work}
+
+% Add the literature review here.
+
+\chapter{Method}
+
+% Describe the proposed method here.
+
+\chapter{Experimental Setup}
+
+% Describe the experimental setup here.
+
+\chapter{Results}
+
+% Present and discuss the results here.
+
+\chapter{Conclusions}
+
+% Summarize the thesis and future work here.
+
+\cleardoublepage
+\phantomsection
+\addcontentsline{toc}{chapter}{Bibliography}
+\printbibliography
+
+\end{document}
