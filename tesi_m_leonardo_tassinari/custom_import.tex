@@ -1,0 +1,151 @@
+%  ----------
+% | PACKAGES |
+%  ----------
+
+% INPUT, ENCODING & LANGUAGE
+% ---
+%\usepackage[utf8]{inputenc}          % XeLaTeX: non serve
+\usepackage[english]{babel}
+%\usepackage[T1]{fontenc}             % XeLaTeX: non serve
+
+% -- Fonts per XeLaTeX (testo) --
+% \usepackage[no-math]{fontspec}        % evita che fontspec tocchi i font matematici classici
+% \defaultfontfeatures{Ligatures=TeX}
+%\setmainfont{Latin Modern Roman}[
+%  SmallCapsFont = Latin Modern Roman Caps,
+%  SmallCapsFeatures = {Letters=SmallCaps}
+% ]
+% \setsansfont{Latin Modern Sans}
+% \setmonofont{Latin Modern Mono}
+
+% MATH & ALGORITHMS
+% ---
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsthm}
+% \usepackage{algorithm2e}               % scegliamo questo come unico pacchetto per gli algoritmi
+% \usepackage{algorithmic}             % <-- RIMOSSO per evitare doppioni/incompatibilità
+
+% (Se preferisci lo stile algorithm + pseudocode, usa invece:)
+\usepackage{algorithm}
+\usepackage{algpseudocode} % da 'algorithmicx'
+% % e in tal caso commenta \usepackage{algorithm2e} qui sopra.
+
+% DOCUMENT STYLE & FORMATTING
+% ---
+\usepackage{style/isi_style_lt}
+\usepackage{caption}
+\usepackage{fancyhdr}
+\usepackage{sectsty}
+\usepackage{tocloft}
+\usepackage{indentfirst}
+\usepackage{microtype}
+
+% COLORS, BOXES & HIGHLIGHTING
+% ---
+% \usepackage[usenames]{color}         % xcolor lo sostituisce
+\usepackage[table]{xcolor}
+\usepackage{tcolorbox}
+\usepackage{framed}
+
+% FIGURES, TABLES & LAYOUT
+% ---
+\usepackage{graphicx}
+\usepackage{subcaption}                % sottofigure moderne
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{multirow}
+\usepackage{arydshln}
+\usepackage{adjustbox}
+\usepackage{float}
+\usepackage{array}
+
+% CODE & LISTINGS
+% ---
+\usepackage{listings}
+\usepackage{fancyvrb}
+
+% SYMBOLS & ICONS
+% ---
+\usepackage{marvosym}
+\usepackage{pifont}
+\usepackage{arydshln}
+
+% SPECIAL STRUCTURES
+% ---
+\usepackage{multicol}
+\usepackage{dirtree}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{svg}
+
+%  -----------------
+% |  CUSTOM COLORS  |
+%  -----------------
+
+% Rounded tag
+\definecolor{tagbackground}{HTML}{EBEBEB}
+\definecolor{tagborder}{HTML}{888888}
+\definecolor{tagforeground}{HTML}{000000}
+
+% Tables
+\definecolor{tablehighlight}{HTML}{F3F3F3}
+\definecolor{tablebordercolor}{HTML}{363636}
+\definecolor{cellhighlight}{HTML}{E9E9E9}
+
+% Figures
+\definecolor{plotbackground}{HTML}{F3F3F3}
+\definecolor{gray}{HTML}{394144}
+\definecolor{blue-1}{HTML}{1876D2} % dark
+\definecolor{blue-2}{HTML}{60D0E2}
+\definecolor{orange-1}{HTML}{FBA418} % dark
+\definecolor{orange-2}{HTML}{FDCC7B}
+\definecolor{purple-1}{HTML}{4D4DFF} % dark
+\definecolor{purple-2}{HTML}{8F8FFF}
+\definecolor{red-1}{HTML}{F00000} % dark
+\definecolor{red-2}{HTML}{FF7575}
+
+% Output
+\definecolor{baseline}{HTML}{F2F2F2}
+\definecolor{gom}{HTML}{F0F4FF}
+\definecolor{error}{HTML}{D10000}
+\definecolor{correct}{HTML}{0A9E4D}
+
+\pgfdeclareverticalshading{bluegradient}{100bp}{
+  color(0bp)=(blue-1);
+  color(30bp)=(blue-1);
+  color(60bp)=(blue-2);
+  color(100bp)=(blue-2)
+}
+\pgfdeclareverticalshading{orangegradient}{100bp}{
+  color(0bp)=(orange-1);
+  color(30bp)=(orange-1);
+  color(60bp)=(orange-2);
+  color(100bp)=(orange-2)
+}
+\pgfdeclareverticalshading{purplegradient}{100bp}{
+  color(0bp)=(purple-1);
+  color(30bp)=(purple-1);
+  color(60bp)=(purple-2);
+  color(100bp)=(purple-2)
+}
+\pgfdeclareverticalshading{redgradient}{100bp}{
+  color(0bp)=(red-1);
+  color(30bp)=(red-1);
+  color(60bp)=(red-2);
+  color(100bp)=(red-2)
+}
+
+% REFERENCES & HYPERLINKS
+% ---
+\usepackage{csquotes}                  % Raccomandato da biblatex per le citazioni
+\usepackage{url}
+\usepackage{hyperref}
+% (Opzionale ma consigliato per gli indici PDF più stabili)
+\usepackage{bookmark}
+
+% BIBLIOGRAPHY
+% ---
+\usepackage[backend=biber,style=numeric,sorting=none,maxbibnames=99]{biblatex}
+\addbibresource{biblio.bib}      % file .bib principale

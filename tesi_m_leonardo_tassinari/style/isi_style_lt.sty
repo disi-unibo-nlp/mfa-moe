@@ -1,0 +1,217 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{style/isi_style_lt}
+
+% Pacchetti richiesti dal tema
+\RequirePackage{ifthen}
+\RequirePackage{multicol}
+\RequirePackage{iftex}     % per distinguere pdfTeX da Xe/LuaTeX
+\RequirePackage{textcase}  % \MakeUppercase più robusto con UTF-8
+
+% --- Gestione grafica coerente con i motori ---
+\ifPDFTeX
+  % pdfLaTeX
+  \RequirePackage[pdftex]{graphicx}
+  \DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\else
+  % XeLaTeX o LuaLaTeX
+  \RequirePackage{graphicx} % nessun driver esplicito
+  \DeclareGraphicsExtensions{.pdf,.png,.jpg}
+\fi
+
+% -------------------------
+% Variabili di intestazione
+% -------------------------
+\newcommand{\@universita}{?}
+\newcommand{\@scuola}{?}
+\newcommand{\@campus}{?}
+\newcommand{\@corsodilaurea}{?}
+\newcommand{\@titolo}{?}
+\newcommand{\@materia}{?}
+\newcommand{\@annoaccademico}{?}
+\newcommand{\@relatore}{?}
+\newcommand{\@correlatoreA}{?}
+\newcommand{\@correlatoreB}{?}
+
+\newcommand{\@laureando}{?}
+\newcommand{\@parolechiave}{?}
+\newcommand{\@dedica}{?}
+\newcommand{\@sessione}{?}
+
+% Setter (con MakeUppercase più robusto di \uppercase per UTF-8)
+\newcommand{\universita}[1]{%
+  \renewcommand{\@universita}{\MakeUppercase{#1}}}
+\newcommand{\campus}[1]{%
+  \renewcommand{\@campus}{\MakeUppercase{#1}}}
+\newcommand{\scuola}[1]{%
+  \renewcommand{\@scuola}{#1}}
+\newcommand{\corsodilaurea}[1]{%
+  \renewcommand{\@corsodilaurea}{#1}}
+\newcommand{\materia}[1]{%
+  \renewcommand{\@materia}{#1}}
+\newcommand{\titolo}[1]{%
+  \renewcommand{\@titolo}{\MakeUppercase{#1}}}
+\newcommand{\annoaccademico}[1]{%
+  \renewcommand{\@annoaccademico}{#1}}
+
+\newcommand{\relatore}[2][Prof.]{%
+  \renewcommand{\@relatore}{#1 #2}}
+
+\newcommand{\correlatoreA}[2][Dott.]{%
+  \renewcommand{\@correlatoreA}{#1 #2}}
+\newcommand{\correlatoreB}[2][Dott.]{%
+  \renewcommand{\@correlatoreB}{#1 #2}}
+
+\newcommand{\laureando}[1]{%
+  \renewcommand{\@laureando}{#1}}
+\newcommand{\parolechiave}[5]{%
+  \renewcommand{\@parolechiave}{#1\\ \medskip #2\\ \medskip #3\\ \medskip #4\\ \medskip #5\\}}
+\newcommand{\dedica}[1]{%
+  \renewcommand{\@dedica}{#1}}
+\newcommand{\sessione}[1]{%
+   \renewcommand{\@sessione}{#1}}
+
+\newcommand{\clearemptydoublepage}{\newpage{\pagestyle{empty}%
+  \cleardoublepage}}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                   %
+%  Formattazione dell'intestazione  %
+%  della tesi                       %
+%                                   %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\renewcommand\maketitle{%
+\begin{titlepage}{
+
+\rmfamily % usa il font principale scelto con fontspec (niente forzature cmr)
+
+\begin{center}
+
+\begin{large}
+\MakeUppercase{\@universita}\\
+\MakeUppercase{\@campus}
+\end{large}\\
+
+\rule{14cm}{.4pt}\\\smallskip
+
+\begin{large}
+\@scuola\\
+\@corsodilaurea\\
+
+\vfill
+
+{
+\setlength{\baselineskip}{1.5\baselineskip}
+\begin{large}
+\begin{textbf}
+\@titolo
+\end{textbf}
+\end{large}\\
+}
+
+\vfill
+
+\begin{large}
+\textit{Master Thesis in}\\
+\@materia
+\end{large}
+
+\vfill
+
+\begin{multicols}{2}
+\raggedright
+
+\begin{normalsize}
+\emph{Supervisor}
+\end{normalsize}\\
+
+\@relatore\\
+\medskip
+
+\ifthenelse{\equal{\@correlatoreA}{?}\and\equal{\@correlatoreB}{?}}
+{}
+{
+\ifthenelse{\equal{\@correlatoreB}{?}}
+{
+\begin{normalsize}
+\emph{Co-supervisor}
+\end{normalsize}\\
+}
+{
+\begin{normalsize}
+\emph{Co-supervisors}
+\end{normalsize}\\
+}
+}
+
+\ifthenelse{\equal{\@correlatoreA}{?}}
+{}
+{
+\@correlatoreA\\
+\vspace{.5ex}
+}
+
+\ifthenelse{\equal{\@correlatoreB}{?}}
+{}
+{
+\@correlatoreB
+}
+
+\columnbreak
+
+\raggedleft
+
+\begin{normalsize}
+\emph{Candidate}
+\end{normalsize}\\
+\@laureando
+
+\end{multicols}
+
+\rule{14cm}{.4pt}\\\smallskip
+
+\@sessione\ Session\\
+Academic Year \@annoaccademico
+
+\end{large}
+\end{center}
+}
+  
+\clearemptydoublepage
+\pagestyle{empty}
+  
+\vspace*{17ex}
+
+\begin{flushright}
+
+\begin{LARGE}
+\textbf{KEYWORDS}\\ 
+\end{LARGE}
+
+\vspace{8ex}
+
+\begin{large}
+\@parolechiave
+\end{large}
+
+\end{flushright}
+  
+\vfill
+
+\clearemptydoublepage
+  
+\ifthenelse{\equal{\@dedica}{?}}{}{%
+  \pagestyle{empty}
+  \vspace*{10ex}
+  \begin{large}
+  \begin{flushright}
+    \@dedica
+  \end{flushright}
+  \end{large}
+  \vfill
+  \clearemptydoublepage
+}
+\end{titlepage}%
+}
+
+\endinput
