@@ -34,14 +34,15 @@ zero-shot with temperature 0.6, top-p 0.95, and at most 8,192 new tokens.
 | `olympiad` | `Hothan/OlympiadBench`, `OE_TO_maths_en_COMP` | pass@1 |
 | `amc23` | `math-ai/amc23`, test | avg@32 |
 | `minerva` | `math-ai/minervamath`, test | pass@1 |
-| `gpqa_diamond` | public Simple Evals Diamond CSV | avg@10 with permuted choices |
+| `gpqa_diamond` | public Simple Evals Diamond CSV | avg@10 with seed-0 permuted choices |
 | `mmlu_pro` | `TIGER-Lab/MMLU-Pro`, test | pass@1 |
 
 GPQA-Diamond follows SPIRAL's released evaluator: each question is attempted ten
 times with a fresh deterministic permutation of its four answer choices. The
 attempts remain grouped under the same source question during analysis.
 
-The four existing repository loaders are also included: `gsm8k`, `math`,
+These eight SPIRAL benchmarks are the pipeline defaults. The four existing
+repository loaders remain available by explicit selection: `gsm8k`, `math`,
 `prm800k`, and `processbench`. The last two provide reference process labels in
 their original use, but newly generated answers have no aligned gold error step.
 ProcessBench generation is therefore retained for representation/routing and
@@ -63,11 +64,11 @@ Build or refresh the project image once from the repository root:
 docker build -t moe-mfa-experiments:latest .
 ```
 
-### One-command recommended pilot
+### One-command full experiment
 
-The orchestrator starts native MTP, waits for `/health`, generates the tutor's
-recommended MATH500/AIME24/Minerva pilot, stops llama.cpp to release VRAM, and
-then runs forward extraction and analysis:
+The orchestrator starts native MTP, waits for `/health`, generates all eight
+SPIRAL benchmarks with their benchmark-specific repeat counts, stops llama.cpp
+to release VRAM, and then runs forward extraction and analysis:
 
 ```bash
 src/moe_exp/correlation_pipeline/run_all.sh
@@ -78,8 +79,10 @@ It prints timestamped stage updates and writes the llama.cpp server log to
 single `/llms` model folder is shared by the server and Python stages. Missing
 GGUF weights are downloaded there with resumable `.part` files, so they are
 fetched only once. The Hugging Face cache under the same directory stores the
-BF16 source shards used by Unsloth's runtime quantizer. A small end-to-end smoke
-run is:
+BF16 source shards used by Unsloth's runtime quantizer. Processed datasets use
+the per-user `/llms/datasets-<uid>` cache so lock files from root-squashed or
+other-user jobs cannot make a run fail; override it with
+`HF_DATASETS_CACHE_DIR` if needed. A small end-to-end smoke run is:
 
 ```bash
 src/moe_exp/correlation_pipeline/run_all.sh \
@@ -98,7 +101,7 @@ Start the recommended Qwen3.5 target with its embedded MTP weights:
 src/common/llamacpp/serve_qwen3_5_35b_a3b_mtp.sh
 ```
 
-In another shell, run all twelve datasets:
+In another shell, run the default eight-benchmark SPIRAL suite:
 
 ```bash
 src/moe_exp/correlation_pipeline/run_docker.sh generate \

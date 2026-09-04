@@ -6,7 +6,7 @@
 \centering
 \scriptsize
 \caption{Living inventory for the three active workflows.
-\modelmetrics{Qwen3.6-27B \texttt{Q4\_K\_XL},
+\modelmetrics{Qwen3.6-27B and Qwen3.8-27B \texttt{Q4\_K\_XL},
 \texttt{Qwen/Qwen3.5-35B-A3B-GPTQ-Int4}, and Qwen3.5-35B-A3B correlation-run
 variants}{workflow status, sample counts, headline metrics, and next actions;
 this is an inventory rather than a common-metric evaluation}}
@@ -15,14 +15,16 @@ this is an inventory rather than a common-metric evaluation}}
 \toprule
 Item & Status & Note / next action \\
 \midrule
-\texttt{gepaLLMAsJudge} & Cross-validation and final-fit validation complete;
-test pending & Static-reward grouped cross-validation over 2,789 units gives
+\texttt{gepaLLMAsJudge} & Cross-validation and two final-fit validations
+complete; test pending & Static-reward grouped cross-validation over 2,789 units gives
 67.34\% accuracy and 65.05\% macro-F1 for light-budget GEPA; heavy is worse.
 The same-model LLM-judge final fit improves validation accuracy from 66.83\%
 to 75.43\% and macro-F1 from 0.613 to 0.727, but reuses six responses across
-145 candidate evaluations and does not evaluate the 336-unit locked test.
-Freeze and ablate the 40-example prompt, report response-level uncertainty,
-and evaluate on genuinely unseen responses. \\
+145 candidate evaluations.  In the final Qwen3.8 alignment, GEPA instead
+reduces balanced accuracy from 0.740 to 0.729 and Plan recall from 0.750 to
+0.563, so the safety gate correctly retains the imported 40-example seed.
+Neither run evaluates the 336-unit locked test.  Freeze the selected seed and
+evaluate it only under a prespecified held-out protocol. \\
 \texttt{probeTest} & Complete; grouped and human validation pending &
 Qwen3.5 GPTQ probes cover 3,087 units, seven targets, and 41 hidden-state
 indices; selected-layer AUROC is 0.835--0.934.  A provisional hybrid review of
@@ -30,14 +32,17 @@ indices; selected-layer AUROC is 0.835--0.934.  A provisional hybrid review of
 187 multi-label and 37 low-confidence units; Explore is never predicted.
 Grouped cross-validation, robust segmentation, multiclass calibration, and
 independent human adjudication remain pending. \\
-\texttt{correlation\_pipeline} & MATH-500 complete; broader study pending &
-Generation, replay, and analysis are complete for all 500 MATH-500 problems
-(one attempt each; 387 correct).  Prespecified aggregate correlations use
-problem-cluster bootstrap intervals, but repeated-attempt problem-level and
-within-problem analyses are unavailable under this design.  The other planned
-benchmarks remain pending.  Generation uses the \texttt{UD-Q4\_K\_XL} GGUF;
-replay uses the matching checkpoint with runtime 4-bit quantization, so the
-two stages use different 4-bit formats. \\
+\texttt{correlation\_pipeline} & Seven benchmarks complete; MMLU-Pro pending &
+Generation, replay, and analysis cover 6,627 scored traces from 1,745 problems
+on MATH-500, AIME 2024/2025, OlympiadBench, AMC 2023, Minerva Math, and
+GPQA-Diamond.  Correct traces are shorter on all seven datasets.  Router
+confidence correlates positively with correctness on six and is null on
+Minerva; it is also higher within mixed-outcome AIME and AMC problems, but
+those correct traces are hundreds of tokens shorter.  Generation uses the
+\texttt{UD-Q4\_K\_XL} GGUF and replay uses the matching checkpoint with runtime
+4-bit quantization.  Run MMLU-Pro and test the confidence effect after
+conditioning on length and benchmark.
+\\
 \bottomrule
 \end{tabular}
 \end{table*}
