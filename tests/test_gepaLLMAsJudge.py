@@ -26,6 +26,7 @@ from moe_exp.gepaLLMAsJudge.prompts import (
     select_few_shot_sentences,
 )
 from moe_exp.gepaLLMAsJudge.run import (
+    _call_lm,
     _seed_configuration,
     create_metric,
     parse_llm_judge_response,
@@ -63,6 +64,24 @@ BOUNDARY_PRECISION: 2"""
 
     with pytest.raises(ValueError, match="BOUNDARY_PRECISION"):
         parse_llm_judge_response(response.rsplit("\n", 1)[0])
+
+
+def test_call_lm_extracts_text_from_qwen_mapping_response() -> None:
+    judge_text = """REASONING: The candidate exactly matches the gold label.
+GOLD_AGREEMENT: 5
+FUNCTIONAL_FIT: 5
+CONTEXTUAL_COHERENCE: 5
+BOUNDARY_PRECISION: 5"""
+
+    class FakeLM:
+        def __call__(self, prompt: str) -> list[dict[str, str]]:
+            assert prompt == "Evaluate this."
+            return [{"text": judge_text, "reasoning_content": "Internal reasoning."}]
+
+    response = _call_lm(FakeLM(), "Evaluate this.")
+
+    assert response == judge_text
+    assert parse_llm_judge_response(response)["gold_agreement"] == 5
 
 
 def test_llm_judge_metric_returns_weighted_score_and_feedback(tmp_path: Path) -> None:

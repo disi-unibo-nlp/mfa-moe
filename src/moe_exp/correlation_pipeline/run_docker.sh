@@ -6,6 +6,12 @@ set -euo pipefail
 
 PHYS_DIR="${PHYS_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)}"
 HF_CACHE_DIR="${HF_CACHE_DIR:-/llms}"
+HOST_UID="$(id -u)"
+HOST_GID="$(id -g)"
+# Shared caches can contain builder directories created by another host or a
+# root-squashed container. Keep Hub/model files shared, but isolate the mutable
+# datasets builder cache by host UID so its lock files are always writable.
+HF_DATASETS_CACHE_DIR="${HF_DATASETS_CACHE_DIR:-${HF_CACHE_DIR}/datasets-${HOST_UID}}"
 IMAGE_NAME="${IMAGE_NAME:-moe-mfa-experiments:latest}"
 CUDA_VISIBLE_DEVICES="${CUDA_VISIBLE_DEVICES:-0}"
 DRY_RUN="${DRY_RUN:-false}"
@@ -54,17 +60,18 @@ if [[ "$STAGE" == "forward" ]] && ! docker run --rm "$IMAGE_NAME" python -c \
     exit 1
 fi
 
-mkdir -p "$HF_CACHE_DIR" "$PHYS_DIR/results/correlation_pipeline"
+mkdir -p "$HF_CACHE_DIR" "$HF_DATASETS_CACHE_DIR" "$PHYS_DIR/results/correlation_pipeline"
 mkdir -p "$HF_CACHE_DIR/.cache/unsloth_compiled_cache" "$HF_CACHE_DIR/.cache/torchinductor"
-for writable_dir in "$HF_CACHE_DIR" "$PHYS_DIR/results/correlation_pipeline"; do
+for writable_dir in \
+    "$HF_CACHE_DIR" \
+    "$HF_DATASETS_CACHE_DIR" \
+    "$PHYS_DIR/results/correlation_pipeline"; do
     if [[ ! -w "$writable_dir" ]]; then
         echo "Directory is not writable by $(id -un) (uid=$(id -u)): $writable_dir" >&2
         exit 1
     fi
 done
 
-HOST_UID="$(id -u)"
-HOST_GID="$(id -g)"
 DOCKER_USER=(--user "$HOST_UID:$HOST_GID")
 DOCKER_GROUPS=()
 if [[ "$(docker info --format '{{json .SecurityOptions}}')" == *rootless* ]]; then
@@ -85,6 +92,7 @@ DOCKER_ARGS=(
     -v "$PHYS_DIR:/workspace"
     -v "$HF_CACHE_DIR:$HF_CACHE_DIR"
     -e "HF_HOME=$HF_CACHE_DIR"
+    -e "HF_DATASETS_CACHE=$HF_DATASETS_CACHE_DIR"
     -e "HOME=$HF_CACHE_DIR"
     -e "XDG_CACHE_HOME=$HF_CACHE_DIR/.cache"
     -e "UNSLOTH_DISABLE_STATISTICS=1"
@@ -119,6 +127,7 @@ echo "  Image:    $IMAGE_NAME"
 echo "  Python:   container Python 3.11"
 echo "  Workspace: $PHYS_DIR"
 echo "  HF_HOME:  $HF_CACHE_DIR"
+echo "  Datasets: $HF_DATASETS_CACHE_DIR"
 if [[ "$STAGE" == "forward" ]]; then
     echo "  GPU:      $CUDA_VISIBLE_DEVICES"
 fi

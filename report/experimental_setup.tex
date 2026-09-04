@@ -2,9 +2,10 @@
 
 \paragraph{Current experimental scope.}
 The active repository contains three complementary Qwen workflows.
-\texttt{gepaLLMAsJudge} is an annotation-capability study that optimizes a
-Qwen3.6-27B prompt for sentence-level Schoenfeld episode classification.  It
-does not provide evidence about Qwen router dynamics.  \texttt{probeTest} is a
+\texttt{gepaLLMAsJudge} is an annotation-capability study that optimizes
+Qwen3.6-27B and Qwen3.8-27B prompts for sentence-level Schoenfeld episode
+classification.  It does not provide evidence about Qwen router dynamics.
+\texttt{probeTest} is a
 representation-probe replication that teacher-forces the 38 released
 DeepSeek-R1 Schoenfeld traces through the official GPTQ 4-bit
 \texttt{Qwen/Qwen3.5-35B-A3B-GPTQ-Int4} checkpoint and tests whether the next
@@ -17,13 +18,16 @@ router and hidden-state summaries to correctness and reasoning-event labels.
 The GEPA workflow starts from 3,125 annotated units in 38 released DeepSeek-R1
 SAT responses.  Complete responses are assigned to partitions before their
 units are flattened, preventing neighboring units from crossing splits.  A
-local \texttt{llama.cpp} server supplies Qwen3.6-27B predictions.  Each request
+local \texttt{llama.cpp} server supplies Qwen predictions.  Each request
 contains the SAT problem and the previous, current, and next response units.
-The context-aware seed instruction contains 21 audited synthetic contrastive
-demonstrations.  The implementation supports inverse-frequency weighted exact
-match and an informative same-model LLM-as-a-judge reward.  Prompt-selection
-rules are evaluated with nested response-grouped cross-validation; the later
-final-fit run uses a response-grouped 26/6/6 train/validation/test split.
+The original context-aware seed instruction contains 21 audited synthetic
+contrastive demonstrations.  The Qwen3.8 alignment instead imports the
+40-example prompt selected by the earlier final fit as its external seed, so
+it does not dynamically sample new demonstrations.  The implementation
+supports inverse-frequency weighted exact match and an informative same-model
+LLM-as-a-judge reward.  Prompt-selection rules are evaluated with nested
+response-grouped cross-validation; the final-fit runs use a response-grouped
+26/6/6 train/validation/test split.
 
 \paragraph{Schoenfeld boundary-probe design.}
 The probe workflow excludes the 38 synthetic \texttt{</think>} closing units,
@@ -53,11 +57,16 @@ The pipeline separates \texttt{llama.cpp} generation from a teacher-forced
 Hugging Face forward pass.  It stores router logits, selected expert
 identifiers, and optional hidden states, then computes trace-level and
 repeated-attempt correlations with correctness and lexical reasoning-event
-labels.  The completed run covers 500 MATH-500 problems with one sample per
-problem.  Generation uses the \texttt{UD-Q4\_K\_XL} GGUF with embedded native
-MTP speculative weights; replay uses the matching BF16 checkpoint with runtime
-4-bit quantization, so the stages use different 4-bit formats.  The remaining
-benchmarks and repeated-attempt evaluations are pending.
+labels.  The current run covers 6,627 scored traces from 1,745 source problems
+across MATH-500, AIME 2024, AIME 2025, OlympiadBench, AMC 2023, Minerva Math,
+and GPQA-Diamond.  AIME and AMC use 32 attempts per problem, GPQA uses ten
+attempts with permuted answer choices, and the other datasets use one.  MMLU-Pro,
+the eighth and last default benchmark, was not run.  Generation uses the
+\texttt{UD-Q4\_K\_XL} GGUF with embedded native MTP speculative weights;
+replay uses the matching BF16 checkpoint with runtime 4-bit quantization, so
+the stages use different 4-bit formats.  All 6,627 traces are scored, and the
+repeated AIME and AMC designs support problem-cluster and within-problem
+analyses.
 
 \paragraph{Table model and metric conventions.}
 Every table caption identifies the evaluated model or models and the metrics
@@ -86,8 +95,9 @@ The active packages are located at
 \path{results/probeTest}.  The correlation workflow is launched by its local
 \path{run_all.sh} and uses its documented output directory.
 
-The Qwen judge artifacts formerly called Experiment~0a and the Qwen3.5
-boundary-probe artifacts formerly called Experiment~0b are complete.  The
-MATH-500 correlation generation, replay, and analysis artifacts are complete
-for the single-attempt protocol.  Historical OLMoE and numbered-experiment
-outputs are archived and are not pooled with the estimates in this report.
+The Qwen judge artifacts formerly called Experiment~0a, including the final
+Qwen3.8 model-alignment run, and the Qwen3.5 boundary-probe artifacts formerly
+called Experiment~0b are complete.  Correlation generation, replay, and
+analysis are complete for seven of eight default benchmarks; only MMLU-Pro
+remains unrun.  Historical OLMoE and numbered-experiment outputs are archived
+and are not pooled with the estimates in this report.

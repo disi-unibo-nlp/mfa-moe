@@ -285,13 +285,18 @@ def build_parser() -> argparse.ArgumentParser:
         "--samples-per-problem",
         type=int,
         default=None,
-        help="Override benchmark defaults (AIME24/25 and AMC23 use 32; all others use 1).",
+        help="Override defaults (AIME24/25 and AMC23 use 32; GPQA-D uses 10; others use 1).",
     )
     parser.add_argument("--max-tokens", type=int, default=8192)
     parser.add_argument("--temperature", type=float, default=0.6)
     parser.add_argument("--top-p", type=float, default=0.95)
     parser.add_argument("--top-k", type=int, default=0)
-    parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument(
+        "--seed",
+        type=int,
+        default=0,
+        help="Base sampling seed (SPIRAL uses 0).",
+    )
     parser.add_argument("--workers", type=int, default=1)
     parser.add_argument("--timeout", type=int, default=3600)
     parser.add_argument("--max-retries", type=int, default=4)
