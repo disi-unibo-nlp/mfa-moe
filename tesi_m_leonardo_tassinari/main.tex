@@ -98,12 +98,803 @@
 \fancyfoot{}
 
 \chapter{Theoretical Framework}
+\label{ch:theoretical-framework}
 
-% Add the theoretical background here.
+The objective of this thesis is to investigate how the reasoning behaviour of
+a mixture-of-experts (MoE) language model can be guided through interventions
+on its routing mechanism. This objective connects a behavioural question,
+concerning the organisation of a generated solution, with a computational
+question, concerning which experts process its tokens. Establishing that
+connection requires a vocabulary for describing reasoning, measurements of
+internal model activity, and a distinction between observing an association
+and changing the mechanism that produces it.
+
+The project develops three experimental components toward this objective.
+The first constructs an automatic annotator of reasoning episodes. The second
+tests whether episode information is accessible from hidden states before the
+corresponding text is generated. The third measures associations between
+routing, representations, reasoning events, and answer correctness. Together,
+these components provide evidence for selecting possible intervention targets.
+They do not yet constitute an evaluated routing controller. This chapter
+defines the concepts and assumptions needed to interpret their outputs and
+to formulate the subsequent intervention problem.
+
+\section{Reasoning as a measurable process}
+\label{sec:reasoning-process}
+
+Let $q$ denote a problem and let $x_{1:T}$ be the model's generated response,
+including intermediate reasoning and the final answer. An autoregressive
+language model with parameters $\theta$ defines
+\begin{equation}
+  P_\theta(x_{1:T}\mid q)
+  = \prod_{t=1}^{T} P_\theta(x_t\mid q,x_{<t}).
+  \label{eq:autoregressive}
+\end{equation}
+Each generated token becomes part of the context for later decisions.
+Intermediate text can therefore affect subsequent computation, even when
+evaluation ultimately assigns a single correctness label to the final answer.
+Chain-of-thought prompting makes such intermediate text explicit and has
+demonstrated benefits on several reasoning benchmarks
+\cite{wei2022cot}.
+
+For analysis, the response is segmented into units $s_1,\ldots,s_J$, usually
+sentences or short coherent spans. A unit can restate the problem, introduce a
+strategy, execute a calculation, or check a previous result. These functions
+provide a richer description than response length or final accuracy alone.
+However, a verbal explanation is an observable output of the model, rather
+than a complete record of its internal computation. Experiments on
+chain-of-thought faithfulness show that a response can omit factors that
+influenced its answer \cite{turpin2023unfaithful}. Accordingly, this thesis
+uses the term \emph{reasoning episode} for a function assigned to a text unit,
+without assuming that the label identifies a unique internal cognitive state.
+
+Three levels of observation will recur throughout the thesis. At the token
+level, the model produces hidden representations and expert-routing
+decisions. At the unit level, a segment receives a functional episode label.
+At the attempt level, the complete response has a final answer and possibly
+binary indicators of particular reasoning events. Repeated attempts add a
+fourth level: the source problem. Keeping these levels explicit is necessary
+both for temporal alignment and for statistical analysis.
+
+\section{Sparse mixture-of-experts computation}
+\label{sec:moe-computation}
+
+\subsection{Experts, routers, and conditional computation}
+
+A sparse MoE layer contains several parameterised expert networks and a router
+that selects a subset for each token. The sparsely gated formulation of
+Shazeer et al. made it possible to increase model capacity while activating
+only part of that capacity for an input \cite{shazeer2017sparselygated}.
+In language-model backbones, an MoE module commonly replaces a dense
+feed-forward sublayer. The expert is therefore a neural transformation within
+a larger network; it is not an independent model that solves the whole
+problem.
+
+Let $u_t^{(\ell)}\in\mathbb{R}^{d}$ be the input to the router at layer
+$\ell$, and let $E_\ell$ be the number of routed experts there. For a
+softmax-based router, scores $z_t^{(\ell)}$ define
+\begin{align}
+  z_t^{(\ell)} &= W_r^{(\ell)}u_t^{(\ell)}+b_r^{(\ell)}, \\
+  p_{t,e}^{(\ell)} &=
+  \frac{\exp(z_{t,e}^{(\ell)})}
+       {\sum_{j=1}^{E_\ell}\exp(z_{t,j}^{(\ell)})}, \\
+  S_t^{(\ell)} &= \operatorname{TopK}\bigl(p_t^{(\ell)},k_\ell\bigr).
+  \label{eq:router-selection}
+\end{align}
+The bias can be absent, and other routing architectures use different score
+transformations. These equations specify the softmax case used to define the
+measurements below, rather than a universal implementation contract.
+
+Writing $f_e^{(\ell)}$ for expert $e$, a routed output has the form
+\begin{equation}
+  m_t^{(\ell)} =
+  \sum_{e\in S_t^{(\ell)}}
+  g_{t,e}^{(\ell)}f_e^{(\ell)}(u_t^{(\ell)})
+  + m_{t,\mathrm{shared}}^{(\ell)}.
+  \label{eq:moe-output}
+\end{equation}
+Here $g_{t,e}^{(\ell)}$ denotes the effective mixing weight, which may be
+renormalised over the selected experts. The shared contribution is present
+only in architectures that include shared experts. This distinction matters:
+the full router distribution $p$, the selected set $S$, and the effective
+weights $g$ are different objects. An intervention on one need not have the
+same effect as an intervention on another.
+
+Switch Transformer uses one routed expert per token, whereas Mixtral uses
+two of eight experts \cite{fedus2022switch,jiang2024mixtral}.
+DeepSeekMoE combines finer expert partitioning with shared experts
+\cite{dai2024deepseekmoe}. These architectural choices affect how routing
+statistics should be interpreted. They also illustrate why total parameter
+count and active parameter count must be distinguished: sparse activation
+reduces per-token expert computation, but does not eliminate the cost of
+storing expert weights or dispatching tokens.
+
+The project's Qwen3.5-35B-A3B subject provides a concrete instance. Its official
+model card describes a hybrid backbone with 40 layers, combining Gated
+DeltaNet and gated attention, with 256 routed experts, eight selected experts
+per token, and a shared expert \cite{qwen2026qwen35}. This makes the subject
+a hybrid sequence model. The general routing notation above applies
+independently of the particular sequence-mixing sublayer.
+
+\subsection{Interpreting expert identity}
+
+Expert identities are local to a layer. The correct identifier is the pair
+$(\ell,e)$: expert 7 in one layer has different parameters from expert 7 in
+another layer. Likewise, selecting an expert frequently during a labelled
+episode does not establish that the expert implements that episode.
+Token identity, syntax, position, and problem content may all influence
+selection. Mixtral's routing analysis, for example, reports syntactic
+regularities and locality between consecutive tokens
+\cite{jiang2024mixtral}.
+
+It is useful to distinguish \emph{statistical specialisation}, meaning that
+expert use differs across observed contexts, from \emph{functional
+involvement}, meaning that changing the expert's contribution changes a
+behaviour of interest. The first can nominate targets for study. The second
+requires an intervention and an appropriate comparison. Neither implies a
+one-to-one mapping between experts and semantic reasoning functions.
+
+\section{A vocabulary for reasoning episodes}
+\label{sec:episode-framework}
+
+\subsection{Adapting episode theory to model-generated text}
+
+Schoenfeld's account of mathematical problem solving emphasises the
+organisation and control of problem-solving activity in addition to the
+availability of mathematical knowledge \cite{schoenfeld1985problem}.
+Li et al. adapt this perspective to reasoning-model traces and release a
+corpus with sentence and paragraph annotations \cite{li2025schoenfeld}.
+The present project uses seven sentence-level categories. Their operational
+meaning in the annotation experiment is summarised in
+Table~\ref{tab:episode-labels}.
+
+\begin{table}[tbp]
+  \centering
+  \small
+  \caption{Operational episode categories used by the project, based on the
+  adapted framework of Li et al.~\cite{li2025schoenfeld}. The descriptions
+  concern a unit's function, rather than its mathematical validity.}
+  \label{tab:episode-labels}
+  \begin{tabularx}{\textwidth}{@{}lX@{}}
+    \toprule
+    Episode & Function of the text unit \\
+    \midrule
+    Read & Restates information or the goal supplied by the problem. \\
+    Analyze & Interprets information, introduces structure, or derives a
+      relationship. \\
+    Plan & Commits to a concrete operation or strategy before executing it. \\
+    Implement & Executes a procedure, calculation, substitution, or enumeration. \\
+    Explore & Tentatively proposes a hypothesis, option, or alternative path. \\
+    Verify & Checks an existing candidate, result, or consistency claim. \\
+    Monitor & Expresses content-light self-regulation, a transition, or a
+      structural boundary. \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+These labels are nominal categories. They are not ordered from weak to strong
+reasoning, and a solution need not pass through them in a fixed sequence.
+A Verify unit can contain an invalid check; an Implement unit can contain an
+incorrect calculation. Similarly, repeated monitoring does not necessarily
+improve a solution. Episode analysis and correctness evaluation therefore
+measure different aspects of model behaviour.
+
+Segmentation is part of this measurement. One sentence may both announce and
+execute a plan, while a short structural marker may have no mathematical
+content. Assigning one label requires a documented precedence rule and access
+to enough context to distinguish, for example, a given fact from a newly
+derived relation. These ambiguities limit the meaning of exact agreement
+with a reference annotation. Per-class errors and inspection of ambiguous
+boundaries are consequently useful alongside aggregate classification scores.
+
+\subsection{Automatic episode annotation}
+
+Let $a_j\in\mathcal{A}$ denote the reference episode for unit $s_j$, where
+$\mathcal{A}$ contains the seven categories. A prompted annotator with
+instruction $\phi$ returns
+\begin{equation}
+  \widehat a_j = A_\phi(q,s_{j-1},s_j,s_{j+1}).
+  \label{eq:offline-annotator}
+\end{equation}
+This is the information pattern used by \texttt{gepaLLMAsJudge}: the problem
+and neighbouring units help identify the current unit's function. Because
+the current and next units are visible, it is an offline annotation tool.
+It cannot be inserted unchanged into a controller that must act before
+$s_j$ is generated.
+
+GEPA searches over instructions using feedback and natural-language
+reflection, while keeping the underlying model weights fixed
+\cite{agrawal2026gepa}. In this project, a same-model judge can provide
+structured optimisation feedback, but final prompt selection is assessed
+against reference labels. Such feedback is not independent ground truth.
+Splitting complete responses before their units are assigned to training,
+validation, and test sets prevents neighbouring passages from crossing
+evaluation boundaries.
+
+Accuracy measures exact label agreement. Balanced accuracy averages recall
+across categories, and macro-F1 averages the category-specific F1 scores;
+both expose failures concealed by a dominant class. Cohen's $\kappa$ measures
+chance-adjusted nominal agreement. Rank-based agreement measures require an
+independently justified ordering and are not primary measures for these
+episode labels. The purpose of annotation optimisation is to establish a
+usable measurement instrument for later experiments, rather than to optimise
+the subject model's routing directly.
+
+\section{Prospective representation probes}
+\label{sec:prospective-probes}
+
+For a unit beginning at token index $b_j$, define a boundary representation
+$v_j^{(\ell)}=h_{b_j-1}^{(\ell)}$. Under causal processing, it depends on the
+problem and the preceding response, but not on the target unit. A binary
+linear probe for episode $a$ has the form
+\begin{equation}
+  \widehat P(a_j=a\mid v_j^{(\ell)})
+  = \sigma\left(w_{a,\ell}^{\mathsf T}v_j^{(\ell)}+c_{a,\ell}\right),
+  \label{eq:linear-probe}
+\end{equation}
+where $\sigma$ is the logistic function. Above-chance prediction indicates
+that information useful to this classifier is accessible at that boundary.
+The interpretation depends on probe capacity, train/test separation, and
+possible shortcuts \cite{hewitt2019control}.
+
+The \texttt{probeTest} experiment trains a separate one-versus-rest logistic
+regression for each label and hidden-state index. It teacher-forces released
+DeepSeek-R1 responses through a Qwen encoder. Consequently, its immediate
+subject is Qwen's representation of those supplied prefixes. It does not
+observe Qwen generating the annotated solutions. The current replication
+uses a sentence-level split, so units from a response can appear in both
+partitions; selecting the best layer on that test split also makes the
+selected maximum optimistic. A response-grouped evaluation and a separate
+layer-selection partition are needed to assess generalisation to new traces.
+
+Temporal availability and causal influence must also be distinguished. A
+pre-unit representation is prospective, but predicting a future label does
+not establish that the probed direction causes that label. A probe can exploit
+problem type, position, or formatting. Independently trained, class-balanced
+binary scores also need not form calibrated multiclass probabilities, even
+when their largest value is used to propose a label for inspection.
+
+Finally, hidden-state indices must be tied to actual locations in the
+architecture. Let $h_t^{(\ell)}$ denote a block-input residual state and
+$u_t^{(\ell)}$ the router input from Section~\ref{sec:moe-computation}.
+An intervening sequence-mixing sublayer and normalisation can make these
+vectors different. The current correlation extraction retains block-input
+hidden states alongside the router distribution from the corresponding
+block; it does not directly capture the exact normalised router-input vector.
+Geometric relationships between the two measurements must be interpreted with
+this distinction in mind.
+
+\section{Routing measurements and statistical analysis}
+\label{sec:routing-measurement}
+
+\subsection{Concentration, selection, and temporal dynamics}
+
+For a fixed layer and token, suppress the indices on $p$, and write
+$p_{(1)}\geq\cdots\geq p_{(E)}$ for the sorted router probabilities.
+For $E>1$, Shannon entropy and its normalised concentration transform are
+\begin{equation}
+  H(p)=-\sum_{e=1}^{E}p_e\log p_e,
+  \qquad C(p)=1-\frac{H(p)}{\log E}.
+  \label{eq:routing-entropy}
+\end{equation}
+$C=0$ for a uniform distribution and approaches one as mass concentrates on
+one expert. Although the implementation calls $C$ routing confidence, it is
+not a calibrated probability that the answer is correct. Routing probabilities
+describe expert allocation; vocabulary probabilities describe the next token.
+Their entropies concern different distributions.
+
+For top-$k$ routing with $k<E$, additional measures are
+\begin{align}
+  M_k(p) &= \sum_{i=1}^{k}p_{(i)}, \\
+  B_k(p) &= p_{(k)}-p_{(k+1)}, \\
+  G_k(p) &= \frac{M_k(p)}{k}-\frac{1-M_k(p)}{E-k}.
+  \label{eq:topk-features}
+\end{align}
+Selected mass $M_k$ measures how much probability is assigned to the active
+set. The boundary margin $B_k$ describes the separation between the last
+selected and first unselected expert. $G_k$ compares mean selected and
+unselected probability. The top-1/top-2 margin alone does not describe the
+selection boundary when more than one expert is active.
+
+Some of these quantities contain redundant information. For fixed $E$ and
+$k$, $G_k$ is an affine function of $M_k$; their associations cannot be treated
+as independent evidence. Similarly, $C$ is an affine sign reversal of $H$.
+Presenting a transformed measure can aid interpretation, but does not create
+an additional empirical finding.
+
+For a trace of $T>1$ tokens, the current implementation summarises temporal
+routing with top-1 switching and top-$k$ set overlap:
+\begin{align}
+  W^{(\ell)} &= \frac{1}{T-1}\sum_{t=2}^{T}
+  \mathbf{1}\!\left[\arg\max_e p_{t,e}^{(\ell)}
+                 \neq \arg\max_e p_{t-1,e}^{(\ell)}\right], \\
+  O^{(\ell)} &= \frac{1}{T-1}\sum_{t=2}^{T}
+  \frac{|S_{t-1}^{(\ell)}\cap S_t^{(\ell)}|}{k_\ell}.
+  \label{eq:routing-temporal}
+\end{align}
+The overlap denominator is the number of selected experts, not the union
+size used by Jaccard similarity. High overlap indicates persistent selection,
+but its relation to useful reasoning is an empirical question.
+
+Identity features can instead measure the proportion of tokens selecting a
+particular $(\ell,e)$, or the frequency of a particular expert pair.
+An ordered top-1/top-2 pair describes co-selection at one token; it does not
+describe a transition between tokens or every combination in a top-$k$ set.
+Layer identity must be preserved before such features can nominate individual
+experts for intervention.
+
+Hidden-state summaries provide complementary measurements, including vector
+norm and consecutive-token cosine distance,
+\begin{equation}
+  D^{(\ell)}=\frac{1}{T-1}\sum_{t=2}^{T}
+  \left(1-\frac{\langle h_t^{(\ell)},h_{t-1}^{(\ell)}\rangle}
+  {\|h_t^{(\ell)}\|\,\|h_{t-1}^{(\ell)}\|}\right).
+  \label{eq:hidden-distance}
+\end{equation}
+The pipeline also constructs a geometry feature by correlating pairwise
+cosine similarities among sampled hidden states with the corresponding
+similarities among router distributions. That internal construction uses
+Pearson correlation. It is a scalar descriptive feature, distinct from the
+coefficient subsequently used to associate it with correctness; the many
+token pairs are not treated as independent experimental observations.
+
+\subsection{Binary correctness and repeated-attempt accuracy}
+
+Let $Y_{ia}\in\{0,1\}$ indicate whether attempt $a$ on problem $i$ produces
+a correct final answer, and let $X_{ia}$ be a routing or representation
+feature. Their attempt-level association is measured by point-biserial
+correlation,
+\begin{equation}
+  r_{\mathrm{pb}}=\operatorname{Corr}(X,Y).
+  \label{eq:point-biserial}
+\end{equation}
+This is exactly Pearson correlation when correctness is encoded as zero or
+one. A positive coefficient means that the feature tends to be larger among
+correct attempts. Its magnitude can depend on class prevalence and feature
+distributions; it is neither a causal effect nor a measure of probability
+calibration. The same coefficient applies to a continuous feature paired
+with a binary reasoning-event indicator. Liu et al. provide direct language
+model precedent for this continuous-versus-binary setting
+\cite{liu2022figurative}.
+
+With $N$ attempts per problem, define
+\begin{equation}
+  \widehat A_i^{(N)}=\frac{1}{N}\sum_{a=1}^{N}Y_{ia},
+  \qquad \overline X_i=\frac{1}{N}\sum_{a=1}^{N}X_{ia}.
+  \label{eq:average-accuracy}
+\end{equation}
+The first quantity is the empirical per-problem avg@$N$. For $N=32$, it
+takes values in $\{0,1/32,\ldots,1\}$. It differs from pass@$N$, which concerns
+at least one successful attempt among $N$ samples. The primary repeated-attempt
+analysis uses one pair $(\overline X_i,\widehat A_i^{(N)})$ per problem and
+computes Spearman correlation,
+\begin{equation}
+  \rho_s=\operatorname{Corr}\!\left(
+    \operatorname{rank}(\overline X_i),
+    \operatorname{rank}(\widehat A_i^{(N)})\right),
+  \label{eq:spearman}
+\end{equation}
+using average ranks for ties. The scientific question is whether larger
+feature values tend to accompany larger success fractions, without requiring
+a linear relation between their numerical scales. Boundedness alone does not
+make Pearson invalid; Spearman is selected because monotone association is
+the target. Small problem counts and many tied success fractions still limit
+precision. Section~\ref{sec:related-statistics} discusses the supporting
+literature.
+
+Complete groups are necessary to make avg@$N$ comparable across problems.
+The analysis checks declared sample identifiers, outcome availability, and
+feature coverage, and audits exact duplicate generations where their
+fingerprints are available. A known gold answer with no parseable generated
+answer is counted as incorrect; a task without a scoring target remains
+unscored. Truncation and answer-parsing failures must be reported because
+they can alter both trace features and the measured success fraction.
+
+\subsection{Dependence, uncertainty, and confounding}
+
+Attempts on the same problem share difficulty and content. Counting them as
+independent observations can make uncertainty appear smaller than it is.
+For prespecified aggregate features, the pipeline therefore estimates
+95\% percentile bootstrap intervals by resampling whole problems and retaining
+their attempts together. For problem-level Spearman coefficients, it
+resamples the observed problem pairs. This latter procedure quantifies
+variation across observed problems without separately modelling uncertainty
+from the finite number of attempts within each problem.
+
+An additional descriptive comparison uses only problems that yield both
+correct and incorrect attempts:
+\begin{equation}
+  \Delta_i = \overline X_{i,Y=1}-\overline X_{i,Y=0}.
+  \label{eq:within-problem}
+\end{equation}
+Averaging these contrasts removes fixed differences between source problems,
+but still permits differences in response length, token composition, or
+generation history within a problem. It also describes the subset of
+mixed-outcome problems. It is not an estimate of what would happen if routing
+were changed. The project's GPQA design varies answer-option positions
+between attempts, so it is excluded from this particular contrast.
+
+Searching many layers, features, experts, and pairs creates a multiplicity
+problem. Benjamini--Hochberg adjustments provide a declared way to summarise
+multiple tests within a specified family \cite{benjamini1995fdr}.
+They rely on valid input tests and appropriate dependence assumptions. In
+particular, applying the adjustment to naive attempt-level $p$-values does
+not repair their failure to account for repeated problems. Such values
+remain exploratory diagnostics. A confirmatory intervention should specify
+its outcomes, targets, and evaluation partitions independently of these scans.
+
+\section{From observations to routing intervention}
+\label{sec:intervention-framework}
+
+A routing intervention modifies the computation in
+Equations~\ref{eq:router-selection}--\ref{eq:moe-output} during inference.
+One possible family of policies adds a context-dependent bias to the router
+scores:
+\begin{equation}
+  \widetilde z_t^{(\ell)} = z_t^{(\ell)}
+  +\alpha\,v^{(\ell)}(q,x_{<t}),
+  \label{eq:routing-intervention}
+\end{equation}
+after which expert selection and mixing weights are recomputed.
+This equation describes a design space for the thesis, rather than an
+already validated implementation. The strength $\alpha$, affected layers,
+target experts, and activation times are parts of the policy.
+
+Alternative policies reweight experts already selected, mask particular
+experts, or alter the selected set. These choices test different hypotheses.
+For example, rescaling all logits by a positive temperature changes their
+concentration but preserves their ordering and therefore preserves a
+deterministic top-$k$ set. Increasing the contribution of an already selected
+expert also differs from forcing an otherwise unselected expert to participate.
+In all cases, renormalisation and the contribution of shared experts must be
+specified to interpret the intervention.
+
+A controller intended to act before a reasoning unit can use only information
+available at that time. Offline labels may help construct or evaluate that
+controller, but the target unit and its future continuation cannot supply its
+decision at deployment. Prospective probes are relevant because they test
+whether useful information exists under this restriction. Their predictions
+still require validation on the generation distribution where the controller
+will operate.
+
+Teacher-forced replay is useful for measuring activations on a fixed saved
+response, but an intervention during free generation changes subsequent
+tokens and therefore subsequent states. A replay-based change in a feature
+or next-token score is not sufficient evidence of improved problem solving.
+The intervention objective ultimately concerns a contrast such as
+\begin{equation}
+  \Delta_{\pi}=\mathbb{E}_{q,\xi}
+  \left[Y\bigl(q,\xi;\pi\bigr)-Y\bigl(q,\xi;\pi_0\bigr)\right],
+  \label{eq:policy-effect}
+\end{equation}
+where $\pi_0$ is the unmodified router, $\pi$ is the intervention, and $\xi$
+represents sampling randomness under a specified evaluation protocol.
+Episode frequencies, answer correctness, and computational cost should be
+measured together: increasing the amount of checking language is not itself
+evidence of better reasoning.
+
+This formulation motivates four connected research questions. Can the episode
+vocabulary be applied reliably to new traces? Can relevant behaviours be
+detected from information available before they occur? Which routing
+measurements remain associated with behaviour and correctness after accounting
+for major confounders? Finally, does acting on selected routing targets improve
+outcomes on held-out problems under a controlled generation budget? The three
+active experiments address the measurement and observational parts of this
+programme and establish the basis for answering the final, causal question.
 
 \chapter{Related Work}
+\label{ch:related-work}
 
-% Add the literature review here.
+Research relevant to routing-guided reasoning spans several levels of model
+behaviour. Some approaches change the prompts or training signals that
+produce reasoning traces. Others annotate those traces, decode information
+from internal representations, or directly modify activations and expert
+routing. This chapter compares those approaches according to the object they
+measure or manipulate, and positions the three active experiments within
+that literature.
+
+\section{Reasoning traces, evaluation, and functional annotation}
+
+Chain-of-thought prompting demonstrated that intermediate reasoning
+demonstrations can improve language-model performance on arithmetic,
+commonsense, and symbolic tasks \cite{wei2022cot}. This established generated
+reasoning text as a practical object of study, but it did not make final
+accuracy a complete measure of the quality of a reasoning process.
+Lightman et al. distinguish outcome supervision from feedback on intermediate
+step validity and release PRM800K for studying process supervision
+\cite{lightman2023verify}. Their distinction is relevant to this thesis
+because a correct final answer and a well-formed intermediate process are
+related but separate evaluation targets.
+
+Functional episode annotation addresses a further question: what a step is
+doing within the solution. Building on Schoenfeld's framework, Li et al.
+annotate model-generated mathematical solutions at sentence and paragraph
+levels and analyse transitions between episode categories
+\cite{li2025schoenfeld}. Their sentence-level labels supply the project's
+annotation vocabulary and released reference data. A semantic episode differs
+from a process-reward label: Verify describes an attempt to check something,
+whereas a validity label evaluates whether a step is correct. The same
+functional category can therefore occur in both successful and failed traces.
+
+The faithfulness experiments of Turpin et al. further limit what can be
+inferred from generated explanations \cite{turpin2023unfaithful}. They show
+settings where input cues influence a prediction without being acknowledged
+in the accompanying rationale. For the present project, the implication is
+methodological: an episode sequence is an informative description of generated
+text, but a claim about the mechanism producing it needs independent internal
+evidence and intervention.
+
+SPIRAL studies reasoning through a different route, using self-play on
+zero-sum games as a reinforcement-learning training signal
+\cite{liu2025spiral}. Its evaluation includes mathematical and
+knowledge-intensive benchmarks also used by the correlation pipeline, and
+it analyses textual reasoning patterns. The project adopts this benchmark
+suite with its own benchmark-specific repeated-attempt protocol; it does
+not claim to reproduce every evaluation setting of the SPIRAL paper.
+Self-play changes the training process, whereas the thesis's intended control
+mechanism acts on routing during inference.
+
+\section{Prompt optimisation for episode annotation}
+
+An automatic episode annotator must handle closely related categories,
+class imbalance, and contextual ambiguity. GEPA addresses the broader
+problem of optimising language-model systems through reflective prompt
+evolution \cite{agrawal2026gepa}. It uses execution and evaluation traces
+to generate natural-language feedback, proposes prompt revisions, and
+maintains candidates with complementary strengths through Pareto-based
+selection. The optimisation operates with fixed model weights.
+
+The \texttt{gepaLLMAsJudge} experiment applies this approach to the seven-label
+annotation task. It supplies the problem and neighbouring text units,
+evaluates predictions against the released annotations, and preserves
+response boundaries in its data splits. A same-model judge can supply
+detailed feedback during the search, while agreement with the reference
+labels and per-class recall constraints govern final selection. These are
+properties of the project's experimental design, rather than claims about
+GEPA's original evaluation.
+
+The distinction between optimisation feedback and final evaluation is
+central. A candidate selected after many comparisons on the same validation
+responses can exploit peculiarities of that partition. Furthermore, a judge
+that shares the classifier's model may share its errors. Response-grouped
+evaluation and an untouched test partition address a different question from
+whether the search found a better validation prompt. The resulting prompt
+is intended as a frozen annotation instrument for subsequent experiments;
+its offline context and reference-label provenance must remain visible when
+its labels are used to study routing.
+
+\section{Probing representations of reasoning}
+
+Probing asks whether a chosen decoder can extract a property from a model's
+representations. Hewitt and Manning demonstrate that a learned transformation
+of contextual word representations can recover aspects of syntactic tree
+geometry \cite{hewitt2019structural}. Hewitt and Liang subsequently show how
+control tasks help distinguish information in representations from a probe's
+capacity to learn the target task \cite{hewitt2019control}. Together, these
+works motivate simple, inspectable probes and evaluation designs that make
+shortcut learning visible. Their linguistic tasks do not establish that
+reasoning episodes are encoded in the same way; that is an empirical question
+for this project.
+
+Sun et al. study reasoning as trajectories through representation space
+\cite{sun2026trajectories}. Their analysis examines step-specific geometry
+and correctness signals in a Llama family, and they investigate adaptive
+activation changes toward reference trajectories. Their step categories
+describe positions in a sequence, rather than Schoenfeld semantic functions.
+This distinction makes their layerwise probing protocol relevant without
+making the two annotation tasks equivalent. They also report more limited
+transfer for correctness prediction than for step-related structure.
+
+The \texttt{probeTest} experiment combines a boundary-probe design with the
+released semantic episode annotations. It extracts representations immediately
+before the target unit, which creates a prospective prediction task. Its
+current sentence-split replication is useful for comparison with the adopted
+protocol, but shared response identities and test-based layer selection limit
+generalisation claims. Moreover, applying the probes to supplied reference
+solutions tests representation transfer under teacher forcing. Using them
+to control the model's own generation requires additional validation.
+
+This line of work supplies possible detection signals and candidate layers.
+It does not identify a router intervention by itself. A decoder may read
+information from a representation that is distributed across many experts,
+or from a component that the model does not use in the way the decoder does.
+The transition from decodability to controllability therefore remains a
+separate experimental step.
+
+\section{Expert specialisation and direct routing control}
+\label{sec:related-routing}
+
+Early sparse MoE work establishes conditional computation as a way to scale
+capacity while limiting active computation \cite{shazeer2017sparselygated}.
+Switch Transformer, Mixtral, and DeepSeekMoE explore different selection and
+expert-sharing designs \cite{fedus2022switch,jiang2024mixtral,dai2024deepseekmoe}.
+These studies support the architectural motivation for treating routing as a
+control point. They also caution against assuming that its units already
+correspond to human-readable reasoning functions. In particular, Mixtral's
+analysis of syntactic routing and token locality makes lexical controls
+relevant when comparing experts across reasoning episodes.
+
+RICE is a close precedent for reasoning-directed expert intervention
+\cite{wang2025rice}. Wang et al. associate experts with reasoning-related
+marker tokens using normalised pointwise mutual information, then reinforce
+identified experts during inference. Their reinforcement multiplies an
+expert's mixture weight when that expert is already in the selected set;
+it does not necessarily make an unselected expert participate. The paper's
+description of cognitive experts is a working hypothesis. Reported
+sensitivity to reinforcement strength and normalisation, together with
+limited sampled transfer in one AIME comparison, makes clear that observed
+specialisation does not automatically imply a robust intervention benefit.
+
+SteerMoE investigates behaviour-associated expert activation using contrasting
+inputs, and promotes or suppresses experts by modifying routing scores before
+top-$k$ selection \cite{fayyaz2025steermoe}. Its experiments concern behaviours
+such as document faithfulness and safety. This provides direct evidence that
+expert selection can be used as an inference-time control mechanism for the
+studied settings. Its behavioural targets differ from mathematical episode
+structure, so the transfer to reasoning-guided routing remains a question.
+The difference from RICE is also operational: changing scores before
+selection can change membership of the active set, whereas reinforcing an
+already selected expert primarily changes its contribution.
+
+Yoon et al. examine whether the trained router selects favourable expert
+combinations by comparing standard routes with sampled alternatives at equal
+expert compute \cite{yoon2026misrouted}. Their counterfactual analysis uses
+successful continuations and also studies a final-router update. This is
+relevant evidence that routing quality can be investigated separately from
+expert capacity. However, a next-token score on a supplied continuation is a
+proxy for free-generation success, and layerwise route comparisons do not
+by themselves identify an episode-level intervention effect.
+
+These studies establish that routing control is an existing research
+direction. The question developed here is more specific: whether a validated
+semantic episode vocabulary, prospective internal signals, and
+outcome-associated routing measurements can jointly support interventions
+that improve reasoning on held-out problems. Demonstrating that conjunction
+requires measurements and evaluations beyond finding experts associated with
+a few textual markers.
+
+\section{Activation steering}
+
+Routing edits should also be compared with methods that act directly on
+representations. Contrastive Activation Addition constructs steering
+directions from differences between activations on contrasting examples and
+adds those directions during generation \cite{rimsky2024caa}. This changes
+the residual representation rather than explicitly specifying which experts
+are selected. It is consequently a useful conceptual baseline for separating
+the value of a behavioural direction from the value of acting at the router.
+
+Hong et al. study a residual-stream direction associated with the balance
+between reasoning and memorisation \cite{hong2025interplay}. Their analysis
+relates scalar projections to graded reasoning scores and includes
+interventions on the corresponding features. Sun et al.'s trajectory work
+similarly moves beyond representation analysis to interventions that use
+reference reasoning trajectories \cite{sun2026trajectories}. These papers
+show why identifying a direction and testing its manipulation belong to
+distinct stages of a causal investigation.
+
+For an MoE subject, a residual edit may indirectly alter routing as well as
+other downstream computations. Conversely, a router edit changes the mixture
+of expert outputs and therefore the residual trajectory that follows.
+The two intervention families are connected, but their direct targets differ.
+A routing-focused thesis must specify that target and evaluate its effects
+under comparable generation conditions. A change in episode labels alone
+would leave open whether the method improved problem solving or only changed
+how the response was expressed.
+
+\section{Statistical evidence for metric selection}
+\label{sec:related-statistics}
+
+The choice of correlation coefficient follows the outcome scale and the
+scientific question. Liu et al. use point-biserial correlation between
+continuous quantities, including context length and answer probability,
+and binary correctness in figurative-language interpretation
+\cite{liu2022figurative}. This is direct precedent for the attempt-level
+continuous-feature/0--1-outcome setting. The additional justification is
+algebraic: point-biserial is Pearson correlation under binary coding, with
+an interpretable direction given by the group difference.
+
+For graded targets, Hong et al. report Spearman association between
+residual-stream projections and model-assigned reasoning scores
+\cite{hong2025interplay}. Hewitt and Manning use rank correlation in
+evaluating representation-derived syntactic geometry
+\cite{hewitt2019structural}. Xu et al. relate language-model-derived
+conceptual representations to human behavioural ratings using Spearman
+correlation and employ bootstrap confidence intervals
+\cite{xu2025conceptual}. These are precedents for rank-based analysis of
+internal quantities, rather than direct studies of avg@32 correctness.
+The project's choice of Spearman for per-problem mean correctness is
+therefore justified by its monotone association target, not by claiming
+that these papers uniquely prescribe that coefficient.
+
+Zhang et al. report both Pearson and Spearman correlations when comparing
+uncertainty-based hallucination scores with graded human judgements
+\cite{zhang2023uncertainty}. Their use of entropy-related quantities is
+relevant to this project's concentration features, although token uncertainty
+and expert-routing entropy refer to different distributions. Reporting both
+coefficients can answer distinct linear and monotone questions; it does not
+turn two analyses of the same data into independent replications.
+
+For the correlation experiment, the sample hierarchy matters as much as the
+coefficient. Thirty-two attempts from a single problem provide repeated
+observations of that problem, rather than 32 independent problems.
+The problem-level analysis and cluster bootstrap described in
+Section~\ref{sec:routing-measurement} address that hierarchy. Xu et al.'s
+use of 10,000 bootstrap resamples in one analysis provides a precedent for
+reporting resampling uncertainty, but does not determine an appropriate
+resample count or sampling unit for a different experiment
+\cite{xu2025conceptual}.
+
+Benjamini and Hochberg's multiple-testing framework motivates declaring
+families of feature, layer, and expert comparisons
+\cite{benjamini1995fdr}. Multiplicity adjustment cannot remove confounding,
+repair non-independent tests, or turn a discovered association into a causal
+effect. The active analysis therefore serves to prioritise hypotheses whose
+intervention effects must subsequently be tested on separate data.
+
+\section{Position of the three active experiments}
+\label{sec:project-position}
+
+Table~\ref{tab:active-experiment-roles} relates the active experiments to the
+evidence required by the thesis objective. Their contributions are
+complementary: a reliable annotation instrument makes behavioural comparisons
+possible; a prospective probe tests whether suitable signals are available
+before a decision; and a routing analysis narrows the set of mechanisms worth
+changing.
+
+\begin{table}[tbp]
+  \centering
+  \small
+  \caption{Role of each active experiment in preparing routing intervention.
+  These are research functions, rather than claims of completed causal
+  validation.}
+  \label{tab:active-experiment-roles}
+  \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.30\textwidth}
+    >{\raggedright\arraybackslash}X>{\raggedright\arraybackslash}X@{}}
+    \toprule
+    Experiment & Evidence sought & Role in intervention research \\
+    \midrule
+    \texttt{gepaLLMAsJudge} & Agreement between automatic episode labels and
+      reference annotations on separated responses. & Defines a reproducible
+      behavioural measurement instrument. \\
+    \addlinespace
+    \texttt{probeTest} & Predictability of upcoming episodes from pre-unit
+      hidden states. & Nominates signals and locations for detecting relevant
+      contexts during generation. \\
+    \addlinespace
+    \texttt{correlation\_pipeline} & Associations of routing and hidden-state
+      features with correctness and reasoning events. & Nominates routing
+      properties and expert-use patterns for controlled tests. \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+The current workflows also leave specific connections to establish. The
+correlation pipeline's default reasoning-event indicators are lexical
+backtracking, contradiction, and self-correction markers; the frozen
+seven-category annotator has not yet replaced them. Probe-selected locations
+remain exploratory under the current split and selection protocol. The
+initial expert-identity scan pools equal numeric expert indices across
+retained layers, so a target-specific intervention requires analysis that
+preserves the full $(\ell,e)$ identity. These distinctions prevent the
+existing components from being mistaken for a completed episode-aware
+controller.
+
+Generation and measurement provenance impose another limit. The correlation
+workflow generates with a quantised GGUF model and replays the saved response
+through a corresponding Hugging Face checkpoint using a different 4-bit
+representation. The replay provides measurements for that implementation on
+the supplied tokens; shared checkpoint lineage does not make its activations
+numerically identical to those of the generator. Any future intervention
+evaluation must specify the actual model and routing implementation being
+modified.
+
+The contribution pursued by the thesis is thus an experimentally grounded
+connection between semantic reasoning behaviour and controllable sparse
+computation. Existing work motivates both the possibility of steering and
+the need for careful interpretation. The three active experiments establish
+the vocabulary, measurements, and candidate signals needed to test that
+connection; the decisive evidence will come from whether a specified routing
+policy changes reasoning and improves final outcomes on held-out problems.
 
 \chapter{Method}
 
