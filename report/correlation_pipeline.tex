@@ -1,5 +1,93 @@
 \section{Qwen Correlation Pipeline}
 
+\subsection{Statistical measures and literature basis}
+\label{sec:qwen-corr-metrics}
+
+The corrected analysis selects the association measure from the scale of the
+outcome and the unit of analysis, as summarized in
+Table~\ref{tab:qwen-corr-metrics}.  This specification applies to the corrected
+run.  The numerical tables later in this section document the previous run and
+will be regenerated only after generation and routing replay pass the
+truncation and completeness audits.
+
+\begin{table*}[t]
+\centering
+\small
+\caption{Prespecified measures for the expanded correlation analysis.}
+\label{tab:qwen-corr-metrics}
+\begin{tabular}{@{}p{0.20\textwidth}p{0.14\textwidth}p{0.18\textwidth}p{0.39\textwidth}@{}}
+\toprule
+Analysis & Unit & Measure & Reason \\
+\midrule
+Continuous feature versus correctness or a binary reasoning-event indicator
+& Generation trace
+& Point-biserial $r_{\mathrm{pb}}$
+& The predictor is continuous and the outcome is binary; the signed
+coefficient is exactly Pearson's $r$ after coding the outcome as 0/1. \\
+
+Mean feature versus avg@$N$ correctness
+& Source problem
+& Spearman's $\rho$
+& Avg@$N$ is bounded, often tied, and not assumed to have a linear interval
+relationship with a feature.  Ranking tests monotone association and one row
+per problem avoids treating repeated attempts as independent. \\
+
+Continuous feature--feature and continuous expert-rate associations
+& Trace or source problem
+& Spearman's $\rho$
+& These exploratory scans ask whether quantities vary monotonically without
+assuming comparable scales or a linear relationship. \\
+
+Correct-versus-incorrect feature difference within a repeated problem
+& Mixed-outcome source problem
+& Mean paired contrast
+& This directly controls for the problem by forming one correct-minus-incorrect
+contrast per problem; uncertainty is obtained by resampling problems. \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+For a continuous feature $X$ and binary target $Y\in\{0,1\}$, the first
+coefficient is
+\begin{equation}
+  r_{\mathrm{pb}} = \operatorname{Corr}(X,Y).
+\end{equation}
+Thus positive values mean that the feature tends to be higher for correct (or
+event-present) traces, and negative values mean that it tends to be lower.
+Liu et al. directly use point-biserial correlation for continuous language-model
+quantities against binary answer correctness, making it the closest precedent
+for this case~\cite{liu-etal-2022-figurative}.
+
+For repeated-attempt datasets, correctness and each predictor are first
+aggregated once per source problem.  Only groups containing exactly the
+declared avg@$N$ unique sample identifiers, no duplicate generations detected
+by the saved fingerprints, and a complete set of binary outcomes enter the
+primary Spearman analysis.  Spearman correlation is appropriate here because
+its target is monotone rank association rather than a specifically linear
+change in avg@$N$.  Hong et al. correlate a
+scalar projection of residual-stream states with graded reasoning scores using
+Spearman correlation~\cite{hong-etal-2025-interplay}; Xu et al. use Spearman
+correlation between language-model-derived conceptual quantities and human
+ratings~\cite{xu-etal-2025-conceptual}; and Hewitt and Manning use it to compare
+geometry derived from contextual representations with gold syntactic
+structure~\cite{hewitt-manning-2019-structural}.  These studies are analogous
+precedents for rank correlation with representation-derived quantities; they
+do not by themselves establish Spearman as a unique choice for avg@32.
+Zhang et al. additionally report Pearson and Spearman correlations together
+when relating model uncertainty, including entropy-based measures, to graded
+human hallucination judgments~\cite{zhang-etal-2023-uncertainty}.
+
+Uncertainty is reported with 95\% percentile bootstrap intervals that resample
+whole source problems, keeping attempts from the same problem together.  Xu et
+al. provide relevant precedent for bootstrap intervals and use 10,000
+resamples in one category--feature analysis~\cite{xu-etal-2025-conceptual}; the
+resample count in this pipeline remains explicit and configurable rather than
+being justified by that number alone.  Benjamini--Hochberg $q$-values are
+computed separately within each declared dataset/scope, target, aggregation,
+or cross-feature family.  Naive trace-level $p$-values are retained only as
+diagnostics when a dataset contains repeated attempts, and layerwise and
+expert-identity screens remain exploratory.
+
 \subsection{Seven-benchmark run}
 
 The September 2, 2026 run completed generation, teacher-forced routing replay,
