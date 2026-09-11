@@ -1,6 +1,6 @@
 # MoE Routing Dynamics During Chain-of-Thought Reasoning
 
-This repository currently contains three active workflows:
+This repository currently contains four active workflows:
 
 1. `gepaLLMAsJudge`: GEPA prompt optimization for the seven Schoenfeld
    reasoning-episode labels, using the served model as an informative judge.
@@ -8,6 +8,8 @@ This repository currently contains three active workflows:
    router/hidden-state extraction, and cluster-aware correlation analysis.
 3. `probeTest`: Qwen3.5 hidden-state probes trained on the released gold
    Schoenfeld traces.
+4. `moe_guiding`: exploratory margin-triggered expert replacement during live
+   top-2 Mixtral inference with vLLM.
 
 The prioritized work agreed in the latest tutor meeting is tracked in
 [`NEXT_STEPS.md`](NEXT_STEPS.md).
@@ -92,6 +94,19 @@ gold traces and trains layer-wise one-vs-rest probes. Results remain under
 See [`src/moe_exp/probeTest/README.md`](src/moe_exp/probeTest/README.md) for the
 protocol and launcher.
 
+## MoE guiding
+
+`moe_guiding` compares native top-2 routing with margin-triggered top-1 + least-1
+routing, using either the selected experts' probabilities or the original
+top-2 mixing coefficients. Start with the model-free arithmetic check:
+
+```bash
+python -m moe_exp.moe_guiding.run sanity
+```
+
+See [`src/moe_exp/moe_guiding/README.md`](src/moe_exp/moe_guiding/README.md) for
+worker plugin setup, layer selection, generation commands, and validation limits.
+
 ## Reports and Archive
 
 - Current report entry point: [`report/main.tex`](report/main.tex)
@@ -115,6 +130,7 @@ The archived pipeline remains runnable through
 src/moe_exp/
 |-- correlation_pipeline/
 |-- gepaLLMAsJudge/
+|-- moe_guiding/
 |-- probeTest/
 |-- models/
 |-- datasets/
