@@ -301,7 +301,9 @@ SPIRAL_BENCHMARKS = (
     "gpqa_diamond",
     "mmlu_pro",
 )
-DEFAULT_BENCHMARKS = SPIRAL_BENCHMARKS
+DEFAULT_BENCHMARKS = tuple(
+    name for name in SPIRAL_BENCHMARKS if name not in {"gpqa_diamond", "mmlu_pro"}
+)
 
 
 def format_user_prompt(example: dict[str, Any]) -> str:

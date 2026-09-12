@@ -14,7 +14,12 @@ import torch
 
 from moe_exp.correlation_pipeline import generate as generation_module
 from moe_exp.correlation_pipeline.analyze import (
+    _benjamini_hochberg,
+    _correlation,
+    _cross_feature_correlations,
     _feature_columns,
+    _generation_budget_audit,
+    _problem_level_table,
     _repeated_problem_analysis,
     extract_trace_features,
 )
@@ -96,8 +101,6 @@ def test_spiral_benchmark_defaults_and_prompts() -> None:
         "olympiad",
         "amc23",
         "minerva",
-        "gpqa_diamond",
-        "mmlu_pro",
     )
     assert set(BENCHMARKS) >= {
         "math500",
@@ -128,16 +131,18 @@ def test_spiral_benchmark_defaults_and_prompts() -> None:
     assert "Question: Choose.\n\nOptions:\nA) one" in gpqa_prompt
 
 
-def test_pipeline_defaults_to_unsloth_qwen35_mtp_pair() -> None:
-    assert DEFAULT_GENERATION_MODEL == "qwen3.5-35b-a3b-mtp-ud-q4-k-xl"
+def test_pipeline_defaults_to_vllm_qwen35_mtp_pair() -> None:
+    assert DEFAULT_GENERATION_MODEL == "Qwen/Qwen3.5-35B-A3B-GPTQ-Int4"
     assert DEFAULT_FORWARD_MODEL == "unsloth/Qwen3.5-35B-A3B"
-    assert DEFAULT_MTP_MODEL == "unsloth/Qwen3.5-35B-A3B-MTP-GGUF:UD-Q4_K_XL"
+    assert DEFAULT_MTP_MODEL == DEFAULT_GENERATION_MODEL
     generation_args = generation_module.build_parser().parse_args([])
     assert generation_args.model == DEFAULT_GENERATION_MODEL
     assert generation_args.target_model_id == DEFAULT_FORWARD_MODEL
     assert generation_args.draft_model_id == DEFAULT_MTP_MODEL
     assert generation_args.datasets == DEFAULT_BENCHMARKS
-    assert generation_args.max_tokens == 8192
+    assert generation_args.workers == 8
+    assert generation_args.base_url == "http://127.0.0.1:41800/v1"
+    assert generation_args.max_tokens == 32768
     assert generation_args.temperature == 0.6
     assert generation_args.top_p == 0.95
     assert generation_args.seed == 0
@@ -393,31 +398,6 @@ def test_correlation_docker_launcher_routes_stages() -> None:
     assert '-e "HF_DATASETS_CACHE=$HF_DATASETS_CACHE_DIR"' in text
 
 
-def test_one_command_orchestrator_orders_server_and_stages() -> None:
-    script = (
-        Path(__file__).parents[1]
-        / "src"
-        / "moe_exp"
-        / "correlation_pipeline"
-        / "run_all.sh"
-    )
-    text = script.read_text(encoding="utf-8")
-    assert (
-        "DATASETS=(math500 aime24 aime25 olympiad amc23 minerva gpqa_diamond mmlu_pro)"
-        in text
-    )
-    assert "Waiting for llama.cpp health" in text
-    assert text.index('STAGE_LAUNCHER\" generate') < text.index('STAGE_LAUNCHER\" forward')
-    assert text.index('STAGE_LAUNCHER\" forward') < text.index('STAGE_LAUNCHER\" analyze')
-    assert "docker stop --timeout 30" in text
-    assert "Removing stale stopped container" in text
-    assert "SERVER_PID=$!" in text
-    assert 'kill -0 "$SERVER_PID"' in text
-    assert "trap cleanup EXIT INT TERM" in text
-    assert "serve_qwen3_5_35b_a3b_mtp.sh" in text
-    assert 'QUANTIZATION="${QUANTIZATION:-unsloth-4bit}"' in text
-
-
 def test_gpqa_attempts_permute_choices_and_recompute_gold_letter() -> None:
     example = {
         "problem_id": "gpqa_diamond_record",
@@ -460,15 +440,17 @@ def test_math_row_normalization_extracts_missing_answer_from_solution() -> None:
     assert _extract_boxed_answer(r"Result: \boxed{\frac{1}{2}}") == r"\frac{1}{2}"
 
 
-def test_llamacpp_client_preserves_reasoning_content(monkeypatch) -> None:
+@pytest.mark.parametrize("reasoning_field", ["reasoning_content", "reasoning"])
+def test_openai_client_preserves_reasoning_content(monkeypatch, reasoning_field) -> None:
     def fake_post(url, api_key, payload, timeout):
         assert url.endswith("/chat/completions")
         assert payload["temperature"] == 0.6
+        assert payload["top_k"] == -1
         return {
             "choices": [
                 {
                     "message": {
-                        "reasoning_content": "First reason.",
+                        reasoning_field: "First reason.",
                         "content": "\\boxed{B}",
                     },
                     "finish_reason": "stop",
@@ -596,6 +578,63 @@ def test_generation_resumes_from_atomic_sample_shards(tmp_path, monkeypatch) -> 
     assert calls == 2
 
 
+def test_generation_scores_submitted_content_not_private_reasoning(tmp_path, monkeypatch) -> None:
+    def fake_completion(**kwargs):
+        return Completion(
+            text="<think>Maybe \\boxed{B}.</think>\n\\boxed{A}",
+            content="\\boxed{A}",
+            reasoning_content="Maybe \\boxed{B}.",
+            usage={"completion_tokens": 8},
+            finish_reason="stop",
+        )
+
+    spec = BenchmarkSpec(
+        name="synthetic",
+        source="unit-test",
+        split="test",
+        default_samples=1,
+        answer_type="choice",
+        loader=lambda limit: [
+            {
+                "problem_id": "problem/1",
+                "prompt": "Choose.",
+                "gold_answer": "B",
+                "options": ["wrong", "right"],
+                "metadata": {},
+            }
+        ],
+    )
+    monkeypatch.setitem(generation_module.BENCHMARKS, "synthetic", spec)
+    monkeypatch.setattr(generation_module, "generate_completion", fake_completion)
+    args = SimpleNamespace(
+        max_items=None,
+        samples_per_problem=None,
+        output_dir=tmp_path,
+        model="unit/model",
+        target_model_id="hf/target",
+        draft_model_id="hf/draft",
+        base_url="http://localhost:8080/v1",
+        api_key="key",
+        max_tokens=32,
+        temperature=0.6,
+        top_p=0.95,
+        top_k=0,
+        seed=42,
+        timeout=10,
+        max_retries=0,
+        workers=1,
+    )
+
+    summary = generation_module.generate_dataset("synthetic", args)
+    saved = json.loads((tmp_path / "unit--model" / "synthetic" / "traces.jsonl").read_text())
+
+    assert summary["accuracy"] == 0.0
+    assert saved["is_correct"] is False
+    assert saved["model_answer"] == "A"
+    assert saved["metadata"]["scoring_input"] == "assistant_content"
+    assert saved["metadata"]["scoring_contract_version"] == 2
+
+
 def test_tensor_features_include_router_hidden_and_geometry(tmp_path) -> None:
     router = torch.tensor(
         [
@@ -644,6 +683,93 @@ def test_tensor_features_include_router_hidden_and_geometry(tmp_path) -> None:
     correlation_features = _feature_columns(pd.DataFrame([row]))
     assert "router_confidence_mean_layers" in correlation_features
     assert "router_entropy_mean_layers" not in correlation_features
+
+
+def test_point_biserial_sign_matches_true_class_feature_direction() -> None:
+    target = np.asarray([0, 0, 1, 1], dtype=np.float64)
+    increasing = np.asarray([1, 2, 3, 4], dtype=np.float64)
+    decreasing = increasing[::-1]
+
+    positive, _ = _correlation(increasing, target)
+    negative, _ = _correlation(decreasing, target)
+
+    assert positive > 0
+    assert negative < 0
+    assert positive == pytest.approx(np.corrcoef(target, increasing)[0, 1])
+    assert negative == pytest.approx(np.corrcoef(target, decreasing)[0, 1])
+
+
+def test_generation_budget_audit_flags_frequent_censoring() -> None:
+    frame = pd.DataFrame(
+        [
+            {
+                "dataset": "synthetic",
+                "is_correct": 1,
+                "generation_finish_reason": "stop",
+                "generation_completion_tokens": 5,
+                "generation_max_tokens": 8,
+                "generation_hit_token_limit": 0,
+                "generation_has_final_content": 1,
+            },
+            {
+                "dataset": "synthetic",
+                "is_correct": 0,
+                "generation_finish_reason": "length",
+                "generation_completion_tokens": 8,
+                "generation_max_tokens": 8,
+                "generation_hit_token_limit": 1,
+                "generation_has_final_content": 0,
+            },
+        ]
+    )
+
+    audit = _generation_budget_audit(frame)
+    overall = audit["scopes"][0]
+
+    assert audit["status"] == "frequent_limit_hits"
+    assert overall["token_limit_hits"] == 1
+    assert overall["token_limit_hit_rate"] == 0.5
+    assert overall["limited_correct_without_final_content"] == 0
+    assert overall["accuracy_limited"] == 0.0
+    assert overall["accuracy_completed"] == 1.0
+
+
+def test_analysis_counts_invalid_answer_with_gold_as_incorrect(tmp_path) -> None:
+    trace = TraceRecord(
+        dataset="synthetic",
+        problem_id="problem",
+        prompt="Question",
+        gold_answer="42",
+        model_id="model",
+        model_answer="",
+        is_correct=None,
+        cot_text="unfinished reasoning",
+        scoring_method="normalized_exact_numeric_fallback",
+        metadata={
+            "correlation_features": {"token_count": 3, "values": {}},
+            "finish_reason": "length",
+        },
+    )
+
+    row = extract_trace_features(
+        trace,
+        input_path=tmp_path / "traces.jsonl",
+        max_geometry_tokens=128,
+    )
+
+    assert row["is_correct"] == 0
+    assert row["invalid_answer_counted_incorrect"] == 1
+
+    unscored = trace.model_copy(
+        update={"gold_answer": "", "scoring_method": "unscored_no_gold_answer"}
+    )
+    unscored_row = extract_trace_features(
+        unscored,
+        input_path=tmp_path / "traces.jsonl",
+        max_geometry_tokens=128,
+    )
+    assert np.isnan(unscored_row["is_correct"])
+    assert unscored_row["invalid_answer_counted_incorrect"] == 0
 
 
 def test_forward_extraction_reuses_content_addressed_tensor_checkpoint(
@@ -873,12 +999,14 @@ def test_correlation_forward_rejects_wrong_top_k(tmp_path) -> None:
 def test_repeated_problem_analysis_uses_mixed_outcome_contrasts() -> None:
     rows = []
     for problem in range(5):
-        for sample, outcome in enumerate((0, 1, 0, 1)):
+        for sample in range(32):
+            outcome = sample % 2
             rows.append(
                 {
                     "dataset": "aime24",
                     "source_problem_id": f"p{problem}",
                     "sample_id": sample,
+                    "evaluation_metric": "avg@32",
                     "is_correct": outcome,
                     "feature": float(problem + outcome * 2 + sample / 10),
                 }
@@ -893,12 +1021,172 @@ def test_repeated_problem_analysis_uses_mixed_outcome_contrasts() -> None:
     assert result["within_problem"][0]["mean_correct_minus_incorrect"] > 1.0
 
 
+def test_avg32_spearman_uses_one_complete_row_per_problem() -> None:
+    rows = []
+    for problem in range(6):
+        correct_attempts = 1 + 5 * problem
+        for sample in range(32):
+            rows.append(
+                {
+                    "dataset": "aime24",
+                    "source_problem_id": f"p{problem}",
+                    "sample_id": sample,
+                    "evaluation_metric": "avg@32",
+                    "is_correct": int(sample < correct_attempts),
+                    "router_confidence_mean_layers": float(problem + sample / 1000),
+                }
+            )
+    frame = pd.DataFrame(rows)
+    problem_frame = _problem_level_table(
+        frame,
+        feature_columns=["router_confidence_mean_layers"],
+    )
+    result = _repeated_problem_analysis(
+        frame,
+        feature_columns=["router_confidence_mean_layers"],
+        bootstrap_samples=30,
+        rng=np.random.default_rng(42),
+        problem_frame=problem_frame,
+    )
+
+    correlation = next(
+        item
+        for item in result["problem_level"]
+        if item["problem_feature"] == "feature_mean"
+    )
+    assert correlation["n_problems"] == 6
+    assert correlation["target"] == "mean_correctness"
+    assert correlation["spearman_rho"] == pytest.approx(1.0)
+    assert correlation["problem_bootstrap_ci"] == pytest.approx([1.0, 1.0])
+    assert problem_frame["mean_correctness"].tolist() == pytest.approx(
+        [(1 + 5 * problem) / 32 for problem in range(6)]
+    )
+
+
+def test_avg32_excludes_incomplete_duplicate_and_missing_outcome_groups() -> None:
+    rows = []
+    for problem, samples in {
+        "complete": list(range(32)),
+        "incomplete": list(range(31)),
+        "duplicate": list(range(31)) + [30],
+        "duplicate_generation": list(range(32)),
+        "missing_outcome": list(range(32)),
+    }.items():
+        for sample in samples:
+            rows.append(
+                {
+                    "dataset": "aime24",
+                    "source_problem_id": problem,
+                    "sample_id": sample,
+                    "evaluation_metric": "avg@32",
+                    "generation_sha256": (
+                        "same"
+                        if problem == "duplicate_generation" and sample in {30, 31}
+                        else f"{problem}-{sample}"
+                    ),
+                    "is_correct": (
+                        None if problem == "missing_outcome" and sample == 31 else sample % 2
+                    ),
+                    "token_count": float(sample + 1),
+                }
+            )
+    frame = pd.DataFrame(rows)
+    problem_frame = _problem_level_table(frame, feature_columns=["token_count"])
+    result = _repeated_problem_analysis(
+        frame,
+        feature_columns=["token_count"],
+        bootstrap_samples=30,
+        rng=np.random.default_rng(42),
+        problem_frame=problem_frame,
+    )
+    indexed = problem_frame.set_index("source_problem_id")
+
+    assert bool(indexed.loc["complete", "eligible_for_repeated_analysis"])
+    assert not bool(indexed.loc["incomplete", "complete_attempt_group"])
+    assert not bool(indexed.loc["duplicate", "complete_attempt_group"])
+    assert bool(indexed.loc["duplicate_generation", "complete_attempt_group"])
+    assert not bool(indexed.loc["duplicate_generation", "independent_generation_group"])
+    assert not bool(indexed.loc["duplicate_generation", "eligible_for_repeated_analysis"])
+    assert bool(indexed.loc["missing_outcome", "complete_attempt_group"])
+    assert not bool(indexed.loc["missing_outcome", "complete_binary_outcomes"])
+    audit = result["group_completeness"][0]
+    assert audit["complete_binary_outcome_groups"] == 2
+    assert audit["eligible_repeated_analysis_groups"] == 1
+    assert audit["groups_with_duplicate_sample_ids"] == 1
+    assert audit["groups_with_exact_duplicate_generations"] == 2
+    assert audit["groups_missing_binary_outcomes"] == 1
+
+
+def test_feature_nan_does_not_change_canonical_avg32_target() -> None:
+    rows = []
+    for problem in range(5):
+        for sample in range(32):
+            rows.append(
+                {
+                    "dataset": "aime24",
+                    "source_problem_id": f"p{problem}",
+                    "sample_id": sample,
+                    "evaluation_metric": "avg@32",
+                    "is_correct": int(sample <= problem),
+                    "token_count": (
+                        np.nan if problem == 2 and sample == 0 else float(problem + sample)
+                    ),
+                }
+            )
+    problem_frame = _problem_level_table(
+        pd.DataFrame(rows), feature_columns=["token_count"]
+    ).set_index("source_problem_id")
+
+    assert problem_frame.loc["p2", "mean_correctness"] == pytest.approx(3 / 32)
+    assert problem_frame.loc["p2", "token_count__n_valid"] == 31
+    assert np.isnan(problem_frame.loc["p2", "token_count__mean"])
+
+
+def test_cross_feature_spearman_and_bh_adjustment() -> None:
+    frame = pd.DataFrame(
+        [
+            {
+                "dataset": "math500",
+                "source_problem_id": f"p{index}",
+                "sample_id": 0,
+                "evaluation_metric": "pass@1",
+                "is_correct": index % 2,
+                "token_count": float(index),
+                "step_count": float(20 - index),
+                "character_count": float(index * 3),
+            }
+            for index in range(20)
+        ]
+    )
+    features = ["token_count", "step_count", "character_count"]
+    problem_frame = _problem_level_table(frame, feature_columns=features)
+    result = _cross_feature_correlations(
+        frame,
+        feature_columns=features,
+        problem_frame=problem_frame,
+    )
+
+    math_result = next(
+        item
+        for item in result["trace_level"]
+        if item["scope"] == "math500"
+        and item["feature_x"] == "step_count"
+        and item["feature_y"] == "token_count"
+    )
+    assert math_result["spearman_rho"] == pytest.approx(-1.0)
+    assert 0 <= math_result["benjamini_hochberg_q_value"] <= 1
+    assert _benjamini_hochberg([0.01, 0.04, 0.03]) == pytest.approx(
+        [0.03, 0.04, 0.04]
+    )
+
+
 def test_gpqa_is_excluded_from_within_problem_correctness_contrasts() -> None:
     rows = [
         {
             "dataset": "gpqa_diamond",
             "source_problem_id": "question",
             "sample_id": sample,
+            "evaluation_metric": "avg@10",
             "is_correct": sample % 2,
             "feature": float(sample),
         }

@@ -23,15 +23,20 @@ interpreted as coarse phase inspection: a provisional pragmatic review gives
 Implement is strongest (F1 0.729), while the remaining labels are incomplete
 external tags.  ProcessBench Verify predictions identify review-heavy
 post-error passages but do not identify correctness.
-\item The correlation run completes 6,627 scored traces from 1,745 problems
-on seven of eight default benchmarks; only MMLU-Pro is unrun.  Correct traces
-are shorter on every dataset ($r=-0.356$ to $-0.690$).  Normalized router
-confidence is positively associated with correctness on six datasets
-($r=0.224$--$0.609$) and null on Minerva.  More importantly, correct attempts
-have higher confidence within the same mixed-outcome AIME 2024, AIME 2025,
-and AMC 2023 problems, with all three problem-bootstrap intervals excluding
-zero.  Those correct attempts are also 362--636 tokens shorter on average, so
-confidence has not yet been shown to add information beyond length.
+\item The September 10 vLLM correlation analysis completes 4,647 attempts
+from 1,547 problems on six math benchmarks. All-attempt accuracy is
+$3,588/4,647=0.772$, with 371 unparseable answers counted as incorrect.
+Confidence has positive correctness associations with pointwise intervals
+excluding zero on MATH-500, both AIME sets, and OlympiadBench; AMC and
+Minerva remain uncertain. The 394 token-limit hits account for 393 of 1,059
+errors. Among non-limit traces, confidence remains moderately positive on
+AIME ($0.233$ and $0.207$), is near zero on MATH-500, OlympiadBench, and
+Minerva, and is negative on AMC ($-0.352$). Complete-problem confidence
+associations survive BH adjustment on both AIME datasets but not AMC.
+Correct attempts within mixed-outcome problems have higher confidence yet
+are 8,251--16,563 tokens shorter. New fixed-position views show early negative
+and later positive confidence coefficients on AIME and AMC, while coverage
+shrinks. Expert-rate maxima remain exploratory pooled-ID candidates.
 \end{enumerate}
 
 \subsection{What has not been established}
@@ -55,14 +60,19 @@ benchmark episode ground truth.  Agreement with the provisional hybrid review
 is diagnostic and should not be called validated transfer accuracy.
 
 The correlation results do not establish a dataset-invariant routing
-predictor or a causal mechanism.  No length-conditioned or dataset-adjusted
-model has been fit.  The repeated-attempt comparisons control question
-identity but not length or token content, GPQA within-problem contrasts are
-excluded because answer positions are permuted, and MMLU-Pro is unrun.  Raw
-pooled coefficients mix datasets with different accuracy, trace length, and
-routing baselines, and layerwise maxima are exploratory comparisons without
-selection-adjusted uncertainty.  Across all three workflows, correlation and
-linear decodability should not be read as causal evidence.
+predictor or a causal mechanism. No length-conditioned or dataset-adjusted
+model has been fit, and the 32,768-token budget censors 8.5\% of traces.
+Repeated-attempt comparisons control question identity but not length,
+termination, or token content. The current run excludes GPQA-Diamond and
+MMLU-Pro. Raw pooled coefficients mix datasets with different accuracy,
+length, and routing baselines. Non-limit sensitivity checks select on
+termination; late-position views select on reaching the window. Neither is
+an unbiased correction for these confounds. The untagged views contain no
+Schoenfeld class evidence. Layerwise and expert maxima are selected on the
+analyzed data, and numeric expert IDs are pooled across distinct layer-local
+modules. Family-specific BH adjustment does not supply held-out validation
+or correct selection across position views. Across all three workflows,
+correlation and linear decodability should not be read as causal evidence.
 
 \section{Discussion}
 
@@ -107,16 +117,25 @@ transfer-accuracy claim.  Cross-model recognition, as studied here, should
 also be separated from Qwen's own generation by running the protocol on
 Qwen-generated traces.
 
-The seven-benchmark correlation run strengthens the router-confidence result
-without making it universal.  The positive marginal association appears in
-six datasets and survives within-question comparison on AIME 2024, AIME 2025,
-and AMC 2023.  Minerva remains null, and its margin and expert-transition
-directions differ from several other benchmarks.  The even more consistent
-finding is that correct responses are shorter, including within the repeated
-problems.  Pooled coefficients and lexical-event correlations remain liable
-to dataset and trace-style confounding.  The next defensible analysis should
-condition confidence on length and token composition, include dataset effects,
-and retain problem-cluster uncertainty.
+The new replay narrows the correlation interpretation. Negative length
+associations recur across all six datasets, but supported positive confidence
+associations occur in four, and the non-limit check leaves moderate positive
+coefficients only on AIME. AMC has a negative non-limit confidence coefficient,
+a positive within-question difference, and an uncertain negative
+problem-level coefficient. These results concern different populations and
+aggregation levels. Fixed-position windows further reveal early negative
+and later positive coefficients while progressively excluding shorter traces.
+A whole-trace confidence mean therefore cannot be interpreted as a uniform
+signal throughout reasoning.
+
+The next analysis should prespecify treatment of budget failures, jointly
+examine length, termination, token composition, and dataset, compare windows
+on common cohorts, and validate selected predictors on held-out problems.
+Simply discarding limited traces or comparing late windows to early windows
+with different membership does not resolve selection bias. Layer-qualified
+expert rates are needed before the pooled-ID screen can motivate a particular
+expert intervention. GPQA-Diamond and MMLU-Pro require separate execution
+under the current generation/replay configuration to extend coverage.
 
 \section{Conclusion}
 
@@ -127,13 +146,17 @@ neither run has been tested on an untouched response set.  The boundary probes r
 linear access to upcoming episode labels, especially for Implement, Verify,
 and Read, but their sentence split leaks every response across train and test
 and their external outputs collapse toward a coarse setup, execution, and
-review taxonomy.  The seven-benchmark correlation study finds a robust
-association with shorter correct traces and a positive router-confidence
-association on six datasets and within three repeated-problem designs.
-Minerva, heterogeneous transition metrics, and co-occurring length effects
-prevent a dataset-invariant, independent, or causal routing claim.
+review taxonomy. The six-benchmark correlation study supports AIME
+confidence/margin associations at both trace and problem levels, but the
+results vary with benchmark, termination, aggregation, and token position.
+Token-limit failures remain substantial, and later position windows select
+longer traces. Expanded metric-pair, expert-rate, and reasoning-view screens
+provide hypotheses for controlled evaluation without establishing an
+independent or causal routing mechanism.
 
 The immediate evidential requirements are a frozen-prompt GEPA evaluation on
 unseen responses, response-grouped nested boundary probes with independently
-validated external labels, completion of MMLU-Pro, and a length-conditioned
-dataset-aware analysis of the repeated-attempt routing result.
+validated external labels, a prespecified response to remaining generation
+censoring, extension of the current run to GPQA-Diamond and MMLU-Pro, and
+length-/termination-aware and common-cohort position analyses with
+problem-respecting validation before routing interventions are evaluated.

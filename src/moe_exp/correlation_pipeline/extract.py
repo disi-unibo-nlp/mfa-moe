@@ -56,7 +56,8 @@ def load_probe_layers(path: Path, num_router_layers: int) -> tuple[list[int], li
     if not compatible:
         raise ValueError(
             f"None of the probe-selected indices {requested} match router layers "
-            f"0..{num_router_layers - 1}"
+            f"0..{num_router_layers - 1}. Use --all-router-layers to explicitly "
+            "override the fixed selection."
         )
     return compatible, excluded
 
@@ -88,6 +89,14 @@ def _storage_summary(output_path: Path) -> tuple[int, dict[str, int]]:
 
 
 def extract_all(args: argparse.Namespace) -> list[dict[str, Any]]:
+    from moe_exp.correlation_pipeline.spans import SPAN_SCHEMA_VERSION
+    from moe_exp.correlation_pipeline.views import compute_views, position_reference
+
+    modes = getattr(args, "views", None)
+    if modes and "class" in modes and getattr(args, "annotation_dir", None) is None:
+        raise ValueError("--views class requires --annotation-dir")
+    if getattr(args, "position_bins", 10) < 1:
+        raise ValueError("--position-bins must be positive")
     generation_root = args.generation_dir / _model_slug(args.generation_model)
     output_root = args.output_dir / _model_slug(args.model_id)
     inputs: list[tuple[str, Path, Path]] = []
@@ -124,16 +133,40 @@ def extract_all(args: argparse.Namespace) -> list[dict[str, Any]]:
         num_router_layers = getattr(model.config, "num_hidden_layers", None)
     if num_router_layers is None:
         raise ValueError("Could not determine the forward model's number of layers")
-    layer_indices, excluded_probe_indices = load_probe_layers(
-        args.probe_results, int(num_router_layers)
-    )
-    logger.info("Retaining probe-selected router-compatible layers: %s", layer_indices)
+    from moe_exp.models.router_adapters import available_router_layers
+    available = available_router_layers(model)
+    if getattr(args, "all_router_layers", False):
+        layer_indices = available if available is not None else list(range(int(num_router_layers)))
+        excluded_probe_indices = []
+    else:
+        layer_indices, excluded_probe_indices = load_probe_layers(
+            args.probe_results, int(num_router_layers)
+        )
+        if available is not None:
+            excluded_probe_indices += [index for index in layer_indices if index not in available]
+            layer_indices = [index for index in layer_indices if index in available]
+    if not layer_indices:
+        raise ValueError(
+            "None of the unchanged probe indices has a router in this model. "
+            f"Available decoder router layers: {available}. "
+            "Use --all-router-layers to explicitly override the fixed selection."
+        )
+    logger.info("Retaining decoder router layers: %s", layer_indices)
     if excluded_probe_indices:
         logger.warning(
             "Excluding probe hidden-state indices without a corresponding router layer: %s",
             excluded_probe_indices,
         )
     summaries: list[dict[str, Any]] = []
+    reference = None
+    if modes and "position" in modes:
+        logger.info("Computing fixed model-corpus position reference from all supplied generations")
+        reference = position_reference([item[1] for item in inputs], tokenizer, args.model_id, args.position_bins)
+        _write_json_atomic(reference, output_root / "position_reference.json")
+
+    def reduce_views(trace, router, hidden, experts, layers):
+        return compute_views(trace, tokenizer, router, hidden, experts, layers, modes=modes,
+                             reference=reference, max_geometry_tokens=args.max_geometry_tokens)
 
     def reduce_features(
         router_logits: torch.Tensor,
@@ -154,6 +187,22 @@ def extract_all(args: argparse.Namespace) -> list[dict[str, Any]]:
     try:
         for dataset, input_path, output_path in inputs:
             logger.info("Extracting %s", dataset)
+            view_kwargs = {}
+            if modes:
+                annotations = None
+                if "class" in modes:
+                    annotation_path = args.annotation_dir / _model_slug(args.generation_model) / dataset / "annotations.jsonl"
+                    annotations = {}
+                    for annotation in iter_jsonl(annotation_path):
+                        if annotation["problem_id"] in annotations:
+                            raise ValueError(f"Duplicate annotation in {annotation_path}")
+                        if annotation.get("status") != "complete":
+                            raise ValueError(f"Incomplete annotation in {annotation_path}")
+                        annotations[annotation["problem_id"]] = annotation
+                view_kwargs = {"view_reducer": reduce_views,
+                               "view_config": {"schema_version": SPAN_SCHEMA_VERSION,
+                                               "modes": sorted(modes), "position_reference": reference},
+                               "trace_annotations": annotations}
             process_file(
                 input_path=input_path,
                 model_id=args.model_id,
@@ -171,6 +220,7 @@ def extract_all(args: argparse.Namespace) -> list[dict[str, Any]]:
                 feature_schema_version=FEATURE_SCHEMA_VERSION,
                 feature_config={"max_geometry_tokens": args.max_geometry_tokens},
                 save_raw_tensors=args.save_raw_tensors,
+                **view_kwargs,
             )
             if not output_path.is_file() or output_path.stat().st_size == 0:
                 raise RuntimeError(f"Forward extraction produced no output for {dataset}")
@@ -200,10 +250,13 @@ def extract_all(args: argparse.Namespace) -> list[dict[str, Any]]:
         "feature_schema_version": FEATURE_SCHEMA_VERSION,
         "max_geometry_tokens": args.max_geometry_tokens,
         "raw_tensors_saved": args.save_raw_tensors,
-        "probe_results": args.probe_results.as_posix(),
+        "probe_results": None if getattr(args, "all_router_layers", False) else args.probe_results.as_posix(),
+        "layer_selection": "all_router_layers" if getattr(args, "all_router_layers", False) else "fixed_probe_indices",
         "layer_indices": layer_indices,
         "excluded_probe_indices": excluded_probe_indices,
         "expert_weights_saved": False,
+        "reasoning_views": modes,
+        "position_reference": reference,
         "datasets": summaries,
     }
     _write_json_atomic(summary, output_root / "summary.json")
@@ -212,12 +265,12 @@ def extract_all(args: argparse.Namespace) -> list[dict[str, Any]]:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Teacher-force llama.cpp traces through a Hugging Face MoE checkpoint"
+        description="Teacher-force saved generations through the matching Hugging Face MoE checkpoint"
     )
     parser.add_argument(
         "--model-id",
         default=DEFAULT_FORWARD_MODEL,
-        help="Hugging Face target checkpoint matching the GGUF",
+        help="Hugging Face target checkpoint matching the generation manifest",
     )
     parser.add_argument("--generation-model", default=DEFAULT_GENERATION_MODEL)
     parser.add_argument("--datasets", nargs="+", choices=tuple(BENCHMARKS), default=DEFAULT_BENCHMARKS)
@@ -232,6 +285,10 @@ def build_parser() -> argparse.ArgumentParser:
         default=Path("results/correlation_pipeline/forward"),
     )
     parser.add_argument("--limit", type=int, default=None, help="Limit traces per dataset")
+    parser.add_argument("--views", nargs="+", choices=("full", "class", "position"), default=None,
+                        help="Opt in to versioned reasoning-span views; legacy features are retained")
+    parser.add_argument("--annotation-dir", type=Path, default=None)
+    parser.add_argument("--position-bins", type=int, default=10)
     parser.add_argument("--top-k", type=int, default=None)
     parser.add_argument(
         "--quantization",
@@ -257,6 +314,8 @@ def build_parser() -> argparse.ArgumentParser:
         default=DEFAULT_PROBE_RESULTS,
         help="Probe results.json used to retain the union of best_by_target layers",
     )
+    parser.add_argument("--all-router-layers", action="store_true",
+                        help="Explicitly use every router layer instead of the fixed probe indices")
     parser.add_argument(
         "--router-only",
         action="store_true",

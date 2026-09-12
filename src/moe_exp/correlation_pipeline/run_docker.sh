@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # Run correlation stages inside the project Python 3.11 image. Generation uses
-# host networking to reach the separately running llama.cpp server on port 8080.
+# host networking to reach the separately running vLLM server on port 41800.
 
 PHYS_DIR="${PHYS_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")/../../.." && pwd)}"
 HF_CACHE_DIR="${HF_CACHE_DIR:-/llms}"
@@ -17,15 +17,24 @@ CUDA_VISIBLE_DEVICES="${CUDA_VISIBLE_DEVICES:-0}"
 DRY_RUN="${DRY_RUN:-false}"
 
 if [[ $# -lt 1 ]]; then
-    echo "Usage: $0 <generate|forward|analyze> [stage arguments...]" >&2
+    echo "Usage: $0 <generate|sample|annotate|forward|analyze|test> [stage arguments...]" >&2
     exit 2
 fi
 
 STAGE="$1"
 shift
 case "$STAGE" in
+    sample)
+        MODULE="moe_exp.correlation_pipeline.sample_tagging"
+        ;;
     generate)
         MODULE="moe_exp.correlation_pipeline.generate"
+        ;;
+    annotate)
+        MODULE="moe_exp.correlation_pipeline.annotate"
+        ;;
+    test)
+        MODULE="pytest"
         ;;
     forward)
         MODULE="moe_exp.correlation_pipeline.extract"
@@ -34,7 +43,7 @@ case "$STAGE" in
         MODULE="moe_exp.correlation_pipeline.analyze"
         ;;
     *)
-        echo "Unknown stage: $STAGE (choose generate, forward, or analyze)" >&2
+        echo "Unknown stage: $STAGE (choose generate, sample, annotate, forward, analyze, or test)" >&2
         exit 2
         ;;
 esac
@@ -53,7 +62,14 @@ if ! docker run --rm "$IMAGE_NAME" python -c "import math_verify" >/dev/null 2>&
     echo "Rebuild it from the repository root: docker build -t $IMAGE_NAME ." >&2
     exit 1
 fi
-if [[ "$STAGE" == "forward" ]] && ! docker run --rm "$IMAGE_NAME" python -c \
+FORWARD_QUANTIZATION="unsloth-4bit"
+STAGE_ARGUMENTS=("$@")
+for (( argument_index=0; argument_index<${#STAGE_ARGUMENTS[@]}; argument_index++ )); do
+    if [[ "${STAGE_ARGUMENTS[argument_index]}" == --quantization ]]; then
+        FORWARD_QUANTIZATION="${STAGE_ARGUMENTS[argument_index+1]:-}"
+    fi
+done
+if [[ "$STAGE" == "forward" && "$FORWARD_QUANTIZATION" == unsloth-4bit ]] && ! docker run --rm "$IMAGE_NAME" python -c \
     "import importlib.util; assert importlib.util.find_spec('unsloth')" >/dev/null 2>&1; then
     echo "Docker image $IMAGE_NAME does not contain the Unsloth forward backend." >&2
     echo "Rebuild it from the repository root: docker build -t $IMAGE_NAME ." >&2
@@ -107,15 +123,18 @@ if [[ -n "${HF_TOKEN:-}" ]]; then
 fi
 
 case "$STAGE" in
-    generate)
-        # The OpenAI-compatible llama.cpp endpoint listens on host localhost.
+    generate|annotate)
+        # The OpenAI-compatible vLLM endpoint listens on host localhost.
         DOCKER_ARGS+=(--network host)
         ;;
     forward)
-        DOCKER_ARGS+=(--gpus "device=$CUDA_VISIBLE_DEVICES" --ipc=host)
+        DOCKER_ARGS+=(--gpus "\"device=$CUDA_VISIBLE_DEVICES\"" --ipc=host)
         if [[ -z "${SLURM_JOB_ID:-}" ]]; then
             DOCKER_ARGS+=(--memory=64g)
         fi
+        ;;
+    test)
+        DOCKER_ARGS+=(--network none -e OMP_NUM_THREADS=2 -e MKL_NUM_THREADS=2)
         ;;
 esac
 

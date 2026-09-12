@@ -2,6 +2,7 @@
 
 \usepackage{amsmath}
 \usepackage{booktabs}
+\usepackage{longtable}
 \usepackage{graphicx}
 \usepackage{xcolor}
 \setlength{\emergencystretch}{2em}
@@ -44,11 +45,13 @@ The agreed order of work is:
 \begin{enumerate}
 \item freeze and archive the seed prompt retained by the completed final GEPA
 alignment, and reserve the locked test for a prespecified evaluation;
-\item run the remaining MMLU-Pro generation, replay, and analysis stages;
-\item fit a prespecified length-conditioned, dataset-aware correctness model
-that respects problem clusters and keeps layerwise screening exploratory;
-\item test whether the repeated-attempt router-confidence contrast survives
-controls for length and token composition; and
+\item prespecify a response to the remaining token-limit failures and extend
+the current vLLM run to GPQA-Diamond and MMLU-Pro;
+\item fit a prespecified length-/termination-aware, dataset-aware correctness
+model with problem-respecting validation and exploratory layerwise screening;
+\item test repeated-attempt and position-window confidence contrasts under
+length, termination, token-composition, and common-cohort controls, and qualify
+pooled expert-ID candidates by layer; and
 \item expand to additional MoE families only after the pilot pipeline and disk
 budget are stable.
 \end{enumerate}
@@ -56,6 +59,9 @@ The detailed acceptance criteria and transcript ambiguities are maintained in
 \texttt{NEXT\_STEPS.md} at the repository root.
 
 \input{reproducibility}
+
+\clearpage
+\input{correlation_tables}
 
 \clearpage
 \bibliographystyle{plain}

@@ -32,17 +32,59 @@ indices; selected-layer AUROC is 0.835--0.934.  A provisional hybrid review of
 187 multi-label and 37 low-confidence units; Explore is never predicted.
 Grouped cross-validation, robust segmentation, multiclass calibration, and
 independent human adjudication remain pending. \\
-\texttt{correlation\_pipeline} & Seven benchmarks complete; MMLU-Pro pending &
-Generation, replay, and analysis cover 6,627 scored traces from 1,745 problems
-on MATH-500, AIME 2024/2025, OlympiadBench, AMC 2023, Minerva Math, and
-GPQA-Diamond.  Correct traces are shorter on all seven datasets.  Router
-confidence correlates positively with correctness on six and is null on
-Minerva; it is also higher within mixed-outcome AIME and AMC problems, but
-those correct traces are hundreds of tokens shorter.  Generation uses the
-\texttt{UD-Q4\_K\_XL} GGUF and replay uses the matching checkpoint with runtime
-4-bit quantization.  Run MMLU-Pro and test the confidence effect after
-conditioning on length and benchmark.
+\texttt{correlation\_pipeline} & Six math benchmarks and requested views complete &
+The September 10 vLLM untagged run covers 4,647 attempts from 1,547 problems,
+with all-attempt accuracy 0.772. There are 394 token-limit hits, including
+393 of 1,059 errors. Confidence is positively associated with correctness
+with intervals excluding zero on four datasets; AMC and Minerva are uncertain.
+Non-limit confidence is moderately positive on AIME and negative on AMC.
+Problem-level AIME confidence survives BH adjustment. Full-reasoning and ten
+fixed-position windows plus overflow are complete, with strong sample
+attrition in later windows; no class views were run. Generation uses GPTQ-Int4
+in vLLM and replay uses runtime 4-bit quantization. Validate length,
+termination, and position effects on held-out problems, qualify expert IDs
+by layer, and extend this run to GPQA-Diamond and MMLU-Pro.
 \\
 \bottomrule
 \end{tabular}
 \end{table*}
+
+\subsection{Correlation snapshot and independent checks}
+
+The current numerical source is
+\path{results/correlation_pipeline/reasoning-vllm-untagged-v1/analysis/unsloth--Qwen3.5-35B-A3B/correlations.json},
+written September 10, 2026. Companion CSVs contain trace, problem, and expert
+features. The \texttt{views-v1} subdirectory contains full reasoning, ten
+position bins, overflow, and their coverage and correlation outputs. The
+forward-stage \texttt{summary.json} records extraction and storage metadata.
+The primary analysis JSON SHA-256 is\par\noindent
+\path{a1b575098cc48774b6628ffea388c1868f3c82ee19ab98e505214124348d60cc}.
+The saved configuration uses 500 bootstrap samples, seed 42, minimum expert
+support of four traces, and a cap of 128 ordered pairs. The position reference
+uses all 4,647 traces and has corpus SHA-256\par\noindent
+\path{78c133703974adfd5ff804941569c7d95c53128d69b2fdc29bb36b0695f1e133}.
+Results are reported at saved precision before table rounding.
+
+\path{report/audit_correlation_run.py} independently matches all generation
+and replay texts to their analysis fingerprints, verifies layer selection,
+feature values, stored outcomes, and the common completion budget, and
+recomputes binary and mean-feature problem-level Spearman coefficients from
+the CSV. It also recomputes the trace metric-pair screen and the three
+reported expert-rate maxima, and verifies outcome alignment across views.
+It checks binary coefficients in all 12 reasoning/position views
+against their finite trace observations and computes the explicitly post-hoc
+non-limit sensitivity table and storage totals. The primary binary and
+problem-level maximum absolute discrepancies are below $1.6\times10^{-13}$
+and $1.2\times10^{-16}$, respectively; every view's binary discrepancy is
+below $1.4\times10^{-13}$. This verifies propagation of saved correctness,
+not an independent mathematical rejudging of answers.
+
+The audit is read-only and defaults to this run. From the repository root in
+the project Python environment, execute
+\texttt{python report/audit\_correlation\_run.py}; an alternative snapshot can
+be selected with \texttt{--run-dir}. Bootstrap intervals and BH values in
+the primary tables are taken from the saved analysis, not refit after
+inspecting results. The report update does not regenerate traces, change
+scores, or overwrite experiment artifacts. The earlier GGUF snapshot remains
+under \path{results/correlation_pipeline/analysis} and is not mixed into
+these results.

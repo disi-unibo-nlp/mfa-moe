@@ -7,6 +7,7 @@ import logging
 import os
 import re
 from concurrent.futures import ThreadPoolExecutor
+from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
@@ -27,11 +28,20 @@ from moe_exp.correlation_pipeline.defaults import (
     DEFAULT_MTP_MODEL,
 )
 from moe_exp.correlation_pipeline.scoring import score_completion
+from moe_exp.correlation_pipeline.model_profiles import model_profile
 from moe_exp.schemas import TraceRecord
+from moe_exp.models.token_replay import TOKEN_REPLAY_VERSION, make_token_replay
 from moe_exp.utils import write_jsonl
 
 logger = logging.getLogger(__name__)
 _SAFE_FILENAME = re.compile(r"[^A-Za-z0-9_.-]+")
+_SCORING_CONTRACT_VERSION = 2
+
+
+@lru_cache(maxsize=8)
+def _replay_tokenizer(model: str):
+    from transformers import AutoTokenizer
+    return AutoTokenizer.from_pretrained(model)
 
 
 def _model_slug(model: str) -> str:
@@ -52,6 +62,20 @@ def _write_json_atomic(payload: dict[str, Any], path: Path) -> None:
         handle.flush()
         os.fsync(handle.fileno())
     os.replace(temporary, path)
+
+
+def _scoring_text(completion: Any) -> tuple[str, str]:
+    """Return the model's submitted answer rather than private reasoning.
+
+    Reasoning-capable llama.cpp models expose private reasoning and the final
+    answer in separate fields.  Scoring their concatenation can turn an
+    intermediate answer in a length-truncated reasoning trace into a nominally
+    correct final response.  Models without a separate reasoning field retain
+    the legacy behavior because their content is the complete response.
+    """
+    if completion.reasoning_content:
+        return completion.content, "assistant_content"
+    return completion.text, "combined_assistant_text"
 
 
 def _load_reusable_shard(
@@ -108,7 +132,16 @@ def _generate_trace(
         "top_p": args.top_p,
         "top_k": args.top_k,
         "seed": sample_seed,
+        "scoring_contract_version": _SCORING_CONTRACT_VERSION,
     }
+    save_token_ids = getattr(args, "save_token_ids", False)
+    template_kwargs = (
+        {"enable_thinking": True} if model_profile(args.model).family == "gemma4" else {}
+    )
+    if template_kwargs:
+        generation_config["chat_template_kwargs"] = template_kwargs
+    if save_token_ids:
+        generation_config["token_replay_version"] = TOKEN_REPLAY_VERSION
     generation_sha256 = _digest(generation_config)
     reusable = _load_reusable_shard(
         shard_path,
@@ -130,13 +163,22 @@ def _generate_trace(
         seed=sample_seed,
         timeout=args.timeout,
         max_retries=args.max_retries,
+        **({"return_token_ids": True} if save_token_ids else {}),
+        **({"chat_template_kwargs": template_kwargs} if template_kwargs else {}),
     )
+    cot_text = completion.text
+    replay = None
+    if save_token_ids:
+        cot_text, replay = make_token_replay(
+            _replay_tokenizer(args.model), completion.prompt_token_ids, completion.token_ids,
+        )
+    scoring_text, scoring_input = _scoring_text(completion)
     model_answer, is_correct, scoring_method = score_completion(
         example,
         answer_type=spec.answer_type,
-        model_text=completion.text,
+        model_text=scoring_text,
     )
-    steps = split_steps(completion.text)
+    steps = split_steps(cot_text)
     source_problem_id = str(example["problem_id"])
     problem_id = f"{source_problem_id}__sample_{sample_id:02d}"
     source_metadata = dict(example.get("metadata") or {})
@@ -155,8 +197,12 @@ def _generate_trace(
             "usage": completion.usage,
             "assistant_content": completion.content,
             "reasoning_content": completion.reasoning_content,
+            "scoring_contract_version": _SCORING_CONTRACT_VERSION,
+            "scoring_input": scoring_input,
         }
     )
+    if replay is not None:
+        source_metadata["token_replay"] = replay
     if example.get("first_error_step") is not None:
         source_metadata["reference_first_error_step"] = example["first_error_step"]
     if example.get("solution_is_correct") is not None:
@@ -173,9 +219,9 @@ def _generate_trace(
         model_id=args.model,
         model_answer=model_answer,
         is_correct=is_correct,
-        cot_text=completion.text,
+        cot_text=cot_text,
         steps=steps,
-        step_labels=classify_trace(steps, completion.text),
+        step_labels=classify_trace(steps, cot_text),
         scoring_method=scoring_method,
         metadata=source_metadata,
         task_type="reasoning",
@@ -210,6 +256,8 @@ def generate_dataset(dataset: str, args: argparse.Namespace) -> dict[str, Any]:
     examples = [example for example in spec.loader(args.max_items) if example.get("prompt")]
     if not examples:
         raise RuntimeError(f"Benchmark {dataset!r} produced zero usable examples")
+    if getattr(args, "save_token_ids", False):
+        _replay_tokenizer(args.model)  # Load once before concurrent requests.
     samples_per_problem = args.samples_per_problem or spec.default_samples
     dataset_dir = args.output_dir / _model_slug(args.model) / dataset
     shard_dir = dataset_dir / "generation_shards"
@@ -271,15 +319,17 @@ def generate_dataset(dataset: str, args: argparse.Namespace) -> dict[str, Any]:
 
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(
-        description="Generate correlation-pipeline benchmark traces with llama.cpp"
+        description="Generate correlation-pipeline benchmark traces with an OpenAI-compatible server"
     )
     parser.add_argument("--datasets", nargs="+", choices=tuple(BENCHMARKS), default=DEFAULT_BENCHMARKS)
     parser.add_argument("--output-dir", type=Path, default=Path("results/correlation_pipeline/generation"))
-    parser.add_argument("--base-url", default="http://127.0.0.1:8080/v1")
-    parser.add_argument("--api-key", default="local-llamacpp-key")
+    parser.add_argument("--base-url", default="http://127.0.0.1:41800/v1")
+    parser.add_argument("--api-key", default="local-vllm-key")
     parser.add_argument("--model", default=DEFAULT_GENERATION_MODEL)
     parser.add_argument("--target-model-id", default=DEFAULT_FORWARD_MODEL)
     parser.add_argument("--draft-model-id", default=DEFAULT_MTP_MODEL)
+    parser.add_argument("--save-token-ids", action="store_true",
+                        help="Require vLLM token IDs for exact model-native forward replay")
     parser.add_argument("--max-items", type=int, default=None)
     parser.add_argument(
         "--samples-per-problem",
@@ -287,7 +337,7 @@ def build_parser() -> argparse.ArgumentParser:
         default=None,
         help="Override defaults (AIME24/25 and AMC23 use 32; GPQA-D uses 10; others use 1).",
     )
-    parser.add_argument("--max-tokens", type=int, default=8192)
+    parser.add_argument("--max-tokens", type=int, default=32768)
     parser.add_argument("--temperature", type=float, default=0.6)
     parser.add_argument("--top-p", type=float, default=0.95)
     parser.add_argument("--top-k", type=int, default=0)
@@ -297,7 +347,7 @@ def build_parser() -> argparse.ArgumentParser:
         default=0,
         help="Base sampling seed (SPIRAL uses 0).",
     )
-    parser.add_argument("--workers", type=int, default=1)
+    parser.add_argument("--workers", type=int, default=8)
     parser.add_argument("--timeout", type=int, default=3600)
     parser.add_argument("--max-retries", type=int, default=4)
     return parser

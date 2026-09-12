@@ -1,0 +1,371 @@
+\subsection{Completed vLLM replay and fixed-budget audit}
+\label{sec:qwen-corr-audit}
+
+The September 10, 2026 analysis of
+\texttt{reasoning-vllm-untagged-v1} contains 4,647 attempts from 1,547 source
+problems across six math benchmarks. It supersedes the September 8 numerical
+snapshot in this report. GPQA-Diamond and MMLU-Pro are absent from this run
+and from every total below; GPQA results from the earlier run are not pooled
+into this snapshot. All 4,647 generation texts match their saved replay
+continuations and analysis SHA-256 fingerprints. Every repeated group is
+complete: 30 AIME 2024, 30 AIME 2025, and 40 AMC 2023 problems each have 32
+distinct attempts, with no duplicate sample IDs or exact duplicate generations.
+The other three datasets use one attempt per problem.
+
+Generation uses vLLM serving \texttt{Qwen/Qwen3.5-35B-A3B-GPTQ-Int4}, at
+temperature 0.6 and top-$p$ 0.95 with a 32,768-token completion budget. Saved
+messages and continuations are replayed through
+\texttt{unsloth/Qwen3.5-35B-A3B} with runtime 4-bit quantization. The generation
+and replay checkpoints share the model family but use different quantization
+formats and engines. Replay computes compact features at decoder indices
+27, 34, 35, 36, 38, and 39, selected using the separate \texttt{probeTest} run.
+Hidden features describe block inputs, not the exact post-attention router
+inputs. Router confidence is $1-H(p)/\log 256$, where $p$ is the softmax router
+distribution over all experts. The main analysis tests 83 scalar features;
+entropy is omitted from separate testing because it is an affine transform
+of confidence.
+Aggregate-feature uncertainty uses 500 problem-bootstrap replicates and seed 42.
+The additional views cover full reasoning and absolute token positions; no
+sentence classifier or Schoenfeld class views were used in this untagged run.
+
+\begin{table*}[t]
+\centering
+\footnotesize
+\caption{Coverage and fixed-budget scores for the September 10 run. Accuracy uses all attempts, including unparseable answers as incorrect: pass@1 for single attempts and avg@32 for AIME and AMC. The pooled row is descriptive, not a benchmark macro-average. Lexical columns give trace percentages. \modelmetrics{Qwen3.5-35B-A3B, GPTQ-Int4 generation and runtime-4-bit replay}{problem/trace counts, all-attempt accuracy, limit hits, and lexical-event prevalence}}
+\label{tab:qwen-corr-data}
+\begin{tabular}{@{}lrrrrrrrr@{}}
+\toprule
+Dataset & Problems & Traces & Correct & Accuracy & Limit hits & Backtrack\% & Contradict\% & Self-correct\% \\
+\midrule
+MATH-500 & 500 & 500 & 344 & 0.688 & 20 (4.0\%) & 25.4 & 14.6 & 16.6 \\
+AIME 2024 & 30 & 960 & 820 & 0.854 & 106 (11.0\%) & 72.2 & 49.6 & 58.2 \\
+AIME 2025 & 30 & 960 & 789 & 0.822 & 144 (15.0\%) & 73.6 & 46.6 & 63.6 \\
+OlympiadBench & 675 & 675 & 323 & 0.479 & 94 (13.9\%) & 51.1 & 39.0 & 41.6 \\
+AMC 2023 & 40 & 1,280 & 1,240 & 0.969 & 12 (0.9\%) & 41.9 & 33.8 & 30.1 \\
+Minerva Math & 272 & 272 & 72 & 0.265 & 18 (6.6\%) & 38.6 & 18.4 & 29.8 \\
+\midrule
+Pooled & 1,547 & 4,647 & 3,588 & 0.772 & 394 (8.5\%) & 54.1 & 37.5 & 43.0 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\paragraph{Correctness denominator and comparability.}
+All-attempt accuracy is $3,588/4,647=0.772$. The scoring contract counts 371
+unparseable answers with known gold answers as incorrect. Generation manifests
+instead condition on scored answers: MATH-500 reports $344/480=0.717$, whereas
+its all-attempt score is $344/500=0.688$. Table~\ref{tab:qwen-corr-data} uses
+the latter denominator throughout. The independent audit verifies the stored
+outcomes and their propagation; it does not independently rejudge mathematical
+answers. Differences from the earlier GGUF run cannot be attributed to the
+serving engine alone: the generated samples, quantization, and benchmark
+composition differ, and there is no controlled engine comparison here.
+
+\paragraph{Completion and truncation.}
+The analysis and both requested view families are complete, but the budget
+audit remains \texttt{frequent\_limit\_hits}. There are 394 limited attempts
+(8.5\%), including 370 without final assistant content. Limited attempts
+account for 393 of 1,059 errors (37.1\%); the remaining 666 errors occur among
+non-limit traces. Accuracy is $1/394=0.003$ among limited traces and
+$3,587/4,253=0.843$ among non-limit traces. Token-limit failures therefore
+remain a substantial confound, although they no longer constitute most
+errors in the pooled sample. Their contribution differs sharply by benchmark:
+106/140 AIME 2024 errors and 144/171 AIME 2025 errors are limited, compared
+with 20/156 MATH-500 errors and 12/40 AMC errors.
+
+\subsection{Trace-level correctness associations}
+
+Appendix~\ref{sec:complete-correlation-tables} provides the complete aggregate
+reasoning-only correctness table, all aggregate position metrics, and every
+metric pair in the saved trace-level scans for the continuation, full reasoning,
+and position windows. The tables below retain the selected results for discussion.
+
+\begin{table*}[t]
+\centering
+\footnotesize
+\caption{Marginal correctness correlations over the entire saved continuation. Router/hidden quantities are token- and selected-layer means. Bold marks a saved 95\% problem-cluster interval excluding zero; intervals are pointwise and are not length/termination-adjusted effects or multiplicity-adjusted discoveries. \modelmetrics{Qwen3.5-35B-A3B, GPTQ-Int4 generation and runtime-4-bit replay}{point-biserial correctness correlations}}
+\label{tab:qwen-corr-correct}
+\begin{tabular}{@{}lrrrrrr@{}}
+\toprule
+Feature & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule
+Token count & $\mathbf{-0.322}$ & $\mathbf{-0.711}$ & $\mathbf{-0.695}$ & $\mathbf{-0.374}$ & $\mathbf{-0.152}$ & $\mathbf{-0.290}$ \\
+Router confidence & $\mathbf{0.259}$ & $\mathbf{0.523}$ & $\mathbf{0.442}$ & $\mathbf{0.216}$ & $0.055$ & $0.079$ \\
+Top-1/top-2 margin & $\mathbf{0.188}$ & $\mathbf{0.536}$ & $\mathbf{0.424}$ & $\mathbf{0.183}$ & $0.204$ & $0.031$ \\
+Top-8 probability mass & $\mathbf{0.223}$ & $\mathbf{0.203}$ & $\mathbf{0.244}$ & $\mathbf{0.135}$ & $-0.023$ & $0.054$ \\
+Top-8/top-9 margin & $\mathbf{0.152}$ & $0.010$ & $0.117$ & $0.065$ & $-0.111$ & $0.010$ \\
+Hidden-state norm & $\mathbf{0.249}$ & $0.024$ & $-0.060$ & $\mathbf{0.074}$ & $\mathbf{0.463}$ & $0.030$ \\
+Hidden-state step distance & $\mathbf{0.214}$ & $\mathbf{0.385}$ & $\mathbf{0.352}$ & $\mathbf{0.090}$ & $\mathbf{0.479}$ & $0.076$ \\
+Hidden/router geometry & $\mathbf{-0.189}$ & $\mathbf{-0.198}$ & $\mathbf{-0.250}$ & $\mathbf{-0.107}$ & $-0.152$ & $\mathbf{-0.156}$ \\
+Top-1 switch rate & $-0.028$ & $\mathbf{-0.287}$ & $0.169$ & $0.047$ & $-0.063$ & $0.033$ \\
+Adjacent top-8 overlap & $0.049$ & $0.018$ & $-0.234$ & $-0.032$ & $-0.134$ & $-0.056$ \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+Token count is negatively associated with correctness in all six datasets
+($r_{\mathrm{pb}}=-0.152$ to $-0.711$), with all six pointwise cluster intervals
+excluding zero. Confidence and top-1/top-2 margin are positive with intervals
+excluding zero on MATH-500, both AIME sets, and OlympiadBench. Their AMC and
+Minerva intervals include zero. Thus the previous seven-dataset claim of
+uniformly supported positive confidence does not describe this run. Top-8
+mass follows the same four-dataset pattern, whereas the top-8/top-9 boundary
+margin has an interval excluding zero only on MATH-500.
+
+Mean hidden-state step distance is positive in every dataset, with intervals
+excluding zero in five; Minerva remains uncertain. Hidden norm is positive
+with intervals excluding zero on MATH-500, OlympiadBench, and AMC, although
+Olympiad's lower endpoint is only 0.0014. Hidden/router geometry is negative
+with intervals excluding zero in five datasets, with AMC uncertain. Switch
+rates and adjacent top-8 overlap remain heterogeneous: only AIME 2024's
+switch-rate interval excludes zero, and no overlap interval does. These are
+marginal associations, not independently adjusted predictors or evidence that
+changing a hidden-state or routing quantity changes correctness.
+
+\subsection{Sensitivity to token-limit hits}
+\label{sec:qwen-corr-sensitivity}
+
+\begin{table*}[t]
+\centering
+\small
+\caption{Descriptive sensitivity after excluding token-limit hits. Conditioning on termination changes the sample and breaks complete avg@32 groups. No confidence intervals or significance claims are attached to these post-hoc coefficients. \modelmetrics{Qwen3.5-35B-A3B, GPTQ-Int4 generation and runtime-4-bit replay}{retained trace/error counts and post-hoc point-biserial coefficients}}
+\label{tab:qwen-corr-sensitivity}
+\begin{tabular}{@{}lrrrrr@{}}
+\toprule
+Dataset & Non-limit traces & Incorrect & Token count & Confidence & Margin \\
+\midrule
+MATH-500 & 480 & 136 & $-0.150$ & $0.009$ & $-0.131$ \\
+AIME 2024 & 854 & 34 & $-0.351$ & $0.233$ & $0.248$ \\
+AIME 2025 & 816 & 27 & $-0.294$ & $0.207$ & $0.190$ \\
+OlympiadBench & 581 & 258 & $-0.150$ & $-0.012$ & $-0.068$ \\
+AMC 2023 & 1,268 & 28 & $0.107$ & $-0.352$ & $-0.249$ \\
+Minerva Math & 254 & 183 & $-0.321$ & $-0.015$ & $-0.093$ \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+Excluding limited traces leaves moderate positive confidence correlations on
+AIME 2024 ($0.233$) and AIME 2025 ($0.207$), but approximately zero on
+MATH-500 ($0.009$), OlympiadBench ($-0.012$), and Minerva ($-0.015$). AMC
+changes from $+0.055$ in the full sample to $-0.352$ among non-limit traces;
+its margin also changes from $+0.204$ to $-0.250$, while length changes from
+$-0.152$ to $+0.108$. These sign changes are descriptive diagnostics, not
+significance-tested differences between coefficients. Conditioning on
+termination changes the population and can induce selection bias. The check
+is not substituted for all-attempt benchmark scores or complete-group avg@32
+analyses, and it does not establish termination-independent prediction.
+
+\subsection{Problem-level and within-problem analyses}
+
+\begin{table*}[t]
+\centering
+\small
+\caption{Mean feature versus per-problem avg@32. The saved 95\% intervals resample whole problems; BH $q$ is adjusted within each dataset's 83-feature mean-feature family. All 100 repeated groups are complete. \modelmetrics{Qwen3.5-35B-A3B, GPTQ-Int4 generation and runtime-4-bit replay}{problem-level Spearman correlation, bootstrap intervals, and BH adjustment}}
+\label{tab:qwen-corr-problem}
+\begin{tabular}{@{}llrrrr@{}}
+\toprule
+Dataset & Mean feature & Problems & $\rho$ & 95\% CI & $q$ \\
+\midrule
+AIME 2024 & Token count & 30 & $-0.791$ & $[-0.916,-0.587]$ & $1.62\times10^{-5}$ \\
+ & Confidence & 30 & $0.606$ & $[0.314,0.809]$ & $0.009$ \\
+ & Margin & 30 & $0.560$ & $[0.226,0.768]$ & $0.013$ \\
+AIME 2025 & Token count & 30 & $-0.892$ & $[-0.958,-0.776]$ & $3.09\times10^{-9}$ \\
+ & Confidence & 30 & $0.647$ & $[0.390,0.827]$ & $0.002$ \\
+ & Margin & 30 & $0.533$ & $[0.228,0.752]$ & $0.015$ \\
+AMC 2023 & Token count & 40 & $0.041$ & $[-0.263,0.328]$ & $0.940$ \\
+ & Confidence & 40 & $-0.255$ & $[-0.599,0.206]$ & $0.372$ \\
+ & Margin & 40 & $-0.067$ & $[-0.429,0.282]$ & $0.866$ \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+At the problem level, both AIME datasets show negative length and positive
+confidence and margin associations under both the pointwise-interval and
+within-family $q<0.05$ criteria. Confidence gives $\rho=0.606$ on AIME 2024
+($q=0.009$) and $0.647$ on AIME 2025 ($q=0.002$). AMC does not reproduce this
+pattern: confidence is $-0.255$, margin $-0.067$, and length $+0.041$, with all
+three intervals crossing zero. Its near-ceiling accuracy limits the rank
+analysis: 34 of 40 problems have no incorrect attempt. Problem-level
+difficulty associations and attempt-to-attempt variation answer different
+questions and need not have matching signs.
+
+\begin{table*}[t]
+\centering
+\small
+\caption{Mean correct-minus-incorrect difference within mixed-outcome problems. Intervals resample those problems; confidence and margin differences are scaled by $10^3$. No length or termination adjustment is applied. \modelmetrics{Qwen3.5-35B-A3B, GPTQ-Int4 generation and runtime-4-bit replay}{paired feature differences and problem-bootstrap intervals}}
+\label{tab:qwen-corr-within}
+\begin{tabular}{@{}llrrr@{}}
+\toprule
+Dataset & Feature & Mixed problems & Difference & 95\% CI \\
+\midrule
+AIME 2024 & Token count & 12 & $-9,589$ & $[-13,335,-5,654]$ \\
+ & $10^3\!\times$ confidence & 12 & $2.883$ & $[0.749,5.316]$ \\
+ & $10^3\!\times$ margin & 12 & $0.475$ & $[0.097,0.928]$ \\
+AIME 2025 & Token count & 14 & $-8,251$ & $[-11,443,-5,435]$ \\
+ & $10^3\!\times$ confidence & 14 & $2.313$ & $[0.675,5.053]$ \\
+ & $10^3\!\times$ margin & 14 & $0.536$ & $[0.195,1.064]$ \\
+AMC 2023 & Token count & 6 & $-16,563$ & $[-25,460,-8,016]$ \\
+ & $10^3\!\times$ confidence & 6 & $9.799$ & $[4.159,15.323]$ \\
+ & $10^3\!\times$ margin & 6 & $2.103$ & $[0.940,3.198]$ \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+All nine displayed within-problem intervals exclude zero: correct attempts
+are shorter and have higher confidence and margin. These comparisons use
+only 12, 14, and 6 mixed-outcome problems on AIME 2024, AIME 2025, and AMC,
+respectively. Correct attempts are 8,251--16,563 tokens shorter on average.
+Matching question identity therefore leaves major differences in length,
+termination, and token content. AMC illustrates the distinction particularly
+clearly: its positive paired confidence difference coexists with a negative
+non-limit trace coefficient and an uncertain negative problem-level rank
+coefficient. None of these analyses alone identifies a causal routing benefit.
+
+\subsection{Metric-pair and expert-rate screens}
+
+\begin{table*}[t]
+\centering
+\footnotesize
+\caption{Selected metric-pair associations over entire continuations. These are descriptive Spearman coefficients from the 13-feature scan (78 pairs per scope). Dependence among predictors limits interpretations based on several correlated summaries. \modelmetrics{Qwen3.5-35B-A3B, GPTQ-Int4 generation and runtime-4-bit replay}{trace-level feature--feature Spearman correlations}}
+\label{tab:qwen-corr-pairs}
+\begin{tabular}{@{}lrrrrrr@{}}
+\toprule
+Metric pair & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule
+Length / confidence & $-0.707$ & $-0.668$ & $-0.824$ & $-0.868$ & $-0.849$ & $-0.303$ \\
+Confidence / margin & $0.629$ & $0.688$ & $0.805$ & $0.801$ & $0.641$ & $0.633$ \\
+Top-8 mass / mean gap & $1.000$ & $1.000$ & $1.000$ & $1.000$ & $1.000$ & $1.000$ \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+Confidence and token count have negative Spearman associations in every
+dataset ($\rho=-0.303$ to $-0.868$). These summaries cannot be treated as
+independent evidence. Top-8 mass and the top-$k$/non-top-$k$ mean probability
+gap have effectively unit rank correlation. For selected mass $S$, $k=8$,
+and $E=256$, this dependence is algebraic:
+\begin{equation}
+ G=\frac{S}{k}-\frac{1-S}{E-k}
+   =\frac{E}{k(E-k)}S-\frac{1}{E-k}.
+\end{equation}
+The relation is preserved by token/layer averaging, so both quantities should
+not be included together in an unregularized model or counted as independent
+corroboration. The main metric-pair scan covers 13 aggregate features and 78
+pairs per scope, with separate trace and complete-repeated-problem tables.
+
+The expert-rate screen covers all 256 numeric expert IDs and retains 128 of
+65,234 eligible ordered top-1/top-2 pairs. Selection uses routing support
+alone, requiring at least four traces. There are 640 features: 256 top-1
+rates, 256 any-top-8 rates, and 128 ordered-pair rates.
+
+\begin{table*}[t]
+\centering
+\small
+\caption{Post-hoc largest absolute problem-level coefficient per dataset in the 640-feature expert-rate screen. BH adjusts over 640 features per dataset. Pairs describe top-1/top-2 IDs in the same routing decision, not temporal transitions. Rates pool six layers; numeric IDs do not identify individual layer-specific modules. No bootstrap intervals or held-out selection validation are available. \modelmetrics{Qwen3.5-35B-A3B, GPTQ-Int4 generation and runtime-4-bit replay}{problem-level expert-rate Spearman maxima and within-dataset BH adjustment}}
+\label{tab:qwen-corr-experts}
+\begin{tabular}{@{}llrrr@{}}
+\toprule
+Dataset & Pooled-ID rate & Problems & $\rho$ & $q$ \\
+\midrule
+AIME 2024 & Top-1 204 / top-2 242 & 30 & $0.766$ & $5.10\times10^{-4}$ \\
+AIME 2025 & Top-1 200 / top-2 58 & 30 & $0.812$ & $3.38\times10^{-5}$ \\
+AMC 2023 & ID 242 in top-8 & 40 & $-0.551$ & $0.086$ \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+The strongest AIME problem-level candidates survive their dataset's BH
+adjustment, but AMC's largest absolute coefficient does not ($q=0.086$).
+The 200/58 pair has $\rho=0.723$ on AIME 2024 and $0.812$ on AIME 2025,
+but $-0.347$ on AMC ($q=0.207$). Rates pool decisions across the six
+selected layers, where the same numeric ID refers to different parameterized
+experts. The screen therefore does not identify a portable individual expert
+or a validated intervention target. Layer-qualified $(\ell,e)$ rates,
+length/termination controls, independent selection and evaluation, and actual
+interventions are needed before assigning functional roles. Trace-level
+expert $p$- and $q$-values do not repair repeated-attempt dependence.
+
+\subsection{Full-reasoning and position views}
+\label{sec:qwen-corr-views}
+
+The new views isolate saved reasoning content from the final answer and then
+partition reasoning tokens into fixed absolute-position windows. Their shared
+reference is the mean of all 4,647 traces: 12,477.026 reasoning tokens. Window
+boundaries are $\lceil i\,12{,}477.026/10\rceil$ for $i=0,\ldots,10$;
+the first covers zero-based offsets $[0,1{,}248)$, and overflow starts at
+12,478. These windows are disjoint, not cumulative prefixes or per-trace
+relative deciles. Every original attempt and its correctness are retained;
+an unreached window has missing routing features rather than zero values.
+Position-token count is excluded from the correlation predictors. No
+Schoenfeld episode labels or class-specific findings are available.
+
+\begin{table*}[t]
+\centering
+\footnotesize
+\caption{Confidence versus whole-attempt correctness in full reasoning and fixed absolute-position windows. Cells give $r_{\mathrm{pb}}$ (finite traces). Ten disjoint windows divide the corpus mean of 12,477.026 reasoning tokens; overflow starts at token offset 12,478. These are not per-trace relative deciles. Late-window samples contain only traces reaching those positions; cross-window sign changes are exploratory and not adjusted temporal effects. \modelmetrics{Qwen3.5-35B-A3B, GPTQ-Int4 generation and runtime-4-bit replay}{position-specific confidence--correctness point-biserial correlations and finite trace counts}}
+\label{tab:qwen-corr-views}
+\begin{tabular}{@{}lrrrrrr@{}}
+\toprule
+View & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule
+Full reasoning & $0.255$ (500) & $0.518$ (960) & $0.435$ (960) & $0.208$ (675) & $0.044$ (1,280) & $0.112$ (272) \\
+Bin 0 & $-0.030$ (500) & $-0.153$ (960) & $-0.209$ (960) & $0.043$ (675) & $-0.361$ (1,280) & $-0.020$ (272) \\
+Bin 1 & $-0.050$ (429) & $-0.148$ (960) & $-0.093$ (960) & $0.070$ (668) & $-0.421$ (1,269) & $0.070$ (269) \\
+Bin 2 & $-0.157$ (347) & $-0.033$ (960) & $0.067$ (960) & $0.023$ (634) & $-0.423$ (1,172) & $0.108$ (254) \\
+Bin 3 & $-0.118$ (268) & $0.072$ (956) & $0.113$ (942) & $0.024$ (564) & $-0.391$ (1,038) & $-0.004$ (234) \\
+Bin 4 & $0.020$ (204) & $0.137$ (927) & $0.150$ (900) & $-0.016$ (494) & $-0.190$ (876) & $-0.066$ (202) \\
+Bin 5 & $0.122$ (171) & $0.183$ (859) & $0.149$ (847) & $0.017$ (427) & $0.081$ (767) & $0.011$ (162) \\
+Bin 6 & $0.246$ (139) & $0.184$ (816) & $0.122$ (803) & $-0.003$ (384) & $0.363$ (684) & $0.075$ (133) \\
+Bin 7 & $0.385$ (106) & $0.206$ (748) & $0.118$ (752) & $0.093$ (342) & $0.454$ (559) & $0.077$ (102) \\
+Bin 8 & $0.467$ (83) & $0.218$ (679) & $0.157$ (724) & $0.121$ (314) & $0.589$ (436) & $0.093$ (83) \\
+Bin 9 & $0.392$ (65) & $0.265$ (605) & $0.185$ (701) & $0.152$ (291) & $0.724$ (317) & $0.137$ (70) \\
+Overflow & $0.539$ (54) & $0.474$ (540) & $0.376$ (664) & $0.195$ (270) & $0.830$ (238) & $0.237$ (59) \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+Full-reasoning confidence coefficients remain close to the entire-continuation
+coefficients, but the fixed-window pattern differs substantially. In the first
+window, confidence is negative on AIME 2024 ($-0.153$), AIME 2025 ($-0.209$),
+and AMC ($-0.361$), despite positive full-reasoning point estimates. AIME
+coefficients turn positive in later windows; AMC reaches $0.724$ in bin 9
+and $0.830$ in overflow. These observations show that a whole-trace mean
+hides strong position and sample-composition differences. They do not show
+that confidence becomes causally beneficial later in reasoning.
+
+Coverage falls from 4,647 traces in bin 0 to 2,049 in bin 9 and 1,825 in
+overflow. AMC, for example, falls from 1,280 to 317 and 238; MATH-500 falls
+from 500 to 65 and 54. Late estimates condition on reaching those positions,
+and the full-budget termination confound remains. Cross-view comparisons are
+exploratory; neither the per-view BH families nor the saved pointwise
+bootstrap intervals adjust for selecting a sign change across windows. A
+common-cohort analysis, explicit length/termination controls, and
+problem-respecting validation are required before interpreting this as a
+within-trace temporal effect.
+
+\subsection{Lexical events, storage, and implications}
+
+The lexical detectors flag 2,513 backtracking, 1,741 contradiction, and 2,000
+self-correction traces. Their pooled point-biserial associations with token
+count are $0.566$, $0.425$, and $0.509$, respectively, with positive point
+estimates in every dataset. Backtracking has negative confidence coefficients
+in all six datasets, while self-correction is negative in five and slightly
+positive on Minerva ($0.048$). These are surface-phrase detectors applied to
+whole attempts, not independently validated reasoning episodes; the view
+analyses reuse those whole-attempt flags rather than detecting local events.
+
+Replay retains 61,964,775 continuation tokens. The projected selected-layer
+raw payload is 1.904 TB (1.731 TiB), while persisted compact tensor artifacts
+total 5.958 GB and per-dataset files total 8.047 GB. No raw router/hidden
+tensors or expert weights are saved. Compact tensor bytes are approximately
+0.313\% of the projected raw payload; the expanded reasoning-view summaries
+are also retained in the dataset files.
+
+For \emph{Guiding MoE Reasoning via Routing Intervention}, this run supplies
+AIME confidence/margin candidates, exploratory pooled expert-ID associations,
+and a position-dependent pattern requiring controlled follow-up. Priorities
+are to prespecify how to handle remaining token-limit failures, validate
+routing features beyond length and benchmark on held-out problems, and
+compare position windows on common cohorts. GPQA-Diamond and MMLU-Pro require
+separate runs before broader coverage claims. Neither full-trace correlations
+nor expert-screen maxima establish that increasing confidence or forcing an
+expert improves reasoning.

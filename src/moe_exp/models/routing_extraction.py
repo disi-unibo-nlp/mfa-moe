@@ -86,6 +86,9 @@ def process_file(
     feature_schema_version: int | None = None,
     feature_config: dict[str, Any] | None = None,
     save_raw_tensors: bool = True,
+    view_reducer: Callable[..., dict[str, Any]] | None = None,
+    view_config: dict[str, Any] | None = None,
+    trace_annotations: dict[str, dict[str, Any]] | None = None,
 ):
     """
     Run the offline extraction loop over traces to compute routing dynamics.
@@ -113,6 +116,8 @@ def process_file(
         raise ValueError("save_raw_tensors=False requires a feature_reducer")
     if feature_reducer is not None and feature_schema_version is None:
         raise ValueError("feature_schema_version is required with feature_reducer")
+    if view_reducer is not None and feature_reducer is None:
+        raise ValueError("view_reducer requires the compact feature_reducer")
     traces: list[dict[str, Any]] = []
     with open(input_path, "r", encoding="utf-8") as f:
         for line in f:
@@ -140,10 +145,12 @@ def process_file(
         if not layer_indices or layer_indices[0] < 0:
             raise ValueError("layer_indices must contain non-negative layer indices")
 
-    text_config = getattr(model.config, "text_config", None)
-    config_top_k = getattr(model.config, "num_experts_per_tok", None)
-    if config_top_k is None and text_config is not None:
-        config_top_k = getattr(text_config, "num_experts_per_tok", None)
+    from moe_exp.models.router_adapters import (
+        ROUTER_CAPTURE_VERSION, SIGMOID_ROUTERS, available_router_layers,
+        configured_top_k, model_family,
+    )
+    config_top_k = configured_top_k(model.config)
+    native_routing = available_router_layers(model) is not None
     if top_k is None:
         if config_top_k is None:
             raise ValueError(
@@ -173,6 +180,17 @@ def process_file(
     with open(tmp_output_path, "w", encoding="utf-8") as out_f:
         for trace_dict in tqdm(traces, desc="Extracting Routing"):
             trace = TraceRecord(**trace_dict)
+            if native_routing:
+                trace.metadata["router_distribution"] = (
+                    "normalized_sigmoid" if model_family(model) in SIGMOID_ROUTERS else "softmax"
+                )
+            if trace_annotations is not None:
+                from moe_exp.correlation_pipeline.spans import validate_annotation
+                annotation = trace_annotations.get(trace.problem_id)
+                if annotation is None:
+                    raise ValueError(f"Missing reasoning annotation for {trace.problem_id}")
+                validate_annotation(trace, annotation)
+                trace.metadata["reasoning_annotation"] = annotation
             
             if not trace.cot_text.strip():
                 out_f.write(trace.model_dump_json() + "\n")
@@ -192,6 +210,8 @@ def process_file(
                         "system_prompt": trace.system_prompt,
                         "generation_messages": trace.generation_messages,
                         "cot_text": trace.cot_text,
+                        **({"token_replay": trace.metadata["token_replay"]}
+                           if "token_replay" in trace.metadata else {}),
                     },
                     sort_keys=True,
                     ensure_ascii=False,
@@ -206,6 +226,8 @@ def process_file(
                 "layer_indices": layer_indices,
                 "expert_weights": save_expert_weights,
             }
+            if native_routing:
+                expected_checkpoint["router_capture_version"] = ROUTER_CAPTURE_VERSION
             if feature_reducer is not None:
                 expected_checkpoint.update(
                     {
@@ -214,6 +236,11 @@ def process_file(
                         "save_raw_tensors": save_raw_tensors,
                     }
                 )
+            if view_reducer is not None:
+                expected_checkpoint["view_config"] = view_config or {}
+                expected_checkpoint["annotation_sha256"] = hashlib.sha256(json.dumps(
+                    trace.metadata.get("reasoning_annotation"), sort_keys=True,
+                ).encode()).hexdigest()
             checkpoint = None
             if checkpoint_path.is_file():
                 try:
@@ -234,6 +261,7 @@ def process_file(
                 isinstance(checkpoint, dict)
                 and isinstance(checkpoint.get("correlation_features"), dict)
                 and isinstance(checkpoint.get("correlation_storage"), dict)
+                and (view_reducer is None or isinstance(checkpoint.get("correlation_views"), dict))
             )
             if (
                 checkpoint_config_matches
@@ -261,10 +289,18 @@ def process_file(
                 if feature_reducer is not None:
                     trace.metadata["correlation_features"] = checkpoint["correlation_features"]
                     trace.metadata["correlation_storage"] = checkpoint["correlation_storage"]
+                    if view_reducer is not None:
+                        trace.metadata["correlation_views"] = checkpoint["correlation_views"]
                 n_with_routing += 1
                 out_f.write(trace.model_dump_json() + "\n")
                 continue
 
+            routing_details = {} if native_routing else None
+            extra_args = {}
+            if routing_details is not None:
+                extra_args["routing_details"] = routing_details
+            if "token_replay" in trace.metadata:
+                extra_args["token_replay"] = trace.metadata["token_replay"]
             extracted = extract_logs_single_pass(
                 model=model,
                 tokenizer=tokenizer,
@@ -274,6 +310,7 @@ def process_file(
                 messages=trace.generation_messages,
                 extract_hidden_states=extract_hidden_states,
                 layer_indices=layer_indices,
+                **extra_args,
             )
             if extract_hidden_states:
                 assert isinstance(extracted, tuple)
@@ -303,7 +340,13 @@ def process_file(
 
                 # Compute selected experts. Only materialize normalized weights
                 # when this run is configured to persist them.
-                if save_expert_weights:
+                if routing_details is not None:
+                    selected = routing_details["selected_experts"]
+                    weights = routing_details["expert_weights"] if save_expert_weights else None
+                    if selected.shape[-1] != top_k:
+                        raise ValueError("Requested top_k differs from the captured native routing")
+                    trace.metadata["router_distribution"] = routing_details["router_distribution"]
+                elif save_expert_weights:
                     selected, weights = compute_selected_experts(router_logits, top_k=top_k)
                 else:
                     selected = torch.topk(router_logits, k=top_k, dim=-1).indices
@@ -350,6 +393,12 @@ def process_file(
                         "values": values,
                     }
                     trace.metadata["correlation_features"] = correlation_features
+                correlation_views = None
+                if view_reducer is not None:
+                    correlation_views = view_reducer(
+                        trace, router_logits, hidden_states, selected, layer_indices,
+                    )
+                    trace.metadata["correlation_views"] = correlation_views
 
                 tensor_audit = {
                     "router_logits": _tensor_audit(
@@ -404,6 +453,8 @@ def process_file(
                         "correlation_features": correlation_features,
                         "correlation_storage": correlation_storage,
                     }
+                    if view_reducer is not None:
+                        checkpoint_payload["correlation_views"] = correlation_views
                 temporary_checkpoint.write_text(
                     json.dumps(checkpoint_payload, indent=2, allow_nan=False) + "\n",
                     encoding="utf-8",

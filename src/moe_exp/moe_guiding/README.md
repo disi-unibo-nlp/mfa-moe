@@ -161,11 +161,13 @@ size-based estimate, not a measured end-to-end vLLM run on a 3070. The configure
 80% GPU budget includes the weights and KV cache; it is not a claim that the
 process will use only 1.4 GB.
 
-After installing the project and vLLM in a Linux/CUDA environment, run from the
-repository root:
+The RTX launcher uses Docker, following the correlation pipeline's generation
+setup. It defaults to the same `vllm/vllm-openai:v0.29.0` base image and builds
+`moe-guiding:vllm-0.29.0` on first use to install the project and worker plugin.
+Host Python is not used. Docker GPU access is required; the first build and
+checkpoint download require network access. Run from the repository root:
 
 ```bash
-python -m pip install -e ".[moe-guiding]"
 bash src/moe_exp/moe_guiding/run_rtx3070.sh selected
 ```
 
@@ -191,9 +193,26 @@ bash src/moe_exp/moe_guiding/run_rtx3070.sh transfer \
   --output-dir results/moe_guiding/rtx3070/all_layers/transfer
 ```
 
-Use a new output directory for each rerun. `PYTHON_BIN` can select a particular
-environment's Python executable. Keep the pinned model revision with this
-checkpoint when comparing conditions.
+Use a new output directory for each rerun. `HF_CACHE_DIR` defaults to `/llms`,
+`CUDA_VISIBLE_DEVICES` defaults to `0`, and `PHYS_DIR` defaults to the repository
+root. The workspace and model cache are mounted into the container, with the
+same rootless Docker user mapping as the correlation stage launcher. Override
+`IMAGE_NAME` to select a prepared image, or `VLLM_IMAGE` to change the base used
+when building a missing image. Rebuild after changing package metadata:
+
+```bash
+docker build -f src/moe_exp/moe_guiding/Dockerfile -t moe-guiding:vllm-0.29.0 .
+```
+
+Preview without Docker calls or filesystem changes:
+
+```bash
+DRY_RUN=true bash src/moe_exp/moe_guiding/run_rtx3070.sh selected
+```
+
+Run CPU arithmetic checks in the same image with
+`bash src/moe_exp/moe_guiding/run_docker.sh sanity`. Keep the pinned model
+revision with this checkpoint when comparing conditions.
 
 This checkpoint is a community merge of small instruction-tuned models, not an
 official Mistral release. Its model card provides no reasoning benchmark

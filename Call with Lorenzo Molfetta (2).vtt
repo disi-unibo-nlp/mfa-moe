@@ -1,0 +1,2510 @@
+WEBVTT
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/5-0
+00:00:03.153 --> 00:00:05.753
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Può rigirare tutta la generazione.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/7-0
+00:00:07.353 --> 00:00:16.748
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>E ho quadruplicato il la context window,
+ma comunque su 6000 passa 800 le troncava</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/7-1
+00:00:16.748 --> 00:00:17.993
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>anche così.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/8-0
+00:00:18.993 --> 00:00:19.953
+<v Lorenzo Molfetta>OK.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/9-0
+00:00:21.593 --> 00:00:23.833
+<v Lorenzo Molfetta>Però vabbè, 800 o 6000, diciamo così.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/10-0
+00:00:23.673 --> 00:00:27.384
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Sì, è quasi tollerabile.
+Io adesso non starei a farlo rigirare</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/10-1
+00:00:27.384 --> 00:00:30.034
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>altri,
+non so quanto quanto ci abbiamo messo</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/10-2
+00:00:30.034 --> 00:00:31.153
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>altri 5 giorni per.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/11-0
+00:00:32.473 --> 00:00:33.353
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>E questa cosa?</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/12-0
+00:00:34.153 --> 00:00:38.192
+<v Lorenzo Molfetta>Ma perché è così lento,
+cioè che cosa sta facendo per tutte le</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/12-1
+00:00:38.192 --> 00:00:42.808
+<v Lorenzo Molfetta>generazioni di tutti i dataset,
+cioè per tutti i benchmark che ci mette</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/12-2
+00:00:42.808 --> 00:00:43.513
+<v Lorenzo Molfetta>così tanto?</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/13-0
+00:00:43.673 --> 00:00:47.628
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Sì, no, per 500 fa,
+cioè ci mette ci mette poco per ogni</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/13-1
+00:00:47.628 --> 00:00:50.473
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>benchmark perché ci sono tanti benchmark.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/14-0
+00:00:52.393 --> 00:00:54.528
+<v Lorenzo Molfetta>OK,
+quindi dici che ci vogliono 5 giorni in</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/14-1
+00:00:54.528 --> 00:00:56.953
+<v Lorenzo Molfetta>totale per tutti i benchmark del singolo
+modello?</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/15-0
+00:00:57.073 --> 00:00:57.913
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Sì.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/16-0
+00:01:00.073 --> 00:01:00.553
+<v Lorenzo Molfetta>Ok.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/17-0
+00:01:00.313 --> 00:01:03.663
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Adesso il 5 5 giorni è una stima molto
+approssimativa,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/17-1
+00:01:03.663 --> 00:01:07.073
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>non dovrei guardare i log per dirti
+quanto ci ho messo.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/18-0
+00:01:07.753 --> 00:01:09.033
+<v Lorenzo Molfetta>Ma questo scusa, che modello?</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/19-0
+00:01:10.793 --> 00:01:15.433
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Quello che stavamo facendo mi sembra QN 3.
+535 B.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/20-0
+00:01:16.833 --> 00:01:17.873
+<v Lorenzo Molfetta>OK.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/21-0
+00:01:19.913 --> 00:01:20.953
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Quattro bit.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/23-0
+00:01:20.113 --> 00:01:24.473
+<v Lorenzo Molfetta>Vabbè sì, quello sì, vabbè sì, certo,
+quello cioè tanto.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/25-0
+00:01:25.433 --> 00:01:29.953
+<v Lorenzo Molfetta>C'ha cioè sta riso in per tanto tempo,
+quindi c'è anche quel fattore lì, però.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/24-0
+00:01:28.753 --> 00:01:29.593
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Sì.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/26-0
+00:01:30.953 --> 00:01:34.268
+<v Lorenzo Molfetta>Cioè nel senso,
+in teoria dovrebbero essere abbastanza</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/26-1
+00:01:34.268 --> 00:01:38.789
+<v Lorenzo Molfetta>veloci quel benchmark lì soprattutto,
+cioè tu adesso li stai lanciando con</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/26-2
+00:01:38.789 --> 00:01:39.753
+<v Lorenzo Molfetta>lamas IPP, vero?</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/27-0
+00:01:41.993 --> 00:01:42.793
+<v Lorenzo Molfetta>Come libreria.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/28-0
+00:01:42.153 --> 00:01:46.113
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>E prima quella MCPPE, poi faccio forward,
+esatto.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/29-0
+00:01:47.033 --> 00:01:50.421
+<v Lorenzo Molfetta>OK,
+allora io ho fatto dei test di carico in</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/29-1
+00:01:50.421 --> 00:01:54.713
+<v Lorenzo Molfetta>tutte le librerie che ci sono,
+li ho concludati di ieri,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/29-2
+00:01:54.713 --> 00:02:00.435
+<v Lorenzo Molfetta>ci sono voluti 20 giorni per trovare
+tutte le librerie possibili e ti posso</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/29-3
+00:02:00.435 --> 00:02:01.113
+<v Lorenzo Molfetta>dire che.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/30-0
+00:02:02.073 --> 00:02:06.936
+<v Lorenzo Molfetta>La cosa che conviene fare in questi
+setting è innanzitutto provare a fare</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/30-1
+00:02:06.936 --> 00:02:10.616
+<v Lorenzo Molfetta>anche solo una generazione alla volta o
+comunque poche,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/30-2
+00:02:10.616 --> 00:02:14.822
+<v Lorenzo Molfetta>cioè tipo al massimo due alla volta,
+cioè in parallelo intendo,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/30-3
+00:02:14.822 --> 00:02:18.633
+<v Lorenzo Molfetta>cioè tipo un bacio perché è molto meglio
+fare la singola.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/31-0
+00:02:18.873 --> 00:02:22.758
+<v Lorenzo Molfetta>Generazione con una certa combinazione di
+librerie invece che farne n</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/31-1
+00:02:22.758 --> 00:02:25.755
+<v Lorenzo Molfetta>parallelamente,
+perché alla fine la somma di token al</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/31-2
+00:02:25.755 --> 00:02:30.250
+<v Lorenzo Molfetta>secondo un po' ne risente dai test fatto
+la libreria migliore sul single diciamo</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/31-3
+00:02:30.250 --> 00:02:32.692
+<v Lorenzo Molfetta>così,
+modello mi è risultato effettivamente</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/31-4
+00:02:32.692 --> 00:02:33.913
+<v Lorenzo Molfetta>anche un po' lama CPP.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/32-0
+00:02:35.473 --> 00:02:39.434
+<v Lorenzo Molfetta>Però invece che con MTP come magari ce
+l'abbiamo lì,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/32-1
+00:02:39.434 --> 00:02:43.918
+<v Lorenzo Molfetta>ci sono altre configurazioni di
+generazione più efficiente,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/32-2
+00:02:43.918 --> 00:02:49.673
+<v Lorenzo Molfetta>solo che adesso in effetti su queste 3.
+5 mi viene il dubbio che non ci sia.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/33-0
+00:02:49.713 --> 00:02:53.376
+<v Lorenzo Molfetta>Allora Fammi controllare 3.
+5 si chiama d flash.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/33-1
+00:02:53.376 --> 00:02:57.113
+<v Lorenzo Molfetta>Forse ne aveva parlato più per il modello
+tre sì.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/34-0
+00:02:55.593 --> 00:03:00.313
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Sì,
+ma io avevo provato sia di flash che MTP.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/35-0
+00:02:59.313 --> 00:03:00.393
+<v Lorenzo Molfetta>Però per il 3.8.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/36-0
+00:03:01.393 --> 00:03:01.993
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Sì.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/37-0
+00:03:02.513 --> 00:03:07.988
+<v Lorenzo Molfetta>Per il 3.8 c'è il dflash va bene,
+ti posso dire io da quelli tra l'altro ho</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/37-1
+00:03:07.988 --> 00:03:13.606
+<v Lorenzo Molfetta>fatto il check sia con CPP che con VLM
+come libreria bene o male son simili e</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/37-2
+00:03:13.606 --> 00:03:17.712
+<v Lorenzo Molfetta>quindi va bene.
+Però sì vabbè ecco non c'è il dflash per</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/37-3
+00:03:17.712 --> 00:03:19.873
+<v Lorenzo Molfetta>il 3.5 quello è proprio molto.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/38-0
+00:03:20.073 --> 00:03:24.111
+<v Lorenzo Molfetta>Con un thinking molto lungo però vedi un
+attimo quanto ha i token al secondo,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/38-1
+00:03:24.111 --> 00:03:27.217
+<v Lorenzo Molfetta>perché cioè ripeto,
+di solito con i check che avevamo fatto</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/38-2
+00:03:27.217 --> 00:03:31.203
+<v Lorenzo Molfetta>in passato ricordo che avevamo raggiunto
+anche i 100 120 token al secondo su</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/38-3
+00:03:31.203 --> 00:03:34.205
+<v Lorenzo Molfetta>quella g più lì,
+che significa che va bene che il modello</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/38-4
+00:03:34.205 --> 00:03:35.033
+<v Lorenzo Molfetta>pensa tanto, ma.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/39-0
+00:03:35.513 --> 00:03:38.333
+<v Lorenzo Molfetta>I dati son piccoli,
+cioè io mi aspettavo che tutto il bench</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/39-1
+00:03:38.333 --> 00:03:39.273
+<v Lorenzo Molfetta>ci mettesse 2 3 ore.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/40-0
+00:03:40.393 --> 00:03:41.113
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>OK.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/41-0
+00:03:41.833 --> 00:03:42.953
+<v Lorenzo Molfetta>Capito quindi, cioè?</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/42-0
+00:03:42.273 --> 00:03:44.706
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Sì, no,
+un benchmark ci mette circa quel tempo lì,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/42-1
+00:03:44.706 --> 00:03:47.473
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>soltanto che sono tanti,
+poi dipende anche dal benchmark.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/44-0
+00:03:50.473 --> 00:03:54.523
+<v Lorenzo Molfetta>Va beh,
+noi alla fine ci abbiamo quello Mark 500,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/44-1
+00:03:54.523 --> 00:03:57.033
+<v Lorenzo Molfetta>i due AIM, abbiamo GSM and key.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/45-0
+00:03:55.913 --> 00:04:00.429
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Sì, no, ce ne avevo infilati molti di più,
+infilati quasi tutti quelli che mi avevi</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/45-1
+00:04:00.429 --> 00:04:00.913
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>detto Tu.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/46-0
+00:04:03.513 --> 00:04:04.673
+<v Lorenzo Molfetta>No, beh, allora.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/47-0
+00:04:06.713 --> 00:04:09.584
+<v Lorenzo Molfetta>Non so, proverei magari a ridurre un po,
+cioè se vedi,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/47-1
+00:04:09.584 --> 00:04:12.873
+<v Lorenzo Molfetta>cioè guarda un attimo quant'è il token al
+secondo che ti esce,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/48-0
+00:04:10.513 --> 00:04:14.329
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Quelli sono sì,
+magari guarda quelli che occupano più</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/47-2
+00:04:12.873 --> 00:04:14.073
+<v Lorenzo Molfetta>vedi quant'è e capiamo.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/48-1
+00:04:14.329 --> 00:04:14.753
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>tempo.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/49-0
+00:04:15.593 --> 00:04:18.780
+<v Lorenzo Molfetta>Cioè sì,
+non per forza dobbiamo farli tutti quanti.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/49-1
+00:04:18.780 --> 00:04:23.191
+<v Lorenzo Molfetta>Possiamo anche abbassare un po' e
+toglierne alcuni, forse di quelli lì,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/49-2
+00:04:23.191 --> 00:04:27.297
+<v Lorenzo Molfetta>quelli molto molto lunghi,
+cioè non mi ricordo se Olympiad forse è</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/49-3
+00:04:27.297 --> 00:04:29.993
+<v Lorenzo Molfetta>molto grosso.
+C'abbiamo anche MMU per caso.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/50-0
+00:04:31.073 --> 00:04:32.393
+<v Lorenzo Molfetta>Non mi ricordo la.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/51-0
+00:04:31.513 --> 00:04:38.153
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Allora io vedo Mate 500, M 24, M 25,
+Olympiad, MC 23, Minerva EGPQA.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/53-0
+00:04:39.273 --> 00:04:43.617
+<v Lorenzo Molfetta>Allora secondo me quelli lunghi erano
+GPQAE, Minerva no,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/53-1
+00:04:43.617 --> 00:04:49.562
+<v Lorenzo Molfetta>forse olympiad uno tra questi 3 1 di
+questi tre dovrebbe essere quello un po'</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/53-2
+00:04:49.562 --> 00:04:53.753
+<v Lorenzo Molfetta>più lungo come istanze e secondo me si
+possono cavare.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/52-0
+00:04:49.833 --> 00:04:51.113
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Molto lungo, OK?</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/54-0
+00:04:56.033 --> 00:04:56.873
+<v Lorenzo Molfetta>Quindi sì.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/56-0
+00:04:59.113 --> 00:05:01.792
+<v Lorenzo Molfetta>Però prima vedi un attimo la cosa che
+torna al secondo,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/56-1
+00:05:01.792 --> 00:05:05.188
+<v Lorenzo Molfetta>cioè vedi se ti torna sta roba e
+controlla che effettivamente perché a</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/56-2
+00:05:05.188 --> 00:05:08.967
+<v Lorenzo Molfetta>volte le cose in batch ti consumano più
+tempo di quanto non ti fanno in single</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/56-3
+00:05:08.967 --> 00:05:12.698
+<v Lorenzo Molfetta>single shot quindi vedi un attimo se
+soprattutto quando fai MTP o queste robe</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/55-0
+00:05:09.913 --> 00:05:10.473
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Ok.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/56-4
+00:05:12.698 --> 00:05:13.033
+<v Lorenzo Molfetta>strane.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/57-0
+00:05:14.233 --> 00:05:17.357
+<v Lorenzo Molfetta>E quindi sì,
+magari controlla un attimo che sia buono</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/57-1
+00:05:17.357 --> 00:05:20.482
+<v Lorenzo Molfetta>il secondo.
+E che cosa succederebbe se facessimo tipo</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/57-2
+00:05:20.482 --> 00:05:23.259
+<v Lorenzo Molfetta>una generazione alla volta invece che in
+batch?</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/57-3
+00:05:23.259 --> 00:05:26.730
+<v Lorenzo Molfetta>Adesso non so quante batch c'abbiamo noi
+adesso. Quindi sì,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/57-4
+00:05:26.730 --> 00:05:30.433
+<v Lorenzo Molfetta>guarderei un attimo quello e nel caso
+togliamo qualche dataset.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/58-0
+00:05:31.513 --> 00:05:34.929
+<v Lorenzo Molfetta>Ci sta a rifarle perché secondo me cambia
+tanto la Cura, sì,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/58-1
+00:05:34.929 --> 00:05:37.113
+<v Lorenzo Molfetta>c'è quella roba lì è importante quindi.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/59-0
+00:05:38.153 --> 00:05:41.913
+<v Lorenzo Molfetta>Alla fine 600 su quante lettere sono 8000.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/60-0
+00:05:41.753 --> 00:05:43.713
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>6000, 6000 passa.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/61-0
+00:05:44.913 --> 00:05:47.869
+<v Lorenzo Molfetta>Beh,
+comunque si dice che non è tantissimo,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/61-1
+00:05:47.869 --> 00:05:48.473
+<v Lorenzo Molfetta>10% però.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/63-0
+00:05:49.673 --> 00:05:53.895
+<v Lorenzo Molfetta>Comunque proviamo a vedere un attimo.
+E poi c'è da capire un attimo quante</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/63-1
+00:05:53.895 --> 00:05:56.484
+<v Lorenzo Molfetta>generazioni stai facendo adesso che ci
+penso,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/63-2
+00:05:56.484 --> 00:06:00.368
+<v Lorenzo Molfetta>cioè nel senso per quei benchmark noi
+stiamo facendo 32 generazioni,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/63-3
+00:06:00.368 --> 00:06:03.633
+<v Lorenzo Molfetta>per alcuni no.
+C'è anche quel fattore lì di parallelismo.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/62-0
+00:06:02.393 --> 00:06:03.793
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Sì, certo.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/64-0
+00:06:04.953 --> 00:06:06.953
+<v Lorenzo Molfetta>No, beh, allora è anche lì il fatto.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/65-0
+00:06:09.353 --> 00:06:12.336
+<v Lorenzo Molfetta>Sì, no, perché sto pensando che magari,
+ecco,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/65-1
+00:06:12.336 --> 00:06:17.784
+<v Lorenzo Molfetta>noi il parallelismo ce l'abbiamo là sopra,
+perché magari quando fa quelle genera le</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/65-2
+00:06:17.784 --> 00:06:20.313
+<v Lorenzo Molfetta>32, le genera tutte assieme secondo me.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/66-0
+00:06:21.753 --> 00:06:25.435
+<v Lorenzo Molfetta>Può essere che se le dividiamo facciamo
+un po' prima.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/66-1
+00:06:25.435 --> 00:06:29.798
+<v Lorenzo Molfetta>Il problema è che se tu le dividi però è
+diverso, perché vabbè,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/66-2
+00:06:29.798 --> 00:06:34.025
+<v Lorenzo Molfetta>alla fine tanto le genera comunque
+diverse. Che ci frega? Sì,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/66-3
+00:06:34.025 --> 00:06:35.593
+<v Lorenzo Molfetta>c'è comunque il sample.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/68-0
+00:06:37.793 --> 00:06:40.982
+<v Lorenzo Molfetta>No, allora proverei a fare così,
+fai sta roba,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/68-1
+00:06:40.982 --> 00:06:46.613
+<v Lorenzo Molfetta>controlla giusto il token al secondo però
+prova a cambiare la il batching cioè che</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/67-0
+00:06:43.433 --> 00:06:44.033
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Sì.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/68-2
+00:06:46.613 --> 00:06:52.243
+<v Lorenzo Molfetta>quando devi andare a fare quelle da 32 o
+quelle da 64 ma non mi ricordo quali sono</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/68-3
+00:06:52.243 --> 00:06:53.193
+<v Lorenzo Molfetta>i valori però.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/71-0
+00:06:53.673 --> 00:06:59.716
+<v Lorenzo Molfetta>In base al no è la media che richiede
+invece che ripeto farli 32 tutti assieme,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/69-0
+00:06:54.913 --> 00:06:56.033
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Sì.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/71-1
+00:06:59.716 --> 00:07:03.493
+<v Lorenzo Molfetta>cioè quando fai la generazione fai n
+uguale a 32,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/71-2
+00:07:03.493 --> 00:07:09.233
+<v Lorenzo Molfetta>invece magari farei n uguale a due e lo
+ripeterei 16 volte per generazione.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/70-0
+00:07:08.673 --> 00:07:09.393
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>OK.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/72-0
+00:07:10.593 --> 00:07:11.273
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>OK.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/73-0
+00:07:10.713 --> 00:07:14.510
+<v Lorenzo Molfetta>Perché secondo me così così risparmiamo
+su quella GPU. Quindi OK,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/73-1
+00:07:14.510 --> 00:07:18.997
+<v Lorenzo Molfetta>questo per la questione performance,
+quindi comunque le facciamo e vediamo un</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/73-2
+00:07:18.997 --> 00:07:21.758
+<v Lorenzo Molfetta>attimo no?
+Allora io stamattina mi sono dato un</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/73-3
+00:07:21.758 --> 00:07:25.094
+<v Lorenzo Molfetta>occhio alla parte di bibliografia per
+capire i Dead work,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/73-4
+00:07:25.094 --> 00:07:27.913
+<v Lorenzo Molfetta>tanto poi comunque ti servono anche per
+la tesi.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/74-0
+00:07:28.313 --> 00:07:32.777
+<v Lorenzo Molfetta>Però per esplorare un po' meglio il campo
+e quel paper che ti ho girato è super,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/74-1
+00:07:32.777 --> 00:07:36.194
+<v Lorenzo Molfetta>super, super rilevante.
+Viene dall'anno scorso per aver fatto</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/74-2
+00:07:36.194 --> 00:07:39.390
+<v Lorenzo Molfetta>preso un po' di citazioni,
+non è lo stesso ambito nostro,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/74-3
+00:07:39.390 --> 00:07:43.193
+<v Lorenzo Molfetta>però è comunque con i MOE su cui viene
+fatto dell'intervention lì e.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/75-0
+00:07:43.353 --> 00:07:45.991
+<v Lorenzo Molfetta>Per fare il modello,
+fargli generare robe safe,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/75-1
+00:07:45.991 --> 00:07:49.123
+<v Lorenzo Molfetta>faithful o meno.
+E tra l'altro loro c'hanno una libreria</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/75-2
+00:07:49.123 --> 00:07:51.541
+<v Lorenzo Molfetta>appunto per fare questa specie di
+steering.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/75-3
+00:07:51.541 --> 00:07:55.223
+<v Lorenzo Molfetta>Perché il problema è che steering uno lo
+può fare pure a mano, no?</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/75-4
+00:07:55.223 --> 00:07:58.520
+<v Lorenzo Molfetta>Cioè nel senso caricare il modello e
+scegliere gli esperti.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/75-5
+00:07:58.520 --> 00:08:00.553
+<v Lorenzo Molfetta>Però il problema è che se lo fai con.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/76-0
+00:08:00.953 --> 00:08:04.811
+<v Lorenzo Molfetta>Automodel via in face per lo stesso
+motivo per cui le generazioni le stai</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/76-1
+00:08:04.811 --> 00:08:08.878
+<v Lorenzo Molfetta>facendo con la Masi IPP non finisci mai
+perché è un problema allora purtroppo</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/76-2
+00:08:08.878 --> 00:08:12.319
+<v Lorenzo Molfetta>c'era bisogno di librerie che lo
+facessero in maniera efficiente,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/76-3
+00:08:12.319 --> 00:08:16.073
+<v Lorenzo Molfetta>tipo lo stesso lama CPP oppure lem però
+che permesse potesse rifare in.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/77-0
+00:08:16.793 --> 00:08:22.073
+<v Lorenzo Molfetta>Injection o steering scusami e questo
+paper lo fa guardando sto paper mi son</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/77-1
+00:08:22.073 --> 00:08:27.627
+<v Lorenzo Molfetta>guardato delle cose relative e trovato
+un'altro paper di dell'anno scorso che fa</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/77-2
+00:08:27.627 --> 00:08:32.633
+<v Lorenzo Molfetta>che fanno anche loro classificazioni del
+reasoning anche lì su 7 classi.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/79-0
+00:08:32.953 --> 00:08:36.481
+<v Lorenzo Molfetta>Sono leggermente diverse da quelle
+utilizzate da noi che vengono da</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/79-1
+00:08:36.481 --> 00:08:39.904
+<v Lorenzo Molfetta>quell'altro paper dove le abbiamo prese,
+però Van bene le nostre.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/78-0
+00:08:38.473 --> 00:08:39.233
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Sì.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/79-2
+00:08:39.904 --> 00:08:44.106
+<v Lorenzo Molfetta>Ho fatto un po' di check e direi che per
+quello che ci serve Van bene le nostre.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/79-3
+00:08:44.106 --> 00:08:46.700
+<v Lorenzo Molfetta>Quindi vabbè,
+tutta quella parte di insomma li ho</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/79-4
+00:08:46.700 --> 00:08:48.983
+<v Lorenzo Molfetta>tirati giù,
+mo li sto un attimo filtrando e</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/79-5
+00:08:48.983 --> 00:08:49.553
+<v Lorenzo Molfetta>sistemando.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/80-0
+00:08:49.993 --> 00:08:55.927
+<v Lorenzo Molfetta>E la cosa che a noi un attimo serve da
+finire per la parte di analisi,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/80-1
+00:08:55.927 --> 00:09:01.527
+<v Lorenzo Molfetta>al netto delle generazioni,
+è che noi per adesso abbiamo calcolato</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/80-2
+00:09:01.527 --> 00:09:04.953
+<v Lorenzo Molfetta>sempre le metriche sulla full generation.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/82-0
+00:09:05.273 --> 00:09:10.597
+<v Lorenzo Molfetta>Cioè per adesso abbiamo fatto token token,
+length contro accuracy, routing,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/82-1
+00:09:10.597 --> 00:09:16.130
+<v Lorenzo Molfetta>margin contro accuracy e così via e oltre
+alla cosa che dicevo l'altro giorno,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/81-0
+00:09:13.353 --> 00:09:14.113
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Sì.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/82-2
+00:09:16.130 --> 00:09:19.843
+<v Lorenzo Molfetta>cioè fare cross,
+cioè tra metriche non sempre contro</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/82-3
+00:09:19.843 --> 00:09:20.473
+<v Lorenzo Molfetta>accuracy.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/83-0
+00:09:20.713 --> 00:09:24.812
+<v Lorenzo Molfetta>E noi per adesso non stiamo considerando
+la questione delle label,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/83-1
+00:09:24.812 --> 00:09:28.544
+<v Lorenzo Molfetta>cioè nel senso noi per adesso ci abbiamo,
+che dobbiamo fare?</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/83-2
+00:09:28.544 --> 00:09:31.908
+<v Lorenzo Molfetta>Abbiamo preso tutto il thinking e quello
+lo valutiamo.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/83-3
+00:09:31.908 --> 00:09:35.090
+<v Lorenzo Molfetta>Però magari cioè che le parti dove c'è il
+rollback,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/83-4
+00:09:35.090 --> 00:09:37.353
+<v Lorenzo Molfetta>quelle magari hanno una correlazione.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/85-0
+00:09:37.593 --> 00:09:42.519
+<v Lorenzo Molfetta>Di margine con la più alta, cioè capito,
+potrebbero esserci parti sotto parti del</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/85-1
+00:09:42.519 --> 00:09:46.423
+<v Lorenzo Molfetta>reasoning che analizzate solamente sui
+token di quella sentence,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/85-2
+00:09:46.423 --> 00:09:49.787
+<v Lorenzo Molfetta>solo su quelle invece abbiamo una
+correlazione diversa.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/85-3
+00:09:49.787 --> 00:09:54.532
+<v Lorenzo Molfetta>Poi chiaramente l'average è un segnale
+significativo che ci dà un'idea di cosa</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/85-4
+00:09:54.532 --> 00:09:55.673
+<v Lorenzo Molfetta>funziona e cosa no.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/84-0
+00:09:56.033 --> 00:09:57.193
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Sì.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/86-0
+00:09:56.433 --> 00:10:01.017
+<v Lorenzo Molfetta>Però è evidente che noi comunque quella
+roba la dobbiamo fare,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/86-1
+00:10:01.017 --> 00:10:04.947
+<v Lorenzo Molfetta>cioè dobbiamo classificare le gli output
+e quelli lì,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/86-2
+00:10:04.947 --> 00:10:10.331
+<v Lorenzo Molfetta>poi quando facciamo oltre che fare gli
+average dobbiamo farli anche sulla</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/86-3
+00:10:10.331 --> 00:10:10.913
+<v Lorenzo Molfetta>singola.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/87-0
+00:10:11.313 --> 00:10:16.115
+<v Lorenzo Molfetta>Cioè facciamo average solamente sulle
+sentence che fanno parte di una certa</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/87-1
+00:10:16.115 --> 00:10:18.073
+<v Lorenzo Molfetta>classe, ecco, questo intendevo.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/88-0
+00:10:18.873 --> 00:10:19.633
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>OK.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/90-0
+00:10:21.033 --> 00:10:25.893
+<v Lorenzo Molfetta>Quindi sì, c'è una cardinalità in più,
+anche perché noi lavoriamo bene o male AA</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/90-1
+00:10:25.893 --> 00:10:29.013
+<v Lorenzo Molfetta>frasi no?
+Cioè così come con quel paper analizziamo</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/90-2
+00:10:29.013 --> 00:10:32.073
+<v Lorenzo Molfetta>frase per frase,
+cioè facciamo la classificazione,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/90-3
+00:10:32.073 --> 00:10:35.073
+<v Lorenzo Molfetta>però vabbè,
+potrebbe banalmente essere essere che</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/90-4
+00:10:35.073 --> 00:10:38.913
+<v Lorenzo Molfetta>diverse frasi una dopo l'altra fanno
+parte della stessa classe.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/92-0
+00:10:40.073 --> 00:10:43.349
+<v Lorenzo Molfetta>Sono uno dietro l'altra,
+però tanto noi dobbiamo analizzarle in</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/92-1
+00:10:43.349 --> 00:10:46.061
+<v Lorenzo Molfetta>maniera separata,
+cioè noi facciamo semplicemente le</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/92-2
+00:10:46.061 --> 00:10:49.951
+<v Lorenzo Molfetta>correlazioni quando abbiamo gli input,
+quella roba là e chiaramente le cose</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/92-3
+00:10:49.951 --> 00:10:53.124
+<v Lorenzo Molfetta>prima, però analizziamo solo quelle,
+solo quelle statistiche,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/92-4
+00:10:53.124 --> 00:10:55.273
+<v Lorenzo Molfetta>i token di quella frase, di quella classe.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/91-0
+00:10:55.993 --> 00:10:56.753
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Sì.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/93-0
+00:10:58.833 --> 00:11:02.438
+<v Lorenzo Molfetta>Quindi sì,
+c'è da aggiungere questa roba che l'altra</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/93-1
+00:11:02.438 --> 00:11:07.335
+<v Lorenzo Molfetta>volta non ne avevamo parlato e direi
+basta perché poi si rimane la roba</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/93-2
+00:11:07.335 --> 00:11:11.757
+<v Lorenzo Molfetta>dell'intervention e però
+sull'intervention dipende dai risultati</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/93-3
+00:11:11.757 --> 00:11:13.593
+<v Lorenzo Molfetta>che adesso ci escono, cioè?</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/94-0
+00:11:14.273 --> 00:11:18.307
+<v Lorenzo Molfetta>Per esempio sulla questione del
+dell'Expert ID della Identity,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/94-1
+00:11:18.307 --> 00:11:23.110
+<v Lorenzo Molfetta>cioè andare a fare quella roba di
+correlare lo specifico Expert uno contro</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/94-2
+00:11:23.110 --> 00:11:28.360
+<v Lorenzo Molfetta>l'accuratezza o contro quelle altre robe,
+perché le cose che ti ho girato tipo al</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/94-3
+00:11:28.360 --> 00:11:30.153
+<v Lorenzo Molfetta>meglio di quel paper lì che.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/95-0
+00:11:30.233 --> 00:11:33.629
+<v Lorenzo Molfetta>Di cui ti parlavo sulla faithfulness che
+ti ho girato quello lì.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/95-1
+00:11:33.629 --> 00:11:37.809
+<v Lorenzo Molfetta>La libreria che fa in maniera efficiente
+la generazione ti permette di fare the</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/95-2
+00:11:37.809 --> 00:11:41.937
+<v Lorenzo Molfetta>activation e activation degli esperti,
+cioè banalmente quando lanci il modello</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/95-3
+00:11:41.937 --> 00:11:46.273
+<v Lorenzo Molfetta>gli dici guarda mi devi riattivare per il
+layer 10 mi disattivi l'experto due e 5.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/96-0
+00:11:47.273 --> 00:11:50.771
+<v Lorenzo Molfetta>E quindi quelli non te li consideri,
+no fa fai il resto.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/96-1
+00:11:50.771 --> 00:11:54.515
+<v Lorenzo Molfetta>Però la questione qual è?
+Che questa roba a noi ci serve nel</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/96-2
+00:11:54.515 --> 00:11:59.669
+<v Lorenzo Molfetta>momento in cui capiamo che effettivamente
+dai risultati a noi ritorna che su alcuni</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/96-3
+00:11:59.669 --> 00:12:01.633
+<v Lorenzo Molfetta>tipi di setting gli esperti col.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/97-0
+00:12:01.753 --> 00:12:06.735
+<v Lorenzo Molfetta>Il due o il 5 sono problematici o aiutano?
+Se invece ci rendiamo conto che su quelle</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/97-1
+00:12:06.735 --> 00:12:10.720
+<v Lorenzo Molfetta>robe non c'è correlazione,
+cioè nel senso gli esperti hanno un load</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/97-2
+00:12:10.720 --> 00:12:14.177
+<v Lorenzo Molfetta>balancing appropriato,
+allora a quel punto potrebbe invece</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/97-3
+00:12:14.177 --> 00:12:16.873
+<v Lorenzo Molfetta>essere che quello che conta è tipo il
+margin.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/99-0
+00:12:17.673 --> 00:12:21.579
+<v Lorenzo Molfetta>Allora a quel punto che succede?
+Che noi non possiamo più andare a fare 1</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/99-1
+00:12:21.579 --> 00:12:25.380
+<v Lorenzo Molfetta>1 steering per dire disattivo l'esperto
+tre perché non è l'esperto tre.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/98-0
+00:12:24.593 --> 00:12:25.313
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Sì.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/99-2
+00:12:25.380 --> 00:12:29.656
+<v Lorenzo Molfetta>Il problema è che quando arrivo al layer
+X se c'ho un certo margin allora dovrei</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/99-3
+00:12:29.656 --> 00:12:31.873
+<v Lorenzo Molfetta>andare da una parte invece che dall'altra.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/100-0
+00:12:32.393 --> 00:12:34.593
+<v Lorenzo Molfetta>Quindi è un po diversa da quella libreria.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/101-0
+00:12:33.273 --> 00:12:35.433
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Sì,
+però vai a sapere qual è la parte giusta.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/102-0
+00:12:36.153 --> 00:12:40.413
+<v Lorenzo Molfetta>No, cioè la questione qual è?
+Che dovremmo cambiare il comportamento</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/102-1
+00:12:40.413 --> 00:12:44.672
+<v Lorenzo Molfetta>del routing in base a quello che in quel
+momento è la distribuzione.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/102-2
+00:12:44.672 --> 00:12:49.117
+<v Lorenzo Molfetta>E questa roba io ci ho guardato
+stamattina e per fortuna per noi esiste</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/102-3
+00:12:49.117 --> 00:12:51.833
+<v Lorenzo Molfetta>una libreria,
+o meglio VLLM per intenderci.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/103-0
+00:12:52.073 --> 00:12:56.072
+<v Lorenzo Molfetta>Già lo supporta questa roba,
+cioè permette di definire delle classi</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/103-1
+00:12:56.072 --> 00:12:59.306
+<v Lorenzo Molfetta>routing Custom che in maniera diciamo
+così automatica,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/103-2
+00:12:59.306 --> 00:13:03.834
+<v Lorenzo Molfetta>facendo partire poi il modello possono
+avere dei comportamenti XE quindi per</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/103-3
+00:13:03.834 --> 00:13:07.891
+<v Lorenzo Molfetta>esempio gli si dice mi devi fare il
+routing in questa maniera quando</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/103-4
+00:13:07.891 --> 00:13:11.713
+<v Lorenzo Molfetta>l'entropy della distribuzione sopra un
+certo threshold eccetera.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/106-0
+00:13:13.273 --> 00:13:16.303
+<v Lorenzo Molfetta>Ripeto, questa roba qua attenzione,
+la potevamo fare pure noi,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/106-1
+00:13:16.303 --> 00:13:19.909
+<v Lorenzo Molfetta>cioè con automodel diag in face,
+però il problema è sempre lo stesso che è</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/104-0
+00:13:17.393 --> 00:13:17.953
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Certo.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/105-0
+00:13:19.073 --> 00:13:19.913
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>È lento.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/106-2
+00:13:19.909 --> 00:13:22.554
+<v Lorenzo Molfetta>inefficiente.
+Invece le librerie queste qua ce l'hanno</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/106-3
+00:13:22.554 --> 00:13:25.728
+<v Lorenzo Molfetta>già. L'ho contato stamattina,
+non li conoscevo, ne conoscevo una,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/106-4
+00:13:25.728 --> 00:13:26.593
+<v Lorenzo Molfetta>ma per fare altro.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/107-0
+00:13:27.033 --> 00:13:32.630
+<v Lorenzo Molfetta>E invece questa qua sembra che si possa
+fare. Quindi vabbè, quelle le ho viste,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/107-1
+00:13:32.630 --> 00:13:36.198
+<v Lorenzo Molfetta>ci sono,
+le ho tirate giù e magari provo un attimo</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/107-2
+00:13:36.198 --> 00:13:41.235
+<v Lorenzo Molfetta>a farci il codice io in cui provo a
+testarle a te chiederei più di fare</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/107-3
+00:13:41.235 --> 00:13:43.753
+<v Lorenzo Molfetta>questa roba qua, cioè di concludere.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/109-0
+00:13:44.153 --> 00:13:49.223
+<v Lorenzo Molfetta>E di controllare sta roba dell'efficienza
+sulla generazione dei benchmark e poi di</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/109-1
+00:13:49.223 --> 00:13:54.231
+<v Lorenzo Molfetta>aggiungere questa roba del dell'analisi
+oltre che average tutto il thinking sullo</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/109-2
+00:13:54.231 --> 00:13:58.201
+<v Lorenzo Molfetta>specifico classificazione,
+quindi in pratica quello che dobbiamo</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/108-0
+00:13:57.553 --> 00:13:57.993
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Chiaro.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/109-3
+00:13:58.201 --> 00:14:00.033
+<v Lorenzo Molfetta>fare è anche classificare, no?</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/110-0
+00:14:00.393 --> 00:14:05.822
+<v Lorenzo Molfetta>Effettivamente questi output generati e
+su questo infatti mi ero appuntato e ti</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/110-1
+00:14:05.822 --> 00:14:09.147
+<v Lorenzo Molfetta>chiedo,
+noi per adesso come stiamo facendo la il</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/110-2
+00:14:09.147 --> 00:14:13.286
+<v Lorenzo Molfetta>merging degli esperti?
+Vabbè esperti è un termine improprio.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/110-3
+00:14:13.286 --> 00:14:15.593
+<v Lorenzo Molfetta>Perdonami, sto facendo confusione.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/111-0
+00:14:15.153 --> 00:14:16.673
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Cosa intendi per merging?</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/114-0
+00:14:16.793 --> 00:14:20.546
+<v Lorenzo Molfetta>Esatto, cioè esatto,
+pessimo scelta di parole. Volevo dire,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/114-1
+00:14:20.546 --> 00:14:25.362
+<v Lorenzo Molfetta>quando noi facciamo il la classificazione,
+ecco i classificatori è la parola</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/114-2
+00:14:25.362 --> 00:14:28.427
+<v Lorenzo Molfetta>corretta.
+Noi adesso c'abbiamo il classificatore</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/112-0
+00:14:26.273 --> 00:14:26.993
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>OK.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/114-3
+00:14:28.427 --> 00:14:30.553
+<v Lorenzo Molfetta>probing e il classificatore edlem.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/113-0
+00:14:31.113 --> 00:14:31.793
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Sì.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/115-0
+00:14:31.793 --> 00:14:35.365
+<v Lorenzo Molfetta>Per intenderci,
+come pensiamo non so se l'avevi già</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/115-1
+00:14:35.365 --> 00:14:40.380
+<v Lorenzo Molfetta>provato a fare di unire queste due
+predizioni, cioè facciamo un 0.5 0.5,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/115-2
+00:14:40.380 --> 00:14:46.082
+<v Lorenzo Molfetta>cioè se il se il modello mi dice che sono
+nella classe rollback e il probe mi dice</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/115-3
+00:14:46.082 --> 00:14:47.593
+<v Lorenzo Molfetta>che sono nella classe.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/116-0
+00:14:48.153 --> 00:14:51.796
+<v Lorenzo Molfetta>Non lo so,
+nella classe commitment come facciamo?</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/116-1
+00:14:51.796 --> 00:14:56.751
+<v Lorenzo Molfetta>Cioè per adesso se hai provato a fare i
+due classificatori assieme,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/116-2
+00:14:56.751 --> 00:14:59.593
+<v Lorenzo Molfetta>guardi tipo qual è le top tre principi?</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/117-0
+00:14:58.113 --> 00:15:01.473
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>No, ma al momento non viene,
+non viene effettuata la classificazione.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/118-0
+00:15:03.193 --> 00:15:04.786
+<v Lorenzo Molfetta>Ok,
+quindi non l'hai provato a fare la</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/118-1
+00:15:04.786 --> 00:15:07.113
+<v Lorenzo Molfetta>classificazione dei dei due tipi dei due
+classificatori?</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/120-0
+00:15:06.033 --> 00:15:11.564
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Cioè abbiamo abbiamo i tre esperimenti,
+uno che con gep abbiamo utilizzato il</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/120-1
+00:15:11.564 --> 00:15:15.819
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>prompt dell'elm as a judge,
+l'altro che con le prob abbiamo</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/119-0
+00:15:14.313 --> 00:15:14.993
+<v Lorenzo Molfetta>Perfetto.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/120-2
+00:15:15.819 --> 00:15:21.562
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>ottimizzato i prob per fare per stimare a
+grosso a modo abbastanza grossolamente</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/120-3
+00:15:21.562 --> 00:15:23.193
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>questa classificazione.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/122-0
+00:15:23.553 --> 00:15:27.793
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>E questo per trovare le correlazioni,
+però ancora non si incrociano queste cose.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/121-0
+00:15:26.993 --> 00:15:27.273
+<v Lorenzo Molfetta>Ok.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/123-0
+00:15:28.353 --> 00:15:31.831
+<v Lorenzo Molfetta>Perfetto allora la sì perché la
+classificazione dobbiamo farle,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/123-1
+00:15:31.831 --> 00:15:36.178
+<v Lorenzo Molfetta>quindi visto che non abbiamo parlato lo
+aggiungo adesso. La questione è questa,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/123-2
+00:15:36.178 --> 00:15:39.711
+<v Lorenzo Molfetta>tutti i paper che io ho visto fanno in
+maniera anche poco furba.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/123-3
+00:15:39.711 --> 00:15:43.188
+<v Lorenzo Molfetta>Però vabbè è stato accettato
+semplicemente dice uso un modello,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/123-4
+00:15:43.188 --> 00:15:47.753
+<v Lorenzo Molfetta>gli faccio fare la classificazione senza
+nemmeno far JEPA. Quindi noi già con JEPA.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/124-0
+00:15:47.793 --> 00:15:50.426
+<v Lorenzo Molfetta>A posto la roba del pro è per dare ancora
+di più,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/124-1
+00:15:50.426 --> 00:15:54.059
+<v Lorenzo Molfetta>perché poi noi c'abbiamo anche l'analisi
+del state, quindi ci serve,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/124-2
+00:15:54.059 --> 00:15:58.482
+<v Lorenzo Molfetta>cioè ci torna utile narrativa quella roba.
+La cosa che farei è che invece che fare,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/124-3
+00:15:58.482 --> 00:16:02.273
+<v Lorenzo Molfetta>cioè abbiamo solamente due tipi di
+classificazione, no? Come ti dicevo,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/124-4
+00:16:02.273 --> 00:16:03.273
+<v Lorenzo Molfetta>se uno mi dice che.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/125-0
+00:16:03.353 --> 00:16:08.673
+<v Lorenzo Molfetta>E rollback e l'altro che mi dice che
+commitment come faccio è di cioè 50 e 50.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/126-0
+00:16:06.913 --> 00:16:10.577
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Beh,
+io mi fiderei di più del M più che del</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/127-0
+00:16:10.313 --> 00:16:14.659
+<v Lorenzo Molfetta>Sì, mi fiderei anche io,
+però quello che possiamo fare è che</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/126-1
+00:16:10.577 --> 00:16:10.993
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>prob.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/127-1
+00:16:14.659 --> 00:16:19.504
+<v Lorenzo Molfetta>magari guardiamo i top tre,
+cioè nel senso prendiamo del cioè l'llm</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/127-2
+00:16:19.504 --> 00:16:24.633
+<v Lorenzo Molfetta>mi ha detto una classe e vabbè,
+la classe che mi dice l'llm è rollback.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/128-0
+00:16:25.433 --> 00:16:29.670
+<v Lorenzo Molfetta>Poi per esempio prendiamo il
+classificatore e al classificatore gli</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/128-1
+00:16:29.670 --> 00:16:33.596
+<v Lorenzo Molfetta>facciamo prendiamo tutti gli Score
+diversi di ciascuna classe,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/128-2
+00:16:33.596 --> 00:16:38.021
+<v Lorenzo Molfetta>vediamo quali sono i tre Score e
+semplicemente noi utilizziamo il prob</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/128-3
+00:16:38.021 --> 00:16:40.513
+<v Lorenzo Molfetta>come una specie di validatore delle LLM.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/129-0
+00:16:41.033 --> 00:16:45.536
+<v Lorenzo Molfetta>Cioè noi, proprio per essere sicuri,
+noi siamo a fare una roba in cui c'è gepa,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/129-1
+00:16:45.536 --> 00:16:49.420
+<v Lorenzo Molfetta>quindi non è solamente il modello,
+noi abbiamo fatto gepa per essere</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/129-2
+00:16:49.420 --> 00:16:53.811
+<v Lorenzo Molfetta>ottimizzato e in più per essere sicuri
+delle classi che CLLM noi chiediamo al</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/129-3
+00:16:53.811 --> 00:16:56.513
+<v Lorenzo Molfetta>prob di darci,
+cioè vediamo le classi del prob.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/130-0
+00:16:56.633 --> 00:17:01.691
+<v Lorenzo Molfetta>E verifichiamo che la classe che ha
+suggerito nella lem è effettivamente tipo</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/130-1
+00:17:01.691 --> 00:17:04.673
+<v Lorenzo Molfetta>nelle top tre no di tutte le classi del
+prob.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/131-0
+00:17:02.513 --> 00:17:06.944
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Del prob sì, ma che il prob,
+la distribuzione delle classi del prob</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/131-1
+00:17:06.944 --> 00:17:10.593
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>era molto sbilanciata verso più o -3
+classi principali.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/133-0
+00:17:12.873 --> 00:17:16.143
+<v Lorenzo Molfetta>Vabbè allora se è così allora lo lascerei
+fuori.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/133-1
+00:17:16.143 --> 00:17:19.746
+<v Lorenzo Molfetta>Cioè se mi dici che effettivamente questo
+è il fatto,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/132-0
+00:17:18.993 --> 00:17:19.913
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Esatto.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/133-2
+00:17:19.746 --> 00:17:24.884
+<v Lorenzo Molfetta>vabbè allora no lo riportiamo cioè a sto
+punto riporterei comunque in tesi i</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/133-3
+00:17:24.884 --> 00:17:27.153
+<v Lorenzo Molfetta>risultati poi di questa roba però.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/135-0
+00:17:25.393 --> 00:17:29.119
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Cioè l'abbiamo usato per capire quali
+fossero i layer più promettenti,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/135-1
+00:17:29.119 --> 00:17:33.107
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>perché ancora cioè correlazione la
+facciamo solo su quei layer che ti avevo</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/134-0
+00:17:32.473 --> 00:17:32.873
+<v Lorenzo Molfetta>Certo.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/135-2
+00:17:33.107 --> 00:17:35.469
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>scritto,
+quindi l'abbiamo usato per quel per</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/135-3
+00:17:35.469 --> 00:17:36.833
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>quello scopo lì alla fine.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/137-0
+00:17:36.633 --> 00:17:39.605
+<v Lorenzo Molfetta>No, perfetto. E allora ci abbiamo,
+abbiamo l'utilizzo,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/136-0
+00:17:39.313 --> 00:17:41.913
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Abbiamo anche sì,
+abbiamo la giustificazione comunque.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/137-1
+00:17:39.605 --> 00:17:41.713
+<v Lorenzo Molfetta>però non allora facciamo così perfetto.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/138-0
+00:17:42.713 --> 00:17:46.076
+<v Lorenzo Molfetta>OK, mi torna, me lo segno, va bene,
+quindi ora facciamo così.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/138-1
+00:17:46.076 --> 00:17:50.362
+<v Lorenzo Molfetta>Quelli li abbiamo utilizzati come sì
+appunto, però per trovare i punti giusti.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/138-2
+00:17:50.362 --> 00:17:54.538
+<v Lorenzo Molfetta>Invece in classificazione utilizziamo
+solo l'l M tanto l'abbiamo analizzato,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/138-3
+00:17:54.538 --> 00:17:57.793
+<v Lorenzo Molfetta>ce l'abbiamo già fatto a posto,
+quindi quello ce l'abbiamo.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/139-0
+00:17:58.073 --> 00:18:01.165
+<v Lorenzo Molfetta>E niente,
+quindi andrebbero sì classificati e poi</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/139-1
+00:18:01.165 --> 00:18:05.927
+<v Lorenzo Molfetta>le statistiche fatte anche su quelli,
+quindi dividendo le frasi per classi e</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/139-2
+00:18:05.927 --> 00:18:07.473
+<v Lorenzo Molfetta>valutando quelle cose là.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/140-0
+00:18:08.993 --> 00:18:10.153
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>E cioè quelle cose là.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/141-0
+00:18:10.953 --> 00:18:17.033
+<v Lorenzo Molfetta>Cioè le stesse metriche di correlazione,
+però sulla singola frase.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/143-0
+00:18:17.913 --> 00:18:20.873
+<v Lorenzo Molfetta>Quindi non su sul thinking,
+ma sulla singola classe.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/142-0
+00:18:20.033 --> 00:18:20.873
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>OK.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/144-0
+00:18:21.873 --> 00:18:23.393
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>OK, va bene.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/146-0
+00:18:22.713 --> 00:18:26.133
+<v Lorenzo Molfetta>Cioè quindi quello di average rimane,
+ripeto, rimane uguale,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/146-1
+00:18:26.133 --> 00:18:30.563
+<v Lorenzo Molfetta>solo che poi rifacciamo lo stesso calcolo
+prendendo solo le frasi di rollback,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/146-2
+00:18:30.563 --> 00:18:34.207
+<v Lorenzo Molfetta>solo le frasi eccetera,
+così vediamo per ogni comportamento se e</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/145-0
+00:18:31.073 --> 00:18:31.633
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Ho capito?</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/146-3
+00:18:34.207 --> 00:18:35.553
+<v Lorenzo Molfetta>come cambia quella roba.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/147-0
+00:18:34.673 --> 00:18:41.313
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>E anche per cioè per layer o come mi
+stavi dicendo prima per.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/148-0
+00:18:42.473 --> 00:18:44.471
+<v Lorenzo Molfetta>No,
+prenderei comunque i layer più</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/148-1
+00:18:44.471 --> 00:18:47.153
+<v Lorenzo Molfetta>significativi che hai fatto col probe e
+basta.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/149-0
+00:18:45.633 --> 00:18:49.793
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>No, sì, intendo per come si,
+come il nome giusto.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/150-0
+00:18:50.993 --> 00:18:52.753
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Per dirci una frase come.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/153-0
+00:18:54.153 --> 00:18:57.852
+<v Lorenzo Molfetta>Sì, esatto, cioè oltre che no,
+tipo posizione no allora.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/151-0
+00:18:57.433 --> 00:18:57.953
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Fatem</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/153-1
+00:18:57.852 --> 00:19:01.291
+<v Lorenzo Molfetta>Quindi abbiamo tre.
+Hai fatto bene a dirlo che me lo</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/153-2
+00:19:01.291 --> 00:19:04.665
+<v Lorenzo Molfetta>dimentico pure questo.
+Abbiamo tre tipi di analisi,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/152-0
+00:19:03.873 --> 00:19:04.513
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Esatto.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/153-3
+00:19:04.665 --> 00:19:08.753
+<v Lorenzo Molfetta>c'è l'analisi full,
+come abbiamo già fatto per adesso, quindi.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/155-0
+00:19:08.913 --> 00:19:12.831
+<v Lorenzo Molfetta>Tutto il team di tutto assieme facciamo
+l'average di tutto e calcoliamo le metri</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/155-1
+00:19:12.831 --> 00:19:16.893
+<v Lorenzo Molfetta>di correlazione come abbiamo già e quelle
+bene o male ce l'abbiamo a parte, ripeto,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/154-0
+00:19:14.753 --> 00:19:15.953
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>E questo l'ho fatto.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/155-2
+00:19:16.893 --> 00:19:19.553
+<v Lorenzo Molfetta>questa rigenerare per essere sicuri però
+ce l'abbiamo.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/157-0
+00:19:19.313 --> 00:19:22.774
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Sì, no, ma no, l'ho già fatto,
+l'ho appena l'ho appena fatto riscrivere</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/157-1
+00:19:22.774 --> 00:19:25.273
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>qua la tabella e le vedo però sono ancora
+negative.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/156-0
+00:19:23.753 --> 00:19:24.353
+<v Lorenzo Molfetta>A posto.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/158-0
+00:19:26.233 --> 00:19:27.593
+<v Lorenzo Molfetta>C'è un po di negativo sull'accuracy.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/159-0
+00:19:28.353 --> 00:19:29.713
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>No, sul tuo account.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/161-0
+00:19:30.393 --> 00:19:35.713
+<v Lorenzo Molfetta>Sì, va beh, sì, no, volevo dire quello sì,
+esatto, un token count e.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/160-0
+00:19:30.993 --> 00:19:33.433
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Sì, va beh, token account, sì, quello è.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/162-0
+00:19:37.273 --> 00:19:39.113
+<v Lorenzo Molfetta>Però queste qui sono senza troncamento.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/163-0
+00:19:39.913 --> 00:19:40.833
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Sì.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/165-0
+00:19:43.513 --> 00:19:47.825
+<v Lorenzo Molfetta>E hai fatto un check sulla questione del
+segno, cioè nel senso,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/165-1
+00:19:47.825 --> 00:19:52.069
+<v Lorenzo Molfetta>se questo è semplicemente,
+quindi vuol dire che più è corto il</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/164-0
+00:19:48.593 --> 00:19:49.873
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Sì, è così.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/165-2
+00:19:52.069 --> 00:19:53.753
+<v Lorenzo Molfetta>reasoning più è accurato.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/166-0
+00:19:55.393 --> 00:19:57.313
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Sì, me lo tocca un produce che ho curato.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/167-0
+00:19:58.953 --> 00:20:03.593
+<v Lorenzo Molfetta>OK, però vabbè sì, magari è quel 3.
+5 lo proverei.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/168-0
+00:20:05.553 --> 00:20:06.513
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Un'altro.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/169-0
+00:20:05.753 --> 00:20:06.873
+<v Lorenzo Molfetta>Provare con un'altro modello.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/170-0
+00:20:07.673 --> 00:20:08.033
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Sì.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/171-0
+00:20:09.553 --> 00:20:10.353
+<v Lorenzo Molfetta>OK.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/172-0
+00:20:11.553 --> 00:20:14.410
+<v Lorenzo Molfetta>Quindi OK,
+queste ce l'abbiamo la l'esame due invece</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/172-1
+00:20:14.410 --> 00:20:18.399
+<v Lorenzo Molfetta>è queste stesse metriche uguali,
+ma invece che prendere il thinking tutto</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/172-2
+00:20:18.399 --> 00:20:20.933
+<v Lorenzo Molfetta>insieme,
+prendiamo tutte le frasi della stessa</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/172-3
+00:20:20.933 --> 00:20:22.873
+<v Lorenzo Molfetta>classe e facciamo un'analisi uguale.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/174-0
+00:20:24.073 --> 00:20:28.233
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Queste queste classi sono date dal LMS
+perfetto.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/173-0
+00:20:24.313 --> 00:20:24.993
+<v Lorenzo Molfetta>E.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/178-0
+00:20:28.153 --> 00:20:32.064
+<v Lorenzo Molfetta>Esatto, corretto.
+Quindi prima le classifichiamo e poi</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/178-1
+00:20:32.064 --> 00:20:36.118
+<v Lorenzo Molfetta>stesse metriche,
+ma isolando solamente i pool di classi.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/177-0
+00:20:33.993 --> 00:20:37.193
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Analisi tre per la posizione.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/178-2
+00:20:36.118 --> 00:20:41.878
+<v Lorenzo Molfetta>L'analisi tre invece se l'analisi tre è
+invece sempre di nuovo su tutto assieme,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/178-3
+00:20:41.878 --> 00:20:44.793
+<v Lorenzo Molfetta>cioè non facciamo più la classificazione.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/179-0
+00:20:45.873 --> 00:20:51.332
+<v Lorenzo Molfetta>Divisa semplicemente andiamo a vedere
+come cambia questa correlazione,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/179-1
+00:20:51.332 --> 00:20:57.099
+<v Lorenzo Molfetta>se io considero faccio average dal token
+zero al token 100 al token 10 del</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/179-2
+00:20:57.099 --> 00:20:59.713
+<v Lorenzo Molfetta>thinking dal token 10 al token 20.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/180-0
+00:21:00.233 --> 00:21:03.022
+<v Lorenzo Molfetta>E così via.
+Cioè vado a capire qual è la tendenza di</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/180-1
+00:21:03.022 --> 00:21:06.390
+<v Lorenzo Molfetta>queste distribuzioni,
+quanto più il cioè non è tanto quanto più</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/180-2
+00:21:06.390 --> 00:21:09.073
+<v Lorenzo Molfetta>il reasoning va avanti,
+però proprio la posizione.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/184-0
+00:21:10.233 --> 00:21:14.223
+<v Lorenzo Molfetta>Perché magari, ripeto,
+la correlazione tra token Count va beh,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/181-0
+00:21:10.473 --> 00:21:10.913
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Chiaro.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/184-1
+00:21:14.223 --> 00:21:17.073
+<v Lorenzo Molfetta>token Count a questo punto sì,
+non ha senso,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/182-0
+00:21:16.313 --> 00:21:17.313
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Non ha senso.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/184-2
+00:21:17.073 --> 00:21:21.950
+<v Lorenzo Molfetta>si potrebbe togliere perché lo stiamo
+trimmando. Però per dire, per esempio,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/184-3
+00:21:21.950 --> 00:21:26.763
+<v Lorenzo Molfetta>la roter confidence di quando sei al
+token 100 generato è diverso dal roter</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/184-4
+00:21:26.763 --> 00:21:29.233
+<v Lorenzo Molfetta>confidence di quando sei magari al 150.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/183-0
+00:21:28.073 --> 00:21:29.953
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Certo, certo, chiaro.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/186-0
+00:21:29.593 --> 00:21:32.975
+<v Lorenzo Molfetta>Perché magari già a 150 hai fatto già con
+un certo tipo di riserin,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/186-1
+00:21:32.975 --> 00:21:36.905
+<v Lorenzo Molfetta>cioè all'inizio 6 1 po' più uncertain,
+poi hai preso la cascata e stai andando</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/185-0
+00:21:36.873 --> 00:21:38.353
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Sì, è chiarissimo.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/186-2
+00:21:36.905 --> 00:21:39.840
+<v Lorenzo Molfetta>giù per un pass,
+quindi magari cambia e quindi questa roba</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/186-3
+00:21:39.840 --> 00:21:43.471
+<v Lorenzo Molfetta>qua lo facciamo a degli intervalli,
+vedi bene o male qual è la media del</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/186-4
+00:21:43.471 --> 00:21:44.913
+<v Lorenzo Molfetta>della lunghezza del thinking.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/187-0
+00:21:45.753 --> 00:21:50.386
+<v Lorenzo Molfetta>E a quel punto invece che dare un cioè un
+numero di token fixed,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/187-1
+00:21:50.386 --> 00:21:55.162
+<v Lorenzo Molfetta>andiamo in percentuali,
+cioè possiamo dire analizzo il 20%, il 40,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/187-2
+00:21:55.162 --> 00:21:56.873
+<v Lorenzo Molfetta>il 60, l'ottanta il 100.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/188-0
+00:21:57.913 --> 00:21:59.873
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Aspetta, scusa,
+non ti ho seguito l'ultimo pezzo?</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/189-0
+00:22:00.073 --> 00:22:05.565
+<v Lorenzo Molfetta>Cioè nel senso invece che dire prendiamo
+i primi 100 token e poi prendiamo i primi</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/189-1
+00:22:05.565 --> 00:22:08.476
+<v Lorenzo Molfetta>110 e così via,
+farei invece a percentuali,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/189-2
+00:22:08.476 --> 00:22:12.247
+<v Lorenzo Molfetta>cioè dici OK qua in 3.
+5 in media c'è un thinking di 30.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/189-3
+00:22:12.247 --> 00:22:14.033
+<v Lorenzo Molfetta>000 caratteri 30.000 token.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/190-0
+00:22:13.833 --> 00:22:16.961
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Vabbè, ma in teoria,
+già che abbiamo tutte le generazioni,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/190-1
+00:22:16.961 --> 00:22:18.233
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>possiamo farlo per ogni.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/191-0
+00:22:19.673 --> 00:22:24.161
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Per ogni iterazione,
+cioè noi sappiamo che questa questo task,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/191-1
+00:22:24.161 --> 00:22:29.717
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>questa iterazione ha richiesto che so 10.
+000 token e lì possiamo prendere le</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/191-2
+00:22:29.717 --> 00:22:35.273
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>percentuali direttamente da quel numero
+lì invece che fare una media globale.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/192-0
+00:22:36.033 --> 00:22:38.913
+<v Lorenzo Molfetta>Però secondo me sì, no, questo è vero,
+però.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/193-0
+00:22:37.633 --> 00:22:39.913
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>La più significativa è la media globale,
+dici?</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/195-0
+00:22:40.073 --> 00:22:43.448
+<v Lorenzo Molfetta>No, è meglio essere,
+cioè parlando qui di token number,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/195-1
+00:22:43.448 --> 00:22:48.329
+<v Lorenzo Molfetta>cioè proprio della posizione nel futuro è
+meglio che consideriamo sempre quella,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/194-0
+00:22:45.393 --> 00:22:46.073
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Sì.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/195-2
+00:22:48.329 --> 00:22:53.150
+<v Lorenzo Molfetta>cioè tipo quando arriviamo al centesimo,
+quando arriviamo al centocinquantesimo</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/195-3
+00:22:53.150 --> 00:22:56.344
+<v Lorenzo Molfetta>però capire.
+Quindi invece se tu fai una generazione</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/195-4
+00:22:56.344 --> 00:22:58.513
+<v Lorenzo Molfetta>da 10.001 da 5000, il 10% è diverso.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/197-0
+00:22:57.953 --> 00:23:04.473
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Chiaro no? Allora facciamo uno spacing,
+che so, di boh, 300 token per frase.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/196-0
+00:22:59.113 --> 00:22:59.673
+<v Lorenzo Molfetta>Allora?</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/199-0
+00:23:05.193 --> 00:23:08.251
+<v Lorenzo Molfetta>Però il problema qual è?
+Che secondo me se facciamo 300,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/199-1
+00:23:08.251 --> 00:23:12.435
+<v Lorenzo Molfetta>cioè dipende quanto è lungo per quello
+dicevo secondo me una cosa sensata per</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/199-2
+00:23:12.435 --> 00:23:16.673
+<v Lorenzo Molfetta>avere anche poi una tabella facile da
+leggere tra modelli diversi che tincano.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/198-0
+00:23:15.273 --> 00:23:18.033
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Faccio la media e me la divido per 20,
+boh.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/200-0
+00:23:18.793 --> 00:23:22.843
+<v Lorenzo Molfetta>No, io dicevo fai proprio le,
+cioè nel senso se in media sono 30.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/200-1
+00:23:22.843 --> 00:23:26.586
+<v Lorenzo Molfetta>000 facciamo il 20%,
+il 40 così poi quando arriverà un'altro</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/200-2
+00:23:26.586 --> 00:23:31.433
+<v Lorenzo Molfetta>modello che invece in media fa 5000
+facciamo comunque se entra il 20%, il 30%,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/202-0
+00:23:30.953 --> 00:23:34.136
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Sì, no,
+ma sto dicendo la stessa cosa tua mi sa</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/200-3
+00:23:31.433 --> 00:23:32.353
+<v Lorenzo Molfetta>il 40%, il 50%.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/201-0
+00:23:33.673 --> 00:23:34.353
+<v Lorenzo Molfetta>Sì.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/202-1
+00:23:34.136 --> 00:23:37.319
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>perché?
+Cioè intendo abbiamo la media di quello</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/202-2
+00:23:37.319 --> 00:23:40.833
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>che produce il modello e poi lo dividiamo
+in 201030.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/204-0
+00:23:41.993 --> 00:23:48.010
+<v Lorenzo Molfetta>Ma secondo me 20 possiamo fare pure a 10
+vedi quanto ci mette in teoria vabbè son</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/204-1
+00:23:48.010 --> 00:23:53.733
+<v Lorenzo Molfetta>solo evaluation quindi sono immediate
+tipo quindi possiamo fare anche a 10 10</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/203-0
+00:23:48.073 --> 00:23:48.793
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Esatto.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/204-2
+00:23:53.733 --> 00:23:54.833
+<v Lorenzo Molfetta>per 10% 10% sì.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/205-0
+00:23:55.673 --> 00:23:58.870
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>OK,
+in questo caso però considero il primo</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/205-1
+00:23:58.870 --> 00:24:04.073
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>10% e poi il secondo 10% non faccio il
+20% nel secondo pezzo, giusto?</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/206-0
+00:24:04.873 --> 00:24:05.513
+<v Lorenzo Molfetta>Allora?</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/207-0
+00:24:07.513 --> 00:24:09.553
+<v Lorenzo Molfetta>No isola solamente le.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/210-0
+00:24:10.953 --> 00:24:14.529
+<v Lorenzo Molfetta>Cioè gli the state o cioè consideriamo
+solamente di quelli,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/210-1
+00:24:14.529 --> 00:24:17.628
+<v Lorenzo Molfetta>quindi non facciamo l'average sul non è
+cumulativo,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/208-0
+00:24:14.873 --> 00:24:16.913
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Certo, dal 10 al 20, chiaro, chiaro.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/210-2
+00:24:17.628 --> 00:24:21.442
+<v Lorenzo Molfetta>cioè poi nel senso che nel prompt
+comunque c'è sempre tutto no?</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/209-0
+00:24:17.993 --> 00:24:18.553
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Perfetto.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/210-3
+00:24:21.442 --> 00:24:25.673
+<v Lorenzo Molfetta>Cioè però le cose da analizzare sono solo
+quelle, solo quello spam là.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/211-0
+00:24:25.033 --> 00:24:27.073
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Certo, perfetto.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/212-0
+00:24:25.913 --> 00:24:29.673
+<v Lorenzo Molfetta>Così come ripeto per è come uguali per le
+classi, cioè analizziamo solo quello spam.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/214-0
+00:24:33.353 --> 00:24:37.623
+<v Lorenzo Molfetta>Quindi sì, solamente queste robe qua.
+Quindi niente proverei. Ripeto,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/214-1
+00:24:37.623 --> 00:24:40.735
+<v Lorenzo Molfetta>su sta roba qua controlla la roba
+dell'efficienza,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/214-2
+00:24:40.735 --> 00:24:45.554
+<v Lorenzo Molfetta>perché per me abbassando quel magari quel
+32 tutti assieme a due alla volta va</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/214-3
+00:24:45.554 --> 00:24:46.713
+<v Lorenzo Molfetta>molto più veloce e.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/213-0
+00:24:45.713 --> 00:24:46.513
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>OK.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/215-0
+00:24:47.913 --> 00:24:51.911
+<v Lorenzo Molfetta>Se vogliamo fare una prova,
+volendo tanto il codice non cambia,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/215-1
+00:24:51.911 --> 00:24:56.659
+<v Lorenzo Molfetta>ma cambia solo il codice di lancio,
+volendo puoi provare a lanciarlo invece</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/215-2
+00:24:56.659 --> 00:24:58.033
+<v Lorenzo Molfetta>con VLM come libreria.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/216-0
+00:24:58.633 --> 00:25:00.898
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Ormai è già tutto pronto qui,
+lo lascerei qui,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/216-1
+00:25:00.898 --> 00:25:02.633
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>tanto le generazioni sono già fatte.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/219-0
+00:25:03.833 --> 00:25:06.430
+<v Lorenzo Molfetta>No,
+di queste generazione se ce l'abbiamo va</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/217-0
+00:25:05.833 --> 00:25:08.353
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Sì, dicevi per l'altro.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/219-1
+00:25:06.430 --> 00:25:10.297
+<v Lorenzo Molfetta>bene, non è un problema.
+Però per il prossimo modello controllerei</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/219-2
+00:25:10.297 --> 00:25:14.626
+<v Lorenzo Molfetta>magari tanto è solo il lo script di
+lancio non è lo script di cioè open AI</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/219-3
+00:25:14.626 --> 00:25:19.185
+<v Lorenzo Molfetta>una volta che c'è la l'url di lamas IPP
+che sia lamas IPPO vuol dire lamas non</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/219-4
+00:25:19.185 --> 00:25:19.993
+<v Lorenzo Molfetta>cambia niente.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/218-0
+00:25:20.473 --> 00:25:20.913
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Certo.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/221-0
+00:25:20.553 --> 00:25:24.531
+<v Lorenzo Molfetta>Come lanci il modello per quello dico,
+magari possiamo fare una prova per il</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/220-0
+00:25:22.433 --> 00:25:23.193
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>LGPI.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/221-1
+00:25:24.531 --> 00:25:28.612
+<v Lorenzo Molfetta>prossimo modello di vedere qual è il
+token al secondo su meno cose chiaramente</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/222-0
+00:25:28.553 --> 00:25:32.353
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Sì, non so se ne può valere la pena,
+visto che il tempo non è già moltissimo.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/221-2
+00:25:28.612 --> 00:25:29.593
+<v Lorenzo Molfetta>tra lamcp e vrelem.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/223-0
+00:25:33.513 --> 00:25:35.598
+<v Lorenzo Molfetta>Va beh,
+vedi un attimo quanto ci metto a fare</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/223-1
+00:25:35.598 --> 00:25:37.593
+<v Lorenzo Molfetta>generazione se abbassi la batch size a
+due?</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/224-0
+00:25:38.753 --> 00:25:39.433
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>OK.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/225-0
+00:25:40.033 --> 00:25:43.353
+<v Lorenzo Molfetta>Vedi un attimo con a due effettivamente
+se miglioriamo tanto.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/226-0
+00:25:42.313 --> 00:25:44.119
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Sì,
+ma una volta che abbiamo che se</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/226-1
+00:25:44.119 --> 00:25:46.828
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>eliminiamo uno o due modelli,
+quelli più impegnativi,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/226-2
+00:25:46.828 --> 00:25:48.233
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>per me non abbiamo problemi.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/228-0
+00:25:48.793 --> 00:25:51.335
+<v Lorenzo Molfetta>No,
+ma infatti però ho capito per averceli</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/227-0
+00:25:50.953 --> 00:25:52.033
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Sì.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/228-1
+00:25:51.335 --> 00:25:55.473
+<v Lorenzo Molfetta>per fare più analisi così prima ce li
+abbiamo meglio è, quindi vabbè.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/229-0
+00:25:54.393 --> 00:25:57.622
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>O magari quei quei due o tre modelli in
+più li facciamo alla fine se abbiamo</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/229-1
+00:25:57.622 --> 00:25:57.873
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>tempo.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/230-0
+00:25:58.313 --> 00:26:01.864
+<v Lorenzo Molfetta>Sì, lo possiamo fare, ma va bene così.
+Però innanzitutto provo adesso a</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/230-1
+00:26:01.864 --> 00:26:04.873
+<v Lorenzo Molfetta>abbassare sta bad size,
+a cambiare il codice di generazione.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/231-0
+00:26:03.833 --> 00:26:07.947
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>OK quindi Ricapitolando,
+lista di cose da fare nell'immediato,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/231-1
+00:26:07.947 --> 00:26:13.170
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>controllare questa cosa del batch size e
+misurare il secondo fare i tre tipi di</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/231-2
+00:26:13.170 --> 00:26:18.393
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>correlazioni quindi questo qui come ho
+già fatto adesso che vabbè ho già fatto.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/232-0
+00:26:19.033 --> 00:26:29.113
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Secondo per categoria decisa da e terzo
+in base alla posizione.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/233-0
+00:26:30.233 --> 00:26:30.913
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Corretto.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/235-0
+00:26:30.553 --> 00:26:34.890
+<v Lorenzo Molfetta>Esatto, sì, son questi sì, no.
+Ripeto chiaramente rispetto a questa</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/234-0
+00:26:32.713 --> 00:26:33.633
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>E c'è altro.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/235-1
+00:26:34.890 --> 00:26:39.673
+<v Lorenzo Molfetta>tabella, come dicevo l'altra volta,
+facciamo anche le regolazioni interne.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/236-0
+00:26:40.553 --> 00:26:44.473
+<v Lorenzo Molfetta>Cioè margin contro routine confidence, no?</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/237-0
+00:26:45.593 --> 00:26:48.313
+<v Lorenzo Molfetta>Cioè non sempre contro a chiudere sì la
+correlazione.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/238-0
+00:26:49.713 --> 00:26:50.513
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>OK.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/239-0
+00:26:56.033 --> 00:26:57.433
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Forse c'erano qualche altra tabella.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/243-0
+00:26:59.113 --> 00:27:01.705
+<v Lorenzo Molfetta>Cioè banalmente basterebbe ripetere la
+stessa,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/243-1
+00:27:01.705 --> 00:27:06.283
+<v Lorenzo Molfetta>cioè la stessa tabella che abbiamo sopra
+viene ripetuta n volte e ogni volta cambi</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/240-0
+00:27:03.153 --> 00:27:03.753
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Sì.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/243-2
+00:27:06.283 --> 00:27:09.702
+<v Lorenzo Molfetta>qual è la destinazione?
+Cioè dico in quella prima è accuracy,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/241-0
+00:27:08.153 --> 00:27:10.793
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Una volta la cura, sì, OK quello.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/243-3
+00:27:09.702 --> 00:27:13.562
+<v Lorenzo Molfetta>una volta è sì, una volta token count,
+una volta è confidence esatto,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/242-0
+00:27:11.873 --> 00:27:13.153
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>La prossima qual è?</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/243-4
+00:27:13.562 --> 00:27:15.713
+<v Lorenzo Molfetta>cioè quella stessa là, quindi sono 123.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/246-0
+00:27:16.153 --> 00:27:20.459
+<v Lorenzo Molfetta>Sono 10 più o meno a vista e quindi 10
+tipo due e 10 tabelle.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/246-1
+00:27:20.459 --> 00:27:26.223
+<v Lorenzo Molfetta>Poi vediamo come plottarle nel senso poi
+per adesso tutte tabelle poi facciamo dei</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/244-0
+00:27:23.993 --> 00:27:24.473
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Ok.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/246-2
+00:27:26.223 --> 00:27:28.793
+<v Lorenzo Molfetta>plot chiaramente ben pensati però sì.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/245-0
+00:27:26.473 --> 00:27:26.913
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Caro.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/249-0
+00:27:30.313 --> 00:27:33.049
+<v Lorenzo Molfetta>Guarda sta roba,
+vedi se effettivamente ce n'è uno di</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/247-0
+00:27:30.473 --> 00:27:31.153
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Perfetto.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/249-1
+00:27:33.049 --> 00:27:35.684
+<v Lorenzo Molfetta>questi benchmark che provo più pesante
+degli altri.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/249-2
+00:27:35.684 --> 00:27:39.686
+<v Lorenzo Molfetta>Però secondo me se cambi già ste robe si
+dovrebbe risolvere, ci dovrebbe fare.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/249-3
+00:27:39.686 --> 00:27:43.537
+<v Lorenzo Molfetta>Io mi immagino che faccia tutti i
+benchmark in cioè in 4 5 ore, non di più.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/249-4
+00:27:43.537 --> 00:27:46.273
+<v Lorenzo Molfetta>Ecco, questo è quello che pensavo.
+Però si controlla.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/248-0
+00:27:43.953 --> 00:27:44.673
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>OK.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/250-0
+00:27:46.953 --> 00:27:52.944
+<v Lorenzo Molfetta>Dopodiché io vedo un attimo di almeno
+fare un unit di queste librerie per la</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/250-1
+00:27:52.944 --> 00:27:54.033
+<v Lorenzo Molfetta>parte guidata.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/251-0
+00:27:56.953 --> 00:27:57.353
+<v Lorenzo Molfetta>E niente.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/252-0
+00:27:58.393 --> 00:27:58.953
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Ottimo.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/255-0
+00:27:58.513 --> 00:28:02.312
+<v Lorenzo Molfetta>Se non si cerca fammi sapere questa roba
+qua del se ti va della velocità,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/255-1
+00:28:02.312 --> 00:28:06.522
+<v Lorenzo Molfetta>cioè vedi che token al secondo ti ritorna
+e soprattutto abbassando la back size e</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/253-0
+00:28:03.313 --> 00:28:03.913
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Sì.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/255-2
+00:28:06.522 --> 00:28:08.113
+<v Lorenzo Molfetta>vedi quanto ci mette in totale.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/254-0
+00:28:08.793 --> 00:28:09.313
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Perfetto.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/257-0
+00:28:11.033 --> 00:28:15.843
+<v Lorenzo Molfetta>Buona dai tutto grazie a te e niente ci
+aggiorniamo se vuoi ci risentiamo anche</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/256-0
+00:28:12.233 --> 00:28:13.513
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Procedo, grazie, 1000.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/257-1
+00:28:15.843 --> 00:28:20.112
+<v Lorenzo Molfetta>volendo giovedì nel senso per adesso lo
+teniamo il così in calendario,</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/257-2
+00:28:20.112 --> 00:28:20.833
+<v Lorenzo Molfetta>poi vediamo.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/259-0
+00:28:20.313 --> 00:28:24.524
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>No, assolutamente,
+io più ci aggiorniamo e meglio è per</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/259-1
+00:28:24.524 --> 00:28:25.953
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>quanto mi riguarda.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/258-0
+00:28:25.513 --> 00:28:25.833
+<v Lorenzo Molfetta>Vai.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/260-0
+00:28:26.913 --> 00:28:27.313
+<v Lorenzo Molfetta>Un attimo.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/261-0
+00:28:27.233 --> 00:28:27.913
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Grazie, 1000.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/263-0
+00:28:28.313 --> 00:28:30.313
+<v Lorenzo Molfetta>Grazie a te, ci sentiamo presto,
+Ciao Ciao.</v>
+
+56a6a6e3-54bf-4f95-9b84-e51f9b26c476/262-0
+00:28:29.353 --> 00:28:29.913
+<v Leonardo Tassinari - leonardo.tassinari6@studio.unibo.it>Ciao Ciao.</v>
