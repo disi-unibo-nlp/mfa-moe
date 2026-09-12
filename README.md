@@ -74,13 +74,28 @@ test policy.
 
 The current Qwen MoE benchmark workflow is self-contained under
 `src/moe_exp/correlation_pipeline`. The default resumable run executes the
-eight-benchmark SPIRAL evaluation suite:
+six benchmarks: MATH-500, AIME24, AIME25, OlympiadBench, AMC23 and Minerva. It
+runs vLLM generation and frozen GEPA sentence tagging with eight concurrent
+requests per stage, followed by forward replay and all
+correctness, metric-pair, expert, class and position analyses:
 
 ```bash
 src/moe_exp/correlation_pipeline/run_all.sh
 ```
 
-Generation, forward replay, and analysis can also be run independently. See
+Use `--skip-tagging` to omit the judge and class-based analyses while retaining
+whole-reasoning, position and standard correlation/expert analyses. Untagged
+outputs go to `reasoning-vllm-untagged-v1`. `--skip-annotate` instead reuses
+existing labels and keeps class-based analyses.
+
+GPQA-Diamond and MMLU-Pro remain available through explicit `--datasets` selection.
+Use `--skip-generate` to reuse generations of the selected model. For the saved
+GGUF generations, also pass
+`--generation-model qwen3.5-35b-a3b-mtp-ud-q4-k-xl`. New generation uses
+`Qwen/Qwen3.5-35B-A3B-GPTQ-Int4`; the judge uses
+`unsloth/Qwen3.8-27B-NVFP4`. New annotations and analyses live under
+`results/correlation_pipeline/reasoning-vllm-v1`, preserving older results. Generation, tagging, forward replay,
+and analysis can also be run independently. See
 [`src/moe_exp/correlation_pipeline/README.md`](src/moe_exp/correlation_pipeline/README.md)
 for supported benchmarks, sampling settings, model pairing, output layout,
 and Docker commands.

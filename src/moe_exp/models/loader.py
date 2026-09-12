@@ -149,13 +149,14 @@ def load_model_and_tokenizer(
         )
         model = model.to("cpu")
     else:
+        quantization_kwargs = {"quantization_config": bnb_config} if bnb_config is not None else {}
         model = model_class.from_pretrained(
             model_id,
             torch_dtype=torch.bfloat16,
             device_map="auto",
             offload_folder=offload_folder,
             trust_remote_code=trust_remote_code,
-            quantization_config=bnb_config,
+            **quantization_kwargs,
         )
 
     model.eval()

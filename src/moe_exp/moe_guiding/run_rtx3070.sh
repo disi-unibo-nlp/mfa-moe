@@ -18,7 +18,7 @@ case "$CONDITION" in
     ;;
 esac
 
-exec "${PYTHON_BIN:-python}" -m moe_exp.moe_guiding.run generate \
+exec bash "$SCRIPT_DIR/run_docker.sh" generate \
   --model Isotonic/TinyMixtral-4x248M-MoE \
   --revision 1e3516176a6279ce93923060fcad848dc043af79 \
   --prompts src/moe_exp/moe_guiding/prompts.jsonl \

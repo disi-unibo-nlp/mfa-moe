@@ -53,20 +53,29 @@ or new gold annotation.  Only boundary vectors are stored; Qwen does not
 regenerate the released or benchmark solutions.
 
 \paragraph{Correlation-pipeline design.}
-The pipeline separates \texttt{llama.cpp} generation from a teacher-forced
-Hugging Face forward pass.  It stores router logits, selected expert
-identifiers, and optional hidden states, then computes trace-level and
-repeated-attempt correlations with correctness and lexical reasoning-event
-labels.  The current run covers 6,627 scored traces from 1,745 source problems
-across MATH-500, AIME 2024, AIME 2025, OlympiadBench, AMC 2023, Minerva Math,
-and GPQA-Diamond.  AIME and AMC use 32 attempts per problem, GPQA uses ten
-attempts with permuted answer choices, and the other datasets use one.  MMLU-Pro,
-the eighth and last default benchmark, was not run.  Generation uses the
-\texttt{UD-Q4\_K\_XL} GGUF with embedded native MTP speculative weights;
-replay uses the matching BF16 checkpoint with runtime 4-bit quantization, so
-the stages use different 4-bit formats.  All 6,627 traces are scored, and the
-repeated AIME and AMC designs support problem-cluster and within-problem
-analyses.
+The current pipeline separates vLLM generation from a teacher-forced
+Hugging Face forward pass. The September 10, 2026 untagged run covers 4,647
+attempts from 1,547 source problems on MATH-500, AIME 2024, AIME 2025,
+OlympiadBench, AMC 2023, and Minerva Math. AIME and AMC use 32 attempts per
+problem; the other datasets use one. GPQA-Diamond and MMLU-Pro are absent
+from this snapshot. Generation serves
+\texttt{Qwen/Qwen3.5-35B-A3B-GPTQ-Int4}; replay uses
+\texttt{unsloth/Qwen3.5-35B-A3B} with runtime 4-bit quantization, so the stages
+use different 4-bit formats. All 4,647 attempts enter the binary analysis,
+including 371 unparseable answers counted as incorrect. There are 3,588
+correct attempts (0.772 pooled accuracy), and 394 traces reach the
+32,768-token budget. These failures account for 393 of 1,059 errors.
+
+Replay retains compact features and selected top-$k$ expert IDs at six decoder
+layers. The analysis includes whole-continuation correlations, complete-group
+avg@32 and within-problem contrasts, metric-pair and pooled expert-ID screens,
+and new full-reasoning and absolute-position views. The position reference
+uses the corpus mean of 12,477.026 reasoning tokens, with ten disjoint windows
+and overflow. Late-window features are missing for shorter traces. No sentence
+classifier or Schoenfeld class view was used. The pipeline is operationally
+complete for these six benchmarks; the analyses do not remove termination,
+length, or token-composition confounds, and pooled numeric expert IDs do not
+identify individual layer-specific expert modules.
 
 \paragraph{Table model and metric conventions.}
 Every table caption identifies the evaluated model or models and the metrics
@@ -78,9 +87,12 @@ positive and negative classes.  Cohen's $\kappa$ is chance-corrected nominal
 agreement, Kendall's $\tau_b$ is rank agreement under the fixed episode-label
 ordering, and the GEPA composite averages their equal-weight $[0,1]$
 rescalings.  Routing entropy is Shannon entropy of the softmax router
-distribution; switch rate is the fraction of top-$k$ experts replaced from the
-preceding token; top-$k$ overlap is adjacent-token Jaccard overlap; and router
-margin is the top-1 minus top-2 router probability.  Unless a caption states
+distribution; the correlation pipeline's switch rate is the fraction of
+adjacent tokens whose top-1 expert changes; its top-$k$ overlap is the
+adjacent-set intersection divided by $k$ (not Jaccard overlap); and router
+margin is the top-1 minus top-2 router probability.  Top-$k$ mass sums the
+selected probabilities, while the boundary margin is $p_{(k)}-p_{(k+1)}$.
+Unless a caption states
 otherwise, $N$ and support are observation counts, $r$ is a Pearson-family
 correlation coefficient, and confidence intervals are percentile bootstrap
 intervals.
@@ -97,7 +109,8 @@ The active packages are located at
 
 The Qwen judge artifacts formerly called Experiment~0a, including the final
 Qwen3.8 model-alignment run, and the Qwen3.5 boundary-probe artifacts formerly
-called Experiment~0b are complete.  Correlation generation, replay, and
-analysis are complete for seven of eight default benchmarks; only MMLU-Pro
-remains unrun.  Historical OLMoE and numbered-experiment outputs are archived
+called Experiment~0b are complete.  The current vLLM correlation generation, replay, and
+analysis are complete for six math benchmarks, including full-reasoning and
+position views. GPQA-Diamond was analyzed in an earlier GGUF run but is absent
+from this snapshot; MMLU-Pro remains unrun.  Historical OLMoE and numbered-experiment outputs are archived
 and are not pooled with the estimates in this report.

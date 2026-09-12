@@ -150,6 +150,82 @@ def _find_prompt_length(
     return common_prefix
 
 
+def _generated_tokens_to_cpu(tensor: torch.Tensor, prompt_len: int) -> torch.Tensor:
+    """Copy the continuation without retaining the full sequence's storage."""
+    if tensor.ndim == 2:
+        tensor = tensor.view(1, -1, tensor.shape[-1])
+    return tensor[0, prompt_len:, :].detach().to(device="cpu", copy=True)
+
+
+def _extract_qwen_logs_to_cpu(
+    forward_model: torch.nn.Module,
+    layers: torch.nn.ModuleList,
+    forward_kwargs: dict,
+    prompt_len: int,
+    requested_layers: set[int] | None,
+    extract_hidden_states: bool,
+) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
+    """Capture selected Qwen3.5 MoE signals without accumulating GPU outputs.
+
+    The gate's first output contains full routing probabilities. Decoder inputs
+    match ``output_hidden_states[:-1]`` (not the post-attention router inputs).
+    Only generated tokens are copied, while the forward still sees full context.
+    """
+    selected = [i for i in range(len(layers)) if requested_layers is None or i in requested_layers]
+    routers: dict[int, torch.Tensor] = {}
+    hidden: dict[int, torch.Tensor] = {}
+    handles = []
+
+    def router_hook(layer_index):
+        def capture(_module, _args, output):
+            probabilities = _generated_tokens_to_cpu(output[0], prompt_len)
+            # Convert on CPU: a log/softmax round trip preserves the full router
+            # distribution, without allocating another full sequence on GPU.
+            routers[layer_index] = probabilities.clamp_min_(
+                torch.finfo(probabilities.dtype).tiny
+            ).log_()
+        return capture
+
+    def hidden_hook(layer_index):
+        def capture(_module, args, kwargs):
+            block_input = args[0] if args else kwargs["hidden_states"]
+            hidden[layer_index] = _generated_tokens_to_cpu(block_input, prompt_len)
+        return capture
+
+    try:
+        for layer_index in selected:
+            layer = layers[layer_index]
+            gate = getattr(getattr(layer, "mlp", None), "gate", None)
+            if gate is None:
+                raise RuntimeError(f"Cannot capture Qwen router at decoder layer {layer_index}")
+            handles.append(gate.register_forward_hook(router_hook(layer_index)))
+            if extract_hidden_states:
+                handles.append(layer.register_forward_pre_hook(
+                    hidden_hook(layer_index), with_kwargs=True
+                ))
+
+        # HF's automatic collectors would otherwise hold every layer's full
+        # sequence on GPU until the end, even when only a few layers are wanted.
+        with torch.inference_mode():
+            forward_model(**{
+                **forward_kwargs,
+                "output_router_logits": False,
+                "output_hidden_states": False,
+                "output_attentions": False,
+            })
+    finally:
+        for handle in handles:
+            handle.remove()
+
+    if any(i not in routers or (extract_hidden_states and i not in hidden) for i in selected):
+        raise RuntimeError("Qwen forward did not capture all requested decoder layers")
+    router_tensor = torch.stack([routers[i] for i in selected]) if selected else torch.empty(0)
+    if extract_hidden_states:
+        hidden_tensor = torch.stack([hidden[i] for i in selected]) if selected else torch.empty(0)
+        return router_tensor, hidden_tensor
+    return router_tensor
+
+
 def extract_logs_single_pass(
     model: PreTrainedModel,
     tokenizer: PreTrainedTokenizerBase,
@@ -159,6 +235,8 @@ def extract_logs_single_pass(
     system_prompt: str | None = None,
     messages: list[dict[str, str]] | None = None,
     layer_indices: list[int] | None = None,
+    token_replay: dict | None = None,
+    routing_details: dict | None = None,
 ) -> torch.Tensor | tuple[torch.Tensor, torch.Tensor]:
     """
     Run a single forward pass with the full prompt + CoT to extract model logs.
@@ -171,23 +249,27 @@ def extract_logs_single_pass(
         router_logits: (num_layers, seq_len, num_experts)
         If extract_hidden_states is True, also returns:
         hidden_states: (num_layers, seq_len, hidden_size)  [Only for the generated part]
-        NOTE: hidden_states are the PRE-MoE representations (input to the router),
-        so that layer i hidden state is the representation the router at layer i sees.
+        NOTE: hidden_states are decoder-block inputs, matching Hugging Face's
+        hidden_states[:-1], not the post-attention representations at the router.
+        Qwen3.5 MoE signals are copied to CPU as the selected layers execute.
     """
     first_device = next(model.parameters()).device
     
-    formatted_prompt = _format_prompt(tokenizer, problem, system_prompt, messages)
-    full_text = formatted_prompt + cot_text
-
-    # Tokenize the full text once to avoid boundary-merge issues
-    inputs = tokenizer(full_text, return_tensors="pt")
+    if token_replay is not None:
+        from moe_exp.models.token_replay import validate_token_replay
+        prompt_ids, completion_ids = validate_token_replay(token_replay, tokenizer, cot_text)
+        ids = torch.tensor([prompt_ids + completion_ids], dtype=torch.long)
+        inputs = {"input_ids": ids, "attention_mask": torch.ones_like(ids)}
+        prompt_len = len(prompt_ids)
+    else:
+        formatted_prompt = _format_prompt(tokenizer, problem, system_prompt, messages)
+        full_text = formatted_prompt + cot_text
+        inputs = tokenizer(full_text, return_tensors="pt")
+        prompt_len = _find_prompt_length(tokenizer, formatted_prompt, full_text)
     assert inputs["input_ids"].shape[0] == 1, (
         "extract_logs_single_pass only supports batch_size=1"
     )
     inputs = {k: v.to(first_device) for k, v in inputs.items()}
-
-    # Find the prompt length within the jointly-tokenized sequence
-    prompt_len = _find_prompt_length(tokenizer, formatted_prompt, full_text)
 
     # Router and hidden-state extraction only needs the decoder backbone. The
     # CausalLM wrapper also computes an auxiliary load-balancing loss when
@@ -203,10 +285,6 @@ def extract_logs_single_pass(
     if forward_model is model and "logits_to_keep" in inspect.signature(model.forward).parameters:
         forward_kwargs["logits_to_keep"] = 1
 
-    with torch.inference_mode():
-        outputs = forward_model(**forward_kwargs)
-
-    extracted_logits = []
     config = getattr(model, "config", None)
     text_config = getattr(config, "text_config", None)
     model_types = {
@@ -216,9 +294,30 @@ def extract_logs_single_pass(
     router_outputs_are_probabilities = bool(
         model_types & {"qwen3_5_moe", "qwen3_5_moe_text"}
     )
+    requested_layers = None if layer_indices is None else set(layer_indices)
+    from moe_exp.models.router_adapters import available_router_layers, stream_router_signals
+    if available_router_layers(model) is not None:
+        return stream_router_signals(
+            model, forward_model, forward_kwargs, prompt_len,
+            requested_layers, extract_hidden_states, routing_details,
+        )
+    if router_outputs_are_probabilities:
+        # Text-only backbones expose .layers; the multimodal backbone exposes
+        # the same decoder through .language_model.layers.
+        decoder = getattr(forward_model, "language_model", forward_model)
+        layers = getattr(decoder, "layers", None)
+        if isinstance(layers, torch.nn.ModuleList):
+            return _extract_qwen_logs_to_cpu(
+                forward_model, layers, forward_kwargs, prompt_len,
+                requested_layers, extract_hidden_states,
+            )
+
+    with torch.inference_mode():
+        outputs = forward_model(**forward_kwargs)
+
+    extracted_logits = []
     
     if hasattr(outputs, "router_logits") and outputs.router_logits is not None:
-        requested_layers = None if layer_indices is None else set(layer_indices)
         for layer_index, layer_logits in enumerate(outputs.router_logits):
             if requested_layers is not None and layer_index not in requested_layers:
                 continue
@@ -250,15 +349,6 @@ def extract_logs_single_pass(
             #   [1] = output of layer 0 = input to layer 1
             #   ...
             #   [L] = output of layer L-1
-            #
-            # In OLMoE (and standard MoE transformers), within each layer the
-            # computation is: input → attention → router → MoE FFN → output.
-            # The router at layer i operates on the post-attention representation
-            # inside that layer. The exact post-attention state is not exposed by
-            # HuggingFace's output, but hidden_states[i] (the input to layer i,
-            # i.e., the output of layer i-1) is the closest available signal and
-            # is highly correlated with the actual router input (they differ only
-            # by the attention sublayer of layer i).
             #
             # We take hidden_states[:-1] to get indices [0..L-1], matching the
             # L router logit tensors.

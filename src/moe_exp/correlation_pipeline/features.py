@@ -7,7 +7,7 @@ import numpy as np
 import torch
 import torch.nn.functional as F
 
-FEATURE_SCHEMA_VERSION = 2
+FEATURE_SCHEMA_VERSION = 3
 
 
 def _mean_or_nan(values: torch.Tensor) -> float:
@@ -46,6 +46,8 @@ def compute_layer_features(
     *,
     max_geometry_tokens: int,
     layer_indices: list[int] | None = None,
+    token_indices: list[int] | None = None,
+    segment_ids: list[int] | None = None,
 ) -> dict[str, float]:
     """Reduce per-token router/hidden tensors to per-trace scalar features.
 
@@ -57,6 +59,26 @@ def compute_layer_features(
         raise ValueError(f"Expected non-empty 3D router logits, got {tuple(router_logits.shape)}")
     if max_geometry_tokens < 3:
         raise ValueError("max_geometry_tokens must be at least 3")
+
+    if token_indices is not None:
+        if not token_indices or token_indices != sorted(set(token_indices)):
+            raise ValueError("token_indices must be non-empty, sorted and unique")
+        if token_indices[0] < 0 or token_indices[-1] >= router_logits.shape[1]:
+            raise ValueError("token_indices are outside the extracted continuation")
+        selection = torch.tensor(token_indices, dtype=torch.long, device=router_logits.device)
+        router_logits = router_logits.index_select(1, selection)
+        if hidden_states is not None:
+            hidden_states = hidden_states.index_select(1, selection.to(hidden_states.device))
+        if selected_experts is not None:
+            selected_experts = selected_experts.index_select(1, selection.to(selected_experts.device))
+        adjacent = selection[1:] - selection[:-1] == 1
+    else:
+        adjacent = torch.ones(router_logits.shape[1] - 1, dtype=torch.bool, device=router_logits.device)
+    if segment_ids is not None:
+        if len(segment_ids) != router_logits.shape[1]:
+            raise ValueError("segment_ids must align with selected tokens")
+        segments = torch.tensor(segment_ids, device=router_logits.device)
+        adjacent &= segments[1:] == segments[:-1]
 
     features: dict[str, float] = {}
     num_layers, token_count, num_experts = router_logits.shape
@@ -92,21 +114,27 @@ def compute_layer_features(
             k=min(top_k + 1, num_experts),
             dim=-1,
         ).values
-        selected_values = sorted_probabilities[:, :top_k]
+        if selected_experts is not None:
+            actual_ids = selected_experts[layer].long()
+            selected_values = probabilities.gather(-1, actual_ids)
+        else:
+            actual_ids = probabilities.topk(top_k, dim=-1).indices
+            selected_values = sorted_probabilities[:, :top_k]
         selected_mass = selected_values.sum(dim=-1)
         if top_k < num_experts:
-            boundary_margin = selected_values[:, -1] - sorted_probabilities[:, top_k]
+            unselected = probabilities.clone().scatter_(-1, actual_ids, -1)
+            boundary_margin = selected_values.min(dim=-1).values - unselected.max(dim=-1).values
             non_selected_mean = (1.0 - selected_mass) / (num_experts - top_k)
             topk_non_topk_gap = selected_values.mean(dim=-1) - non_selected_mean
         else:
-            boundary_margin = selected_values[:, -1]
+            boundary_margin = selected_values.min(dim=-1).values
             topk_non_topk_gap = selected_values.mean(dim=-1)
 
         top_two = torch.topk(probabilities, k=min(2, num_experts), dim=-1).values
         margin = top_two[:, 0] - top_two[:, 1] if num_experts > 1 else top_two[:, 0]
-        top_one = probabilities.argmax(dim=-1)
+        top_one = actual_ids.gather(-1, selected_values.argmax(dim=-1, keepdim=True)).squeeze(-1)
         switch_rate = (
-            _mean_or_nan((top_one[1:] != top_one[:-1]).to(torch.float32))
+            _mean_or_nan((top_one[1:] != top_one[:-1])[adjacent].to(torch.float32))
             if token_count > 1
             else float("nan")
         )
@@ -116,7 +144,7 @@ def compute_layer_features(
             intersection = (
                 previous.unsqueeze(-1) == current.unsqueeze(-2)
             ).any(dim=-1).sum(dim=-1)
-            topk_overlap = _mean_or_nan(intersection.to(torch.float32) / previous.shape[-1])
+            topk_overlap = _mean_or_nan(intersection[adjacent].to(torch.float32) / previous.shape[-1])
         else:
             topk_overlap = float("nan")
 
@@ -139,7 +167,7 @@ def compute_layer_features(
                 trajectory_distance = 1.0 - F.cosine_similarity(
                     hidden[1:], hidden[:-1], dim=-1
                 )
-                hidden_step_distance = _mean_or_nan(trajectory_distance)
+                hidden_step_distance = _mean_or_nan(trajectory_distance[adjacent])
             else:
                 hidden_step_distance = float("nan")
             layer_values.update(
