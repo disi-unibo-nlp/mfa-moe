@@ -901,8 +901,505 @@ policy changes reasoning and improves final outcomes on held-out problems.
 % Describe the proposed method here.
 
 \chapter{Experimental Setup}
+\label{ch:experimental-setup}
 
-% Describe the experimental setup here.
+This chapter describes the computing environment, model implementations,
+datasets, and evaluation protocols used in the experimental work. The three
+principal studies address complementary questions: whether an automatic
+annotator can identify reasoning episodes, whether upcoming episodes can be
+predicted from hidden representations, and whether routing measurements are
+associated with answer correctness and reasoning events. Model weights remain
+fixed throughout these studies; learning is confined to prompt optimisation
+and the fitting of linear probes.
+
+The experiments evolved during development. In particular, benchmark
+generation moved from a GGUF implementation in \texttt{llama.cpp} to a GPTQ
+implementation in vLLM. The completed correlation corpus described below is
+the six-benchmark, untagged snapshot documented on 10 September 2026.
+Subsequent support for sentence annotation and changes to truncation handling
+are identified separately. This distinction makes the experimental population
+and the provenance of each measurement explicit.
+
+\section{Computing infrastructure}
+\label{sec:setup-infrastructure}
+
+Most experiments were executed on the University of Bologna NLP group's
+Slurm-managed GPU cluster, principally on \texttt{moro43}, the node equipped
+with one NVIDIA GeForce RTX 5090 with 32\,GB of VRAM. Earlier annotation
+experiments also used one RTX 3090 on \texttt{faretra}, the cluster's master
+node. The cluster guide lists four RTX 3090 GPUs on that machine, each with
+24\,GB of VRAM; these are separate devices, rather than a single shared
+memory pool \cite{unibonlpClusterGuide}.
+
+\begin{table}[tbp]
+  \centering
+  \small
+  \caption{Resources of the principal experimental node. GPU specifications
+  follow the cluster guide; CPU and host-memory capacities are the scheduler
+  values displayed by the dashboard on 13 September 2026
+  \cite{unibonlpClusterGuide,unibonlpClusterDashboard}.}
+  \label{tab:setup-hardware}
+  \begin{tabularx}{\textwidth}{@{}lX@{}}
+    \toprule
+    Resource & Configuration \\
+    \midrule
+    Compute node & \texttt{moro43} \\
+    GPU & One NVIDIA GeForce RTX 5090 \\
+    GPU memory & 32\,GB \\
+    Scheduler CPU capacity & 32 CPU resources \\
+    Scheduler host memory & Approximately 121\,GB, as displayed \\
+    Execution environment & Linux, Slurm, and GPU-enabled Docker containers \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+Table~\ref{tab:setup-hardware} describes node capacity, rather than a resource
+allocation guaranteed to each job. The GEPA and probe batch launchers request
+one GPU, 64\,GiB of host memory, and a 48-hour time limit; the probe launcher
+also explicitly requests four CPUs. Their retained default node is
+\texttt{faretra}, so reproducing those jobs on the main RTX 5090 machine
+requires overriding the node at submission. The later sentence-tagging
+launcher requests one GPU, eight CPUs, 64\,GiB, and four days. These limits are
+scheduler requests, not measurements of elapsed runtime or peak memory.
+
+The cluster has independent node filesystems. Consequently, the repository,
+data, and Docker images must be available on the allocated node. The launchers
+mount the project into the container and use \path{/llms} as the shared model
+cache on that node, with \texttt{HF\_HOME} pointing to the mounted directory
+\cite{unibonlpClusterGuide}. Slurm's assigned GPU identifiers are passed to
+Docker. Generation, optional annotation, and activation extraction execute
+sequentially so that their model weights do not occupy GPU memory together.
+
+The 32\,GB device-memory budget influenced the setup directly. Quantised
+weights made the chosen models practical to load, while long contexts still
+required space for inference caches and intermediate tensors. The extraction
+stages therefore retain boundary vectors or compact statistics instead of
+serialising every full activation tensor.
+
+\section{Software and model configurations}
+\label{sec:setup-software}
+
+The project runs in Python 3.11 inside a CUDA-enabled Docker image based on
+Ubuntu 22.04 with CUDA 12.8.1. PyTorch is installed from the CUDA 12.8 wheel
+index. Hugging Face Transformers provides model loading and
+forward execution, while NumPy, pandas, SciPy, and scikit-learn support data
+processing, statistical analysis, and probe training. DSPy and GEPA implement
+prompt optimisation. Table~\ref{tab:setup-software} records the relevant
+declared dependencies and image settings.
+
+\begin{table}[tbp]
+  \centering
+  \small
+  \caption{Software configuration declared by the Dockerfile, project
+  metadata, and current launchers. Version intervals are dependency
+  constraints, not exact installed versions for every historical run.}
+  \label{tab:setup-software}
+  \begin{tabularx}{\textwidth}{@{}lX@{}}
+    \toprule
+    Component & Declared configuration \\
+    \midrule
+    Project container & Ubuntu 22.04, CUDA 12.8.1, Python 3.11 \\
+    PyTorch & CUDA 12.8 wheels; no explicit version pin for \texttt{torch} \\
+    Transformers & $\geq 5.5.0$, $<6$ \\
+    GPTQ loading & GPTQModel 7.3.1 \\
+    Replay backend & Unsloth 2026.8.18; bitsandbytes $\geq 0.46.1$ \\
+    Prompt optimisation & DSPy $\geq 3.0.0$, $<4$; GEPA $\geq 0.0.27$ \\
+    Probe fitting & scikit-learn $\geq 1.5.0$ \\
+    Mathematical scoring & \texttt{math-verify} $\geq 0.9.0$, $<1$ \\
+    vLLM server & \texttt{vllm/vllm-openai:v0.29.0} \\
+    Earlier GGUF server & Locally built \texttt{llama.cpp:localcuda} image \\
+    \bottomrule
+  \end{tabularx}
+\end{table}
+
+\subsection{The subject model and the annotation models}
+
+The representation and routing studies use Qwen3.5-35B-A3B. Its language
+backbone has approximately 35 billion total parameters and 3 billion active
+parameters, 40 layers, and a hidden dimension of 2,048. Each MoE block has
+256 routed experts, of which eight are selected per token, together with a
+shared expert. The backbone alternates Gated DeltaNet and gated-attention
+blocks \cite{qwen2026qwen35}. The experiments use textual problems and
+continuations; they do not evaluate visual inputs.
+
+The annotator is a separate model. The initial GEPA experiments use
+Qwen3.6-27B in a GGUF \texttt{Q4\_K\_XL} configuration served through
+\texttt{llama.cpp}. A later alignment run uses Qwen3.8-27B in
+\texttt{UD-Q4\_K\_XL} format. These models supply episode predictions and
+optimisation feedback; the routing measurements described in this chapter
+come from Qwen3.5-35B-A3B.
+
+\subsection{Quantisation and generation--replay provenance}
+
+The official \path{Qwen/Qwen3.5-35B-A3B-GPTQ-Int4} checkpoint supplies
+native GPTQ 4-bit weights for the probe experiment.
+The later correlation generation stage serves this same checkpoint identifier
+through vLLM. Correlation replay instead loads
+\path{unsloth/Qwen3.5-35B-A3B} through Unsloth with runtime 4-bit
+quantisation. Thus, the generator and replay model have corresponding base
+model identities, but different quantisation formats and execution engines.
+
+Replay means supplying the saved problem and continuation to a frozen model
+in a teacher-forced forward pass. It does not generate a replacement answer.
+The resulting routing and hidden-state features describe how the replay
+implementation processes those tokens. They are not direct recordings of
+the generator's internal activations, and numerical equivalence between the
+two implementations is not assumed.
+
+An earlier correlation pilot loaded a GGUF checkpoint from
+\path{unsloth/Qwen3.5-35B-A3B-MTP-GGUF}.
+Its \texttt{UD-Q4\_K\_XL} weights were served through \texttt{llama.cpp}
+with multi-token prediction (MTP). The alias
+\path{qwen3.5-35b-a3b-mtp-ud-q4-k-xl} identifies these outputs.
+They are kept separate from the
+later GPTQ/vLLM corpus. Differences between these runs are not a controlled
+comparison of inference engines, since the quantisation and generated
+samples also changed.
+
+\section{Datasets and units of observation}
+\label{sec:setup-data}
+
+\subsection{Annotated reasoning traces}
+
+The annotation and probe studies use the released Schoenfeld reasoning corpus
+of Li et al.~\cite{li2025schoenfeld}. The repository snapshot contains
+38 DeepSeek-R1 responses to SAT problems and 3,125 annotated units. Each unit
+has one of the seven labels introduced in
+Section~\ref{sec:episode-framework}. The SAT problem, answer choices, and
+available textual descriptions of tables or figures provide context.
+Reference answers and rationales are excluded from the annotator's
+model-visible input.
+
+The annotation study retains all 3,125 units. The probe study removes the
+38 synthetic \texttt{</think>} closing units, one per response, all labelled
+Monitor. Its retained corpus therefore contains 3,087 units. This removes a
+structural marker that could otherwise provide a shortcut for Monitor
+classification and matches the sentence count in the source study.
+Table~\ref{tab:setup-episode-support} shows the resulting class distribution.
+
+\begin{table}[tbp]
+  \centering
+  \small
+  \caption{Episode support in the local corpus. Only the synthetic closing
+  units are removed for the probe experiment.}
+  \label{tab:setup-episode-support}
+  \begin{tabular}{@{}lrr@{}}
+    \toprule
+    Episode & Annotation study & Probe study \\
+    \midrule
+    Read & 377 & 377 \\
+    Analyze & 791 & 791 \\
+    Plan & 225 & 225 \\
+    Implement & 675 & 675 \\
+    Explore & 208 & 208 \\
+    Verify & 629 & 629 \\
+    Monitor & 220 & 182 \\
+    \midrule
+    Total & 3,125 & 3,087 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+The two studies deliberately use different split protocols. GEPA partitions
+complete responses before flattening their units. With seed 42, the final-fit
+partition contains 26 training, six validation, and six test responses,
+corresponding to 2,382, 407, and 336 units. The probe replication instead
+uses a target-stratified 80/20 sentence split with seed 42: 2,469 training
+units and 618 test units for each binary target. All 38 response identifiers
+occur in both probe partitions. Consequently, the probe split measures
+within-corpus predictability and does not provide a response-disjoint
+generalisation estimate.
+
+\subsection{Mathematical reasoning benchmarks}
+
+The completed correlation run covers the six mathematical benchmarks in
+Table~\ref{tab:setup-benchmarks}. The dataset selection and repeated-attempt
+convention follow the project's adaptation of the SPIRAL evaluation suite
+\cite{liu2025spiral}. There are 1,547 source problems and 4,647 generated
+attempts. These are corpus sizes before any analysis-specific filtering.
+
+\begin{table}[tbp]
+  \centering
+  \small
+  \caption{Benchmark coverage of the completed September 10 correlation
+  corpus. Counts refer to source problems and generated attempts, not to
+  the number of independent observations in every statistical analysis.}
+  \label{tab:setup-benchmarks}
+  \begin{tabular}{@{}lrrr@{}}
+    \toprule
+    Dataset & Problems & Attempts per problem & Total attempts \\
+    \midrule
+    MATH-500 \cite{math500Dataset} & 500 & 1 & 500 \\
+    AIME 2024 \cite{aime24Dataset} & 30 & 32 & 960 \\
+    AIME 2025 \cite{aime25Dataset} & 30 & 32 & 960 \\
+    OlympiadBench \cite{olympiadbenchDataset} & 675 & 1 & 675 \\
+    AMC 2023 \cite{amc23Dataset} & 40 & 32 & 1,280 \\
+    Minerva Math \cite{minervaDataset} & 272 & 1 & 272 \\
+    \midrule
+    Total & 1,547 & --- & 4,647 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+MATH-500 is loaded from \path{HuggingFaceH4/MATH-500}. AIME, AMC, and
+Minerva use the \texttt{math-ai} releases \texttt{aime24}, \texttt{aime25},
+\texttt{amc23}, and \texttt{minervamath}. These loaders use the published
+\texttt{test} split. OlympiadBench uses \path{Hothan/OlympiadBench},
+configuration \texttt{OE\_TO\_maths\_en\_COMP}, exposed by the repository
+loader as \texttt{train}. That split name belongs to the dataset release;
+these problems are used for evaluation without training the subject model.
+GPQA-Diamond and MMLU-Pro are supported by the pipeline but are absent from
+this completed six-benchmark corpus.
+
+A separate qualitative probe-transfer stage uses 20 examples each from
+GSM8K, MATH, PRM800K, and ProcessBench. It teacher-forces their supplied
+solutions or reconstructed rated paths, rather than generating new ones.
+These 80 examples serve to inspect predicted episode labels and are not
+included in the correlation benchmark totals.
+
+\section{Episode-annotation protocol}
+\label{sec:setup-annotation}
+
+Each annotation request contains the problem and the previous, current, and
+next response units. The model returns one episode label for the current
+unit. The initial context-aware instruction contains 21 audited synthetic
+demonstrations, three per class, chosen to illustrate ambiguous category
+boundaries without copying held-out annotations. Since the next unit is
+visible, this protocol is an offline annotation procedure.
+
+GEPA searches over instructions while keeping the model fixed
+\cite{agrawal2026gepa}. The experiments include exact-match and
+inverse-frequency weighted rewards, followed by an informative same-model
+judge reward. In the latter configuration, the judge scores gold agreement,
+functional fit, contextual coherence, and boundary precision from one to
+five. Their weights are 0.40, 0.25, 0.15, and 0.20, respectively, and the
+weighted score is normalised for optimisation. Gold labels are available to
+this feedback stage, but are not included in the classifier request.
+
+Prompt selection remains based on reference-label performance. The default
+selection measure is balanced accuracy; accuracy and macro-F1 are also
+evaluated. A candidate is retained only if it improves the selected measure
+and does not lower any class recall by more than 0.10 on validation data.
+This gate prevents a gain in frequent classes from concealing a substantial
+loss in a less frequent episode.
+
+Configuration comparisons use five-fold nested response-grouped
+cross-validation over the 32 development responses, with the six test
+responses excluded. Each outer fold has its own inner training and
+validation partition. The final-fit studies then use the 26/6/6 partition
+described above. The later Qwen3.8 alignment starts from the 40-example
+prompt produced by the earlier Qwen3.6 fit, uses the heavy GEPA budget and
+medium reasoning effort, and retains the imported seed after the validation
+gate rejects the new candidate. The selected instruction is subsequently
+frozen for downstream annotation.
+
+Reported classification measures include exact accuracy, balanced accuracy,
+macro-F1, per-class precision and recall, Cohen's $\kappa$, and valid-output
+coverage. Kendall's $\tau_b$ is retained in historical artifacts but is not
+a primary measure for the nominal episode categories. The final-fit runs do
+not evaluate the 336-unit test partition. Moreover, those responses had
+already been inspected in preliminary experiments, so their designation as
+a locked test does not make them a newly untouched evaluation set.
+
+\section{Prospective hidden-state probes}
+\label{sec:setup-probes}
+
+Probe extraction supplies each SAT problem as a user message and its released
+DeepSeek-R1 response as an assistant continuation. Annotated units are
+matched verbatim and monotonically to the response before tokenisation.
+For a unit beginning at token $b_j$, the stored feature is the hidden state
+at $b_j-1$. The target unit and later text are therefore unavailable at the
+measurement boundary.
+
+All 41 hidden-state indices are retained: index 0 is the embedding output
+and indices 1--40 are successive block outputs. Each feature has 2,048
+dimensions. Following the replication protocol of
+Sun et al.~\cite{sun2026trajectories}, a separate one-versus-rest logistic
+regression is fitted for each label at each index, giving $7\times41=287$
+classifiers. Training uses raw activations, balanced class weights, L2
+regularisation with $C=1$, the \texttt{lbfgs} solver, and at most 2,000
+iterations. No standardisation or principal-component analysis is applied.
+
+Accuracy, binary F1, and AUROC are computed on the 618-unit test partition.
+For each target, the selected index maximises accuracy on that same
+partition. This selection and the shared response identities make the
+best-index scores exploratory. In the transfer inspection, the seven
+selected binary classifiers are applied independently. Their scores do not
+constitute calibrated multiclass probabilities; choosing their maximum
+produces an inspection label rather than a reference annotation.
+
+Only boundary activations are persisted. At float32 precision, the
+$3{,}087\times41\times2{,}048$ values require approximately 0.97\,GiB,
+before metadata and classifier files. This storage choice retains the
+information required for refitting probes without preserving every token's
+full hidden-state trajectory.
+
+\section{Benchmark generation and routing extraction}
+\label{sec:setup-correlation}
+
+\subsection{Generation settings}
+
+Benchmark solutions are generated zero-shot at temperature 0.6 and
+top-$p=0.95$, with a completion budget of 32,768 tokens. The current launcher
+allocates a 49,152-token context, leaving room for the input prompt in
+addition to the completion. The default sampling seed is zero, with the
+per-request seed formed as $s_{i,a}=s_0+1000i+a$, where $i$ is the problem
+index within a dataset and $a$ is the attempt index. The saved trace records
+the actual seed and sampling settings.
+
+The vLLM configuration permits eight concurrent requests and eight sequences,
+enables prefix caching, and uses a batch-token budget of 8,192. Generation
+uses the checkpoint's MTP head with three speculative tokens. These are
+execution settings: request concurrency does not alter the declared number
+of attempts per problem, and long contexts can reduce the number of requests
+that decode simultaneously. The GPU memory utilisation setting is 0.90 and
+tensor parallelism is one for the main single-GPU configuration.
+
+\subsection{Replay measurements and layer selection}
+
+After generation, the inference server is stopped and the saved continuations
+are replayed through the corresponding Hugging Face model. Extraction
+retains decoder indices 27, 34, 35, 36, 38, and 39. This is the compatible
+union of indices selected by the separate probe experiment. Probe index 40
+is excluded because decoder router indices run from 0 to 39.
+
+The indexing convention is significant. A probe hidden-state index denotes
+a block output, while replay pairs the block-input hidden state at the
+retained decoder index with that block's router distribution. The hidden
+vector is therefore not the exact normalised router input after the
+intervening sequence-mixing computation. Probe-based layer selection is a
+way to restrict measurement locations, not evidence that these locations
+are optimal intervention targets.
+
+At each retained layer, extraction computes the routing and representation
+summaries defined in Chapter~\ref{ch:theoretical-framework}: entropy-derived
+concentration, top-1/top-2 margin, selected top-eight probability mass,
+selection-boundary margin, selected-versus-unselected mean probability gap,
+top-1 switching, top-eight set overlap, hidden-state norm, successive-state
+distance, and hidden/router geometry. Geometry calculations use at most
+128 uniformly sampled tokens per trace by default. Full hidden and router
+tensors are reduced during extraction; compact scalar features and selected
+expert IDs are persisted. Original layer indices remain attached to the
+measurements.
+
+The completed untagged run includes whole-continuation, full-reasoning, and
+absolute-position analyses. Position analysis uses ten disjoint windows
+defined relative to the corpus mean reasoning length, followed by an overflow
+window. These are common absolute token windows, rather than ten equal
+fractions of each response. A shorter trace has no observation in a window
+it never reaches. Coverage is consequently reported alongside each view.
+The reasoning-event outcomes in this snapshot are lexical indicators of
+backtracking, contradiction, and self-correction; no seven-class sentence
+annotation was used.
+
+\subsection{Subsequent sentence-annotation extension}
+
+The current pipeline also supports applying the frozen GEPA annotator to
+generated reasoning. Its vLLM judge checkpoint is
+\path{unsloth/Qwen3.8-27B-NVFP4}, with temperature zero, low reasoning effort,
+a 4,096-token completion budget, and a 32,768-token context. The server uses
+eager execution and an FP8 KV cache; judge MTP is disabled in the default
+configuration. This deployment differs from the GGUF model and medium-effort
+setting of the earlier alignment study, so agreement measured there is not
+automatically an estimate of downstream annotation accuracy.
+
+Before tagging, the default extension selects attempt zero for repeated
+problems and at most 100,000 sentences across benchmarks. Benchmark quotas
+are proportional to their observed error rates; sentences are sampled
+uniformly within each benchmark with seed 42. The sampling manifest identifies
+the selected units. This outcome-dependent sample has a different population
+from the full repeated-attempt corpus. Class-specific analyses produced from
+it must therefore be reported separately from the completed untagged study.
+
+\section{Evaluation and statistical protocol}
+\label{sec:setup-evaluation}
+
+Mathematical answers are checked with \texttt{math-verify}; the pipeline
+records when a normalised exact or numeric fallback is used. For an attempt
+with a known reference answer, an unparseable response is counted as
+incorrect in the all-attempt evaluation. This denominator is distinct from
+an accuracy calculated only over successfully parsed answers.
+
+For benchmarks with one attempt per problem, the reported score is empirical
+pass@1. For the repeated AIME and AMC evaluations, it is avg@32: the mean
+correctness over 32 attempts for each problem, averaged over problems. It
+does not measure whether at least one of the 32 attempts succeeds. A pooled
+attempt-level score gives more weight to benchmarks with more attempts, so
+benchmark-specific scores remain necessary for interpretation.
+
+Continuous features are related to binary correctness or event indicators
+using point-biserial correlation. At the problem level, mean features are
+related to avg@32 using Spearman's rank correlation. The primary repeated-
+problem analysis requires the full set of unique attempt identifiers,
+complete binary outcomes, and no duplicate generations under the recorded
+fingerprint checks. Problems with both correct and incorrect attempts also
+support a paired correct-minus-incorrect feature contrast.
+
+The saved analysis uses 500 bootstrap resamples and seed 42 for 95\%
+percentile intervals. Resampling occurs at the source-problem level, keeping
+repeated attempts together. Benjamini--Hochberg adjustment is applied within
+the declared testing families \cite{benjamini1995fdr}; layerwise,
+feature-pair, and expert-use screens remain exploratory. The initial
+expert-use screen pools equal numeric expert indices across retained layers.
+It therefore cannot identify a particular layer-specific expert module
+without a subsequent analysis preserving the full $(\ell,e)$ identity.
+
+\paragraph{Token-budget handling.}
+The completed September 10 snapshot includes all 4,647 attempts, including
+those reaching the generation limit. Its interpretation is consequently
+conditional on the fixed completion budget. The current analysis code
+instead excludes a trace when its finish reason is \texttt{length} or its
+completion-token count reaches the configured maximum. It retains traces
+whose limit status is unknown and records excluded counts. Under this newer
+rule, repeated-problem groups made incomplete by filtering are also
+ineligible for the primary avg@32 correlation. Reproducing the earlier
+all-attempt tables requires their saved analysis artifacts or the matching
+code revision; rerunning the current defaults changes the analysed
+population. A completed-trace analysis also remains conditional on successful
+termination, rather than removing all effects of problem difficulty or
+response length.
+
+\section{Artifacts, reproducibility, and experimental scope}
+\label{sec:setup-reproducibility}
+
+The implementation is organised under \path{src/moe_exp/gepaLLMAsJudge},
+\path{src/moe_exp/probeTest}, and
+\path{src/moe_exp/correlation_pipeline}. Their outputs preserve the
+information needed to connect a numerical result to its inputs: split
+response identifiers, seed and selected prompts, per-call judge feedback,
+activation manifests, classifier parameters, generation settings, text
+fingerprints, retained layer indices, extraction summaries, and
+analysis-specific inclusion counts. Generation, annotation, and replay are
+checkpointed independently, allowing completed work to be reused when the
+recorded configuration matches.
+
+Probe artifacts use the root \path{results/probeTest} and the run name
+\path{qwen3.5-35b-a3b-gptq-int4}. GEPA runs have separate directories
+under \path{results/gepaLLMAsJudge}. Correlation outputs use the root
+\path{results/correlation_pipeline}, with the completed vLLM snapshot
+named \path{reasoning-vllm-untagged-v1}. Tagged outputs use a separate
+run directory. The numerical snapshot and its fingerprints
+are documented in the accompanying experimental report. Historical numbered
+experiments and earlier GGUF outputs are not pooled with these studies.
+
+The manifests and launchers provide substantial provenance, but several
+dependencies still use version intervals, local image tags, or the mutable
+model revision \texttt{main}. These identify a configuration without fixing
+every underlying binary. Exact reproduction therefore also depends on the
+resolved model revision, Docker image digest, package versions, and matching
+code revision. Seeds alone do not establish bitwise equivalence across
+different quantisation or inference implementations.
+
+Finally, the repository contains an exploratory \texttt{moe\_guiding}
+implementation for live top-2 Mixtral routing. It compares native routing
+with replacing the second selected expert by the least probable expert,
+under two different mixing-weight rules. Its initial adapter targets
+unquantised FP16/BF16 Mixtral checkpoints and has no validated end-to-end
+model-generation run recorded in the workspace documentation. It is a
+separate intervention prototype, not a completed intervention evaluation
+on the Qwen subject model. The experimental evidence described in this
+chapter concerns annotation, prospective probing, and observational routing
+analysis.
 
 \chapter{Results}
 
