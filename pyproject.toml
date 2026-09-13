@@ -14,7 +14,7 @@ dependencies = [
     "accelerate>=0.30.0",
     "datasets>=2.20.0",
     "tokenizers>=0.22.2",
-    "kernels",  # native MXFP4 kernels used by gpt-oss
+    "kernels==0.11.7",  # API compatible with Transformers 5.5 hub-kernel registration
     "numpy>=1.26.0",
     "pandas>=2.2.0",
     "tqdm>=4.66.0",

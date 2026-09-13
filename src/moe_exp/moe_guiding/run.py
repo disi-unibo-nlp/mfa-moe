@@ -147,8 +147,6 @@ def generate(args: argparse.Namespace) -> Path:
     import torch
     from vllm import LLM, SamplingParams
 
-    from moe_exp.moe_guiding.integration import routing_diagnostics
-
     engine_args = {
         "model": args.model,
         "revision": args.revision,
@@ -164,6 +162,7 @@ def generate(args: argparse.Namespace) -> Path:
         "generation_config": "vllm",
         "hf_overrides": {"architectures": [ARCHITECTURE]},
         "additional_config": {"moe_guiding": config.to_dict()},
+        "worker_extension_cls": "moe_exp.moe_guiding.integration.RoutingWorkerExtension",
     }
     for name in ("max_num_seqs", "max_num_batched_tokens"):
         if (value := getattr(args, name)) is not None:
@@ -222,9 +221,9 @@ def generate(args: argparse.Namespace) -> Path:
                 for prompt in prompts
             ]
         # Discard model profiling/warmup calls; verify callbacks on actual generation.
-        llm.collective_rpc(routing_diagnostics, kwargs={"reset": True})
+        llm.collective_rpc("moe_guiding_diagnostics", kwargs={"reset": True})
         outputs = llm.generate(engine_prompts, sampling, use_tqdm=True)
-        reports = llm.collective_rpc(routing_diagnostics)
+        reports = llm.collective_rpc("moe_guiding_diagnostics")
         manifest["routing_diagnostics"] = reports
         validate_diagnostics(reports, config.condition)
         if len(outputs) != len(rows):

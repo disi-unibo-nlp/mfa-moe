@@ -41,7 +41,79 @@ Only the multimodal Qwen3.5/3.6 and Gemma profiles request text-only server load
 
 ## Run and memory settings
 
+### Nemotron: NVFP4 generation and NF4 forward replay
+
+Use the official NVFP4 checkpoint for vLLM generation and the BF16 checkpoint
+with `--quantization bnb-4bit` for replay:
+
+```bash
+bash src/moe_exp/correlation_pipeline/run_all.sh \
+  --model nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-BF16 \
+  --generation-model nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4 \
+  --generation-speculation none \
+  --quantization bnb-4bit \
+  --results-dir results/correlation_pipeline/nemotron-nvfp4-nf4
+```
+
+Do not pass `--generation-quantization bitsandbytes`: the pinned vLLM 0.29.0
+image rejects it. vLLM reads the NVFP4 checkpoint's native ModelOpt configuration.
+The forward loader quantizes the BF16 checkpoint to bitsandbytes NF4 with double
+quantization. It converts Nemotron's non-gated experts into individual linear
+layers before loading weights, avoiding Transformers' unquantized fused expert
+tensors. Mamba mixers, routers, and the output head retain native floating-point
+weights. Native routing, correction biases, and the existing capture hooks are
+preserved. Loading fails if checkpoint tensors are missing or any expert is
+not materialized in 4-bit on CUDA.
+
+The generation and replay quantizers differ, as in the Qwen GPTQ/Unsloth setup.
+Captured routes describe the **NF4 replay model**, not necessarily the routes
+selected by NVFP4 generation. This path does not use Unsloth's gated-expert
+implementation and does not load ModelOpt weights into Transformers.
+
+Rebuild the project image after updating dependencies. `kernels==0.11.7` is pinned
+because newer releases reject the hub-kernel registrations in Transformers 5.5.
+For the locally prepared compatibility image, prefix the command above with
+`IMAGE_NAME=moe-mfa-experiments:nemotron-forward`.
+
+Validation: a tiny real hybrid Nemotron checkpoint preserves native logits and
+router capture before quantization, and loads every expert in NF4 and completes
+router/hidden-state extraction on an RTX 5090. Full 30B loading and long-context
+memory fit are not yet validated. The BF16 source download requires approximately
+61.3 GiB in the model cache, in addition to the NVFP4 generation checkpoint.
+For a first full-model smoke test, add `--datasets math500 --max-items 1
+--samples-per-problem 1 --limit 1 --workers 1 --skip-tagging`; this includes
+forward replay and analysis while omitting the judge.
+
 ### Quantized Gemma checkpoints
+
+Gemma 4 MoE now has a text-only NF4 forward adapter. Use the unquantized Google
+checkpoint as the forward source and NVIDIA's NVFP4 checkpoint for generation:
+
+```bash
+IMAGE_NAME=moe-mfa-experiments:quantized-forward \
+bash src/moe_exp/correlation_pipeline/run_all.sh \
+  --model google/gemma-4-26B-A4B-it \
+  --generation-model nvidia/Gemma-4-26B-A4B-NVFP4 \
+  --quantization bnb-4bit \
+  --results-dir results/correlation_pipeline/gemma-nvfp4-nf4
+```
+
+The local `quantized-forward` image is an alias of the compatible
+`nemotron-forward` image; both use the source mounted by `run_docker.sh`.
+A rebuilt project image also includes the pinned dependency fix.
+
+The adapter splits each fused `gate_up_proj`/`down_proj` tensor during checkpoint
+loading and quantizes **every** expert independently with double-quantized NF4.
+Routers, normalization parameters, and tied input/output embeddings remain in
+floating point. Vision/audio towers are omitted from text replay. Checkpoint
+mismatches and unquantized experts fail explicitly; exporting and reloading this
+adapter as a new quantized checkpoint is not implemented.
+
+Tests use tiny real Gemma models to check native-logit equivalence before
+quantization, each expert's quantized weights, text and multimodal checkpoint
+loading, tied embeddings, scaled routing weights, and CUDA router/hidden-state
+capture. Full 26B loading and long-context memory fit remain unverified.
+Routes describe the NF4 replay model and may differ from NVFP4 generation.
 
 `nvidia/Gemma-4-26B-A4B-NVFP4` selects the Gemma generation profile
 (`gemma4` reasoning parser, thinking enabled, no MTP, text-only loading).

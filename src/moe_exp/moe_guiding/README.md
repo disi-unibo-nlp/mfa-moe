@@ -131,6 +131,8 @@ manifest.json       settings, prompt digest, versions, status, worker routing co
 generations.jsonl   original records, rendered prompts, outputs, token IDs, finish reasons
 ```
 
+The runner registers `RoutingWorkerExtension` and calls its diagnostics method
+by name, so RPC works with vLLM's default serialization settings.
 After warmup, counters are reset through an RPC in every worker. Following
 generation, every selected layer must report routed token evaluations; a
 missing/bypassed callback makes the run fail. An intervention count of zero is

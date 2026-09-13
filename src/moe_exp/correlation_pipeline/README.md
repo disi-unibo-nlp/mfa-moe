@@ -13,8 +13,44 @@ LiteLLM/HTTP request logs are suppressed; warnings and errors remain visible.
 On resume, only matching validated labels count as already complete; ETA uses
 newly completed sentences from the current run.
 
+To tag already saved generations in a Slurm job, submit from the repository root:
+
+```bash
+mkdir -p slurm_logs
+sbatch src/moe_exp/correlation_pipeline/tag_slurm.sh \
+  --model Qwen/Qwen3.5-35B-A3B-GPTQ-Int4 \
+  --generation-dir results/correlation_pipeline/reasoning-vllm-v1/sampling/generation
+```
+
+`--model` identifies the model that generated the traces. The directory must
+contain `<model slug>/<dataset>/traces.jsonl`; for example, the slug above is
+`Qwen--Qwen3.5-35B-A3B-GPTQ-Int4`. Dataset folders with saved traces are discovered
+automatically, or select them with `--datasets math500 aime24`. This job performs
+tagging only. Using sampled inputs preserves their sentence selection; using
+`results/correlation_pipeline/generation` tags all sentences in the raw traces.
+Matching annotation checkpoints resume automatically.
+
+The job uses the same `moe-mfa-experiments:latest` client image and
+`vllm/vllm-openai:v0.29.0` judge image as the local workflow, with low thinking
+and judge MTP disabled. Docker, both images, the repository, and `/llms` must be
+available on the compute node. Override image/cache paths through `IMAGE_NAME`,
+`VLLM_IMAGE`, and `HF_CACHE_DIR`. The default allocation is one GPU, eight CPUs,
+64 GB RAM, and four days; override cluster-specific resources before the script
+path, for example `sbatch --partition=gpu --time=2-00:00:00 ...`.
+
+Outputs default to
+`results/correlation_pipeline/reasoning-vllm-v1/annotations/<model slug>/`.
+Use `--results-dir results/tagging-other-run` to isolate another run. Logs go to
+`slurm_logs/tag-<job ID>.out` and `.err`. Set `JUDGE_PORT` to a free port for
+concurrent jobs on the same node. The Slurm submit directory locates the repo;
+set `PHYS_DIR` explicitly if submitting elsewhere. Preview locally with
+`bash src/moe_exp/correlation_pipeline/tag_slurm.sh --model ... --generation-dir ... --dry-run`.
+
 Each vLLM server enables prefix caching, allows eight sequences, and batches up to
-8,192 tokens. The default Qwen pair uses MTP with three speculative tokens. The servers run one
+8,192 tokens. Generation uses MTP with three speculative tokens; judge MTP is
+disabled by default after a CUDA launch timeout in v0.29.0 speculative GDN
+attention on the RTX 5090. Use `--judge-speculation mtp` only to explicitly
+opt in. The servers run one
 after another on the same GPU and stop before forward extraction begins.
 
 Generation uses `Qwen/Qwen3.5-35B-A3B-GPTQ-Int4`, including its saved MTP head.
@@ -25,8 +61,10 @@ loading for memory headroom. Forward extraction still loads
 `unsloth/Qwen3.5-35B-A3B` through Unsloth with runtime 4-bit quantization.
 
 Generation retains its 32,768-token completion budget and a 49,152-token context
-to leave room for prompts. Judge context is 32,768; its temperature, thinking
-mode, reasoning effort and 4,096-token completion budget are unchanged.
+to leave room for prompts. Judge context is 32,768, thinking is enabled with
+low reasoning effort, temperature is 0, and the completion budget is 4,096 tokens.
+Changing reasoning effort invalidates existing annotation checkpoints; labels
+are recomputed under the new setting.
 
 The quantized checkpoints differ from the old GGUF artifacts. New generations
 use their actual checkpoint name, and vLLM annotations/analyses live under

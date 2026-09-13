@@ -97,10 +97,11 @@ def test_default_plan_runs_all_stages_and_releases_each_server(tmp_path):
         assert option(command, "--max-num-batched-tokens") == "8192"
         assert option(command, "--port") == "41800"
         assert "--enable-prefix-caching" in command
-        assert json.loads(option(command, "--speculative-config")) == {
-            "method": "mtp",
-            "num_speculative_tokens": 3,
-        }
+    assert "--speculative-config" not in plan[judge_start]
+    assert json.loads(option(plan[starts[0]], "--speculative-config")) == {
+        "method": "mtp",
+        "num_speculative_tokens": 3,
+    }
     assert option(plan[starts[0]], "--max-model-len") == "49152"
     assert option(plan[starts[1]], "--max-model-len") == "32768"
     assert (
@@ -421,7 +422,7 @@ def test_supported_model_profiles_preserve_judge_and_fixed_probe_defaults(
     assert option(generation, "--max-model-len") == context
     assert option(judge, "serve") == "unsloth/Qwen3.8-27B-NVFP4"
     assert option(judge, "--reasoning-parser") == "qwen3"
-    assert "--speculative-config" in judge
+    assert "--speculative-config" not in judge
     assert "--language-model-only" in judge
     assert "--enforce-eager" in judge
     stages = stage_commands(result.stdout)
@@ -452,7 +453,7 @@ def test_generation_overrides_leave_judge_settings_unchanged(tmp_path):
     assert "--quantization" not in judge
     assert "--cpu-offload-gb" not in judge
     assert "--tensor-parallel-size" not in judge
-    assert "--speculative-config" in judge
+    assert "--speculative-config" not in judge
     stages = stage_commands(result.stdout)
     assert "--all-router-layers" in stages["forward"]
     assert option(stages["forward"], "--quantization") == "bnb-4bit"
@@ -470,3 +471,23 @@ def test_gpt_oss_fixed_probe_mismatch_fails_before_any_server_start(tmp_path):
         **runtime, FAIL_STAGE="none",
     )
     assert result.returncode == 0, result.stderr
+
+
+def test_judge_speculation_opt_in_is_independent_of_generation(tmp_path):
+    result = run_script(
+        tmp_path, "--dry-run", "--generation-speculation", "none",
+        "--judge-speculation", "mtp",
+    )
+    assert result.returncode == 0, result.stderr
+    generation, judge = [c for c in commands(result.stdout) if c[:2] == ["docker", "run"]]
+    assert "--speculative-config" not in generation
+    assert json.loads(option(judge, "--speculative-config")) == {
+        "method": "mtp", "num_speculative_tokens": 3,
+    }
+
+
+def test_invalid_judge_speculation_fails_before_launch(tmp_path):
+    result = run_script(tmp_path, "--judge-speculation", "invalid")
+    assert result.returncode == 2
+    assert "--judge-speculation must be none or mtp" in result.stderr
+    assert not list(tmp_path.iterdir())
