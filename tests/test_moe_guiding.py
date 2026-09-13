@@ -13,6 +13,7 @@ from moe_exp.moe_guiding import plugin
 from moe_exp.moe_guiding import run as run_module
 from moe_exp.moe_guiding.config import ARCHITECTURE, RoutingConfig, parse_layers
 from moe_exp.moe_guiding.integration import (
+    RoutingWorkerExtension,
     routing_construction,
     routing_diagnostics,
     validate_vllm_config,
@@ -268,6 +269,9 @@ def test_generation_records_condition_and_detects_callback_bypass(
 
     class FakeLLM:
         def __init__(self, **kwargs):
+            assert kwargs["worker_extension_cls"] == (
+                "moe_exp.moe_guiding.integration.RoutingWorkerExtension"
+            )
             assert kwargs["moe_backend"] == "triton" and kwargs["enforce_eager"]
             assert kwargs["hf_overrides"]["architectures"] == [ARCHITECTURE]
             assert kwargs["max_num_seqs"] == 1
@@ -279,10 +283,13 @@ def test_generation_records_condition_and_detects_callback_bypass(
                 moe_guiding_config=config,
                 moe_guiding_layers=(0,),
             )
-            self.worker = SimpleNamespace(model_runner=SimpleNamespace(get_model=lambda: model))
+            self.worker = RoutingWorkerExtension()
+            self.worker.model_runner = SimpleNamespace(get_model=lambda: model)
 
         def collective_rpc(self, method, kwargs=None):
-            return [method(self.worker, **(kwargs or {}))]
+            # vLLM's default serializer rejects callable RPC methods.
+            assert isinstance(method, str)
+            return [getattr(self.worker, method)(**(kwargs or {}))]
 
         def get_tokenizer(self):
             def encode(prompt, add_special_tokens):

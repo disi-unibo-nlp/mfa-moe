@@ -109,3 +109,10 @@ def routing_diagnostics(worker, reset: bool = False) -> dict:
         "selected_layers": list(model.moe_guiding_layers),
         "layers": {str(layer): router.snapshot() for layer, router in routers.items()},
     }
+
+
+class RoutingWorkerExtension:
+    """Expose diagnostics by name without serializing a Python callable over RPC."""
+
+    def moe_guiding_diagnostics(self, reset: bool = False) -> dict:
+        return routing_diagnostics(self, reset=reset)

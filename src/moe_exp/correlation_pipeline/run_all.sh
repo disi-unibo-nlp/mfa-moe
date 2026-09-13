@@ -26,6 +26,7 @@ GENERATION_QUANTIZATION="${GENERATION_QUANTIZATION:-}"
 CPU_OFFLOAD_GB="${CPU_OFFLOAD_GB:-0}"
 TENSOR_PARALLEL_SIZE="${TENSOR_PARALLEL_SIZE:-1}"
 GENERATION_SPECULATION="auto"
+JUDGE_SPECULATION="${JUDGE_SPECULATION:-none}"
 ALL_ROUTER_LAYERS=false
 BOOTSTRAP_SAMPLES="${BOOTSTRAP_SAMPLES:-500}"
 DRY_RUN="${DRY_RUN:-false}"
@@ -54,7 +55,7 @@ Usage: bash src/moe_exp/correlation_pipeline/run_all.sh [options]
 
 Runs vLLM generation, frozen GEPA tagging, forward replay, and all analyses.
 Each server uses prefix caching, eight sequences and batch-token budget 8192.
-Generation uses model-specific reasoning and MTP settings; the judge is unchanged.
+Generation uses model-specific MTP settings; judge MTP is disabled by default.
 New generations are identified by their checkpoint; reasoning-vllm-v1 keeps
 vLLM annotations/extraction/analysis separate from existing GGUF results.
 
@@ -65,6 +66,7 @@ vLLM annotations/extraction/analysis separate from existing GGUF results.
   --generation-model NAME    Override generation only (also accepts saved alias with --skip-generate)
   --max-tokens N             Completion budget (default: 32768)
   --ctx-size N               Generation context (default: 49152; Qwen3: 40960)
+  --judge-speculation MODE   none or mtp (default: none; avoids judge CUDA timeouts)
   --generation-speculation MODE  auto, mtp, or none (default: model profile)
   --generation-quantization MODE  Optional vLLM generation quantization override
   --cpu-offload-gb N         Generation weight offload per GPU (default: 0)
@@ -110,7 +112,7 @@ while [[ $# -gt 0 ]]; do
         --workers|--judge-workers|--model|--generation-model|--max-tokens|--ctx-size|--results-dir|\
         --generation-dir|--max-items|--samples-per-problem|--limit|--max-sentences|--judge-program|\
         --judge-model|--position-bins|--quantization|--bootstrap-samples|\
-        --generation-speculation|--generation-quantization|--cpu-offload-gb|--tensor-parallel-size)
+        --judge-speculation|--generation-speculation|--generation-quantization|--cpu-offload-gb|--tensor-parallel-size)
             [[ $# -ge 2 && -n "$2" && "$2" != --* ]] || { echo "$1 requires a value" >&2; exit 2; }
             case "$1" in
                 --workers) WORKERS="$2" ;;
@@ -129,6 +131,7 @@ while [[ $# -gt 0 ]]; do
                 --judge-model) JUDGE_MODEL="$2" ;;
                 --position-bins) POSITION_BINS="$2" ;;
                 --quantization) QUANTIZATION="$2" ;;
+                --judge-speculation) JUDGE_SPECULATION="$2" ;;
                 --generation-speculation) GENERATION_SPECULATION="$2" ;;
                 --generation-quantization) GENERATION_QUANTIZATION="$2" ;;
                 --cpu-offload-gb) CPU_OFFLOAD_GB="$2" ;;
@@ -148,6 +151,10 @@ while [[ $# -gt 0 ]]; do
         *) echo "Unknown argument: $1" >&2; usage >&2; exit 2 ;;
     esac
 done
+case "$JUDGE_SPECULATION" in
+    none|mtp) ;;
+    *) echo "--judge-speculation must be none or mtp" >&2; exit 2 ;;
+esac
 FORWARD_MODEL="${PIPELINE_MODEL:-unsloth/Qwen3.5-35B-A3B}"
 GENERATION_MODEL="${GENERATION_MODEL:-${PIPELINE_MODEL:-Qwen/Qwen3.5-35B-A3B-GPTQ-Int4}}"
 # Use the script's own directory: PHYS_DIR may point at an isolated test workspace.
@@ -288,8 +295,12 @@ start_server() {
     # The dense NVFP4 judge needs graph memory headroom on a single 32 GB 5090.
     if [[ "$stage" == judge ]]; then
         command+=(--enforce-eager --kv-cache-dtype fp8 --reasoning-parser qwen3
-            --language-model-only
-            --speculative-config "{\"method\":\"mtp\",\"num_speculative_tokens\":$SPECULATIVE_TOKENS}")
+            --language-model-only)
+        # v0.29.0 timed out in the judge GDN speculative attention path on the 5090.
+        # Keep generation MTP independent; judge speculation is an explicit opt-in.
+        if [[ "$JUDGE_SPECULATION" == mtp ]]; then
+            command+=(--speculative-config "{\"method\":\"mtp\",\"num_speculative_tokens\":$SPECULATIVE_TOKENS}")
+        fi
     else
         command+=(--reasoning-parser "$GENERATION_REASONING_PARSER"
             --tensor-parallel-size "$TENSOR_PARALLEL_SIZE" --cpu-offload-gb "$CPU_OFFLOAD_GB")
@@ -335,7 +346,7 @@ echo "  Generation model:  $GENERATION_MODEL"
 echo "  Forward model:     $FORWARD_MODEL"
 echo "  Generation profile: $GENERATION_FAMILY (parser=$GENERATION_REASONING_PARSER, MTP=$GENERATION_MTP)"
 echo "  Forward quantization: $QUANTIZATION"
-echo "  Judge model:       $JUDGE_MODEL"
+echo "  Judge model:       $JUDGE_MODEL (speculation=$JUDGE_SPECULATION)"
 echo "  Concurrent calls:  generation=$WORKERS tagging=$JUDGE_WORKERS"
 echo "  Generation path:   $GENERATION_DIR"
 echo "  Replay input:      $REPLAY_GENERATION_DIR"

@@ -341,7 +341,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--max-tokens", type=int, default=4096)
     parser.add_argument("--temperature", type=float, default=0.0)
     parser.add_argument("--enable-thinking", action=argparse.BooleanOptionalAction, default=True)
-    parser.add_argument("--reasoning-effort", choices=("low", "medium", "high"), default="medium")
+    parser.add_argument("--reasoning-effort", choices=("low", "medium", "high"), default="low")
     parser.add_argument(
         "--limit", type=int, default=None, help="Trace limit per dataset, retaining whole traces"
     )

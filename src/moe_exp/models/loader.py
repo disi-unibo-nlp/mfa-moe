@@ -116,6 +116,26 @@ def load_model_and_tokenizer(
         tokenizer.pad_token_id = tokenizer.eos_token_id
 
     config = AutoConfig.from_pretrained(model_id, trust_remote_code=trust_remote_code)
+    if getattr(config, "model_type", None) in {"gemma4", "gemma4_text"} and quantization == "bnb-4bit":
+        if device == "cpu":
+            raise ValueError("Gemma 4-bit expert replay requires a CUDA device")
+        from .gemma_quantized import load_gemma_4bit
+
+        model = load_gemma_4bit(model_id, config, offload_folder=offload_folder)
+        model.eval()
+        model.config.use_cache = False
+        console.print("[green]Gemma text model loaded with 4-bit expert weights.[/]")
+        return model, tokenizer
+    if getattr(config, "model_type", None) == "nemotron_h" and quantization == "bnb-4bit":
+        if device == "cpu":
+            raise ValueError("Nemotron 4-bit expert replay requires a CUDA device")
+        from .nemotron_quantized import load_nemotron_4bit
+
+        model = load_nemotron_4bit(model_id, config, offload_folder=offload_folder)
+        model.eval()
+        model.config.use_cache = False
+        console.print("[green]Nemotron model loaded with 4-bit expert weights.[/]")
+        return model, tokenizer
     model_class = (
         AutoModelForImageTextToText
         if _is_conditional_generation_config(config)
