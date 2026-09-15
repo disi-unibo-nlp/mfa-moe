@@ -133,7 +133,7 @@ set +e
     --base-url http://127.0.0.1:41800/v1 \
     --api-key local-vllm-key \
     --workers 16 --max-tokens 4096 --temperature 0.0 \
-    --enable-thinking --reasoning-effort high
+    --enable-thinking --reasoning-effort medium
 ANNOTATE_STATUS=$?
 set -e
 END_NS=$(date +%s%N)
