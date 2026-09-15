@@ -65,6 +65,11 @@ def classify_batch(
     temperature: float,
     reasoning_effort: str,
     timeout: float = 600.0,
+    top_p: float | None = None,
+    top_k: int | None = None,
+    min_p: float | None = None,
+    presence_penalty: float | None = None,
+    repetition_penalty: float | None = None,
 ) -> list[str]:
     """Classify `items` in a single batched generation request, order preserved."""
     conversations = [render_conversation(adapter, predict, item) for item in items]
@@ -74,6 +79,11 @@ def classify_batch(
         max_tokens=max_tokens,
         temperature=temperature,
         reasoning_effort=reasoning_effort,
+        top_p=top_p,
+        top_k=top_k,
+        min_p=min_p,
+        presence_penalty=presence_penalty,
+        repetition_penalty=repetition_penalty,
     )
     response = post_batch(payload, base_url=base_url, api_key=api_key, timeout=timeout)
     mapped = map_batch_response(response, expected=len(items))

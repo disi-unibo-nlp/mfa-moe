@@ -27,6 +27,11 @@ def build_batch_payload(
     temperature: float,
     reasoning_effort: str,
     enable_thinking: bool = True,
+    top_p: float | None = None,
+    top_k: int | None = None,
+    min_p: float | None = None,
+    presence_penalty: float | None = None,
+    repetition_penalty: float | None = None,
 ) -> dict[str, Any]:
     """Build one batch request carrying every conversation in `conversations`."""
     if not conversations:
@@ -36,6 +41,8 @@ def build_batch_payload(
             raise ValueError("each conversation must be a non-empty list of messages")
     return {
         "model": model,
+        "n": 1,
+        "stream": False,
         "messages": conversations,
         "max_tokens": max_tokens,
         "temperature": temperature,
@@ -43,6 +50,17 @@ def build_batch_payload(
             "enable_thinking": enable_thinking,
             "reasoning_effort": reasoning_effort,
             "preserve_thinking": False,
+        },
+        **{
+            key: value
+            for key, value in {
+                "top_p": top_p,
+                "top_k": top_k,
+                "min_p": min_p,
+                "presence_penalty": presence_penalty,
+                "repetition_penalty": repetition_penalty,
+            }.items()
+            if value is not None
         },
     }
 
@@ -56,8 +74,12 @@ def map_batch_response(response: dict[str, Any], *, expected: int) -> dict[int, 
         raise ValueError(f"batch response returned {len(choices)} choices, expected {expected}")
     mapped: dict[int, str] = {}
     for choice in choices:
+        if not isinstance(choice, dict):
+            raise ValueError("batch choice must be an object")
+        if choice.get("finish_reason") not in (None, "stop"):
+            raise ValueError("batch choice did not finish normally")
         index = choice.get("index")
-        if not isinstance(index, int):
+        if type(index) is not int:
             raise ValueError("batch choice is missing an integer index")
         if index in mapped:
             raise ValueError(f"batch response repeated index {index}")
