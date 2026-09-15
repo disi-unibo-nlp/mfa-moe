@@ -21,7 +21,9 @@ def test_fullprecision_flash_attn_benchmark_launcher_contract() -> None:
     assert "--dtype bfloat16" in vllm_command
     assert vllm_command.count("--max-num-seqs 16") == 1
     assert "--workers 16" in text
-    assert "--reasoning-effort high" in text
+    assert "--reasoning-effort medium" in text
+    assert "--enable-thinking --reasoning-effort medium" in text
+    assert "--reasoning-effort high" not in text
     assert "--enable-thinking" in text
     assert "--language-model-only" in vllm_command
     assert "--judge-program" in text
