@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+from pathlib import Path
 
 import pytest
 
@@ -106,6 +107,58 @@ def test_selection_rule_rejects_excess_gpu_memory() -> None:
 
 def test_selection_rule_is_documented() -> None:
     assert "10" in SELECTION_RULE and "p95" in SELECTION_RULE
+
+
+REPO_ROOT = Path(__file__).resolve().parents[1]
+GEN_ROOT = REPO_ROOT / "results/correlation_pipeline/gpt-oss-20b/generation/openai--gpt-oss-20b"
+MATH500 = GEN_ROOT / "math500/traces.jsonl"
+AMC23 = GEN_ROOT / "amc23/traces.jsonl"
+
+# The slice is asserted against the real trace files the sweep actually reads, so a
+# schema drift in TraceRecord surfaces here instead of inside a GPU job.
+requires_traces = pytest.mark.skipif(
+    not (MATH500.is_file() and AMC23.is_file()),
+    reason="generation traces for math500/amc23 are not present",
+)
+
+
+@requires_traces
+def test_balanced_slice_is_thirty_two_items_split_sixteen_each() -> None:
+    from moe_exp.correlation_pipeline.batch_probe import build_balanced_slice
+
+    items = build_balanced_slice([MATH500, AMC23], 32)
+
+    assert len(items) == 32
+    counts: dict[str, int] = {}
+    for item in items:
+        counts[item["source"]] = counts.get(item["source"], 0) + 1
+    assert counts == {"math500": 16, "amc23": 16}
+
+
+@requires_traces
+def test_balanced_slice_rejects_an_uneven_split() -> None:
+    from moe_exp.correlation_pipeline.batch_probe import build_balanced_slice
+
+    with pytest.raises(ValueError):
+        build_balanced_slice([MATH500, AMC23], 33)
+
+
+@requires_traces
+def test_balanced_slice_is_deterministic() -> None:
+    from moe_exp.correlation_pipeline.batch_probe import build_balanced_slice
+
+    first = build_balanced_slice([MATH500, AMC23], 32)
+    second = build_balanced_slice([MATH500, AMC23], 32)
+    assert [item["sentence"] for item in first] == [item["sentence"] for item in second]
+
+
+@requires_traces
+def test_balanced_slice_items_carry_every_judge_input_field() -> None:
+    from moe_exp.correlation_pipeline.batch_predictor import JUDGE_INPUT_FIELDS
+    from moe_exp.correlation_pipeline.batch_probe import build_balanced_slice
+
+    for item in build_balanced_slice([MATH500, AMC23], 32):
+        assert set(JUDGE_INPUT_FIELDS) <= set(item)
 
 
 def _row(

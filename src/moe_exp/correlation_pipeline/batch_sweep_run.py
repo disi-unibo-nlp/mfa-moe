@@ -16,8 +16,11 @@ import json
 from pathlib import Path
 
 from moe_exp.correlation_pipeline.batch_benchmark import append_row, build_cells, run_cell
-from moe_exp.correlation_pipeline.batch_predictor import load_program_and_adapter
-from moe_exp.correlation_pipeline.batch_probe import build_probe_items
+from moe_exp.correlation_pipeline.batch_predictor import (
+    JUDGE_INPUT_FIELDS,
+    load_program_and_adapter,
+)
+from moe_exp.correlation_pipeline.batch_probe import build_balanced_slice
 
 CONTROL_NAME = "control_labels.json"
 
@@ -25,7 +28,7 @@ CONTROL_NAME = "control_labels.json"
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--traces", type=Path, nargs="+", required=True)
-    parser.add_argument("--slice-size", type=int, default=256)
+    parser.add_argument("--slice-size", type=int, default=32)
     parser.add_argument("--judge-program", required=True)
     parser.add_argument("--model", required=True)
     parser.add_argument("--base-url", default="http://127.0.0.1:41800/v1")
@@ -40,14 +43,16 @@ def main() -> None:
     parser.add_argument("--reasoning-effort", default="medium")
     args = parser.parse_args()
 
-    per_file = max(1, args.slice_size // len(args.traces))
-    items = []
-    for path in args.traces:
-        items.extend(build_probe_items(path, per_file))
-    items = items[: args.slice_size]
-    if len(items) < args.slice_size:
-        raise SystemExit(f"slice has {len(items)} items, expected {args.slice_size}")
-    print(f"slice_ready items={len(items)}")
+    items = build_balanced_slice(args.traces, args.slice_size)
+    by_source: dict[str, int] = {}
+    for item in items:
+        by_source[item["source"]] = by_source.get(item["source"], 0) + 1
+    print(f"slice_ready items={len(items)} split={by_source}", flush=True)
+
+    # The provenance tag is for reporting only. DSPy's adapter ignores unknown keys, but
+    # the judge inputs are stripped to exactly JUDGE_INPUT_FIELDS so prompts stay
+    # byte-identical to the single-request control regardless of DSPy version.
+    judge_items = [{k: v for k, v in item.items() if k in JUDGE_INPUT_FIELDS} for item in items]
 
     _, predict, adapter = load_program_and_adapter(args.judge_program)
 
@@ -65,9 +70,15 @@ def main() -> None:
 
     control_path = args.scoreboard.parent / CONTROL_NAME
     for cell in cells:
+        print(
+            f"CELL_START batch={cell['batch_size']} conc={cell['concurrency']} "
+            f"mtp={cell['mtp']} max_num_seqs={cell['max_num_seqs']} "
+            f"batches={-(-len(judge_items) // cell['batch_size'])}",
+            flush=True,
+        )
         result = run_cell(
             cell,
-            items=items,
+            items=judge_items,
             adapter=adapter,
             predict=predict,
             model=args.model,

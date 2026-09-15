@@ -45,3 +45,28 @@ def build_probe_items(traces_path: Path, count: int = 16) -> list[dict[str, Any]
             if len(items) == count:
                 return items
     raise ValueError(f"only found {len(items)} judge units, needed {count}")
+
+
+def build_balanced_slice(traces_paths: list[Path], slice_size: int) -> list[dict[str, Any]]:
+    """Take an equal number of judge items from each trace file.
+
+    Every sweep cell must see identical inputs, so the split is exact by construction:
+    an uneven request is a hard error rather than a silently truncated slice. Each item
+    is tagged with the dataset directory it came from so the split is reportable.
+    """
+    if not traces_paths:
+        raise ValueError("at least one traces file is required")
+    if slice_size % len(traces_paths) != 0:
+        raise ValueError(
+            f"slice_size {slice_size} does not divide evenly across "
+            f"{len(traces_paths)} trace files"
+        )
+    per_file = slice_size // len(traces_paths)
+    items: list[dict[str, Any]] = []
+    for path in traces_paths:
+        source = path.parent.name
+        for item in build_probe_items(path, per_file):
+            items.append({**item, "source": source})
+    if len(items) != slice_size:
+        raise ValueError(f"assembled {len(items)} items, expected {slice_size}")
+    return items
