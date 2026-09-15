@@ -1,0 +1,4 @@
+# Runtime-only dependencies missing from the validated vLLM/Torch environment.
+# Keep the source constraints synchronized with pyproject.toml[project.optional-dependencies].gepa-llm-as-judge.
+dspy>=3.0.0,<4
+gepa>=0.0.27
