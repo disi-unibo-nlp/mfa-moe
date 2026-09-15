@@ -8,7 +8,7 @@
 #SBATCH --cpus-per-task=16
 #SBATCH --gres=gpu:2
 #SBATCH --mem=120G
-#SBATCH --time=08:00:00
+#SBATCH --time=04:00:00
 #SBATCH --mail-type=BEGIN,END,FAIL
 #SBATCH --mail-user=lorenzo.molfetta@unibo.it
 #SBATCH --output=/leonardo_scratch/large/userexternal/lmolfett/mfa-moe/qwen-fp-fa-smoke/logs/qwen-batch-sweep-%j.out
@@ -38,7 +38,7 @@ HF_CACHE_DIR="$HF_HOME/hub"
 RUNTIME_ROOT="$SCRATCH_ROOT/runtime"
 RUN_ROOT="$SCRATCH_ROOT/benchmarks/batch-sweep/${SLURM_JOB_ID:-manual}"
 SCOREBOARD="$RUN_ROOT/scoreboard.jsonl"
-SLICE_SIZE=256
+SLICE_SIZE=32
 SERVER_PID=""
 
 mkdir -p "$RUN_ROOT" "$RUNTIME_ROOT/tmp" "$RUNTIME_ROOT/torch" "$RUNTIME_ROOT/triton" "$RUNTIME_ROOT/xdg"
