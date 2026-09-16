@@ -65,19 +65,23 @@ def build_batch_payload(
     }
 
 
-def map_batch_response(response: dict[str, Any], *, expected: int) -> dict[int, str]:
-    """Map `choices` back to conversation position using the documented index field."""
+def map_batch_choices(response: dict[str, Any], *, expected: int) -> dict[int, dict[str, Any]]:
+    """Map raw `choices` back to conversation positions without judging their content.
+
+    Structural problems stay fatal because a response like that cannot be attributed to
+    the input rows. Per-choice problems (truncation, missing content, unparseable text)
+    are left to the tolerant caller, which is why the original choice dictionaries are
+    returned instead of extracted content strings.
+    """
     choices = response.get("choices")
     if not isinstance(choices, list):
         raise ValueError("batch response has no choices list")
     if len(choices) != expected:
         raise ValueError(f"batch response returned {len(choices)} choices, expected {expected}")
-    mapped: dict[int, str] = {}
+    mapped: dict[int, dict[str, Any]] = {}
     for choice in choices:
         if not isinstance(choice, dict):
             raise ValueError("batch choice must be an object")
-        if choice.get("finish_reason") not in (None, "stop"):
-            raise ValueError("batch choice did not finish normally")
         index = choice.get("index")
         if type(index) is not int:
             raise ValueError("batch choice is missing an integer index")
@@ -85,12 +89,22 @@ def map_batch_response(response: dict[str, Any], *, expected: int) -> dict[int, 
             raise ValueError(f"batch response repeated index {index}")
         if not 0 <= index < expected:
             raise ValueError(f"batch choice index {index} outside 0..{expected - 1}")
+        mapped[index] = choice
+    if len(mapped) != expected:
+        raise ValueError(f"batch response covered {len(mapped)} indices, expected {expected}")
+    return mapped
+
+
+def map_batch_response(response: dict[str, Any], *, expected: int) -> dict[int, str]:
+    """Map `choices` back to conversation position, rejecting anything but a clean answer."""
+    mapped: dict[int, str] = {}
+    for index, choice in map_batch_choices(response, expected=expected).items():
+        if choice.get("finish_reason") not in (None, "stop"):
+            raise ValueError("batch choice did not finish normally")
         content = (choice.get("message") or {}).get("content")
         if not isinstance(content, str):
             raise ValueError(f"batch choice {index} has no string content")
         mapped[index] = content
-    if len(mapped) != expected:
-        raise ValueError(f"batch response covered {len(mapped)} indices, expected {expected}")
     return mapped
 
 
