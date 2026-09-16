@@ -18,10 +18,14 @@ from moe_exp.correlation_pipeline.annotation_partition import (
     partition_items,
     plan,
 )
-from moe_exp.correlation_pipeline.batch_predictor import classify_batch, load_program_and_adapter
+from moe_exp.correlation_pipeline.batch_predictor import (
+    classify_batch_outcomes,
+    load_program_and_adapter,
+)
 
 BATCH_SIZE = 64
 LABELS = frozenset(("Read", "Analyze", "Plan", "Implement", "Explore", "Verify", "Monitor"))
+UNKNOWN_FIELDS = frozenset(("status", "raw_completion", "failure"))
 
 
 def digest(value: Any) -> str:
@@ -45,6 +49,79 @@ def _publish(path: Path, value: Any) -> None:
             pass
 
 
+def _unknown_record(row: dict[str, Any], outcome: dict[str, Any]) -> dict[str, Any]:
+    """Build one persisted `unknown` record, rejecting metadata we cannot re-read."""
+    raw = outcome.get("raw_completion")
+    if raw is not None and not isinstance(raw, str):
+        raise ValueError("unknown outcome raw_completion must be a string or null")
+    failure = outcome.get("failure")
+    if not isinstance(failure, dict):
+        raise ValueError("unknown outcome is missing failure metadata")
+    missing = [
+        key for key in ("kind", "error_type", "message") if not isinstance(failure.get(key), str)
+    ]
+    if missing:
+        raise ValueError(f"unknown outcome failure is missing {missing}")
+    finish_reason = failure.get("finish_reason")
+    if finish_reason is not None and not isinstance(finish_reason, str):
+        raise ValueError("unknown outcome finish_reason must be a string or null")
+    return dict(
+        row,
+        status="unknown",
+        raw_completion=raw,
+        failure={
+            "kind": failure["kind"],
+            "error_type": failure["error_type"],
+            "message": failure["message"],
+            "finish_reason": finish_reason,
+        },
+    )
+
+
+def validate_record(row: dict[str, Any], record: Any) -> None:
+    """Check one checkpoint record against its source row; raise `ValueError` if it drifts.
+
+    Legacy valid records (`label` only, no status field) and new `unknown` records are
+    both accepted, so checkpoints written before this change still resume.
+    """
+    if not isinstance(record, dict):
+        raise ValueError("invalid checkpoint record")
+    if any(record.get(key) != value for key, value in row.items()):
+        raise ValueError("invalid checkpoint record")
+    added = set(record) - set(row)
+    if added == {"label"} and record["label"] in LABELS:
+        return
+    if added == set(UNKNOWN_FIELDS) and record.get("status") == "unknown":
+        _unknown_record(row, record)
+        return
+    raise ValueError("invalid checkpoint record")
+
+
+def outcome_record(row: dict[str, Any], outcome: Any) -> dict[str, Any]:
+    """Normalise one classifier outcome into the record that gets checkpointed.
+
+    A canonical label yields the legacy record shape. An `unknown` outcome from the
+    tolerant predictor yields a record carrying the exact raw completion and its
+    failure metadata, so a bad choice is persisted work instead of a lost batch.
+    Anything else is a programming or checkpoint contract error.
+    """
+    if isinstance(outcome, str):
+        if outcome not in LABELS:
+            raise ValueError(f"invalid classifier label {outcome!r}")
+        record = dict(row, label=outcome)
+    elif isinstance(outcome, dict) and outcome.get("status") == "unknown":
+        record = _unknown_record(row, outcome)
+    elif isinstance(outcome, dict):
+        label = outcome.get("label")
+        if not isinstance(label, str) or label not in LABELS:
+            raise ValueError(f"invalid classifier outcome {outcome!r}")
+        record = dict(row, label=label)
+    else:
+        raise ValueError(f"invalid classifier outcome {outcome!r}")
+    validate_record(row, record)
+    return record
+
+
 def run_part(items, config, *, output_dir, classify, expected_count=PART_SIZE, dry_run=False):
     rows = [dict(identity=identity, unit=unit, inputs=inputs) for identity, _trace, unit, inputs in items]
     if len(rows) != expected_count:
@@ -62,22 +139,26 @@ def run_part(items, config, *, output_dir, classify, expected_count=PART_SIZE, d
             raise ValueError("invalid batch size")
         for record in records:
             position = len(saved)
-            if position >= len(rows) or {k: record[k] for k in rows[position]} != rows[position] or record.get("label") not in LABELS:
+            if position >= len(rows):
                 raise ValueError("invalid checkpoint record")
+            validate_record(rows[position], record)
             saved.append(record)
     if dry_run:
         return {"status": "dry_run", "completed": len(saved), "expected": expected_count, "binding_sha256": digest(binding)}
     for offset in range(len(saved), len(rows), BATCH_SIZE):
         batch = rows[offset:offset + BATCH_SIZE]
-        labels = classify([row["inputs"] for row in batch])
-        if not isinstance(labels, list) or len(labels) != len(batch) or any(label not in LABELS for label in labels):
-            raise ValueError("invalid batch labels")
-        records = [dict(row, label=label) for row, label in zip(batch, labels, strict=True)]
+        outcomes = classify([row["inputs"] for row in batch])
+        if not isinstance(outcomes, list) or len(outcomes) != len(batch):
+            raise ValueError("invalid batch outcomes")
+        records = [outcome_record(row, outcome) for row, outcome in zip(batch, outcomes, strict=True)]
         _publish(checkpoints / f"batch-{len(saved) // BATCH_SIZE:06d}.json", {"binding": binding, "records": records})
         saved.extend(records)
         if len(saved) % (BATCH_SIZE * 10) == 0 or len(saved) == len(rows):
             print(f"PART_PROGRESS completed={len(saved)} expected={len(rows)}", flush=True)
     summary = {"status": "complete", "completed": len(saved), "expected": len(rows), "binding_sha256": digest(binding), "annotations_sha256": digest(saved)}
+    unknown_count = sum(1 for record in saved if record.get("status") == "unknown")
+    if unknown_count:
+        summary["unknown_count"] = unknown_count
     for path, value in ((root / "annotations.json", saved), (root / "summary.json", summary)):
         if path.exists():
             if json.loads(path.read_text(encoding="utf-8")) != value:
@@ -155,7 +236,7 @@ def main(argv: list[str] | None = None) -> None:
     }
     _program, predict, adapter = load_program_and_adapter(str(args.judge_program))
     def classify(batch):
-        return classify_batch(batch, adapter=adapter, predict=predict, model=args.model, base_url=args.base_url, api_key=args.api_key, max_tokens=args.max_tokens, temperature=args.temperature, reasoning_effort=args.reasoning_effort, top_p=args.top_p, top_k=args.top_k, min_p=args.min_p, presence_penalty=args.presence_penalty, repetition_penalty=args.repetition_penalty)
+        return classify_batch_outcomes(batch, adapter=adapter, predict=predict, model=args.model, base_url=args.base_url, api_key=args.api_key, max_tokens=args.max_tokens, temperature=args.temperature, reasoning_effort=args.reasoning_effort, top_p=args.top_p, top_k=args.top_k, min_p=args.min_p, presence_penalty=args.presence_penalty, repetition_penalty=args.repetition_penalty)
     result = run_part(parts[args.part], config, output_dir=args.output_dir, classify=classify)
     print(json.dumps(result, sort_keys=True), flush=True)
 
