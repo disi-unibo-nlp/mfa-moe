@@ -169,8 +169,14 @@ def run_part(items, config, *, output_dir, classify, expected_count=PART_SIZE, d
     return summary
 
 
-def load_include_traces(path: Path) -> set[tuple[str, str, int]]:
-    """Read the committed affected-trace list used for targeted re-labeling."""
+def load_include_traces(
+    path: Path, source: str | None = None
+) -> set[tuple[str, str, int]]:
+    """Read the committed affected-trace list used for targeted re-labeling.
+
+    `source` selects only the entries that the listed corpus actually changes, because the
+    same problem id can exist in both corpora.
+    """
     document = json.loads(path.read_text(encoding="utf-8"))
     if document.get("schema_version") != 1:
         raise ValueError(f"unsupported include-traces schema in {path}")
@@ -181,7 +187,11 @@ def load_include_traces(path: Path) -> set[tuple[str, str, int]]:
     for entry in entries:
         if not isinstance(entry, dict):
             raise ValueError(f"invalid include-traces entry in {path}: {entry!r}")
+        if source is not None and entry.get("source") != source:
+            continue
         keys.add((entry["dataset"], entry["problem_id"], entry["sample_id"]))
+    if not keys:
+        raise ValueError(f"include-traces file {path} has no entries for source {source!r}")
     return keys
 
 
@@ -192,6 +202,11 @@ def main(argv: list[str] | None = None) -> None:
         "--include-traces",
         type=Path,
         help="JSON list of trace keys to label instead of the first --total units",
+    )
+    parser.add_argument(
+        "--include-source",
+        choices=("gpt", "gemma"),
+        help="keep only the include entries attributed to this source",
     )
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--part", type=int, required=True)
@@ -223,7 +238,11 @@ def main(argv: list[str] | None = None) -> None:
         raise ValueError("production batch size is fixed at 64")
     if not 0 <= args.part < args.parts or args.part_size * args.parts != args.total:
         raise ValueError("part, parts, part-size and total must define exact disjoint parts")
-    include = load_include_traces(args.include_traces) if args.include_traces else None
+    include = (
+        load_include_traces(args.include_traces, args.include_source)
+        if args.include_traces
+        else None
+    )
     items = enumerate_items(
         args.trace_root, DATASETS, limit=None if include is not None else args.total, include=include
     )

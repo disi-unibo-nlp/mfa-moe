@@ -56,14 +56,21 @@ def write_corpus(root: Path) -> None:
         )
 
 
-def write_affected(path: Path, keys: list[tuple[str, str, int]], units: dict) -> None:
+def write_affected(
+    path: Path, keys: list[tuple[str, str, int, str]], units: dict
+) -> None:
     path.write_text(
         json.dumps(
             {
                 "schema_version": 1,
                 "trace_keys": [
-                    {"dataset": dataset, "problem_id": problem_id, "sample_id": sample_id}
-                    for dataset, problem_id, sample_id in keys
+                    {
+                        "dataset": dataset,
+                        "problem_id": problem_id,
+                        "sample_id": sample_id,
+                        "source": source,
+                    }
+                    for dataset, problem_id, sample_id, source in keys
                 ],
                 "expected_units": units,
             }
@@ -126,7 +133,7 @@ class IncludeTracesTests(unittest.TestCase):
             root = directory / "corpus"
             write_corpus(root)
             affected = directory / "affected.json"
-            write_affected(affected, [("math500", "merged", 0)], {"gpt": 5})
+            write_affected(affected, [("math500", "merged", 0, "gpt")], {"gpt": 5})
             buffer = io.StringIO()
             with contextlib.redirect_stdout(buffer):
                 main(
@@ -147,13 +154,27 @@ class IncludeTracesTests(unittest.TestCase):
             self.assertEqual(payload["source_plan"]["selected_identities"], 5)
             self.assertFalse((directory / "out").exists())
 
+    def test_include_source_filters_entries_for_other_corpora(self):
+        with tempfile.TemporaryDirectory() as raw:
+            directory = Path(raw)
+            root = directory / "corpus"
+            write_corpus(root)
+            affected = directory / "affected.json"
+            write_affected(affected, [("math500", "merged", 0, "gemma")], {"gemma": 5})
+            from moe_exp.correlation_pipeline.annotation_batch import load_include_traces
+
+            self.assertEqual(load_include_traces(affected, "gemma"), {("math500", "merged", 0)})
+            # The same key exists in this corpus but belongs to the other source's run.
+            with self.assertRaises(ValueError):
+                load_include_traces(affected, "gpt")
+
     def test_wrong_total_is_rejected_before_the_judge_loads(self):
         with tempfile.TemporaryDirectory() as raw:
             directory = Path(raw)
             root = directory / "corpus"
             write_corpus(root)
             affected = directory / "affected.json"
-            write_affected(affected, [("math500", "merged", 0)], {"gpt": 5})
+            write_affected(affected, [("math500", "merged", 0, "gpt")], {"gpt": 5})
             with self.assertRaises(ValueError):
                 main(
                     [

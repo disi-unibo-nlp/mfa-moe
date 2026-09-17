@@ -67,14 +67,20 @@ def load_affected(path: Path) -> dict[str, Any]:
     if not isinstance(entries, list) or not entries:
         raise ValueError(f"{path} has no trace keys")
     keys = set()
+    by_source = {source: set() for source in SOURCES}
     for entry in entries:
         if not isinstance(entry, dict):
             raise ValueError(f"invalid affected-trace entry in {path}: {entry!r}")
-        keys.add((entry["dataset"], entry["problem_id"], entry["sample_id"]))
+        key = (entry["dataset"], entry["problem_id"], entry["sample_id"])
+        if entry.get("source") not in SOURCES:
+            raise ValueError(f"{path}: entry {key} has no valid source: {entry.get('source')!r}")
+        keys.add(key)
+        by_source[entry["source"]].add(key)
     if len(keys) != len(entries):
         raise ValueError(f"{path} repeats an affected trace")
     return {
         "keys": keys,
+        "by_source": by_source,
         "expected_units": document.get("expected_units") or {},
         "verified_units": document.get("verified_units") or {},
         "document": document,
@@ -359,6 +365,11 @@ def verify_splitter(
         }
         if unexpected or repeated:
             raise ValueError(f"{source}: splitter blast radius does not match the affected list: {status}")
+        misattributed = sorted(keys - affected["by_source"][source])
+        if misattributed:
+            raise ValueError(
+                f"{source}: affected list attributes {misattributed} to another source"
+            )
         if expected is not None and new_total != expected:
             raise ValueError(f"{source}: splitter produced {new_total} units, expected {expected}")
         for key in keys:
@@ -459,7 +470,7 @@ def main(argv: list[str] | None = None) -> None:
             source,
             v1_records,
             v2_records,
-            affected["keys"],
+            affected["by_source"][source],
             expected_rows=expected_rows,
             trace_root=trace_roots[source],
             verify_units=args.verify_units,
