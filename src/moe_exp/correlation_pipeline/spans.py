@@ -2,16 +2,31 @@
 
 from __future__ import annotations
 
+from bisect import bisect_left
 import hashlib
 import json
 import math
 import re
-from typing import Any
+from typing import Any, Iterable
 
 from moe_exp.gepaLLMAsJudge.data import SENTENCE_LABELS
-from moe_exp.models.inference import _find_prompt_length, _format_prompt
 
 SPAN_SCHEMA_VERSION = 1
+
+# Version 2 single-`$` protection limits: a stray delimiter may not swallow prose.
+SINGLE_DOLLAR_MAX_CHARS = 1000
+SINGLE_DOLLAR_MAX_BOUNDARIES = 2
+# A plausible single-`$` opener follows whitespace or one of these characters.
+OPENING_CONTEXT = "([{=,;:"
+_DOLLAR_MARKERS = "$"
+_BRACKET_MARKER = re.compile(r"\\[\[\(]")
+_BOUNDARY_PATTERN = re.compile(r"(?<=[.!?])[^\S\n]+|\n+")
+_STEP_PATTERN = re.compile(r"\s*(?:\d+[.)]|[Ss]tep\s+\d+[.:])")
+_V1_MATH_PATTERN = re.compile(
+    r"\$\$.*?\$\$|\\\[.*?\\\]|\\\(.*?\\\)"
+    r"|(?<!\\)\$(?:(?:\\.|[^$\\])*?\$|(?:\\.|[^$\\])*\\\$)",
+    flags=re.DOTALL,
+)
 
 
 def digest(value: Any) -> str:
@@ -77,38 +92,55 @@ def reasoning_ranges(trace: Any) -> list[tuple[int, int]]:
 def sentence_spans(trace: Any) -> list[dict[str, Any]]:
     """Split punctuation/newlines, retaining source offsets and math expressions.
 
-    This is a versioned deterministic segmentation, not a linguistic parser.
-    Decimal points and punctuation inside LaTeX math do not create boundaries.
+    This is a versioned deterministic segmentation, not a linguistic parser. Version 2
+    keeps the frozen version 1 math protection but refuses a single-`$` span that starts
+    after a word character and is longer than `SINGLE_DOLLAR_MAX_CHARS` or hides
+    `SINGLE_DOLLAR_MAX_BOUNDARIES` sentence boundaries. A stray closing `$` therefore
+    cannot swallow prose up to the next real formula, while a plausible `$...$` pair is
+    protected exactly as before.
     """
+    return _index_units(
+        trace.cot_text,
+        reasoning_ranges(trace),
+        math_protection_spans,
+    )
+
+
+def sentence_spans_v1(trace: Any) -> list[dict[str, Any]]:
+    """Frozen version 1 segmentation, kept only to map stored v1 selections to v2."""
+    return _index_units(trace.cot_text, reasoning_ranges(trace), legacy_math_protection_spans)
+
+
+def _index_units(
+    text: str, ranges: list[tuple[int, int]], protection: Any
+) -> list[dict[str, Any]]:
+    protected = protection(text)
     units = []
-    for start, end in reasoning_ranges(trace):
-        for unit in _sentence_spans_in_range(trace.cot_text, start, end):
+    for start, end in ranges:
+        for unit in _split_with_protection(text, start, end, protected):
             units.append({**unit, "index": len(units)})
     return units
 
 
-def _sentence_spans_in_range(text: str, start: int, end: int) -> list[dict[str, Any]]:
-    # Disjoint alternatives avoid exponential backtracking on unclosed math.
-    # The fallback preserves the original last-escaped-dollar closing behavior.
-    protected = [
-        match.span()
-        for match in re.finditer(
-            r"\$\$.*?\$\$|\\\[.*?\\\]|\\\(.*?\\\)|(?<!\\)\$(?:(?:\\.|[^$\\])*?\$|(?:\\.|[^$\\])*\\\$)",
-            text,
-            flags=re.DOTALL,
-        )
+def _boundary_spans(text: str, start: int, end: int) -> list[tuple[int, int]]:
+    return [
+        (start + match.start(), start + match.end())
+        for match in _BOUNDARY_PATTERN.finditer(text[start:end])
     ]
+
+
+def _split_with_protection(
+    text: str, start: int, end: int, protected: list[tuple[int, int]]
+) -> list[dict[str, Any]]:
     spans = []
     cursor = start
-    boundaries = [match for match in re.finditer(r"(?<=[.!?])[^\S\n]+|\n+", text[start:end])]
-    for match in boundaries:
-        boundary = start + match.start()
+    for boundary, after in _boundary_spans(text, start, end):
         if any(left <= boundary < right for left, right in protected):
             continue
-        if re.fullmatch(r"\s*(?:\d+[.)]|[Ss]tep\s+\d+[.:])", text[cursor:boundary]):
+        if _STEP_PATTERN.fullmatch(text[cursor:boundary]):
             continue
         spans.append((cursor, boundary))
-        cursor = start + match.end()
+        cursor = after
     spans.append((cursor, end))
     units = []
     for left, right in spans:
@@ -121,6 +153,166 @@ def _sentence_spans_in_range(text: str, start: int, end: int) -> list[dict[str, 
                 {"index": len(units), "start": left, "end": right, "text": text[left:right]}
             )
     return units
+
+
+def legacy_math_protection_spans(text: str) -> list[tuple[int, int]]:
+    """Frozen version 1 protected spans (regex over the whole text)."""
+    return [match.span() for match in _V1_MATH_PATTERN.finditer(text)]
+
+
+def _is_escaped_dollar(text: str, index: int) -> bool:
+    """True when `$` closes an odd-length backslash run, i.e. version 1 `\\$`."""
+    backslashes = 0
+    cursor = index - 1
+    while cursor >= 0 and text[cursor] == "\\":
+        backslashes += 1
+        cursor -= 1
+    return backslashes % 2 == 1
+
+
+def _dollar_markers(text: str) -> list[tuple[int, str]]:
+    """Every `$` and every `\\[`/`\\(` opener, in text order."""
+    markers: list[tuple[int, str]] = []
+    index = text.find("$")
+    while index >= 0:
+        markers.append((index, "$"))
+        index = text.find("$", index + 1)
+    markers.extend(
+        (match.start(), match.group()) for match in _BRACKET_MARKER.finditer(text)
+    )
+    markers.sort()
+    return markers
+
+
+def _hidden_by_stray_delimiter(text: str, left: int, right: int) -> bool:
+    """Version 2 refusal: a suspicious opener may not hide a long prose span.
+
+    A span that starts right after a word character is a closing delimiter that the
+    frozen pattern read as an opener. It is dropped when it is longer than
+    `SINGLE_DOLLAR_MAX_CHARS` characters or covers `SINGLE_DOLLAR_MAX_BOUNDARIES`
+    sentence boundaries; short ones stay protected so unaffected traces keep the exact
+    version 1 segmentation.
+    """
+    span = text[left:right]
+    if not span.startswith("$") or span.startswith("$$"):
+        return False
+    previous = text[left - 1] if left > 0 else ""
+    if not previous or previous.isspace() or previous in OPENING_CONTEXT:
+        return False
+    inner = span[1:-1]
+    if len(inner) > SINGLE_DOLLAR_MAX_CHARS:
+        return True
+    return len(_BOUNDARY_PATTERN.findall(inner)) >= SINGLE_DOLLAR_MAX_BOUNDARIES
+
+
+def math_protection_spans(text: str) -> list[tuple[int, int]]:
+    """Version 2 protected spans, matched once per text and shared by every range.
+
+    The scanner walks the markers once, so it stays linear on unclosed math. Single `$`
+    delimiters are paired exactly like the frozen pattern: the opener takes the nearest
+    later unescaped `$` and only falls back to the nearest `\\$` when no unescaped `$`
+    follows at all; an opener with no partner stays literal. Everything the winning
+    expression covers, including a nested `$$`, `\\[..\\]` or `\\(..\\)` block, is
+    consumed by it, and a suspicious span is dropped by `_hidden_by_stray_delimiter`.
+    """
+    markers = _dollar_markers(text)
+    total = len(markers)
+    spans: list[tuple[int, int]] = []
+    skip_until = -1
+    position = 0
+    while position < total:
+        index, marker = markers[position]
+        if index < skip_until:
+            position += 1
+            continue
+        if marker != "$":
+            closing = text.find("\\]" if marker == "\\[" else "\\)", index + 2)
+            if closing >= 0:
+                spans.append((index, closing + 2))
+                skip_until = closing + 2
+            position += 1
+            continue
+        if _is_escaped_dollar(text, index):
+            position += 1
+            continue
+        if text.startswith("$$", index):
+            closing = text.find("$$", index + 2)
+            if closing >= 0:
+                spans.append((index, closing + 2))
+                skip_until = closing + 2
+                position += 1
+                continue
+        closing = closing_position = fallback = fallback_position = None
+        cursor = position + 1
+        while cursor < total:
+            other, other_marker = markers[cursor]
+            if other_marker == "$":
+                if not _is_escaped_dollar(text, other):
+                    closing, closing_position = other, cursor
+                    break
+                if fallback is None:
+                    fallback, fallback_position = other, cursor
+            cursor += 1
+        if closing is None:
+            closing, closing_position = fallback, fallback_position
+        if closing is None:
+            position += 1
+            continue
+        if not _hidden_by_stray_delimiter(text, index, closing + 1):
+            spans.append((index, closing + 1))
+        skip_until = closing + 1
+        position = closing_position + 1
+    return sorted(spans)
+
+
+def map_selection_to_v2(trace: Any, indices: Iterable[int]) -> list[int]:
+    """Map stored version 1 unit indices onto the version 2 sub-units they contain.
+
+    The fix only ever splits a version 1 unit further, so one stored v1 index can expand
+    into several v2 indices but never into characters outside the old unit's span.
+    """
+    legacy = sentence_spans_v1(trace)
+    current = sentence_spans(trace)
+    starts = [unit["start"] for unit in current]
+    mapped: list[int] = []
+    for index in indices:
+        if type(index) is not int or not 0 <= index < len(legacy):
+            raise ValueError(f"version 1 unit index out of range: {index!r}")
+        left, right = legacy[index]["start"], legacy[index]["end"]
+        position = bisect_left(starts, left)
+        while position < len(current) and current[position]["end"] <= right:
+            mapped.append(current[position]["index"])
+            position += 1
+    return sorted(set(mapped))
+
+
+def splitter_delta(trace: Any) -> dict[str, Any]:
+    """Describe how the fixed splitter changes one trace relative to the frozen v1 one."""
+    legacy = sentence_spans_v1(trace)
+    current = sentence_spans(trace)
+    legacy_keys = {(unit["start"], unit["end"], unit["text"]) for unit in legacy}
+    current_keys = {(unit["start"], unit["end"], unit["text"]) for unit in current}
+    superseded = [
+        unit for unit in legacy if (unit["start"], unit["end"], unit["text"]) not in current_keys
+    ]
+    mapped = map_selection_to_v2(trace, [unit["index"] for unit in legacy])
+    return {
+        "v1_units": len(legacy),
+        "v2_units": len(current),
+        "mapped_units": len(mapped),
+        "added_units": len(current_keys - legacy_keys),
+        "superseded_units": len(superseded),
+        "superseded": [
+            {
+                "index": unit["index"],
+                "start": unit["start"],
+                "end": unit["end"],
+                "text": unit["text"],
+            }
+            for unit in superseded
+        ],
+        "affected": legacy_keys != current_keys or len(mapped) != len(legacy),
+    }
 
 
 def selected_sentence_indices(trace: Any, units: list[dict[str, Any]]) -> list[int]:
@@ -167,6 +359,9 @@ def token_layout(trace: Any, tokenizer: Any) -> dict[str, Any]:
     overlapping reasoning is owned exactly once; tags/final answers are excluded.
     Fast tokenizer offsets are required; approximate retokenization is unsafe.
     """
+    # Imported lazily so unit segmentation and its tests do not need the torch stack.
+    from moe_exp.models.inference import _find_prompt_length, _format_prompt
+
     replay = trace.metadata.get("token_replay")
     if replay is not None:
         from moe_exp.models.token_replay import validate_token_replay

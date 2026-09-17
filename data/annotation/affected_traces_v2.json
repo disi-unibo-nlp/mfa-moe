@@ -1,0 +1,72 @@
+{
+  "schema_version": 1,
+  "description": "Traces whose frozen-v1 sentence splitter protected a stray closing '$' and merged prose; re-labeled with the fixed version 2 splitter. Verified against the full corpus on 2026-09-17: 100,000 -> 100,039 units for gpt and 100,000 -> 100,932 for gemma, with no other trace changed.",
+  "trace_keys": [
+    {
+      "dataset": "math500",
+      "problem_id": "math500_test/number_theory/1185.json__sample_00",
+      "sample_id": 0
+    },
+    {
+      "dataset": "math500",
+      "problem_id": "math500_test/algebra/2427.json__sample_00",
+      "sample_id": 0
+    },
+    {
+      "dataset": "olympiad",
+      "problem_id": "olympiad_2709__sample_00",
+      "sample_id": 0
+    },
+    {
+      "dataset": "amc23",
+      "problem_id": "amc23_36__sample_00",
+      "sample_id": 0
+    },
+    {
+      "dataset": "minerva",
+      "problem_id": "minerva_215__sample_00",
+      "sample_id": 0
+    },
+    {
+      "dataset": "minerva",
+      "problem_id": "minerva_246__sample_00",
+      "sample_id": 0
+    },
+    {
+      "dataset": "minerva",
+      "problem_id": "minerva_253__sample_00",
+      "sample_id": 0
+    },
+    {
+      "dataset": "minerva",
+      "problem_id": "minerva_258__sample_00",
+      "sample_id": 0
+    }
+  ],
+  "expected_units": {
+    "gpt": 46,
+    "gemma": 1105
+  },
+  "verified_units": {
+    "gpt": {
+      "v1": 100000,
+      "v2": 100039,
+      "affected": [
+        ["math500_test/number_theory/1185.json__sample_00", 46]
+      ]
+    },
+    "gemma": {
+      "v1": 100000,
+      "v2": 100932,
+      "affected": [
+        ["math500_test/algebra/2427.json__sample_00", 17],
+        ["olympiad_2709__sample_00", 45],
+        ["amc23_36__sample_00", 48],
+        ["minerva_215__sample_00", 487],
+        ["minerva_246__sample_00", 268],
+        ["minerva_253__sample_00", 15],
+        ["minerva_258__sample_00", 225]
+      ]
+    }
+  }
+}
