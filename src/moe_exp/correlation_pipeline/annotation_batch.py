@@ -17,6 +17,7 @@ from moe_exp.correlation_pipeline.annotation_partition import (
     enumerate_items,
     partition_items,
     plan,
+    trace_key,
 )
 from moe_exp.correlation_pipeline.batch_predictor import (
     classify_batch_outcomes,
@@ -168,9 +169,30 @@ def run_part(items, config, *, output_dir, classify, expected_count=PART_SIZE, d
     return summary
 
 
+def load_include_traces(path: Path) -> set[tuple[str, str, int]]:
+    """Read the committed affected-trace list used for targeted re-labeling."""
+    document = json.loads(path.read_text(encoding="utf-8"))
+    if document.get("schema_version") != 1:
+        raise ValueError(f"unsupported include-traces schema in {path}")
+    entries = document.get("trace_keys")
+    if not isinstance(entries, list) or not entries:
+        raise ValueError(f"include-traces file {path} has no trace keys")
+    keys = set()
+    for entry in entries:
+        if not isinstance(entry, dict):
+            raise ValueError(f"invalid include-traces entry in {path}: {entry!r}")
+        keys.add((entry["dataset"], entry["problem_id"], entry["sample_id"]))
+    return keys
+
+
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--trace-root", type=Path, required=True)
+    parser.add_argument(
+        "--include-traces",
+        type=Path,
+        help="JSON list of trace keys to label instead of the first --total units",
+    )
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--part", type=int, required=True)
     parser.add_argument("--parts", type=int, default=PARTS)
@@ -201,7 +223,14 @@ def main(argv: list[str] | None = None) -> None:
         raise ValueError("production batch size is fixed at 64")
     if not 0 <= args.part < args.parts or args.part_size * args.parts != args.total:
         raise ValueError("part, parts, part-size and total must define exact disjoint parts")
-    items = enumerate_items(args.trace_root, DATASETS, limit=args.total)
+    include = load_include_traces(args.include_traces) if args.include_traces else None
+    items = enumerate_items(
+        args.trace_root, DATASETS, limit=None if include is not None else args.total, include=include
+    )
+    if include is not None and not args.plan_only and len(items) != args.total:
+        raise ValueError(
+            f"include-traces selection has {len(items)} units, expected exactly {args.total}"
+        )
     if len(items) < args.total:
         raise ValueError(f"source has {len(items)} identities, fewer than required {args.total}")
     selected = items[:args.total]
@@ -210,6 +239,9 @@ def main(argv: list[str] | None = None) -> None:
         "schema_version": 1,
         "trace_root": str(args.trace_root),
         "datasets": list(DATASETS),
+        "include_traces_sha256": (
+            digest(sorted(include)) if include is not None else None
+        ),
         "source_identities": len(items),
         "selected_identities": len(selected),
         "part_size": args.part_size,
@@ -243,7 +275,13 @@ def main(argv: list[str] | None = None) -> None:
     _program, predict, adapter = load_program_and_adapter(str(args.judge_program))
     def classify(batch):
         return classify_batch_outcomes(batch, adapter=adapter, predict=predict, model=args.model, base_url=args.base_url, api_key=args.api_key, max_tokens=args.max_tokens, temperature=args.temperature, reasoning_effort=args.reasoning_effort, top_p=args.top_p, top_k=args.top_k, min_p=args.min_p, presence_penalty=args.presence_penalty, repetition_penalty=args.repetition_penalty)
-    result = run_part(parts[args.part], config, output_dir=args.output_dir, classify=classify)
+    result = run_part(
+        parts[args.part],
+        config,
+        output_dir=args.output_dir,
+        classify=classify,
+        expected_count=len(parts[args.part]),
+    )
     print(json.dumps(result, sort_keys=True), flush=True)
 
 

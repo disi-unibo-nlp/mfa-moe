@@ -75,8 +75,28 @@ def _inputs(question: str, units: list[dict[str, Any]], index: int) -> dict[str,
     }
 
 
-def enumerate_items(trace_root: Path, datasets: tuple[str, ...] = DATASETS, *, limit: int | None = None) -> list[tuple[dict, TraceRecord, dict, dict]]:
-    """Enumerate source traces in file order without padding or deduplication."""
+def trace_key(trace: TraceRecord) -> tuple[str, str, int]:
+    """The exact source key used by `--include-traces` and the affected list."""
+    return (trace.dataset, trace.problem_id, trace.sample_id)
+
+
+def enumerate_items(
+    trace_root: Path,
+    datasets: tuple[str, ...] = DATASETS,
+    *,
+    limit: int | None = None,
+    include: set[tuple[str, str, int]] | None = None,
+) -> list[tuple[dict, TraceRecord, dict, dict]]:
+    """Enumerate source traces in file order without padding or deduplication.
+
+    `limit` stops after that many items. `include` restricts the enumeration to those
+    trace keys and stops as soon as every requested key has been seen, so a targeted
+    re-label only reads the traces it needs; a key that is missing from the source is
+    an error rather than a silently smaller part.
+    """
+    remaining = set(include) if include is not None else None
+    if remaining is not None and not remaining:
+        raise ValueError("include must name at least one trace")
     items = []
     for dataset in datasets:
         path = trace_root / dataset / "traces.jsonl"
@@ -84,6 +104,9 @@ def enumerate_items(trace_root: Path, datasets: tuple[str, ...] = DATASETS, *, l
             raise FileNotFoundError(path)
         for row in iter_jsonl(path):
             trace = TraceRecord(**row)
+            key = trace_key(trace)
+            if remaining is not None and key not in remaining:
+                continue
             units = sentence_spans(trace)
             trace_sha256 = trace_digest(trace)
             question = _question(trace)
@@ -101,10 +124,18 @@ def enumerate_items(trace_root: Path, datasets: tuple[str, ...] = DATASETS, *, l
                 items.append((identity, trace, units[index], _inputs(question, units, index)))
                 if limit is not None and len(items) >= limit:
                     break
+            if remaining is not None:
+                remaining.discard(key)
+                if not remaining:
+                    break
             if limit is not None and len(items) >= limit:
                 break
+        if remaining is not None and not remaining:
+            break
         if limit is not None and len(items) >= limit:
             break
+    if remaining:
+        raise ValueError(f"include traces missing from source: {sorted(remaining)}")
     identities = [item[0] for item in items]
     if len({digest(identity) for identity in identities}) != len(identities):
         raise ValueError("source contains duplicate sentence identities")
