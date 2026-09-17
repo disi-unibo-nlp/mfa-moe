@@ -18,7 +18,6 @@ SINGLE_DOLLAR_MAX_CHARS = 1000
 SINGLE_DOLLAR_MAX_BOUNDARIES = 2
 # A plausible single-`$` opener follows whitespace or one of these characters.
 OPENING_CONTEXT = "([{=,;:"
-_DOLLAR_MARKERS = "$"
 _BRACKET_MARKER = re.compile(r"\\[\[\(]")
 _BOUNDARY_PATTERN = re.compile(r"(?<=[.!?])[^\S\n]+|\n+")
 _STEP_PATTERN = re.compile(r"\s*(?:\d+[.)]|[Ss]tep\s+\d+[.:])")
