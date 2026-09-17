@@ -41,14 +41,19 @@ def trace_row(dataset: str, problem_id: str, text: str) -> dict:
     }
 
 
-def write_corpus(root: Path) -> None:
+def merged_id(source: str) -> str:
+    """Each corpus has its own affected trace: the same id may exist in both corpora."""
+    return f"merged_{source}"
+
+
+def write_corpus(root: Path, source: str) -> None:
     for dataset in DATASETS:
         directory = root / dataset
         directory.mkdir(parents=True, exist_ok=True)
         rows = []
         if dataset == "math500":
             rows = [
-                trace_row("math500", "merged", MERGED_TEXT),
+                trace_row("math500", merged_id(source), MERGED_TEXT),
                 trace_row("math500", "plain", PLAIN_TEXT),
             ]
         (directory / "traces.jsonl").write_text(
@@ -85,8 +90,13 @@ def write_affected(path: Path, keys, units, verified) -> None:
             {
                 "schema_version": 1,
                 "trace_keys": [
-                    {"dataset": dataset, "problem_id": problem_id, "sample_id": sample_id}
-                    for dataset, problem_id, sample_id in keys
+                    {
+                        "dataset": dataset,
+                        "problem_id": problem_id,
+                        "sample_id": sample_id,
+                        "source": source,
+                    }
+                    for dataset, problem_id, sample_id, source in keys
                 ],
                 "expected_units": units,
                 "verified_units": verified,
@@ -97,38 +107,41 @@ def write_affected(path: Path, keys, units, verified) -> None:
 
 
 def build_workspace(directory: Path):
-    corpus = directory / "corpus"
-    write_corpus(corpus)
-    key = ("math500", "merged", 0)
+    roots = {}
+    keys = {}
     v1_root = directory / "v1"
     v2_root = directory / "v2"
     for source in SOURCES:
+        corpus = directory / f"corpus-{source}"
+        write_corpus(corpus, source)
+        roots[source] = corpus
+        keys[source] = ("math500", merged_id(source), 0)
         v1_rows = build_run(corpus, v1_root / source / "part-00", legacy=True)
         v2_rows = build_run(
-            corpus, v2_root / source / "part-00", legacy=False, include={key}
+            corpus, v2_root / source / "part-00", legacy=False, include={keys[source]}
         )
         assert v1_rows == 5, v1_rows
         assert v2_rows == 5, v2_rows
     affected = directory / "affected.json"
     write_affected(
         affected,
-        [key],
+        [(key[0], key[1], key[2], source) for source, key in keys.items()],
         {"gpt": 5, "gemma": 5},
         {"gpt": {"v2": 7}, "gemma": {"v2": 7}},
     )
-    return corpus, v1_root, v2_root, affected
+    return roots, v1_root, v2_root, affected
 
 
-def merge_argv(corpus, v1_root, v2_root, affected, merged_root, *extra):
+def merge_argv(roots, v1_root, v2_root, affected, merged_root, *extra):
     argv = [
         "--v1-root", str(v1_root),
         "--v2-root", str(v2_root),
         "--merged-root", str(merged_root),
         "--affected-traces", str(affected),
         "--parts", "1", "--part-size", "5", "--total", "5",
-        "--trace-root", f"gpt={corpus}",
-        "--trace-root", f"gemma={corpus}",
     ]
+    for source, root in roots.items():
+        argv.extend(["--trace-root", f"{source}={root}"])
     argv.extend(extra)
     return argv
 
@@ -144,10 +157,10 @@ class MergeTests(unittest.TestCase):
     def test_dry_run_reports_the_v2_sequence_and_superseded_rows(self):
         with tempfile.TemporaryDirectory() as raw:
             directory = Path(raw)
-            corpus, v1_root, v2_root, affected = build_workspace(directory)
+            roots, v1_root, v2_root, affected = build_workspace(directory)
             merged_root = directory / "merged"
             printed = run_merge(
-                merge_argv(corpus, v1_root, v2_root, affected, merged_root, "--dry-run", "--verify-units")
+                merge_argv(roots, v1_root, v2_root, affected, merged_root, "--dry-run", "--verify-units")
             )
             summary = printed[0]
             reports = {line["source"]: line for line in printed[1:] if "source" in line}
@@ -170,9 +183,9 @@ class MergeTests(unittest.TestCase):
     def test_publish_writes_both_sources_and_a_summary(self):
         with tempfile.TemporaryDirectory() as raw:
             directory = Path(raw)
-            corpus, v1_root, v2_root, affected = build_workspace(directory)
+            roots, v1_root, v2_root, affected = build_workspace(directory)
             merged_root = directory / "merged"
-            run_merge(merge_argv(corpus, v1_root, v2_root, affected, merged_root))
+            run_merge(merge_argv(roots, v1_root, v2_root, affected, merged_root))
             for source in SOURCES:
                 rows = json.loads((merged_root / source / "annotations.json").read_text())
                 self.assertEqual(len(rows), 7)
@@ -187,18 +200,18 @@ class MergeTests(unittest.TestCase):
     def test_missing_v2_sub_unit_is_rejected(self):
         with tempfile.TemporaryDirectory() as raw:
             directory = Path(raw)
-            corpus, v1_root, v2_root, affected = build_workspace(directory)
+            roots, v1_root, v2_root, affected = build_workspace(directory)
             path = v2_root / "gpt/part-00/annotations.json"
             rows = json.loads(path.read_text())
             rows = [row for row in rows if row["unit"]["text"] != "Second sentence here."]
             path.write_text(json.dumps(rows), encoding="utf-8")
             with self.assertRaises((ValueError, SystemExit)):
-                run_merge(merge_argv(corpus, v1_root, v2_root, affected, directory / "merged", "--dry-run"))
+                run_merge(merge_argv(roots, v1_root, v2_root, affected, directory / "merged", "--dry-run"))
 
     def test_truncated_v2_unit_is_rejected(self):
         with tempfile.TemporaryDirectory() as raw:
             directory = Path(raw)
-            corpus, v1_root, v2_root, affected = build_workspace(directory)
+            roots, v1_root, v2_root, affected = build_workspace(directory)
             path = v2_root / "gemma/part-00/annotations.json"
             rows = json.loads(path.read_text())
             for row in rows:
@@ -208,12 +221,12 @@ class MergeTests(unittest.TestCase):
                     row["identity"]["end"] = row["unit"]["end"]
             path.write_text(json.dumps(rows), encoding="utf-8")
             with self.assertRaises(ValueError):
-                run_merge(merge_argv(corpus, v1_root, v2_root, affected, directory / "merged", "--dry-run"))
+                run_merge(merge_argv(roots, v1_root, v2_root, affected, directory / "merged", "--dry-run"))
 
     def test_drifted_v1_label_is_rejected_with_verify_units(self):
         with tempfile.TemporaryDirectory() as raw:
             directory = Path(raw)
-            corpus, v1_root, v2_root, affected = build_workspace(directory)
+            roots, v1_root, v2_root, affected = build_workspace(directory)
             path = v1_root / "gpt/part-00/annotations.json"
             rows = json.loads(path.read_text())
             drifted = [row for row in rows if row["identity"]["problem_id"] == "plain"]
@@ -222,7 +235,7 @@ class MergeTests(unittest.TestCase):
             path.write_text(json.dumps(rows), encoding="utf-8")
             with self.assertRaises(ValueError):
                 run_merge(
-                    merge_argv(corpus, v1_root, v2_root, affected, directory / "merged", "--dry-run", "--verify-units")
+                    merge_argv(roots, v1_root, v2_root, affected, directory / "merged", "--dry-run", "--verify-units")
                 )
 
 
