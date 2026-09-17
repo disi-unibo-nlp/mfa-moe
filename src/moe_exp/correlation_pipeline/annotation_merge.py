@@ -284,6 +284,13 @@ def merge_source(
             ):
                 raise ValueError(f"{source}: {key} unit identity drifted")
 
+    for key, group in group_by_trace(rows, f"{source} merged").items():
+        previous = None
+        for record in group:
+            unit = record["unit"]
+            if previous is not None and unit["start"] < previous:
+                raise ValueError(f"{source}: {key} units are not in text order")
+            previous = unit["end"]
     if expected_rows is not None and len(rows) != expected_rows:
         raise ValueError(f"{source}: merged {len(rows)} rows, expected {expected_rows}")
     digests = [digest(record["identity"]) for record in rows]
