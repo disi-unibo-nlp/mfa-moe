@@ -28,6 +28,7 @@ TENSOR_PARALLEL_SIZE="${TENSOR_PARALLEL_SIZE:-1}"
 GENERATION_SPECULATION="auto"
 JUDGE_SPECULATION="${JUDGE_SPECULATION:-none}"
 ALL_ROUTER_LAYERS=false
+PROBE_RESULTS="${PROBE_RESULTS:-}"
 BOOTSTRAP_SAMPLES="${BOOTSTRAP_SAMPLES:-500}"
 DRY_RUN="${DRY_RUN:-false}"
 RESULTS_DIR="${RESULTS_DIR:-results/correlation_pipeline}"
@@ -83,9 +84,10 @@ vLLM annotations/extraction/analysis separate from existing GGUF results.
   --position-bins N          Fixed mean-length bins (default: 10)
   --quantization MODE        Forward quantization (default: model profile)
   --all-router-layers        Explicitly override fixed probe selection with every MoE layer
+  --probe-results PATH       Override the model-specific gold probe results
   --bootstrap-samples N      Analysis cluster bootstraps (default: 500)
   --skip-generate            Reuse existing generations of --generation-model
-  --skip-annotate            Reuse completed matching sentence annotations; keep class views
+  --skip-annotate            Reuse all saved sentence labels (including partial shards)
   --skip-tagging             Run without annotations or class views; keep full/position views
   --skip-forward             Reuse extraction checkpoints with the selected reasoning views
   --skip-analyze             Skip the analysis stage
@@ -111,7 +113,7 @@ while [[ $# -gt 0 ]]; do
             ;;
         --workers|--judge-workers|--model|--generation-model|--max-tokens|--ctx-size|--results-dir|\
         --generation-dir|--max-items|--samples-per-problem|--limit|--max-sentences|--judge-program|\
-        --judge-model|--position-bins|--quantization|--bootstrap-samples|\
+        --judge-model|--position-bins|--quantization|--bootstrap-samples|--probe-results|\
         --judge-speculation|--generation-speculation|--generation-quantization|--cpu-offload-gb|--tensor-parallel-size)
             [[ $# -ge 2 && -n "$2" && "$2" != --* ]] || { echo "$1 requires a value" >&2; exit 2; }
             case "$1" in
@@ -131,6 +133,7 @@ while [[ $# -gt 0 ]]; do
                 --judge-model) JUDGE_MODEL="$2" ;;
                 --position-bins) POSITION_BINS="$2" ;;
                 --quantization) QUANTIZATION="$2" ;;
+                --probe-results) PROBE_RESULTS="$2" ;;
                 --judge-speculation) JUDGE_SPECULATION="$2" ;;
                 --generation-speculation) GENERATION_SPECULATION="$2" ;;
                 --generation-quantization) GENERATION_QUANTIZATION="$2" ;;
@@ -159,9 +162,9 @@ FORWARD_MODEL="${PIPELINE_MODEL:-unsloth/Qwen3.5-35B-A3B}"
 GENERATION_MODEL="${GENERATION_MODEL:-${PIPELINE_MODEL:-Qwen/Qwen3.5-35B-A3B-GPTQ-Int4}}"
 # Use the script's own directory: PHYS_DIR may point at an isolated test workspace.
 PROBE_CHECK_ARGS=()
+[[ -z "$PROBE_RESULTS" ]] || PROBE_CHECK_ARGS+=(--probe-results "$PROBE_RESULTS")
 if [[ "$DRY_RUN" != true && "$SKIP_FORWARD" != true && "$ALL_ROUTER_LAYERS" != true ]]; then
-    PROBE_CHECK_ARGS=(--check-probe-results
-        "$PHYS_DIR/results/probeTest/qwen3.5-35b-a3b-gptq-int4/probes/results.json")
+    PROBE_CHECK_ARGS+=(--check-probe-results --repo-root "$PHYS_DIR")
 fi
 PROFILE_OUTPUT="$(python3 "$(dirname "${BASH_SOURCE[0]}")/model_profiles.py" \
     --generation-model "$GENERATION_MODEL" --forward-model "$FORWARD_MODEL" "${PROBE_CHECK_ARGS[@]}")"
@@ -172,6 +175,7 @@ GENERATION_MTP="${PROFILE[2]}"
 CTX_SIZE="${CTX_SIZE:-${PROFILE[3]}}"
 QUANTIZATION="${QUANTIZATION:-${PROFILE[4]}}"
 GENERATION_LANGUAGE_ONLY="${PROFILE[5]}"
+PROBE_RESULTS="${PROFILE[6]}"
 case "$GENERATION_SPECULATION" in
     auto) ;;
     mtp) GENERATION_MTP=true ;;
@@ -234,7 +238,7 @@ ACTIVE_CONTAINER=""
 ACTIVE_LOG=""
 LIMIT_ARGS=()
 [[ -n "$LIMIT" ]] && LIMIT_ARGS=(--limit "$LIMIT")
-LAYER_ARGS=()
+LAYER_ARGS=(--probe-results "$PROBE_RESULTS")
 [[ "$ALL_ROUTER_LAYERS" != true ]] || LAYER_ARGS=(--all-router-layers)
 stage_number=0
 TOTAL_STAGES=0
@@ -349,7 +353,8 @@ echo "  Forward quantization: $QUANTIZATION"
 echo "  Judge model:       $JUDGE_MODEL (speculation=$JUDGE_SPECULATION)"
 echo "  Concurrent calls:  generation=$WORKERS tagging=$JUDGE_WORKERS"
 echo "  Generation path:   $GENERATION_DIR"
-echo "  Replay input:      $REPLAY_GENERATION_DIR"
+echo "  Tagging input:     $REPLAY_GENERATION_DIR"
+echo "  Replay input:      $GENERATION_DIR"
 if [[ "$SKIP_SAMPLING" != true ]]; then
     echo "  Sentence sampling: error-rate weighted, cap=$MAX_SENTENCES, sample-id=0, seed=42"
 fi
@@ -395,7 +400,7 @@ if [[ "$SKIP_FORWARD" != true ]]; then
     run_stage "Forward extraction for selected reasoning views" \
         env HF_CACHE_DIR="$HF_CACHE_DIR" "$STAGE_LAUNCHER" forward --datasets "${DATASETS[@]}" \
         --model-id "$FORWARD_MODEL" \
-        --generation-dir "$REPLAY_GENERATION_DIR" --generation-model "$GENERATION_MODEL" \
+        --generation-dir "$GENERATION_DIR" --generation-model "$GENERATION_MODEL" \
         "${ANNOTATION_ARGS[@]}" --output-dir "$REASONING_DIR/forward" \
         --views "${VIEW_MODES[@]}" --position-bins "$POSITION_BINS" \
         --quantization "$QUANTIZATION" "${LAYER_ARGS[@]}" "${LIMIT_ARGS[@]}"

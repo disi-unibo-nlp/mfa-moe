@@ -156,7 +156,7 @@ def test_annotation_resumes_units_rejects_bad_labels_and_invalidates_program(tmp
         validate_annotation(item, result)
 
 
-def test_sampled_annotations_keep_original_context_and_only_pool_selected_tokens(tmp_path):
+def test_sampled_annotations_restrict_only_class_tokens(tmp_path):
     item = trace("<think>A. B. C.</think>answer")
     item.metadata["sentence_selection"] = {
         "schema_version": 1, "indices": [0, 2], "manifest_sha256": "fixed",
@@ -178,9 +178,10 @@ def test_sampled_annotations_keep_original_context_and_only_pool_selected_tokens
         reference={"mean_reasoning_tokens": 6, "bins": 3}, max_geometry_tokens=8,
     )
     selected_tokens = len(layout["unit_tokens"][0]) + len(layout["unit_tokens"][2])
-    assert views["reasoning_token_count"] == selected_tokens
+    assert views["reasoning_token_count"] == len(layout["reasoning_tokens"])
     for mode in ["full", "class", "position"]:
-        assert sum(s["token_count"] for s in views["scopes"] if s["view"] == mode) == selected_tokens
+        expected = selected_tokens if mode == "class" else len(layout["reasoning_tokens"])
+        assert sum(s["token_count"] for s in views["scopes"] if s["view"] == mode) == expected
     assert "label" not in views["sentence_spans"][1]
     plan = next(s for s in views["scopes"] if s["view"] == "class" and s["name"] == "Plan")
     assert plan["transition_count"] == selected_tokens - 2
@@ -476,6 +477,22 @@ def test_all_stages_roundtrip_with_a_fixed_reference_and_separate_outputs(
     if tagged:
         annotate.annotate_all(annotation_args, predict=predict)
         assert visible_questions == ["Choose A) one B) two"] * 8
+        # Replay original generations while tagging is incomplete: include a
+        # missing first annotation, a partial checkpoint, and a sampled label.
+        directory = annotation_root / "test/math500"
+        (directory / "annotations.jsonl").unlink()
+        for path in (directory / "shards").glob("*.json"):
+            annotation = json.loads(path.read_text())
+            if annotation["problem_id"] == "p0":
+                path.unlink()
+                continue
+            if annotation["problem_id"] == "p1":
+                annotation["status"] = "partial"
+                annotation["units"] = annotation["units"][:1]
+            if annotation["problem_id"] == "p2":
+                annotation["sentence_selection"] = {"schema_version": 1, "indices": [0]}
+                annotation["units"] = annotation["units"][:1]
+            path.write_text(json.dumps(annotation))
     else:
         assert not annotation_root.exists()
     tokenizer = CharacterTokenizer()
@@ -509,8 +526,6 @@ def test_all_stages_roundtrip_with_a_fixed_reference_and_separate_outputs(
             "--probe-results",
             str(probes),
             "--router-only",
-            "--limit",
-            "4",
         ]
     )
     extract.extract_all(forward_args)
@@ -534,25 +549,89 @@ def test_all_stages_roundtrip_with_a_fixed_reference_and_separate_outputs(
         ]
     )
     result = analyze.analyze(analysis_args)
-    assert result["n_traces"] == (2 if truncated else 4)
-    assert result["datasets"] == {"math500": 2 if truncated else 4}
-    assert result["excluded_truncated_generations"] == {"math500": 2 if truncated else 0}
-    assert result["generation_budget_audit"]["scopes"][0]["n_traces"] == 4
+    assert result["n_traces"] == 6
+    assert result["datasets"] == {"math500": 6}
+    assert result["excluded_truncated_generations"] == {"math500": 0}
+    assert result["generation_budget_audit"]["scopes"][0]["n_traces"] == 6
     import pandas as pd
 
     for table in (tmp_path / "analysis/test").rglob("trace_features.csv"):
         features = pd.read_csv(table)
-        assert len(features) == (2 if truncated else 4)
-        if truncated:
-            assert set(features.source_problem_id) == {"p2", "p3"}
+        assert len(features) == 6
+        assert set(features.source_problem_id) == {f"p{i}" for i in range(6)}
+        if "class" in table.parts:
+            assert features.loc[features.source_problem_id.isin(["p4", "p5"]), "token_count"].isna().all()
     assert len(result["reasoning_view_analysis"]["views"]) == (19 if tagged else 12)
     assert (tmp_path / "analysis/test/views-v1/class/Plan/correlations.json").is_file() == tagged
     assert (tmp_path / "analysis/test/views-v1/full/reasoning/correlations.json").is_file()
     assert (tmp_path / "analysis/test/views-v1/position/bin_00/correlations.json").is_file()
+    if tagged:
+        class_summary = json.loads((tmp_path / "analysis/test/views-v1/class/Plan/correlations.json").read_text())
+        assert class_summary["coverage"]["traces_with_tokens"] == 3
+        verify_summary = json.loads((tmp_path / "analysis/test/views-v1/class/Verify/correlations.json").read_text())
+        assert verify_summary["coverage"]["traces_with_tokens"] == 1
     if not tagged:
         assert not annotation_root.exists()
         assert not (tmp_path / "analysis/test/views-v1/class").exists()
     assert (generation / "traces.jsonl").read_text() == source
+
+
+def test_saved_annotation_union_and_validation(tmp_path):
+    from moe_exp.correlation_pipeline.extract import load_available_annotations
+    from moe_exp.correlation_pipeline.spans import validate_available_annotation
+
+    item = trace()
+    complete = annotated(item, tmp_path / "original.json")
+    directory = tmp_path / "annotations"
+    (directory / "shards").mkdir(parents=True)
+    first = {**complete, "status": "partial", "units": complete["units"][:1]}
+    rest = {**complete, "status": "partial", "units": complete["units"][1:]}
+    (directory / "annotations.jsonl").write_text(json.dumps(first) + "\n")
+    shard = directory / "shards/partial.json"
+    shard.write_text(json.dumps(rest))
+    merged = load_available_annotations(directory)[item.problem_id]
+    assert merged["units"] == complete["units"]
+    validate_available_annotation(item, merged)
+    with pytest.raises(ValueError, match="Stale"):
+        validate_available_annotation(item.model_copy(update={"cot_text": "Changed."}), merged)
+    with pytest.raises(ValueError, match="offsets/text"):
+        validate_available_annotation(item, {**first, "units": [{**first["units"][0], "text": "Wrong"}]})
+    shard.write_text(json.dumps({**first, "units": [{**first["units"][0], "label": "Monitor"}]}))
+    with pytest.raises(ValueError, match="Conflicting"):
+        load_available_annotations(directory)
+
+
+def test_empty_generation_retains_missing_views_and_old_population_is_rejected(tmp_path, monkeypatch):
+    item = trace("")
+    input_path = tmp_path / "input.jsonl"
+    nonempty = trace("One.")
+    nonempty.problem_id = "p1"
+    input_path.write_text(item.model_dump_json() + "\n" + nonempty.model_dump_json() + "\n")
+    monkeypatch.setattr(
+        routing_extraction, "extract_logs_single_pass",
+        lambda **kw: torch.ones(1, len(kw["cot_text"]), 2),
+    )
+    output = tmp_path / "output.jsonl"
+    tokenizer = CharacterTokenizer()
+    routing_extraction.process_file(
+        input_path, "test", output,
+        model=SimpleNamespace(config=SimpleNamespace(num_experts_per_tok=1)),
+        tokenizer=tokenizer,
+        trace_annotations={},
+        feature_reducer=lambda *args: {},
+        feature_schema_version=2,
+        view_reducer=lambda t, r, h, e, layers: compute_views(
+            t, tokenizer, r, h, e, layers, modes=["full", "class"],
+            reference=None, max_geometry_tokens=8,
+        ),
+    )
+    saved = TraceRecord(**json.loads(output.read_text().splitlines()[0]))
+    rows, _ = collect_view_rows(saved, {"dataset": "math500"}, ["full", "class"])
+    assert len(rows) == 8
+    assert all(np.isnan(row["token_count"]) for _, row in rows)
+    saved.metadata["correlation_views"].pop("population_version")
+    with pytest.raises(ValueError, match="old data population"):
+        collect_view_rows(saved, {}, ["full", "class"])
 
 
 def test_frozen_dspy_program_loads_and_predicts_without_optimization(tmp_path, monkeypatch):

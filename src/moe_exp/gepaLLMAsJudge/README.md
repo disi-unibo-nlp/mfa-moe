@@ -135,6 +135,48 @@ The current historical test split has already been inspected in earlier
 experiments. A genuinely final result requires newly held-out responses or an
 external evaluation corpus.
 
+## Compare judge thinking levels
+
+With the correlation judge server running at `http://127.0.0.1:41800/v1`, run
+this from the repository root (using the optional dependencies above):
+
+```bash
+python -m moe_exp.gepaLLMAsJudge.compare_thinking \
+  --output-dir results/gepaLLMAsJudge/thinking-comparison
+```
+
+This loads the exact frozen `selected_program_20260827_173300.json` used by
+correlation tagging, with the same DSPy prediction code and Qwen3.8-27B model.
+It compares `off`, `low`, `medium`, and `high` on the saved six-response
+validation split. These data were used for prompt selection, so the scores are
+an exploratory comparison, not an untouched test estimate.
+
+Requests run sequentially with caching disabled, randomized level order per
+unit, temperature 0, and a shared 4096-token output budget (including thinking).
+The server must support the model's `enable_thinking` and `reasoning_effort`
+chat-template settings. Latency includes the full DSPy call and any retries;
+it measures end-to-end latency, not concurrent server throughput. Run on an
+otherwise idle server for comparable timing. A shared output budget can cause
+higher thinking levels to exhaust their budget; invalid outputs and failed
+requests are retained and scored as incorrect.
+
+Useful options:
+
+- `--dry-run`: validate files and show the request count without model calls.
+- `--limit 20`: use the same seeded sample of 20 validation units at every level.
+- `--repeats 3`: repeat every unit/level combination three times.
+- `--levels low medium high`: compare selected levels; the first is the baseline.
+- `--base-url URL`, `--judge-model NAME`, `--max-tokens N`: override server settings.
+- `--judge-program FILE`, `--split-file FILE`, `--dataset-dir DIR`: supply another
+  frozen program and a GEPA results file with `split_question_ids.validation`.
+
+The new output directory contains `summary.csv`, `summary.json` (including
+per-class metrics), flushed per-request `predictions.jsonl`, input contexts,
+the frozen program, and configuration with its SHA-256 digest. The summary
+reports accuracy, balanced accuracy, macro-F1, valid-output coverage, errors,
+latency, accuracy differences, and label disagreement against the baseline.
+Use a fresh output directory for each run.
+
 ## SLURM with Docker
 
 Build the two images once:

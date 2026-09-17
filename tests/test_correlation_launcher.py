@@ -80,8 +80,8 @@ def test_default_plan_runs_all_stages_and_releases_each_server(tmp_path):
     assert option(stages["forward"], "--quantization") == "unsloth-4bit"
     assert option(stages["analyze"], "--forward-dir") == f"{reasoning}/forward"
     assert option(stages["analyze"], "--output-dir") == f"{reasoning}/analysis"
-    for name in ("annotate", "forward"):
-        assert option(stages[name], "--generation-dir") == f"{reasoning}/sampling/generation"
+    assert option(stages["annotate"], "--generation-dir") == f"{reasoning}/sampling/generation"
+    assert option(stages["forward"], "--generation-dir") == generation
     for name in ("forward", "analyze"):
         i = stages[name].index("--views") + 1
         assert stages[name][i : i + 3] == ["full", "class", "position"]
@@ -204,7 +204,7 @@ def test_resume_custom_paths_options_and_optional_benchmarks(tmp_path):
         if args is not stages["sample"]:
             assert option(args, "--limit") == "2"
     assert option(stages["annotate"], "--generation-dir") == "results/custom run/reasoning-vllm-v1/sampling/generation"
-    assert option(stages["forward"], "--generation-dir") == "results/custom run/reasoning-vllm-v1/sampling/generation"
+    assert option(stages["forward"], "--generation-dir") == "results/saved generations"
     assert option(stages["annotate"], "--judge-program") == "results/frozen.json"
     assert option(stages["annotate"], "--judge-model") == "custom-judge"
     assert option(stages["forward"], "--position-bins") == "5"
@@ -376,13 +376,13 @@ def test_skip_tagging_needs_no_judge_and_keeps_only_full_position_views(tmp_path
     assert not list(tmp_path.glob("*.running"))
 
 
-def test_skip_annotate_still_requires_saved_class_annotations(tmp_path):
+def test_skip_annotate_uses_saved_labels_and_replays_all_generations(tmp_path):
     result = run_script(tmp_path, "--skip-annotate", "--dry-run")
     assert result.returncode == 0, result.stderr
     forward = stage_commands(result.stdout)["forward"]
     assert "class" in forward
     assert option(forward, "--annotation-dir").endswith("reasoning-vllm-v1/annotations")
-    assert option(forward, "--generation-dir").endswith("reasoning-vllm-v1/sampling/generation")
+    assert option(forward, "--generation-dir") == "results/correlation_pipeline/generation"
 
 
 def test_sampling_cap_override_and_presampled_inputs(tmp_path):
@@ -403,12 +403,12 @@ def test_sampling_cap_override_and_presampled_inputs(tmp_path):
     ("Qwen/Qwen3.5-35B-A3B", "qwen3", True, "49152", "unsloth-4bit", True),
     ("Qwen/Qwen3-30B-A3B", "qwen3", False, "40960", "none", False),
     ("nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-BF16", "nemotron_v3", True, "49152", "none", False),
-    ("google/gemma-4-26B-A4B-it", "gemma4", False, "49152", "none", True),
+    ("google/gemma-4-26B-A4B-it", "gemma4", False, "49152", "bnb-4bit", True),
     ("nvidia/Gemma-4-26B-A4B-NVFP4", "gemma4", False, "49152", "none", True),
     ("zai-org/GLM-4.7-Flash", "glm45", True, "49152", "none", False),
-    ("openai/gpt-oss-20b", "openai_gptoss", False, "49152", "none", False),
+    ("openai/gpt-oss-20b", "openai_gptoss", False, "49152", "mxfp4-bf16", False),
 ])
-def test_supported_model_profiles_preserve_judge_and_fixed_probe_defaults(
+def test_supported_model_profiles_preserve_judge_and_select_model_probes(
     tmp_path, model, parser, mtp, context, quantization, language_only,
 ):
     result = run_script(tmp_path, "--model", model, "--dry-run")
@@ -430,7 +430,8 @@ def test_supported_model_profiles_preserve_judge_and_fixed_probe_defaults(
     assert option(stages["generate"], "--draft-model-id") == (model if mtp else "")
     assert option(stages["forward"], "--quantization") == quantization
     assert "--all-router-layers" not in stages["forward"]
-    assert "--probe-results" not in stages["forward"]
+    from moe_exp.correlation_pipeline.model_profiles import default_probe_results
+    assert option(stages["forward"], "--probe-results") == str(default_probe_results(model))
     assert "no stages executed" in result.stdout
     assert "Stage 4/4 complete" not in result.stdout
 
@@ -459,18 +460,35 @@ def test_generation_overrides_leave_judge_settings_unchanged(tmp_path):
     assert option(stages["forward"], "--quantization") == "bnb-4bit"
 
 
-def test_gpt_oss_fixed_probe_mismatch_fails_before_any_server_start(tmp_path):
+def test_gpt_oss_missing_probes_fail_before_any_server_start(tmp_path):
     runtime = fake_runtime(tmp_path)
     result = run_script(tmp_path, "--model", "openai/gpt-oss-20b", **runtime, FAIL_STAGE="none")
     assert result.returncode == 2
-    assert "--all-router-layers" in result.stderr
-    assert "24 layers" in result.stderr
+    assert "gpt-oss-20b/probes/results.json" in result.stderr
     assert not (tmp_path / "events").exists()
     result = run_script(
         tmp_path, "--model", "openai/gpt-oss-20b", "--all-router-layers",
         **runtime, FAIL_STAGE="none",
     )
     assert result.returncode == 0, result.stderr
+
+
+def test_gpt_oss_uses_its_completed_probes(tmp_path):
+    runtime = fake_runtime(tmp_path)
+    probes = tmp_path / "results/probeTest/gpt-oss-20b/probes/results.json"
+    probes.parent.mkdir(parents=True)
+    probes.write_text(json.dumps({"best_by_target": {"Read": {"layer_idx": 12}}}))
+    result = run_script(tmp_path, "--model", "openai/gpt-oss-20b", **runtime, FAIL_STAGE="none")
+    assert result.returncode == 0, result.stderr
+
+
+def test_explicit_probe_results_override(tmp_path):
+    result = run_script(tmp_path, "--dry-run", "--model", "openai/gpt-oss-20b",
+                        "--probe-results", "results/custom/probes/results.json")
+    assert result.returncode == 0, result.stderr
+    assert option(stage_commands(result.stdout)["forward"], "--probe-results") == (
+        "results/custom/probes/results.json"
+    )
 
 
 def test_judge_speculation_opt_in_is_independent_of_generation(tmp_path):

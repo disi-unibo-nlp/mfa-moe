@@ -21,7 +21,7 @@ def _add_extraction_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--model-revision", default="main")
     parser.add_argument(
         "--quantization",
-        choices=("gptq-4bit", "none", "bnb-4bit", "bnb-8bit"),
+        choices=("gptq-4bit", "mxfp4", "mxfp4-bf16", "none", "bnb-4bit", "bnb-8bit"),
         default=DEFAULT_QUANTIZATION,
     )
     parser.add_argument("--trust-remote-code", action="store_true")

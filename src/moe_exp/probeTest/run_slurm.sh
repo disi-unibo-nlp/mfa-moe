@@ -17,10 +17,10 @@ PHYS_DIR="${PHYS_DIR:-/home/tassinari/moe-mfaExperiments}"
 DATASET_DIR="${DATASET_DIR:-${PHYS_DIR}/data/Schoenfeld_Reasoning}"
 HF_CACHE_DIR="${HF_CACHE_DIR:-/llms}"
 RESULTS_ROOT="${RESULTS_ROOT:-${PHYS_DIR}/results}"
-OUTPUT_DIR="${OUTPUT_DIR:-${RESULTS_ROOT}/probeTest/qwen3.5-35b-a3b-gptq-int4}"
+OUTPUT_DIR="${OUTPUT_DIR:-}"
 MODEL="${MODEL:-Qwen/Qwen3.5-35B-A3B-GPTQ-Int4}"
 MODEL_REVISION="${MODEL_REVISION:-main}"
-QUANTIZATION="${QUANTIZATION:-gptq-4bit}"
+QUANTIZATION="${QUANTIZATION:-}"
 IMAGE_NAME="${IMAGE_NAME:-moe-mfa-experiments:latest}"
 CUDA_VISIBLE_DEVICES="${CUDA_VISIBLE_DEVICES:-0}"
 LOCAL=false
@@ -48,6 +48,22 @@ while [[ $# -gt 0 ]]; do
         *) echo "Unknown argument: $1" >&2; exit 2 ;;
     esac
 done
+
+case "$MODEL" in
+    openai/gpt-oss-20b)
+        MODEL_SLUG=gpt-oss-20b
+        QUANTIZATION="${QUANTIZATION:-mxfp4-bf16}" ;;
+    google/gemma-4-26B-A4B-it)
+        MODEL_SLUG=gemma-4-26b-a4b-it-nf4
+        QUANTIZATION="${QUANTIZATION:-bnb-4bit}" ;;
+    *)
+        MODEL_SLUG="$(basename "$MODEL" | tr '[:upper:]' '[:lower:]')"
+        QUANTIZATION="${QUANTIZATION:-gptq-4bit}" ;;
+esac
+OUTPUT_DIR="${OUTPUT_DIR:-${RESULTS_ROOT}/probeTest/${MODEL_SLUG}}"
+export OPENBLAS_NUM_THREADS="${PROBE_NUM_THREADS:-4}"
+export OMP_NUM_THREADS="${PROBE_NUM_THREADS:-4}"
+export PYTORCH_CUDA_ALLOC_CONF="${PYTORCH_CUDA_ALLOC_CONF:-expandable_segments:True}"
 
 if [[ ! -d "$DATASET_DIR" ]]; then
     echo "Dataset directory does not exist: $DATASET_DIR" >&2
@@ -114,6 +130,10 @@ else
         exit 1
     fi
     DOCKER_ENV=(
+        -e PYTHONPATH=/workspace/src
+        -e OPENBLAS_NUM_THREADS
+        -e OMP_NUM_THREADS
+        -e PYTORCH_CUDA_ALLOC_CONF
         -e HF_HOME="$HF_CACHE_DIR"
         -e HOME="$HF_CACHE_DIR"
         -e XDG_CACHE_HOME="$XDG_CACHE_HOME"
@@ -186,6 +206,7 @@ else
         -v "$DATASET_DIR":/data/schoenfeld:ro \
         -v "$HF_CACHE_DIR":"$HF_CACHE_DIR" \
         -v "$OUTPUT_DIR":/output \
+        -w /workspace \
         "${DOCKER_ENV[@]}" \
         "$IMAGE_NAME" \
         "${DOCKER_COMMAND[@]}"

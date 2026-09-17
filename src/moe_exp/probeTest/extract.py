@@ -187,7 +187,7 @@ def _response_digest(response: GoldResponse) -> str:
 
 
 def _make_quantization_config(name: str) -> Any | None:
-    if name in ("none", "gptq-4bit"):
+    if name in ("none", "gptq-4bit", "mxfp4", "mxfp4-bf16"):
         return None
     from transformers import BitsAndBytesConfig
 
@@ -205,6 +205,11 @@ def _make_quantization_config(name: str) -> Any | None:
 def _validate_quantization_request(config: Any, requested: str) -> None:
     """Require CLI metadata to match any quantization embedded in the checkpoint."""
     embedded = getattr(config, "quantization_config", None)
+    if requested in ("mxfp4", "mxfp4-bf16"):
+        payload = embedded.to_dict() if hasattr(embedded, "to_dict") else dict(embedded or {})
+        if payload.get("quant_method") != "mxfp4":
+            raise ValueError("--quantization mxfp4 requires native MXFP4 checkpoint metadata")
+        return
     if requested == "gptq-4bit":
         if embedded is None:
             raise ValueError(
@@ -265,7 +270,7 @@ def load_model_and_tokenizer(
     trust_remote_code: bool = False,
     offload_dir: Path | None = None,
 ) -> tuple[Any, Any]:
-    """Load Qwen as an image-text model, using text-only inputs."""
+    """Load the probe checkpoint with its matching forward quantization."""
     from transformers import (
         AutoConfig,
         AutoModelForCausalLM,
@@ -295,7 +300,14 @@ def load_model_and_tokenizer(
     model_class = AutoModelForImageTextToText if is_conditional_generation else AutoModelForCausalLM
 
     _validate_quantization_request(config, quantization)
-    if quantization == "gptq-4bit":
+    if getattr(config, "model_type", None) in {"gemma4", "gemma4_text"} and quantization == "bnb-4bit":
+        from moe_exp.models.gemma_quantized import load_gemma_4bit
+
+        model = load_gemma_4bit(
+            model_id, config, revision=revision,
+            offload_folder=str(offload_dir) if offload_dir is not None else "offload",
+        )
+    elif quantization == "gptq-4bit":
         if not torch.cuda.is_available():
             raise RuntimeError("GPTQ activation extraction requires a CUDA GPU")
         from gptqmodel import GPTQModel
@@ -335,6 +347,10 @@ def load_model_and_tokenizer(
         }
         if quantization_config is not None:
             model_kwargs["quantization_config"] = quantization_config
+        if quantization == "mxfp4-bf16":
+            from moe_exp.models.gpt_oss import dequantized_mxfp4_kwargs
+
+            model_kwargs.update(dequantized_mxfp4_kwargs())
         model = model_class.from_pretrained(model_id, **model_kwargs)
     model.eval()
     return model, tokenizer
@@ -609,6 +625,11 @@ def extract_gold_corpus(
     )
     manifest_path = output_dir / "manifest.json"
     _json_dump_atomic(manifest, manifest_path)
+    # Probe fitting is CPU-only; release the GPU before entering that stage.
+    del model, tokenizer
+    gc.collect()
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
     return manifest_path
 
 

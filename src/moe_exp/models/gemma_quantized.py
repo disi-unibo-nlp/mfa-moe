@@ -115,7 +115,7 @@ class Gemma4ForQuantizedReplay(Gemma4ForCausalLM):
                 layer.experts = GemmaLinearExperts(config)
 
 
-def load_gemma_4bit(model_id, config, *, offload_folder="offload"):
+def load_gemma_4bit(model_id, config, *, offload_folder="offload", revision="main"):
     text_config = getattr(config, "text_config", config)
     if any(getattr(c, "quantization_config", None) is not None for c in (config, text_config)):
         raise ValueError(
@@ -125,7 +125,7 @@ def load_gemma_4bit(model_id, config, *, offload_folder="offload"):
     if not text_config.enable_moe_block:
         raise ValueError("Gemma expert NF4 replay requires an MoE checkpoint")
     model, info = Gemma4ForQuantizedReplay.from_pretrained(
-        model_id, config=deepcopy(text_config), dtype=torch.bfloat16,
+        model_id, config=deepcopy(text_config), dtype=torch.bfloat16, revision=revision,
         device_map="auto", offload_folder=offload_folder,
         experts_implementation="eager",
         quantization_config=GemmaReplayNF4Config(text_config.num_experts, text_config.num_hidden_layers),
