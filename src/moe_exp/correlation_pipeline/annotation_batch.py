@@ -191,6 +191,12 @@ def main(argv: list[str] | None = None) -> None:
     parser.add_argument("--reasoning-effort", default="medium")
     parser.add_argument("--plan-only", action="store_true")
     args = parser.parse_args(argv)
+    if os.environ.get("MFA_FAULTHANDLER") == "1":
+        import faulthandler
+
+        # Slurm batch runs enable this so a stalled process writes a Python stack
+        # to stderr before the launcher's stalled-write watchdog kills it.
+        faulthandler.dump_traceback_later(1200, repeat=True)
     if args.batch_size != BATCH_SIZE:
         raise ValueError("production batch size is fixed at 64")
     if not 0 <= args.part < args.parts or args.part_size * args.parts != args.total:

@@ -8,7 +8,7 @@
 #SBATCH --cpus-per-task=16
 #SBATCH --mem=120G
 #SBATCH --gres=gpu:2
-#SBATCH --time=07:00:00
+#SBATCH --time=24:00:00
 #SBATCH --no-requeue
 #SBATCH --mail-type=BEGIN,END,FAIL
 #SBATCH --mail-user=lorenzo.molfetta@unibo.it
@@ -19,6 +19,10 @@ set -euo pipefail
 
 P=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe
 REPO="$P/repo"
+# Immutable code snapshot used only for PYTHONPATH; data paths always stay in $REPO.
+CODE_ROOT="${CODE_ROOT:-$REPO}"
+# Frozen copy of the stalled-write watchdog wrapper, staged with the code snapshot.
+WATCHDOG_SCRIPT="${WATCHDOG_SCRIPT:-$REPO/sbatch/qwen_annotation_watchdog.sh}"
 PY_BASE="$P/envs/vllm-cu129/bin/python"
 VLLM="$P/envs/vllm-cu129/bin/vllm"
 ENV_POINTER=/leonardo_scratch/large/userexternal/lmolfett/mfa-moe/qwen-fp-fa-smoke/envs/qwen-fp-fa-dspy-current.path
@@ -63,6 +67,8 @@ fi
 test -s "$PROGRAM_FILE"
 test -s "$TRACE_ROOT/math500/traces.jsonl"
 test -s "$ENV_POINTER"
+test -s "$CODE_ROOT/src/moe_exp/correlation_pipeline/annotation_batch.py"
+test -x "$WATCHDOG_SCRIPT"
 test -d "$CACHE_ROOT/hub/models--Qwen--Qwen3.8-27B"
 ENV_ROOT=$(<"$ENV_POINTER")
 test -x "$ENV_ROOT/bin/python"
@@ -75,10 +81,11 @@ export TORCH_HOME="$OUTPUT_DIR/runtime/torch" TRITON_CACHE_DIR="$OUTPUT_DIR/runt
 export XDG_CACHE_HOME="$OUTPUT_DIR/runtime/xdg" TMPDIR="$OUTPUT_DIR/runtime/tmp"
 export PYTHONDONTWRITEBYTECODE=1
 export PATH="$P/envs/vllm-cu129/bin:$PATH"
-export PYTHONPATH="$ENV_ROOT/lib/python3.11/site-packages:$P/envs/vllm-cu129/lib/python3.11/site-packages:$REPO/src"
-mkdir -p "$OUTPUT_DIR/runtime/torch" "$OUTPUT_DIR/runtime/triton" "$OUTPUT_DIR/runtime/xdg" "$OUTPUT_DIR/runtime/tmp" "$OUTPUT_DIR/logs"
+export PYTHONPATH="$CODE_ROOT/src:$ENV_ROOT/lib/python3.11/site-packages:$P/envs/vllm-cu129/lib/python3.11/site-packages"
+mkdir -p "$OUTPUT_DIR/runtime/torch" "$OUTPUT_DIR/runtime/triton" "$OUTPUT_DIR/runtime/xdg" "$OUTPUT_DIR/runtime/tmp" "$OUTPUT_DIR/logs" "$OUTPUT_DIR/checkpoints"
 
 "$ENV_ROOT/bin/python" -c 'import dspy, torch, vllm; assert torch.cuda.is_available() and torch.cuda.device_count() == 2; print("judge_env_ready dspy={} vllm={} cuda_devices={}".format(dspy.__version__, getattr(vllm, "__version__", "unknown"), torch.cuda.device_count()), flush=True)'
+"$ENV_ROOT/bin/python" -c 'import moe_exp.correlation_pipeline.annotation_batch as module; print("annotation_module", module.__file__, flush=True)'
 nvidia-smi --query-gpu=name,driver_version,memory.total --format=csv,noheader
 
 SERVER_LOG="$OUTPUT_DIR/logs/vllm.log"
@@ -98,7 +105,7 @@ VLLM_COMMAND=(
     srun --ntasks=1 --nodes=1 "$VLLM" serve "$MODEL"
     --served-model-name "$MODEL" --download-dir "$CACHE_ROOT/hub"
     --host 127.0.0.1 --port "$PORT" --api-key local-vllm-key
-    --max-model-len 32768 --max-num-seqs 64 --max-num-batched-tokens 8192
+    --max-model-len 49152 --max-num-seqs 64 --max-num-batched-tokens 8192
     --enable-prefix-caching --generation-config vllm --gpu-memory-utilization 0.90
     --enforce-eager --dtype bfloat16 --kv-cache-dtype bfloat16
     --reasoning-parser qwen3 --language-model-only --tensor-parallel-size 2
@@ -106,7 +113,7 @@ VLLM_COMMAND=(
     --speculative-config '{"method":"mtp","num_speculative_tokens":3}'
 )
 printf 'production_command='; printf '%q ' "${VLLM_COMMAND[@]}"; printf '\n'
-printf 'production_source=%s part=%s port=%s trace_root=%s output_dir=%s\n' "$SOURCE" "$PART" "$PORT" "$TRACE_ROOT" "$OUTPUT_DIR"
+printf 'production_source=%s part=%s port=%s code_root=%s trace_root=%s output_dir=%s\n' "$SOURCE" "$PART" "$PORT" "$CODE_ROOT" "$TRACE_ROOT" "$OUTPUT_DIR"
 "${VLLM_COMMAND[@]}" >"$SERVER_LOG" 2>&1 &
 SERVER_PID=$!
 
@@ -123,13 +130,31 @@ printf 'native_vllm_ready model=%s backend=FLASH_ATTN tensor_parallel_size=2 mtp
 
 grep -iE 'speculative|mtp|flash|attention' "$SERVER_LOG" | head -30 || true
 
-"$ENV_ROOT/bin/python" -m moe_exp.correlation_pipeline.annotation_batch \
-    --trace-root "$TRACE_ROOT" \
+CLIENT_LOG="$OUTPUT_DIR/logs/annotation_client.log"
+export MFA_FAULTHANDLER=1
+
+client_command=(
+    "$ENV_ROOT/bin/python" -m moe_exp.correlation_pipeline.annotation_batch
+    --trace-root "$TRACE_ROOT"
+    --output-dir "$OUTPUT_DIR"
+    --part "$PART" --parts 4 --part-size 25000 --total 100000
+    --judge-program "$PROGRAM_FILE" --model "$MODEL"
+    --base-url "http://127.0.0.1:$PORT/v1" --api-key local-vllm-key
+    --batch-size 64 --max-tokens 16384 --temperature 1.0
+    --top-p 0.95 --top-k 20 --min-p 0.0
+    --presence-penalty 0.0 --repetition-penalty 1.0
+    --reasoning-effort low
+)
+printf 'client_command='; printf '%q ' "${client_command[@]}"; printf '\n'
+
+"$WATCHDOG_SCRIPT" \
     --output-dir "$OUTPUT_DIR" \
-    --part "$PART" --parts 4 --part-size 25000 --total 100000 \
-    --judge-program "$PROGRAM_FILE" --model "$MODEL" \
-    --base-url "http://127.0.0.1:$PORT/v1" --api-key local-vllm-key \
-    --batch-size 64 --max-tokens 4096 --temperature 1.0 \
-    --top-p 0.95 --top-k 20 --min-p 0.0 \
-    --presence-penalty 0.0 --repetition-penalty 1.0 \
-    --reasoning-effort medium
+    --client-log "$CLIENT_LOG" \
+    --stall-seconds "${MFA_STALL_SECONDS:-1500}" \
+    --poll-seconds "${MFA_POLL_SECONDS:-60}" \
+    --max-restarts "${MFA_MAX_RESTARTS:-24}" \
+    -- "${client_command[@]}"
+
+test -s "$OUTPUT_DIR/annotations.json"
+test -s "$OUTPUT_DIR/summary.json"
+"$ENV_ROOT/bin/python" -c 'import json, sys; summary = json.load(open(sys.argv[1])); assert summary["status"] == "complete" and summary["completed"] == summary["expected"] == 25000, summary; print("final_summary", json.dumps(summary, sort_keys=True))' "$OUTPUT_DIR/summary.json"
