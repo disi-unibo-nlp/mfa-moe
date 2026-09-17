@@ -45,10 +45,12 @@ def test_spool_copy_tags_only_saved_model_on_allocated_gpu(tmp_path):
     assert option(stages["annotate"], "--generation-model") == "org/custom-model"
     assert option(stages["annotate"], "--generation-dir") == "saved"
     assert option(stages["annotate"], "--datasets") == "math500"
+    assert option(stages["annotate"], "--reasoning-effort") == "high"
     servers = [c for c in commands(result.stdout) if c[:2] == ["docker", "run"]]
     assert len(servers) == 1
     assert "vllm/vllm-openai:v0.29.0" in servers[0]
     assert option(servers[0], "--gpus") == '"device=2"'
+    assert option(servers[0], "--tensor-parallel-size") == "1"
     assert "--speculative-config" not in servers[0]
     assert not (tmp_path / "results").exists()
 
@@ -74,3 +76,25 @@ def test_output_and_worker_overrides_reach_annotation(tmp_path):
     assert option(annotate, "--output-dir") == "results/tag-test/reasoning-vllm-v1/annotations"
     assert option(annotate, "--workers") == "4"
     assert option(annotate, "--limit") == "2"
+
+
+def test_judge_tensor_parallel_override_reaches_judge_server(tmp_path):
+    result = launch(tmp_path, workspace(tmp_path),
+                    "--judge-workers", "16", "--judge-tensor-parallel-size", "2")
+    assert result.returncode == 0, result.stderr
+    servers = [c for c in commands(result.stdout) if c[:2] == ["docker", "run"]]
+    assert len(servers) == 1
+    assert option(servers[0], "--tensor-parallel-size") == "2"
+    assert option(servers[0], "--max-num-seqs") == "16"
+
+
+def test_reasoning_effort_override_reaches_annotation(tmp_path):
+    result = launch(
+        tmp_path,
+        workspace(tmp_path),
+        "--judge-reasoning-effort",
+        "medium",
+    )
+    assert result.returncode == 0, result.stderr
+    annotate = stage_commands(result.stdout)["annotate"]
+    assert option(annotate, "--reasoning-effort") == "medium"

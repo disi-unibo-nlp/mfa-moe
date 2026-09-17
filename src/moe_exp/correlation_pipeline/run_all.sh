@@ -25,6 +25,7 @@ QUANTIZATION="${QUANTIZATION:-}"
 GENERATION_QUANTIZATION="${GENERATION_QUANTIZATION:-}"
 CPU_OFFLOAD_GB="${CPU_OFFLOAD_GB:-0}"
 TENSOR_PARALLEL_SIZE="${TENSOR_PARALLEL_SIZE:-1}"
+JUDGE_TENSOR_PARALLEL_SIZE="${JUDGE_TENSOR_PARALLEL_SIZE:-1}"
 GENERATION_SPECULATION="auto"
 JUDGE_SPECULATION="${JUDGE_SPECULATION:-none}"
 ALL_ROUTER_LAYERS=false
@@ -36,6 +37,7 @@ PIPELINE_MODEL=""
 GENERATION_MODEL="${GENERATION_MODEL:-}"
 JUDGE_PROGRAM="${JUDGE_PROGRAM:-results/gepaLLMAsJudge/qwen3.8-27b-medium-final-s42-v3/selected_program_20260827_173300.json}"
 JUDGE_MODEL="${JUDGE_MODEL:-unsloth/Qwen3.8-27B-NVFP4}"
+JUDGE_REASONING_EFFORT="${JUDGE_REASONING_EFFORT:-low}"
 POSITION_BINS=10
 DATASETS=(math500 aime24 aime25 olympiad amc23 minerva)
 MAX_ITEMS=""
@@ -71,6 +73,7 @@ vLLM annotations/extraction/analysis separate from existing GGUF results.
   --generation-quantization MODE  Optional vLLM generation quantization override
   --cpu-offload-gb N         Generation weight offload per GPU (default: 0)
   --tensor-parallel-size N   Generation GPU count (default: 1)
+  --judge-tensor-parallel-size N  Judge GPU count (default: 1)
   --results-dir DIR          Repo-relative result root (default: results/correlation_pipeline)
   --generation-dir DIR       Generation input/output (default: RESULTS_DIR/generation)
   --max-items N              Limit generated problems per dataset (smoke test)
@@ -80,6 +83,7 @@ vLLM annotations/extraction/analysis separate from existing GGUF results.
   --skip-sampling            Use generation inputs directly (for already sampled inputs)
   --judge-program FILE       Repo-relative frozen GEPA selected_program JSON
   --judge-model NAME         vLLM judge checkpoint (default: unsloth/Qwen3.8-27B-NVFP4)
+  --judge-reasoning-effort MODE  Judge thinking effort: low, medium, or high (default: low)
   --position-bins N          Fixed mean-length bins (default: 10)
   --quantization MODE        Forward quantization (default: model profile)
   --all-router-layers        Explicitly override fixed probe selection with every MoE layer
@@ -94,7 +98,8 @@ vLLM annotations/extraction/analysis separate from existing GGUF results.
 
 Environment overrides include VLLM_IMAGE, SERVER_HOST, SERVER_PORT, JUDGE_PORT,
 SERVER_READY_TIMEOUT, CUDA_VISIBLE_DEVICES, HF_CACHE_DIR, JUDGE_CTX_SIZE,
-MAX_NUM_BATCHED_TOKENS, SPECULATIVE_TOKENS and GPU_MEMORY_UTILIZATION.
+JUDGE_TENSOR_PARALLEL_SIZE, MAX_NUM_BATCHED_TOKENS, SPECULATIVE_TOKENS and
+GPU_MEMORY_UTILIZATION.
 
 Without --model, generation defaults to Qwen/Qwen3.5-35B-A3B-GPTQ-Int4 and
 forward/analysis to unsloth/Qwen3.5-35B-A3B. --generation-model (or
@@ -111,8 +116,9 @@ while [[ $# -gt 0 ]]; do
             ;;
         --workers|--judge-workers|--model|--generation-model|--max-tokens|--ctx-size|--results-dir|\
         --generation-dir|--max-items|--samples-per-problem|--limit|--max-sentences|--judge-program|\
-        --judge-model|--position-bins|--quantization|--bootstrap-samples|\
-        --judge-speculation|--generation-speculation|--generation-quantization|--cpu-offload-gb|--tensor-parallel-size)
+        --judge-model|--judge-reasoning-effort|--position-bins|--quantization|--bootstrap-samples|\
+        --judge-speculation|--generation-speculation|--generation-quantization|--cpu-offload-gb|\
+        --tensor-parallel-size|--judge-tensor-parallel-size)
             [[ $# -ge 2 && -n "$2" && "$2" != --* ]] || { echo "$1 requires a value" >&2; exit 2; }
             case "$1" in
                 --workers) WORKERS="$2" ;;
@@ -129,6 +135,7 @@ while [[ $# -gt 0 ]]; do
                 --max-sentences) MAX_SENTENCES="$2" ;;
                 --judge-program) JUDGE_PROGRAM="$2" ;;
                 --judge-model) JUDGE_MODEL="$2" ;;
+                --judge-reasoning-effort) JUDGE_REASONING_EFFORT="$2" ;;
                 --position-bins) POSITION_BINS="$2" ;;
                 --quantization) QUANTIZATION="$2" ;;
                 --judge-speculation) JUDGE_SPECULATION="$2" ;;
@@ -136,6 +143,7 @@ while [[ $# -gt 0 ]]; do
                 --generation-quantization) GENERATION_QUANTIZATION="$2" ;;
                 --cpu-offload-gb) CPU_OFFLOAD_GB="$2" ;;
                 --tensor-parallel-size) TENSOR_PARALLEL_SIZE="$2" ;;
+                --judge-tensor-parallel-size) JUDGE_TENSOR_PARALLEL_SIZE="$2" ;;
                 --bootstrap-samples) BOOTSTRAP_SAMPLES="$2" ;;
             esac
             shift 2 ;;
@@ -154,6 +162,10 @@ done
 case "$JUDGE_SPECULATION" in
     none|mtp) ;;
     *) echo "--judge-speculation must be none or mtp" >&2; exit 2 ;;
+esac
+case "$JUDGE_REASONING_EFFORT" in
+    low|medium|high) ;;
+    *) echo "--judge-reasoning-effort must be low, medium, or high" >&2; exit 2 ;;
 esac
 FORWARD_MODEL="${PIPELINE_MODEL:-unsloth/Qwen3.5-35B-A3B}"
 GENERATION_MODEL="${GENERATION_MODEL:-${PIPELINE_MODEL:-Qwen/Qwen3.5-35B-A3B-GPTQ-Int4}}"
@@ -183,7 +195,8 @@ esac
 }
 for value in "$MAX_TOKENS" "$CTX_SIZE" "$JUDGE_CTX_SIZE" "$WORKERS" "$JUDGE_WORKERS" \
     "$POSITION_BINS" "$BOOTSTRAP_SAMPLES" "$SERVER_READY_TIMEOUT" "$SPECULATIVE_TOKENS" "$MAX_SENTENCES" \
-    "$MAX_NUM_BATCHED_TOKENS" "$TENSOR_PARALLEL_SIZE" "${LIMIT:-1}" "${MAX_ITEMS:-1}" "${SAMPLES_PER_PROBLEM:-1}"; do
+    "$MAX_NUM_BATCHED_TOKENS" "$TENSOR_PARALLEL_SIZE" "$JUDGE_TENSOR_PARALLEL_SIZE" \
+    "${LIMIT:-1}" "${MAX_ITEMS:-1}" "${SAMPLES_PER_PROBLEM:-1}"; do
     [[ "$value" =~ ^[1-9][0-9]*$ ]] || { echo "Counts must be positive integers" >&2; exit 2; }
 done
 if (( MAX_TOKENS >= CTX_SIZE )); then
@@ -295,7 +308,7 @@ start_server() {
     # The dense NVFP4 judge needs graph memory headroom on a single 32 GB 5090.
     if [[ "$stage" == judge ]]; then
         command+=(--enforce-eager --kv-cache-dtype fp8 --reasoning-parser qwen3
-            --language-model-only)
+            --language-model-only --tensor-parallel-size "$JUDGE_TENSOR_PARALLEL_SIZE")
         # v0.29.0 timed out in the judge GDN speculative attention path on the 5090.
         # Keep generation MTP independent; judge speculation is an explicit opt-in.
         if [[ "$JUDGE_SPECULATION" == mtp ]]; then
@@ -346,7 +359,7 @@ echo "  Generation model:  $GENERATION_MODEL"
 echo "  Forward model:     $FORWARD_MODEL"
 echo "  Generation profile: $GENERATION_FAMILY (parser=$GENERATION_REASONING_PARSER, MTP=$GENERATION_MTP)"
 echo "  Forward quantization: $QUANTIZATION"
-echo "  Judge model:       $JUDGE_MODEL (speculation=$JUDGE_SPECULATION)"
+echo "  Judge model:       $JUDGE_MODEL (speculation=$JUDGE_SPECULATION, TP=$JUDGE_TENSOR_PARALLEL_SIZE)"
 echo "  Concurrent calls:  generation=$WORKERS tagging=$JUDGE_WORKERS"
 echo "  Generation path:   $GENERATION_DIR"
 echo "  Replay input:      $REPLAY_GENERATION_DIR"
@@ -387,7 +400,7 @@ if [[ "$SKIP_ANNOTATE" != true ]]; then
         env HF_CACHE_DIR="$HF_CACHE_DIR" "$STAGE_LAUNCHER" annotate --datasets "${DATASETS[@]}" \
         --generation-dir "$REPLAY_GENERATION_DIR" --generation-model "$GENERATION_MODEL" \
         --output-dir "$REASONING_DIR/annotations" --judge-program "$JUDGE_PROGRAM" \
-        --judge-model "$JUDGE_MODEL" --workers "$JUDGE_WORKERS" \
+        --judge-model "$JUDGE_MODEL" --reasoning-effort "$JUDGE_REASONING_EFFORT" --workers "$JUDGE_WORKERS" \
         --base-url "http://$SERVER_HOST:$JUDGE_PORT/v1" --api-key "$API_KEY" "${LIMIT_ARGS[@]}"
     stop_server
 fi

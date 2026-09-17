@@ -28,14 +28,16 @@ Existing matching annotation checkpoints are resumed automatically.
   --datasets NAME...       Default: discover dataset folders containing traces.jsonl
   --results-dir DIR        Default: results/correlation_pipeline
   --judge-workers N        Default: 8
+  --judge-tensor-parallel-size N  Judge tensor parallel GPU count (default: 1)
   --judge-model NAME       Override the default Qwen3.8-27B-NVFP4 judge
+  --judge-reasoning-effort MODE  Judge thinking effort (default: high)
   --judge-program FILE     Override the frozen GEPA program (repo-relative)
   --limit N                Limit traces per dataset for a smoke test
   --dry-run                Validate inputs and print the plan without Docker calls
 
 Images: IMAGE_NAME=moe-mfa-experiments:latest and
 VLLM_IMAGE=vllm/vllm-openai:v0.29.0, as in the local pipeline.
-Thinking effort defaults to low; judge MTP is disabled.
+Thinking effort defaults to high; judge MTP is disabled.
 PHYS_DIR overrides the repository root (otherwise SLURM_SUBMIT_DIR in Slurm).
 HF_CACHE_DIR defaults to /llms. JUDGE_PORT defaults to 41800; override it for
 concurrent jobs on the same node. Docker and both images must exist on the node.
@@ -49,15 +51,18 @@ MODEL=""
 INPUT_DIR=""
 DATASETS=()
 OPTIONS=()
+JUDGE_REASONING_EFFORT="${JUDGE_REASONING_EFFORT:-high}"
 while [[ $# -gt 0 ]]; do
     case "$1" in
-        --model|--generation-model|--generation-dir|--results-dir|--judge-workers|--judge-model|--judge-program|--limit)
+        --model|--generation-model|--generation-dir|--results-dir|--judge-workers|\
+        --judge-tensor-parallel-size|--judge-model|--judge-reasoning-effort|--judge-program|--limit)
             [[ $# -ge 2 && -n "$2" && "$2" != --* ]] || {
                 echo "$1 requires a value" >&2; exit 2;
             }
             case "$1" in
                 --model|--generation-model) MODEL="$2" ;;
                 --generation-dir) INPUT_DIR="$2" ;;
+                --judge-reasoning-effort) JUDGE_REASONING_EFFORT="$2" ;;
                 *) OPTIONS+=("$1" "$2") ;;
             esac
             shift 2 ;;
@@ -105,4 +110,4 @@ export JUDGE_SPECULATION=none
 exec bash "$PHYS_DIR/src/moe_exp/correlation_pipeline/run_all.sh" \
     --skip-generate --skip-sampling --skip-forward --skip-analyze \
     --generation-model "$MODEL" --generation-dir "$INPUT_DIR" \
-    --datasets "${DATASETS[@]}" "${OPTIONS[@]}"
+    --datasets "${DATASETS[@]}" --judge-reasoning-effort "$JUDGE_REASONING_EFFORT" "${OPTIONS[@]}"

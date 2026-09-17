@@ -31,12 +31,37 @@ tagging only. Using sampled inputs preserves their sentence selection; using
 Matching annotation checkpoints resume automatically.
 
 The job uses the same `moe-mfa-experiments:latest` client image and
-`vllm/vllm-openai:v0.29.0` judge image as the local workflow, with low thinking
-and judge MTP disabled. Docker, both images, the repository, and `/llms` must be
-available on the compute node. Override image/cache paths through `IMAGE_NAME`,
-`VLLM_IMAGE`, and `HF_CACHE_DIR`. The default allocation is one GPU, eight CPUs,
-64 GB RAM, and four days; override cluster-specific resources before the script
-path, for example `sbatch --partition=gpu --time=2-00:00:00 ...`.
+`vllm/vllm-openai:v0.29.0` judge image as the local workflow, with high judge
+reasoning effort by default for this labeling-only wrapper and judge MTP disabled.
+The underlying `run_all.sh` default remains low for existing local workflows.
+Pass `--judge-reasoning-effort low`, `--judge-reasoning-effort medium`, or
+`--judge-reasoning-effort high` to override the wrapper default. Docker, both
+images, the repository, and `/llms` must be available on the compute node.
+Override image/cache paths through `IMAGE_NAME`, `VLLM_IMAGE`, and `HF_CACHE_DIR`.
+The default allocation is one GPU, eight CPUs, 64 GB RAM, and four days; override
+cluster-specific resources before the script path, for example `sbatch --partition=gpu --time=2-00:00:00 ...`.
+The judge tensor-parallel size defaults to one; pass `--judge-tensor-parallel-size 2`
+when allocating two GPUs. `--judge-workers 16` sets sixteen concurrent sentence
+requests and the judge server's `--max-num-seqs 16`.
+
+For the GPT-OSS calibration, use only the first 16 real `math500` traces; this
+avoids the per-dataset meaning of `--limit 16` becoming 16 traces for every
+benchmark:
+
+```bash
+sbatch --job-name=gptoss-qwen-cal --account=IscrC_MIOSR \
+  --partition=boost_usr_prod --qos=normal --time=04:00:00 \
+  --nodes=1 --ntasks=1 --cpus-per-task=16 --gres=gpu:2 --mem=120G \
+  --mail-type=BEGIN,END,FAIL --mail-user=lorenzo.molfetta@unibo.it \
+  src/moe_exp/correlation_pipeline/tag_slurm.sh \
+  --model openai/gpt-oss-20b \
+  --generation-dir results/correlation_pipeline/gpt-oss-20b/generation \
+  --datasets math500 --limit 16 --judge-workers 16 \
+  --judge-tensor-parallel-size 2 --judge-reasoning-effort high \
+  --judge-model unsloth/Qwen3.8-27B-NVFP4 \
+  --judge-program results/gepaLLMAsJudge/qwen3.8-27b-medium-final-s42-v3/selected_program_20260827_173300.json \
+  --results-dir results/correlation_pipeline/gpt-oss-20b/calibration-qwen3.8-high
+```
 
 Outputs default to
 `results/correlation_pipeline/reasoning-vllm-v1/annotations/<model slug>/`.
@@ -61,8 +86,11 @@ loading for memory headroom. Forward extraction still loads
 `unsloth/Qwen3.5-35B-A3B` through Unsloth with runtime 4-bit quantization.
 
 Generation retains its 32,768-token completion budget and a 49,152-token context
-to leave room for prompts. Judge context is 32,768, thinking is enabled with
-low reasoning effort, temperature is 0, and the completion budget is 4,096 tokens.
+to leave room for prompts. Judge context is 32,768, thinking is enabled with low
+reasoning effort when `run_all.sh` is invoked directly, temperature is 0, and the
+completion budget is 4,096 tokens. `tag_slurm.sh` changes only the
+labeling-workflow default to high; its `--judge-reasoning-effort` option accepts
+`low`, `medium`, or `high`.
 Changing reasoning effort invalidates existing annotation checkpoints; labels
 are recomputed under the new setting.
 
