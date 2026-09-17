@@ -73,6 +73,7 @@ def test_default_plan_runs_all_stages_and_releases_each_server(tmp_path):
     assert option(stages["generate"], "--max-tokens") == "32768"
     assert option(stages["generate"], "--workers") == "8"
     assert option(stages["annotate"], "--workers") == "8"
+    assert option(stages["annotate"], "--reasoning-effort") == "low"
     assert option(stages["annotate"], "--output-dir") == f"{reasoning}/annotations"
     assert option(stages["annotate"], "--base-url") == "http://127.0.0.1:41800/v1"
     assert option(stages["forward"], "--annotation-dir") == f"{reasoning}/annotations"
@@ -104,6 +105,7 @@ def test_default_plan_runs_all_stages_and_releases_each_server(tmp_path):
     }
     assert option(plan[starts[0]], "--max-model-len") == "49152"
     assert option(plan[starts[1]], "--max-model-len") == "32768"
+    assert option(plan[starts[1]], "--tensor-parallel-size") == "1"
     assert (
         stage_indices[0] < stops[0] < stage_indices[1] < judge_start < stage_indices[2] < stops[1] < stage_indices[3]
     )
@@ -234,13 +236,55 @@ def test_skip_flags_only_run_requested_stages(tmp_path, flags, expected):
     assert not list(tmp_path.iterdir())
 
 
+def test_judge_reasoning_effort_reaches_annotation_stage(tmp_path):
+    result = run_script(
+        tmp_path,
+        "--dry-run",
+        "--skip-generate",
+        "--skip-sampling",
+        "--skip-forward",
+        "--skip-analyze",
+        "--judge-reasoning-effort",
+        "high",
+    )
+    assert result.returncode == 0, result.stderr
+    annotate = stage_commands(result.stdout)["annotate"]
+    assert option(annotate, "--reasoning-effort") == "high"
+    assert not list(tmp_path.iterdir())
+
+
+def test_judge_tensor_parallel_override_reaches_judge_server(tmp_path):
+    result = run_script(
+        tmp_path,
+        "--dry-run",
+        "--skip-generate",
+        "--skip-sampling",
+        "--skip-forward",
+        "--skip-analyze",
+        "--judge-workers",
+        "16",
+        "--judge-tensor-parallel-size",
+        "2",
+        CUDA_VISIBLE_DEVICES="0,1",
+    )
+    assert result.returncode == 0, result.stderr
+    servers = [command for command in commands(result.stdout) if command[:2] == ["docker", "run"]]
+    assert len(servers) == 1
+    assert option(servers[0], "--gpus") == '"device=0,1"'
+    assert option(servers[0], "--max-num-seqs") == "16"
+    assert option(servers[0], "--tensor-parallel-size") == "2"
+    assert not list(tmp_path.iterdir())
+
+
 @pytest.mark.parametrize(
     "flags",
     [
         ["--limit", "0"],
         ["--max-sentences", "0"],
         ["--position-bins", "0"],
+        ["--judge-tensor-parallel-size", "0"],
         ["--judge-model"],
+        ["--judge-reasoning-effort", "invalid"],
         ["--model"],
         ["--model", ""],
         ["--model", "--dry-run"],
@@ -452,7 +496,7 @@ def test_generation_overrides_leave_judge_settings_unchanged(tmp_path):
     assert option(generation, "--gpus") == '"device=0,1"'
     assert "--quantization" not in judge
     assert "--cpu-offload-gb" not in judge
-    assert "--tensor-parallel-size" not in judge
+    assert option(judge, "--tensor-parallel-size") == "1"
     assert "--speculative-config" not in judge
     stages = stage_commands(result.stdout)
     assert "--all-router-layers" in stages["forward"]

@@ -62,12 +62,12 @@ VLLM_COMMAND=(
     srun --ntasks=1 --nodes=1 "$VLLM" serve "$MODEL"
     --served-model-name "$MODEL" --download-dir "$HF_CACHE_DIR"
     --host 127.0.0.1 --port 41800 --api-key local-vllm-key
-    --max-model-len 32768 --max-num-seqs 16 --max-num-batched-tokens 8192
+    --max-model-len 32768 --max-num-seqs 64 --max-num-batched-tokens 8192
     --enable-prefix-caching --generation-config vllm --gpu-memory-utilization 0.90
     --enforce-eager --dtype bfloat16 --kv-cache-dtype bfloat16
     --reasoning-parser qwen3 --language-model-only --tensor-parallel-size 2
     --attention-config '{"backend":"FLASH_ATTN"}'
-    --speculative-config '{"method":"mtp","num_speculative_tokens":1}'
+    --speculative-config '{"method":"mtp","num_speculative_tokens":3}'
 )
 printf 'qwen_mtp_probe_command='; printf '%q ' "${VLLM_COMMAND[@]}"; printf '\n'
 "${VLLM_COMMAND[@]}" >"$SERVER_LOG" 2>&1 &
@@ -93,6 +93,8 @@ grep -iE 'speculative|mtp|draft' "$SERVER_LOG" | head -20 || true
     --model "$MODEL" \
     --base-url http://127.0.0.1:41800/v1 \
     --api-key local-vllm-key \
-    --batch-size 16 \
-    --max-tokens 4096 --temperature 0.0 \
+    --batch-size 64 \
+    --max-tokens 4096 --temperature 1.0 \
+    --top-p 0.95 --top-k 20 --min-p 0.0 \
+    --presence-penalty 0.0 --repetition-penalty 1.0 \
     --reasoning-effort medium
