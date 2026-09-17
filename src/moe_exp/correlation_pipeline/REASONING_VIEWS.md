@@ -254,12 +254,22 @@ placeholder labels. Replay preserves the complete original continuation and
 pools only sampled sentence tokens into class features. Transitions remain
 restricted to each original sentence. No new solutions are generated.
 
-Tagging is followed by class-feature replay and class correctness/metric-pair
-analyses with 500 problem bootstraps. Sampled class results are under
-`reasoning-vllm-v1/analysis/<model>/views-v1/class/`; standard whole-continuation
-outputs are ancillary and expert identity analysis is skipped. Original
-avg@32 metadata remain intact, so one-attempt subsets are excluded from
-repeated-attempt statistics. Sentences are not independent correctness trials.
+The unified `run_all.sh` workflow replays the original generation directory,
+including every attempt rather than the one-attempt tagging sample. Full and
+position views use all reasoning tokens; aggregate and expert analyses also
+use all generations, including token-limit completions. Class views use every
+available validated label from consolidated annotations and complete/partial
+shards. Unlabelled attempts retain missing class features for coverage and
+repeated-attempt audits. View population version 2 invalidates the earlier
+sample-restricted full/position caches without changing sentence segmentation.
+The standalone `run_sampled_tagging.sh` workflow follows the same replay policy.
+
+Tagging is followed by full-corpus replay and correctness/metric-pair analyses
+with 500 problem bootstraps. Class results are under
+`reasoning-vllm-v1/analysis/<model>/views-v1/class/`; whole-continuation, full
+reasoning, position and expert analyses use every original generation. Original
+avg@32 metadata remain intact; class aggregates still require all attempts to
+have finite class features. Sentences are not independent correctness trials.
 
 The earlier three-benchmark sample under
 `sentence-tagging-one-solution-error-weighted-v1` was based on a scope

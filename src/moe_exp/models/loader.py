@@ -8,7 +8,7 @@ from rich.console import Console
 
 console = Console()
 
-QUANTIZATION_CHOICES = ["none", "bnb-4bit", "bnb-8bit", "unsloth-4bit"]
+QUANTIZATION_CHOICES = ["none", "bnb-4bit", "bnb-8bit", "unsloth-4bit", "mxfp4-bf16"]
 
 
 def _is_conditional_generation_config(config: object) -> bool:
@@ -116,6 +116,10 @@ def load_model_and_tokenizer(
         tokenizer.pad_token_id = tokenizer.eos_token_id
 
     config = AutoConfig.from_pretrained(model_id, trust_remote_code=trust_remote_code)
+    if quantization == "mxfp4-bf16" and (
+        getattr(config, "model_type", None) != "gpt_oss" or device == "cpu"
+    ):
+        raise ValueError("mxfp4-bf16 replay requires GPT-OSS and a CUDA GPU")
     if getattr(config, "model_type", None) in {"gemma4", "gemma4_text"} and quantization == "bnb-4bit":
         if device == "cpu":
             raise ValueError("Gemma 4-bit expert replay requires a CUDA device")
@@ -170,6 +174,10 @@ def load_model_and_tokenizer(
         model = model.to("cpu")
     else:
         quantization_kwargs = {"quantization_config": bnb_config} if bnb_config is not None else {}
+        if quantization == "mxfp4-bf16":
+            from .gpt_oss import dequantized_mxfp4_kwargs
+
+            quantization_kwargs.update(dequantized_mxfp4_kwargs())
         model = model_class.from_pretrained(
             model_id,
             torch_dtype=torch.bfloat16,

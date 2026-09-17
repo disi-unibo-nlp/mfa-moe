@@ -2,7 +2,8 @@
 
 This experiment asks whether the seven sentence-level categories released by
 Li et al. are linearly decodable from
-`Qwen/Qwen3.5-35B-A3B-GPTQ-Int4` hidden states. This is the official Qwen
+Qwen, GPT-OSS, and Gemma hidden states. The original run uses
+`Qwen/Qwen3.5-35B-A3B-GPTQ-Int4`. This is the official Qwen
 GPTQ 4-bit checkpoint; unlike on-load bitsandbytes conversion, its fused MoE
 expert weights are already quantized and fit on a 32 GiB RTX 5090.
 It combines the [Schoenfeld gold corpus](https://arxiv.org/abs/2509.14662) with
@@ -12,7 +13,7 @@ and its [official implementation](https://github.com/slhleosun/reasoning-traject
 
 ## What is forwarded
 
-No response is regenerated for probe training. The input to Qwen is:
+No response is regenerated for probe training. The input to each model is:
 
 1. the released SAT `Instruction`, formatted as a user message;
 2. the corresponding released DeepSeek-R1 response, supplied in teacher
@@ -65,7 +66,7 @@ This inspection stage does not generate new solutions:
   loader (good prefix followed by the first negatively rated completion).
 
 Reference reasoning is split conservatively at sentence punctuation and line
-boundaries. Each resulting unit is teacher-forced through the same Qwen
+boundaries. Each resulting unit is teacher-forced through the same probe
 checkpoint, using the same causal pre-unit boundary definition as probe
 training. For every unit, the stage saves all seven best-layer one-vs-rest
 scores, all probes above their binary 0.5 threshold, and an inspection label
@@ -140,6 +141,70 @@ python -m moe_exp.probeTest.run extract \
   --quantization gptq-4bit \
   --max-documents 1
 ```
+
+## GPT-OSS and Gemma layer selection
+
+Run the full gold extraction and layer-wise probe stages for each model:
+
+```bash
+IMAGE_NAME=moe-mfa-experiments:quantized-forward \
+bash src/moe_exp/probeTest/run_slurm.sh \
+  --model openai/gpt-oss-20b --skip-benchmark-labeling
+
+IMAGE_NAME=moe-mfa-experiments:quantized-forward \
+bash src/moe_exp/probeTest/run_slurm.sh \
+  --model google/gemma-4-26B-A4B-it --skip-benchmark-labeling
+```
+
+The launcher selects `mxfp4-bf16` for OSS and the existing text-only
+`bnb-4bit` expert adapter for Gemma. OSS expands the checkpoint's quantized
+MXFP4 values to BF16 and offloads excess weights to CPU. This avoids native
+Triton compiler crashes on this RTX 5090; it does not recover the original
+pre-quantization weights. Both probes and correlation replay use this mode.
+The explicit `mxfp4` mode remains available for compatible native runtimes. Outputs go to separate `gpt-oss-20b` and
+`gemma-4-26b-a4b-it-nf4` directories below `results/probeTest`. Use
+`--model-revision` to pin the checkpoint revision. The corpus, causal boundary,
+sentence split, classifier settings, and accuracy selection match Qwen.
+Benchmark labeling is optional and is not needed to select correlation layers.
+
+OSS supplies 25 hidden states (24 decoder layers); Gemma supplies 31 (30 layers).
+The correlation pipeline automatically reads each model's results and keeps
+only selected indices with a corresponding router. See
+[model support](../correlation_pipeline/MODEL_SUPPORT.md#probe-layers).
+
+### Completed runs (2026-09-15)
+
+Both runs use all 3,087 units and the unchanged seed-42 protocol. Layer indices
+are zero-based decoder inputs for correlation replay.
+
+| Target | OSS layer | Accuracy | Gemma layer | Accuracy |
+| --- | ---: | ---: | ---: | ---: |
+| Read | 19 | 0.9304 | 21 | 0.9207 |
+| Analyze | 21 | 0.7654 | 27 | 0.7896 |
+| Plan | 15 | 0.9239 | 25 | 0.9159 |
+| Implement | 21 | 0.8916 | 29 | 0.8819 |
+| Explore | 23 | 0.9239 | 16 | 0.9239 |
+| Verify | 21 | 0.8770 | 19 | 0.8447 |
+| Monitor | 15 | 0.9320 | 22 | 0.9320 |
+
+**Correlation layer unions:** OSS `15, 19, 21, 23`; Gemma
+`16, 19, 21, 22, 25, 27, 29`. Every selected index has a router.
+Both selections passed a full-checkpoint GPU check through the correlation
+loader and exact-token replay, with finite router and hidden-state tensors.
+Each run saves `correlation_replay_validation.json`; the combined audit is
+`results/probeTest/model_layer_selection.json`.
+
+Gemma: 217 fits, no convergence warnings. OSS: 175 fits, four hit the fixed
+2,000-iteration limit (Analyze at 1 and 20; Plan and Verify at 1). None of
+the seven selected fits hit the limit. The warnings are retained in the
+full results; the iteration budget was not changed to improve selection.
+
+Pinned revisions:
+- OSS: `6cee5e81ee83917806bbde320786a8fb61efebee`
+- Gemma: `4d7ae4984b7db7de8f8457170b3f1a419ee76d52`
+
+Full per-layer accuracy, F1, AUC, convergence diagnostics, saved classifiers,
+and split indices are in each model's `probes/` directory.
 
 ## Outputs
 

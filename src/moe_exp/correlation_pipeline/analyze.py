@@ -918,16 +918,23 @@ def analyze(args: argparse.Namespace) -> dict[str, Any]:
                 max_geometry_tokens=args.max_geometry_tokens,
             )
             budget_rows.append(row)
-            if row["generation_hit_token_limit"] == 1:
-                excluded_truncated[dataset] += 1
-                continue
             dataset_counts[dataset] += 1
             rows.append(row)
             if getattr(args, "views", None):
                 scoped_rows, contract = collect_view_rows(trace, row, args.views)
-                if view_contract is not None and contract != view_contract:
-                    raise ValueError("Cannot mix different classifier/position-reference contracts")
-                view_contract = contract
+                if view_contract is None:
+                    view_contract = contract
+                else:
+                    # Unlabelled generations have no classifier contract but still
+                    # contribute to all non-class metrics and attempt coverage.
+                    previous_classifier = view_contract.get("classifier")
+                    classifier = contract.get("classifier")
+                    if (any(contract[k] != view_contract[k] for k in contract if k != "classifier")
+                            or (previous_classifier is not None and classifier is not None
+                                and classifier != previous_classifier)):
+                        raise ValueError("Cannot mix different classifier/position-reference contracts")
+                    if previous_classifier is None:
+                        view_contract["classifier"] = classifier
                 for key, scoped_row in scoped_rows:
                     view_rows.setdefault(key, []).append(scoped_row)
             selected_experts = _resolve_tensor(trace.model_logs.selected_experts, input_path)
@@ -1034,10 +1041,14 @@ def analyze(args: argparse.Namespace) -> dict[str, Any]:
         },
         "methodology": {
             "truncation": (
-                "Exclude attempts with finish_reason=length or completion_tokens >= max_tokens "
-                "from all correlation, expert, and view analyses. Unknown limit status is retained. "
-                "Problem-level avg@n still requires all declared n attempts after exclusion. "
-                "The generation-budget audit includes excluded attempts."
+                "Retain all supplied attempts, including token-limit completions, in correlation, "
+                "expert, and view analyses. The generation-budget audit reports truncation status. "
+                "Problem-level avg@n requires all declared n attempts."
+            ),
+            "population": (
+                "All supplied generations for aggregate, expert, full-reasoning and position metrics; "
+                "all available validated tagged sentences for class metrics. "
+                "Missing labels do not exclude generations; missing/nonfinite metrics are pairwise omitted."
             ),
             "binary_correlation": "point-biserial correlation",
             "binary_target_encoding": (

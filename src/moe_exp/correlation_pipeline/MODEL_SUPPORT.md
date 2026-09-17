@@ -16,9 +16,9 @@ and `unsloth/Qwen3.5-35B-A3B` with Unsloth 4-bit loading for forward replay.
 | [Qwen/Qwen3.5-35B-A3B](https://huggingface.co/Qwen/Qwen3.5-35B-A3B) | `qwen3` | Yes | `unsloth-4bit` |
 | [Qwen/Qwen3-30B-A3B](https://huggingface.co/Qwen/Qwen3-30B-A3B) | `qwen3` | No | `none` |
 | [nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-BF16](https://huggingface.co/nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-BF16) | `nemotron_v3` | Yes | `none` |
-| [google/gemma-4-26B-A4B-it](https://huggingface.co/google/gemma-4-26B-A4B-it) | `gemma4` | No | `none` |
+| [google/gemma-4-26B-A4B-it](https://huggingface.co/google/gemma-4-26B-A4B-it) | `gemma4` | No | `bnb-4bit` |
 | [zai-org/GLM-4.7-Flash](https://huggingface.co/zai-org/GLM-4.7-Flash) | `glm45` | Yes | `none` |
-| [openai/gpt-oss-20b](https://huggingface.co/openai/gpt-oss-20b) | `openai_gptoss` | No | `none` (native MXFP4) |
+| [openai/gpt-oss-20b](https://huggingface.co/openai/gpt-oss-20b) | `openai_gptoss` | No | `mxfp4-bf16` (dequantized MXFP4, CPU offload) |
 
 The server image remains `vllm/vllm-openai:v0.29.0`. Its
 [reasoning parser registry](https://github.com/vllm-project/vllm/blob/v0.29.0/vllm/reasoning/__init__.py)
@@ -112,7 +112,9 @@ adapter as a new quantized checkpoint is not implemented.
 Tests use tiny real Gemma models to check native-logit equivalence before
 quantization, each expert's quantized weights, text and multimodal checkpoint
 loading, tied embeddings, scaled routing weights, and CUDA router/hidden-state
-capture. Full 26B loading and long-context memory fit remain unverified.
+capture. The full 26B NF4 model also completed all 38 gold-corpus forwards
+on an RTX 5090 during the probe experiment. This verifies memory fit for those
+traces; longer correlation traces can still require more memory.
 Routes describe the NF4 replay model and may differ from NVFP4 generation.
 
 `nvidia/Gemma-4-26B-A4B-NVFP4` selects the Gemma generation profile
@@ -169,40 +171,52 @@ writes. A dry run validates argument construction, not GPU memory or model loadi
 
 ## Probe layers
 
-The default probe file and selected indices remain unchanged:
-`results/probeTest/qwen3.5-35b-a3b-gptq-int4/probes/results.json`, currently
-`27, 34, 35, 36, 38, 39, 40`.
+The launcher and direct forward command select gold probe results by forward
+model. Missing results stop a real launcher run before a server starts.
 
-Only existing MoE decoder layers are extracted. Excluded indices are reported;
-indices are never renumbered to match a compressed list of routers.
-
-| Model | Current probe indices that have routers |
+| Forward model | Probe results under `results/probeTest/` |
 | --- | --- |
-| Qwen3.5 / Qwen3.6 | 27, 34, 35, 36, 38, 39 |
-| Qwen3-30B | 27, 34, 35, 36, 38, 39, 40 |
-| Nemotron 3.5 Lightning | 27, 34, 36, 38, 40 |
-| Gemma4-26B | 27 |
-| GLM-4.7-Flash | 27, 34, 35, 36, 38, 39, 40 |
-| GPT-OSS-20B | None: it has layers 0–23 |
+| GPT-OSS-20B, MXFP4 expanded to BF16 | `gpt-oss-20b/probes/results.json` |
+| Gemma4-26B, NF4 replay | `gemma-4-26b-a4b-it-nf4/probes/results.json` |
+| Qwen and the remaining profiles | `qwen3.5-35b-a3b-gptq-int4/probes/results.json` |
 
-A real GPT-OSS run with the fixed selection stops before starting a server.
-To explicitly use all its router layers, add `--all-router-layers`:
+Each model's selection is the union of the seven `best_by_target.layer_idx`
+values, selected by test accuracy with ties resolved toward the earlier index.
+The probe uses the input of the decoder at that index (index 0 is the embedding
+output). Only actual router layers are retained. The final normalized output
+has no next router and is excluded; indices are never shifted or renumbered.
+The forward summary records retained and excluded indices. Gemma's completed
+2026-09-15 run selects `16, 19, 21, 22, 25, 27, 29`; OSS selects
+`15, 19, 21, 23`. All are valid router indices. Per-target metrics and
+convergence diagnostics are summarized in the [probe README](../probeTest/README.md#completed-runs-2026-09-15).
+
+GPT-OSS defaults to `mxfp4-bf16`: the original MXFP4 checkpoint values are
+expanded to BF16, with eager expert execution and CPU offload. This avoids
+the native Triton compiler crashes observed on the RTX 5090. Generation still
+uses vLLM's native MXFP4 checkpoint; the replay precision is recorded in the
+probe and forward metadata. The native forward mode remains available through
+`--quantization none` on compatible runtimes.
+
+The Google Gemma checkpoint defaults to the same `bnb-4bit` forward adapter
+used by its probes. For NVFP4 generation, keep Google Gemma as `--model` and
+select the NVIDIA checkpoint with `--generation-model`.
 
 ```bash
 bash src/moe_exp/correlation_pipeline/run_all.sh \
   --model openai/gpt-oss-20b \
-  --all-router-layers \
-  --results-dir results/correlation_pipeline/gpt-oss-20b \
-  --datasets math500 --max-items 1 --samples-per-problem 1 \
-  --bootstrap-samples 20
+  --results-dir results/correlation_pipeline/gpt-oss-20b
+
+IMAGE_NAME=moe-mfa-experiments:quantized-forward \
+bash src/moe_exp/correlation_pipeline/run_all.sh \
+  --model google/gemma-4-26B-A4B-it \
+  --generation-model nvidia/Gemma-4-26B-A4B-NVFP4 \
+  --results-dir results/correlation_pipeline/gemma-nvfp4-nf4
 ```
 
-This override is opt-in; it does not modify the probe file or the defaults for
-other runs. Omit `--datasets`, `--max-items`, `--samples-per-problem`, and
-`--bootstrap-samples` to run the usual suite with its default sampling settings.
-The selected layer policy and actual layer indices are recorded in the forward
-summary. Reusing Qwen-selected indices on other families is an explicit experiment
-choice; it does not imply those are their best probe layers.
+`--probe-results PATH` explicitly overrides the model-specific file.
+`--all-router-layers` bypasses probe selection. The remaining profiles still
+reuse the historical Qwen selection; those are not independently measured
+best layers for those families.
 
 ## Replay and routing contracts
 

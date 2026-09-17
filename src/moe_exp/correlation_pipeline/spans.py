@@ -12,6 +12,8 @@ from moe_exp.gepaLLMAsJudge.data import SENTENCE_LABELS
 from moe_exp.models.inference import _find_prompt_length, _format_prompt
 
 SPAN_SCHEMA_VERSION = 1
+# Separate from sentence segmentation: old sampled view features must be replayed.
+VIEW_POPULATION_VERSION = 2
 
 
 def digest(value: Any) -> str:
@@ -157,6 +159,39 @@ def validate_annotation(trace: Any, annotation: dict[str, Any]) -> None:
             raise ValueError("Annotation sentence offsets/text do not match generation")
         if labeled.get("label") not in SENTENCE_LABELS:
             raise ValueError("Invalid reasoning class")
+
+
+def validate_available_annotation(trace: Any, annotation: dict[str, Any]) -> None:
+    """Validate saved labels against a generation, independently of tagging selection.
+
+    A partial tagging checkpoint still contributes every validated sentence.
+    Keep the stricter completion check above for annotation/resume workflows.
+    """
+    if annotation.get("schema_version") != SPAN_SCHEMA_VERSION:
+        raise ValueError("Unsupported reasoning annotation schema")
+    if (annotation.get("trace_sha256") != trace_digest(trace)
+            or annotation.get("dataset") != trace.dataset
+            or annotation.get("problem_id") != trace.problem_id):
+        raise ValueError(f"Stale annotation for {trace.dataset}/{trace.problem_id}")
+    if annotation.get("status") not in {"complete", "partial"}:
+        raise ValueError("Unsupported reasoning annotation status")
+    units = sentence_spans(trace)
+    sampled = trace.model_copy(update={"metadata": {
+        **trace.metadata, "sentence_selection": annotation.get("sentence_selection"),
+    }})
+    selected = set(selected_sentence_indices(sampled, units))
+    seen = set()
+    for labeled in annotation.get("units", []):
+        index = labeled.get("index")
+        if type(index) is not int or index not in selected or index in seen:
+            raise ValueError("Invalid or duplicate annotated sentence index")
+        seen.add(index)
+        if any(labeled.get(key) != value for key, value in units[index].items()):
+            raise ValueError("Annotation sentence offsets/text do not match generation")
+        if labeled.get("label") not in SENTENCE_LABELS:
+            raise ValueError("Invalid reasoning class")
+    if annotation["status"] == "complete" and seen != selected:
+        raise ValueError("Incomplete sentence annotations")
 
 
 def token_layout(trace: Any, tokenizer: Any) -> dict[str, Any]:

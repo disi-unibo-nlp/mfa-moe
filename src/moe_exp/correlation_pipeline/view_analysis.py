@@ -12,6 +12,7 @@ from moe_exp.correlation_pipeline.features import restore_features
 from moe_exp.correlation_pipeline.spans import (
     SENTENCE_LABELS,
     SPAN_SCHEMA_VERSION,
+    VIEW_POPULATION_VERSION,
     digest,
     trace_digest,
 )
@@ -23,14 +24,16 @@ def collect_view_rows(trace: Any, base_row: dict[str, Any], modes: list[str]):
     payload = trace.metadata.get("correlation_views")
     if not isinstance(payload, dict) or payload.get("schema_version") != SPAN_SCHEMA_VERSION:
         raise ValueError("Missing/version-mismatched reasoning views; rerun forward with --views")
+    if payload.get("population_version") != VIEW_POPULATION_VERSION:
+        raise ValueError("Reasoning views use an old data population; rerun forward with --views")
     if payload.get("trace_sha256") != trace_digest(trace):
         raise ValueError("Reasoning view features belong to a different generation")
     if payload.get("sentence_selection") != trace.metadata.get("sentence_selection"):
         raise ValueError("Reasoning view features belong to a different sentence selection")
     reference = payload.get("position_reference")
     annotation = trace.metadata.get("reasoning_annotation")
-    if "class" in modes and (
-        annotation is None or payload.get("annotation_sha256") != digest(annotation)
+    if "class" in modes and payload.get("annotation_sha256") != (
+        digest(annotation) if annotation is not None else None
     ):
         raise ValueError("Reasoning views do not match the sentence annotations")
     expected = set()
@@ -64,12 +67,10 @@ def collect_view_rows(trace: Any, base_row: dict[str, Any], modes: list[str]):
         raise ValueError(f"Missing reasoning scopes: {sorted(expected - found)}")
     contract = {
         "schema_version": SPAN_SCHEMA_VERSION,
+        "population_version": VIEW_POPULATION_VERSION,
         "classifier": annotation.get("classifier") if annotation and "class" in modes else None,
         "position_reference": reference if "position" in modes else None,
-        "sentence_sampling": (
-            {key: value for key, value in payload["sentence_selection"].items() if key != "indices"}
-            if payload.get("sentence_selection") else None
-        ),
+        "population": "all supplied generations; class metrics use all available tagged sentences",
     }
     return rows, contract
 

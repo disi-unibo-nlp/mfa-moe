@@ -10,6 +10,7 @@ DATASETS=(math500 aime24 aime25 olympiad amc23 minerva)
 REASONING_DIR="$RUN_DIR/reasoning-vllm-v1"
 STAGE_LAUNCHER="$REPO_DIR/src/moe_exp/correlation_pipeline/run_docker.sh"
 MODEL="Qwen/Qwen3.5-35B-A3B-GPTQ-Int4"
+GENERATION_DIR="results/correlation_pipeline/generation"
 export HF_CACHE_DIR="${HF_CACHE_DIR:-/llms}"
 mkdir -p "$RUN_DIR"
 exec 9> "$RUN_DIR/pipeline.lock"
@@ -45,16 +46,16 @@ bash src/moe_exp/correlation_pipeline/run_all.sh \
     --datasets "${DATASETS[@]}" --results-dir "$RUN_DIR" \
     --generation-model "$MODEL"
 
-stage="class_forward"
+stage="forward"
 write_status running "$stage"
 bash "$STAGE_LAUNCHER" forward --datasets "${DATASETS[@]}" \
-    --generation-dir "$RUN_DIR/generation" --generation-model "$MODEL" \
+    --generation-dir "$GENERATION_DIR" --generation-model "$MODEL" \
     --annotation-dir "$REASONING_DIR/annotations" \
-    --output-dir "$REASONING_DIR/forward" --views class
+    --output-dir "$REASONING_DIR/forward" --views full class position
 
-stage="class_analysis"
+stage="analysis"
 write_status running "$stage"
 bash "$STAGE_LAUNCHER" analyze --datasets "${DATASETS[@]}" \
     --forward-dir "$REASONING_DIR/forward" --output-dir "$REASONING_DIR/analysis" \
-    --views class --skip-expert-identity --bootstrap-samples 500
+    --views full class position --bootstrap-samples 500
 write_status complete "$stage"

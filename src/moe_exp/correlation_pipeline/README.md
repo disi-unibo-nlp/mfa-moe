@@ -226,8 +226,29 @@ keep their usual directory. This separates the reduced outputs from tagged
 analyses. Adding labels later reuses generations but requires another forward
 replay to compute the class features.
 
-`--skip-annotate` instead reuses existing completed annotations and retains
-class views. It is useful after tagging has finished. `--skip-generate`,
+`--skip-annotate` instead reuses all available validated sentence labels and
+retains class views, including labels saved in partial tagging shards. Replay
+always reads the original generation directory, not the tagging sample. Full
+reasoning, position, aggregate and expert correlations use all supplied
+generations, including token-limit completions. Category metrics pool all
+available tagged sentences; unlabelled sentences do not receive placeholder
+labels, and generations without tags have missing category metrics. Full and
+position features cover all reasoning tokens regardless of sentence sampling.
+Position windows use the mean over the full supplied generation corpus.
+
+To refresh an existing run with this population policy, reuse generations and
+labels but rerun forward extraction and analysis:
+
+```bash
+bash src/moe_exp/correlation_pipeline/run_all.sh --skip-generate --skip-annotate
+```
+
+Use the same model, results directory and dataset options as the original run.
+Old sampled-view checkpoints are invalidated automatically; analysis rejects
+old view populations if forward extraction is skipped. Historical report tables
+and frozen snapshots are not refreshed by this command.
+
+`--skip-generate`,
 `--skip-forward`, and `--skip-analyze` skip their respective stages; skipping
 forward requires checkpoints containing the selected views. For analysis only,
 pass `--skip-generate --skip-annotate --skip-forward` for tagged outputs, or

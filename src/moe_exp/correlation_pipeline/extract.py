@@ -17,15 +17,14 @@ from moe_exp.correlation_pipeline.features import (
     compute_layer_features,
     json_safe_features,
 )
+from moe_exp.correlation_pipeline.model_profiles import default_probe_results
 from moe_exp.jsonl import iter_jsonl
 from moe_exp.models.loader import QUANTIZATION_CHOICES, load_model_and_tokenizer
 from moe_exp.models.routing_extraction import process_file
 
 logger = logging.getLogger(__name__)
 _SAFE_FILENAME = re.compile(r"[^A-Za-z0-9_.-]+")
-DEFAULT_PROBE_RESULTS = Path(
-    "results/probeTest/qwen3.5-35b-a3b-gptq-int4/probes/results.json"
-)
+DEFAULT_PROBE_RESULTS = default_probe_results(DEFAULT_FORWARD_MODEL)
 
 
 def _model_slug(model: str) -> str:
@@ -88,10 +87,56 @@ def _storage_summary(output_path: Path) -> tuple[int, dict[str, int]]:
     }
 
 
+def load_available_annotations(directory: Path) -> dict[str, dict[str, Any]]:
+    """Union consolidated labels with complete/partial resumable shards.
+
+    Duplicate copies must agree; a shard may contain additional saved labels.
+    Missing labels are normal when replaying the full generation corpus.
+    """
+    annotations: dict[str, dict[str, Any]] = {}
+    consolidated = directory / "annotations.jsonl"
+    records = list(iter_jsonl(consolidated)) if consolidated.is_file() else []
+    ids = [row["problem_id"] for row in records]
+    if len(ids) != len(set(ids)):
+        raise ValueError(f"Duplicate annotation in {consolidated}")
+    records.extend(json.loads(path.read_text()) for path in sorted((directory / "shards").glob("*.json")))
+
+    def contract(row):
+        return {k: v for k, v in row.items() if k not in {"units", "status"}}
+
+    for annotation in records:
+        if annotation.get("status") not in {"complete", "partial"}:
+            raise ValueError(f"Unsupported annotation status in {directory}")
+        problem_id = annotation["problem_id"]
+        previous = annotations.get(problem_id)
+        if previous is None:
+            annotations[problem_id] = annotation
+            continue
+        if contract(previous) != contract(annotation):
+            raise ValueError(f"Conflicting annotation contracts for {problem_id} in {directory}")
+        units = {}
+        for record in (previous, annotation):
+            seen = set()
+            for unit in record["units"]:
+                index = unit["index"]
+                if index in seen or (index in units and units[index] != unit):
+                    raise ValueError(f"Conflicting or duplicate sentence labels for {problem_id}")
+                seen.add(index)
+                units[index] = unit
+        annotations[problem_id] = {
+            **previous,
+            "units": [units[index] for index in sorted(units)],
+            "status": "complete" if "complete" in {previous["status"], annotation["status"]} else "partial",
+        }
+    return annotations
+
+
 def extract_all(args: argparse.Namespace) -> list[dict[str, Any]]:
-    from moe_exp.correlation_pipeline.spans import SPAN_SCHEMA_VERSION
+    from moe_exp.correlation_pipeline.spans import SPAN_SCHEMA_VERSION, VIEW_POPULATION_VERSION
     from moe_exp.correlation_pipeline.views import compute_views, position_reference
 
+    if getattr(args, "probe_results", None) is None:
+        args.probe_results = default_probe_results(args.model_id)
     modes = getattr(args, "views", None)
     if modes and "class" in modes and getattr(args, "annotation_dir", None) is None:
         raise ValueError("--views class requires --annotation-dir")
@@ -191,16 +236,15 @@ def extract_all(args: argparse.Namespace) -> list[dict[str, Any]]:
             if modes:
                 annotations = None
                 if "class" in modes:
-                    annotation_path = args.annotation_dir / _model_slug(args.generation_model) / dataset / "annotations.jsonl"
-                    annotations = {}
-                    for annotation in iter_jsonl(annotation_path):
-                        if annotation["problem_id"] in annotations:
-                            raise ValueError(f"Duplicate annotation in {annotation_path}")
-                        if annotation.get("status") != "complete":
-                            raise ValueError(f"Incomplete annotation in {annotation_path}")
-                        annotations[annotation["problem_id"]] = annotation
+                    annotation_dir = args.annotation_dir / _model_slug(args.generation_model) / dataset
+                    annotations = load_available_annotations(annotation_dir)
+                    generation_ids = {row["problem_id"] for row in iter_jsonl(input_path)}
+                    unmatched = annotations.keys() - generation_ids
+                    if unmatched:
+                        raise ValueError(f"Annotations have no matching generations in {dataset}: {sorted(unmatched)}")
                 view_kwargs = {"view_reducer": reduce_views,
                                "view_config": {"schema_version": SPAN_SCHEMA_VERSION,
+                                               "population_version": VIEW_POPULATION_VERSION,
                                                "modes": sorted(modes), "position_reference": reference},
                                "trace_annotations": annotations}
             process_file(
@@ -311,8 +355,8 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument(
         "--probe-results",
         type=Path,
-        default=DEFAULT_PROBE_RESULTS,
-        help="Probe results.json used to retain the union of best_by_target layers",
+        default=None,
+        help="Model-specific probe results.json (default: chosen from --model-id)",
     )
     parser.add_argument("--all-router-layers", action="store_true",
                         help="Explicitly use every router layer instead of the fixed probe indices")

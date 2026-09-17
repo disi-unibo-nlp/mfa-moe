@@ -5,7 +5,7 @@ slurm_logs/**
 memory/**
 results?/**
 
-
+**/*.vtt
 
 ## Core latex/pdflatex auxiliary files:
 *.aux

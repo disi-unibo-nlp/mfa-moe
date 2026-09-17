@@ -261,6 +261,16 @@ def test_embedded_quantization_cannot_be_relabelled_as_bitsandbytes() -> None:
         _validate_quantization_request(config, "bnb-4bit")
 
 
+def test_mxfp4_mode_requires_native_checkpoint_metadata() -> None:
+    config = SimpleNamespace(quantization_config={"quant_method": "mxfp4"})
+    _validate_quantization_request(config, "mxfp4")
+    _validate_quantization_request(config, "mxfp4-bf16")
+    with pytest.raises(ValueError, match="matching mode"):
+        _validate_quantization_request(config, "none")
+    with pytest.raises(ValueError, match="native MXFP4"):
+        _validate_quantization_request(SimpleNamespace(quantization_config=None), "mxfp4")
+
+
 def test_binary_probe_uses_paper_configuration() -> None:
     rng = np.random.default_rng(4)
     y = np.asarray([0, 1] * 20, dtype=np.int8)

@@ -185,14 +185,21 @@ def process_file(
                     "normalized_sigmoid" if model_family(model) in SIGMOID_ROUTERS else "softmax"
                 )
             if trace_annotations is not None:
-                from moe_exp.correlation_pipeline.spans import validate_annotation
+                from moe_exp.correlation_pipeline.spans import validate_available_annotation
                 annotation = trace_annotations.get(trace.problem_id)
-                if annotation is None:
-                    raise ValueError(f"Missing reasoning annotation for {trace.problem_id}")
-                validate_annotation(trace, annotation)
-                trace.metadata["reasoning_annotation"] = annotation
+                trace.metadata.pop("reasoning_annotation", None)
+                if annotation is not None:
+                    validate_available_annotation(trace, annotation)
+                    trace.metadata["reasoning_annotation"] = annotation
             
             if not trace.cot_text.strip():
+                if view_reducer is not None:
+                    from moe_exp.correlation_pipeline.spans import token_layout
+                    token_count = token_layout(trace, tokenizer)["token_count"]
+                    empty = torch.empty((0, token_count, 0))
+                    trace.metadata["correlation_views"] = view_reducer(
+                        trace, empty, None, empty.to(torch.long), layer_indices,
+                    )
                 out_f.write(trace.model_dump_json() + "\n")
                 continue
                 

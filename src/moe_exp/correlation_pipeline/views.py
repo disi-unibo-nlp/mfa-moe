@@ -10,12 +10,12 @@ from moe_exp.correlation_pipeline.features import compute_layer_features, json_s
 from moe_exp.correlation_pipeline.spans import (
     SENTENCE_LABELS,
     SPAN_SCHEMA_VERSION,
+    VIEW_POPULATION_VERSION,
     digest,
     position_windows,
-    selected_sentence_indices,
     token_layout,
     trace_digest,
-    validate_annotation,
+    validate_available_annotation,
 )
 from moe_exp.jsonl import iter_jsonl
 from moe_exp.schemas import TraceRecord
@@ -62,20 +62,17 @@ def compute_views(
     layout = token_layout(trace, tokenizer)
     if layout["token_count"] != router_logits.shape[1]:
         raise ValueError("Tokenizer span offsets do not align with extracted routing tokens")
-    selected = selected_sentence_indices(trace, layout["units"])
-    selected_tokens = {token for index in selected for token in layout["unit_tokens"][index]}
-    tokens = [token for token in layout["reasoning_tokens"] if token in selected_tokens]
+    tokens = layout["reasoning_tokens"]
     scopes = []
     if "full" in modes:
         scopes.append({"view": "full", "name": "reasoning", "tokens": tokens})
     annotation = trace.metadata.get("reasoning_annotation")
     if "class" in modes:
-        if annotation is None:
-            raise ValueError("Class views require GEPA sentence annotations")
-        validate_annotation(trace, annotation)
+        if annotation is not None:
+            validate_available_annotation(trace, annotation)
         for label in SENTENCE_LABELS:
             indices, segments = [], []
-            for unit in annotation["units"]:
+            for unit in sorted(annotation["units"], key=lambda u: u["index"]) if annotation else []:
                 owned = layout["unit_tokens"][unit["index"]]
                 if unit["label"] == label:
                     indices.extend(owned)
@@ -87,7 +84,6 @@ def compute_views(
         for window in position_windows(
             layout["reasoning_tokens"], reference["mean_reasoning_tokens"], reference["bins"]
         ):
-            window["tokens"] = [token for token in window["tokens"] if token in selected_tokens]
             scopes.append({"view": "position", **window})
     features = []
     for scope in scopes:
@@ -121,6 +117,7 @@ def compute_views(
     labels = {unit["index"]: unit["label"] for unit in annotation["units"]} if annotation else {}
     return {
         "schema_version": SPAN_SCHEMA_VERSION,
+        "population_version": VIEW_POPULATION_VERSION,
         "trace_sha256": trace_digest(trace),
         "reasoning_token_count": len(tokens),
         "sentence_selection": trace.metadata.get("sentence_selection"),
