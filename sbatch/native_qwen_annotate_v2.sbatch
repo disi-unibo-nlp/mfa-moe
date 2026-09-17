@@ -136,7 +136,7 @@ command_common=(
     --trace-root "$TRACE_ROOT"
     --output-dir "$OUTPUT_DIR"
     --part 0 --parts 1 --part-size "$EXPECT_UNITS" --total "$EXPECT_UNITS"
-    --include-traces "$INCLUDE_TRACES"
+    --include-traces "$INCLUDE_TRACES" --include-source "$SOURCE"
     --judge-program "$PROGRAM_FILE" --model "$MODEL"
     --base-url "http://127.0.0.1:$PORT/v1" --api-key local-vllm-key
     --batch-size 64 --max-tokens 16384 --temperature 1.0

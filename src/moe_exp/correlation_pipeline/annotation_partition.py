@@ -9,8 +9,10 @@ from typing import Any
 
 from moe_exp.correlation_pipeline.spans import (
     digest,
+    map_selection_to_v2,
     selected_sentence_indices,
     sentence_spans,
+    sentence_spans_v1,
     trace_digest,
 )
 from moe_exp.jsonl import iter_jsonl
@@ -110,7 +112,14 @@ def enumerate_items(
             units = sentence_spans(trace)
             trace_sha256 = trace_digest(trace)
             question = _question(trace)
-            for index in selected_sentence_indices(trace, units):
+            if remaining is None:
+                indices = selected_sentence_indices(trace, units)
+            else:
+                # A stored sentence_selection always indexes the frozen version 1 units,
+                # so a targeted re-label maps it onto the current splitter's sub-units.
+                stored = selected_sentence_indices(trace, sentence_spans_v1(trace))
+                indices = map_selection_to_v2(trace, stored)
+            for index in indices:
                 identity = {
                     "dataset": trace.dataset,
                     "problem_id": trace.problem_id,
