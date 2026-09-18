@@ -180,6 +180,22 @@ class MergeTests(unittest.TestCase):
                 self.assertEqual(report["affected_traces"][0]["v2_rows"], 5)
             self.assertFalse(merged_root.exists())
 
+    def test_sources_and_verify_datasets_selectors(self):
+        with tempfile.TemporaryDirectory() as raw:
+            directory = Path(raw)
+            roots, v1_root, v2_root, affected = build_workspace(directory)
+            argv = merge_argv(
+                roots, v1_root, v2_root, affected, directory / "merged",
+                "--dry-run", "--verify-units", "--sources", "gpt", "--verify-datasets", "math500",
+            )
+            printed = run_merge(argv)
+            summary = printed[0]
+            reports = {line["source"]: line for line in printed[1:] if "source" in line}
+            self.assertEqual(sorted(reports), ["gpt"])
+            self.assertEqual(summary["rows"], 7)
+            self.assertEqual(reports["gpt"]["verification"]["datasets"], ["math500"])
+            self.assertIn("traces_verified", reports["gpt"]["verification"])
+
     def test_publish_writes_both_sources_and_a_summary(self):
         with tempfile.TemporaryDirectory() as raw:
             directory = Path(raw)

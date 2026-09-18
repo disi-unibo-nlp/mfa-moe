@@ -15,10 +15,12 @@ from __future__ import annotations
 import argparse
 from collections import OrderedDict
 import json
+import os
 from pathlib import Path
+import tempfile
 from typing import Any
 
-from moe_exp.correlation_pipeline.annotation_batch import LABELS, UNKNOWN_FIELDS, _publish, digest
+from moe_exp.correlation_pipeline.annotation_batch import LABELS, UNKNOWN_FIELDS, digest
 from moe_exp.correlation_pipeline.annotation_partition import (
     DATASETS,
     PART_SIZE,
@@ -56,6 +58,26 @@ DEFAULT_TRACE_ROOTS = {
     ),
 }
 SUPERSEDED_TEXT_LIMIT = 200
+
+
+def _publish(path: Path, value: Any) -> None:
+    """Publish one JSON document atomically, tolerating an identical existing file."""
+    payload = json.dumps(value, sort_keys=True, ensure_ascii=False)
+    if path.is_file() and path.read_text(encoding="utf-8").rstrip("\n") == payload:
+        return
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fd, name = tempfile.mkstemp(prefix=".pending-", dir=path.parent)
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as handle:
+            handle.write(payload + "\n")
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(name, path)
+    finally:
+        try:
+            os.unlink(name)
+        except FileNotFoundError:
+            pass
 
 
 def load_affected(path: Path) -> dict[str, Any]:
@@ -201,6 +223,7 @@ def merge_source(
     expected_rows: int | None,
     trace_root: Path | None = None,
     verify_units: bool = False,
+    verify_datasets: set[str] | None = None,
 ) -> tuple[list[dict[str, Any]], dict[str, Any]]:
     groups = group_by_trace(v1_records, f"{source} v1")
     v2_groups = group_by_trace(v2_records, f"{source} v2")
@@ -209,7 +232,8 @@ def merge_source(
         raise ValueError(f"{source}: v2 labels exist for traces outside the affected list: {outside}")
 
     rows: list[dict[str, Any]] = []
-    reused = relabeled = superseded = 0
+    chosen_by_key: dict[tuple[str, str, int], list[tuple[int, int, str]]] = {}
+    reused = relabeled = superseded = index_shifts = 0
     superseded_records: list[dict[str, Any]] = []
     affected_report: list[dict[str, Any]] = []
     unchanged_v2_units = 0
@@ -250,6 +274,7 @@ def merge_source(
             mapped_set = set(mapped)
             chosen = [record for record in fresh_records if unit_span(record) in mapped_set]
             relabeled += len(chosen)
+            chosen_by_key[key] = [unit_span(record) for record in chosen]
             rows.extend(chosen)
             affected_report.append(
                 {
@@ -265,25 +290,13 @@ def merge_source(
             continue
         rows.extend(group)
         reused += len(group)
-        if verify_units:
-            if trace_root is None:
-                raise ValueError("--verify-units needs a trace root")
-            trace = fetch_trace(trace_root, key)
-            legacy_units, current_units, indices = selection_units(trace)
-            expected = [legacy_units[index] for index in indices[: len(group)]]
-            derived = [(unit["start"], unit["end"], unit["text"]) for unit in expected]
-            if derived != legacy:
-                raise ValueError(f"{source}: v1 labels for {key} do not match the frozen splitter")
-            mapped_indices = map_selection_to_v2(trace, indices[: len(group)])
-            mapped_spans = [(current_units[index]["start"], current_units[index]["end"], current_units[index]["text"]) for index in mapped_indices]
-            if mapped_spans != legacy:
-                raise ValueError(f"{source}: {key} is not listed as affected but version 2 changes it")
-            if any(
-                (unit["start"], unit["end"], unit["text"]) != (legacy_units[index]["start"], legacy_units[index]["end"], legacy_units[index]["text"])
-                for index, unit in zip(mapped_indices, current_units, strict=False)
-            ):
-                raise ValueError(f"{source}: {key} unit identity drifted")
-
+    verification: dict[str, Any] = {}
+    if verify_units:
+        if trace_root is None:
+            raise ValueError("--verify-units needs a trace root")
+        verification = verify_against_traces(
+            source, groups, affected_keys, chosen_by_key, trace_root, verify_datasets
+        )
     for key, group in group_by_trace(rows, f"{source} merged").items():
         previous = None
         for record in group:
@@ -308,19 +321,86 @@ def merge_source(
         "affected_traces": affected_report,
         "labels": stats["labels"],
         "unknown": stats["unknown"],
+        "traces_with_shifted_unselected_units": verification.get(
+            "traces_with_shifted_unselected_units", index_shifts
+        ),
+        "verification": verification,
         "annotations_sha256": digest(rows),
         "expected_rows": expected_rows,
     }
     return rows, report
 
 
+def verify_against_traces(
+    source: str,
+    groups: "OrderedDict[tuple[str, str, int], list[dict[str, Any]]]",
+    affected_keys: set[tuple[str, str, int]],
+    chosen_by_key: dict[tuple[str, str, int], list[tuple[int, int, str]]],
+    trace_root: Path,
+    datasets: set[str] | None = None,
+) -> dict[str, Any]:
+    """Stream each dataset once and re-derive both segmentations for the labelled traces.
+
+    For every trace that contributed labels this checks that the stored v1 rows equal the
+    frozen v1 segmentation, and that the rows the merge keeps (v1 rows unchanged, or the
+    mapped v2 sub-units for affected traces) equal what the fixed version 2 splitter
+    produces from the source trace.
+    """
+    verified = shifts = 0
+    seen: set[tuple[str, str, int]] = set()
+    for dataset in DATASETS:
+        if datasets is not None and dataset not in datasets:
+            continue
+        path = trace_root / dataset / "traces.jsonl"
+        if not path.is_file():
+            raise FileNotFoundError(path)
+        for row in iter_jsonl(path):
+            trace = TraceRecord(**row)
+            key = (trace.dataset, trace.problem_id, trace.sample_id)
+            group = groups.get(key)
+            if group is None:
+                continue
+            legacy_units, current_units, indices = selection_units(trace)
+            stored = [unit_span(record) for record in group]
+            derived = [
+                (legacy_units[index]["start"], legacy_units[index]["end"], legacy_units[index]["text"])
+                for index in indices[: len(group)]
+            ]
+            if derived != stored:
+                raise ValueError(f"{source}: v1 rows for {key} do not match the frozen splitter")
+            mapped_indices = map_selection_to_v2(trace, indices[: len(group)])
+            mapped = [
+                (current_units[index]["start"], current_units[index]["end"], current_units[index]["text"])
+                for index in mapped_indices
+            ]
+            expected = chosen_by_key[key] if key in affected_keys else stored
+            if mapped != expected:
+                raise ValueError(f"{source}: {key} does not match the fixed splitter output")
+            if mapped_indices != indices[: len(group)]:
+                shifts += 1
+            seen.add(key)
+            verified += 1
+    missing = sorted(set(groups) - seen)
+    if missing:
+        raise ValueError(f"{source}: labelled traces missing from the source: {missing}")
+    return {
+        "traces_verified": verified,
+        "traces_with_shifted_unselected_units": shifts,
+        "datasets": sorted(datasets) if datasets is not None else list(DATASETS),
+    }
+
+
 def verify_splitter(
-    trace_roots: dict[str, Path], affected: dict[str, Any], *, total: int = TOTAL
+    trace_roots: dict[str, Path],
+    affected: dict[str, Any],
+    *,
+    sources: tuple[str, ...] = SOURCES,
+    total: int = TOTAL,
 ) -> dict[str, Any]:
     """Corpus dry-run: only the affected traces may change, with the verified counts."""
     report = {}
     observed: dict[tuple[str, str, int], str] = {}
-    for source in SOURCES:
+    for source in sources:
         trace_root = trace_roots[source]
         old_total = new_total = 0
         changed: list[dict[str, Any]] = []
@@ -424,13 +504,31 @@ def main(argv: list[str] | None = None) -> None:
     parser.add_argument("--trace-root", action="append", default=[], metavar="SOURCE=PATH")
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--verify-units", action="store_true")
+    parser.add_argument(
+        "--verify-datasets",
+        help="restrict --verify-units to these datasets (comma separated) so a login-node "
+        "run stays inside the CPU budget",
+    )
     parser.add_argument("--verify-splitter", action="store_true")
+    parser.add_argument(
+        "--sources",
+        default=",".join(SOURCES),
+        help="comma-separated sources to process (default: gpt,gemma)",
+    )
     parser.add_argument("--total", type=int, default=TOTAL)
     parser.add_argument("--parts", type=int, default=PARTS)
     parser.add_argument("--part-size", type=int, default=PART_SIZE)
     args = parser.parse_args(argv)
     if args.parts * args.part_size != args.total:
         raise SystemExit("--parts, --part-size and --total must describe exact disjoint parts")
+    sources = tuple(item.strip() for item in args.sources.split(",") if item.strip())
+    verify_datasets = (
+        {item.strip() for item in args.verify_datasets.split(",") if item.strip()}
+        if args.verify_datasets
+        else None
+    )
+    if not sources or any(source not in SOURCES for source in sources):
+        raise SystemExit(f"--sources must be a subset of {SOURCES}")
 
     trace_roots = dict(DEFAULT_TRACE_ROOTS)
     for value in args.trace_root:
@@ -441,7 +539,7 @@ def main(argv: list[str] | None = None) -> None:
     affected = load_affected(args.affected_traces)
 
     if args.verify_splitter:
-        report = verify_splitter(trace_roots, affected, total=args.total)
+        report = verify_splitter(trace_roots, affected, sources=sources, total=args.total)
         print(json.dumps({"splitter_verification": report}, sort_keys=True), flush=True)
         return
 
@@ -454,7 +552,7 @@ def main(argv: list[str] | None = None) -> None:
         "sources": {},
     }
     rows_by_source: dict[str, list[dict[str, Any]]] = {}
-    for source in SOURCES:
+    for source in sources:
         v1_records, missing, part_stats = load_parts(
             args.v1_root, source, parts=args.parts, part_size=args.part_size
         )
@@ -481,6 +579,7 @@ def main(argv: list[str] | None = None) -> None:
             expected_rows=expected_rows,
             trace_root=trace_roots[source],
             verify_units=args.verify_units,
+            verify_datasets=verify_datasets,
         )
         rows_by_source[source] = rows
         report["v1_parts"] = part_stats
@@ -495,7 +594,7 @@ def main(argv: list[str] | None = None) -> None:
         item["superseded_v1_records"] for item in summary["sources"].values()
     )
     if not args.dry_run:
-        for source in SOURCES:
+        for source in sources:
             _publish(args.merged_root / source / "annotations.json", rows_by_source[source])
             _publish(args.merged_root / source / "summary.json", summary["sources"][source])
         _publish(args.merged_root / "summary.json", summary)
