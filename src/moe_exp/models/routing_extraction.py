@@ -233,6 +233,10 @@ def process_file(
                 "layer_indices": layer_indices,
                 "expert_weights": save_expert_weights,
             }
+            attention_config = getattr(model.config, "text_config", None) or model.config
+            attention_backend = getattr(attention_config, "_attn_implementation", None)
+            if attention_backend and attention_backend.startswith("moe_replay_"):
+                expected_checkpoint["attention_backend"] = attention_backend
             if native_routing:
                 expected_checkpoint["router_capture_version"] = ROUTER_CAPTURE_VERSION
             if feature_reducer is not None:

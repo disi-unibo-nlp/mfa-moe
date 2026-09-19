@@ -14,11 +14,13 @@ def dequantized_mxfp4_kwargs() -> dict:
 
     if not torch.cuda.is_available():
         raise RuntimeError("MXFP4 BF16 replay requires a CUDA GPU with CPU offload")
+    from .replay_attention import register_replay_attention
+
     free_bytes, _ = torch.cuda.mem_get_info()
     return {
         "quantization_config": Mxfp4Config(dequantize=True),
         "experts_implementation": "eager",
-        # Eager attention with attention sinks materializes quadratic logits.
-        # Leave room for the longest gold traces, not just model weights.
+        "attn_implementation": register_replay_attention(),
+        # Retain conservative headroom for activations and offloaded layers.
         "max_memory": {0: int(free_bytes * 0.45), "cpu": "80GiB"},
     }

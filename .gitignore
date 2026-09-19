@@ -6,6 +6,7 @@ memory/**
 results?/**
 
 **/*.vtt
+logs/
 
 ## Core latex/pdflatex auxiliary files:
 *.aux
