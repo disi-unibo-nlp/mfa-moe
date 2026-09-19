@@ -37,6 +37,7 @@ the current experimental plan.
 \input{gepaLLMAsJudge}
 \input{probeTest}
 \input{correlation_pipeline}
+\input{multimodel_correlation_results}
 \input{active_synthesis}
 
 \section{Immediate Work}
@@ -45,23 +46,27 @@ The agreed order of work is:
 \begin{enumerate}
 \item freeze and archive the seed prompt retained by the completed final GEPA
 alignment, and reserve the locked test for a prespecified evaluation;
-\item prespecify a response to the remaining token-limit failures and extend
-the current vLLM run to GPQA-Diamond and MMLU-Pro;
+\item independently assess sentence labels, document token-limit sensitivity,
+and extend coverage to the missing benchmarks;
 \item fit a prespecified length-/termination-aware, dataset-aware correctness
 model with problem-respecting validation and exploratory layerwise screening;
-\item test repeated-attempt and position-window confidence contrasts under
-length, termination, token-composition, and common-cohort controls, and qualify
+\item validate the completed repeated-problem analyses, test class/position
+contrasts on common cohorts, and qualify
 pooled expert-ID candidates by layer; and
-\item expand to additional MoE families only after the pilot pipeline and disk
-budget are stable.
+\item extend the completed Qwen, Gemma, and GPT-OSS comparison with matched
+annotation coverage and held-out validation.
 \end{enumerate}
 The detailed acceptance criteria and transcript ambiguities are maintained in
 \texttt{NEXT\_STEPS.md} at the repository root.
 
 \input{reproducibility}
 
+\input{tutor_chart_coverage}
+
 \clearpage
-\input{correlation_tables}
+\input{correlation_plot_atlas}
+\clearpage
+\input{multimodel_correlation_atlas}
 
 \clearpage
 \bibliographystyle{plain}

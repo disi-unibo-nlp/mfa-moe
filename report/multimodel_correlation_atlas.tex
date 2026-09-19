@@ -1,0 +1,306 @@
+\section{Gemma and GPT-OSS correlation plot atlas}
+Lower triangles show metric--metric Spearman $\rho$; Acc shows point-biserial $r$ with correctness. Missing or undefined values are dashes, not zero. Token-bearing counts are upper bounds on pairwise finite counts. Each model has whole-continuation, full-reasoning, seven class, and eleven position scopes. Qwen plots appear in the preceding atlas. These are descriptive screens without significance selection.
+\begingroup\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}ll@{}}
+\caption{Metric key for all models.}\label{tab:multi-key}\\
+\toprule
+Code & Metric \\
+\midrule\endfirsthead
+\multicolumn{2}{l}{\textit{Continued from previous page}}\\
+\toprule
+Code & Metric \\
+\midrule\endhead
+\bottomrule\endfoot
+T & Token count \\
+C & Router confidence \\
+M & Leading-expert margin \\
+S & Selected probability mass \\
+B & Selection-boundary margin \\
+G & Selected/rest mean gap \\
+H & Hidden-state norm \\
+D & Hidden-state step distance \\
+R & Hidden/router geometry \\
+W & Top-1 switch rate \\
+O & Adjacent selected-set overlap \\
+\end{longtable}\endgroup
+
+\begin{figure}[p]\centering
+\includegraphics[width=\linewidth]{figures/gemma_atlas_continuation.pdf}
+\caption{Gemma-4-26B-A4B / Whole continuation. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\Description{Gemma-4-26B-A4B / Whole continuation. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\end{figure}
+
+\clearpage
+\begin{figure}[p]\centering
+\includegraphics[width=\linewidth]{figures/gemma_atlas_reasoning.pdf}
+\caption{Gemma-4-26B-A4B / Full reasoning. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\Description{Gemma-4-26B-A4B / Full reasoning. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\end{figure}
+
+\clearpage
+\begin{figure}[p]\centering
+\includegraphics[width=\linewidth]{figures/gemma_atlas_class-Read.pdf}
+\caption{Gemma-4-26B-A4B / Class: Read. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\Description{Gemma-4-26B-A4B / Class: Read. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\end{figure}
+
+\clearpage
+\begin{figure}[p]\centering
+\includegraphics[width=\linewidth]{figures/gemma_atlas_class-Analyze.pdf}
+\caption{Gemma-4-26B-A4B / Class: Analyze. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\Description{Gemma-4-26B-A4B / Class: Analyze. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\end{figure}
+
+\clearpage
+\begin{figure}[p]\centering
+\includegraphics[width=\linewidth]{figures/gemma_atlas_class-Plan.pdf}
+\caption{Gemma-4-26B-A4B / Class: Plan. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\Description{Gemma-4-26B-A4B / Class: Plan. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\end{figure}
+
+\clearpage
+\begin{figure}[p]\centering
+\includegraphics[width=\linewidth]{figures/gemma_atlas_class-Implement.pdf}
+\caption{Gemma-4-26B-A4B / Class: Implement. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\Description{Gemma-4-26B-A4B / Class: Implement. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\end{figure}
+
+\clearpage
+\begin{figure}[p]\centering
+\includegraphics[width=\linewidth]{figures/gemma_atlas_class-Explore.pdf}
+\caption{Gemma-4-26B-A4B / Class: Explore. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\Description{Gemma-4-26B-A4B / Class: Explore. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\end{figure}
+
+\clearpage
+\begin{figure}[p]\centering
+\includegraphics[width=\linewidth]{figures/gemma_atlas_class-Verify.pdf}
+\caption{Gemma-4-26B-A4B / Class: Verify. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\Description{Gemma-4-26B-A4B / Class: Verify. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\end{figure}
+
+\clearpage
+\begin{figure}[p]\centering
+\includegraphics[width=\linewidth]{figures/gemma_atlas_class-Monitor.pdf}
+\caption{Gemma-4-26B-A4B / Class: Monitor. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\Description{Gemma-4-26B-A4B / Class: Monitor. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\end{figure}
+
+\clearpage
+\begin{figure}[p]\centering
+\includegraphics[width=\linewidth]{figures/gemma_atlas_position-bin_00.pdf}
+\caption{Gemma-4-26B-A4B / Position: bin 00. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\Description{Gemma-4-26B-A4B / Position: bin 00. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\end{figure}
+
+\clearpage
+\begin{figure}[p]\centering
+\includegraphics[width=\linewidth]{figures/gemma_atlas_position-bin_01.pdf}
+\caption{Gemma-4-26B-A4B / Position: bin 01. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\Description{Gemma-4-26B-A4B / Position: bin 01. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\end{figure}
+
+\clearpage
+\begin{figure}[p]\centering
+\includegraphics[width=\linewidth]{figures/gemma_atlas_position-bin_02.pdf}
+\caption{Gemma-4-26B-A4B / Position: bin 02. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\Description{Gemma-4-26B-A4B / Position: bin 02. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\end{figure}
+
+\clearpage
+\begin{figure}[p]\centering
+\includegraphics[width=\linewidth]{figures/gemma_atlas_position-bin_03.pdf}
+\caption{Gemma-4-26B-A4B / Position: bin 03. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\Description{Gemma-4-26B-A4B / Position: bin 03. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\end{figure}
+
+\clearpage
+\begin{figure}[p]\centering
+\includegraphics[width=\linewidth]{figures/gemma_atlas_position-bin_04.pdf}
+\caption{Gemma-4-26B-A4B / Position: bin 04. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\Description{Gemma-4-26B-A4B / Position: bin 04. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\end{figure}
+
+\clearpage
+\begin{figure}[p]\centering
+\includegraphics[width=\linewidth]{figures/gemma_atlas_position-bin_05.pdf}
+\caption{Gemma-4-26B-A4B / Position: bin 05. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\Description{Gemma-4-26B-A4B / Position: bin 05. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\end{figure}
+
+\clearpage
+\begin{figure}[p]\centering
+\includegraphics[width=\linewidth]{figures/gemma_atlas_position-bin_06.pdf}
+\caption{Gemma-4-26B-A4B / Position: bin 06. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\Description{Gemma-4-26B-A4B / Position: bin 06. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\end{figure}
+
+\clearpage
+\begin{figure}[p]\centering
+\includegraphics[width=\linewidth]{figures/gemma_atlas_position-bin_07.pdf}
+\caption{Gemma-4-26B-A4B / Position: bin 07. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\Description{Gemma-4-26B-A4B / Position: bin 07. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\end{figure}
+
+\clearpage
+\begin{figure}[p]\centering
+\includegraphics[width=\linewidth]{figures/gemma_atlas_position-bin_08.pdf}
+\caption{Gemma-4-26B-A4B / Position: bin 08. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\Description{Gemma-4-26B-A4B / Position: bin 08. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\end{figure}
+
+\clearpage
+\begin{figure}[p]\centering
+\includegraphics[width=\linewidth]{figures/gemma_atlas_position-bin_09.pdf}
+\caption{Gemma-4-26B-A4B / Position: bin 09. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\Description{Gemma-4-26B-A4B / Position: bin 09. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\end{figure}
+
+\clearpage
+\begin{figure}[p]\centering
+\includegraphics[width=\linewidth]{figures/gemma_atlas_position-overflow.pdf}
+\caption{Gemma-4-26B-A4B / Position: overflow. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\Description{Gemma-4-26B-A4B / Position: overflow. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\end{figure}
+
+\clearpage
+\begin{figure}[p]\centering
+\includegraphics[width=\linewidth]{figures/gptoss_atlas_continuation.pdf}
+\caption{GPT-OSS-20B / Whole continuation. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\Description{GPT-OSS-20B / Whole continuation. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\end{figure}
+
+\clearpage
+\begin{figure}[p]\centering
+\includegraphics[width=\linewidth]{figures/gptoss_atlas_reasoning.pdf}
+\caption{GPT-OSS-20B / Full reasoning. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\Description{GPT-OSS-20B / Full reasoning. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\end{figure}
+
+\clearpage
+\begin{figure}[p]\centering
+\includegraphics[width=\linewidth]{figures/gptoss_atlas_class-Read.pdf}
+\caption{GPT-OSS-20B / Class: Read. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\Description{GPT-OSS-20B / Class: Read. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\end{figure}
+
+\clearpage
+\begin{figure}[p]\centering
+\includegraphics[width=\linewidth]{figures/gptoss_atlas_class-Analyze.pdf}
+\caption{GPT-OSS-20B / Class: Analyze. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\Description{GPT-OSS-20B / Class: Analyze. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\end{figure}
+
+\clearpage
+\begin{figure}[p]\centering
+\includegraphics[width=\linewidth]{figures/gptoss_atlas_class-Plan.pdf}
+\caption{GPT-OSS-20B / Class: Plan. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\Description{GPT-OSS-20B / Class: Plan. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\end{figure}
+
+\clearpage
+\begin{figure}[p]\centering
+\includegraphics[width=\linewidth]{figures/gptoss_atlas_class-Implement.pdf}
+\caption{GPT-OSS-20B / Class: Implement. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\Description{GPT-OSS-20B / Class: Implement. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\end{figure}
+
+\clearpage
+\begin{figure}[p]\centering
+\includegraphics[width=\linewidth]{figures/gptoss_atlas_class-Explore.pdf}
+\caption{GPT-OSS-20B / Class: Explore. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\Description{GPT-OSS-20B / Class: Explore. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\end{figure}
+
+\clearpage
+\begin{figure}[p]\centering
+\includegraphics[width=\linewidth]{figures/gptoss_atlas_class-Verify.pdf}
+\caption{GPT-OSS-20B / Class: Verify. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\Description{GPT-OSS-20B / Class: Verify. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\end{figure}
+
+\clearpage
+\begin{figure}[p]\centering
+\includegraphics[width=\linewidth]{figures/gptoss_atlas_class-Monitor.pdf}
+\caption{GPT-OSS-20B / Class: Monitor. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\Description{GPT-OSS-20B / Class: Monitor. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\end{figure}
+
+\clearpage
+\begin{figure}[p]\centering
+\includegraphics[width=\linewidth]{figures/gptoss_atlas_position-bin_00.pdf}
+\caption{GPT-OSS-20B / Position: bin 00. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\Description{GPT-OSS-20B / Position: bin 00. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\end{figure}
+
+\clearpage
+\begin{figure}[p]\centering
+\includegraphics[width=\linewidth]{figures/gptoss_atlas_position-bin_01.pdf}
+\caption{GPT-OSS-20B / Position: bin 01. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\Description{GPT-OSS-20B / Position: bin 01. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\end{figure}
+
+\clearpage
+\begin{figure}[p]\centering
+\includegraphics[width=\linewidth]{figures/gptoss_atlas_position-bin_02.pdf}
+\caption{GPT-OSS-20B / Position: bin 02. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\Description{GPT-OSS-20B / Position: bin 02. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\end{figure}
+
+\clearpage
+\begin{figure}[p]\centering
+\includegraphics[width=\linewidth]{figures/gptoss_atlas_position-bin_03.pdf}
+\caption{GPT-OSS-20B / Position: bin 03. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\Description{GPT-OSS-20B / Position: bin 03. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\end{figure}
+
+\clearpage
+\begin{figure}[p]\centering
+\includegraphics[width=\linewidth]{figures/gptoss_atlas_position-bin_04.pdf}
+\caption{GPT-OSS-20B / Position: bin 04. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\Description{GPT-OSS-20B / Position: bin 04. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\end{figure}
+
+\clearpage
+\begin{figure}[p]\centering
+\includegraphics[width=\linewidth]{figures/gptoss_atlas_position-bin_05.pdf}
+\caption{GPT-OSS-20B / Position: bin 05. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\Description{GPT-OSS-20B / Position: bin 05. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\end{figure}
+
+\clearpage
+\begin{figure}[p]\centering
+\includegraphics[width=\linewidth]{figures/gptoss_atlas_position-bin_06.pdf}
+\caption{GPT-OSS-20B / Position: bin 06. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\Description{GPT-OSS-20B / Position: bin 06. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\end{figure}
+
+\clearpage
+\begin{figure}[p]\centering
+\includegraphics[width=\linewidth]{figures/gptoss_atlas_position-bin_07.pdf}
+\caption{GPT-OSS-20B / Position: bin 07. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\Description{GPT-OSS-20B / Position: bin 07. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\end{figure}
+
+\clearpage
+\begin{figure}[p]\centering
+\includegraphics[width=\linewidth]{figures/gptoss_atlas_position-bin_08.pdf}
+\caption{GPT-OSS-20B / Position: bin 08. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\Description{GPT-OSS-20B / Position: bin 08. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\end{figure}
+
+\clearpage
+\begin{figure}[p]\centering
+\includegraphics[width=\linewidth]{figures/gptoss_atlas_position-bin_09.pdf}
+\caption{GPT-OSS-20B / Position: bin 09. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\Description{GPT-OSS-20B / Position: bin 09. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\end{figure}
+
+\clearpage
+\begin{figure}[p]\centering
+\includegraphics[width=\linewidth]{figures/gptoss_atlas_position-overflow.pdf}
+\caption{GPT-OSS-20B / Position: overflow. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\Description{GPT-OSS-20B / Position: overflow. Metric correlations and correctness; model-specific cohorts and tokenization.}
+\end{figure}
+
+\clearpage

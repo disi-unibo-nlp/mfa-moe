@@ -694,6 +694,19 @@ generalisation claims. Moreover, applying the probes to supplied reference
 solutions tests representation transfer under teacher forcing. Using them
 to control the model's own generation requires additional validation.
 
+Chen et al.'s recent preprint, Beyond the Trace, connects internal readouts
+directly to native MoE routing \cite{chen2026beyondtrace}. They construct J64,
+a 64-axis semantic frame from reasoning states, and learn a routing-based
+proxy, R64, from expert usage and gate entropy. They evaluate candidate
+selection, online stopping and resampling, and targeted router edits.
+This is a close precedent for connecting process interpretation to routing
+and test-time decisions. The distinction here is the target vocabulary:
+the present project starts from externally defined Schoenfeld episodes,
+whereas J64 is derived from model states. Reconstructing a latent readout,
+predicting an upcoming episode, and improving an answer through intervention
+remain different evaluation tasks. Their question-grouped evaluation and
+frozen cross-benchmark transfer also provide useful methodological comparisons.
+
 This line of work supplies possible detection signals and candidate layers.
 It does not identify a router intervention by itself. A decoder may read
 information from a representation that is distributed across many experts,
@@ -713,6 +726,27 @@ control point. They also caution against assuming that its units already
 correspond to human-readable reasoning functions. In particular, Mixtral's
 analysis of syntactic routing and token locality makes lexical controls
 relevant when comparing experts across reasoning episodes.
+
+Olson et al. provide controlled evidence of semantic routing
+\cite{olson2025semanticrouting}. They compare expert overlap when a fixed
+word changes sense across contexts and when a fixed context contains
+semantically similar or dissimilar replacement words. These controls make
+their study relevant to separating meaning from lexical identity. However,
+word-sense sensitivity does not establish that experts specialise in
+multi-sentence reasoning episodes. For the present analysis, it motivates
+checking whether episode--routing associations persist beyond differences
+in the words used to express each episode.
+
+Ye et al.'s preprint shifts the unit of interpretation from individual
+experts to paths across layers \cite{ye2026polysemantic}. Their decomposition
+separates a routing control component from an orthogonal component invisible
+to the router. Across the architectures studied, they report that individual
+experts remain polysemantic while expert trajectories group tokens by
+semantic function across surface forms. This suggests a limitation of
+per-expert episode correlations: an expert can participate in several
+functions, with specificity emerging through its combination with other
+layers. Path-level analysis is consequently a possible extension of the
+present measurements, rather than a property demonstrated by them.
 
 RICE is a close precedent for reasoning-directed expert intervention
 \cite{wang2025rice}. Wang et al. associate experts with reasoning-related
@@ -744,6 +778,17 @@ relevant evidence that routing quality can be investigated separately from
 expert capacity. However, a next-token score on a supplied continuation is a
 proxy for free-generation success, and layerwise route comparisons do not
 by themselves identify an episode-level intervention effect.
+
+Su et al. study continuous test-time rerouting under deployment shifts
+\cite{su2025rewiring}. Their method optimises additive router-logit vectors
+in selected layers during prefill and at subsequent intervals, using the
+available context and generated sequence for self-supervision. Generation
+then continues with the adapted routing until the next update. This offers
+a comparison with interventions whose expert targets are identified offline:
+the routing adjustment is optimised online, without external reference data.
+Its adaptation objective is not an explicit episode vocabulary, so it does
+not directly test episode-guided control. Comparisons would also need to
+account for the extra optimisation cost at inference time.
 
 These studies establish that routing control is an existing research
 direction. The question developed here is more specific: whether a validated
