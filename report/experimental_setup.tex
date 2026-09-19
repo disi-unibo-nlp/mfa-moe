@@ -53,29 +53,30 @@ or new gold annotation.  Only boundary vectors are stored; Qwen does not
 regenerate the released or benchmark solutions.
 
 \paragraph{Correlation-pipeline design.}
-The current pipeline separates vLLM generation from a teacher-forced
-Hugging Face forward pass. The September 10, 2026 untagged run covers 4,647
-attempts from 1,547 source problems on MATH-500, AIME 2024, AIME 2025,
-OlympiadBench, AMC 2023, and Minerva Math. AIME and AMC use 32 attempts per
-problem; the other datasets use one. GPQA-Diamond and MMLU-Pro are absent
-from this snapshot. Generation serves
-\texttt{Qwen/Qwen3.5-35B-A3B-GPTQ-Int4}; replay uses
-\texttt{unsloth/Qwen3.5-35B-A3B} with runtime 4-bit quantization, so the stages
-use different 4-bit formats. All 4,647 attempts enter the binary analysis,
-including 371 unparseable answers counted as incorrect. There are 3,588
-correct attempts (0.772 pooled accuracy), and 394 traces reach the
-32,768-token budget. These failures account for 393 of 1,059 errors.
+The current report uses the six-benchmark run completed September 17, 2026:
+4,647 attempts from 1,547 source problems, including all 32 attempts per
+AIME24, AIME25, and AMC23 problem and one per MATH-500, OlympiadBench, and
+Minerva problem. GPQA-Diamond and MMLU-Pro remain absent.
+Generation uses \texttt{Qwen/Qwen3.5-35B-A3B-GPTQ-Int4}; replay uses
+\texttt{unsloth/Qwen3.5-35B-A3B} with runtime 4-bit quantization at decoder
+indices 27, 34, 35, 36, 38, and 39. Compact features and top-eight expert
+IDs are retained. No raw activation tensors are saved.
 
-Replay retains compact features and selected top-$k$ expert IDs at six decoder
-layers. The analysis includes whole-continuation correlations, complete-group
-avg@32 and within-problem contrasts, metric-pair and pooled expert-ID screens,
-and new full-reasoning and absolute-position views. The position reference
-uses the corpus mean of 12,477.026 reasoning tokens, with ten disjoint windows
-and overflow. Late-window features are missing for shorter traces. No sentence
-classifier or Schoenfeld class view was used. The pipeline is operationally
-complete for these six benchmarks; the analyses do not remove termination,
-length, or token-composition confounds, and pooled numeric expert IDs do not
-identify individual layer-specific expert modules.
+All 412 token-limit completions remain included; 3,568/4,647 answers are
+correct (0.768). Full-reasoning and absolute-position views pool all reasoning
+tokens independently of tagging; whole-continuation metrics also include
+final-answer tokens. The position reference mean is 12,498.062 tokens, with
+ten disjoint windows and overflow. Class views use available sentence labels
+from sample zero, selected with error-rate-weighted quotas and a 100,000-unit
+cap (seed 42). Missing class/window features are not zero.
+The judge is \texttt{unsloth/Qwen3.8-27B-NVFP4} with the frozen GEPA program
+and low reasoning effort; its accuracy on these traces is unmeasured.
+
+All requested stages are complete. The 100 complete avg@32 groups support
+problem-level and within-problem analyses in whole-continuation and
+full-reasoning views; classes still have one tagged attempt per problem.
+Length, termination, sparse class outcomes, and changing window cohorts
+limit interpretation. Historical runs remain separate artifacts.
 
 \paragraph{Table model and metric conventions.}
 Every table caption identifies the evaluated model or models and the metrics
@@ -109,8 +110,7 @@ The active packages are located at
 
 The Qwen judge artifacts formerly called Experiment~0a, including the final
 Qwen3.8 model-alignment run, and the Qwen3.5 boundary-probe artifacts formerly
-called Experiment~0b are complete.  The current vLLM correlation generation, replay, and
-analysis are complete for six math benchmarks, including full-reasoning and
-position views. GPQA-Diamond was analyzed in an earlier GGUF run but is absent
-from this snapshot; MMLU-Pro remains unrun.  Historical OLMoE and numbered-experiment outputs are archived
-and are not pooled with the estimates in this report.
+called Experiment~0b are complete. The six-benchmark Qwen correlation run is complete for all requested views;
+class labels remain sampled and cross-model tagging is ongoing. Earlier untagged and GGUF outputs are
+not pooled with the current estimates. Historical OLMoE and numbered-experiment
+outputs remain archived.

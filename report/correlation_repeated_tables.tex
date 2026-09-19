@@ -1,0 +1,38 @@
+\begingroup\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}lrrr@{}}
+\caption{Whole-continuation mean feature versus avg@32 correctness, Spearman $\rho$ (source problems). All 32 attempts, including token-limit completions, enter each eligible group.}\label{tab:qwen-repeated}\\
+\toprule
+Feature & AIME24 & AIME25 & AMC23 \\
+\midrule\endfirsthead
+\multicolumn{4}{l}{\textit{Continued from previous page}}\\
+\toprule
+Feature & AIME24 & AIME25 & AMC23 \\
+\midrule\endhead
+\bottomrule\endfoot
+Token count & $-0.861$ (30) & $-0.909$ (30) & $-0.057$ (40) \\
+Router confidence & $0.632$ (30) & $0.705$ (30) & $-0.200$ (40) \\
+Leading-expert margin & $0.583$ (30) & $0.638$ (30) & $0.190$ (40) \\
+Selected probability mass & $-0.112$ (30) & $0.388$ (30) & $-0.215$ (40) \\
+Selection-boundary margin & $-0.367$ (30) & $0.135$ (30) & $-0.145$ (40) \\
+Selected/rest mean gap & $-0.112$ (30) & $0.388$ (30) & $-0.215$ (40) \\
+Hidden-state norm & $-0.384$ (30) & $-0.186$ (30) & $0.484$ (40) \\
+Hidden-state step distance & $0.238$ (30) & $0.384$ (30) & $0.504$ (40) \\
+Hidden/router geometry & $0.273$ (30) & $0.046$ (30) & $-0.331$ (40) \\
+Top-1 switch rate & $-0.381$ (30) & $0.156$ (30) & $0.121$ (40) \\
+Adjacent selected-set overlap & $-0.047$ (30) & $-0.196$ (30) & $-0.327$ (40) \\
+\end{longtable}\endgroup
+\begingroup\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}lrrr@{}}
+\caption{Within-problem confidence differences, Qwen3.5: mean correct minus incorrect, equally weighted over mixed-outcome problems; saved 95\% whole-problem bootstrap intervals.}\label{tab:qwen-within}\\
+\toprule
+Dataset & Mixed problems & Difference & 95\% interval \\
+\midrule\endfirsthead
+\multicolumn{4}{l}{\textit{Continued from previous page}}\\
+\toprule
+Dataset & Mixed problems & Difference & 95\% interval \\
+\midrule\endhead
+\bottomrule\endfoot
+AIME24 & 14 & 0.00268 & [0.00152, 0.00412] \\
+AIME25 & 15 & 0.00123 & [0.00065, 0.00176] \\
+AMC23 & 6 & 0.01102 & [0.00455, 0.01709] \\
+\end{longtable}\endgroup

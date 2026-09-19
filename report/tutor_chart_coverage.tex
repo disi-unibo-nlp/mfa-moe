@@ -1,0 +1,54 @@
+\section{Coverage of the current tutor feedback}
+\label{sec:tutor-chart-coverage}
+
+This section refers to the current \texttt{Call with Lorenzo Molfetta (2).vtt},
+automatically transcribed in Italian. Requests below are interpreted as
+report changes; proposals for future model interventions are not results.
+
+\begingroup\small
+\begin{longtable}{@{}p{.14\linewidth}p{.29\linewidth}p{.49\linewidth}@{}}
+\caption{Current-call requests and available evidence.}
+\label{tab:tutor-chart-coverage}\\
+\toprule
+Call time & Request & Implementation and limitation \\
+\midrule\endfirsthead
+\toprule Call time & Request & Implementation and limitation \\
+\midrule\endhead
+\bottomrule\endfoot
+01:21--01:59; 04:37--05:49 & Explicit targets, common metric names, uncertainty &
+Class plot titles name correctness; router definitions distinguish leading,
+selection-boundary, and selected/rest gaps. Position panels now show saved
+problem-bootstrap intervals (Figure~\ref{fig:qwen-position}). \\
+06:52--07:56 & Replace the trace-coverage plot with reasoning-length statistics &
+Table~\ref{tab:reasoning-length} reports observed mean, median, and 90th
+percentile tokens for each benchmark. \\
+16:18--16:47; 19:08--19:39 & Compact correlation plots; remove obsolete lexical targets &
+The appendix plots all 20 scopes as triangles plus correctness columns.
+Regex-event panels are removed; original numeric artifacts remain available. \\
+24:41--29:57; 36:55--37:32 & Class proportions against accuracy and token count &
+Figures~\ref{fig:class-share-correlations} and
+\ref{fig:class-share-outcomes} use sampled sentence shares, with benchmark
+sample sizes and actual outcome levels. Full-sequence proportions are unavailable. \\
+26:38--27:12; 29:57--30:20 & Class-state transition matrices &
+Figure~\ref{fig:class-transitions} counts only originally adjacent labelled
+sentences, with row percentages and counts. Sampling gaps are not bridged. \\
+30:40--34:25 & Cumulative class counts as reasoning progresses &
+Figure~\ref{fig:class-cumulative} starts at zero and ends at observed sampled
+class totals. Token progress is normalized within each attempt. \\
+35:35--36:26; 39:34--40:08 & Selected-pool expert identity versus outcomes &
+Figure~\ref{fig:expert-outcomes} shows all 256 IDs against correctness and
+token count. IDs still pool six layer-local modules. \\
+42:06--45:17 & Actual router values associated with higher accuracy &
+Figure~\ref{fig:router-value-accuracy} gives value ranges, accuracy, counts,
+and source-problem bootstrap intervals; no causal threshold is inferred. \\
+20:11--21:07; 37:29--39:20 & Rank-prefix selected/rest curves and subset entropy &
+Only the all-selected gap is available. Top-2/4/6 probability summaries and
+selected/unselected entropies require new replay because raw probabilities
+were not saved. \\
+\end{longtable}
+\endgroup
+
+The final agreement keeps class dynamics descriptive and defers routing
+conditioned on class trajectories (41:45--42:05; 45:23--48:10).
+Any intervention comparison must evaluate the baseline on the same problem
+subset (40:55--41:29); no intervention is claimed here.

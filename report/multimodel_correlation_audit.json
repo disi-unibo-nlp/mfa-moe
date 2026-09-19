@@ -1,0 +1,635 @@
+{
+  "qwen": {
+    "status": "complete",
+    "attempts": 4647,
+    "problems": 1547,
+    "checks": {
+      "continuation": {
+        "correctness": {
+          "coefficients_checked": 91,
+          "maximum_absolute_error": 6.661338147750939e-16
+        },
+        "metric_pairs": {
+          "coefficients_checked": 546,
+          "maximum_absolute_error": 1.1102230246251565e-16
+        }
+      },
+      "reasoning": {
+        "correctness": {
+          "coefficients_checked": 77,
+          "maximum_absolute_error": 6.661338147750939e-16
+        },
+        "metric_pairs": {
+          "coefficients_checked": 385,
+          "maximum_absolute_error": 1.1102230246251565e-16
+        }
+      },
+      "class-Read": {
+        "correctness": {
+          "coefficients_checked": 77,
+          "maximum_absolute_error": 1.3877787807814457e-16
+        },
+        "metric_pairs": {
+          "coefficients_checked": 385,
+          "maximum_absolute_error": 1.1102230246251565e-16
+        }
+      },
+      "class-Analyze": {
+        "correctness": {
+          "coefficients_checked": 77,
+          "maximum_absolute_error": 1.6653345369377348e-16
+        },
+        "metric_pairs": {
+          "coefficients_checked": 385,
+          "maximum_absolute_error": 1.1102230246251565e-16
+        }
+      },
+      "class-Plan": {
+        "correctness": {
+          "coefficients_checked": 77,
+          "maximum_absolute_error": 1.1102230246251565e-16
+        },
+        "metric_pairs": {
+          "coefficients_checked": 385,
+          "maximum_absolute_error": 1.1102230246251565e-16
+        }
+      },
+      "class-Implement": {
+        "correctness": {
+          "coefficients_checked": 77,
+          "maximum_absolute_error": 2.498001805406602e-16
+        },
+        "metric_pairs": {
+          "coefficients_checked": 385,
+          "maximum_absolute_error": 5.551115123125783e-17
+        }
+      },
+      "class-Explore": {
+        "correctness": {
+          "coefficients_checked": 77,
+          "maximum_absolute_error": 2.7755575615628914e-16
+        },
+        "metric_pairs": {
+          "coefficients_checked": 385,
+          "maximum_absolute_error": 1.1102230246251565e-16
+        }
+      },
+      "class-Verify": {
+        "correctness": {
+          "coefficients_checked": 77,
+          "maximum_absolute_error": 2.7755575615628914e-16
+        },
+        "metric_pairs": {
+          "coefficients_checked": 385,
+          "maximum_absolute_error": 1.1102230246251565e-16
+        }
+      },
+      "class-Monitor": {
+        "correctness": {
+          "coefficients_checked": 77,
+          "maximum_absolute_error": 4.440892098500626e-16
+        },
+        "metric_pairs": {
+          "coefficients_checked": 385,
+          "maximum_absolute_error": 1.1102230246251565e-16
+        }
+      },
+      "position-bin_00": {
+        "correctness": {
+          "coefficients_checked": 70,
+          "maximum_absolute_error": 3.885780586188048e-16
+        },
+        "metric_pairs": {
+          "coefficients_checked": 315,
+          "maximum_absolute_error": 1.1102230246251565e-16
+        }
+      },
+      "position-bin_01": {
+        "correctness": {
+          "coefficients_checked": 70,
+          "maximum_absolute_error": 2.7755575615628914e-16
+        },
+        "metric_pairs": {
+          "coefficients_checked": 315,
+          "maximum_absolute_error": 1.1102230246251565e-16
+        }
+      },
+      "position-bin_02": {
+        "correctness": {
+          "coefficients_checked": 70,
+          "maximum_absolute_error": 3.885780586188048e-16
+        },
+        "metric_pairs": {
+          "coefficients_checked": 315,
+          "maximum_absolute_error": 2.220446049250313e-16
+        }
+      },
+      "position-bin_03": {
+        "correctness": {
+          "coefficients_checked": 70,
+          "maximum_absolute_error": 2.220446049250313e-16
+        },
+        "metric_pairs": {
+          "coefficients_checked": 315,
+          "maximum_absolute_error": 1.1102230246251565e-16
+        }
+      },
+      "position-bin_04": {
+        "correctness": {
+          "coefficients_checked": 70,
+          "maximum_absolute_error": 1.1102230246251565e-16
+        },
+        "metric_pairs": {
+          "coefficients_checked": 315,
+          "maximum_absolute_error": 1.1102230246251565e-16
+        }
+      },
+      "position-bin_05": {
+        "correctness": {
+          "coefficients_checked": 70,
+          "maximum_absolute_error": 2.220446049250313e-16
+        },
+        "metric_pairs": {
+          "coefficients_checked": 315,
+          "maximum_absolute_error": 1.1102230246251565e-16
+        }
+      },
+      "position-bin_06": {
+        "correctness": {
+          "coefficients_checked": 70,
+          "maximum_absolute_error": 4.440892098500626e-16
+        },
+        "metric_pairs": {
+          "coefficients_checked": 315,
+          "maximum_absolute_error": 1.1102230246251565e-16
+        }
+      },
+      "position-bin_07": {
+        "correctness": {
+          "coefficients_checked": 70,
+          "maximum_absolute_error": 4.440892098500626e-16
+        },
+        "metric_pairs": {
+          "coefficients_checked": 315,
+          "maximum_absolute_error": 1.1102230246251565e-16
+        }
+      },
+      "position-bin_08": {
+        "correctness": {
+          "coefficients_checked": 70,
+          "maximum_absolute_error": 3.3306690738754696e-16
+        },
+        "metric_pairs": {
+          "coefficients_checked": 315,
+          "maximum_absolute_error": 1.1102230246251565e-16
+        }
+      },
+      "position-bin_09": {
+        "correctness": {
+          "coefficients_checked": 70,
+          "maximum_absolute_error": 4.440892098500626e-16
+        },
+        "metric_pairs": {
+          "coefficients_checked": 315,
+          "maximum_absolute_error": 2.220446049250313e-16
+        }
+      },
+      "position-overflow": {
+        "correctness": {
+          "coefficients_checked": 70,
+          "maximum_absolute_error": 7.771561172376096e-16
+        },
+        "metric_pairs": {
+          "coefficients_checked": 315,
+          "maximum_absolute_error": 5.551115123125783e-17
+        }
+      },
+      "repeated": {
+        "coefficients_checked": 498,
+        "maximum_absolute_error": 1.1102230246251565e-16
+      }
+    }
+  },
+  "gemma": {
+    "status": "complete",
+    "attempts": 4647,
+    "problems": 1547,
+    "checks": {
+      "continuation": {
+        "correctness": {
+          "coefficients_checked": 91,
+          "maximum_absolute_error": 4.440892098500626e-16
+        },
+        "metric_pairs": {
+          "coefficients_checked": 546,
+          "maximum_absolute_error": 1.1102230246251565e-16
+        }
+      },
+      "reasoning": {
+        "correctness": {
+          "coefficients_checked": 77,
+          "maximum_absolute_error": 3.0531133177191805e-16
+        },
+        "metric_pairs": {
+          "coefficients_checked": 385,
+          "maximum_absolute_error": 1.1102230246251565e-16
+        }
+      },
+      "class-Read": {
+        "correctness": {
+          "coefficients_checked": 66,
+          "maximum_absolute_error": 8.326672684688674e-17
+        },
+        "metric_pairs": {
+          "coefficients_checked": 385,
+          "maximum_absolute_error": 1.1102230246251565e-16
+        }
+      },
+      "class-Analyze": {
+        "correctness": {
+          "coefficients_checked": 77,
+          "maximum_absolute_error": 1.6653345369377348e-16
+        },
+        "metric_pairs": {
+          "coefficients_checked": 385,
+          "maximum_absolute_error": 1.1102230246251565e-16
+        }
+      },
+      "class-Plan": {
+        "correctness": {
+          "coefficients_checked": 77,
+          "maximum_absolute_error": 3.3306690738754696e-16
+        },
+        "metric_pairs": {
+          "coefficients_checked": 385,
+          "maximum_absolute_error": 1.1102230246251565e-16
+        }
+      },
+      "class-Implement": {
+        "correctness": {
+          "coefficients_checked": 77,
+          "maximum_absolute_error": 4.996003610813204e-16
+        },
+        "metric_pairs": {
+          "coefficients_checked": 385,
+          "maximum_absolute_error": 1.1102230246251565e-16
+        }
+      },
+      "class-Explore": {
+        "correctness": {
+          "coefficients_checked": 66,
+          "maximum_absolute_error": 1.6653345369377348e-16
+        },
+        "metric_pairs": {
+          "coefficients_checked": 385,
+          "maximum_absolute_error": 1.1102230246251565e-16
+        }
+      },
+      "class-Verify": {
+        "correctness": {
+          "coefficients_checked": 66,
+          "maximum_absolute_error": 1.3877787807814457e-16
+        },
+        "metric_pairs": {
+          "coefficients_checked": 385,
+          "maximum_absolute_error": 1.1102230246251565e-16
+        }
+      },
+      "class-Monitor": {
+        "correctness": {
+          "coefficients_checked": 66,
+          "maximum_absolute_error": 8.326672684688674e-17
+        },
+        "metric_pairs": {
+          "coefficients_checked": 385,
+          "maximum_absolute_error": 1.1102230246251565e-16
+        }
+      },
+      "position-bin_00": {
+        "correctness": {
+          "coefficients_checked": 70,
+          "maximum_absolute_error": 2.220446049250313e-16
+        },
+        "metric_pairs": {
+          "coefficients_checked": 315,
+          "maximum_absolute_error": 1.1102230246251565e-16
+        }
+      },
+      "position-bin_01": {
+        "correctness": {
+          "coefficients_checked": 70,
+          "maximum_absolute_error": 2.7755575615628914e-16
+        },
+        "metric_pairs": {
+          "coefficients_checked": 315,
+          "maximum_absolute_error": 1.1102230246251565e-16
+        }
+      },
+      "position-bin_02": {
+        "correctness": {
+          "coefficients_checked": 70,
+          "maximum_absolute_error": 1.6653345369377348e-16
+        },
+        "metric_pairs": {
+          "coefficients_checked": 315,
+          "maximum_absolute_error": 1.1102230246251565e-16
+        }
+      },
+      "position-bin_03": {
+        "correctness": {
+          "coefficients_checked": 70,
+          "maximum_absolute_error": 1.6653345369377348e-16
+        },
+        "metric_pairs": {
+          "coefficients_checked": 315,
+          "maximum_absolute_error": 2.220446049250313e-16
+        }
+      },
+      "position-bin_04": {
+        "correctness": {
+          "coefficients_checked": 70,
+          "maximum_absolute_error": 2.498001805406602e-16
+        },
+        "metric_pairs": {
+          "coefficients_checked": 315,
+          "maximum_absolute_error": 1.1102230246251565e-16
+        }
+      },
+      "position-bin_05": {
+        "correctness": {
+          "coefficients_checked": 70,
+          "maximum_absolute_error": 1.3877787807814457e-16
+        },
+        "metric_pairs": {
+          "coefficients_checked": 315,
+          "maximum_absolute_error": 2.220446049250313e-16
+        }
+      },
+      "position-bin_06": {
+        "correctness": {
+          "coefficients_checked": 70,
+          "maximum_absolute_error": 2.220446049250313e-16
+        },
+        "metric_pairs": {
+          "coefficients_checked": 315,
+          "maximum_absolute_error": 1.1102230246251565e-16
+        }
+      },
+      "position-bin_07": {
+        "correctness": {
+          "coefficients_checked": 70,
+          "maximum_absolute_error": 2.7755575615628914e-16
+        },
+        "metric_pairs": {
+          "coefficients_checked": 315,
+          "maximum_absolute_error": 1.1102230246251565e-16
+        }
+      },
+      "position-bin_08": {
+        "correctness": {
+          "coefficients_checked": 70,
+          "maximum_absolute_error": 1.3877787807814457e-16
+        },
+        "metric_pairs": {
+          "coefficients_checked": 315,
+          "maximum_absolute_error": 1.1102230246251565e-16
+        }
+      },
+      "position-bin_09": {
+        "correctness": {
+          "coefficients_checked": 70,
+          "maximum_absolute_error": 2.7755575615628914e-16
+        },
+        "metric_pairs": {
+          "coefficients_checked": 315,
+          "maximum_absolute_error": 1.1102230246251565e-16
+        }
+      },
+      "position-overflow": {
+        "correctness": {
+          "coefficients_checked": 70,
+          "maximum_absolute_error": 1.6653345369377348e-16
+        },
+        "metric_pairs": {
+          "coefficients_checked": 315,
+          "maximum_absolute_error": 1.1102230246251565e-16
+        }
+      },
+      "repeated": {
+        "coefficients_checked": 558,
+        "maximum_absolute_error": 1.1102230246251565e-16
+      }
+    }
+  },
+  "gptoss": {
+    "status": "complete",
+    "attempts": 4647,
+    "problems": 1547,
+    "checks": {
+      "continuation": {
+        "correctness": {
+          "coefficients_checked": 91,
+          "maximum_absolute_error": 3.3306690738754696e-16
+        },
+        "metric_pairs": {
+          "coefficients_checked": 546,
+          "maximum_absolute_error": 1.1102230246251565e-16
+        }
+      },
+      "reasoning": {
+        "correctness": {
+          "coefficients_checked": 77,
+          "maximum_absolute_error": 4.440892098500626e-16
+        },
+        "metric_pairs": {
+          "coefficients_checked": 385,
+          "maximum_absolute_error": 1.1102230246251565e-16
+        }
+      },
+      "class-Read": {
+        "correctness": {
+          "coefficients_checked": 33,
+          "maximum_absolute_error": 1.1102230246251565e-16
+        },
+        "metric_pairs": {
+          "coefficients_checked": 165,
+          "maximum_absolute_error": 1.1102230246251565e-16
+        }
+      },
+      "class-Analyze": {
+        "correctness": {
+          "coefficients_checked": 33,
+          "maximum_absolute_error": 1.1102230246251565e-16
+        },
+        "metric_pairs": {
+          "coefficients_checked": 165,
+          "maximum_absolute_error": 1.1102230246251565e-16
+        }
+      },
+      "class-Plan": {
+        "correctness": {
+          "coefficients_checked": 33,
+          "maximum_absolute_error": 1.6653345369377348e-16
+        },
+        "metric_pairs": {
+          "coefficients_checked": 165,
+          "maximum_absolute_error": 1.1102230246251565e-16
+        }
+      },
+      "class-Implement": {
+        "correctness": {
+          "coefficients_checked": 33,
+          "maximum_absolute_error": 2.498001805406602e-16
+        },
+        "metric_pairs": {
+          "coefficients_checked": 165,
+          "maximum_absolute_error": 1.1102230246251565e-16
+        }
+      },
+      "class-Explore": {
+        "correctness": {
+          "coefficients_checked": 33,
+          "maximum_absolute_error": 1.3877787807814457e-16
+        },
+        "metric_pairs": {
+          "coefficients_checked": 165,
+          "maximum_absolute_error": 1.1102230246251565e-16
+        }
+      },
+      "class-Verify": {
+        "correctness": {
+          "coefficients_checked": 33,
+          "maximum_absolute_error": 1.1102230246251565e-16
+        },
+        "metric_pairs": {
+          "coefficients_checked": 165,
+          "maximum_absolute_error": 1.1102230246251565e-16
+        }
+      },
+      "class-Monitor": {
+        "correctness": {
+          "coefficients_checked": 33,
+          "maximum_absolute_error": 2.7755575615628914e-16
+        },
+        "metric_pairs": {
+          "coefficients_checked": 165,
+          "maximum_absolute_error": 1.1102230246251565e-16
+        }
+      },
+      "position-bin_00": {
+        "correctness": {
+          "coefficients_checked": 70,
+          "maximum_absolute_error": 1.6653345369377348e-16
+        },
+        "metric_pairs": {
+          "coefficients_checked": 315,
+          "maximum_absolute_error": 1.1102230246251565e-16
+        }
+      },
+      "position-bin_01": {
+        "correctness": {
+          "coefficients_checked": 70,
+          "maximum_absolute_error": 2.220446049250313e-16
+        },
+        "metric_pairs": {
+          "coefficients_checked": 315,
+          "maximum_absolute_error": 1.1102230246251565e-16
+        }
+      },
+      "position-bin_02": {
+        "correctness": {
+          "coefficients_checked": 70,
+          "maximum_absolute_error": 1.1102230246251565e-16
+        },
+        "metric_pairs": {
+          "coefficients_checked": 315,
+          "maximum_absolute_error": 1.1102230246251565e-16
+        }
+      },
+      "position-bin_03": {
+        "correctness": {
+          "coefficients_checked": 70,
+          "maximum_absolute_error": 2.2898349882893854e-16
+        },
+        "metric_pairs": {
+          "coefficients_checked": 315,
+          "maximum_absolute_error": 1.1102230246251565e-16
+        }
+      },
+      "position-bin_04": {
+        "correctness": {
+          "coefficients_checked": 70,
+          "maximum_absolute_error": 8.326672684688674e-17
+        },
+        "metric_pairs": {
+          "coefficients_checked": 315,
+          "maximum_absolute_error": 1.1102230246251565e-16
+        }
+      },
+      "position-bin_05": {
+        "correctness": {
+          "coefficients_checked": 70,
+          "maximum_absolute_error": 2.220446049250313e-16
+        },
+        "metric_pairs": {
+          "coefficients_checked": 315,
+          "maximum_absolute_error": 1.1102230246251565e-16
+        }
+      },
+      "position-bin_06": {
+        "correctness": {
+          "coefficients_checked": 70,
+          "maximum_absolute_error": 1.942890293094024e-16
+        },
+        "metric_pairs": {
+          "coefficients_checked": 315,
+          "maximum_absolute_error": 1.1102230246251565e-16
+        }
+      },
+      "position-bin_07": {
+        "correctness": {
+          "coefficients_checked": 70,
+          "maximum_absolute_error": 1.6653345369377348e-16
+        },
+        "metric_pairs": {
+          "coefficients_checked": 315,
+          "maximum_absolute_error": 1.1102230246251565e-16
+        }
+      },
+      "position-bin_08": {
+        "correctness": {
+          "coefficients_checked": 70,
+          "maximum_absolute_error": 1.3877787807814457e-16
+        },
+        "metric_pairs": {
+          "coefficients_checked": 315,
+          "maximum_absolute_error": 1.1102230246251565e-16
+        }
+      },
+      "position-bin_09": {
+        "correctness": {
+          "coefficients_checked": 70,
+          "maximum_absolute_error": 2.220446049250313e-16
+        },
+        "metric_pairs": {
+          "coefficients_checked": 315,
+          "maximum_absolute_error": 2.220446049250313e-16
+        }
+      },
+      "position-overflow": {
+        "correctness": {
+          "coefficients_checked": 60,
+          "maximum_absolute_error": 2.7755575615628914e-16
+        },
+        "metric_pairs": {
+          "coefficients_checked": 270,
+          "maximum_absolute_error": 1.1102230246251565e-16
+        }
+      },
+      "repeated": {
+        "coefficients_checked": 378,
+        "maximum_absolute_error": 1.1102230246251565e-16
+      }
+    }
+  }
+}

@@ -1,0 +1,1413 @@
+\begingroup\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}lrrrrrr@{}}
+\caption{Qwen3.5-35B-A3B / Whole continuation: correctness correlations $r$ (finite attempts).}\label{tab:multi-qwen-continuation}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endfirsthead
+\multicolumn{7}{l}{\textit{Continued from previous page}}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endhead
+\bottomrule\endfoot
+Token count & $-0.291$ (500) & $-0.726$ (960) & $-0.727$ (960) & $-0.387$ (675) & $-0.238$ (1,280) & $-0.293$ (272) \\
+Router confidence & $0.199$ (500) & $0.533$ (960) & $0.493$ (960) & $0.243$ (675) & $0.175$ (1,280) & $0.112$ (272) \\
+Leading-expert margin & $0.125$ (500) & $0.562$ (960) & $0.479$ (960) & $0.218$ (675) & $0.295$ (1,280) & $0.075$ (272) \\
+Selected probability mass & $0.131$ (500) & $0.175$ (960) & $0.342$ (960) & $0.188$ (675) & $0.097$ (1,280) & $0.082$ (272) \\
+Selection-boundary margin & $0.054$ (500) & $-0.035$ (960) & $0.222$ (960) & $0.118$ (675) & $-0.010$ (1,280) & $0.039$ (272) \\
+Selected/rest mean gap & $0.131$ (500) & $0.175$ (960) & $0.342$ (960) & $0.188$ (675) & $0.097$ (1,280) & $0.082$ (272) \\
+Hidden-state norm & $0.203$ (500) & $-0.018$ (960) & $0.056$ (960) & $0.085$ (675) & $0.550$ (1,280) & $0.083$ (272) \\
+Hidden-state step distance & $0.157$ (500) & $0.382$ (960) & $0.404$ (960) & $0.111$ (675) & $0.557$ (1,280) & $0.100$ (272) \\
+Hidden/router geometry & $-0.152$ (500) & $-0.058$ (960) & $-0.077$ (960) & $-0.102$ (675) & $-0.229$ (1,280) & $-0.096$ (272) \\
+Top-1 switch rate & $-0.071$ (500) & $-0.297$ (960) & $0.141$ (960) & $0.005$ (675) & $-0.160$ (1,280) & $-0.006$ (272) \\
+Adjacent selected-set overlap & $0.047$ (500) & $0.022$ (960) & $-0.155$ (960) & $0.016$ (675) & $-0.062$ (1,280) & $-0.010$ (272) \\
+Character count & $-0.308$ (500) & $-0.722$ (960) & $-0.676$ (960) & $-0.384$ (675) & $-0.322$ (1,280) & $-0.276$ (272) \\
+Step count & $-0.092$ (500) & $-0.008$ (960) & $-0.105$ (960) & $-0.062$ (675) & $0.033$ (1,280) & $-0.042$ (272) \\
+\end{longtable}\endgroup
+
+\begingroup\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}lrrrrrr@{}}
+\caption{Qwen3.5-35B-A3B / Full reasoning: correctness correlations $r$ (finite attempts).}\label{tab:multi-qwen-reasoning}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endfirsthead
+\multicolumn{7}{l}{\textit{Continued from previous page}}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endhead
+\bottomrule\endfoot
+Token count & $-0.291$ (500) & $-0.743$ (960) & $-0.746$ (960) & $-0.386$ (675) & $-0.261$ (1,280) & $-0.306$ (272) \\
+Router confidence & $0.191$ (500) & $0.527$ (960) & $0.486$ (960) & $0.238$ (675) & $0.164$ (1,280) & $0.124$ (272) \\
+Leading-expert margin & $0.132$ (500) & $0.559$ (960) & $0.473$ (960) & $0.216$ (675) & $0.294$ (1,280) & $0.093$ (272) \\
+Selected probability mass & $0.134$ (500) & $0.231$ (960) & $0.386$ (960) & $0.195$ (675) & $0.080$ (1,280) & $0.108$ (272) \\
+Selection-boundary margin & $0.055$ (500) & $0.033$ (960) & $0.291$ (960) & $0.129$ (675) & $-0.026$ (1,280) & $0.070$ (272) \\
+Selected/rest mean gap & $0.134$ (500) & $0.231$ (960) & $0.386$ (960) & $0.195$ (675) & $0.080$ (1,280) & $0.108$ (272) \\
+Hidden-state norm & $0.219$ (500) & $0.024$ (960) & $0.105$ (960) & $0.097$ (675) & $0.551$ (1,280) & $0.099$ (272) \\
+Hidden-state step distance & $0.178$ (500) & $0.403$ (960) & $0.439$ (960) & $0.130$ (675) & $0.570$ (1,280) & $0.128$ (272) \\
+Hidden/router geometry & $-0.127$ (500) & $-0.013$ (960) & $-0.046$ (960) & $-0.129$ (675) & $-0.187$ (1,280) & $-0.214$ (272) \\
+Top-1 switch rate & $-0.077$ (500) & $-0.308$ (960) & $0.106$ (960) & $-0.014$ (675) & $-0.161$ (1,280) & $-0.020$ (272) \\
+Adjacent selected-set overlap & $0.042$ (500) & $0.082$ (960) & $-0.083$ (960) & $0.040$ (675) & $-0.067$ (1,280) & $0.009$ (272) \\
+\end{longtable}\endgroup
+
+\begingroup\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}lrrrrrr@{}}
+\caption{Qwen3.5-35B-A3B / Class: Read: correctness correlations $r$ (finite attempts).}\label{tab:multi-qwen-class-Read}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endfirsthead
+\multicolumn{7}{l}{\textit{Continued from previous page}}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endhead
+\bottomrule\endfoot
+Token count & $-0.139$ (378) & $-0.279$ (30) & $-0.501$ (26) & $-0.102$ (514) & $-0.166$ (27) & $-0.112$ (270) \\
+Router confidence & $-0.073$ (378) & $0.074$ (30) & $0.332$ (26) & $-0.026$ (514) & $0.071$ (27) & $-0.042$ (270) \\
+Leading-expert margin & $-0.141$ (378) & $0.167$ (30) & $-0.096$ (26) & $0.049$ (514) & $0.083$ (27) & $0.061$ (270) \\
+Selected probability mass & $-0.066$ (378) & $0.128$ (30) & $0.151$ (26) & $-0.031$ (514) & $0.073$ (27) & $-0.119$ (270) \\
+Selection-boundary margin & $-0.072$ (378) & $0.003$ (30) & $0.071$ (26) & $-0.035$ (514) & $0.107$ (27) & $-0.147$ (270) \\
+Selected/rest mean gap & $-0.066$ (378) & $0.128$ (30) & $0.151$ (26) & $-0.031$ (514) & $0.073$ (27) & $-0.119$ (270) \\
+Hidden-state norm & $0.081$ (378) & $-0.089$ (30) & $-0.160$ (26) & $0.058$ (514) & $0.219$ (27) & $-0.037$ (270) \\
+Hidden-state step distance & $-0.026$ (378) & $0.068$ (30) & $-0.098$ (26) & $-0.087$ (514) & $0.057$ (27) & $0.082$ (270) \\
+Hidden/router geometry & $0.072$ (378) & $-0.565$ (30) & $0.116$ (26) & $0.036$ (514) & $0.320$ (27) & $-0.028$ (270) \\
+Top-1 switch rate & $0.064$ (378) & $0.227$ (30) & $0.206$ (26) & $-0.000$ (514) & $0.021$ (27) & $0.081$ (270) \\
+Adjacent selected-set overlap & $-0.008$ (378) & $-0.149$ (30) & $0.185$ (26) & $0.006$ (514) & $-0.086$ (27) & $-0.125$ (270) \\
+\end{longtable}\endgroup
+
+\begingroup\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}lrrrrrr@{}}
+\caption{Qwen3.5-35B-A3B / Class: Analyze: correctness correlations $r$ (finite attempts).}\label{tab:multi-qwen-class-Analyze}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endfirsthead
+\multicolumn{7}{l}{\textit{Continued from previous page}}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endhead
+\bottomrule\endfoot
+Token count & $-0.138$ (424) & $-0.733$ (30) & $-0.411$ (30) & $-0.256$ (619) & $0.220$ (38) & $-0.228$ (271) \\
+Router confidence & $0.023$ (424) & $0.513$ (30) & $0.128$ (30) & $0.139$ (619) & $-0.026$ (38) & $-0.097$ (271) \\
+Leading-expert margin & $-0.034$ (424) & $0.467$ (30) & $0.090$ (30) & $0.082$ (619) & $0.079$ (38) & $-0.025$ (271) \\
+Selected probability mass & $-0.001$ (424) & $0.321$ (30) & $-0.002$ (30) & $0.078$ (619) & $-0.076$ (38) & $-0.140$ (271) \\
+Selection-boundary margin & $-0.013$ (424) & $0.183$ (30) & $-0.027$ (30) & $0.032$ (619) & $-0.006$ (38) & $-0.129$ (271) \\
+Selected/rest mean gap & $-0.001$ (424) & $0.321$ (30) & $-0.002$ (30) & $0.078$ (619) & $-0.076$ (38) & $-0.140$ (271) \\
+Hidden-state norm & $0.060$ (424) & $0.378$ (30) & $-0.038$ (30) & $0.015$ (619) & $0.166$ (38) & $-0.106$ (271) \\
+Hidden-state step distance & $-0.038$ (424) & $0.327$ (30) & $0.066$ (30) & $-0.073$ (619) & $0.022$ (38) & $-0.053$ (271) \\
+Hidden/router geometry & $0.074$ (424) & $-0.256$ (30) & $0.014$ (30) & $-0.043$ (619) & $0.225$ (38) & $-0.007$ (271) \\
+Top-1 switch rate & $0.006$ (424) & $-0.109$ (30) & $0.031$ (30) & $-0.004$ (619) & $-0.095$ (38) & $-0.047$ (271) \\
+Adjacent selected-set overlap & $0.041$ (424) & $0.195$ (30) & $0.044$ (30) & $0.038$ (619) & $0.093$ (38) & $-0.022$ (271) \\
+\end{longtable}\endgroup
+
+\begingroup\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}lrrrrrr@{}}
+\caption{Qwen3.5-35B-A3B / Class: Plan: correctness correlations $r$ (finite attempts).}\label{tab:multi-qwen-class-Plan}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endfirsthead
+\multicolumn{7}{l}{\textit{Continued from previous page}}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endhead
+\bottomrule\endfoot
+Token count & $-0.115$ (407) & $-0.729$ (28) & $-0.715$ (28) & $-0.208$ (507) & $0.067$ (28) & $-0.257$ (271) \\
+Router confidence & $-0.067$ (407) & $0.137$ (28) & $0.185$ (28) & $0.039$ (507) & $-0.198$ (28) & $-0.121$ (271) \\
+Leading-expert margin & $-0.004$ (407) & $0.238$ (28) & $0.045$ (28) & $0.140$ (507) & $-0.151$ (28) & $-0.123$ (271) \\
+Selected probability mass & $-0.107$ (407) & $-0.041$ (28) & $0.161$ (28) & $0.006$ (507) & $-0.159$ (28) & $-0.090$ (271) \\
+Selection-boundary margin & $-0.133$ (407) & $-0.106$ (28) & $0.159$ (28) & $-0.053$ (507) & $-0.140$ (28) & $-0.124$ (271) \\
+Selected/rest mean gap & $-0.107$ (407) & $-0.041$ (28) & $0.161$ (28) & $0.006$ (507) & $-0.159$ (28) & $-0.090$ (271) \\
+Hidden-state norm & $0.066$ (407) & $-0.275$ (28) & $0.112$ (28) & $0.075$ (507) & $-0.027$ (28) & $0.125$ (271) \\
+Hidden-state step distance & $0.112$ (407) & $-0.141$ (28) & $-0.013$ (28) & $0.018$ (507) & $0.108$ (28) & $0.021$ (271) \\
+Hidden/router geometry & $-0.042$ (407) & $0.217$ (28) & $0.027$ (28) & $0.015$ (507) & $0.030$ (28) & $0.019$ (271) \\
+Top-1 switch rate & $0.022$ (407) & $-0.173$ (28) & $-0.177$ (28) & $-0.059$ (507) & $-0.195$ (28) & $0.072$ (271) \\
+Adjacent selected-set overlap & $-0.058$ (407) & $-0.027$ (28) & $0.279$ (28) & $-0.029$ (507) & $-0.201$ (28) & $-0.107$ (271) \\
+\end{longtable}\endgroup
+
+\begingroup\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}lrrrrrr@{}}
+\caption{Qwen3.5-35B-A3B / Class: Implement: correctness correlations $r$ (finite attempts).}\label{tab:multi-qwen-class-Implement}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endfirsthead
+\multicolumn{7}{l}{\textit{Continued from previous page}}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endhead
+\bottomrule\endfoot
+Token count & $-0.134$ (477) & $-0.077$ (30) & $-0.487$ (30) & $-0.270$ (667) & $-0.522$ (39) & $-0.214$ (271) \\
+Router confidence & $0.105$ (477) & $0.311$ (30) & $0.515$ (30) & $0.241$ (667) & $0.505$ (39) & $0.129$ (271) \\
+Leading-expert margin & $-0.017$ (477) & $0.137$ (30) & $0.319$ (30) & $0.111$ (667) & $0.615$ (39) & $0.054$ (271) \\
+Selected probability mass & $0.164$ (477) & $-0.133$ (30) & $0.389$ (30) & $0.159$ (667) & $0.276$ (39) & $0.071$ (271) \\
+Selection-boundary margin & $0.138$ (477) & $-0.126$ (30) & $0.350$ (30) & $0.125$ (667) & $0.141$ (39) & $0.035$ (271) \\
+Selected/rest mean gap & $0.164$ (477) & $-0.133$ (30) & $0.389$ (30) & $0.159$ (667) & $0.276$ (39) & $0.071$ (271) \\
+Hidden-state norm & $0.158$ (477) & $-0.070$ (30) & $0.120$ (30) & $-0.037$ (667) & $0.517$ (39) & $0.010$ (271) \\
+Hidden-state step distance & $0.017$ (477) & $-0.147$ (30) & $0.185$ (30) & $0.153$ (667) & $0.617$ (39) & $0.106$ (271) \\
+Hidden/router geometry & $-0.008$ (477) & $0.189$ (30) & $0.151$ (30) & $0.103$ (667) & $-0.340$ (39) & $-0.102$ (271) \\
+Top-1 switch rate & $-0.074$ (477) & $-0.146$ (30) & $0.279$ (30) & $0.122$ (667) & $-0.254$ (39) & $0.109$ (271) \\
+Adjacent selected-set overlap & $0.114$ (477) & $0.097$ (30) & $-0.023$ (30) & $-0.080$ (667) & $-0.202$ (39) & $-0.078$ (271) \\
+\end{longtable}\endgroup
+
+\begingroup\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}lrrrrrr@{}}
+\caption{Qwen3.5-35B-A3B / Class: Explore: correctness correlations $r$ (finite attempts).}\label{tab:multi-qwen-class-Explore}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endfirsthead
+\multicolumn{7}{l}{\textit{Continued from previous page}}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endhead
+\bottomrule\endfoot
+Token count & $-0.109$ (260) & $-0.646$ (28) & $-0.453$ (27) & $-0.258$ (474) & $0.112$ (22) & $-0.173$ (251) \\
+Router confidence & $-0.031$ (260) & $0.340$ (28) & $0.333$ (27) & $0.120$ (474) & $-0.131$ (22) & $-0.109$ (251) \\
+Leading-expert margin & $-0.056$ (260) & $0.397$ (28) & $0.362$ (27) & $0.174$ (474) & $-0.072$ (22) & $0.018$ (251) \\
+Selected probability mass & $-0.027$ (260) & $0.359$ (28) & $0.339$ (27) & $0.131$ (474) & $-0.116$ (22) & $-0.024$ (251) \\
+Selection-boundary margin & $0.012$ (260) & $0.255$ (28) & $0.235$ (27) & $0.116$ (474) & $0.223$ (22) & $-0.015$ (251) \\
+Selected/rest mean gap & $-0.027$ (260) & $0.359$ (28) & $0.339$ (27) & $0.131$ (474) & $-0.116$ (22) & $-0.024$ (251) \\
+Hidden-state norm & $0.189$ (260) & $0.318$ (28) & $0.335$ (27) & $0.037$ (474) & $0.488$ (22) & $0.050$ (251) \\
+Hidden-state step distance & $-0.030$ (260) & $0.489$ (28) & $0.281$ (27) & $0.072$ (474) & $0.304$ (22) & $-0.078$ (251) \\
+Hidden/router geometry & $-0.095$ (260) & $-0.088$ (28) & $-0.298$ (27) & $-0.036$ (474) & $-0.174$ (22) & $0.061$ (251) \\
+Top-1 switch rate & $-0.018$ (260) & $0.076$ (28) & $0.110$ (27) & $0.078$ (474) & $0.452$ (22) & $-0.102$ (251) \\
+Adjacent selected-set overlap & $0.013$ (260) & $0.196$ (28) & $0.250$ (27) & $0.005$ (474) & $-0.352$ (22) & $0.166$ (251) \\
+\end{longtable}\endgroup
+
+\begingroup\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}lrrrrrr@{}}
+\caption{Qwen3.5-35B-A3B / Class: Verify: correctness correlations $r$ (finite attempts).}\label{tab:multi-qwen-class-Verify}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endfirsthead
+\multicolumn{7}{l}{\textit{Continued from previous page}}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endhead
+\bottomrule\endfoot
+Token count & $-0.076$ (400) & $-0.608$ (29) & $-0.580$ (30) & $-0.213$ (617) & $0.124$ (38) & $-0.181$ (270) \\
+Router confidence & $0.066$ (400) & $0.562$ (29) & $0.515$ (30) & $0.123$ (617) & $-0.081$ (38) & $-0.028$ (270) \\
+Leading-expert margin & $0.067$ (400) & $0.576$ (29) & $0.549$ (30) & $0.058$ (617) & $-0.090$ (38) & $-0.029$ (270) \\
+Selected probability mass & $0.050$ (400) & $0.443$ (29) & $0.446$ (30) & $0.107$ (617) & $0.127$ (38) & $-0.007$ (270) \\
+Selection-boundary margin & $0.044$ (400) & $0.414$ (29) & $0.399$ (30) & $0.077$ (617) & $0.165$ (38) & $-0.054$ (270) \\
+Selected/rest mean gap & $0.050$ (400) & $0.443$ (29) & $0.446$ (30) & $0.107$ (617) & $0.127$ (38) & $-0.007$ (270) \\
+Hidden-state norm & $-0.006$ (400) & $0.074$ (29) & $0.201$ (30) & $0.003$ (617) & $0.391$ (38) & $0.023$ (270) \\
+Hidden-state step distance & $0.089$ (400) & $0.434$ (29) & $0.342$ (30) & $0.060$ (617) & $-0.194$ (38) & $-0.035$ (270) \\
+Hidden/router geometry & $0.116$ (399) & $-0.265$ (29) & $0.033$ (30) & $0.063$ (617) & $-0.070$ (38) & $0.048$ (270) \\
+Top-1 switch rate & $-0.029$ (400) & $-0.100$ (29) & $0.113$ (30) & $0.026$ (617) & $-0.170$ (38) & $0.014$ (270) \\
+Adjacent selected-set overlap & $0.039$ (400) & $0.201$ (29) & $0.280$ (30) & $0.006$ (617) & $0.081$ (38) & $0.042$ (270) \\
+\end{longtable}\endgroup
+
+\begingroup\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}lrrrrrr@{}}
+\caption{Qwen3.5-35B-A3B / Class: Monitor: correctness correlations $r$ (finite attempts).}\label{tab:multi-qwen-class-Monitor}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endfirsthead
+\multicolumn{7}{l}{\textit{Continued from previous page}}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endhead
+\bottomrule\endfoot
+Token count & $-0.230$ (451) & $-0.374$ (30) & $-0.167$ (29) & $-0.141$ (583) & $-0.731$ (29) & $-0.140$ (272) \\
+Router confidence & $0.102$ (451) & $0.361$ (30) & $0.127$ (29) & $0.081$ (583) & $0.222$ (29) & $0.096$ (272) \\
+Leading-expert margin & $0.134$ (451) & $0.302$ (30) & $0.386$ (29) & $0.121$ (583) & $0.168$ (29) & $0.106$ (272) \\
+Selected probability mass & $0.053$ (451) & $0.302$ (30) & $0.106$ (29) & $0.071$ (583) & $0.237$ (29) & $0.106$ (272) \\
+Selection-boundary margin & $-0.031$ (451) & $0.270$ (30) & $0.083$ (29) & $-0.008$ (583) & $0.165$ (29) & $0.064$ (272) \\
+Selected/rest mean gap & $0.053$ (451) & $0.302$ (30) & $0.106$ (29) & $0.071$ (583) & $0.237$ (29) & $0.106$ (272) \\
+Hidden-state norm & $0.113$ (451) & $-0.254$ (30) & $-0.095$ (29) & $-0.005$ (583) & $0.390$ (29) & $0.095$ (272) \\
+Hidden-state step distance & $0.145$ (451) & $0.205$ (30) & $0.399$ (29) & $0.083$ (583) & $0.398$ (29) & $0.092$ (272) \\
+Hidden/router geometry & $-0.115$ (451) & $0.180$ (30) & $-0.193$ (29) & $0.050$ (580) & $-0.289$ (29) & $-0.202$ (272) \\
+Top-1 switch rate & $-0.069$ (451) & $-0.193$ (30) & $-0.249$ (29) & $-0.067$ (583) & $0.020$ (29) & $-0.099$ (272) \\
+Adjacent selected-set overlap & $-0.029$ (451) & $0.183$ (30) & $-0.205$ (29) & $0.001$ (583) & $0.037$ (29) & $0.099$ (272) \\
+\end{longtable}\endgroup
+
+\begingroup\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}lrrrrrr@{}}
+\caption{Qwen3.5-35B-A3B / Position: bin 00: correctness correlations $r$ (finite attempts).}\label{tab:multi-qwen-position-bin_00}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endfirsthead
+\multicolumn{7}{l}{\textit{Continued from previous page}}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endhead
+\bottomrule\endfoot
+Router confidence & $-0.045$ (500) & $-0.159$ (960) & $-0.180$ (960) & $0.053$ (675) & $-0.390$ (1,280) & $-0.029$ (272) \\
+Leading-expert margin & $-0.143$ (500) & $0.173$ (960) & $-0.022$ (960) & $-0.007$ (675) & $-0.300$ (1,280) & $-0.061$ (272) \\
+Selected probability mass & $-0.074$ (500) & $-0.352$ (960) & $-0.178$ (960) & $-0.088$ (675) & $-0.142$ (1,280) & $-0.021$ (272) \\
+Selection-boundary margin & $-0.075$ (500) & $-0.408$ (960) & $-0.170$ (960) & $-0.088$ (675) & $-0.034$ (1,280) & $0.007$ (272) \\
+Selected/rest mean gap & $-0.074$ (500) & $-0.352$ (960) & $-0.178$ (960) & $-0.088$ (675) & $-0.142$ (1,280) & $-0.021$ (272) \\
+Hidden-state norm & $0.006$ (500) & $-0.307$ (960) & $-0.040$ (960) & $-0.057$ (675) & $0.198$ (1,280) & $-0.029$ (272) \\
+Hidden-state step distance & $-0.130$ (500) & $-0.013$ (960) & $-0.026$ (960) & $-0.203$ (675) & $0.086$ (1,280) & $-0.110$ (272) \\
+Hidden/router geometry & $0.074$ (500) & $0.168$ (960) & $0.020$ (960) & $-0.021$ (675) & $0.020$ (1,280) & $0.045$ (272) \\
+Top-1 switch rate & $0.037$ (500) & $-0.093$ (960) & $0.239$ (960) & $-0.005$ (675) & $0.137$ (1,280) & $0.043$ (272) \\
+Adjacent selected-set overlap & $0.007$ (500) & $-0.260$ (960) & $-0.187$ (960) & $-0.044$ (675) & $-0.076$ (1,280) & $-0.091$ (272) \\
+\end{longtable}\endgroup
+
+\begingroup\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}lrrrrrr@{}}
+\caption{Qwen3.5-35B-A3B / Position: bin 01: correctness correlations $r$ (finite attempts).}\label{tab:multi-qwen-position-bin_01}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endfirsthead
+\multicolumn{7}{l}{\textit{Continued from previous page}}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endhead
+\bottomrule\endfoot
+Router confidence & $-0.065$ (442) & $-0.118$ (960) & $-0.069$ (960) & $0.101$ (672) & $-0.449$ (1,275) & $0.042$ (271) \\
+Leading-expert margin & $-0.079$ (442) & $0.178$ (960) & $-0.016$ (960) & $0.049$ (672) & $-0.234$ (1,275) & $-0.086$ (271) \\
+Selected probability mass & $-0.032$ (442) & $-0.328$ (960) & $-0.235$ (960) & $0.045$ (672) & $-0.456$ (1,275) & $0.020$ (271) \\
+Selection-boundary margin & $-0.041$ (442) & $-0.374$ (960) & $-0.219$ (960) & $0.035$ (672) & $-0.450$ (1,275) & $0.035$ (271) \\
+Selected/rest mean gap & $-0.032$ (442) & $-0.328$ (960) & $-0.235$ (960) & $0.045$ (672) & $-0.456$ (1,275) & $0.020$ (271) \\
+Hidden-state norm & $0.061$ (442) & $-0.277$ (960) & $-0.218$ (960) & $-0.050$ (672) & $0.101$ (1,275) & $-0.127$ (271) \\
+Hidden-state step distance & $-0.046$ (442) & $-0.072$ (960) & $-0.034$ (960) & $-0.206$ (672) & $0.182$ (1,275) & $-0.156$ (271) \\
+Hidden/router geometry & $0.120$ (442) & $0.249$ (960) & $0.147$ (960) & $0.131$ (672) & $0.123$ (1,275) & $-0.110$ (271) \\
+Top-1 switch rate & $-0.017$ (442) & $-0.157$ (960) & $0.120$ (960) & $-0.034$ (672) & $0.162$ (1,275) & $0.103$ (271) \\
+Adjacent selected-set overlap & $0.023$ (442) & $-0.175$ (960) & $-0.210$ (960) & $0.038$ (672) & $-0.305$ (1,275) & $-0.065$ (271) \\
+\end{longtable}\endgroup
+
+\begingroup\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}lrrrrrr@{}}
+\caption{Qwen3.5-35B-A3B / Position: bin 02: correctness correlations $r$ (finite attempts).}\label{tab:multi-qwen-position-bin_02}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endfirsthead
+\multicolumn{7}{l}{\textit{Continued from previous page}}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endhead
+\bottomrule\endfoot
+Router confidence & $-0.116$ (351) & $-0.091$ (960) & $0.054$ (954) & $-0.011$ (629) & $-0.439$ (1,182) & $0.040$ (254) \\
+Leading-expert margin & $-0.062$ (351) & $0.187$ (960) & $0.051$ (954) & $0.018$ (629) & $-0.178$ (1,182) & $-0.102$ (254) \\
+Selected probability mass & $-0.111$ (351) & $-0.333$ (960) & $-0.135$ (954) & $-0.049$ (629) & $-0.427$ (1,182) & $0.102$ (254) \\
+Selection-boundary margin & $-0.136$ (351) & $-0.381$ (960) & $-0.126$ (954) & $-0.070$ (629) & $-0.452$ (1,182) & $0.116$ (254) \\
+Selected/rest mean gap & $-0.111$ (351) & $-0.333$ (960) & $-0.135$ (954) & $-0.049$ (629) & $-0.427$ (1,182) & $0.102$ (254) \\
+Hidden-state norm & $0.054$ (351) & $-0.322$ (960) & $-0.187$ (954) & $-0.090$ (629) & $0.132$ (1,182) & $-0.096$ (254) \\
+Hidden-state step distance & $-0.044$ (350) & $-0.135$ (960) & $-0.052$ (954) & $-0.146$ (629) & $0.220$ (1,182) & $-0.124$ (254) \\
+Hidden/router geometry & $0.186$ (350) & $0.274$ (960) & $0.201$ (954) & $0.112$ (629) & $0.088$ (1,182) & $-0.139$ (254) \\
+Top-1 switch rate & $0.025$ (350) & $-0.230$ (960) & $0.097$ (954) & $-0.044$ (629) & $0.110$ (1,182) & $0.063$ (254) \\
+Adjacent selected-set overlap & $-0.057$ (350) & $-0.104$ (960) & $-0.149$ (954) & $-0.007$ (629) & $-0.318$ (1,182) & $0.076$ (254) \\
+\end{longtable}\endgroup
+
+\begingroup\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}lrrrrrr@{}}
+\caption{Qwen3.5-35B-A3B / Position: bin 03: correctness correlations $r$ (finite attempts).}\label{tab:multi-qwen-position-bin_03}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endfirsthead
+\multicolumn{7}{l}{\textit{Continued from previous page}}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endhead
+\bottomrule\endfoot
+Router confidence & $-0.096$ (278) & $0.005$ (957) & $0.090$ (936) & $0.013$ (581) & $-0.399$ (1,024) & $-0.014$ (236) \\
+Leading-expert margin & $-0.091$ (278) & $0.197$ (957) & $0.078$ (936) & $0.050$ (581) & $-0.091$ (1,024) & $-0.025$ (236) \\
+Selected probability mass & $-0.033$ (278) & $-0.253$ (957) & $-0.074$ (936) & $-0.053$ (581) & $-0.371$ (1,024) & $0.005$ (236) \\
+Selection-boundary margin & $-0.035$ (278) & $-0.288$ (957) & $-0.080$ (936) & $-0.079$ (581) & $-0.413$ (1,024) & $-0.004$ (236) \\
+Selected/rest mean gap & $-0.033$ (278) & $-0.253$ (957) & $-0.074$ (936) & $-0.053$ (581) & $-0.371$ (1,024) & $0.005$ (236) \\
+Hidden-state norm & $0.173$ (278) & $-0.308$ (957) & $-0.238$ (936) & $-0.130$ (581) & $0.130$ (1,024) & $-0.087$ (236) \\
+Hidden-state step distance & $0.019$ (278) & $-0.142$ (957) & $-0.033$ (936) & $-0.086$ (581) & $0.322$ (1,023) & $-0.083$ (236) \\
+Hidden/router geometry & $0.077$ (278) & $0.243$ (957) & $0.204$ (936) & $0.104$ (581) & $0.105$ (1,023) & $-0.054$ (236) \\
+Top-1 switch rate & $0.078$ (278) & $-0.202$ (957) & $0.084$ (936) & $0.010$ (581) & $0.093$ (1,023) & $0.013$ (236) \\
+Adjacent selected-set overlap & $-0.044$ (278) & $-0.041$ (957) & $-0.115$ (936) & $-0.053$ (581) & $-0.322$ (1,023) & $-0.002$ (236) \\
+\end{longtable}\endgroup
+
+\begingroup\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}lrrrrrr@{}}
+\caption{Qwen3.5-35B-A3B / Position: bin 04: correctness correlations $r$ (finite attempts).}\label{tab:multi-qwen-position-bin_04}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endfirsthead
+\multicolumn{7}{l}{\textit{Continued from previous page}}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endhead
+\bottomrule\endfoot
+Router confidence & $0.058$ (216) & $0.092$ (922) & $0.136$ (904) & $0.009$ (504) & $-0.139$ (882) & $-0.062$ (214) \\
+Leading-expert margin & $0.022$ (216) & $0.216$ (922) & $0.099$ (904) & $0.037$ (504) & $0.127$ (882) & $-0.056$ (214) \\
+Selected probability mass & $0.164$ (216) & $-0.163$ (922) & $0.035$ (904) & $-0.038$ (504) & $-0.116$ (882) & $-0.038$ (214) \\
+Selection-boundary margin & $0.166$ (216) & $-0.213$ (922) & $0.031$ (904) & $-0.057$ (504) & $-0.180$ (882) & $-0.029$ (214) \\
+Selected/rest mean gap & $0.164$ (216) & $-0.163$ (922) & $0.035$ (904) & $-0.038$ (504) & $-0.116$ (882) & $-0.038$ (214) \\
+Hidden-state norm & $0.241$ (216) & $-0.298$ (922) & $-0.182$ (904) & $-0.094$ (504) & $0.337$ (882) & $-0.115$ (214) \\
+Hidden-state step distance & $0.112$ (216) & $-0.165$ (922) & $-0.005$ (904) & $-0.051$ (504) & $0.476$ (882) & $-0.218$ (214) \\
+Hidden/router geometry & $-0.033$ (216) & $0.232$ (922) & $0.172$ (904) & $0.140$ (504) & $-0.116$ (882) & $0.006$ (214) \\
+Top-1 switch rate & $0.036$ (216) & $-0.270$ (922) & $0.122$ (904) & $0.042$ (504) & $0.041$ (882) & $0.037$ (214) \\
+Adjacent selected-set overlap & $0.054$ (216) & $0.025$ (922) & $-0.070$ (904) & $-0.095$ (504) & $-0.224$ (882) & $-0.028$ (214) \\
+\end{longtable}\endgroup
+
+\begingroup\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}lrrrrrr@{}}
+\caption{Qwen3.5-35B-A3B / Position: bin 05: correctness correlations $r$ (finite attempts).}\label{tab:multi-qwen-position-bin_05}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endfirsthead
+\multicolumn{7}{l}{\textit{Continued from previous page}}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endhead
+\bottomrule\endfoot
+Router confidence & $0.128$ (161) & $0.111$ (862) & $0.150$ (855) & $0.110$ (423) & $0.258$ (772) & $-0.053$ (175) \\
+Leading-expert margin & $0.144$ (161) & $0.268$ (862) & $0.093$ (855) & $0.132$ (423) & $0.470$ (772) & $-0.091$ (175) \\
+Selected probability mass & $0.176$ (161) & $-0.150$ (862) & $0.034$ (855) & $0.057$ (423) & $0.269$ (772) & $0.035$ (175) \\
+Selection-boundary margin & $0.166$ (161) & $-0.186$ (862) & $0.025$ (855) & $0.026$ (423) & $0.192$ (772) & $-0.001$ (175) \\
+Selected/rest mean gap & $0.176$ (161) & $-0.150$ (862) & $0.034$ (855) & $0.057$ (423) & $0.269$ (772) & $0.035$ (175) \\
+Hidden-state norm & $0.309$ (161) & $-0.336$ (862) & $-0.153$ (855) & $-0.043$ (423) & $0.566$ (772) & $0.048$ (175) \\
+Hidden-state step distance & $0.222$ (161) & $-0.149$ (862) & $0.019$ (855) & $0.004$ (423) & $0.659$ (772) & $-0.081$ (175) \\
+Hidden/router geometry & $-0.076$ (161) & $0.279$ (862) & $0.110$ (855) & $0.025$ (423) & $-0.262$ (772) & $-0.006$ (175) \\
+Top-1 switch rate & $-0.017$ (161) & $-0.268$ (862) & $0.071$ (855) & $-0.000$ (423) & $-0.164$ (772) & $-0.089$ (175) \\
+Adjacent selected-set overlap & $0.058$ (161) & $0.024$ (862) & $-0.061$ (855) & $-0.043$ (423) & $-0.035$ (772) & $0.119$ (175) \\
+\end{longtable}\endgroup
+
+\begingroup\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}lrrrrrr@{}}
+\caption{Qwen3.5-35B-A3B / Position: bin 06: correctness correlations $r$ (finite attempts).}\label{tab:multi-qwen-position-bin_06}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endfirsthead
+\multicolumn{7}{l}{\textit{Continued from previous page}}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endhead
+\bottomrule\endfoot
+Router confidence & $0.262$ (123) & $0.177$ (803) & $0.172$ (810) & $0.134$ (389) & $0.505$ (659) & $0.008$ (135) \\
+Leading-expert margin & $0.284$ (123) & $0.296$ (803) & $0.157$ (810) & $0.162$ (389) & $0.614$ (659) & $-0.034$ (135) \\
+Selected probability mass & $0.278$ (123) & $-0.103$ (803) & $0.070$ (810) & $0.078$ (389) & $0.464$ (659) & $0.049$ (135) \\
+Selection-boundary margin & $0.239$ (123) & $-0.143$ (803) & $0.047$ (810) & $0.043$ (389) & $0.362$ (659) & $0.033$ (135) \\
+Selected/rest mean gap & $0.278$ (123) & $-0.103$ (803) & $0.070$ (810) & $0.078$ (389) & $0.464$ (659) & $0.049$ (135) \\
+Hidden-state norm & $0.315$ (123) & $-0.324$ (803) & $-0.142$ (810) & $-0.040$ (389) & $0.684$ (659) & $-0.002$ (135) \\
+Hidden-state step distance & $0.268$ (123) & $-0.189$ (803) & $0.059$ (810) & $0.034$ (389) & $0.716$ (659) & $-0.083$ (135) \\
+Hidden/router geometry & $-0.229$ (123) & $0.244$ (803) & $0.140$ (810) & $0.019$ (389) & $-0.320$ (659) & $0.066$ (135) \\
+Top-1 switch rate & $-0.180$ (123) & $-0.267$ (803) & $0.063$ (810) & $0.013$ (389) & $-0.299$ (659) & $-0.004$ (135) \\
+Adjacent selected-set overlap & $0.058$ (123) & $0.047$ (803) & $-0.057$ (810) & $-0.046$ (389) & $0.061$ (659) & $0.086$ (135) \\
+\end{longtable}\endgroup
+
+\begingroup\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}lrrrrrr@{}}
+\caption{Qwen3.5-35B-A3B / Position: bin 07: correctness correlations $r$ (finite attempts).}\label{tab:multi-qwen-position-bin_07}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endfirsthead
+\multicolumn{7}{l}{\textit{Continued from previous page}}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endhead
+\bottomrule\endfoot
+Router confidence & $0.312$ (93) & $0.170$ (758) & $0.160$ (756) & $0.137$ (348) & $0.549$ (560) & $0.017$ (108) \\
+Leading-expert margin & $0.391$ (93) & $0.282$ (758) & $0.122$ (756) & $0.184$ (348) & $0.677$ (560) & $0.010$ (108) \\
+Selected probability mass & $0.313$ (93) & $-0.048$ (758) & $0.077$ (756) & $0.091$ (348) & $0.534$ (560) & $0.080$ (108) \\
+Selection-boundary margin & $0.262$ (93) & $-0.120$ (758) & $0.054$ (756) & $0.073$ (348) & $0.457$ (560) & $0.063$ (108) \\
+Selected/rest mean gap & $0.313$ (93) & $-0.048$ (758) & $0.077$ (756) & $0.091$ (348) & $0.534$ (560) & $0.080$ (108) \\
+Hidden-state norm & $0.375$ (93) & $-0.300$ (758) & $-0.140$ (756) & $-0.013$ (348) & $0.754$ (560) & $0.109$ (108) \\
+Hidden-state step distance & $0.394$ (93) & $-0.161$ (758) & $0.042$ (756) & $0.093$ (348) & $0.797$ (559) & $-0.019$ (108) \\
+Hidden/router geometry & $-0.190$ (93) & $0.203$ (758) & $0.089$ (756) & $0.030$ (347) & $-0.384$ (559) & $-0.051$ (108) \\
+Top-1 switch rate & $-0.193$ (93) & $-0.254$ (758) & $0.089$ (756) & $0.060$ (348) & $-0.361$ (559) & $-0.030$ (108) \\
+Adjacent selected-set overlap & $-0.010$ (93) & $0.047$ (758) & $-0.043$ (756) & $-0.103$ (348) & $0.116$ (559) & $0.138$ (108) \\
+\end{longtable}\endgroup
+
+\begingroup\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}lrrrrrr@{}}
+\caption{Qwen3.5-35B-A3B / Position: bin 08: correctness correlations $r$ (finite attempts).}\label{tab:multi-qwen-position-bin_08}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endfirsthead
+\multicolumn{7}{l}{\textit{Continued from previous page}}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endhead
+\bottomrule\endfoot
+Router confidence & $0.332$ (77) & $0.244$ (669) & $0.174$ (722) & $0.064$ (321) & $0.706$ (435) & $0.112$ (84) \\
+Leading-expert margin & $0.322$ (77) & $0.320$ (669) & $0.146$ (722) & $0.112$ (321) & $0.733$ (435) & $0.075$ (84) \\
+Selected probability mass & $0.380$ (77) & $0.022$ (669) & $0.114$ (722) & $0.012$ (321) & $0.634$ (435) & $0.170$ (84) \\
+Selection-boundary margin & $0.377$ (77) & $-0.039$ (669) & $0.100$ (722) & $-0.013$ (321) & $0.534$ (435) & $0.187$ (84) \\
+Selected/rest mean gap & $0.380$ (77) & $0.022$ (669) & $0.114$ (722) & $0.012$ (321) & $0.634$ (435) & $0.170$ (84) \\
+Hidden-state norm & $0.432$ (77) & $-0.175$ (669) & $-0.094$ (722) & $-0.007$ (321) & $0.776$ (435) & $0.137$ (84) \\
+Hidden-state step distance & $0.369$ (77) & $-0.167$ (669) & $0.082$ (722) & $0.036$ (321) & $0.826$ (435) & $0.023$ (84) \\
+Hidden/router geometry & $-0.102$ (77) & $0.204$ (669) & $0.112$ (722) & $0.039$ (321) & $-0.384$ (435) & $-0.137$ (84) \\
+Top-1 switch rate & $-0.248$ (77) & $-0.297$ (669) & $0.115$ (722) & $-0.088$ (321) & $-0.386$ (435) & $-0.013$ (84) \\
+Adjacent selected-set overlap & $0.201$ (77) & $0.138$ (669) & $-0.071$ (722) & $-0.012$ (321) & $0.117$ (435) & $0.226$ (84) \\
+\end{longtable}\endgroup
+
+\begingroup\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}lrrrrrr@{}}
+\caption{Qwen3.5-35B-A3B / Position: bin 09: correctness correlations $r$ (finite attempts).}\label{tab:multi-qwen-position-bin_09}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endfirsthead
+\multicolumn{7}{l}{\textit{Continued from previous page}}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endhead
+\bottomrule\endfoot
+Router confidence & $0.350$ (70) & $0.204$ (600) & $0.175$ (691) & $0.092$ (295) & $0.734$ (304) & $0.142$ (68) \\
+Leading-expert margin & $0.355$ (70) & $0.335$ (600) & $0.162$ (691) & $0.108$ (295) & $0.747$ (304) & $0.109$ (68) \\
+Selected probability mass & $0.341$ (70) & $0.015$ (600) & $0.126$ (691) & $0.062$ (295) & $0.676$ (304) & $0.137$ (68) \\
+Selection-boundary margin & $0.318$ (70) & $-0.041$ (600) & $0.096$ (691) & $0.054$ (295) & $0.592$ (304) & $0.154$ (68) \\
+Selected/rest mean gap & $0.341$ (70) & $0.015$ (600) & $0.126$ (691) & $0.062$ (295) & $0.676$ (304) & $0.137$ (68) \\
+Hidden-state norm & $0.407$ (70) & $-0.155$ (600) & $-0.094$ (691) & $0.053$ (295) & $0.801$ (304) & $0.113$ (68) \\
+Hidden-state step distance & $0.390$ (70) & $-0.084$ (600) & $0.078$ (691) & $0.008$ (295) & $0.841$ (304) & $0.053$ (68) \\
+Hidden/router geometry & $-0.245$ (70) & $0.221$ (600) & $0.103$ (691) & $0.020$ (295) & $-0.469$ (304) & $0.003$ (68) \\
+Top-1 switch rate & $-0.376$ (70) & $-0.293$ (600) & $0.056$ (691) & $-0.105$ (295) & $-0.472$ (304) & $-0.053$ (68) \\
+Adjacent selected-set overlap & $0.171$ (70) & $0.121$ (600) & $-0.012$ (691) & $0.065$ (295) & $0.157$ (304) & $0.114$ (68) \\
+\end{longtable}\endgroup
+
+\begingroup\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}lrrrrrr@{}}
+\caption{Qwen3.5-35B-A3B / Position: overflow: correctness correlations $r$ (finite attempts).}\label{tab:multi-qwen-position-overflow}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endfirsthead
+\multicolumn{7}{l}{\textit{Continued from previous page}}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endhead
+\bottomrule\endfoot
+Router confidence & $0.509$ (59) & $0.497$ (541) & $0.397$ (643) & $0.212$ (276) & $0.857$ (212) & $0.160$ (58) \\
+Leading-expert margin & $0.475$ (59) & $0.543$ (541) & $0.364$ (643) & $0.232$ (276) & $0.867$ (212) & $0.185$ (58) \\
+Selected probability mass & $0.506$ (59) & $0.383$ (541) & $0.388$ (643) & $0.193$ (276) & $0.790$ (212) & $0.161$ (58) \\
+Selection-boundary margin & $0.482$ (59) & $0.308$ (541) & $0.371$ (643) & $0.174$ (276) & $0.709$ (212) & $0.175$ (58) \\
+Selected/rest mean gap & $0.506$ (59) & $0.383$ (541) & $0.388$ (643) & $0.193$ (276) & $0.790$ (212) & $0.161$ (58) \\
+Hidden-state norm & $0.498$ (59) & $0.193$ (541) & $0.156$ (643) & $0.120$ (276) & $0.916$ (212) & $0.155$ (58) \\
+Hidden-state step distance & $0.489$ (59) & $0.283$ (541) & $0.323$ (643) & $0.115$ (276) & $0.905$ (212) & $0.119$ (58) \\
+Hidden/router geometry & $-0.428$ (59) & $0.012$ (541) & $0.061$ (643) & $-0.037$ (276) & $-0.560$ (212) & $-0.140$ (58) \\
+Top-1 switch rate & $-0.388$ (59) & $-0.357$ (541) & $0.089$ (643) & $-0.099$ (276) & $-0.733$ (212) & $-0.204$ (58) \\
+Adjacent selected-set overlap & $0.442$ (59) & $0.267$ (541) & $0.038$ (643) & $0.133$ (276) & $0.592$ (212) & $0.181$ (58) \\
+\end{longtable}\endgroup
+
+\begingroup\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}lrrrrrr@{}}
+\caption{Gemma-4-26B-A4B / Whole continuation: correctness correlations $r$ (finite attempts).}\label{tab:multi-gemma-continuation}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endfirsthead
+\multicolumn{7}{l}{\textit{Continued from previous page}}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endhead
+\bottomrule\endfoot
+Token count & $-0.155$ (500) & $-0.672$ (960) & $-0.709$ (960) & $-0.240$ (675) & $0.080$ (1,280) & $-0.205$ (272) \\
+Router confidence & $0.080$ (500) & $0.392$ (960) & $0.313$ (960) & $0.027$ (675) & $-0.256$ (1,280) & $-0.037$ (272) \\
+Leading-expert margin & $0.108$ (500) & $0.297$ (960) & $0.456$ (960) & $0.036$ (675) & $-0.243$ (1,280) & $0.010$ (272) \\
+Selected probability mass & $0.072$ (500) & $0.375$ (960) & $0.259$ (960) & $0.009$ (675) & $-0.217$ (1,280) & $-0.061$ (272) \\
+Selection-boundary margin & $-0.027$ (500) & $0.261$ (960) & $0.068$ (960) & $-0.043$ (675) & $-0.128$ (1,280) & $-0.028$ (272) \\
+Selected/rest mean gap & $0.072$ (500) & $0.375$ (960) & $0.259$ (960) & $0.009$ (675) & $-0.217$ (1,280) & $-0.061$ (272) \\
+Hidden-state norm & $0.036$ (500) & $0.161$ (960) & $0.007$ (960) & $-0.005$ (675) & $0.104$ (1,280) & $0.003$ (272) \\
+Hidden-state step distance & $0.010$ (500) & $0.272$ (960) & $0.440$ (960) & $0.001$ (675) & $-0.141$ (1,280) & $0.059$ (272) \\
+Hidden/router geometry & $-0.068$ (500) & $0.020$ (960) & $0.000$ (960) & $-0.019$ (675) & $-0.043$ (1,280) & $-0.076$ (272) \\
+Top-1 switch rate & $0.052$ (500) & $-0.133$ (960) & $0.222$ (960) & $0.048$ (675) & $-0.116$ (1,280) & $0.100$ (272) \\
+Adjacent selected-set overlap & $-0.021$ (500) & $0.129$ (960) & $-0.244$ (960) & $-0.049$ (675) & $0.038$ (1,280) & $-0.117$ (272) \\
+Character count & $-0.148$ (500) & $-0.632$ (960) & $-0.702$ (960) & $-0.227$ (675) & $0.082$ (1,280) & $-0.223$ (272) \\
+Step count & $-0.072$ (500) & $-0.268$ (960) & $-0.380$ (960) & $-0.094$ (675) & $-0.099$ (1,280) & $-0.030$ (272) \\
+\end{longtable}\endgroup
+
+\begingroup\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}lrrrrrr@{}}
+\caption{Gemma-4-26B-A4B / Full reasoning: correctness correlations $r$ (finite attempts).}\label{tab:multi-gemma-reasoning}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endfirsthead
+\multicolumn{7}{l}{\textit{Continued from previous page}}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endhead
+\bottomrule\endfoot
+Token count & $-0.155$ (500) & $-0.681$ (960) & $-0.722$ (960) & $-0.242$ (675) & $0.071$ (1,280) & $-0.200$ (272) \\
+Router confidence & $0.053$ (500) & $0.368$ (960) & $0.281$ (960) & $0.001$ (675) & $-0.215$ (1,280) & $-0.077$ (272) \\
+Leading-expert margin & $0.083$ (500) & $0.248$ (960) & $0.429$ (960) & $-0.012$ (675) & $-0.202$ (1,280) & $-0.029$ (272) \\
+Selected probability mass & $0.048$ (500) & $0.355$ (960) & $0.230$ (960) & $-0.012$ (675) & $-0.181$ (1,280) & $-0.094$ (272) \\
+Selection-boundary margin & $-0.031$ (500) & $0.255$ (960) & $0.063$ (960) & $-0.040$ (675) & $-0.125$ (1,280) & $-0.030$ (272) \\
+Selected/rest mean gap & $0.048$ (500) & $0.355$ (960) & $0.230$ (960) & $-0.012$ (675) & $-0.181$ (1,280) & $-0.094$ (272) \\
+Hidden-state norm & $0.051$ (500) & $0.187$ (960) & $0.051$ (960) & $-0.000$ (675) & $0.060$ (1,280) & $0.004$ (272) \\
+Hidden-state step distance & $-0.010$ (500) & $0.250$ (960) & $0.420$ (960) & $-0.004$ (675) & $-0.106$ (1,280) & $0.059$ (272) \\
+Hidden/router geometry & $-0.006$ (500) & $-0.031$ (960) & $0.012$ (960) & $-0.000$ (675) & $-0.063$ (1,280) & $0.069$ (272) \\
+Top-1 switch rate & $0.063$ (500) & $-0.130$ (960) & $0.223$ (960) & $0.040$ (675) & $-0.140$ (1,280) & $0.096$ (272) \\
+Adjacent selected-set overlap & $-0.012$ (500) & $0.138$ (960) & $-0.227$ (960) & $-0.039$ (675) & $0.035$ (1,280) & $-0.115$ (272) \\
+\end{longtable}\endgroup
+
+\begingroup\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}lrrrrrr@{}}
+\caption{Gemma-4-26B-A4B / Class: Read: correctness correlations $r$ (finite attempts).}\label{tab:multi-gemma-class-Read}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endfirsthead
+\multicolumn{7}{l}{\textit{Continued from previous page}}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endhead
+\bottomrule\endfoot
+Token count & $-0.101$ (393) & $-0.025$ (28) & $-0.054$ (29) & $-0.023$ (528) & --- & $-0.089$ (271) \\
+Router confidence & $-0.050$ (393) & $0.016$ (28) & $0.171$ (29) & $-0.021$ (528) & --- & $-0.076$ (271) \\
+Leading-expert margin & $-0.068$ (393) & $0.232$ (28) & $0.369$ (29) & $0.012$ (528) & --- & $-0.097$ (271) \\
+Selected probability mass & $-0.049$ (393) & $-0.037$ (28) & $0.078$ (29) & $-0.026$ (528) & --- & $-0.081$ (271) \\
+Selection-boundary margin & $-0.011$ (393) & $-0.258$ (28) & $-0.142$ (29) & $-0.048$ (528) & --- & $0.030$ (271) \\
+Selected/rest mean gap & $-0.049$ (393) & $-0.037$ (28) & $0.078$ (29) & $-0.026$ (528) & --- & $-0.081$ (271) \\
+Hidden-state norm & $0.021$ (393) & $-0.258$ (28) & $-0.396$ (29) & $0.020$ (528) & --- & $0.005$ (271) \\
+Hidden-state step distance & $-0.035$ (393) & $-0.139$ (28) & $0.053$ (29) & $-0.019$ (528) & --- & $-0.015$ (271) \\
+Hidden/router geometry & $-0.035$ (393) & $0.139$ (28) & $0.052$ (29) & $-0.017$ (528) & --- & $-0.026$ (271) \\
+Top-1 switch rate & $0.026$ (393) & $-0.366$ (28) & $-0.298$ (29) & $-0.013$ (528) & --- & $0.137$ (271) \\
+Adjacent selected-set overlap & $0.028$ (393) & $0.111$ (28) & $-0.031$ (29) & $0.045$ (528) & --- & $-0.035$ (271) \\
+\end{longtable}\endgroup
+
+\begingroup\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}lrrrrrr@{}}
+\caption{Gemma-4-26B-A4B / Class: Analyze: correctness correlations $r$ (finite attempts).}\label{tab:multi-gemma-class-Analyze}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endfirsthead
+\multicolumn{7}{l}{\textit{Continued from previous page}}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endhead
+\bottomrule\endfoot
+Token count & $-0.132$ (424) & $-0.688$ (30) & $-0.321$ (30) & $-0.139$ (615) & $0.126$ (40) & $-0.152$ (269) \\
+Router confidence & $0.011$ (424) & $0.292$ (30) & $0.318$ (30) & $-0.018$ (615) & $-0.117$ (40) & $-0.060$ (269) \\
+Leading-expert margin & $0.033$ (424) & $0.332$ (30) & $0.299$ (30) & $-0.021$ (615) & $-0.270$ (40) & $-0.034$ (269) \\
+Selected probability mass & $0.001$ (424) & $0.276$ (30) & $0.273$ (30) & $-0.033$ (615) & $-0.060$ (40) & $-0.087$ (269) \\
+Selection-boundary margin & $-0.040$ (424) & $0.216$ (30) & $0.091$ (30) & $-0.029$ (615) & $-0.005$ (40) & $-0.102$ (269) \\
+Selected/rest mean gap & $0.001$ (424) & $0.276$ (30) & $0.273$ (30) & $-0.033$ (615) & $-0.060$ (40) & $-0.087$ (269) \\
+Hidden-state norm & $-0.022$ (424) & $0.098$ (30) & $-0.106$ (30) & $-0.013$ (615) & $0.318$ (40) & $-0.075$ (269) \\
+Hidden-state step distance & $0.061$ (424) & $-0.005$ (30) & $0.111$ (30) & $-0.006$ (615) & $-0.168$ (40) & $0.004$ (269) \\
+Hidden/router geometry & $-0.013$ (424) & $-0.037$ (30) & $0.004$ (30) & $-0.065$ (615) & $0.083$ (40) & $-0.010$ (269) \\
+Top-1 switch rate & $0.068$ (424) & $-0.182$ (30) & $0.014$ (30) & $0.035$ (615) & $-0.269$ (40) & $0.054$ (269) \\
+Adjacent selected-set overlap & $-0.085$ (424) & $0.177$ (30) & $-0.040$ (30) & $-0.055$ (615) & $-0.057$ (40) & $-0.088$ (269) \\
+\end{longtable}\endgroup
+
+\begingroup\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}lrrrrrr@{}}
+\caption{Gemma-4-26B-A4B / Class: Plan: correctness correlations $r$ (finite attempts).}\label{tab:multi-gemma-class-Plan}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endfirsthead
+\multicolumn{7}{l}{\textit{Continued from previous page}}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endhead
+\bottomrule\endfoot
+Token count & $-0.109$ (294) & $-0.650$ (27) & $-0.459$ (28) & $-0.092$ (397) & $0.152$ (20) & $-0.071$ (244) \\
+Router confidence & $0.090$ (294) & $0.197$ (27) & $0.413$ (28) & $0.050$ (397) & $-0.170$ (20) & $-0.129$ (244) \\
+Leading-expert margin & $0.075$ (294) & $0.105$ (27) & $0.499$ (28) & $0.061$ (397) & $-0.241$ (20) & $-0.118$ (244) \\
+Selected probability mass & $0.080$ (294) & $0.120$ (27) & $0.362$ (28) & $0.031$ (397) & $-0.158$ (20) & $-0.124$ (244) \\
+Selection-boundary margin & $0.011$ (294) & $0.032$ (27) & $0.000$ (28) & $-0.019$ (397) & $-0.215$ (20) & $0.058$ (244) \\
+Selected/rest mean gap & $0.080$ (294) & $0.120$ (27) & $0.362$ (28) & $0.031$ (397) & $-0.158$ (20) & $-0.124$ (244) \\
+Hidden-state norm & $-0.028$ (294) & $-0.220$ (27) & $0.015$ (28) & $0.057$ (397) & $0.386$ (20) & $-0.003$ (244) \\
+Hidden-state step distance & $0.049$ (294) & $0.058$ (27) & $-0.010$ (28) & $-0.008$ (397) & $-0.265$ (20) & $-0.114$ (244) \\
+Hidden/router geometry & $-0.018$ (294) & $0.314$ (27) & $0.099$ (28) & $-0.108$ (397) & $0.206$ (20) & $0.141$ (244) \\
+Top-1 switch rate & $0.068$ (294) & $-0.125$ (27) & $-0.070$ (28) & $0.078$ (397) & $0.077$ (20) & $-0.034$ (244) \\
+Adjacent selected-set overlap & $0.022$ (294) & $0.003$ (27) & $-0.081$ (28) & $0.038$ (397) & $0.098$ (20) & $0.034$ (244) \\
+\end{longtable}\endgroup
+
+\begingroup\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}lrrrrrr@{}}
+\caption{Gemma-4-26B-A4B / Class: Implement: correctness correlations $r$ (finite attempts).}\label{tab:multi-gemma-class-Implement}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endfirsthead
+\multicolumn{7}{l}{\textit{Continued from previous page}}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endhead
+\bottomrule\endfoot
+Token count & $-0.101$ (478) & $-0.438$ (30) & $-0.489$ (30) & $-0.177$ (656) & $0.192$ (39) & $-0.146$ (271) \\
+Router confidence & $0.023$ (478) & $0.345$ (30) & $0.244$ (30) & $-0.009$ (656) & $-0.180$ (39) & $-0.051$ (271) \\
+Leading-expert margin & $0.059$ (478) & $0.201$ (30) & $0.445$ (30) & $-0.008$ (656) & $-0.179$ (39) & $0.018$ (271) \\
+Selected probability mass & $0.004$ (478) & $0.295$ (30) & $0.149$ (30) & $-0.022$ (656) & $-0.177$ (39) & $-0.066$ (271) \\
+Selection-boundary margin & $-0.050$ (478) & $0.187$ (30) & $0.012$ (30) & $-0.023$ (656) & $-0.272$ (39) & $0.026$ (271) \\
+Selected/rest mean gap & $0.004$ (478) & $0.295$ (30) & $0.149$ (30) & $-0.022$ (656) & $-0.177$ (39) & $-0.066$ (271) \\
+Hidden-state norm & $-0.048$ (478) & $-0.053$ (30) & $-0.204$ (30) & $-0.050$ (656) & $-0.324$ (39) & $0.022$ (271) \\
+Hidden-state step distance & $0.019$ (478) & $0.061$ (30) & $0.424$ (30) & $0.003$ (656) & $-0.457$ (39) & $0.039$ (271) \\
+Hidden/router geometry & $0.017$ (478) & $0.045$ (30) & $-0.315$ (30) & $0.023$ (656) & $0.324$ (39) & $-0.096$ (271) \\
+Top-1 switch rate & $0.086$ (478) & $-0.137$ (30) & $0.161$ (30) & $0.020$ (656) & $-0.496$ (39) & $0.107$ (271) \\
+Adjacent selected-set overlap & $-0.039$ (478) & $0.086$ (30) & $-0.240$ (30) & $-0.041$ (656) & $0.199$ (39) & $-0.119$ (271) \\
+\end{longtable}\endgroup
+
+\begingroup\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}lrrrrrr@{}}
+\caption{Gemma-4-26B-A4B / Class: Explore: correctness correlations $r$ (finite attempts).}\label{tab:multi-gemma-class-Explore}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endfirsthead
+\multicolumn{7}{l}{\textit{Continued from previous page}}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endhead
+\bottomrule\endfoot
+Token count & $-0.030$ (202) & $-0.187$ (26) & $-0.426$ (25) & $-0.258$ (387) & --- & $-0.068$ (235) \\
+Router confidence & $-0.131$ (202) & $-0.029$ (26) & $0.273$ (25) & $-0.088$ (387) & --- & $-0.141$ (235) \\
+Leading-expert margin & $-0.008$ (202) & $0.017$ (26) & $0.207$ (25) & $-0.014$ (387) & --- & $-0.057$ (235) \\
+Selected probability mass & $-0.148$ (202) & $-0.076$ (26) & $0.247$ (25) & $-0.081$ (387) & --- & $-0.151$ (235) \\
+Selection-boundary margin & $-0.073$ (202) & $-0.092$ (26) & $0.025$ (25) & $-0.068$ (387) & --- & $-0.112$ (235) \\
+Selected/rest mean gap & $-0.148$ (202) & $-0.076$ (26) & $0.247$ (25) & $-0.081$ (387) & --- & $-0.151$ (235) \\
+Hidden-state norm & $-0.006$ (202) & $-0.200$ (26) & $0.294$ (25) & $0.073$ (387) & --- & $0.002$ (235) \\
+Hidden-state step distance & $0.017$ (202) & $0.041$ (26) & $-0.068$ (25) & $-0.166$ (387) & --- & $-0.007$ (235) \\
+Hidden/router geometry & $0.033$ (202) & $-0.048$ (26) & $0.055$ (25) & $0.117$ (387) & --- & $-0.055$ (235) \\
+Top-1 switch rate & $0.033$ (202) & $-0.059$ (26) & $0.138$ (25) & $-0.037$ (387) & --- & $0.006$ (235) \\
+Adjacent selected-set overlap & $-0.039$ (202) & $-0.310$ (26) & $-0.023$ (25) & $0.040$ (387) & --- & $-0.054$ (235) \\
+\end{longtable}\endgroup
+
+\begingroup\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}lrrrrrr@{}}
+\caption{Gemma-4-26B-A4B / Class: Verify: correctness correlations $r$ (finite attempts).}\label{tab:multi-gemma-class-Verify}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endfirsthead
+\multicolumn{7}{l}{\textit{Continued from previous page}}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endhead
+\bottomrule\endfoot
+Token count & $-0.083$ (408) & $-0.182$ (30) & $-0.443$ (30) & $-0.170$ (597) & --- & $-0.094$ (261) \\
+Router confidence & $0.022$ (408) & $0.280$ (30) & $0.365$ (30) & $0.021$ (597) & --- & $-0.045$ (261) \\
+Leading-expert margin & $0.034$ (408) & $0.090$ (30) & $0.394$ (30) & $0.035$ (597) & --- & $-0.109$ (261) \\
+Selected probability mass & $0.014$ (408) & $0.274$ (30) & $0.329$ (30) & $0.018$ (597) & --- & $-0.026$ (261) \\
+Selection-boundary margin & $0.007$ (408) & $0.194$ (30) & $0.089$ (30) & $-0.017$ (597) & --- & $0.037$ (261) \\
+Selected/rest mean gap & $0.014$ (408) & $0.274$ (30) & $0.329$ (30) & $0.018$ (597) & --- & $-0.026$ (261) \\
+Hidden-state norm & $-0.076$ (408) & $-0.150$ (30) & $0.196$ (30) & $0.045$ (597) & --- & $0.119$ (261) \\
+Hidden-state step distance & $0.015$ (408) & $-0.065$ (30) & $0.060$ (30) & $-0.035$ (597) & --- & $-0.143$ (261) \\
+Hidden/router geometry & $0.041$ (408) & $0.165$ (30) & $-0.051$ (30) & $0.042$ (597) & --- & $0.072$ (261) \\
+Top-1 switch rate & $-0.030$ (408) & $-0.293$ (30) & $-0.010$ (30) & $0.022$ (597) & --- & $0.079$ (261) \\
+Adjacent selected-set overlap & $0.002$ (408) & $0.189$ (30) & $0.022$ (30) & $-0.004$ (597) & --- & $0.018$ (261) \\
+\end{longtable}\endgroup
+
+\begingroup\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}lrrrrrr@{}}
+\caption{Gemma-4-26B-A4B / Class: Monitor: correctness correlations $r$ (finite attempts).}\label{tab:multi-gemma-class-Monitor}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endfirsthead
+\multicolumn{7}{l}{\textit{Continued from previous page}}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endhead
+\bottomrule\endfoot
+Token count & $-0.159$ (280) & $-0.235$ (30) & $-0.108$ (29) & $-0.174$ (461) & --- & $-0.145$ (251) \\
+Router confidence & $0.157$ (280) & $0.050$ (30) & $0.255$ (29) & $0.047$ (461) & --- & $-0.058$ (251) \\
+Leading-expert margin & $0.023$ (280) & $-0.061$ (30) & $0.190$ (29) & $0.048$ (461) & --- & $0.025$ (251) \\
+Selected probability mass & $0.178$ (280) & $0.047$ (30) & $0.263$ (29) & $0.048$ (461) & --- & $-0.063$ (251) \\
+Selection-boundary margin & $0.097$ (280) & $-0.032$ (30) & $0.184$ (29) & $0.045$ (461) & --- & $-0.060$ (251) \\
+Selected/rest mean gap & $0.178$ (280) & $0.047$ (30) & $0.263$ (29) & $0.048$ (461) & --- & $-0.063$ (251) \\
+Hidden-state norm & $0.096$ (280) & $0.075$ (30) & $0.013$ (29) & $0.025$ (461) & --- & $0.043$ (251) \\
+Hidden-state step distance & $-0.052$ (280) & $-0.142$ (30) & $-0.009$ (29) & $-0.022$ (461) & --- & $-0.094$ (251) \\
+Hidden/router geometry & $0.139$ (279) & $0.004$ (30) & $0.021$ (29) & $0.039$ (460) & --- & $0.061$ (251) \\
+Top-1 switch rate & $-0.002$ (280) & $-0.049$ (30) & $0.128$ (29) & $0.028$ (461) & --- & $-0.005$ (251) \\
+Adjacent selected-set overlap & $0.117$ (280) & $0.150$ (30) & $0.068$ (29) & $0.058$ (461) & --- & $0.040$ (251) \\
+\end{longtable}\endgroup
+
+\begingroup\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}lrrrrrr@{}}
+\caption{Gemma-4-26B-A4B / Position: bin 00: correctness correlations $r$ (finite attempts).}\label{tab:multi-gemma-position-bin_00}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endfirsthead
+\multicolumn{7}{l}{\textit{Continued from previous page}}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endhead
+\bottomrule\endfoot
+Router confidence & $0.043$ (500) & $0.268$ (960) & $0.096$ (960) & $-0.060$ (675) & $-0.148$ (1,280) & $-0.159$ (272) \\
+Leading-expert margin & $0.050$ (500) & $0.295$ (960) & $0.313$ (960) & $-0.064$ (675) & $-0.046$ (1,280) & $-0.099$ (272) \\
+Selected probability mass & $0.034$ (500) & $0.224$ (960) & $0.026$ (960) & $-0.067$ (675) & $-0.149$ (1,280) & $-0.176$ (272) \\
+Selection-boundary margin & $-0.047$ (500) & $0.122$ (960) & $-0.064$ (960) & $-0.063$ (675) & $-0.146$ (1,280) & $-0.096$ (272) \\
+Selected/rest mean gap & $0.034$ (500) & $0.224$ (960) & $0.026$ (960) & $-0.067$ (675) & $-0.149$ (1,280) & $-0.176$ (272) \\
+Hidden-state norm & $-0.043$ (500) & $-0.061$ (960) & $-0.183$ (960) & $-0.007$ (675) & $0.019$ (1,280) & $-0.164$ (272) \\
+Hidden-state step distance & $-0.028$ (500) & $0.081$ (960) & $0.077$ (960) & $-0.141$ (675) & $0.004$ (1,280) & $0.000$ (272) \\
+Hidden/router geometry & $-0.033$ (500) & $-0.016$ (960) & $0.073$ (960) & $-0.004$ (675) & $-0.048$ (1,280) & $0.024$ (272) \\
+Top-1 switch rate & $0.032$ (500) & $-0.199$ (960) & $-0.132$ (960) & $-0.038$ (675) & $-0.067$ (1,280) & $0.064$ (272) \\
+Adjacent selected-set overlap & $0.000$ (500) & $0.130$ (960) & $0.006$ (960) & $0.036$ (675) & $-0.027$ (1,280) & $-0.141$ (272) \\
+\end{longtable}\endgroup
+
+\begingroup\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}lrrrrrr@{}}
+\caption{Gemma-4-26B-A4B / Position: bin 01: correctness correlations $r$ (finite attempts).}\label{tab:multi-gemma-position-bin_01}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endfirsthead
+\multicolumn{7}{l}{\textit{Continued from previous page}}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endhead
+\bottomrule\endfoot
+Router confidence & $-0.023$ (392) & $0.284$ (960) & $0.098$ (960) & $-0.056$ (655) & $-0.027$ (1,223) & $-0.159$ (247) \\
+Leading-expert margin & $-0.008$ (392) & $0.322$ (960) & $0.289$ (960) & $-0.075$ (655) & $0.103$ (1,223) & $-0.117$ (247) \\
+Selected probability mass & $-0.020$ (392) & $0.250$ (960) & $0.051$ (960) & $-0.065$ (655) & $-0.046$ (1,223) & $-0.176$ (247) \\
+Selection-boundary margin & $-0.071$ (392) & $0.156$ (960) & $-0.040$ (960) & $-0.057$ (655) & $-0.022$ (1,223) & $-0.121$ (247) \\
+Selected/rest mean gap & $-0.020$ (392) & $0.250$ (960) & $0.051$ (960) & $-0.065$ (655) & $-0.046$ (1,223) & $-0.176$ (247) \\
+Hidden-state norm & $-0.008$ (392) & $-0.075$ (960) & $-0.192$ (960) & $-0.083$ (655) & $-0.062$ (1,223) & $-0.146$ (247) \\
+Hidden-state step distance & $-0.099$ (392) & $0.068$ (960) & $0.014$ (960) & $-0.091$ (655) & $0.050$ (1,223) & $-0.070$ (247) \\
+Hidden/router geometry & $-0.036$ (391) & $0.100$ (960) & $0.097$ (960) & $0.000$ (655) & $0.019$ (1,223) & $-0.049$ (247) \\
+Top-1 switch rate & $0.038$ (392) & $-0.286$ (960) & $-0.127$ (960) & $-0.043$ (655) & $-0.132$ (1,223) & $0.106$ (247) \\
+Adjacent selected-set overlap & $-0.013$ (392) & $0.166$ (960) & $0.020$ (960) & $0.004$ (655) & $0.013$ (1,223) & $-0.106$ (247) \\
+\end{longtable}\endgroup
+
+\begingroup\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}lrrrrrr@{}}
+\caption{Gemma-4-26B-A4B / Position: bin 02: correctness correlations $r$ (finite attempts).}\label{tab:multi-gemma-position-bin_02}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endfirsthead
+\multicolumn{7}{l}{\textit{Continued from previous page}}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endhead
+\bottomrule\endfoot
+Router confidence & $-0.022$ (292) & $0.262$ (958) & $0.149$ (945) & $-0.105$ (591) & $0.107$ (1,089) & $-0.145$ (221) \\
+Leading-expert margin & $0.064$ (292) & $0.266$ (958) & $0.237$ (945) & $-0.091$ (591) & $0.033$ (1,089) & $-0.109$ (221) \\
+Selected probability mass & $-0.028$ (292) & $0.230$ (958) & $0.108$ (945) & $-0.117$ (591) & $0.113$ (1,089) & $-0.167$ (221) \\
+Selection-boundary margin & $-0.079$ (292) & $0.155$ (958) & $-0.005$ (945) & $-0.117$ (591) & $0.094$ (1,089) & $-0.072$ (221) \\
+Selected/rest mean gap & $-0.028$ (292) & $0.230$ (958) & $0.108$ (945) & $-0.117$ (591) & $0.113$ (1,089) & $-0.167$ (221) \\
+Hidden-state norm & $-0.014$ (292) & $-0.119$ (958) & $-0.192$ (945) & $-0.122$ (591) & $0.099$ (1,089) & $-0.157$ (221) \\
+Hidden-state step distance & $-0.022$ (292) & $0.008$ (958) & $0.014$ (945) & $-0.051$ (591) & $0.045$ (1,089) & $0.007$ (221) \\
+Hidden/router geometry & $0.087$ (292) & $0.021$ (958) & $0.066$ (945) & $-0.084$ (591) & $0.001$ (1,088) & $0.091$ (221) \\
+Top-1 switch rate & $0.042$ (292) & $-0.302$ (958) & $-0.070$ (945) & $0.005$ (591) & $0.027$ (1,089) & $0.053$ (221) \\
+Adjacent selected-set overlap & $-0.027$ (292) & $0.175$ (958) & $-0.028$ (945) & $-0.028$ (591) & $0.025$ (1,089) & $-0.040$ (221) \\
+\end{longtable}\endgroup
+
+\begingroup\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}lrrrrrr@{}}
+\caption{Gemma-4-26B-A4B / Position: bin 03: correctness correlations $r$ (finite attempts).}\label{tab:multi-gemma-position-bin_03}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endfirsthead
+\multicolumn{7}{l}{\textit{Continued from previous page}}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endhead
+\bottomrule\endfoot
+Router confidence & $-0.061$ (236) & $0.288$ (943) & $0.084$ (900) & $-0.102$ (526) & $0.134$ (949) & $-0.123$ (194) \\
+Leading-expert margin & $-0.022$ (236) & $0.272$ (943) & $0.203$ (900) & $-0.033$ (526) & $-0.006$ (949) & $-0.094$ (194) \\
+Selected probability mass & $-0.060$ (236) & $0.259$ (943) & $0.042$ (900) & $-0.118$ (526) & $0.148$ (949) & $-0.138$ (194) \\
+Selection-boundary margin & $-0.106$ (236) & $0.167$ (943) & $-0.054$ (900) & $-0.136$ (526) & $0.136$ (949) & $-0.056$ (194) \\
+Selected/rest mean gap & $-0.060$ (236) & $0.259$ (943) & $0.042$ (900) & $-0.118$ (526) & $0.148$ (949) & $-0.138$ (194) \\
+Hidden-state norm & $-0.027$ (236) & $-0.140$ (943) & $-0.229$ (900) & $-0.105$ (526) & $0.162$ (949) & $-0.158$ (194) \\
+Hidden-state step distance & $-0.047$ (236) & $-0.064$ (943) & $0.061$ (900) & $-0.098$ (526) & $0.067$ (949) & $0.015$ (194) \\
+Hidden/router geometry & $-0.104$ (235) & $0.021$ (943) & $0.059$ (899) & $-0.032$ (526) & $0.020$ (949) & $0.072$ (194) \\
+Top-1 switch rate & $0.112$ (236) & $-0.249$ (943) & $-0.003$ (900) & $-0.018$ (526) & $0.049$ (949) & $0.090$ (194) \\
+Adjacent selected-set overlap & $-0.073$ (236) & $0.181$ (943) & $-0.097$ (900) & $-0.005$ (526) & $0.047$ (949) & $-0.078$ (194) \\
+\end{longtable}\endgroup
+
+\begingroup\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}lrrrrrr@{}}
+\caption{Gemma-4-26B-A4B / Position: bin 04: correctness correlations $r$ (finite attempts).}\label{tab:multi-gemma-position-bin_04}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endfirsthead
+\multicolumn{7}{l}{\textit{Continued from previous page}}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endhead
+\bottomrule\endfoot
+Router confidence & $0.049$ (179) & $0.259$ (925) & $0.069$ (862) & $-0.119$ (470) & $0.153$ (863) & $-0.103$ (174) \\
+Leading-expert margin & $0.019$ (179) & $0.217$ (925) & $0.197$ (862) & $-0.047$ (470) & $0.005$ (863) & $-0.023$ (174) \\
+Selected probability mass & $0.044$ (179) & $0.229$ (925) & $0.029$ (862) & $-0.142$ (470) & $0.165$ (863) & $-0.120$ (174) \\
+Selection-boundary margin & $-0.020$ (179) & $0.164$ (925) & $-0.042$ (862) & $-0.142$ (470) & $0.147$ (863) & $-0.064$ (174) \\
+Selected/rest mean gap & $0.044$ (179) & $0.229$ (925) & $0.029$ (862) & $-0.142$ (470) & $0.165$ (863) & $-0.120$ (174) \\
+Hidden-state norm & $-0.002$ (179) & $-0.180$ (925) & $-0.185$ (862) & $-0.181$ (470) & $0.183$ (863) & $-0.117$ (174) \\
+Hidden-state step distance & $-0.087$ (179) & $-0.045$ (925) & $0.049$ (862) & $0.013$ (470) & $0.081$ (863) & $0.003$ (174) \\
+Hidden/router geometry & $0.108$ (179) & $0.050$ (925) & $0.101$ (862) & $-0.020$ (470) & $-0.076$ (863) & $0.059$ (174) \\
+Top-1 switch rate & $-0.026$ (179) & $-0.211$ (925) & $0.016$ (862) & $0.031$ (470) & $0.063$ (863) & $0.083$ (174) \\
+Adjacent selected-set overlap & $0.047$ (179) & $0.146$ (925) & $-0.107$ (862) & $-0.098$ (470) & $0.045$ (863) & $-0.063$ (174) \\
+\end{longtable}\endgroup
+
+\begingroup\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}lrrrrrr@{}}
+\caption{Gemma-4-26B-A4B / Position: bin 05: correctness correlations $r$ (finite attempts).}\label{tab:multi-gemma-position-bin_05}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endfirsthead
+\multicolumn{7}{l}{\textit{Continued from previous page}}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endhead
+\bottomrule\endfoot
+Router confidence & $-0.167$ (157) & $0.256$ (875) & $0.058$ (834) & $-0.069$ (438) & $0.130$ (787) & $-0.150$ (151) \\
+Leading-expert margin & $-0.126$ (157) & $0.273$ (875) & $0.179$ (834) & $-0.037$ (438) & $0.027$ (787) & $-0.121$ (151) \\
+Selected probability mass & $-0.160$ (157) & $0.217$ (875) & $0.009$ (834) & $-0.095$ (438) & $0.138$ (787) & $-0.159$ (151) \\
+Selection-boundary margin & $-0.149$ (157) & $0.137$ (875) & $-0.081$ (834) & $-0.118$ (438) & $0.113$ (787) & $-0.108$ (151) \\
+Selected/rest mean gap & $-0.160$ (157) & $0.217$ (875) & $0.009$ (834) & $-0.095$ (438) & $0.138$ (787) & $-0.159$ (151) \\
+Hidden-state norm & $-0.056$ (157) & $-0.197$ (875) & $-0.216$ (834) & $-0.137$ (438) & $0.165$ (787) & $-0.052$ (151) \\
+Hidden-state step distance & $-0.085$ (157) & $-0.047$ (875) & $0.060$ (834) & $-0.062$ (438) & $0.098$ (787) & $-0.001$ (151) \\
+Hidden/router geometry & $-0.153$ (157) & $0.040$ (875) & $0.031$ (834) & $0.070$ (438) & $0.012$ (787) & $-0.049$ (151) \\
+Top-1 switch rate & $0.134$ (157) & $-0.213$ (875) & $0.046$ (834) & $-0.037$ (438) & $0.059$ (787) & $0.079$ (151) \\
+Adjacent selected-set overlap & $-0.103$ (157) & $0.119$ (875) & $-0.131$ (834) & $-0.032$ (438) & $0.029$ (787) & $-0.064$ (151) \\
+\end{longtable}\endgroup
+
+\begingroup\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}lrrrrrr@{}}
+\caption{Gemma-4-26B-A4B / Position: bin 06: correctness correlations $r$ (finite attempts).}\label{tab:multi-gemma-position-bin_06}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endfirsthead
+\multicolumn{7}{l}{\textit{Continued from previous page}}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endhead
+\bottomrule\endfoot
+Router confidence & $-0.066$ (138) & $0.275$ (829) & $0.057$ (819) & $-0.094$ (407) & $0.131$ (683) & $-0.068$ (135) \\
+Leading-expert margin & $0.049$ (138) & $0.228$ (829) & $0.193$ (819) & $0.082$ (407) & $-0.019$ (683) & $-0.054$ (135) \\
+Selected probability mass & $-0.080$ (138) & $0.242$ (829) & $0.005$ (819) & $-0.128$ (407) & $0.147$ (683) & $-0.059$ (135) \\
+Selection-boundary margin & $-0.191$ (138) & $0.169$ (829) & $-0.089$ (819) & $-0.173$ (407) & $0.137$ (683) & $-0.015$ (135) \\
+Selected/rest mean gap & $-0.080$ (138) & $0.242$ (829) & $0.005$ (819) & $-0.128$ (407) & $0.147$ (683) & $-0.059$ (135) \\
+Hidden-state norm & $-0.111$ (138) & $-0.143$ (829) & $-0.235$ (819) & $-0.160$ (407) & $0.208$ (683) & $0.099$ (135) \\
+Hidden-state step distance & $-0.029$ (138) & $-0.069$ (829) & $0.072$ (819) & $0.010$ (407) & $0.095$ (683) & $-0.011$ (135) \\
+Hidden/router geometry & $0.012$ (138) & $0.069$ (829) & $0.086$ (819) & $0.063$ (407) & $-0.030$ (683) & $-0.157$ (135) \\
+Top-1 switch rate & $0.120$ (138) & $-0.217$ (829) & $0.076$ (819) & $0.052$ (407) & $0.082$ (683) & $0.149$ (135) \\
+Adjacent selected-set overlap & $-0.119$ (138) & $0.153$ (829) & $-0.158$ (819) & $-0.093$ (407) & $0.033$ (683) & $-0.076$ (135) \\
+\end{longtable}\endgroup
+
+\begingroup\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}lrrrrrr@{}}
+\caption{Gemma-4-26B-A4B / Position: bin 07: correctness correlations $r$ (finite attempts).}\label{tab:multi-gemma-position-bin_07}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endfirsthead
+\multicolumn{7}{l}{\textit{Continued from previous page}}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endhead
+\bottomrule\endfoot
+Router confidence & $-0.068$ (106) & $0.269$ (772) & $0.048$ (805) & $-0.095$ (378) & $0.160$ (587) & $-0.101$ (122) \\
+Leading-expert margin & $-0.012$ (106) & $0.244$ (772) & $0.241$ (805) & $0.037$ (378) & $-0.017$ (587) & $-0.073$ (122) \\
+Selected probability mass & $-0.077$ (106) & $0.232$ (772) & $-0.010$ (805) & $-0.132$ (378) & $0.182$ (587) & $-0.102$ (122) \\
+Selection-boundary margin & $-0.148$ (106) & $0.128$ (772) & $-0.129$ (805) & $-0.194$ (378) & $0.168$ (587) & $0.003$ (122) \\
+Selected/rest mean gap & $-0.077$ (106) & $0.232$ (772) & $-0.010$ (805) & $-0.132$ (378) & $0.182$ (587) & $-0.102$ (122) \\
+Hidden-state norm & $-0.051$ (106) & $-0.195$ (772) & $-0.227$ (805) & $-0.197$ (378) & $0.242$ (587) & $-0.076$ (122) \\
+Hidden-state step distance & $-0.019$ (106) & $-0.064$ (772) & $0.121$ (805) & $0.030$ (377) & $0.072$ (587) & $-0.051$ (122) \\
+Hidden/router geometry & $-0.082$ (106) & $-0.036$ (772) & $-0.001$ (804) & $-0.060$ (377) & $-0.024$ (587) & $0.048$ (122) \\
+Top-1 switch rate & $0.065$ (106) & $-0.221$ (772) & $0.120$ (805) & $0.069$ (377) & $0.066$ (587) & $0.037$ (122) \\
+Adjacent selected-set overlap & $-0.066$ (106) & $0.144$ (772) & $-0.205$ (805) & $-0.130$ (377) & $0.062$ (587) & $-0.003$ (122) \\
+\end{longtable}\endgroup
+
+\begingroup\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}lrrrrrr@{}}
+\caption{Gemma-4-26B-A4B / Position: bin 08: correctness correlations $r$ (finite attempts).}\label{tab:multi-gemma-position-bin_08}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endfirsthead
+\multicolumn{7}{l}{\textit{Continued from previous page}}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endhead
+\bottomrule\endfoot
+Router confidence & $0.100$ (89) & $0.254$ (719) & $0.054$ (770) & $-0.062$ (346) & $0.131$ (498) & $0.014$ (104) \\
+Leading-expert margin & $0.095$ (89) & $0.219$ (719) & $0.192$ (770) & $0.122$ (346) & $-0.029$ (498) & $0.010$ (104) \\
+Selected probability mass & $0.086$ (89) & $0.215$ (719) & $0.001$ (770) & $-0.102$ (346) & $0.157$ (498) & $0.024$ (104) \\
+Selection-boundary margin & $-0.030$ (89) & $0.106$ (719) & $-0.096$ (770) & $-0.162$ (346) & $0.154$ (498) & $0.086$ (104) \\
+Selected/rest mean gap & $0.086$ (89) & $0.215$ (719) & $0.001$ (770) & $-0.102$ (346) & $0.157$ (498) & $0.024$ (104) \\
+Hidden-state norm & $-0.027$ (89) & $-0.198$ (719) & $-0.173$ (770) & $-0.168$ (346) & $0.253$ (498) & $0.011$ (104) \\
+Hidden-state step distance & $0.039$ (89) & $-0.008$ (719) & $0.095$ (770) & $0.067$ (346) & $0.089$ (498) & $-0.125$ (104) \\
+Hidden/router geometry & $-0.019$ (89) & $0.006$ (719) & $0.066$ (770) & $-0.031$ (346) & $-0.101$ (498) & $0.049$ (104) \\
+Top-1 switch rate & $0.095$ (89) & $-0.188$ (719) & $0.132$ (770) & $0.039$ (346) & $0.122$ (498) & $-0.091$ (104) \\
+Adjacent selected-set overlap & $-0.018$ (89) & $0.096$ (719) & $-0.203$ (770) & $-0.095$ (346) & $0.026$ (498) & $0.137$ (104) \\
+\end{longtable}\endgroup
+
+\begingroup\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}lrrrrrr@{}}
+\caption{Gemma-4-26B-A4B / Position: bin 09: correctness correlations $r$ (finite attempts).}\label{tab:multi-gemma-position-bin_09}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endfirsthead
+\multicolumn{7}{l}{\textit{Continued from previous page}}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endhead
+\bottomrule\endfoot
+Router confidence & $0.138$ (75) & $0.271$ (664) & $0.065$ (737) & $0.010$ (316) & $0.123$ (394) & $-0.019$ (86) \\
+Leading-expert margin & $0.069$ (75) & $0.225$ (664) & $0.203$ (737) & $0.149$ (316) & $-0.045$ (394) & $0.002$ (86) \\
+Selected probability mass & $0.132$ (75) & $0.240$ (664) & $0.025$ (737) & $-0.053$ (316) & $0.152$ (394) & $-0.007$ (86) \\
+Selection-boundary margin & $0.079$ (75) & $0.127$ (664) & $-0.051$ (737) & $-0.142$ (316) & $0.155$ (394) & $0.116$ (86) \\
+Selected/rest mean gap & $0.132$ (75) & $0.240$ (664) & $0.025$ (737) & $-0.053$ (316) & $0.152$ (394) & $-0.007$ (86) \\
+Hidden-state norm & $0.132$ (75) & $-0.148$ (664) & $-0.143$ (737) & $-0.160$ (316) & $0.230$ (394) & $0.056$ (86) \\
+Hidden-state step distance & $-0.092$ (75) & $0.032$ (664) & $0.038$ (737) & $0.110$ (316) & $0.134$ (394) & $-0.196$ (86) \\
+Hidden/router geometry & $0.061$ (75) & $-0.031$ (664) & $0.106$ (737) & $-0.082$ (316) & $-0.024$ (394) & $-0.094$ (85) \\
+Top-1 switch rate & $-0.074$ (75) & $-0.143$ (664) & $0.109$ (737) & $0.066$ (316) & $0.135$ (394) & $-0.107$ (86) \\
+Adjacent selected-set overlap & $0.057$ (75) & $0.066$ (664) & $-0.137$ (737) & $-0.120$ (316) & $-0.002$ (394) & $0.173$ (86) \\
+\end{longtable}\endgroup
+
+\begingroup\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}lrrrrrr@{}}
+\caption{Gemma-4-26B-A4B / Position: overflow: correctness correlations $r$ (finite attempts).}\label{tab:multi-gemma-position-overflow}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endfirsthead
+\multicolumn{7}{l}{\textit{Continued from previous page}}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endhead
+\bottomrule\endfoot
+Router confidence & $0.064$ (63) & $0.324$ (570) & $0.147$ (687) & $-0.034$ (277) & $0.122$ (316) & $0.004$ (70) \\
+Leading-expert margin & $-0.023$ (63) & $0.104$ (570) & $0.264$ (687) & $-0.061$ (277) & $-0.029$ (316) & $-0.083$ (70) \\
+Selected probability mass & $0.104$ (63) & $0.336$ (570) & $0.094$ (687) & $-0.051$ (277) & $0.153$ (316) & $0.037$ (70) \\
+Selection-boundary margin & $0.072$ (63) & $0.226$ (570) & $-0.055$ (687) & $-0.113$ (277) & $0.141$ (316) & $0.104$ (70) \\
+Selected/rest mean gap & $0.104$ (63) & $0.336$ (570) & $0.094$ (687) & $-0.051$ (277) & $0.153$ (316) & $0.037$ (70) \\
+Hidden-state norm & $0.236$ (63) & $0.197$ (570) & $-0.033$ (687) & $-0.073$ (277) & $0.302$ (316) & $0.089$ (70) \\
+Hidden-state step distance & $0.146$ (63) & $0.129$ (570) & $0.362$ (687) & $0.095$ (277) & $0.147$ (315) & $-0.196$ (70) \\
+Hidden/router geometry & $-0.075$ (63) & $0.022$ (570) & $0.111$ (687) & $-0.048$ (277) & $0.018$ (315) & $-0.072$ (70) \\
+Top-1 switch rate & $0.105$ (63) & $0.026$ (570) & $0.240$ (687) & $0.086$ (277) & $0.092$ (315) & $-0.011$ (70) \\
+Adjacent selected-set overlap & $-0.064$ (63) & $0.060$ (570) & $-0.266$ (687) & $-0.081$ (277) & $0.031$ (315) & $0.095$ (70) \\
+\end{longtable}\endgroup
+
+\begingroup\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}lrrrrrr@{}}
+\caption{GPT-OSS-20B / Whole continuation: correctness correlations $r$ (finite attempts).}\label{tab:multi-gptoss-continuation}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endfirsthead
+\multicolumn{7}{l}{\textit{Continued from previous page}}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endhead
+\bottomrule\endfoot
+Token count & $-0.221$ (500) & $-0.606$ (960) & $-0.646$ (960) & $-0.362$ (675) & $-0.169$ (1,280) & $-0.094$ (272) \\
+Router confidence & $-0.061$ (500) & $0.210$ (960) & $-0.075$ (960) & $0.051$ (675) & $-0.077$ (1,280) & $-0.160$ (272) \\
+Leading-expert margin & $0.041$ (500) & $0.137$ (960) & $-0.176$ (960) & $0.154$ (675) & $-0.018$ (1,280) & $-0.082$ (272) \\
+Selected probability mass & $-0.052$ (500) & $0.128$ (960) & $-0.102$ (960) & $0.089$ (675) & $-0.033$ (1,280) & $-0.166$ (272) \\
+Selection-boundary margin & $-0.036$ (500) & $-0.218$ (960) & $-0.091$ (960) & $-0.064$ (675) & $-0.005$ (1,280) & $-0.032$ (272) \\
+Selected/rest mean gap & $-0.052$ (500) & $0.128$ (960) & $-0.102$ (960) & $0.089$ (675) & $-0.033$ (1,280) & $-0.166$ (272) \\
+Hidden-state norm & $0.192$ (500) & $0.494$ (960) & $0.366$ (960) & $0.329$ (675) & $0.049$ (1,280) & $-0.006$ (272) \\
+Hidden-state step distance & $-0.150$ (500) & $-0.186$ (960) & $-0.404$ (960) & $-0.210$ (675) & $-0.094$ (1,280) & $0.045$ (272) \\
+Hidden/router geometry & $0.002$ (500) & $-0.239$ (960) & $-0.311$ (960) & $-0.076$ (675) & $-0.027$ (1,280) & $0.053$ (272) \\
+Top-1 switch rate & $0.181$ (500) & $0.149$ (960) & $0.376$ (960) & $0.110$ (675) & $-0.006$ (1,280) & $0.331$ (272) \\
+Adjacent selected-set overlap & $-0.198$ (500) & $-0.068$ (960) & $-0.278$ (960) & $-0.143$ (675) & $-0.052$ (1,280) & $-0.317$ (272) \\
+Character count & $-0.210$ (500) & $-0.610$ (960) & $-0.622$ (960) & $-0.357$ (675) & $-0.161$ (1,280) & $-0.073$ (272) \\
+Step count & $-0.190$ (500) & $-0.374$ (960) & $-0.342$ (960) & $-0.214$ (675) & $-0.016$ (1,280) & $-0.150$ (272) \\
+\end{longtable}\endgroup
+
+\begingroup\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}lrrrrrr@{}}
+\caption{GPT-OSS-20B / Full reasoning: correctness correlations $r$ (finite attempts).}\label{tab:multi-gptoss-reasoning}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endfirsthead
+\multicolumn{7}{l}{\textit{Continued from previous page}}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endhead
+\bottomrule\endfoot
+Token count & $-0.218$ (500) & $-0.607$ (960) & $-0.649$ (960) & $-0.358$ (675) & $-0.172$ (1,280) & $-0.076$ (272) \\
+Router confidence & $-0.144$ (500) & $0.097$ (960) & $-0.208$ (960) & $-0.066$ (675) & $-0.103$ (1,280) & $-0.167$ (272) \\
+Leading-expert margin & $-0.008$ (500) & $0.067$ (960) & $-0.242$ (960) & $0.076$ (675) & $-0.015$ (1,280) & $-0.101$ (272) \\
+Selected probability mass & $-0.115$ (500) & $0.027$ (960) & $-0.212$ (960) & $-0.012$ (675) & $-0.026$ (1,280) & $-0.169$ (272) \\
+Selection-boundary margin & $0.011$ (500) & $-0.212$ (960) & $-0.052$ (960) & $-0.052$ (675) & $0.086$ (1,280) & $-0.045$ (272) \\
+Selected/rest mean gap & $-0.115$ (500) & $0.027$ (960) & $-0.212$ (960) & $-0.012$ (675) & $-0.026$ (1,280) & $-0.169$ (272) \\
+Hidden-state norm & $0.214$ (500) & $0.495$ (960) & $0.383$ (960) & $0.344$ (675) & $0.039$ (1,280) & $0.007$ (272) \\
+Hidden-state step distance & $-0.165$ (500) & $-0.165$ (960) & $-0.383$ (960) & $-0.206$ (675) & $-0.108$ (1,280) & $0.038$ (272) \\
+Hidden/router geometry & $0.079$ (500) & $-0.079$ (960) & $-0.112$ (960) & $0.021$ (675) & $-0.071$ (1,280) & $0.033$ (272) \\
+Top-1 switch rate & $0.175$ (500) & $0.145$ (960) & $0.376$ (960) & $0.134$ (675) & $-0.012$ (1,280) & $0.319$ (272) \\
+Adjacent selected-set overlap & $-0.192$ (500) & $-0.130$ (960) & $-0.364$ (960) & $-0.198$ (675) & $-0.041$ (1,280) & $-0.298$ (272) \\
+\end{longtable}\endgroup
+
+\begingroup\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}lrrrrrr@{}}
+\caption{GPT-OSS-20B / Class: Read: correctness correlations $r$ (finite attempts).}\label{tab:multi-gptoss-class-Read}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endfirsthead
+\multicolumn{7}{l}{\textit{Continued from previous page}}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endhead
+\bottomrule\endfoot
+Token count & $-0.143$ (474) & $-0.332$ (68) & --- & --- & --- & --- \\
+Router confidence & $-0.042$ (474) & $-0.105$ (68) & --- & --- & --- & --- \\
+Leading-expert margin & $0.031$ (474) & $0.092$ (68) & --- & --- & --- & --- \\
+Selected probability mass & $-0.090$ (474) & $-0.097$ (68) & --- & --- & --- & --- \\
+Selection-boundary margin & $-0.033$ (474) & $0.038$ (68) & --- & --- & --- & --- \\
+Selected/rest mean gap & $-0.090$ (474) & $-0.097$ (68) & --- & --- & --- & --- \\
+Hidden-state norm & $0.119$ (474) & $0.260$ (68) & --- & --- & --- & --- \\
+Hidden-state step distance & $-0.083$ (474) & $-0.216$ (68) & --- & --- & --- & --- \\
+Hidden/router geometry & $0.079$ (474) & $0.316$ (68) & --- & --- & --- & --- \\
+Top-1 switch rate & $0.059$ (474) & $0.191$ (68) & --- & --- & --- & --- \\
+Adjacent selected-set overlap & $-0.079$ (474) & $-0.042$ (68) & --- & --- & --- & --- \\
+\end{longtable}\endgroup
+
+\begingroup\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}lrrrrrr@{}}
+\caption{GPT-OSS-20B / Class: Analyze: correctness correlations $r$ (finite attempts).}\label{tab:multi-gptoss-class-Analyze}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endfirsthead
+\multicolumn{7}{l}{\textit{Continued from previous page}}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endhead
+\bottomrule\endfoot
+Token count & $-0.187$ (433) & $-0.408$ (68) & --- & --- & --- & --- \\
+Router confidence & $-0.080$ (433) & $0.212$ (68) & --- & --- & --- & --- \\
+Leading-expert margin & $-0.030$ (433) & $0.289$ (68) & --- & --- & --- & --- \\
+Selected probability mass & $-0.052$ (433) & $-0.219$ (68) & --- & --- & --- & --- \\
+Selection-boundary margin & $-0.040$ (433) & $-0.298$ (68) & --- & --- & --- & --- \\
+Selected/rest mean gap & $-0.052$ (433) & $-0.219$ (68) & --- & --- & --- & --- \\
+Hidden-state norm & $0.163$ (433) & $0.411$ (68) & --- & --- & --- & --- \\
+Hidden-state step distance & $-0.145$ (433) & $-0.092$ (68) & --- & --- & --- & --- \\
+Hidden/router geometry & $0.019$ (432) & $0.170$ (68) & --- & --- & --- & --- \\
+Top-1 switch rate & $0.075$ (433) & $0.365$ (68) & --- & --- & --- & --- \\
+Adjacent selected-set overlap & $-0.065$ (433) & $-0.162$ (68) & --- & --- & --- & --- \\
+\end{longtable}\endgroup
+
+\begingroup\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}lrrrrrr@{}}
+\caption{GPT-OSS-20B / Class: Plan: correctness correlations $r$ (finite attempts).}\label{tab:multi-gptoss-class-Plan}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endfirsthead
+\multicolumn{7}{l}{\textit{Continued from previous page}}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endhead
+\bottomrule\endfoot
+Token count & $-0.208$ (324) & $-0.357$ (68) & --- & --- & --- & --- \\
+Router confidence & $-0.031$ (324) & $0.261$ (68) & --- & --- & --- & --- \\
+Leading-expert margin & $0.072$ (324) & $0.316$ (68) & --- & --- & --- & --- \\
+Selected probability mass & $0.017$ (324) & $-0.146$ (68) & --- & --- & --- & --- \\
+Selection-boundary margin & $-0.053$ (324) & $-0.298$ (68) & --- & --- & --- & --- \\
+Selected/rest mean gap & $0.017$ (324) & $-0.146$ (68) & --- & --- & --- & --- \\
+Hidden-state norm & $0.120$ (324) & $0.475$ (68) & --- & --- & --- & --- \\
+Hidden-state step distance & $0.007$ (324) & $-0.049$ (68) & --- & --- & --- & --- \\
+Hidden/router geometry & $0.129$ (324) & $0.117$ (68) & --- & --- & --- & --- \\
+Top-1 switch rate & $0.082$ (324) & $0.104$ (68) & --- & --- & --- & --- \\
+Adjacent selected-set overlap & $-0.128$ (324) & $-0.071$ (68) & --- & --- & --- & --- \\
+\end{longtable}\endgroup
+
+\begingroup\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}lrrrrrr@{}}
+\caption{GPT-OSS-20B / Class: Implement: correctness correlations $r$ (finite attempts).}\label{tab:multi-gptoss-class-Implement}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endfirsthead
+\multicolumn{7}{l}{\textit{Continued from previous page}}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endhead
+\bottomrule\endfoot
+Token count & $-0.190$ (500) & $-0.334$ (68) & --- & --- & --- & --- \\
+Router confidence & $-0.181$ (500) & $-0.098$ (68) & --- & --- & --- & --- \\
+Leading-expert margin & $0.007$ (500) & $-0.069$ (68) & --- & --- & --- & --- \\
+Selected probability mass & $-0.054$ (500) & $0.029$ (68) & --- & --- & --- & --- \\
+Selection-boundary margin & $0.156$ (500) & $-0.467$ (68) & --- & --- & --- & --- \\
+Selected/rest mean gap & $-0.054$ (500) & $0.029$ (68) & --- & --- & --- & --- \\
+Hidden-state norm & $0.241$ (500) & $0.508$ (68) & --- & --- & --- & --- \\
+Hidden-state step distance & $-0.211$ (500) & $-0.348$ (68) & --- & --- & --- & --- \\
+Hidden/router geometry & $0.191$ (500) & $-0.120$ (68) & --- & --- & --- & --- \\
+Top-1 switch rate & $0.161$ (500) & $0.110$ (68) & --- & --- & --- & --- \\
+Adjacent selected-set overlap & $-0.187$ (500) & $0.004$ (68) & --- & --- & --- & --- \\
+\end{longtable}\endgroup
+
+\begingroup\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}lrrrrrr@{}}
+\caption{GPT-OSS-20B / Class: Explore: correctness correlations $r$ (finite attempts).}\label{tab:multi-gptoss-class-Explore}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endfirsthead
+\multicolumn{7}{l}{\textit{Continued from previous page}}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endhead
+\bottomrule\endfoot
+Token count & $-0.173$ (291) & $-0.368$ (44) & --- & --- & --- & --- \\
+Router confidence & $-0.078$ (291) & $-0.005$ (44) & --- & --- & --- & --- \\
+Leading-expert margin & $-0.041$ (291) & $0.083$ (44) & --- & --- & --- & --- \\
+Selected probability mass & $-0.054$ (291) & $0.003$ (44) & --- & --- & --- & --- \\
+Selection-boundary margin & $-0.033$ (291) & $-0.048$ (44) & --- & --- & --- & --- \\
+Selected/rest mean gap & $-0.054$ (291) & $0.003$ (44) & --- & --- & --- & --- \\
+Hidden-state norm & $0.156$ (291) & $0.364$ (44) & --- & --- & --- & --- \\
+Hidden-state step distance & $-0.118$ (291) & $-0.166$ (44) & --- & --- & --- & --- \\
+Hidden/router geometry & $0.143$ (291) & $-0.167$ (44) & --- & --- & --- & --- \\
+Top-1 switch rate & $0.061$ (291) & $0.195$ (44) & --- & --- & --- & --- \\
+Adjacent selected-set overlap & $0.019$ (291) & $-0.277$ (44) & --- & --- & --- & --- \\
+\end{longtable}\endgroup
+
+\begingroup\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}lrrrrrr@{}}
+\caption{GPT-OSS-20B / Class: Verify: correctness correlations $r$ (finite attempts).}\label{tab:multi-gptoss-class-Verify}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endfirsthead
+\multicolumn{7}{l}{\textit{Continued from previous page}}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endhead
+\bottomrule\endfoot
+Token count & $-0.219$ (435) & $-0.315$ (68) & --- & --- & --- & --- \\
+Router confidence & $-0.035$ (435) & $0.039$ (68) & --- & --- & --- & --- \\
+Leading-expert margin & $0.031$ (435) & $0.142$ (68) & --- & --- & --- & --- \\
+Selected probability mass & $-0.050$ (435) & $-0.042$ (68) & --- & --- & --- & --- \\
+Selection-boundary margin & $-0.016$ (435) & $-0.286$ (68) & --- & --- & --- & --- \\
+Selected/rest mean gap & $-0.050$ (435) & $-0.042$ (68) & --- & --- & --- & --- \\
+Hidden-state norm & $0.140$ (435) & $0.438$ (68) & --- & --- & --- & --- \\
+Hidden-state step distance & $0.031$ (435) & $-0.188$ (68) & --- & --- & --- & --- \\
+Hidden/router geometry & $0.078$ (434) & $0.108$ (68) & --- & --- & --- & --- \\
+Top-1 switch rate & $0.113$ (435) & $0.104$ (68) & --- & --- & --- & --- \\
+Adjacent selected-set overlap & $-0.114$ (435) & $0.135$ (68) & --- & --- & --- & --- \\
+\end{longtable}\endgroup
+
+\begingroup\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}lrrrrrr@{}}
+\caption{GPT-OSS-20B / Class: Monitor: correctness correlations $r$ (finite attempts).}\label{tab:multi-gptoss-class-Monitor}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endfirsthead
+\multicolumn{7}{l}{\textit{Continued from previous page}}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endhead
+\bottomrule\endfoot
+Token count & $-0.239$ (496) & $-0.364$ (68) & --- & --- & --- & --- \\
+Router confidence & $-0.343$ (496) & $-0.100$ (68) & --- & --- & --- & --- \\
+Leading-expert margin & $0.071$ (496) & $0.262$ (68) & --- & --- & --- & --- \\
+Selected probability mass & $-0.347$ (496) & $0.160$ (68) & --- & --- & --- & --- \\
+Selection-boundary margin & $-0.213$ (496) & $0.036$ (68) & --- & --- & --- & --- \\
+Selected/rest mean gap & $-0.347$ (496) & $0.160$ (68) & --- & --- & --- & --- \\
+Hidden-state norm & $0.269$ (496) & $0.484$ (68) & --- & --- & --- & --- \\
+Hidden-state step distance & $-0.155$ (496) & $-0.329$ (68) & --- & --- & --- & --- \\
+Hidden/router geometry & $-0.022$ (493) & $-0.274$ (68) & --- & --- & --- & --- \\
+Top-1 switch rate & $0.177$ (496) & $0.131$ (68) & --- & --- & --- & --- \\
+Adjacent selected-set overlap & $-0.307$ (496) & $-0.098$ (68) & --- & --- & --- & --- \\
+\end{longtable}\endgroup
+
+\begingroup\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}lrrrrrr@{}}
+\caption{GPT-OSS-20B / Position: bin 00: correctness correlations $r$ (finite attempts).}\label{tab:multi-gptoss-position-bin_00}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endfirsthead
+\multicolumn{7}{l}{\textit{Continued from previous page}}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endhead
+\bottomrule\endfoot
+Router confidence & $-0.092$ (500) & $0.252$ (960) & $0.030$ (960) & $0.038$ (675) & $-0.021$ (1,280) & $-0.157$ (272) \\
+Leading-expert margin & $0.014$ (500) & $0.160$ (960) & $0.018$ (960) & $0.138$ (675) & $0.013$ (1,280) & $-0.088$ (272) \\
+Selected probability mass & $-0.103$ (500) & $-0.055$ (960) & $-0.219$ (960) & $-0.045$ (675) & $-0.009$ (1,280) & $-0.171$ (272) \\
+Selection-boundary margin & $-0.071$ (500) & $-0.340$ (960) & $-0.310$ (960) & $-0.161$ (675) & $0.032$ (1,280) & $-0.070$ (272) \\
+Selected/rest mean gap & $-0.103$ (500) & $-0.055$ (960) & $-0.219$ (960) & $-0.045$ (675) & $-0.009$ (1,280) & $-0.171$ (272) \\
+Hidden-state norm & $0.167$ (500) & $0.182$ (960) & $0.008$ (960) & $0.254$ (675) & $-0.033$ (1,280) & $-0.039$ (272) \\
+Hidden-state step distance & $-0.097$ (500) & $0.232$ (960) & $0.184$ (960) & $-0.023$ (675) & $-0.073$ (1,280) & $0.048$ (272) \\
+Hidden/router geometry & $0.130$ (500) & $0.212$ (960) & $0.001$ (960) & $0.141$ (675) & $-0.049$ (1,280) & $0.015$ (272) \\
+Top-1 switch rate & $0.171$ (500) & $0.217$ (960) & $0.242$ (960) & $0.140$ (675) & $-0.066$ (1,280) & $0.306$ (272) \\
+Adjacent selected-set overlap & $-0.184$ (500) & $-0.167$ (960) & $-0.254$ (960) & $-0.151$ (675) & $0.022$ (1,280) & $-0.273$ (272) \\
+\end{longtable}\endgroup
+
+\begingroup\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}lrrrrrr@{}}
+\caption{GPT-OSS-20B / Position: bin 01: correctness correlations $r$ (finite attempts).}\label{tab:multi-gptoss-position-bin_01}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endfirsthead
+\multicolumn{7}{l}{\textit{Continued from previous page}}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endhead
+\bottomrule\endfoot
+Router confidence & $-0.145$ (202) & $0.261$ (948) & $0.042$ (942) & $0.014$ (529) & $0.008$ (933) & $-0.115$ (116) \\
+Leading-expert margin & $-0.026$ (202) & $0.235$ (948) & $0.081$ (942) & $0.138$ (529) & $0.059$ (933) & $-0.059$ (116) \\
+Selected probability mass & $-0.058$ (202) & $0.034$ (948) & $-0.084$ (942) & $0.006$ (529) & $0.030$ (933) & $-0.132$ (116) \\
+Selection-boundary margin & $0.057$ (202) & $-0.345$ (948) & $-0.223$ (942) & $-0.085$ (529) & $-0.011$ (933) & $-0.102$ (116) \\
+Selected/rest mean gap & $-0.058$ (202) & $0.034$ (948) & $-0.084$ (942) & $0.006$ (529) & $0.030$ (933) & $-0.132$ (116) \\
+Hidden-state norm & $0.068$ (202) & $0.160$ (948) & $0.073$ (942) & $0.137$ (529) & $0.106$ (933) & $-0.138$ (116) \\
+Hidden-state step distance & $-0.132$ (202) & $0.161$ (948) & $0.056$ (942) & $-0.009$ (529) & $-0.089$ (933) & $0.216$ (116) \\
+Hidden/router geometry & $0.138$ (202) & $0.230$ (948) & $0.099$ (942) & $0.101$ (529) & $0.030$ (931) & $0.179$ (116) \\
+Top-1 switch rate & $0.164$ (202) & $0.174$ (948) & $0.233$ (942) & $0.105$ (529) & $-0.022$ (933) & $0.348$ (116) \\
+Adjacent selected-set overlap & $-0.123$ (202) & $-0.112$ (948) & $-0.222$ (942) & $-0.162$ (529) & $0.007$ (933) & $-0.293$ (116) \\
+\end{longtable}\endgroup
+
+\begingroup\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}lrrrrrr@{}}
+\caption{GPT-OSS-20B / Position: bin 02: correctness correlations $r$ (finite attempts).}\label{tab:multi-gptoss-position-bin_02}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endfirsthead
+\multicolumn{7}{l}{\textit{Continued from previous page}}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endhead
+\bottomrule\endfoot
+Router confidence & $-0.107$ (129) & $0.254$ (853) & $-0.025$ (864) & $0.025$ (398) & $-0.049$ (666) & $-0.074$ (64) \\
+Leading-expert margin & $0.062$ (129) & $0.201$ (853) & $0.050$ (864) & $0.158$ (398) & $-0.022$ (666) & $-0.057$ (64) \\
+Selected probability mass & $0.048$ (129) & $0.049$ (853) & $-0.055$ (864) & $-0.019$ (398) & $-0.025$ (666) & $-0.009$ (64) \\
+Selection-boundary margin & $0.139$ (129) & $-0.318$ (853) & $-0.121$ (864) & $-0.169$ (398) & $0.012$ (666) & $0.152$ (64) \\
+Selected/rest mean gap & $0.048$ (129) & $0.049$ (853) & $-0.055$ (864) & $-0.019$ (398) & $-0.025$ (666) & $-0.009$ (64) \\
+Hidden-state norm & $0.186$ (129) & $0.142$ (853) & $0.074$ (864) & $0.105$ (398) & $0.039$ (666) & $-0.009$ (64) \\
+Hidden-state step distance & $-0.055$ (128) & $0.138$ (853) & $-0.041$ (864) & $0.055$ (398) & $-0.088$ (664) & $0.012$ (64) \\
+Hidden/router geometry & $-0.083$ (128) & $0.229$ (853) & $0.103$ (864) & $0.103$ (398) & $-0.057$ (664) & $0.050$ (64) \\
+Top-1 switch rate & $0.047$ (128) & $0.161$ (853) & $0.101$ (864) & $0.142$ (398) & $-0.006$ (664) & $-0.005$ (64) \\
+Adjacent selected-set overlap & $-0.016$ (128) & $-0.123$ (853) & $-0.135$ (864) & $-0.278$ (398) & $-0.015$ (664) & $0.021$ (64) \\
+\end{longtable}\endgroup
+
+\begingroup\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}lrrrrrr@{}}
+\caption{GPT-OSS-20B / Position: bin 03: correctness correlations $r$ (finite attempts).}\label{tab:multi-gptoss-position-bin_03}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endfirsthead
+\multicolumn{7}{l}{\textit{Continued from previous page}}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endhead
+\bottomrule\endfoot
+Router confidence & $-0.137$ (91) & $0.250$ (749) & $-0.039$ (760) & $0.119$ (331) & $-0.056$ (514) & $0.026$ (39) \\
+Leading-expert margin & $-0.042$ (91) & $0.189$ (749) & $0.003$ (760) & $0.185$ (331) & $-0.071$ (514) & $0.053$ (39) \\
+Selected probability mass & $-0.141$ (91) & $0.047$ (749) & $-0.118$ (760) & $0.001$ (331) & $-0.060$ (514) & $0.066$ (39) \\
+Selection-boundary margin & $-0.087$ (91) & $-0.322$ (749) & $-0.167$ (760) & $-0.201$ (331) & $-0.011$ (514) & $-0.013$ (39) \\
+Selected/rest mean gap & $-0.141$ (91) & $0.047$ (749) & $-0.118$ (760) & $0.001$ (331) & $-0.060$ (514) & $0.066$ (39) \\
+Hidden-state norm & $-0.051$ (91) & $0.141$ (749) & $-0.025$ (760) & $0.043$ (331) & $-0.022$ (514) & $0.090$ (39) \\
+Hidden-state step distance & $-0.142$ (91) & $0.176$ (748) & $0.034$ (760) & $0.163$ (331) & $-0.051$ (514) & $0.218$ (39) \\
+Hidden/router geometry & $0.130$ (91) & $0.204$ (748) & $0.066$ (760) & $0.097$ (331) & $0.033$ (514) & $0.160$ (39) \\
+Top-1 switch rate & $0.177$ (91) & $0.160$ (748) & $0.164$ (760) & $0.149$ (331) & $0.018$ (514) & $-0.061$ (39) \\
+Adjacent selected-set overlap & $-0.153$ (91) & $-0.153$ (748) & $-0.227$ (760) & $-0.225$ (331) & $-0.015$ (514) & $0.020$ (39) \\
+\end{longtable}\endgroup
+
+\begingroup\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}lrrrrrr@{}}
+\caption{GPT-OSS-20B / Position: bin 04: correctness correlations $r$ (finite attempts).}\label{tab:multi-gptoss-position-bin_04}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endfirsthead
+\multicolumn{7}{l}{\textit{Continued from previous page}}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endhead
+\bottomrule\endfoot
+Router confidence & $-0.071$ (66) & $0.245$ (664) & $-0.079$ (716) & $0.139$ (288) & $-0.054$ (382) & $-0.053$ (25) \\
+Leading-expert margin & $-0.013$ (66) & $0.224$ (664) & $-0.009$ (716) & $0.171$ (288) & $-0.054$ (382) & $-0.023$ (25) \\
+Selected probability mass & $-0.056$ (66) & $0.099$ (664) & $-0.149$ (716) & $0.044$ (288) & $-0.068$ (382) & $0.030$ (25) \\
+Selection-boundary margin & $0.018$ (66) & $-0.280$ (664) & $-0.209$ (716) & $-0.153$ (288) & $0.003$ (382) & $0.244$ (25) \\
+Selected/rest mean gap & $-0.056$ (66) & $0.099$ (664) & $-0.149$ (716) & $0.044$ (288) & $-0.068$ (382) & $0.030$ (25) \\
+Hidden-state norm & $-0.049$ (66) & $0.201$ (664) & $-0.058$ (716) & $0.060$ (288) & $-0.006$ (382) & $-0.064$ (25) \\
+Hidden-state step distance & $-0.125$ (66) & $0.179$ (664) & $0.019$ (716) & $0.105$ (288) & $-0.060$ (381) & $-0.115$ (25) \\
+Hidden/router geometry & $0.230$ (66) & $0.193$ (664) & $0.042$ (716) & $0.126$ (288) & $-0.134$ (381) & $-0.058$ (25) \\
+Top-1 switch rate & $0.087$ (66) & $0.164$ (664) & $0.190$ (716) & $0.036$ (288) & $0.076$ (381) & $-0.130$ (25) \\
+Adjacent selected-set overlap & $0.037$ (66) & $-0.205$ (664) & $-0.264$ (716) & $-0.150$ (288) & $-0.053$ (381) & $0.203$ (25) \\
+\end{longtable}\endgroup
+
+\begingroup\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}lrrrrrr@{}}
+\caption{GPT-OSS-20B / Position: bin 05: correctness correlations $r$ (finite attempts).}\label{tab:multi-gptoss-position-bin_05}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endfirsthead
+\multicolumn{7}{l}{\textit{Continued from previous page}}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endhead
+\bottomrule\endfoot
+Router confidence & $0.004$ (56) & $0.262$ (602) & $-0.057$ (666) & $0.108$ (260) & $-0.038$ (302) & $-0.176$ (17) \\
+Leading-expert margin & $0.146$ (56) & $0.227$ (602) & $0.001$ (666) & $0.132$ (260) & $-0.087$ (302) & $-0.067$ (17) \\
+Selected probability mass & $0.128$ (56) & $0.107$ (602) & $-0.141$ (666) & $-0.000$ (260) & $-0.043$ (302) & $-0.084$ (17) \\
+Selection-boundary margin & $0.187$ (56) & $-0.266$ (602) & $-0.202$ (666) & $-0.160$ (260) & $0.014$ (302) & $0.147$ (17) \\
+Selected/rest mean gap & $0.128$ (56) & $0.107$ (602) & $-0.141$ (666) & $-0.000$ (260) & $-0.043$ (302) & $-0.084$ (17) \\
+Hidden-state norm & $0.075$ (56) & $0.198$ (602) & $-0.062$ (666) & $0.013$ (260) & $-0.009$ (302) & $-0.101$ (17) \\
+Hidden-state step distance & $0.074$ (56) & $0.151$ (602) & $0.063$ (666) & $0.155$ (260) & $-0.054$ (302) & $-0.074$ (17) \\
+Hidden/router geometry & $-0.012$ (56) & $0.244$ (602) & $0.063$ (666) & $0.007$ (260) & $-0.059$ (302) & $-0.283$ (17) \\
+Top-1 switch rate & $0.015$ (56) & $0.137$ (602) & $0.182$ (666) & $0.048$ (260) & $0.096$ (302) & $0.138$ (17) \\
+Adjacent selected-set overlap & $0.089$ (56) & $-0.144$ (602) & $-0.270$ (666) & $-0.188$ (260) & $-0.013$ (302) & $-0.161$ (17) \\
+\end{longtable}\endgroup
+
+\begingroup\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}lrrrrrr@{}}
+\caption{GPT-OSS-20B / Position: bin 06: correctness correlations $r$ (finite attempts).}\label{tab:multi-gptoss-position-bin_06}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endfirsthead
+\multicolumn{7}{l}{\textit{Continued from previous page}}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endhead
+\bottomrule\endfoot
+Router confidence & $-0.054$ (48) & $0.249$ (556) & $-0.052$ (612) & $0.124$ (240) & $-0.115$ (253) & $0.045$ (13) \\
+Leading-expert margin & $0.089$ (48) & $0.231$ (556) & $-0.031$ (612) & $0.197$ (240) & $-0.151$ (253) & $0.184$ (13) \\
+Selected probability mass & $0.075$ (48) & $0.102$ (556) & $-0.155$ (612) & $0.102$ (240) & $-0.061$ (253) & $-0.014$ (13) \\
+Selection-boundary margin & $0.204$ (48) & $-0.301$ (556) & $-0.214$ (612) & $-0.109$ (240) & $0.069$ (253) & $-0.193$ (13) \\
+Selected/rest mean gap & $0.075$ (48) & $0.102$ (556) & $-0.155$ (612) & $0.102$ (240) & $-0.061$ (253) & $-0.014$ (13) \\
+Hidden-state norm & $0.067$ (48) & $0.223$ (556) & $-0.073$ (612) & $0.122$ (240) & $0.060$ (253) & $-0.111$ (13) \\
+Hidden-state step distance & $-0.162$ (48) & $0.156$ (556) & $0.040$ (612) & $0.096$ (240) & $-0.154$ (253) & $0.238$ (13) \\
+Hidden/router geometry & $-0.021$ (48) & $0.251$ (556) & $0.035$ (612) & $0.044$ (240) & $-0.110$ (253) & $-0.248$ (13) \\
+Top-1 switch rate & $-0.069$ (48) & $0.181$ (556) & $0.236$ (612) & $-0.009$ (240) & $0.089$ (253) & $0.009$ (13) \\
+Adjacent selected-set overlap & $0.186$ (48) & $-0.190$ (556) & $-0.266$ (612) & $-0.077$ (240) & $0.015$ (253) & $-0.253$ (13) \\
+\end{longtable}\endgroup
+
+\begingroup\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}lrrrrrr@{}}
+\caption{GPT-OSS-20B / Position: bin 07: correctness correlations $r$ (finite attempts).}\label{tab:multi-gptoss-position-bin_07}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endfirsthead
+\multicolumn{7}{l}{\textit{Continued from previous page}}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endhead
+\bottomrule\endfoot
+Router confidence & $-0.187$ (43) & $0.242$ (506) & $-0.106$ (569) & $0.095$ (225) & $-0.093$ (217) & $-0.420$ (9) \\
+Leading-expert margin & $0.024$ (43) & $0.250$ (506) & $-0.058$ (569) & $0.149$ (225) & $-0.195$ (217) & $-0.275$ (9) \\
+Selected probability mass & $-0.007$ (43) & $0.138$ (506) & $-0.158$ (569) & $0.094$ (225) & $-0.123$ (217) & $-0.470$ (9) \\
+Selection-boundary margin & $0.140$ (43) & $-0.236$ (506) & $-0.166$ (569) & $-0.057$ (225) & $-0.028$ (217) & $-0.488$ (9) \\
+Selected/rest mean gap & $-0.007$ (43) & $0.138$ (506) & $-0.158$ (569) & $0.094$ (225) & $-0.123$ (217) & $-0.470$ (9) \\
+Hidden-state norm & $0.065$ (43) & $0.247$ (506) & $-0.076$ (569) & $0.086$ (225) & $-0.009$ (217) & $-0.421$ (9) \\
+Hidden-state step distance & $-0.327$ (43) & $0.144$ (506) & $-0.050$ (569) & $0.085$ (225) & $-0.048$ (217) & $0.260$ (9) \\
+Hidden/router geometry & $-0.099$ (43) & $0.201$ (506) & $0.050$ (568) & $0.033$ (225) & $-0.017$ (217) & $0.141$ (9) \\
+Top-1 switch rate & $-0.064$ (43) & $0.181$ (506) & $0.142$ (569) & $-0.047$ (225) & $0.170$ (217) & $0.482$ (9) \\
+Adjacent selected-set overlap & $0.138$ (43) & $-0.178$ (506) & $-0.190$ (569) & $-0.072$ (225) & $-0.116$ (217) & $-0.492$ (9) \\
+\end{longtable}\endgroup
+
+\begingroup\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}lrrrrrr@{}}
+\caption{GPT-OSS-20B / Position: bin 08: correctness correlations $r$ (finite attempts).}\label{tab:multi-gptoss-position-bin_08}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endfirsthead
+\multicolumn{7}{l}{\textit{Continued from previous page}}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endhead
+\bottomrule\endfoot
+Router confidence & $0.041$ (37) & $0.262$ (458) & $-0.089$ (528) & $0.037$ (209) & $-0.052$ (176) & $-0.711$ (8) \\
+Leading-expert margin & $0.201$ (37) & $0.265$ (458) & $-0.051$ (528) & $0.098$ (209) & $-0.142$ (176) & $-0.460$ (8) \\
+Selected probability mass & $0.081$ (37) & $0.162$ (458) & $-0.160$ (528) & $0.064$ (209) & $-0.043$ (176) & $-0.415$ (8) \\
+Selection-boundary margin & $-0.121$ (37) & $-0.217$ (458) & $-0.195$ (528) & $-0.055$ (209) & $0.048$ (176) & $0.597$ (8) \\
+Selected/rest mean gap & $0.081$ (37) & $0.162$ (458) & $-0.160$ (528) & $0.064$ (209) & $-0.043$ (176) & $-0.415$ (8) \\
+Hidden-state norm & $0.073$ (37) & $0.234$ (458) & $-0.060$ (528) & $0.113$ (209) & $-0.022$ (176) & $-0.801$ (8) \\
+Hidden-state step distance & $-0.019$ (37) & $0.149$ (458) & $-0.001$ (528) & $0.021$ (209) & $-0.034$ (176) & $0.161$ (8) \\
+Hidden/router geometry & $0.204$ (37) & $0.169$ (458) & $0.052$ (528) & $0.046$ (209) & $-0.047$ (176) & $-0.697$ (8) \\
+Top-1 switch rate & $-0.027$ (37) & $0.148$ (458) & $0.181$ (528) & $0.033$ (209) & $0.188$ (176) & $0.561$ (8) \\
+Adjacent selected-set overlap & $0.093$ (37) & $-0.201$ (458) & $-0.222$ (528) & $-0.115$ (209) & $-0.136$ (176) & $-0.484$ (8) \\
+\end{longtable}\endgroup
+
+\begingroup\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}lrrrrrr@{}}
+\caption{GPT-OSS-20B / Position: bin 09: correctness correlations $r$ (finite attempts).}\label{tab:multi-gptoss-position-bin_09}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endfirsthead
+\multicolumn{7}{l}{\textit{Continued from previous page}}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endhead
+\bottomrule\endfoot
+Router confidence & $0.169$ (30) & $0.269$ (416) & $-0.074$ (493) & $0.052$ (194) & $0.024$ (154) & $-0.451$ (6) \\
+Leading-expert margin & $0.318$ (30) & $0.240$ (416) & $-0.044$ (493) & $0.004$ (194) & $-0.063$ (154) & $-0.289$ (6) \\
+Selected probability mass & $0.217$ (30) & $0.128$ (416) & $-0.136$ (493) & $-0.024$ (194) & $0.032$ (154) & $-0.394$ (6) \\
+Selection-boundary margin & $-0.162$ (30) & $-0.277$ (416) & $-0.176$ (493) & $-0.098$ (194) & $0.075$ (154) & $0.782$ (6) \\
+Selected/rest mean gap & $0.217$ (30) & $0.128$ (416) & $-0.136$ (493) & $-0.024$ (194) & $0.032$ (154) & $-0.394$ (6) \\
+Hidden-state norm & $0.280$ (30) & $0.198$ (416) & $-0.067$ (493) & $0.023$ (194) & $0.001$ (154) & $-0.513$ (6) \\
+Hidden-state step distance & $0.051$ (30) & $0.153$ (416) & $-0.005$ (493) & $0.078$ (193) & $0.024$ (154) & $-0.093$ (6) \\
+Hidden/router geometry & $0.116$ (30) & $0.204$ (416) & $0.027$ (493) & $-0.002$ (193) & $-0.157$ (154) & $-0.330$ (6) \\
+Top-1 switch rate & $-0.185$ (30) & $0.179$ (416) & $0.201$ (493) & $0.056$ (193) & $0.214$ (154) & $0.875$ (6) \\
+Adjacent selected-set overlap & $0.230$ (30) & $-0.164$ (416) & $-0.210$ (493) & $-0.103$ (193) & $-0.113$ (154) & $-0.864$ (6) \\
+\end{longtable}\endgroup
+
+\begingroup\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}lrrrrrr@{}}
+\caption{GPT-OSS-20B / Position: overflow: correctness correlations $r$ (finite attempts).}\label{tab:multi-gptoss-position-overflow}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endfirsthead
+\multicolumn{7}{l}{\textit{Continued from previous page}}\\
+\toprule
+Metric & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\
+\midrule\endhead
+\bottomrule\endfoot
+Router confidence & $0.086$ (27) & $0.048$ (383) & $-0.247$ (466) & $0.038$ (185) & $-0.097$ (133) & --- \\
+Leading-expert margin & $0.181$ (27) & $0.129$ (383) & $-0.224$ (466) & $0.099$ (185) & $-0.139$ (133) & --- \\
+Selected probability mass & $0.168$ (27) & $0.158$ (383) & $-0.256$ (466) & $0.047$ (185) & $0.048$ (133) & --- \\
+Selection-boundary margin & $0.161$ (27) & $-0.012$ (383) & $-0.109$ (466) & $-0.071$ (185) & $0.179$ (133) & --- \\
+Selected/rest mean gap & $0.168$ (27) & $0.158$ (383) & $-0.256$ (466) & $0.047$ (185) & $0.048$ (133) & --- \\
+Hidden-state norm & $0.236$ (27) & $0.425$ (383) & $0.030$ (466) & $0.130$ (185) & $0.158$ (133) & --- \\
+Hidden-state step distance & $-0.035$ (27) & $-0.113$ (383) & $-0.294$ (466) & $0.079$ (185) & $-0.146$ (133) & --- \\
+Hidden/router geometry & $0.065$ (27) & $0.123$ (383) & $-0.012$ (466) & $-0.013$ (185) & $-0.032$ (133) & --- \\
+Top-1 switch rate & $-0.111$ (27) & $0.093$ (383) & $0.262$ (466) & $0.028$ (185) & $0.166$ (133) & --- \\
+Adjacent selected-set overlap & $0.393$ (27) & $-0.102$ (383) & $-0.275$ (466) & $-0.147$ (185) & $-0.057$ (133) & --- \\
+\end{longtable}\endgroup
+

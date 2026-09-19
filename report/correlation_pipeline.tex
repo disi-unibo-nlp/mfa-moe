@@ -1,17 +1,18 @@
-\section{Qwen Correlation Pipeline}
+\section{Correlation Pipeline}
 
 \subsection{Statistical measures and literature basis}
 \label{sec:qwen-corr-metrics}
 
-The corrected analysis selects the association measure from the scale of the
-outcome and the unit of analysis, as summarized in
-Table~\ref{tab:qwen-corr-metrics}.  The numerical results below use the
-September 10, 2026 vLLM untagged analysis snapshot and supersede the earlier
-tables. Generation/replay coverage and full-reasoning/position analysis are
-complete for the six executed math benchmarks, but the token-budget audit
-still flags frequent truncation. Consequently,
-these are fixed-budget observational results, not uncensored reasoning-length
-estimates or evidence that a routing intervention improves correctness.
+The analysis selects the association measure from the outcome scale and
+unit of analysis, as summarized in Table~\ref{tab:qwen-corr-metrics}.
+The detailed Qwen results below use the six-benchmark run completed September 17,
+2026: 4,647 attempts, including token-limit completions, with full-reasoning,
+class, and position views. The 100 complete avg@32 groups now support
+repeated-attempt analysis. Classes use sampled labelled attempts; full and
+position views use all reasoning tokens. Historical snapshot coefficients
+are superseded here and remain separate archival artifacts.
+Section~\ref{sec:multimodel} adds the completed Gemma and GPT-OSS runs,
+with model-specific class coverage and annotation protocols.
 
 \begin{table*}[t]
 \centering

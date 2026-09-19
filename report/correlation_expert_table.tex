@@ -1,0 +1,18 @@
+\begingroup\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}llrrrr@{}}
+\caption{Post-hoc largest absolute correctness coefficient per dataset in the expert-rate screen, Qwen3.5-35B-A3B. Point-biserial $r$ and BH $q$ within dataset/target; no expert bootstrap intervals. Numeric IDs pool six distinct layer-local modules. Repeated-attempt trace-level q-values are diagnostic, not cluster-adjusted inference.}\label{tab:qwen-corr-experts}\\
+\toprule
+Dataset & Pooled-ID rate & Traces & Errors & $r$ & $q$ \\
+\midrule\endfirsthead
+\multicolumn{6}{l}{\textit{Continued from previous page}}\\
+\toprule
+Dataset & Pooled-ID rate & Traces & Errors & $r$ & $q$ \\
+\midrule\endhead
+\bottomrule\endfoot
+MATH-500 & Top-1 61 / top-2 7 & 500 & 155 & $0.328$ & $3.36e-11$ \\
+AIME24 & Top-1 ID 123 & 960 & 143 & $-0.568$ & $1.87e-80$ \\
+AIME25 & Top-1 133 / top-2 85 & 960 & 187 & $0.556$ & $4.72e-76$ \\
+Olympiad & Top-1 70 / top-2 181 & 675 & 353 & $0.312$ & $6.25e-14$ \\
+AMC23 & Top-8 ID 217 & 1280 & 42 & $-0.665$ & $2.83e-161$ \\
+Minerva & Top-1 162 / top-2 165 & 272 & 199 & $0.409$ & $1.31e-09$ \\
+\end{longtable}\endgroup
