@@ -173,6 +173,8 @@ def extract_all(args: argparse.Namespace) -> list[dict[str, Any]]:
         quantization=args.quantization,
     )
     text_config = getattr(model.config, "text_config", None)
+    logger.info("Forward attention backend: %s",
+                getattr(text_config or model.config, "_attn_implementation", None))
     num_router_layers = getattr(text_config, "num_hidden_layers", None)
     if num_router_layers is None:
         num_router_layers = getattr(model.config, "num_hidden_layers", None)

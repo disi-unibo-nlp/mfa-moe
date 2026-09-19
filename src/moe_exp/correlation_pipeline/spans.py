@@ -9,7 +9,6 @@ import re
 from typing import Any
 
 from moe_exp.gepaLLMAsJudge.data import SENTENCE_LABELS
-from moe_exp.models.inference import _find_prompt_length, _format_prompt
 
 SPAN_SCHEMA_VERSION = 1
 # Separate from sentence segmentation: old sampled view features must be replayed.
@@ -82,17 +81,27 @@ def sentence_spans(trace: Any) -> list[dict[str, Any]]:
     This is a versioned deterministic segmentation, not a linguistic parser.
     Decimal points and punctuation inside LaTeX math do not create boundaries.
     """
+    version = (trace.metadata.get("reasoning_annotation") or {}).get("splitter_version", 1)
+    protected = None
+    if version == 2:
+        from moe_exp.correlation_pipeline.splitter_v2 import math_protection_spans
+
+        protected = math_protection_spans(trace.cot_text)
+    elif version != 1:
+        raise ValueError(f"Unsupported sentence splitter version: {version}")
     units = []
     for start, end in reasoning_ranges(trace):
-        for unit in _sentence_spans_in_range(trace.cot_text, start, end):
+        for unit in _sentence_spans_in_range(trace.cot_text, start, end, protected):
             units.append({**unit, "index": len(units)})
     return units
 
 
-def _sentence_spans_in_range(text: str, start: int, end: int) -> list[dict[str, Any]]:
+def _sentence_spans_in_range(
+    text: str, start: int, end: int, protected: list[tuple[int, int]] | None = None
+) -> list[dict[str, Any]]:
     # Disjoint alternatives avoid exponential backtracking on unclosed math.
     # The fallback preserves the original last-escaped-dollar closing behavior.
-    protected = [
+    protected = protected if protected is not None else [
         match.span()
         for match in re.finditer(
             r"\$\$.*?\$\$|\\\[.*?\\\]|\\\(.*?\\\)|(?<!\\)\$(?:(?:\\.|[^$\\])*?\$|(?:\\.|[^$\\])*\\\$)",
@@ -149,7 +158,10 @@ def validate_annotation(trace: Any, annotation: dict[str, Any]) -> None:
         raise ValueError(f"Stale annotation for {trace.dataset}/{trace.problem_id}")
     if annotation.get("sentence_selection") != trace.metadata.get("sentence_selection"):
         raise ValueError("Annotation belongs to a different sentence selection")
-    units = sentence_spans(trace)
+    annotated = trace.model_copy(update={"metadata": {
+        **trace.metadata, "reasoning_annotation": annotation,
+    }})
+    units = sentence_spans(annotated)
     expected = [units[index] for index in selected_sentence_indices(trace, units)]
     actual = annotation.get("units", [])
     if len(expected) != len(actual):
@@ -175,10 +187,11 @@ def validate_available_annotation(trace: Any, annotation: dict[str, Any]) -> Non
         raise ValueError(f"Stale annotation for {trace.dataset}/{trace.problem_id}")
     if annotation.get("status") not in {"complete", "partial"}:
         raise ValueError("Unsupported reasoning annotation status")
-    units = sentence_spans(trace)
     sampled = trace.model_copy(update={"metadata": {
         **trace.metadata, "sentence_selection": annotation.get("sentence_selection"),
+        "reasoning_annotation": annotation,
     }})
+    units = sentence_spans(sampled)
     selected = set(selected_sentence_indices(sampled, units))
     seen = set()
     for labeled in annotation.get("units", []):
@@ -202,6 +215,8 @@ def token_layout(trace: Any, tokenizer: Any) -> dict[str, Any]:
     overlapping reasoning is owned exactly once; tags/final answers are excluded.
     Fast tokenizer offsets are required; approximate retokenization is unsafe.
     """
+    from moe_exp.models.inference import _find_prompt_length, _format_prompt
+
     replay = trace.metadata.get("token_replay")
     if replay is not None:
         from moe_exp.models.token_replay import validate_token_replay

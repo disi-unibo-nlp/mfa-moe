@@ -174,10 +174,14 @@ Qwen3.6, Qwen3.5, Qwen3, Nemotron 3.5 Lightning, Gemma4, GLM-4.7-Flash, and
 GPT-OSS-20B. New runs save and replay the actual server token IDs, including
 each model's native reasoning-channel format.
 
-The probe indices remain unchanged. GPT-OSS has no layers matching those
-indices and requires an explicit `--all-router-layers` override for forward
-replay. See [MODEL_SUPPORT.md](MODEL_SUPPORT.md) for the model table, commands,
-memory settings, layer mappings, and verification limits.
+Forward replay automatically selects model-specific probe results for GPT-OSS
+and Gemma4; other profiles use the historical Qwen selection. GPT-OSS loads
+`results/probeTest/gpt-oss-20b/probes/results.json`, whose current selected router
+layers are 15, 19, 21, and 23 (zero-based). `--all-router-layers` is optional:
+it bypasses probe selection and retains all 24 GPT-OSS router layers. Use
+`--probe-results PATH` to override the probe results file. See
+[MODEL_SUPPORT.md](MODEL_SUPPORT.md) for the model table, commands, memory
+settings, layer mappings, and verification limits.
 
 To tag the already saved GGUF generations without regenerating answers:
 
@@ -456,3 +460,23 @@ Naive independent-sample p-values and layer-specific feature rankings are
 retained only as exploratory diagnostics and are labelled as such. Any later episode classifier can add numeric values under
 `TraceRecord.metadata["episode_features"]`; the analyzer automatically includes
 them as `episode_*` columns.
+
+### Memory-efficient Gemma and GPT-OSS replay
+
+Gemma NF4 and GPT-OSS `mxfp4-bf16` replay now select
+`moe_replay_efficient_v1` automatically. This backend uses PyTorch's precompiled
+CUDA memory-efficient attention operator, including native causal/local-window
+masking. It supports Gemma's 512-dimensional global heads and preserves GPT-OSS
+attention sinks using the kernel's FP32 log-sum-exp. It does not use Triton JIT,
+truncate sequences, or split model replay into chunks. Qwen's Unsloth path is unchanged.
+
+The backend is restricted to inference on one unpadded text sequence, without a
+KV cache or custom masks. Unsupported inputs fail explicitly. It uses a private
+ATen operator tested with the project image's PyTorch 2.11.0 / Transformers 5.5.0;
+rerun `tests/test_replay_attention.py` on CUDA when upgrading those dependencies.
+Fused attention can introduce small floating-point differences from eager attention.
+The backend name is recorded in forward checkpoints so older results are recomputed.
+
+Rerun the existing commands with `--skip-generate --skip-annotate`; no additional
+flag or image rebuild is needed with the existing project image and mounted source.
+The selected backend is printed during forward extraction.

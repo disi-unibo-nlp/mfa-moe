@@ -124,10 +124,13 @@ def load_gemma_4bit(model_id, config, *, offload_folder="offload", revision="mai
         )
     if not text_config.enable_moe_block:
         raise ValueError("Gemma expert NF4 replay requires an MoE checkpoint")
+    from .replay_attention import register_replay_attention
+
     model, info = Gemma4ForQuantizedReplay.from_pretrained(
         model_id, config=deepcopy(text_config), dtype=torch.bfloat16, revision=revision,
         device_map="auto", offload_folder=offload_folder,
         experts_implementation="eager",
+        attn_implementation=register_replay_attention(),
         quantization_config=GemmaReplayNF4Config(text_config.num_experts, text_config.num_hidden_layers),
         key_mapping={r"^model\.language_model\.": "model."},
         output_loading_info=True,
