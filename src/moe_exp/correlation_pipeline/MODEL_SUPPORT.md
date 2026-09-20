@@ -75,6 +75,177 @@ because newer releases reject the hub-kernel registrations in Transformers 5.5.
 For the locally prepared compatibility image, prefix the command above with
 `IMAGE_NAME=moe-mfa-experiments:nemotron-forward`.
 
+### Nemotron on LEONARDO Booster (A100, native Slurm)
+
+`sbatch/native_nemotron_generate.sbatch` serves
+`nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4` from the project
+`vllm-cu129` environment on two A100s and runs the resumable generation stage
+with the dedicated `envs/correlation-client-3.11` client. Checkpoints are read
+from `cache/hf` with `HF_HUB_OFFLINE=1`, so they must be downloaded on a login
+node first.
+
+A100 (SM80) needs the settings that `sbatch/native_nemotron_server.sh` pins:
+
+- `--attention-config '{"backend":"TRITON_ATTN"}'`: the FlashInfer paged-prefill
+  kernel image is invalid on this driver stack (job 57729862).
+- `--kv-cache-dtype bfloat16`: a native FP8 KV cache needs SM89+.
+- `--linear-backend marlin`: the ModelOpt mixed-precision layout routes both the
+  W4A16 NVFP4 expert layers and the FP8 mixer projections through Marlin.
+- `--mamba-backend triton --mamba-cache-mode align`: the verified setting on
+  this node. NVIDIA's Ampere recipe uses FlashInfer, but FlashInfer's Mamba SSU
+  JIT hits a gcc internal compiler error while building
+  `invoke_selective_state_update_mtp.cuh`, so that path cannot start a server.
+  FlashInfer remains selectable with `--mamba-backend flashinfer`.
+
+The checkpoint declares ModelOpt `MIXED_PRECISION` (5,935 W4A16_NVFP4 expert
+layers, 46 FP8 mixer projections), so no `--quantization` flag is passed:
+vLLM 0.29 detects the layout and selects the per-layer kernels itself.
+
+That combination is the verified default of both launchers, not just an example:
+tensor parallel 2, 8 concurrent sequences, 8,192 batched tokens, 0.90 GPU memory
+utilization, DSpark with 3 speculative tokens, Triton Mamba, Marlin linears,
+Triton attention and bfloat16 KV. `--plan-only` on either launcher prints the
+resulting command without touching a GPU.
+
+Measured on 2026-09-18 (debug QoS, 2x A100-SXM-64GB, checkpoint revisions above):
+
+| Probe | Configuration | Result |
+| --- | --- | --- |
+| 58117845 | DSpark, 2 requests | acceptance length 3.45, draft acceptance 81.7% |
+| 58121810 | DSpark, fresh AIME traces | acceptance length 2.92, draft acceptance 64.1% |
+| 58122776 | DSpark, 8 concurrent, 12-request batch | 826 accepted tokens/s in the vLLM metric window; 13,321 tokens in 30 s end to end (444 tokens/s including prefill and trace writes) |
+
+The 58122776 verdict is kept at
+`results/correlation_pipeline/nemotron-nvfp4-throughput-dspark-8w/probe/job-58122776.json`.
+At ~800 tokens/s sustained, the six-benchmark suite (4,647 traces) projects to
+roughly 6-10 h, so it fits one 24 h `boost_usr_prod` job with resumption room.
+
+Generation uses the checkpoint's recommended sampling, temperature 1.0 and
+top-p 0.95, a 49,152-token context and a 32,768-token completion budget, and
+writes token-replay traces for exact forward replay later. The default run
+covers the six SPIRAL MATH benchmarks with their per-dataset attempt counts
+(`math500`, `olympiad`, `minerva` pass@1; `aime24`, `aime25`, `amc23` avg@32:
+500/30/30/675/40/272 problems, 4,647 traces) under
+`results/correlation_pipeline/nemotron-nvfp4-<dspark|plain>/generation`.
+
+```bash
+# 30-minute debug-QoS feasibility probe (DSpark on A100 is unvalidated upstream)
+sbatch sbatch/native_nemotron_probe.sbatch --speculation dspark
+
+# full six-benchmark run, only after the probe passed
+sbatch sbatch/native_nemotron_generate.sbatch --speculation dspark
+```
+
+The suite can also run as independent per-dataset shards that share one
+generation root and finish in parallel. Each shard keeps its own provenance,
+logs and compile cache under `<results>/parallel/<label>/`, and verifies only
+its own per-dataset manifest, so the shards cannot overwrite each other:
+
+```bash
+for ds in math500 aime24 aime25 olympiad amc23 minerva; do
+  sbatch sbatch/native_nemotron_generate.sbatch --job-label "$ds" --datasets "$ds"
+done
+```
+
+A labelled shard writes a root `summary.json` that lists only its dataset, so
+regenerate the merged root summary from the per-dataset manifests once every
+shard has finished before downstream labeling or forward replay reads the root.
+The launcher's job IDs and settings for the 2026-09-18 run are recorded in
+`results/correlation_pipeline/nemotron-nvfp4-dspark/parallel/launch_record.json`.
+
+DSpark is validated by NVIDIA on Hopper/Blackwell only, but the CINECA probes
+(jobs 58117845, 58118129, 58121810 on `lrdn0250`/`lrdn1554`/`lrdn2026`) show it
+working on the A100s with the Triton Mamba backend: the server loads the
+`Qwen3DSparkModel` draft, captures its CUDA graphs, and reports a mean
+acceptance length of 2.9-3.5 with 64-82% draft acceptance. Re-run the probe
+before trusting another node, driver or vLLM build; if it fails, fall back to
+`--speculation none`.
+`generation/server_manifest.json` records the run contract (speculation mode,
+model revisions, backends, argv, versions, repository SHA) and the launcher
+refuses to resume a directory whose contract differs; resubmitting the same
+command after a walltime stop continues from the per-trace shards. Labeling and
+forward replay are unchanged and can consume the new trace root.
+
+### GLM-4.7-Flash and Qwen3-30B-A3B on LEONARDO Booster (A100, native Slurm)
+
+`sbatch/native_source_generate.sbatch --source glm|qwen330b` serves these two
+BF16 checkpoints from the project `vllm-cu129` environment on two A100s, with the
+argv built by the pure-stdout helper `sbatch/native_source_server.sh`. Neither
+checkpoint is quantized, so no `--quantization`, `--linear-backend` or
+`--mamba-backend` flag is passed, and neither is multimodal, so
+`--language-model-only` must not be passed either.
+
+| | GLM-4.7-Flash | Qwen3-30B-A3B |
+| --- | --- | --- |
+| architecture | `Glm4MoeLiteForCausalLM` | `Qwen3MoeForCausalLM` |
+| attention | **`TRITON_MLA`** | `FLASH_ATTN` |
+| reasoning parser | `glm45` | `qwen3` |
+| `--max-model-len` | 49152 | **40960** (native cap) |
+| MTP head | present, opt in with `--speculation mtp` | none, `mtp` is refused |
+| sampling | temperature 1.0, top-p 0.95, top-k 0 | temperature 0.6, top-p 0.95, top-k 20 |
+| size / revision | 62.5 GB, `7dd20894a642a0aa287e9827cb1a1f7f91386b67` | 61.1 GB, `ad44e777bcd18fa416d9da3bd8f70d33ebb85d39` |
+
+Two settings are load-bearing, not stylistic:
+
+- vLLM 0.29 lists `glm4_moe_lite` in `is_deepseek_mla()`, so GLM-4.7-Flash runs
+  the MLA attention kernels. `FLASH_ATTN` is not a valid backend on that path,
+  and of the MLA backends only `TRITON_MLA` supports SM80. Passing an empty
+  `--attention-backend` omits the flag and lets vLLM select, which is the probe
+  fallback.
+- `glm45` is an alias, not a legacy parser: `vllm/reasoning/__init__.py` maps
+  both `glm45` and `glm47` to `glm47_moe_reasoning_parser`, so GLM-4.7-Flash is
+  served by its own parser.
+
+Checkpoints are read from `cache/hf` with `HF_HUB_OFFLINE=1`, so they must be
+downloaded on a login node first with `download_model.sh <repo-id> ...`, which
+verifies every shard named in `model.safetensors.index.json`.
+
+Probe before committing a full run: `sbatch/native_source_probe.sbatch --source
+<key>` is a 30-minute `boost_qos_dbg` job whose `SMOKE_OK` verdict additionally
+requires a positive, non-constant reasoning-length metric on every trace,
+resolved with the sampler's own `sample_stratified.reasoning_tokens`.
+`boost_qos_dbg` permits at most two running or pending jobs per user.
+
+### One server port per concurrent job, chosen deterministically
+
+Leonardo Booster nodes hold four A100s, so Slurm can place two 2-GPU jobs on the
+same node. Every launcher that binds a fixed port therefore risks a collision:
+probe 58282929 shared port 41800 with a concurrent GLM probe, passed `/health`
+against the sibling's server, and had every request rejected because the served
+model id did not match. Nothing in the failure named the port; it surfaced only
+as `Inference request failed after 5 attempts`.
+
+`native_source_probe.sbatch` and `native_source_generate.sbatch` therefore derive
+the port from the source and, for generation, the dataset shard: probes use 41810
+(glm) and 41820 (qwen330b); generation uses 41900-41905 and 41920-41925. The
+mapping must stay deterministic rather than random, because `generate.py` folds
+`--base-url` into `generation_sha256`, so a shard only resumes from its own cached
+traces when it is handed the same port again. The older Nemotron and Qwen3.6
+generation launchers still share port 41800 across their six shards and are
+exposed to this if two of their shards ever land on one node.
+
+### Server readiness for unquantized BF16 checkpoints
+
+Qwen3-30B-A3B spends ~350 s loading its 16 BF16 shards and a further ~130 s on
+profiling, KV-cache creation and CUDA-graph capture, so it answers `/health`
+about 750 s after launch. The Nemotron probe's 720 s readiness cap cut that off
+(job 58283627) even though the engine had come up correctly, so the source probe
+defaults to 1200 s; the `boost_qos_dbg` wall of 1800 s still leaves room for the
+four-problem slice. GLM-4.7-Flash spreads the same weight volume over 48 smaller
+shards and loads comfortably faster.
+
+### Reasoning-token reporting is not uniform across model families
+
+vLLM does not populate `usage.completion_tokens_details.reasoning_tokens` for
+every family. The gpt-oss harmony path reports a constant `0` while its
+`openai_gptoss` parser still fills `reasoning_content` correctly. Gemma,
+Qwen3.6 and Nemotron report real values. Because the stratified sampler uses
+that field as its length stratum, the first gpt-oss sample was stratified into a
+single length bucket. `sample_stratified.py` now derives the count from the
+saved `token_replay` when the server value is absent or zero, and refuses a
+dataset whose eligible traces all report the same length. Any new model should
+be checked with the probe rather than assumed to report the field.
+
 Validation: a tiny real hybrid Nemotron checkpoint preserves native logits and
 router capture before quantization, and loads every expert in NF4 and completes
 router/hidden-state extraction on an RTX 5090. Full 30B loading and long-context

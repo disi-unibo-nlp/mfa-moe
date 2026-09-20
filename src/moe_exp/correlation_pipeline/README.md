@@ -133,6 +133,174 @@ reasoning-event analysis and is explicitly unscored for final-answer accuracy.
 the requested `\boxed{LETTER}` answer. A normalized exact/numeric fallback is
 recorded explicitly if symbolic parsing cannot score an answer.
 
+## Stratified 100k sampling and labelling (all benchmark sources)
+
+`sample_stratified.py` selects the 100,000 sentence labels of every source
+instead of the error-rate-weighted sentence sample above. It keeps one
+completion per `source_problem_id` (diversity first), splits each dataset's
+scored traces into equal-count `reasoning_tokens` quartiles, and allocates
+sentence quotas proportional to the chosen universe's
+`dataset x correct|incorrect x Q1..Q4` supply. Inside a cell the quota is spread
+max-min fairly across problems, and each cell quota is split evenly across four
+25,000-identity parts.
+
+The same recipe (seed 42) is applied to every source; the balanced sample roots
+live next to each source's generation:
+
+| source key | generation model | sampling root (`--output-dir`) |
+| --- | --- | --- |
+| `gpt` | `openai/gpt-oss-20b` | `results/correlation_pipeline/gpt-oss-20b/reasoning-vllm-v1/sampling-100k-stratified-v2` |
+| `gemma` | `nvidia/Gemma-4-26B-A4B-NVFP4` | `results/correlation_pipeline/gemma-nvfp4-nf4/reasoning-vllm-v1/sampling-100k-stratified` |
+| `qwen36` | `Qwen/Qwen3.6-35B-A3B-FP8` | `results/correlation_pipeline/qwen36-35b-a3b-fp8/reasoning-vllm-v1/sampling-100k-stratified` |
+| `nemotron` | `nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4` | `results/correlation_pipeline/nemotron-nvfp4-dspark/reasoning-vllm-v1/sampling-100k-stratified` |
+| `glm` | `zai-org/GLM-4.7-Flash` | `results/correlation_pipeline/glm-4.7-flash/reasoning-vllm-v1/sampling-100k-stratified` |
+| `qwen330b` | `Qwen/Qwen3-30B-A3B` | `results/correlation_pipeline/qwen3-30b-a3b/reasoning-vllm-v1/sampling-100k-stratified` |
+
+The earlier GPT-OSS labels (a 100k prefix of the full corpus: `math500` plus
+three `aime24` problems) and the earlier Gemma labels (the error-weighted
+`sample_tagging.py` population under `reasoning-vllm-v1/sampling`) are
+superseded by this recipe. The Nemotron sampling was produced with it on
+2026-09-18 and is reused unchanged (the current code reproduces the same plan
+hash), but its labels are re-run with the uniform launcher below.
+
+Run it from the repository root (CPU only; any Python with pydantic works, a
+2-5 GB corpus takes one to three minutes):
+
+```bash
+PYTHONPATH=src python -m moe_exp.correlation_pipeline.sample_stratified \
+  --generation-dir results/correlation_pipeline/gpt-oss-20b/generation \
+  --generation-model openai/gpt-oss-20b \
+  --output-dir results/correlation_pipeline/gpt-oss-20b/reasoning-vllm-v1/sampling-100k-stratified \
+  --dry-run
+```
+
+Drop `--dry-run` to write `<output-dir>/generation/<model-slug>/...` (combined
+100k), four self-contained `<output-dir>/parts/part-XX/...` roots and
+`sampling_manifest.json`. Truncated/unscored traces are excluded and counted in
+the manifest, which also records per-dataset cell supplies, the chosen
+`sample_id` per problem, share deviations and plan hashes. Re-running with the
+same seed is idempotent; a different plan into the same directory is refused.
+
+### Reasoning-length metric
+
+The length stratum comes from `sample_stratified.reasoning_tokens`, which
+resolves in three tiers and records which one won per dataset in the manifest's
+`eligible.<dataset>.length_metric_source`:
+
+1. the server's `usage.completion_tokens_details.reasoning_tokens` when it is
+   positive;
+2. otherwise a count derived from the saved `metadata.token_replay`: the
+   completion offsets are character spans into `cot_text`, so locating
+   `reasoning_content` inside it identifies exactly which completion tokens are
+   reasoning. This needs no tokenizer and no chat-format knowledge;
+3. otherwise the trace is dropped and counted in
+   `dropped_missing_reasoning_tokens`.
+
+Tier 2 exists because vLLM does not populate the usage field for every model
+family. The gpt-oss harmony path reports a constant `reasoning_tokens: 0` while
+still parsing `reasoning_content` correctly, so the first gpt-oss sample stratified
+100k units into a single length bucket whose quartiles were decided by the
+`trace_sha256` tiebreak alone. The sampler now also **refuses** a dataset whose
+eligible traces all report the same length, which is what makes that failure
+loud instead of silent. Gemma, Qwen3.6 and Nemotron resolve entirely through
+tier 1, and their selections are byte-identical before and after the change.
+
+### Labelling the parts on LEONARDO
+
+`sbatch/native_stratified_annotate.sbatch` labels one part of one source with
+the usual Qwen3.8-27B judge (TP=2, MTP=3, batch 64, reasoning effort low, 12 h
+limit, checkpoint resume). It reads only
+`<sampling root>/parts/part-XX/generation/<slug>` and writes only
+`/leonardo_scratch/large/userexternal/lmolfett/mfa-moe/qwen38-mtp3-stratified/<source>/part-XX`.
+Ports are unique per source and part (`gpt` 43000+part, `gemma` 43100+part,
+`qwen36` 43200+part, `nemotron` 43300+part, `glm` 43400+part, `qwen330b`
+43500+part) because two 2-GPU jobs can share a node:
+
+```bash
+STRAT=/leonardo_scratch/large/userexternal/lmolfett/mfa-moe/qwen38-mtp3-stratified
+for src in gpt gemma qwen36 nemotron glm qwen330b; do
+  case $src in gpt) base=43000 ;; gemma) base=43100 ;; qwen36) base=43200 ;;
+                nemotron) base=43300 ;; glm) base=43400 ;; qwen330b) base=43500 ;; esac
+  for p in 0 1 2 3; do
+    sbatch --parsable sbatch/native_stratified_annotate.sbatch \
+      --source $src --part $p --port $((base + p)) \
+      --output-dir $STRAT/$src/part-0$p
+  done
+done
+```
+
+The 2026-09-18 Nemotron labels from `sbatch/native_nemotron_annotate.sbatch`
+(same contract, ports 42000+part, output under `qwen38-mtp3-production/nemotron`)
+are superseded by the uniform rerun; that launcher is kept for provenance.
+Each part is internally stratified, so a single part is representative of the
+global mix. The plan-only form of the client is still available for inspection:
+
+```bash
+<judge-env>/bin/python -m moe_exp.correlation_pipeline.annotation_batch \
+  --trace-root <sampling root>/parts/part-00/generation/<model-slug> \
+  --output-dir <scratch-part-00> \
+  --part 0 --parts 1 --part-size 25000 --total 25000 \
+  --judge-program results/gepaLLMAsJudge/qwen3.8-27b-medium-final-s42-v3/selected_program_20260827_173300.json \
+  --model Qwen/Qwen3.8-27B --base-url http://127.0.0.1:41800/v1 \
+  --plan-only
+```
+
+### Generating a new source model
+
+`sbatch/native_source_generate.sbatch` benchmarks a BF16 dense-MoE checkpoint on
+two A100s and writes a trace root the sampler can consume. The vLLM argv comes
+from `sbatch/native_source_server.sh`, which is a pure-stdout helper so the argv
+is testable without Slurm. Per-source settings are not interchangeable:
+
+| `--source` | model | attention | parser | context | temp / top-k |
+| --- | --- | --- | --- | --- | --- |
+| `glm` | `zai-org/GLM-4.7-Flash` | `TRITON_MLA` | `glm45` | 49152 | 1.0 / 0 |
+| `qwen330b` | `Qwen/Qwen3-30B-A3B` | `FLASH_ATTN` | `qwen3` | 40960 | 0.6 / 20 |
+
+GLM-4.7-Flash is routed through vLLM's MLA kernels (`glm4_moe_lite` is listed in
+`is_deepseek_mla()`), where `FLASH_ATTN` is not a valid backend and `TRITON_MLA`
+is the only MLA backend that supports SM80. Qwen3-30B-A3B is plain GQA, caps at
+its native 40,960-token window, and has no MTP head, so `--speculation mtp` is
+refused for it. The existing Nemotron and Qwen3.6 generation launchers are left
+alone: their trace roots are published provenance.
+
+Probe a new checkpoint before spending a full run. `sbatch/native_source_probe.sbatch`
+is a 30-minute `boost_qos_dbg` job over a four-problem slice whose `SMOKE_OK`
+verdict requires, besides the trace and token-replay counts, that
+`sample_stratified.reasoning_tokens` resolves to a positive and **non-constant**
+value on every trace. That is the sampler's own predicate, so a passing probe
+guarantees the corpus is samplable. Note `boost_qos_dbg` allows at most two
+running or pending jobs per user, which is exactly two probes.
+
+```bash
+sbatch sbatch/native_source_probe.sbatch --source glm
+sbatch sbatch/native_source_probe.sbatch --source qwen330b
+
+# only once both verdicts are SMOKE_OK
+for ds in math500 aime24 aime25 olympiad amc23 minerva; do
+  sbatch sbatch/native_source_generate.sbatch --source glm      --job-label "$ds" --datasets "$ds"
+  sbatch sbatch/native_source_generate.sbatch --source qwen330b --job-label "$ds" --datasets "$ds"
+done
+```
+
+### Merged deliverable
+
+`labels_export.py` verifies the four parts of every source (complete summaries,
+matching `annotations_sha256`, record schema, identities unique across parts,
+per-dataset trace counts equal to the part manifests), concatenates them into
+`<merged-root>/<source>/annotations.json` + `summary.json`, and writes
+`manifest.json` (judge settings, code revision, Slurm launch record),
+`SHA256SUMS.txt`, `README.txt` and a zip under the gitignored `data/labels/`.
+`sbatch/mfa_export_labels.sbatch` runs `--verify-only` and then the export on
+the serial partition; submit it with `--dependency=afterok:<labeling job ids>`
+and `--launch-record <json>`.
+
+```bash
+PYTHONPATH=src python -m moe_exp.correlation_pipeline.labels_export --verify-only
+PYTHONPATH=src python -m moe_exp.correlation_pipeline.labels_export \
+  --launch-record /leonardo_scratch/large/userexternal/lmolfett/mfa-moe/qwen38-mtp3-stratified/launch_record.json
+```
+
 ## 1. Generate with vLLM
 
 The host Python on the current machine is 3.10, while the project requires
