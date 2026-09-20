@@ -100,6 +100,11 @@ and analysis can also be run independently. See
 for supported benchmarks, sampling settings, model pairing, output layout,
 and Docker commands.
 
+Native CINECA generation for a custom checkpoint (Nemotron 3.5 Lightning
+30B-A3B NVFP4 on the A100s, including a DSpark feasibility probe) uses
+[`sbatch/native_nemotron_generate.sbatch`](sbatch/native_nemotron_generate.sbatch);
+see [MODEL_SUPPORT.md](src/moe_exp/correlation_pipeline/MODEL_SUPPORT.md#nemotron-on-leonardo-booster-a100-native-slurm).
+
 ## probeTest
 
 `probeTest` extracts pre-sentence Qwen3.5 hidden states for the 38 released
