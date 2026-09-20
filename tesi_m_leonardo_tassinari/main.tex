@@ -109,15 +109,15 @@ connection requires a vocabulary for describing reasoning, measurements of
 internal model activity, and a distinction between observing an association
 and changing the mechanism that produces it.
 
-The project develops three experimental components toward this objective.
-The first constructs an automatic annotator of reasoning episodes. The second
-tests whether episode information is accessible from hidden states before the
-corresponding text is generated. The third measures associations between
-routing, representations, reasoning events, and answer correctness. Together,
-these components provide evidence for selecting possible intervention targets.
-They do not yet constitute an evaluated routing controller. This chapter
-defines the concepts and assumptions needed to interpret their outputs and
-to formulate the subsequent intervention problem.
+The project develops four connected stages toward this objective. The first
+constructs an automatic annotator of reasoning episodes. The second tests
+whether episode information is accessible from prefix hidden states and
+selects measurement locations. The third measures associations between
+routing, representations, reasoning behaviour, and answer correctness. The
+fourth tests expert-identity and margin policies during free generation.
+Chapter~\ref{ch:method} specifies their integration. This chapter defines
+the concepts needed to distinguish measurement, association, and the effect
+of a routing intervention.
 
 \section{Reasoning as a measurable process}
 \label{sec:reasoning-process}
@@ -578,9 +578,9 @@ vocabulary be applied reliably to new traces? Can relevant behaviours be
 detected from information available before they occur? Which routing
 measurements remain associated with behaviour and correctness after accounting
 for major confounders? Finally, does acting on selected routing targets improve
-outcomes on held-out problems under a controlled generation budget? The three
-active experiments address the measurement and observational parts of this
-programme and establish the basis for answering the final, causal question.
+outcomes on held-out problems under a controlled generation budget? The annotation, probe, and correlation stages address the measurement and
+observational questions; the guiding experiments specified in
+Chapter~\ref{ch:method} address the effect of intervening during generation.
 
 \chapter{Related Work}
 \label{ch:related-work}
@@ -590,7 +590,7 @@ behaviour. Some approaches change the prompts or training signals that
 produce reasoning traces. Others annotate those traces, decode information
 from internal representations, or directly modify activations and expert
 routing. This chapter compares those approaches according to the object they
-measure or manipulate, and positions the three active experiments within
+measure or manipulate, and positions the four-stage experimental pipeline within
 that literature.
 
 \section{Reasoning traces, evaluation, and functional annotation}
@@ -876,20 +876,20 @@ repair non-independent tests, or turn a discovered association into a causal
 effect. The active analysis therefore serves to prioritise hypotheses whose
 intervention effects must subsequently be tested on separate data.
 
-\section{Position of the three active experiments}
+\section{Position of the experimental pipeline}
 \label{sec:project-position}
 
 Table~\ref{tab:active-experiment-roles} relates the active experiments to the
 evidence required by the thesis objective. Their contributions are
 complementary: a reliable annotation instrument makes behavioural comparisons
 possible; a prospective probe tests whether suitable signals are available
-before a decision; and a routing analysis narrows the set of mechanisms worth
-changing.
+before a decision; a routing analysis narrows the set of mechanisms worth
+changing; and guiding experiments evaluate those changes during generation.
 
 \begin{table}[tbp]
   \centering
   \small
-  \caption{Role of each active experiment in preparing routing intervention.
+  \caption{Role of each stage in the routing-intervention pipeline.
   These are research functions, rather than claims of completed causal
   validation.}
   \label{tab:active-experiment-roles}
@@ -909,41 +909,473 @@ changing.
     \texttt{correlation\_pipeline} & Associations of routing and hidden-state
       features with correctness and reasoning events. & Nominates routing
       properties and expert-use patterns for controlled tests. \\
+    \addlinespace
+    Routing guidance & Paired changes in correctness and generated-token
+      counts on held-out problems. & Tests calibrated expert-identity biases
+      and margin targets during free generation. \\
     \bottomrule
   \end{tabularx}
 \end{table}
 
-The current workflows also leave specific connections to establish. The
-correlation pipeline's default reasoning-event indicators are lexical
-backtracking, contradiction, and self-correction markers; the frozen
-seven-category annotator has not yet replaced them. Probe-selected locations
-remain exploratory under the current split and selection protocol. The
-initial expert-identity scan pools equal numeric expert indices across
-retained layers, so a target-specific intervention requires analysis that
-preserves the full $(\ell,e)$ identity. These distinctions prevent the
-existing components from being mistaken for a completed episode-aware
-controller.
+The completed method connects these stages without requiring an episode-aware
+controller. The frozen annotator supplies offline behavioural labels, and the
+probes select measurement locations. Identity and margin policies are then
+calibrated from routing measurements and correctness, independently of episode
+labels. This design avoids relying on the transfer accuracy of the probes
+as online classifiers. Their layer selection remains exploratory under the
+replicated split and selection protocol.
 
-Generation and measurement provenance impose another limit. The correlation
-workflow generates with a quantised GGUF model and replays the saved response
-through a corresponding Hugging Face checkpoint using a different 4-bit
-representation. The replay provides measurements for that implementation on
-the supplied tokens; shared checkpoint lineage does not make its activations
-numerically identical to those of the generator. Any future intervention
-evaluation must specify the actual model and routing implementation being
-modified.
+Generation and measurement provenance impose a further interpretative limit.
+Quantised generation and replay implementations can differ, so replay
+measurements need not equal the generator's internal activations. Guiding
+policies retain that provenance and are evaluated by changing the actual
+router used for free generation. Expert-identity calibration also preserves
+the full $(\ell,e)$ pair, avoiding the ambiguity of historical screens that
+pooled equal numeric expert indices across layers.
 
-The contribution pursued by the thesis is thus an experimentally grounded
+The contribution pursued by the thesis is an experimentally grounded
 connection between semantic reasoning behaviour and controllable sparse
-computation. Existing work motivates both the possibility of steering and
-the need for careful interpretation. The three active experiments establish
-the vocabulary, measurements, and candidate signals needed to test that
-connection; the decisive evidence will come from whether a specified routing
-policy changes reasoning and improves final outcomes on held-out problems.
+computation. Chapter~\ref{ch:method} specifies this connection through the
+four-stage pipeline. Its empirical success is assessed by the effect of
+frozen routing policies on held-out outcomes and token use.
 
 \chapter{Method}
+\label{ch:method}
 
-% Describe the proposed method here.
+The method connects semantic descriptions of reasoning to controlled changes
+in sparse expert computation. It consists of four stages: optimising an
+LLM-based episode annotator with GEPA, identifying informative hidden-state
+locations with probes, measuring associations between routing and reasoning
+outcomes, and testing routing policies during generation. Model parameters
+remain frozen throughout. The learned objects are an annotation prompt,
+linear classifiers, and calibration-derived routing policies.
+
+These stages have distinct roles. The annotator describes the function of
+text already produced; the probes identify locations where information about
+an upcoming episode is accessible; the correlation experiment characterises
+routing on generated solutions; and the guiding experiments test whether
+changing routing changes performance. Figure~\ref{fig:method-pipeline} shows
+the flow of information. Neither guiding policy requires a predicted episode
+label at inference time. Episode annotation supplies a behavioural analysis,
+while the deployed interventions use expert identity or the current router
+margin.
+
+\begin{figure}[tbp]
+  \centering
+  \begin{tikzpicture}[every node/.style={font=\small},
+    stage/.style={draw, rounded corners, align=center,
+      text width=0.82\textwidth, inner sep=7pt}]
+    \node[stage] (annotation) at (0,0)
+      {\textbf{GEPA prompt optimisation}\\
+       Reference episodes $\longrightarrow$ frozen offline annotator};
+    \node[stage] (probe) at (0,-1.7)
+      {\textbf{Prospective probes}\\
+       Reference episodes and prefix states $\longrightarrow$ selected layers};
+    \node[stage] (correlation) at (0,-3.4)
+      {\textbf{Correlation experiment}\\
+       Generated traces, episode labels, and selected-layer replay\\
+       $\longrightarrow$ routing measurements and outcome associations};
+    \node[stage] (guiding) at (0,-5.3)
+      {\textbf{Guiding experiments}\\
+       Calibration measurements $\longrightarrow$ frozen identity or margin policy\\
+       $\longrightarrow$ paired baseline and guided generation};
+    \draw[->] (probe.south) -- (correlation.north);
+    \draw[->] (correlation.south) -- (guiding.north);
+    \draw[->] (annotation.east) -- ++(0.65,0) |- (correlation.east);
+  \end{tikzpicture}
+  \caption{Information flow through the method. Annotation and probing use
+  the reference corpus independently. Their outputs meet in the correlation
+  experiment; guiding policies are fitted using calibration problems only.}
+  \label{fig:method-pipeline}
+\end{figure}
+
+\section{Optimising the LLM-as-judge prompt}
+\label{sec:method-judge}
+
+The first stage operationalises the seven reasoning episodes defined in
+Section~\ref{sec:episode-framework}: Read, Analyze, Plan, Implement, Explore,
+Verify, and Monitor. For problem $q$ and response unit $u_j$, the annotator
+receives the context
+\begin{equation}
+  c_j=(q,u_{j-1},u_j,u_{j+1}), \qquad
+  \widehat y_j=A_{\phi}(c_j),
+\end{equation}
+where $\phi$ is the instruction prompt. The model assigns exactly one label
+to the current unit. Neighbouring units help distinguish, for example,
+announcing an operation from performing it, or deriving a result from
+checking an existing result. The problem statement is visible, but reference
+answers and rationales are excluded. Since the next unit is available, this
+is an offline measurement procedure.
+
+GEPA searches over $\phi$ using performance feedback while leaving the
+annotator's weights fixed. The initial context-aware prompt contains the
+category definitions, boundary rules, and 21 audited synthetic examples,
+three per category. Complete responses are partitioned before their units
+are flattened so that neighbouring units cannot cross the annotation
+training and validation boundaries. Configuration comparison uses nested
+response-grouped cross-validation; the selected configuration is then fitted
+to obtain a deployable prompt. The concrete partitions and model settings
+are specified in Section~\ref{sec:setup-annotation}.
+
+Two uses of the language model must be distinguished. The episode annotator
+predicts $\widehat y_j$ without access to the reference label. During prompt
+optimisation, a separate call to the same model evaluates that prediction
+with access to the reference label. This feedback judge supplies an
+explanation and four scores $s_d\in\{1,\ldots,5\}$: gold agreement,
+functional fit, contextual coherence, and boundary precision. The reward is
+\begin{equation}
+  R(c_j,\widehat y_j,y_j)
+  =\sum_{d=1}^{4}\omega_d\frac{s_d-1}{4},
+  \qquad
+  (\omega_1,\omega_2,\omega_3,\omega_4)
+  =(0.40,0.25,0.15,0.20).
+  \label{eq:method-gepa-reward}
+\end{equation}
+The resulting score lies in $[0,1]$. The explanations provide information
+about category confusions for prompt revision. Exact-match and
+inverse-frequency weighted rewards provide alternative optimisation
+conditions.
+
+The feedback score is not the final prompt-selection criterion. Selection
+compares the candidate and seed prompts against reference annotations, using
+balanced accuracy by default. A candidate is retained only if it improves
+that measure and no class recall decreases by more than 0.10. Otherwise,
+the seed remains the selected prompt. This distinction matters because a
+same-model judge can reinforce its own preferences; agreement with its
+feedback is not an independent estimate of annotation accuracy. The later
+Qwen3.8 alignment retained the imported prompt under this selection rule.
+
+The selected instruction is frozen before downstream tagging. Each generated
+reasoning unit is assigned a label using the same context construction, and
+its text span is aligned to completion tokens. Unlabelled units remain
+unlabelled rather than being imputed from probe predictions. Classification
+quality is assessed through accuracy, balanced accuracy, macro-F1,
+per-category precision and recall, and valid-output coverage. Changes to the
+serving checkpoint or reasoning configuration are recorded because a frozen
+prompt alone does not imply unchanged annotation behaviour.
+
+\section{Identifying relevant layers with prospective probes}
+\label{sec:method-probes}
+
+The second stage identifies hidden-state locations informative about the
+next reasoning episode. It uses the reference annotations directly, without
+substituting the automatic judge's labels. The released problem and response
+are supplied to each frozen subject model through teacher forcing. For a
+unit whose first token has position $b_j$, the feature at hidden-state index
+$\ell$ is
+\begin{equation}
+  v_j^{(\ell)}=h_{b_j-1}^{(\ell)}.
+\end{equation}
+This boundary excludes the target unit and all later tokens. Consequently,
+the probe measures information available in the prefix before the unit is
+read, rather than classifying its text retrospectively. Synthetic closing
+\texttt{</think>} units are removed to avoid learning a structural shortcut.
+
+For each episode $c$ and hidden-state index $\ell$, a separate logistic
+regression predicts the binary target $\mathbb{1}[y_j=c]$:
+\begin{equation}
+  P_{c,\ell}(v_j)=
+  \sigma\!\left(w_{c,\ell}^{\mathsf T}v_j^{(\ell)}+b_{c,\ell}\right).
+\end{equation}
+The replication uses raw activations, balanced class weights, and L2
+regularisation. The sentence-level split and classifier settings are held
+constant across models. Accuracy, F1, and AUROC are computed at every index.
+For each category, the saved protocol selects the index with greatest test
+accuracy, resolving ties toward the earlier index.
+
+The output used by the correlation experiment is the union of those selected
+indices that correspond to actual router layers. Table~\ref{tab:method-layers}
+records the resulting measurement locations. Hidden-state index zero denotes
+the embedding output; an intermediate index denotes the state entering the
+decoder block with that index. The final output index has no following
+router. Indices are therefore filtered for router availability without
+shifting or renumbering them. In particular, Qwen's Explore selection at
+hidden-state index 40 is omitted from routing extraction.
+
+\begin{table}[tbp]
+  \centering
+  \small
+  \caption{Probe-derived router locations used by the method. Indices are
+  zero-based decoder indices and are specific to each model's probe run.}
+  \label{tab:method-layers}
+  \begin{tabular}{@{}ll@{}}
+    \toprule
+    Subject model & Retained router indices \\
+    \midrule
+    Qwen3.5-35B-A3B & 27, 34, 35, 36, 38, 39 \\
+    GPT-OSS-20B & 15, 19, 21, 23 \\
+    Gemma-4-26B-A4B & 16, 19, 21, 22, 25, 27, 29 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+Layer selection narrows the measurement space but does not establish causal
+importance. Units from the same response occur on both sides of the probe
+split, and the same test partition is used for selection and evaluation.
+The selected scores are therefore exploratory measures of within-corpus
+decodability. Moreover, a block-input state is not necessarily the vector
+presented directly to its router after sequence mixing and normalisation.
+The subsequent experiments preserve this distinction. They use the selected
+locations for routing measurements, without treating the probes as validated
+online episode detectors or optimal intervention selectors.
+
+\section{Relating routing to reasoning and correctness}
+\label{sec:method-correlation}
+
+\subsection{Generation, annotation, and replay}
+
+The correlation stage begins with freely generated benchmark solutions.
+Each record identifies the dataset, source problem, attempt, generation
+settings, response, final-answer score, and termination status. Multiple
+attempts share a source-problem identifier. Correctness is defined by the
+benchmark answer checker; an unparseable answer to a scored problem is
+incorrect, while a genuinely unscored task has a missing outcome.
+
+Generation and internal measurement are separate operations. The saved
+continuation is replayed through the corresponding instrumented model to
+capture hidden states and router behaviour at the retained layers. The
+current replay path uses the original prompt and completion token IDs,
+together with tokenizer fingerprints and character offsets, rather than
+reconstructing a response from rendered text. This preserves native chat and
+reasoning markers and permits sentence labels to be associated with the
+same token positions used for feature extraction.
+
+Generation and replay can use different quantised implementations of a
+checkpoint lineage. Replay measurements therefore describe the replay model
+on the saved continuation. Numerical equivalence with the generator is not
+assumed. The same provenance is carried into policy calibration: transferring
+an expert identity or a numeric margin range between implementations is an
+explicit experimental assumption.
+
+The frozen annotator supplies class labels for the tagged analysis. When
+annotation is restricted to a sampled population, the sampling manifest
+specifies which attempts and sentences are covered. In particular, the
+standard tagging path selects attempt zero and allocates a sentence budget
+across benchmarks according to observed error rates. Such class statistics
+describe that selected population. Aggregate routing analyses and analyses of
+available tagged units retain their own denominators; missing labels do not
+imply an absence of the corresponding episode. Untagged runs also support
+separate lexical indicators of backtracking, contradiction, and
+self-correction, which are not interchangeable with the seven episode labels.
+
+\subsection{Measurements and analysis views}
+
+Let $p_{i,t,e}^{(\ell)}$ be the full router probability for expert $e$ at token
+$t$ of attempt $i$, and let $S_{i,t}^{(\ell)}$ be the selected expert set.
+The method measures concentration, probability margins, selected mass,
+selection-boundary gaps, and changes in expert selection across successive
+tokens. Hidden-state norms, successive-state distances, and hidden/router
+geometry provide complementary representation measurements. Their definitions
+are given in Chapter~\ref{ch:theoretical-framework}. Expert membership is
+measured anywhere in the native top-$k$ set, not only at rank one. Every
+intervention target retains the full pair $(\ell,e)$, since equal expert
+numbers at different layers identify different modules.
+
+Features are summarised over the whole continuation, the reasoning span,
+each available episode class, and absolute-position windows. The position
+view uses common token boundaries derived from the corpus mean reasoning
+length, with an overflow window. A short response contributes only to windows
+it reaches. Class views similarly require observed labelled tokens of the
+class. Coverage accompanies each estimate so that changes in the analysed
+population remain visible. Full distributions need not be retained for all
+analyses: compact scalar summaries and selected expert tensors preserve the
+measurements required for correlation and guiding calibration.
+
+\subsection{Statistical unit and outcome association}
+
+For a continuous feature $f_i$ and binary correctness $Y_i$, the attempt-level
+association is the point-biserial correlation. Positive values mean that the
+feature is larger in correct attempts. The same convention applies to binary
+reasoning-event indicators. For repeated-attempt benchmarks, a separate
+problem-level analysis relates the mean feature to mean correctness using
+Spearman correlation. With $n$ attempts, this outcome is avg@$n$, not the
+probability that at least one attempt succeeds. The primary problem-level
+analysis requires the complete declared set of unique attempts and complete
+binary outcomes. Problems containing both correct and incorrect attempts
+also permit within-problem feature contrasts.
+
+Repeated attempts are not independent observations. For prespecified
+aggregate associations, uncertainty is estimated by resampling source
+problems and retaining their attempts together; the attempt-level bootstrap
+is stratified by dataset. Problem-level Spearman intervals resample complete
+problem summaries. Benjamini--Hochberg adjustment is applied within the
+declared testing families. Broad layer, expert, and feature-pair screens
+remain exploratory, and conventional attempt-level significance tests do
+not replace uncertainty estimates that account for problem clustering.
+
+The current analysis retains token-limit completions and reports their
+termination status in a generation-budget audit. Missing or nonfinite
+measurements are omitted for the relevant feature--outcome pair. This keeps
+the target population distinct from a completed-response-only analysis.
+Length, benchmark difficulty, and episode composition can affect both routing
+and correctness, so an observed association is a candidate for intervention,
+not evidence that changing the feature will improve an answer.
+
+\section{Guiding experiments}
+\label{sec:method-guiding}
+
+The final stage tests two policies separately: promoting expert identities
+associated with correctness and moving router margins toward ranges
+associated with correctness. Both act on native router outputs during free
+generation, with expert network parameters unchanged. They preserve the
+model's expert count, native top-$k$ dispatch, and shared computation.
+Qwen uses eight of 256 routed experts, GPT-OSS four of 32, and Gemma eight of
+128. Policies are fitted separately for each model and cannot exchange expert
+identities across unrelated checkpoints.
+
+\subsection{Calibration and held-out evaluation}
+
+The global workflow partitions source problems within each benchmark into
+70\% calibration and 30\% evaluation using seed 42. All attempts of a problem
+remain on the same side. Calibration consumes scored traces with the
+required routing measurements and records exclusions. Evaluation uses the
+held-out generation problems irrespective of whether their earlier traces
+had routing tensors or usable scores. Both correct and incorrect calibration
+answers are required to estimate an accuracy advantage.
+
+For calibration trace $i$ belonging to problem $q(i)$, let $n_{q(i)}$ be the
+number of available calibration attempts for that problem and define
+$w_i=1/n_{q(i)}$. Each problem then has total weight one. The common baseline
+for policy fitting is
+\begin{equation}
+  A_0=\frac{\sum_i w_iY_i}{\sum_i w_i}.
+  \label{eq:method-calibration-accuracy}
+\end{equation}
+This weighting prevents repeated-attempt benchmarks from dominating solely
+through their number of attempts; datasets with more problems still have
+more calibration weight. Policies are frozen before evaluation. Any tuning
+of intervention strength, support thresholds, or binning must use a separate
+validation partition rather than held-out outcomes.
+
+\subsection{Expert-identity guiding}
+\label{sec:method-identity}
+
+Identity guiding uses the frequency with which an expert belongs to the
+selected pool. For a trace with $T_i$ saved completion positions, define
+\begin{equation}
+  r_{i,\ell,e}=\frac{1}{T_i}\sum_{t=1}^{T_i}
+  \mathbb{1}\!\left[e\in S_{i,t}^{(\ell)}\right],
+  \qquad
+  A_{\ell,e}=
+  \frac{\sum_i w_i r_{i,\ell,e}Y_i}{\sum_i w_i r_{i,\ell,e}}.
+\end{equation}
+The first normalisation prevents long traces from dominating through their
+number of tokens. $A_{\ell,e}$ is a frequency-weighted correctness estimate,
+not the success rate of an expert acting in isolation. Its lift is
+$L_{\ell,e}=A_{\ell,e}-A_0$.
+
+At each layer, experts are eligible if they have positive lift and occur in
+at least four distinct calibration problems. At most eight are retained,
+ordered by lift, then problem support, then expert identifier. Retained lifts
+are divided by the largest retained lift at that layer to produce scores
+$v_{\ell,e}\in(0,1]$; other scores are zero. Layers without eligible experts
+receive zero scores, and calibration fails if no layer has an eligible target.
+
+During generation, the policy adds a fixed bias to each selected layer's
+router logits:
+\begin{equation}
+  \widetilde z_{t,e}^{(\ell)}
+  =z_{t,e}^{(\ell)}+\alpha v_{\ell,e},\qquad \alpha\geq0.
+  \label{eq:method-identity-policy}
+\end{equation}
+Native dispatch then selects and weights experts from the adjusted logits.
+The bias can change both membership and mixture weights. The policy is
+independent of episode labels and does not wait for a particular margin or
+reasoning event. Its purpose is to test whether the calibrated association
+survives an intervention that increases the influence of those identities.
+
+\subsection{Margin guiding}
+\label{sec:method-margin}
+
+Margin guiding instead targets a distributional property without assigning
+preferred expert identities. Let $p_{(r)}$ denote the probability at descending
+rank $r$ before selected-expert renormalisation. The default metric is the
+selection-boundary margin
+\begin{equation}
+  m=p_{(k)}-p_{(k+1)}.
+\end{equation}
+The top-1/top-2 gap is an alternative configuration. For each layer,
+calibration partitions trace-mean margins into up to five problem-weighted
+quantile bins, keeping ties together. Among bins supported by at least four
+distinct problems and with accuracy above $A_0$, it selects the bin with
+highest weighted accuracy, breaking ties by support and then lower margin.
+The observed minimum and maximum define the frozen interval $[a_\ell,b_\ell]$.
+Layers without an eligible bin are skipped; a policy with no eligible layer
+is rejected.
+
+At a live token, the desired margin interpolates toward the nearest point
+of this interval:
+\begin{equation}
+  d=m+\lambda\bigl(\operatorname{clip}(m,a_\ell,b_\ell)-m\bigr),
+  \qquad 0\leq\lambda\leq1.
+\end{equation}
+Let $r=k$ for the boundary margin, or $r=1$ for the alternative gap, and let
+$E$ be the number of routed experts. To decrease the margin, the policy mixes
+the full probability vector with the uniform distribution $u_E$:
+\begin{equation}
+  \widetilde p=(1-\beta)p+\beta u_E,
+  \qquad \beta=\frac{m-d}{m}\quad(d<m).
+\end{equation}
+To increase it, the policy mixes with a distribution $u_r$ uniform over the
+current top-$r$ experts and zero elsewhere:
+\begin{equation}
+  \widetilde p=(1-\beta)p+\beta u_r,
+  \qquad \beta=\frac{d-m}{1/r-m}\quad(d>m).
+\end{equation}
+If $d=m$, the original logits are returned unchanged. Otherwise the hook
+returns $\log\widetilde p$ in the native logit dtype, after which the model
+performs its usual dispatch and weighting.
+
+In exact arithmetic these mixtures reach the desired gap and preserve expert
+ordering away from singular endpoints. The implementation caps mixture
+coefficients below one to avoid fully uniform ties or zero probabilities.
+Finite precision can still introduce ties and small target errors, so the
+recorded diagnostics use the achieved margin after casting. Relative expert
+weights can change even when top-$k$ membership does not. Learning a range
+from trace averages and applying it to individual token margins is a specific
+experimental assumption tested by the generation comparison.
+
+\subsection{Matched generation and evaluation}
+
+Each policy is evaluated against a freshly generated native-routing baseline
+on identical held-out prompts and attempt identifiers. The two conditions
+share the checkpoint, tokenised inputs, chat-template options, sampling
+settings, per-attempt seeds, and completion budget. The default stochastic
+protocol uses temperature 0.6, top-$p=0.95$, and 32,768 output tokens; repeated
+benchmarks retain their original attempt counts. Matching seeds pairs the
+randomness settings but does not force identical sampled trajectories once
+the distributions change.
+
+Interventions apply during both prompt prefill and decoding at the policy's
+selected layers. The generation engine uses eager execution, disables prefix
+caching and speculative decoding, and installs router hooks after warmup.
+Native expert dispatch remains responsible for executing the chosen experts.
+The run verifies that every intended hook processes tokens. Diagnostics
+record changed top-$k$ sets and, for margin guiding, achieved margins and
+distance from the target range. Hook counters can include engine padding or
+recomputation and are not interpreted as independent generated tokens.
+
+The comparison reports final-answer accuracy, generated-token counts,
+truncations, and paired wrong-to-right and right-to-wrong transitions. For
+$N$ matched attempts, the empirical accuracy change is
+\begin{equation}
+  \widehat\Delta_{\pi}
+  =\frac{1}{N}\sum_{i=1}^{N}
+    \left(Y_i^{\pi}-Y_i^{0}\right)
+  =\frac{N_{\mathrm{wrong\to right}}-
+          N_{\mathrm{right\to wrong}}}{N}.
+\end{equation}
+Token counts include reasoning and final-answer text. Benchmark-specific
+results accompany pooled comparisons, since pooling attempts gives more
+weight to repeated-attempt benchmarks. Matching manifests are checked before
+comparison so that changes in prompts, scoring, software, or sampling are
+not silently attributed to the routing policy.
+
+Together, these experiments distinguish a calibrated association from the
+measured effect of acting on it. The method specifies the complete path from
+reference labels to held-out intervention evaluation; whether either policy
+improves accuracy or reduces token use is an empirical result, not an
+assumption of the pipeline.
 
 \chapter{Experimental Setup}
 \label{ch:experimental-setup}
@@ -954,8 +1386,9 @@ principal studies address complementary questions: whether an automatic
 annotator can identify reasoning episodes, whether upcoming episodes can be
 predicted from hidden representations, and whether routing measurements are
 associated with answer correctness and reasoning events. Model weights remain
-fixed throughout these studies; learning is confined to prompt optimisation
-and the fitting of linear probes.
+fixed throughout these studies. The guiding stage additionally fits routing
+policies on calibration problems and evaluates them on held-out problems,
+as specified in Section~\ref{sec:method-guiding}.
 
 The experiments evolved during development. In particular, benchmark
 generation moved from a GGUF implementation in \texttt{llama.cpp} to a GPTQ
@@ -1391,18 +1824,14 @@ without a subsequent analysis preserving the full $(\ell,e)$ identity.
 
 \paragraph{Token-budget handling.}
 The completed September 10 snapshot includes all 4,647 attempts, including
-those reaching the generation limit. Its interpretation is consequently
-conditional on the fixed completion budget. The current analysis code
-instead excludes a trace when its finish reason is \texttt{length} or its
-completion-token count reaches the configured maximum. It retains traces
-whose limit status is unknown and records excluded counts. Under this newer
-rule, repeated-problem groups made incomplete by filtering are also
-ineligible for the primary avg@32 correlation. Reproducing the earlier
-all-attempt tables requires their saved analysis artifacts or the matching
-code revision; rerunning the current defaults changes the analysed
-population. A completed-trace analysis also remains conditional on successful
-termination, rather than removing all effects of problem difficulty or
-response length.
+those reaching the generation limit. The current analysis also retains
+supplied token-limit completions and reports their termination status in a
+generation-budget audit. Missing or nonfinite features are omitted only for
+the relevant analysis pair. Problem-level avg@32 requires a complete set of
+attempts and binary outcomes. An intermediate implementation excluded known
+truncations, so reproducing an older table requires its saved inclusion
+counts and matching code revision. Both all-attempt and completed-trace
+analyses remain conditional on the configured generation budget.
 
 \section{Artifacts, reproducibility, and experimental scope}
 \label{sec:setup-reproducibility}
@@ -1435,16 +1864,16 @@ resolved model revision, Docker image digest, package versions, and matching
 code revision. Seeds alone do not establish bitwise equivalence across
 different quantisation or inference implementations.
 
-Finally, the repository contains an exploratory \texttt{moe\_guiding}
-implementation for live top-2 Mixtral routing. It compares native routing
-with replacing the second selected expert by the least probable expert,
-under two different mixing-weight rules. Its initial adapter targets
-unquantised FP16/BF16 Mixtral checkpoints and has no validated end-to-end
-model-generation run recorded in the workspace documentation. It is a
-separate intervention prototype, not a completed intervention evaluation
-on the Qwen subject model. The experimental evidence described in this
-chapter concerns annotation, prospective probing, and observational routing
-analysis.
+The guiding stage is implemented in \path{src/moe_exp/moe_identity_guiding}
+and \path{src/moe_exp/moe_margin_guiding}. These workflows fit separate
+model-specific policies from the correlation artifacts and compare native
+and guided generation on matched held-out problems. Their split, calibration,
+intervention, and evaluation rules are described in
+Section~\ref{sec:method-guiding}. They are distinct from the earlier
+\texttt{moe\_guiding} Mixtral replacement prototype. Split manifests,
+policy files, per-condition generations, and routing diagnostics provide the
+provenance for a guiding result; implementation checks alone do not establish
+an improvement in generation accuracy.
 
 \chapter{Results}
 
