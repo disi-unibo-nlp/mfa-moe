@@ -92,7 +92,7 @@ def binary_rows(view, target='is_correct', features=None):
 
 
 def target_pair_rows(view):
-    """Tutor's layout: fix a target, then features in rows and datasets in columns."""
+    """Fix a target, then features in rows and datasets in columns."""
     records = view['cross_feature_correlations']['trace_level']
     pairs = {(r['scope'], frozenset((r['feature_x'], r['feature_y']))): r for r in records}
     features = [f for f in FEATURES if any(f in (r['feature_x'], r['feature_y']) for r in records)]
@@ -176,7 +176,7 @@ def figures(base, full, classes, positions):
     fig.supxlabel(f'Absolute reasoning window (~{full["contract"]["position_reference"]["mean_reasoning_tokens"] / 10:,.1f} tokens per bin; Ov. = overflow)')
     save_figure(fig, 'qwen_position_coverage')
 
-    # The call explicitly requests cross-metric relationships, not only accuracy.
+    # Compare relationships among metrics as well as their correctness associations.
     features = list(FEATURES)[:11]
     pairs = {(r['scope'], frozenset((r['feature_x'], r['feature_y']))): r
              for r in base['cross_feature_correlations']['trace_level']}
@@ -243,7 +243,6 @@ def repeated_outputs(base, full):
 
 def main():
     base = read(SOURCE / 'correlations.json')
-    fingerprint(ROOT / 'Call with Lorenzo Molfetta (2).vtt')
     audit = read(REPORT / 'correlation_run_audit.json')
     assert audit['analysis_sha256'] == MANIFEST[str((SOURCE / 'correlations.json').relative_to(ROOT))]
     forward = read(RUN / 'forward/unsloth--Qwen3.5-35B-A3B/summary.json')
@@ -348,7 +347,7 @@ class transitions require original adjacency within a sentence.
 
 Each binary table contains all available prespecified aggregate metrics for
 correctness and the three whole-attempt lexical flags. Feature-pair tables
-use Spearman $\rho$ and the tutor's requested layout: each panel fixes a
+use Spearman $\rho$ and a common layout: each panel fixes a
 target metric, with the remaining named metrics in rows and benchmarks in
 columns. Each symmetric association appears under both target orientations;
 these are duplicated presentations, not independent results. Self-correlations
@@ -378,10 +377,10 @@ artifacts. Repeated-problem and within-problem summaries appear in the main text
     repeated_outputs(base, full)
     figures(base, full, classes, positions)
     import sys
-    import tutor_figures
-    tutor_figures.generate(sys.modules[__name__], base, full, classes, positions, frames, views)
+    import descriptive_figures
+    descriptive_figures.generate(sys.modules[__name__], base, full, classes, positions, frames, views)
     (REPORT / 'correlation_tables_sources.json').write_text(json.dumps(MANIFEST, indent=2) + '\n')
-    print(f'Generated {len(views)} views, coverage/correctness/class/event/expert and repeated-attempt tables, plot atlas and tutor-requested figures; {len(MANIFEST)} fingerprinted inputs.')
+    print(f'Generated {len(views)} views, coverage/correctness/class/event/expert and repeated-attempt tables, plot atlas and descriptive figures; {len(MANIFEST)} fingerprinted inputs.')
 
 
 if __name__ == '__main__':

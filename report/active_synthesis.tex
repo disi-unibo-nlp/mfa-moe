@@ -1,152 +1,42 @@
-\section{Analysis}
+\section{Synthesis and Limitations}
 
-\subsection{Conclusions supported so far}
+The frozen Qwen3.8 judge retains the 40-example seed because the optimized
+candidate fails the per-class recall gate. Its NVFP4 deployment reaches
+0.710 accuracy on 407 reused validation units under both low and medium
+effort, while changing 10.1\% of labels between settings. Neither prompt
+selection nor this deployment check establishes annotation accuracy on the
+generated benchmark traces. Imported Gemma and GPT-OSS labels additionally
+use a different sampling protocol and inference configuration.
 
-\begin{enumerate}
-\item The static-reward, context-aware GEPA study reaches 0.650 cross-validated
-macro-F1 with the light budget.  The advantage over balanced-accuracy
-selection is small and the heavy search is worse.  In the separate completed
-same-model LLM-judge final fit, development-set balanced accuracy rises from
-0.677 to 0.777 and macro-F1 from 0.613 to 0.727, primarily through reduced
-Monitor overprediction.  This establishes successful prompt optimization on
-the development distribution, not held-out generalization.  The final
-Qwen3.8-27B alignment does not reproduce that gain: balanced accuracy falls
-from 0.740 for the imported seed to 0.729 for the GEPA candidate, and the
-prespecified recall gate correctly retains the seed.
-\item The boundary probes show substantial sentence-split decodability of
-upcoming Schoenfeld episodes, with selected-layer AUROC of 0.835--0.934 and
-the strongest thresholded performance for Implement, Verify, and Read.  This
-establishes accessible prefix-state signal within familiar responses, not
-generalization to unseen reasoning traces.  External application is best
-interpreted as coarse phase inspection: a provisional pragmatic review gives
-50.3\% strict and 60.8\% compatible agreement, with 187/581 multi-label units.
-Implement is strongest (F1 0.729), while the remaining labels are incomplete
-external tags.  ProcessBench Verify predictions identify review-heavy
-post-error passages but do not identify correctness.
-\item All three model correlation analyses are complete (Qwen, Gemma,
-and GPT-OSS), each with 4,647 attempts and 100 complete avg@32 groups.
-GPT-OSS class coverage is limited to MATH-500 and part of AIME24;
-class comparisons also differ in annotation protocol.
-The September 17 Qwen correlation run covers 4,647 attempts across six
-benchmarks, with all token-limit completions retained. Whole-continuation
-confidence coefficients are positive ($r=0.112$--$0.533$), although AMC23's
-problem-bootstrap interval includes zero. Mean confidence also correlates
-positively with avg@32 on AIME24 ($\rho=0.632$) and AIME25 ($0.705$), while
-AMC23 is uncertain ($-0.200$). Full-reasoning and position metrics now use
-all reasoning tokens; classes use sampled sentence labels. The 412 limit
-hits, of which only two are correct, make termination and length essential
-follow-up controls. Expert maxima remain exploratory pooled-ID candidates.
-\end{enumerate}
+All three models have linearly decodable information about upcoming
+Schoenfeld labels in the released response prefixes. Selected-layer AUROC
+ranges are 0.835--0.934 for Qwen, 0.767--0.906 for GPT-OSS, and
+0.816--0.922 for Gemma. However, every response appears in both sentence
+partitions, and the reported layers are selected on the same test split.
+The results support within-corpus decodability rather than generalization
+to unseen responses. Qwen's external 581-unit inspection has 50.3\%
+primary and 60.8\% compatible agreement under a provisional hybrid review;
+it is neither independent human validation nor evidence for the other encoders.
 
-\subsection{What has not been established}
+The three correlation corpora each cover 4,647 attempts, 1,547 problems,
+and 100 complete avg@32 groups. Associations depend on model, benchmark,
+and aggregation level. For Qwen, whole-continuation confidence correlates
+with avg@32 at $\rho=0.632$ on AIME24 and $0.705$ on AIME25,
+whereas AMC23 gives $-0.200$ with an interval containing zero.
+These estimates do not control length, termination, or difficulty.
+Problem-respecting bootstrap intervals address repeated attempts for the
+reported primary features; naive attempt-level significance screens remain
+exploratory. Sparse and unmatched class coverage further limits comparisons.
+No common causal interpretation of router confidence follows from these data.
 
-Neither GEPA final fit provides an unbiased test estimate.  The earlier run selects
-among 145 candidates on the same six-response validation set, has only one
-optimization seed, and leaves the locked 336-unit test unevaluated.  The result
-does not establish that the expanded 40-demonstration prompt transfers to new
-responses or that the same-model reward is an independent evaluator.  The
-Qwen3.8 alignment reuses that selected prompt as its seed, optimizes and
-selects on the same validation partition, and also leaves the locked test
-untouched; retaining the seed is evidence that this search found no safe
-development-set improvement, not evidence of generalization.
-
-The boundary-probe run does not establish response-grouped generalization,
-calibrated seven-way episode classification, or the cognitive states of Qwen's
-own generations.  It uses Qwen to encode teacher-forced DeepSeek-R1 text,
-shares all 38 response IDs between train and test, and selects layers on the
-reported test set.  Its external argmax outputs have no authoritative human or
-benchmark episode ground truth.  Agreement with the provisional hybrid review
-is diagnostic and should not be called validated transfer accuracy.
-
-The correlation results do not establish a dataset-invariant predictor or a
-causal mechanism. No length-conditioned or dataset-adjusted model has been
-fit. All attempts are retained, but completion limits censor natural response
-length. Class views condition on error-rate-weighted sentence sampling and
-available labels. GPQA-Diamond and MMLU-Pro remain absent. AIME/AMC have
-only 30/30/40 independent source problems, and their class cohorts have at
-most one labelled attempt per problem. Undefined bootstrap resamples are
-discarded, so pointwise intervals need particular care for sparse outcomes.
-
-Seven class views are now available, but their labels have no independent
-accuracy evaluation on the generated math traces. Class views pool sampled labelled tokens; position views pool all reasoning
-tokens in each window. Their finite cohorts differ.
-Per-family BH adjustment does not correct selection across views or provide
-held-out validation. Numeric expert IDs pool distinct layer-local modules.
-Across all three workflows, correlation and linear decodability should not
-be interpreted as causal evidence.
-
-\section{Discussion}
-
-The completed GEPA final fit demonstrates that same-model informative feedback
-can guide a large prompt toward the development labels: it fixes 49 seed
-errors while introducing 14 regressions and improves every validation
-response.  Its optimization trace also shows the central risk.  The prompt
-expands from 21 to 40 demonstrations and is selected after 145 candidate
-evaluations on those same six responses.  The next defensible test is therefore
-to freeze and ablate or compress the prompt, quantify response-level
-uncertainty, and evaluate it once on genuinely unseen responses.
-
-The Qwen3.8 alignment is an important negative result.  Although its internal
-same-model reward increases, exact corpus-label metrics decline and Plan
-recall breaches the prespecified 0.10 safety threshold.  Its shorter optimized
-instruction also contains conflicting guidance for phrases such as ``Let me
-compute that,'' plausibly contributing to more Plan-to-Monitor errors.  The
-safety gate therefore performs its intended role: optimization reward alone
-is insufficient evidence for deployment, and the byte-identical selected seed
-should now be frozen rather than optimized further on this validation set.
-
-The episode probes add a complementary representation-level result: the
-prefix before a sentence often encodes the phase likely to follow, and the
-signal is strongest in middle-to-late layers rather than at the final model
-output.  The current split cannot determine whether this reflects a portable
-episode representation, trace-specific transition regularities, position, or
-formatting.  A response-grouped nested evaluation should select both layer
-and regularization on inner folds, evaluate once on unseen responses, repeat
-over seeds, and report response-bootstrap intervals.  Standardized or
-norm-matched features and simple position, previous-unit, and formatting
-baselines are needed to separate hidden-state information from layer scale and
-trace structure.
-
-For external use, the probe outputs should be treated as abstaining phase
-suggestions rather than annotations.  Abbreviation- and LaTeX-aware
-segmentation should precede evaluation; independent one-versus-rest scores
-should either be calibrated on a common multiclass validation set or retain
-multiple labels.  The pragmatic review confirms substantial ambiguity and
-only 60.8\% compatible agreement.  Independent human annotators should resolve
-the 37 low-confidence units and assess inter-annotator agreement before any
-transfer-accuracy claim.  Cross-model recognition, as studied here, should
-also be separated from Qwen's own generation by running the protocol on
-Qwen-generated traces.
-
-The completed replay expands the evidence to all six benchmarks and complete
-repeated-attempt groups. Positive marginal confidence associations on AIME
-also appear in problem-level avg@32 analyses, while AMC23 illustrates that
-attempt-level and problem-level signs can differ. These observations need
-length- and termination-aware models, validation holding out whole problems,
-and common-cohort class/window comparisons. The changed population and replay
-semantics preclude interpreting differences from the September 15 snapshot as
-an effect of tagging. Layer-qualified expert rates and independent label
-assessment remain necessary before routing interventions.
-
-\section{Conclusion}
-
-The three active workflows support deliberately limited claims.  GEPA improves
-the earlier same-model-judge development result substantially, but the final
-Qwen3.8 alignment finds no safe improvement over that imported prompt and
-neither run has been tested on an untouched response set.  The boundary probes reveal strong within-split
-linear access to upcoming episode labels, especially for Implement, Verify,
-and Read, but their sentence split leaks every response across train and test
-and their external outputs collapse toward a coarse setup, execution, and
-review taxonomy. The completed six-benchmark run adds full-reasoning, class, position,
-lexical, metric-pair, and repeated-attempt analyses. Positive confidence
-associations on both AIME sets persist at the avg@32 problem level, but
-length, termination, cohort selection, and sparse class outcomes remain
-uncontrolled. These screens supply hypotheses for held-out evaluation
-without establishing a causal routing mechanism.
-
-The immediate evidential requirements are a frozen-prompt GEPA evaluation on
-unseen responses, response-grouped nested boundary probes with independently
-validated external labels, a prespecified response to remaining generation
-censoring, extension of the current run to GPQA-Diamond and MMLU-Pro, and
-length-/termination-aware and common-cohort position analyses with
-problem-respecting validation before routing interventions are evaluated.
+The held-out interventions provide direct perturbation evidence for Qwen,
+but no consistent accuracy improvement: identity promotion and margin
+guiding lose five and two net correct answers, while identity suppression
+gains eleven out of 1,395 attempts. Each effect is relative to its own
+matched baseline. The policy calibration excludes unscored traces,
+transfers between quantizations, and selects targets from observational
+associations. Margin manipulation also changes expert membership in
+finite precision. These limitations prevent attributing a small aggregate
+effect exclusively to the intended routing statistic or claiming a portable
+improvement. Problem-cluster uncertainty and independent selection of
+intervention strength remain necessary.

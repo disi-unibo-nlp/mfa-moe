@@ -1,18 +1,11 @@
 \section{Experimental Setup}
 
 \paragraph{Current experimental scope.}
-The active repository contains three complementary Qwen workflows.
-\texttt{gepaLLMAsJudge} is an annotation-capability study that optimizes
-Qwen3.6-27B and Qwen3.8-27B prompts for sentence-level Schoenfeld episode
-classification.  It does not provide evidence about Qwen router dynamics.
-\texttt{probeTest} is a
-representation-probe replication that teacher-forces the 38 released
-DeepSeek-R1 Schoenfeld traces through the official GPTQ 4-bit
-\texttt{Qwen/Qwen3.5-35B-A3B-GPTQ-Int4} checkpoint and tests whether the next
-sentence's label is linearly decodable at its causal pre-sentence boundary.
-The separate \texttt{correlation\_pipeline} generates benchmark solutions with
-Qwen3.5-35B-A3B, replays them through the matching checkpoint, and relates
-router and hidden-state summaries to correctness and reasoning-event labels.
+The generative judge assigns Schoenfeld episode labels. Boundary probes test
+prospective label decodability in Qwen3.5-35B-A3B, GPT-OSS-20B, and
+Gemma-4-26B-A4B. Correlation analysis relates each model's routing summaries
+to correctness and labelled reasoning episodes. Identity and margin guiding
+then evaluate frozen policies on held-out Qwen problems.
 
 \paragraph{GEPA judge design.}
 The GEPA workflow starts from 3,125 annotated units in 38 released DeepSeek-R1
@@ -31,52 +24,63 @@ response-grouped cross-validation; the final-fit runs use a response-grouped
 
 \paragraph{Schoenfeld boundary-probe design.}
 The probe workflow excludes the 38 synthetic \texttt{</think>} closing units,
-which are all labelled Monitor, leaving the paper-matched 3,087 units.  Qwen
+which are all labelled Monitor, leaving the paper-matched 3,087 units. Each model
 receives each SAT instruction as the user message and the released response as
 a teacher-forced assistant continuation.  For a target unit, the feature is
 the hidden state immediately before its first token, so the probe sees the
-problem and preceding response but cannot read the target sentence.  Hidden-
-state index 0 is the embedding output and indices 1--40 are the successive
-language-model layers.
+problem and preceding response but cannot read the target sentence.  Hidden-state index 0 is the embedding output. Qwen, GPT-OSS, and Gemma
+provide 41, 25, and 31 hidden-state indices, respectively. An intermediate
+index is the input to the equally numbered decoder block; the final output
+has no corresponding router.
 
 At each index, seven separate target-versus-rest logistic regressions use raw
-2,048-dimensional activations, balanced class weights, L2 regularization with
+activations (2,048 dimensions for Qwen, 2,880 for GPT-OSS, and 2,816 for Gemma), balanced class weights, L2 regularization with
 $C=1$, and no standardization or PCA.  The paper-matched protocol uses a
 target-stratified 80/20 sentence split with seed 42.  This is a replication
 choice rather than a strong generalization design: all 38 response IDs occur
 in both partitions.  The reported layer for each target maximizes accuracy on
-that same test split.  For qualitative transfer inspection, the selected
+that same test split.  For qualitative transfer inspection, the selected Qwen
 probes are applied to 20 examples each from GSM8K, MATH, PRM800K, and
 ProcessBench.  The seven binary scores are independently trained and
 uncalibrated; their argmax is an inspection label, not a multiclass probability
-or new gold annotation.  Only boundary vectors are stored; Qwen does not
+or new gold annotation.  Only boundary vectors are stored; the models do not
 regenerate the released or benchmark solutions.
 
 \paragraph{Correlation-pipeline design.}
-The current report uses the six-benchmark run completed September 17, 2026:
-4,647 attempts from 1,547 source problems, including all 32 attempts per
-AIME24, AIME25, and AMC23 problem and one per MATH-500, OlympiadBench, and
-Minerva problem. GPQA-Diamond and MMLU-Pro remain absent.
-Generation uses \texttt{Qwen/Qwen3.5-35B-A3B-GPTQ-Int4}; replay uses
-\texttt{unsloth/Qwen3.5-35B-A3B} with runtime 4-bit quantization at decoder
-indices 27, 34, 35, 36, 38, and 39. Compact features and top-eight expert
-IDs are retained. No raw activation tensors are saved.
+Each of the three models has 4,647 attempts from 1,547 source problems:
+32 attempts per AIME24, AIME25, and AMC23 problem, and one per MATH-500,
+OlympiadBench, and Minerva problem. There are 100 complete avg@32 groups.
+Generation uses temperature 0.6, top-$p$ 0.95, a 32,768-token completion
+budget, and a 49,152-token context. Generation and replay quantizations
+are not identical: Qwen uses GPTQ generation and Unsloth runtime 4-bit
+replay; Gemma uses NVFP4 generation and NF4 replay; GPT-OSS uses its
+MXFP4 checkpoint. Native top-$k$ is 8 of 256, 8 of 128, and 4 of 32,
+respectively. Probe-selected router indices are Qwen 27/34/35/36/38/39,
+Gemma 16/19/21/22/25/27/29, and GPT-OSS 15/19/21/23.
 
-All 412 token-limit completions remain included; 3,568/4,647 answers are
-correct (0.768). Full-reasoning and absolute-position views pool all reasoning
-tokens independently of tagging; whole-continuation metrics also include
-final-answer tokens. The position reference mean is 12,498.062 tokens, with
-ten disjoint windows and overflow. Class views use available sentence labels
-from sample zero, selected with error-rate-weighted quotas and a 100,000-unit
-cap (seed 42). Missing class/window features are not zero.
-The judge is \texttt{unsloth/Qwen3.8-27B-NVFP4} with the frozen GEPA program
-and low reasoning effort; its accuracy on these traces is unmeasured.
+All token-limit completions remain included. Known-gold attempts with no
+extracted answer count as incorrect in correlation analysis. Whole-continuation
+features include final-answer tokens; full-reasoning and absolute-position
+views use all reasoning tokens independently of tagging. Class views use
+available sentence labels and omit missing features pairwise.
+Qwen uses a frozen Qwen3.8-NVFP4 judge at temperature zero, low effort,
+and a 4,096-token output budget, with a 100,000-unit sample-zero cap.
+Imported Gemma and GPT-OSS labels use temperature 1, top-$p$ 0.95,
+top-$k$ 20, low effort, and a 16,384-token budget. Gemma labels cover all
+six benchmarks; GPT-OSS labels cover MATH-500 and part of AIME24.
+These annotation protocols and populations are not matched across models.
+Source-integrity checks do not establish label accuracy.
 
-All requested stages are complete. The 100 complete avg@32 groups support
-problem-level and within-problem analyses in whole-continuation and
-full-reasoning views; classes still have one tagged attempt per problem.
-Length, termination, sparse class outcomes, and changing window cohorts
-limit interpretation. Historical runs remain separate artifacts.
+\paragraph{Guiding design.}
+Identity and margin policies use a dataset-stratified 70/30 source-problem
+split (seed 42), problem-weighted calibration, and at least four supporting
+problems per target. Their completed stochastic evaluations pair 1,395
+attempts on 465 held-out problems with condition-specific baselines.
+Sampling settings and prompts match within each pair; original attempt
+seeds are retained. Hooks act during prefill and decoding with native expert
+dispatch, eager execution, and no speculative decoding or prefix cache.
+Section~\ref{sec:guiding} gives the calibration exclusions, policy definitions,
+and numerical comparisons.
 
 \paragraph{Table model and metric conventions.}
 Every table caption identifies the evaluated model or models and the metrics
@@ -99,18 +103,8 @@ correlation coefficient, and confidence intervals are percentile bootstrap
 intervals.
 
 \paragraph{Artifact provenance.}
-The active packages are located at
-\path{src/moe_exp/gepaLLMAsJudge},
-\path{src/moe_exp/probeTest}, and
-\path{src/moe_exp/correlation_pipeline}.  GEPA runs through
-\path{run_gepaLLMAsJudge.sh} and writes to
-\path{results/gepaLLMAsJudge}; boundary-probe outputs remain under
-\path{results/probeTest}.  The correlation workflow is launched by its local
-\path{run_all.sh} and uses its documented output directory.
-
-The Qwen judge artifacts formerly called Experiment~0a, including the final
-Qwen3.8 model-alignment run, and the Qwen3.5 boundary-probe artifacts formerly
-called Experiment~0b are complete. The six-benchmark Qwen correlation run is complete for all requested views;
-class labels remain sampled and cross-model tagging is ongoing. Earlier untagged and GGUF outputs are
-not pooled with the current estimates. Historical OLMoE and numbered-experiment
-outputs remain archived.
+The five active packages are under \path{src/moe_exp}; their saved outputs
+are under the corresponding \path{results} subdirectories. Source hashes,
+comparison checks, and regeneration commands are listed in the
+reproducibility appendix. Correlation tables and guiding comparisons have
+different populations and must not be pooled.

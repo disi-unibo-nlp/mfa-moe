@@ -2,49 +2,27 @@
 
 \section{Reproducibility Checklist}
 
-\begin{table*}[ht]
-\centering
-\scriptsize
-\caption{Living inventory for the three active workflows.
-\modelmetrics{Qwen3.6-27B and Qwen3.8-27B \texttt{Q4\_K\_XL},
-\texttt{Qwen/Qwen3.5-35B-A3B-GPTQ-Int4}, and Qwen3.5-35B-A3B correlation-run
-variants}{workflow status, sample counts, headline metrics, and next actions;
-this is an inventory rather than a common-metric evaluation}}
-\label{tab:status}
-\begin{tabular}{p{0.22\textwidth}p{0.16\textwidth}p{0.52\textwidth}}
-\toprule
-Item & Status & Note / next action \\
-\midrule
-\texttt{gepaLLMAsJudge} & Cross-validation and two final-fit validations
-complete; test pending & Static-reward grouped cross-validation over 2,789 units gives
-67.34\% accuracy and 65.05\% macro-F1 for light-budget GEPA; heavy is worse.
-The same-model LLM-judge final fit improves validation accuracy from 66.83\%
-to 75.43\% and macro-F1 from 0.613 to 0.727, but reuses six responses across
-145 candidate evaluations.  In the final Qwen3.8 alignment, GEPA instead
-reduces balanced accuracy from 0.740 to 0.729 and Plan recall from 0.750 to
-0.563, so the safety gate correctly retains the imported 40-example seed.
-Neither run evaluates the 336-unit locked test.  Freeze the selected seed and
-evaluate it only under a prespecified held-out protocol. \\
-\texttt{probeTest} & Complete; grouped and human validation pending &
-Qwen3.5 GPTQ probes cover 3,087 units, seven targets, and 41 hidden-state
-indices; selected-layer AUROC is 0.835--0.934.  A provisional hybrid review of
-581 external units gives 50.3\% primary and 60.8\% compatible agreement, with
-187 multi-label and 37 low-confidence units; Explore is never predicted.
-Grouped cross-validation, robust segmentation, multiclass calibration, and
-independent human adjudication remain pending. \\
-\texttt{correlation\_pipeline} & Three six-benchmark model runs complete &
-Qwen, Gemma, and GPT-OSS each analyze 4,647 attempts from 1,547 problems
-and 100 complete avg@32 groups. GPT-OSS class labels cover only MATH-500
-and part of AIME24. The September 17 Qwen run analyzes all 4,647 attempts from 1,547 problems,
-including 412 token-limit completions. There are 3,568 correct answers
-(0.768). Full-reasoning, seven class, and eleven position scopes are
-complete. All 100 AIME/AMC avg@32 groups are eligible. Class labels remain
-sampled, and the added repeated attempts are not all tagged. Validate
-length-/termination-aware effects on held-out problems, assess label accuracy,
-compare common cohorts, and qualify expert IDs by layer. \\
-\bottomrule
-\end{tabular}
-\end{table*}
+\paragraph{Current artifact inventory.}
+The judge includes grouped prompt-selection studies, final-fit validation,
+and a frozen-prompt NVFP4 effort comparison. Boundary probes are complete
+for Qwen, GPT-OSS, and Gemma; external probe inspection covers Qwen only.
+Each correlation model has a complete six-benchmark corpus, with differing
+class-label coverage. Guiding tables use complete Qwen identity $+1$,
+identity $-1$, and margin-$1$ matched stochastic pairs. Incomplete conditions
+are excluded from numerical comparisons. Independent annotation assessment,
+response-grouped probe evaluation, and problem-cluster intervention
+uncertainty remain outstanding.
+
+\paragraph{Regenerating probe, effort, and guiding tables.}
+Run \texttt{python3 report/generate\_current\_results.py} from the repository
+root. It reads saved probe summaries and the judge-effort CSV, checks that
+all reported guiding manifests are complete and share comparison contracts,
+and verifies unique matching IDs, prompts, prompt tokens, per-attempt
+sampling settings, and Boolean outcomes. It then recomputes pooled and
+benchmark-specific correctness, flips, token counts, and truncation counts.
+\path{report/current_results_sources.json} records input SHA-256 hashes
+and the derived guiding statistics. The generator does not run inference,
+rejudge answers, or calculate uncertainty intervals.
 
 \subsection{Completed run and independent checks}
 
@@ -79,8 +57,7 @@ their continuous-metric associations. Counts and numerical discrepancies are
 recorded in \path{report/correlation_run_audit.json}.
 
 These checks do not independently rejudge mathematical answers or recompute
-model activations, bootstrap intervals, or BH adjustments. The historical
-\path{report/audit_correlation_run.py} audits a different untagged population.
+model activations, bootstrap intervals, or BH adjustments.
 
 \paragraph{Regenerating the report.}
 From the repository root, using Python with NumPy, SciPy, and Matplotlib:
@@ -100,9 +77,8 @@ The renderer reuses saved feature correlations and additionally computes
 descriptive sampled-label counts, adjacent-sentence transitions, class-share
 associations, and binned outcomes from fingerprinted inputs. These new
 summaries and bin counts/ranges are saved in
-\path{report/tutor_plot_statistics.json}; router-value intervals use 500
-source-problem bootstrap resamples with seed 42. No model is fitted. Narrative text and the tutor-coverage checklist are maintained
-alongside the generated artifacts. Original experiment outputs are unchanged.
+\path{report/descriptive_plot_statistics.json}; router-value intervals use 500
+source-problem bootstrap resamples with seed 42. No model is fitted. Original experiment outputs are unchanged.
 
 \paragraph{Scope of reproducibility.}
 Mutable local Docker tags and checkpoint names do not fix all underlying

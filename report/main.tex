@@ -22,46 +22,35 @@
 
 \section{Scope}
 
-This report tracks the three active workflows: \texttt{gepaLLMAsJudge},
-\texttt{probeTest}, and \texttt{correlation\_pipeline}.  The first two were
-called Experiments~0a and 0b in the previous combined manuscript.  Their full
-protocols, intermediate results, tables, limitations, and external-validation
-results are retained here under their current names.
-
-The previous combined manuscript for numbered Experiments 1--5 is preserved at
-\path{old/report/legacy_full_report.tex} together with its compiled PDF.
-Those archived results remain available for provenance but are not mixed into
-the current experimental plan.
+This report describes annotation, representation probing, observational
+routing analysis, and held-out routing interventions. The active packages are
+\texttt{gepaLLMAsJudge}, \texttt{probeTest},
+\texttt{correlation\_pipeline}, \texttt{moe\_identity\_guiding}, and
+\texttt{moe\_margin\_guiding}. Numerical comparisons use complete saved
+artifacts and retain their model, population, and deployment limitations.
 
 \input{experimental_setup}
 \input{gepaLLMAsJudge}
 \input{probeTest}
 \input{correlation_pipeline}
 \input{multimodel_correlation_results}
+\input{guiding_results}
 \input{active_synthesis}
 
 \section{Immediate Work}
 
-The agreed order of work is:
-\begin{enumerate}
-\item freeze and archive the seed prompt retained by the completed final GEPA
-alignment, and reserve the locked test for a prespecified evaluation;
-\item independently assess sentence labels, document token-limit sensitivity,
-and extend coverage to the missing benchmarks;
-\item fit a prespecified length-/termination-aware, dataset-aware correctness
-model with problem-respecting validation and exploratory layerwise screening;
-\item validate the completed repeated-problem analyses, test class/position
-contrasts on common cohorts, and qualify
-pooled expert-ID candidates by layer; and
-\item extend the completed Qwen, Gemma, and GPT-OSS comparison with matched
-annotation coverage and held-out validation.
-\end{enumerate}
-The detailed acceptance criteria and transcript ambiguities are maintained in
-\texttt{NEXT\_STEPS.md} at the repository root.
+The remaining priorities are independent assessment of generated-trace
+labels; response-grouped probe validation with layer selection inside the
+training folds; matched annotation coverage across models; and
+length-/termination-aware correlation models evaluated on held-out problems.
+For routing interventions, uncertainty should respect source-problem clusters,
+and further controls should assess random expert targets, calibration
+sensitivity, and transfer across quantizations. Strength selection and final
+evaluation require separate problem sets. Class-conditioned routing remains
+unevaluated.
 
 \input{reproducibility}
 
-\input{tutor_chart_coverage}
 
 \clearpage
 \input{correlation_plot_atlas}
