@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import logging
 from pathlib import Path
 from typing import Any
 
@@ -94,6 +95,9 @@ def analyze_views(
 
     summaries = []
     for (view, name), rows in sorted(grouped.items()):
+        logging.getLogger(__name__).info(
+            "Analyzing reasoning view %s/%s (%d traces)", view, name, len(rows)
+        )
         frame = pd.DataFrame(rows)
         features = [
             column

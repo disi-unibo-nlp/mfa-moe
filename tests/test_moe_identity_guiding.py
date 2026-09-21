@@ -180,13 +180,16 @@ def test_prepare_excludes_unscored_and_splits_by_problem(tmp_path):
     assert len(calibration) + len(evaluation) == 10
 
 
-def test_generate_worker_configuration_and_saved_scoring(tmp_path, monkeypatch):
+@pytest.mark.parametrize("strength", [-1., 1., 2.])
+def test_generate_worker_configuration_and_saved_scoring(tmp_path, monkeypatch, strength):
     import sys
     from moe_exp.moe_identity_guiding import run
     calls = []
     class LLM:
         def __init__(self, **kwargs):
             calls.append(kwargs)
+            self.llm_engine = self
+            self.pending = []
         def get_tokenizer(self):
             return SimpleNamespace(apply_chat_template=lambda messages, **kw: "rendered",
                                    encode=lambda prompt, **kw: [1, 2])
@@ -194,18 +197,25 @@ def test_generate_worker_configuration_and_saved_scoring(tmp_path, monkeypatch):
             calls.append(name)
             return [{"condition": "guided", "layers": {
                 k: {"token_evaluations": 2} for k in policy()["layers"]}}]
-        def generate(self, prompts, sampling):
-            assert prompts == [{"prompt_token_ids": [1, 2]}]
-            return [SimpleNamespace(prompt_token_ids=[1, 2], outputs=[SimpleNamespace(
-                text=r"\boxed{B}", token_ids=[3, 4], finish_reason="stop")])]
+        def add_request(self, request_id, prompt, params):
+            assert prompt == {"prompt_token_ids": [1, 2]}
+            self.pending.append(request_id)
+        def has_unfinished_requests(self):
+            return bool(self.pending)
+        def step(self):
+            return [SimpleNamespace(request_id=self.pending.pop(), finished=True,
+                prompt_token_ids=[1, 2], outputs=[SimpleNamespace(
+                    text=r"\boxed{B}", token_ids=[3, 4], finish_reason="stop")])]
     monkeypatch.setitem(sys.modules, "vllm", SimpleNamespace(LLM=LLM, SamplingParams=lambda **kw: kw))
+    monkeypatch.setitem(sys.modules, "vllm.sampling_params",
+                        SimpleNamespace(RequestOutputKind=SimpleNamespace(FINAL_ONLY="final")))
     monkeypatch.setattr(run, "version", lambda name: "test")
     p = tmp_path / "policy.json"
     p.write_text(json.dumps(policy()))
     prompts = tmp_path / "prompts.jsonl"
     prompts.write_text(json.dumps(dict(id="heldout", prompt="question", gold_answer="B",
                                       answer_type="choice")) + "\n")
-    args = SimpleNamespace(policy=p, model="qwen-test", prompts=prompts, strength=1.,
+    args = SimpleNamespace(policy=p, model="qwen-test", prompts=prompts, strength=strength,
                            allow_calibration_overlap=False, revision=None, dtype="auto",
                            tensor_parallel_size=1, max_model_len=128, max_tokens=16,
                            max_num_seqs=1, gpu_memory_utilization=.9, seed=42, temperature=0.,
@@ -399,3 +409,22 @@ def test_original_sampling_seeds_and_template_metadata(tmp_path):
         request_sampling([{'id':'x'}], sampling, require_original=True)
     with pytest.raises(ValueError, match='model differs'):
         request_sampling(prepared, sampling, require_original=True, model='other')
+
+
+@pytest.mark.parametrize("dtype", [torch.float32, torch.float16, torch.bfloat16])
+@pytest.mark.parametrize("diagnostics", ["minimal", "full"])
+def test_negative_strength_penalizes_favored_expert(dtype, diagnostics):
+    logits = torch.tensor([[3., 2.5, 1., 0.]], dtype=dtype)
+    hook = IdentityBias([1., 0., 0., 0.], -1., 1, diagnostics=diagnostics)
+    guided, extra = hook(None, (), (logits, "native"))
+    assert extra == "native" and guided.dtype == dtype
+    assert torch.equal(guided, torch.tensor([[2., 2.5, 1., 0.]], dtype=dtype))
+    assert logits.argmax(-1).item() == 0
+    assert guided.argmax(-1).item() == 1
+    assert hook.snapshot()["token_evaluations"] == 1
+
+
+@pytest.mark.parametrize("strength", [float("nan"), float("inf"), -float("inf")])
+def test_identity_strength_must_still_be_finite(strength):
+    with pytest.raises(ValueError, match="finite"):
+        IdentityBias([1., 0.], strength, 1)

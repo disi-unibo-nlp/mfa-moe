@@ -8,7 +8,7 @@ from importlib.metadata import version
 from pathlib import Path
 
 from moe_exp.jsonl import iter_jsonl
-from moe_exp.moe_guiding.run import _write_json, load_prompts
+from moe_exp.moe_guiding.run import load_prompts
 from .calibration import fit, problem_key, validate_policy
 
 DEFAULT_MODEL = "Qwen/Qwen3.5-35B-A3B-GPTQ-Int4"
@@ -35,8 +35,8 @@ def generate(args):
     policy = json.loads(args.policy.read_text())
     validate_policy(policy, args.model)
     rows = load_prompts(args.prompts)
-    if not math.isfinite(args.strength) or args.strength < 0:
-        raise ValueError("strength must be finite and nonnegative")
+    if not math.isfinite(args.strength):
+        raise ValueError("strength must be finite")
     if any(value < 1 for value in (args.max_tokens, args.max_model_len,
                                    args.max_num_seqs, args.tensor_parallel_size)):
         raise ValueError("Token limits, concurrency and tensor parallel size must be positive")
@@ -46,9 +46,7 @@ def generate(args):
     if overlaps and not args.allow_calibration_overlap:
         raise ValueError("Evaluation overlaps calibration problems; split by problem or explicitly "
                          "use --allow-calibration-overlap for an exploratory in-sample run")
-    from vllm import LLM, SamplingParams
     from moe_exp.correlation_pipeline.model_profiles import model_profile
-    from moe_exp.correlation_pipeline.scoring import score_completion
 
     engine = dict(model=args.model, revision=args.revision, tokenizer_revision=args.revision,
                   dtype=args.dtype, tensor_parallel_size=args.tensor_parallel_size,
@@ -65,8 +63,6 @@ def generate(args):
     per_request = request_sampling(rows, sampling,
                                    require_original=getattr(args, "require_original_sampling", False),
                                    model=args.model)
-    args.output_dir.mkdir(parents=True, exist_ok=True)
-    manifest_path = args.output_dir / "manifest.json"
     manifest = dict(experiment="moe_identity_guiding", status="running", condition=args.condition,
                     strength=args.strength, policy=policy, policy_sha256=digest(args.policy),
                     prompts_sha256=digest(args.prompts), engine_args=engine, sampling_args=sampling,
@@ -74,52 +70,8 @@ def generate(args):
                     scoring_contract="correlation_pipeline.score_completion",
                     seed_strategy="original_seed_plus_offset_or_id_hash_v1",
                     versions={name: version(name) for name in ("torch", "vllm", "transformers")})
-    with manifest_path.open("x") as handle:
-        json.dump(manifest, handle, indent=2)
-    try:
-        llm = LLM(**engine)
-        tokenizer = llm.get_tokenizer()
-        rendered = []
-        for row in rows:
-            messages = row.get("generation_messages") or row.get("messages")
-            if messages is None:
-                messages = []
-                if row.get("system_prompt"):
-                    messages.append({"role": "system", "content": row["system_prompt"]})
-                messages.append({"role": "user", "content": row["prompt"]})
-            rendered.append(tokenizer.apply_chat_template(messages, tokenize=False,
-                                                          add_generation_prompt=True,
-                                                          **((row.get("original_generation_config") or {}).get(
-                                                              "chat_template_kwargs") or {})))
-        inputs = [{"prompt_token_ids": tokenizer.encode(p, add_special_tokens=False)}
-                  for p in rendered]
-        llm.collective_rpc("identity_configure", kwargs=dict(
-            policy=policy, strength=args.strength, condition=args.condition))
-        outputs = llm.generate(inputs, [SamplingParams(**p) for p in per_request])
-        reports = llm.collective_rpc("identity_diagnostics")
-        manifest["routing_diagnostics"] = reports
-        check_reports(reports, policy, args.condition)
-        if len(outputs) != len(rows):
-            raise RuntimeError("Generation count does not match prompts")
-        with (args.output_dir / "generations.jsonl").open("x") as handle:
-            for row, prompt, output, request in zip(rows, rendered, outputs, per_request, strict=True):
-                completion = output.outputs[0]
-                answer, correct, method = score_completion(
-                    row, answer_type=row.get("answer_type", "math"), model_text=completion.text)
-                record = dict(id=row["id"], input=row, rendered_prompt=prompt,
-                              condition=args.condition, text=completion.text, sampling_args=request,
-                              model_answer=answer, is_correct=correct, scoring_method=method,
-                              prompt_token_ids=output.prompt_token_ids,
-                              generated_token_ids=list(completion.token_ids),
-                              generated_token_count=len(completion.token_ids),
-                              finish_reason=completion.finish_reason)
-                handle.write(json.dumps(record, ensure_ascii=False) + "\n")
-        manifest["status"] = "complete"
-    except Exception as error:
-        manifest.update(status="failed", error=f"{type(error).__name__}: {error}")
-        raise
-    finally:
-        _write_json(manifest_path, manifest)
+    from moe_exp.moe_identity_guiding.execution import execute
+    execute(args, manifest, rows, per_request, "identity", check_reports)
 
 
 def compare(baseline: Path, guided: Path):
@@ -130,6 +82,12 @@ def compare(baseline: Path, guided: Path):
     for key in ("prompts_sha256", "policy_sha256", "engine_args", "sampling_args", "versions", "scoring_contract"):
         if manifests[0][key] != manifests[1][key]:
             raise ValueError(f"Runs differ in {key}; use matched conditions")
+    if "reused_baseline" in manifests[0]:
+        from .execution import matching_baseline, file_hash
+        provenance = manifests[0]["reused_baseline"]
+        if (not matching_baseline(provenance["manifest"], manifests[0])
+                or file_hash(baseline / "generations.jsonl") != provenance["generations_sha256"]):
+            raise ValueError("Reused baseline provenance or completion hash differs")
     groups = []
     for path in (baseline, guided):
         rows = list(iter_jsonl(path / "generations.jsonl"))
@@ -193,13 +151,16 @@ def main():
     fit_parser.add_argument("--max-experts", type=int, default=8)
     fit_parser.add_argument("--output", type=Path, required=True)
     gen = sub.add_parser("generate")
+    from moe_exp.moe_identity_guiding.execution import add_execution_args
+    add_execution_args(gen)
     gen.add_argument("--model", default=DEFAULT_MODEL)
     gen.add_argument("--revision")
     gen.add_argument("--policy", type=Path, required=True)
     gen.add_argument("--prompts", type=Path, required=True)
     gen.add_argument("--output-dir", type=Path, required=True)
     gen.add_argument("--condition", choices=("baseline", "guided"), required=True)
-    gen.add_argument("--strength", type=float, default=1.0)
+    gen.add_argument("--strength", type=float, default=1.0,
+                     help="Signed router bias multiplier; negative values penalize favored experts")
     gen.add_argument("--allow-calibration-overlap", action="store_true")
     gen.add_argument("--dtype", choices=("auto", "float16", "bfloat16"), default="auto")
     # Match correlation_pipeline generation: completion budget plus prompt headroom.

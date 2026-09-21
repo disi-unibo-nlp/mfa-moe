@@ -51,6 +51,7 @@ if [[ "$STAGE" == generate || "$STAGE" == all ]]; then
     for condition in baseline guided; do
         bash "$RUNNER" generate --model "$MODEL" --policy "$OUTPUT_ROOT/policy.json" \
             --prompts "$OUTPUT_ROOT/split/prompts.$ATTEMPTS.sampling.jsonl" \
+            --resume --diagnostics "${DIAGNOSTICS:-minimal}" \
             --condition "$condition" --strength "${STRENGTH:-1}" \
             --max-num-seqs "${MAX_NUM_SEQS:-16}" \
             --temperature "${TEMPERATURE:-0.6}" --top-p "${TOP_P:-0.95}" --top-k 0 --seed 0 \

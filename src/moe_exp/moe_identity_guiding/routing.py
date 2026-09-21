@@ -11,9 +11,10 @@ from .calibration import validate_policy
 class IdentityBias:
     """Hook vLLM's unquantized gate output before its native expert selection."""
 
-    def __init__(self, scores, strength: float, top_k: int):
-        if not math.isfinite(strength) or strength < 0:
-            raise ValueError("strength must be finite and nonnegative")
+    def __init__(self, scores, strength: float, top_k: int, diagnostics="full"):
+        if not math.isfinite(strength):
+            raise ValueError("strength must be finite")
+        self.diagnostics = diagnostics
         self.scores = torch.tensor(scores, dtype=torch.float32)
         if self.scores.ndim != 1 or not 1 <= top_k <= len(scores):
             raise ValueError("Invalid score vector or top_k")
@@ -33,24 +34,28 @@ class IdentityBias:
         self.scores = self.scores.to(logits.device)
         # Retain the gate dtype expected by the native fused kernel.
         guided = (logits.float() + self.strength * self.scores).to(logits.dtype)
-        old_ids = logits.float().topk(self.top_k, dim=-1).indices
-        new_ids = guided.float().topk(self.top_k, dim=-1).indices
-        changes = (old_ids.sort(-1).values != new_ids.sort(-1).values).any(-1).sum()
-        before = torch.bincount(old_ids.flatten(), minlength=len(self.scores))
-        after = torch.bincount(new_ids.flatten(), minlength=len(self.scores))
         self.calls += 1
         self.tokens += logits.shape[0]
-        if self.changed is None:
-            self.changed, self.before, self.after = changes.detach(), before, after
-        else:
-            self.changed += changes.detach()
-            self.before += before
-            self.after += after
+        if self.diagnostics == "full":
+            old_ids = logits.float().topk(self.top_k, dim=-1).indices
+            new_ids = guided.float().topk(self.top_k, dim=-1).indices
+            changes = (old_ids.sort(-1).values != new_ids.sort(-1).values).any(-1).sum()
+            before = torch.bincount(old_ids.flatten(), minlength=len(self.scores))
+            after = torch.bincount(new_ids.flatten(), minlength=len(self.scores))
+            if self.changed is None:
+                self.changed, self.before, self.after = changes.detach(), before, after
+            else:
+                self.changed += changes.detach()
+                self.before += before
+                self.after += after
         if self.strength == 0:
             return output
         return (guided, *output[1:]) if isinstance(output, tuple) else guided
 
     def snapshot(self):
+        if self.diagnostics != "full":
+            return {"calls": self.calls, "token_evaluations": self.tokens,
+                    "diagnostics": "minimal"}
         return {"calls": self.calls, "token_evaluations": self.tokens,
                 "changed_topk_sets": 0 if self.changed is None else self.changed.item(),
                 "expert_counts_before": [] if self.before is None else self.before.tolist(),
@@ -69,7 +74,7 @@ def routing_spec(text):
     raise ValueError("Identity guiding supports Qwen3.5 MoE, GPT-OSS and Gemma4 MoE only")
 
 
-def install(model, policy: dict, strength: float, family: str = "qwen"):
+def install(model, policy: dict, strength: float, family: str = "qwen", diagnostics="full"):
     if family not in ("qwen", "oss", "gemma"):
         raise ValueError(f"Unsupported routing family: {family}")
     validate_policy(policy)
@@ -90,7 +95,7 @@ def install(model, policy: dict, strength: float, family: str = "qwen"):
     hooks, handles = {}, []
     try:
         for layer, gate in found.items():
-            hook = IdentityBias(policy["layers"][layer]["scores"], strength, policy["top_k"])
+            hook = IdentityBias(policy["layers"][layer]["scores"], strength, policy["top_k"], diagnostics=diagnostics)
             handles.append(gate.register_forward_hook(hook))
             hooks[layer] = hook
     except Exception:
@@ -101,7 +106,7 @@ def install(model, policy: dict, strength: float, family: str = "qwen"):
 
 
 class IdentityWorkerExtension:
-    def identity_configure(self, policy: dict, strength: float, condition: str):
+    def identity_configure(self, policy: dict, strength: float, condition: str, diagnostics="minimal"):
         config = self.vllm_config
         text = getattr(config.model_config, "hf_text_config", None)
         if text is None:
@@ -129,7 +134,7 @@ class IdentityWorkerExtension:
         self.identity_hooks, self.identity_handles = {}, []
         if condition == "guided":
             self.identity_hooks, self.identity_handles = install(
-                self.model_runner.get_model(), policy, strength, family)
+                self.model_runner.get_model(), policy, strength, family, diagnostics=diagnostics)
         return self.identity_diagnostics()
 
     def identity_diagnostics(self):

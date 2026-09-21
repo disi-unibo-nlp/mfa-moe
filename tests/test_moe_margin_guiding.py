@@ -223,7 +223,8 @@ def test_generate_preserves_original_request_sampling(tmp_path, monkeypatch):
     template_calls = []
     class LLM:
         def __init__(self, **kwargs):
-            pass
+            self.llm_engine = self
+            self.pending = []
         def get_tokenizer(self):
             def render(messages, **kwargs):
                 template_calls.append(kwargs)
@@ -231,14 +232,18 @@ def test_generate_preserves_original_request_sampling(tmp_path, monkeypatch):
             return SimpleNamespace(apply_chat_template=render, encode=lambda *a, **k: [1])
         def collective_rpc(self, name, **kwargs):
             return [{'condition': 'baseline', 'layers': {}}]
-        def generate(self, prompts, sampling):
-            assert len(prompts) == len(sampling) == 32
-            assert [p['seed'] for p in sampling] == list(range(7000, 7032))
-            assert all(p['temperature'] == .6 and p['top_p'] == .95 and
-                       p['top_k'] == -1 and p['max_tokens'] == 32768 for p in sampling)
-            return [SimpleNamespace(prompt_token_ids=[1], outputs=[SimpleNamespace(
-                text='B', token_ids=[2], finish_reason='stop')]) for _ in prompts]
+        def add_request(self, request_id, prompt, params):
+            assert params['seed'] == 7000 + int(request_id)
+            self.pending.append(request_id)
+        def has_unfinished_requests(self):
+            return bool(self.pending)
+        def step(self):
+            return [SimpleNamespace(request_id=self.pending.pop(0), finished=True,
+                prompt_token_ids=[1], outputs=[SimpleNamespace(
+                    text=r"\boxed{B}", token_ids=[2], finish_reason="stop")])]
     monkeypatch.setitem(sys.modules, 'vllm', SimpleNamespace(LLM=LLM, SamplingParams=lambda **k: k))
+    monkeypatch.setitem(sys.modules, "vllm.sampling_params",
+                        SimpleNamespace(RequestOutputKind=SimpleNamespace(FINAL_ONLY="final")))
     monkeypatch.setattr(run, 'version', lambda name: 'test')
     p = tmp_path / 'policy.json'
     p.write_text(json.dumps(policy()))
