@@ -310,5 +310,66 @@ bash src/moe_exp/moe_identity_guiding/run_global.sh compare
 
 For a fresh OSS/Gemma experiment, use `MODEL_PROFILE=oss` or `MODEL_PROFILE=gemma`
 with `run_global.sh all`. `all` skips existing preparation/fitting artifacts;
-it does not automatically resume or overwrite existing generation output files.
+it resumes compatible incremental runs and skips validated completed runs.
 No GPU generation is launched by changing these defaults.
+
+
+## Faster execution, baseline reuse, and recovery
+
+Global launchers now use `--diagnostics minimal` and `--resume`. Minimal diagnostics
+retain per-layer hook call/token counts and the mandatory hook-activity checks,
+without extra top-k comparisons, expert histograms, or post-intervention margin
+statistics. The intervention arithmetic is unchanged. Use `DIAGNOSTICS=full` on
+a fresh run (or `generate --diagnostics full`) for detailed router validation.
+Unavailable statistics are omitted, rather than reported as zero.
+
+Before loading a baseline model, generation searches completed runs beneath
+`results/moe_identity_guiding` and `results/moe_margin_guiding`. Reuse requires
+matching model/revision, engine settings, software versions, prompt-file hash,
+sampling configuration, and every saved attempt's input and seed. The source
+must have complete coverage and diagnostics proving no guiding hooks were
+installed. Different guiding policies and the two known worker-extension names
+are allowed, since baseline execution applies neither policy. Unknown worker
+extensions are rejected. This search applies to all model profiles, not just Qwen.
+`--baseline-search-root PATH` overrides the search roots and can be repeated;
+`--no-reuse-baseline` requests a fresh baseline in a fresh output directory.
+
+A reused baseline is copied into the destination, preserving its source manifest
+and content hashes in `reused_baseline`. The destination records the current
+comparison policy; the nested source manifest records the actual originating
+execution. Comparison verifies the reused completion hash and source compatibility.
+The source run remains intact. Existing completed destinations are validated and
+skipped, not replaced by a different baseline.
+
+Generation retains vLLM continuous batching and writes each completed, scored
+attempt to `generations.jsonl`, flushing and syncing it to disk. The manifest
+records `completed_count` and `expected_count`. Completions are saved in completion
+order; comparison joins by ID. No partial token sequence is checkpointed.
+
+Rerun the same global command after interruption, or pass `--resume` to `generate`.
+Saved attempts are validated and skipped; unfinished attempts restart with their
+original seeds. Resume refuses changed run settings, duplicate IDs, incompatible
+records, or another writer holding the run lock. A torn final JSONL line is
+removed on resume; corruption in complete lines is rejected. Scheduling after a
+restart can differ, so seeds alone do not guarantee bit-identical regenerated
+answers. Hook reports from earlier sessions are retained separately.
+
+Incomplete legacy runs without the incremental execution marker cannot be
+resumed automatically: they may still be executing in an older process. Let them
+finish, or use a fresh output directory after stopping them. These code changes
+do not alter processes that are already running.
+
+
+### Signed strength controls
+
+`STRENGTH` (CLI `--strength`) accepts any finite signed value. Positive values
+favor the policy's selected experts; `2` doubles the original bias. `-1` subtracts
+that same bias, penalizing the favored experts. This is a reversed-bias control,
+not a separately learned policy selecting experts associated with incorrect
+answers. Zero leaves native router logits unchanged. Margin guiding retains its
+separate `[0, 1]` strength restriction.
+
+Use a separate output root for each strength and copy the original policy and
+split to keep evaluation problems fixed. Compatible baseline reuse is independent
+of strength because baseline execution installs no intervention hooks. Treat a
+strength sweep on an already examined evaluation set as exploratory.

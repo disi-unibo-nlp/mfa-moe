@@ -18,11 +18,12 @@ class MarginGuide:
     """
 
     def __init__(self, target, strength, top_k, num_experts,
-                 metric="router_boundary_margin"):
+                 metric="router_boundary_margin", diagnostics="full"):
         if not math.isfinite(strength) or not 0 <= strength <= 1:
             raise ValueError("strength must be finite and in [0, 1]")
         if not 1 <= top_k < num_experts or metric not in ("router_margin", "router_boundary_margin"):
             raise ValueError("Invalid expert counts or margin metric")
+        self.diagnostics = diagnostics
         self.rank = top_k if metric == "router_boundary_margin" else 1
         self.lower, self.upper = target["lower"], target["upper"]
         if (not all(math.isfinite(v) for v in (self.lower, self.upper))
@@ -58,24 +59,28 @@ class MarginGuide:
         candidate = adjusted.clamp_min(torch.finfo(torch.float32).tiny).log().to(logits.dtype)
         # Keep unmodified rows bit-identical, including strength=0 controls.
         guided = torch.where(changed[:, None], candidate, logits)
-        post = guided.float().softmax(-1).topk(self.rank + 1, dim=-1).values
-        after = post[:, self.rank - 1] - post[:, self.rank]
-        old_ids = logits.topk(self.top_k, dim=-1).indices.sort(-1).values
-        new_ids = guided.topk(self.top_k, dim=-1).indices.sort(-1).values
-        before_distance = (margin - target).abs()
-        after_distance = (after - after.clamp(self.lower, self.upper)).abs()
-        totals = torch.stack((changed.sum(), (old_ids != new_ids).any(-1).sum(),
-                              margin.double().sum(), after.double().sum(),
-                              before_distance.double().sum(), after_distance.double().sum(),
-                              (guided != logits).any(-1).sum())).detach()
         self.calls += 1
         self.tokens += logits.shape[0]
-        self.totals = totals if self.totals is None else self.totals + totals
+        if self.diagnostics == "full":
+            post = guided.float().softmax(-1).topk(self.rank + 1, dim=-1).values
+            after = post[:, self.rank - 1] - post[:, self.rank]
+            old_ids = logits.topk(self.top_k, dim=-1).indices.sort(-1).values
+            new_ids = guided.topk(self.top_k, dim=-1).indices.sort(-1).values
+            before_distance = (margin - target).abs()
+            after_distance = (after - after.clamp(self.lower, self.upper)).abs()
+            totals = torch.stack((changed.sum(), (old_ids != new_ids).any(-1).sum(),
+                                  margin.double().sum(), after.double().sum(),
+                                  before_distance.double().sum(), after_distance.double().sum(),
+                                  (guided != logits).any(-1).sum())).detach()
+            self.totals = totals if self.totals is None else self.totals + totals
         if self.strength == 0:
             return output
         return (guided, *output[1:]) if isinstance(output, tuple) else guided
 
     def snapshot(self):
+        if self.diagnostics != "full":
+            return dict(calls=self.calls, token_evaluations=self.tokens,
+                        diagnostics="minimal", target_range=[self.lower, self.upper])
         values = [0] * 7 if self.totals is None else self.totals.tolist()
         return dict(calls=self.calls, token_evaluations=self.tokens,
                     interventions=int(values[0]), changed_topk_sets=int(values[1]),
@@ -86,7 +91,7 @@ class MarginGuide:
                     changed_logit_rows=int(values[6]),
                     target_range=[self.lower, self.upper])
 
-def install(model, policy: dict, strength: float, family: str = "qwen"):
+def install(model, policy: dict, strength: float, family: str = "qwen", diagnostics="full"):
     if family not in ("qwen", "oss", "gemma"):
         raise ValueError(f"Unsupported routing family: {family}")
     validate_policy(policy)
@@ -108,7 +113,7 @@ def install(model, policy: dict, strength: float, family: str = "qwen"):
     try:
         for layer, gate in found.items():
             hook = MarginGuide(policy["layers"][layer], strength, policy["top_k"],
-                               policy["num_experts"], policy["metric"])
+                               policy["num_experts"], policy["metric"], diagnostics=diagnostics)
             handles.append(gate.register_forward_hook(hook))
             hooks[layer] = hook
     except Exception:
@@ -119,7 +124,7 @@ def install(model, policy: dict, strength: float, family: str = "qwen"):
 
 
 class MarginWorkerExtension:
-    def margin_configure(self, policy: dict, strength: float, condition: str):
+    def margin_configure(self, policy: dict, strength: float, condition: str, diagnostics="minimal"):
         config = self.vllm_config
         text = getattr(config.model_config, "hf_text_config", None)
         if text is None:
@@ -147,7 +152,7 @@ class MarginWorkerExtension:
         self.margin_hooks, self.margin_handles = {}, []
         if condition == "guided":
             self.margin_hooks, self.margin_handles = install(
-                self.model_runner.get_model(), policy, strength, family)
+                self.model_runner.get_model(), policy, strength, family, diagnostics=diagnostics)
         return self.margin_diagnostics()
 
     def margin_diagnostics(self):

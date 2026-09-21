@@ -12,7 +12,7 @@ from typing import Any
 import numpy as np
 import pandas as pd
 import torch
-from scipy.stats import pointbiserialr, spearmanr
+from scipy.stats import pointbiserialr, rankdata, spearmanr
 from tqdm import tqdm
 
 from moe_exp.correlation_pipeline.benchmarks import BENCHMARKS, DEFAULT_BENCHMARKS
@@ -536,6 +536,19 @@ def _repeated_group_audit(problem_frame: pd.DataFrame) -> list[dict[str, Any]]:
     return audits
 
 
+def _bootstrap_coefficient(x: np.ndarray, y: np.ndarray) -> float:
+    """Pearson coefficient only; bootstrap replicates do not need p-values."""
+    if len(x) < 4:
+        return float("nan")
+    x = x - x.mean()
+    y = y - y.mean()
+    x_norm = np.linalg.norm(x)
+    y_norm = np.linalg.norm(y)
+    if x_norm == 0 or y_norm == 0:
+        return float("nan")
+    return float(np.clip(np.dot(x / x_norm, y / y_norm), -1.0, 1.0))
+
+
 def _bootstrap_ci(
     frame: pd.DataFrame,
     *,
@@ -544,6 +557,8 @@ def _bootstrap_ci(
     samples: int,
     rng: np.random.Generator,
 ) -> tuple[float | None, float | None]:
+    # Use positional groups once, instead of pandas label lookups per replicate.
+    frame = frame.reset_index(drop=True)
     strata: list[list[np.ndarray]] = []
     for _, dataset_frame in frame.groupby("dataset", sort=False):
         groups = [
@@ -556,8 +571,8 @@ def _bootstrap_ci(
     if n_clusters < 2 or samples < 1:
         return None, None
     values: list[float] = []
-    x_all = pd.to_numeric(frame[feature], errors="coerce")
-    y_all = pd.to_numeric(frame[target], errors="coerce")
+    x_all = pd.to_numeric(frame[feature], errors="coerce").to_numpy(dtype=np.float64)
+    y_all = pd.to_numeric(frame[target], errors="coerce").to_numpy(dtype=np.float64)
     for _ in range(samples):
         indices = np.concatenate(
             [
@@ -566,10 +581,10 @@ def _bootstrap_ci(
                 for index in rng.integers(0, len(groups), len(groups))
             ]
         )
-        x = x_all.loc[indices].to_numpy(dtype=np.float64)
-        y = y_all.loc[indices].to_numpy(dtype=np.float64)
+        x = x_all[indices]
+        y = y_all[indices]
         valid = np.isfinite(x) & np.isfinite(y)
-        correlation, _ = _correlation(x[valid], y[valid])
+        correlation = _bootstrap_coefficient(x[valid], y[valid])
         if np.isfinite(correlation):
             values.append(correlation)
     if len(values) < max(20, samples // 2):
@@ -592,7 +607,8 @@ def _bootstrap_spearman_ci(
     values: list[float] = []
     for _ in range(samples):
         indices = rng.integers(0, len(x), len(x))
-        correlation, _ = _spearman_correlation(x[indices], y[indices])
+        # Re-rank each resample: repeated observations change the tied ranks.
+        correlation = _bootstrap_coefficient(rankdata(x[indices]), rankdata(y[indices]))
         if np.isfinite(correlation):
             values.append(correlation)
     if len(values) < max(20, samples // 2):
@@ -968,12 +984,14 @@ def analyze(args: argparse.Namespace) -> dict[str, Any]:
     problem_features_path = output_root / "problem_features.csv"
     problem_frame.to_csv(problem_features_path, index=False)
     rng = np.random.default_rng(args.seed)
+    logger.info("Analyzing trace correlations (%d bootstrap samples)", args.bootstrap_samples)
     binary = _binary_correlations(
         frame,
         feature_columns=feature_columns,
         bootstrap_samples=args.bootstrap_samples,
         rng=rng,
     )
+    logger.info("Analyzing repeated-problem correlations")
     repeated = _repeated_problem_analysis(
         frame,
         feature_columns=feature_columns,
@@ -981,11 +999,13 @@ def analyze(args: argparse.Namespace) -> dict[str, Any]:
         rng=rng,
         problem_frame=problem_frame,
     )
+    logger.info("Analyzing cross-feature correlations")
     cross_feature = _cross_feature_correlations(
         frame,
         feature_columns=feature_columns,
         problem_frame=problem_frame,
     )
+    logger.info("Analyzing expert identity")
     if getattr(args, "skip_expert_identity", False):
         expert_identity: dict[str, Any] = {"status": "skipped"}
     elif traces_without_expert_tensors:
