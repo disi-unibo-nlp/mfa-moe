@@ -1,14 +1,25 @@
 \section{probeTest}
 
 The \texttt{probeTest} workflow tests a different annotation mechanism from
-the generative judge in \texttt{gepaLLMAsJudge}.  It asks whether Qwen's
+the generative judge in \texttt{gepaLLMAsJudge}.  It asks whether each model's
 representation of the prefix
 immediately before a sentence contains linearly accessible information about
 the upcoming Schoenfeld episode.  It therefore measures prospective
 prefix-state decodability, not semantic classification after reading the
 sentence and not the latent dynamics of a Qwen-generated trace.
 
-\paragraph{Within-corpus results.}
+\paragraph{Three-model comparison.}
+All three encoders use the same 3,087 units and target-stratified sentence
+split: 2,469 training and 618 test units. Table~\ref{tab:probe-models}
+reports each target's accuracy-selected hidden-state index, F1, and AUROC.
+All 38 response IDs occur in both partitions, and layer selection uses the
+evaluation split. These are descriptive within-corpus comparisons, not
+response-held-out generalization estimates. There are 287 Qwen, 175 GPT-OSS,
+and 217 Gemma binary fits. The detailed external inspection below applies
+only to Qwen.
+\input{probe_multimodel_table}
+
+\paragraph{Qwen within-corpus results.}
 Table~\ref{tab:schoenfeld-boundary-probes} reports the accuracy-selected layer
 for each one-versus-rest target.  AUROC is 0.835--0.934 and balanced accuracy
 is 0.740--0.862, demonstrating substantial within-split ranking signal.
@@ -66,7 +77,7 @@ of responses than to the number of sentences.  Test-based layer selection
 adds further optimism.
 
 \paragraph{External benchmark inspection.}
-All 80 requested examples complete without omitted units, yielding 581
+All 80 benchmark examples complete without omitted units, yielding 581
 sentence boundaries.  Table~\ref{tab:schoenfeld-external-labels} shows that
 the seven-way inspection behavior collapses mainly to Implement, Read, and
 Monitor.  Implement alone receives 49.2\% of argmax assignments, whereas

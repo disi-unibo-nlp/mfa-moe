@@ -1,4 +1,4 @@
-"""Descriptive tutor-requested plots from saved features and sampled labels.
+"""Descriptive routing and reasoning plots from saved features and sampled labels.
 
 Called by generate_correlation_tables.py; never reconstructs missing labels or
 router probabilities. Every input is registered by the parent reader.
@@ -243,4 +243,4 @@ def generate(api, base, full, classes, positions, frames, views):
         atlas.append(figure_tex('qwen_atlas_'+slug,name+': metric relationships and correctness. Codes are defined in Table~\\ref{tab:qwen-metric-key-atlas}.','atlas-'+slug))
         atlas.append(r'\clearpage')
     (report/'correlation_plot_atlas.tex').write_text('\n'.join(atlas))
-    (report/'tutor_plot_statistics.json').write_text(json.dumps(numerical,indent=2,allow_nan=False)+'\n')
+    (report/'descriptive_plot_statistics.json').write_text(json.dumps(numerical,indent=2,allow_nan=False)+'\n')

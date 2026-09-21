@@ -1,18 +1,12 @@
 \subsection{Completed six-benchmark run and analysis population}
 \label{sec:qwen-corr-audit}
 
-The Qwen numerical results use the run completed on September 17, 2026,
+The Qwen numerical results use the run
 under \path{results/correlation_pipeline/reasoning-vllm-v1}. Forward replay
 and the saved aggregate analyses are complete for 4,647 attempts from 1,547 source
 problems: 500 MATH-500, 960 AIME24, 960 AIME25, 675 OlympiadBench, 1,280 AMC23,
 and 272 Minerva attempts. AIME and AMC retain 32 attempts per problem;
 the other benchmarks retain one. GPQA-Diamond and MMLU-Pro are absent.
-
-This supersedes the September 15 tagged snapshot in the numerical report.
-That historical snapshot had 738 inputs and 699 attempts after termination
-filtering. The new run changes the population, termination policy, and token
-scope together: it is not a controlled before/after comparison or an
-annotation-only ablation. Historical snapshot outputs remain archived.
 
 \paragraph{Generation, replay, and annotation.}
 Generation serves \texttt{Qwen/Qwen3.5-35B-A3B-GPTQ-Int4} through vLLM with
@@ -36,7 +30,7 @@ measured; the earlier GGUF alignment evaluation uses a different deployment.
 \paragraph{Population and token scopes.}
 All supplied generations enter whole-continuation, full-reasoning, position,
 and expert analyses, including token-limit completions. Whole-continuation
-metrics include final-answer tokens. The \texttt{full/reasoning} view now
+metrics include final-answer tokens. The \texttt{full/reasoning} view
 uses every reasoning token, independently of annotation coverage. Position
 views also use all reasoning tokens within their absolute windows. Class
 views alone use available validated sentence labels: the sampling protocol
@@ -69,9 +63,7 @@ These are marginal associations, without length or dataset adjustment.
 Leading-expert margin ($M=p_{(1)}-p_{(2)}$) is positive throughout; Minerva's interval includes
 zero. Hidden-state step distance is also positive throughout
 ($r=0.100$--$0.557$), while token count is negative
-($-0.727$--$-0.238$). The change from the historical snapshot's signs
-cannot be attributed to adding labels alone: replay and inclusion semantics
-also changed. Attempts within AIME/AMC problems are dependent; naive
+($-0.727$--$-0.238$). Attempts within AIME/AMC problems are dependent; naive
 trace-level $p$-values and their BH adjustments are diagnostic only.
 
 \begin{figure}[p]
@@ -126,7 +118,7 @@ cohorts remain especially sensitive to individual errors. Annotation errors,
 length, difficulty, and coverage are uncontrolled, so these screens do not
 identify beneficial or harmful reasoning states.
 
-\input{tutor_class_results}
+\input{class_results}
 
 \subsection{Position-dependent estimates and coverage}
 
@@ -182,16 +174,14 @@ class-conditioned metrics versus correctness and token count. The numeric
 tables remain available as a separate generated artifact.
 
 The legacy regex flags (backtracking, contradiction, and self-correction)
-are removed from the report's outcome panels, as requested at 19:08--19:39.
-They are not the seven predicted reasoning classes. Historical detector
-outputs remain in the source artifacts.
+are removed from the report's outcome panels, to keep the outcome panels focused on model-assigned classes.
+They are not the seven predicted reasoning classes. Detector outputs remain in the source artifacts.
 
 \subsection{Repeated-attempt findings}
 
-There are now 100 eligible complete avg@32 groups: 30 AIME24, 30 AIME25,
+There are 100 eligible complete avg@32 groups: 30 AIME24, 30 AIME25,
 and 40 AMC23 problems. Problem means use all declared attempts, including
-limit hits, and binary outcomes are complete. Unlike the historical
-sample-zero snapshot, the current run supports both between-problem
+limit hits, and binary outcomes are complete. The run supports both between-problem
 rank associations and within-problem correct/incorrect contrasts.
 
 \input{correlation_repeated_tables}
@@ -235,7 +225,7 @@ correctness and total token count, without selecting a maximum. Numeric IDs pool
 identify a portable expert or establish an intervention target. Trace-level
 BH values on repeated-attempt datasets do not account for clustering.
 
-\input{tutor_router_results}
+\input{router_results}
 
 Replay covers 62,088,209 continuation tokens. Compact tensor artifacts
 occupy 5.970 GB versus a projected 1,907.350 GB of raw selected-layer
@@ -246,4 +236,5 @@ expert weights are saved. The completed run supplies six-benchmark,
 full-reasoning, class, position, lexical, and repeated-attempt analyses.
 Next steps are independent label assessment, length-/termination-aware
 models, common-cohort class/window comparisons, and validation holding out
-whole problems before any routing intervention.
+whole problems. Separate held-out guiding results are reported in
+Section~\ref{sec:guiding}.

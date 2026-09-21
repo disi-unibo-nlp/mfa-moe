@@ -1,6 +1,5 @@
 {
   "results/correlation_pipeline/reasoning-vllm-v1/analysis/unsloth--Qwen3.5-35B-A3B/correlations.json": "6bddd605ab62c3ed55ed453a1006a14ead341c57bc3ab5cb06185f316245735f",
-  "Call with Lorenzo Molfetta (2).vtt": "eb311bfb898f2818d419d2a3712320d6aa329313c5ae851d9bc1a112547b59d9",
   "report/correlation_run_audit.json": "9128bb0da0324baa1604b3ff438581fd9635dec405f0d676373b50eec2bb0e55",
   "results/correlation_pipeline/reasoning-vllm-v1/forward/unsloth--Qwen3.5-35B-A3B/summary.json": "06cb644bdb5c5581ea228b946ca56f7dee63478cf267311e9c1b3098ce54df49",
   "results/correlation_pipeline/reasoning-vllm-v1/analysis/unsloth--Qwen3.5-35B-A3B/views-v1/summary.json": "4a31aaae7aee444c737365c6272742ec1fc56c9357bfcb894128cbe52d9ce476",

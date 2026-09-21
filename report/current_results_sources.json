@@ -1,0 +1,412 @@
+{
+  "sha256": {
+    "results/probeTest/qwen3.5-35b-a3b-gptq-int4/probes/results.json": "403a68a4ad805f135f866dc96fc9d40470df8c6f007b7c5f62e5a0da7cc0775b",
+    "results/probeTest/gpt-oss-20b/probes/results.json": "9c55e7b5d4419a1a9f3068e91507cb8bed71745764d5346f124682bd3a3970e3",
+    "results/probeTest/gemma-4-26b-a4b-it-nf4/probes/results.json": "e47ceb10b2b1b4d67803567f0904dacfed3d72b21fd793b4a9f3b6cf4a5bb46a",
+    "results/gepaLLMAsJudge/thinking-low-medium-20260915/summary.csv": "534a59d2925ce7a6fc818608190b59092ba77f1e856a133b9e8e68105f977a19",
+    "results/moe_identity_guiding/qwen_global/sampling/full/baseline/manifest.json": "8cb629c0b522318ce6efd2e510c9c135cbe4a9017a2fae8b86a9d80935f2321d",
+    "results/moe_identity_guiding/qwen_global/sampling/full/guided/manifest.json": "4d524c03936cb3bd04ac0bdac001fa0254325ac1ab27938ed255e1da65a193b4",
+    "results/moe_identity_guiding/qwen_global/sampling/full/baseline/generations.jsonl": "5e9e09192eae57eea96985c1ca942670767c987fa2ad08fb501212b875875889",
+    "results/moe_identity_guiding/qwen_global/sampling/full/guided/generations.jsonl": "af3b9bd7efa25c7f2722b84fc33da400c7f3b418383f1860ed87a149a81ac2b6",
+    "results/moe_identity_guiding/qwen_strength_-1/sampling/full/baseline/manifest.json": "e921e692ca78ea6b0bcc711a819d23a3b4bde7b0a68a242bf938ea2eae4e2e87",
+    "results/moe_identity_guiding/qwen_strength_-1/sampling/full/guided/manifest.json": "2906a5cb43028956b33474090a486457dff91c9db24d3d6eabdeeb89b4a1193f",
+    "results/moe_identity_guiding/qwen_strength_-1/sampling/full/baseline/generations.jsonl": "6c9c2c3406653dff0f91a8e95806a5769f52b5700e6a8b431ad9e6e7dd3394ba",
+    "results/moe_identity_guiding/qwen_strength_-1/sampling/full/guided/generations.jsonl": "dbf6d0070ed9f483419bf73c47452ce8fc6a140f19035327b54774926f265d69",
+    "results/moe_margin_guiding/qwen_global/sampling/full/baseline/manifest.json": "f980b9199d07ed7fee26178874ad646f12816c461208f114454b60228ba7b7ea",
+    "results/moe_margin_guiding/qwen_global/sampling/full/guided/manifest.json": "ad3508e53296807a7a2b9cdd6940d5da2edfbfbbadcc3d7700bfb0fd8af1d15b",
+    "results/moe_margin_guiding/qwen_global/sampling/full/baseline/generations.jsonl": "562d50dc46625b606e38c83d4d58915239c64d047db6c216bcec84164ae6229c",
+    "results/moe_margin_guiding/qwen_global/sampling/full/guided/generations.jsonl": "5fc1da9a7ff244300820a51cf6c9141a5687bda4e480352814f58410a97874a3"
+  },
+  "guiding": {
+    "Identity $+1$": {
+      "total": {
+        "n": 1395,
+        "correct": [
+          1031,
+          1026
+        ],
+        "delta_pp": -0.35842293906810035,
+        "tokens": [
+          13862.92329749104,
+          13706.05734767025
+        ],
+        "truncated": [
+          140,
+          146
+        ],
+        "wrong_to_right": 39,
+        "right_to_wrong": 44
+      },
+      "datasets": {
+        "aime24": {
+          "n": 288,
+          "correct": [
+            185,
+            177
+          ],
+          "delta_pp": -2.7777777777777777,
+          "tokens": [
+            20817.354166666668,
+            21089.527777777777
+          ],
+          "truncated": [
+            63,
+            76
+          ],
+          "wrong_to_right": 15,
+          "right_to_wrong": 23
+        },
+        "aime25": {
+          "n": 288,
+          "correct": [
+            246,
+            246
+          ],
+          "delta_pp": 0.0,
+          "tokens": [
+            18204.565972222223,
+            17994.413194444445
+          ],
+          "truncated": [
+            41,
+            42
+          ],
+          "wrong_to_right": 10,
+          "right_to_wrong": 10
+        },
+        "amc23": {
+          "n": 384,
+          "correct": [
+            381,
+            381
+          ],
+          "delta_pp": 0.0,
+          "tokens": [
+            8731.4453125,
+            8650.453125
+          ],
+          "truncated": [
+            0,
+            0
+          ],
+          "wrong_to_right": 2,
+          "right_to_wrong": 2
+        },
+        "math500": {
+          "n": 150,
+          "correct": [
+            106,
+            106
+          ],
+          "delta_pp": 0.0,
+          "tokens": [
+            7117.493333333333,
+            6882.333333333333
+          ],
+          "truncated": [
+            7,
+            5
+          ],
+          "wrong_to_right": 2,
+          "right_to_wrong": 2
+        },
+        "minerva": {
+          "n": 82,
+          "correct": [
+            16,
+            18
+          ],
+          "delta_pp": 2.4390243902439024,
+          "tokens": [
+            10912.512195121952,
+            10098.548780487805
+          ],
+          "truncated": [
+            7,
+            3
+          ],
+          "wrong_to_right": 4,
+          "right_to_wrong": 2
+        },
+        "olympiad": {
+          "n": 203,
+          "correct": [
+            97,
+            98
+          ],
+          "delta_pp": 0.49261083743842365,
+          "tokens": [
+            13719.901477832513,
+            13209.704433497536
+          ],
+          "truncated": [
+            22,
+            20
+          ],
+          "wrong_to_right": 6,
+          "right_to_wrong": 5
+        }
+      }
+    },
+    "Identity $-1$": {
+      "total": {
+        "n": 1395,
+        "correct": [
+          1021,
+          1032
+        ],
+        "delta_pp": 0.7885304659498208,
+        "tokens": [
+          13830.25376344086,
+          13919.205734767025
+        ],
+        "truncated": [
+          154,
+          138
+        ],
+        "wrong_to_right": 47,
+        "right_to_wrong": 36
+      },
+      "datasets": {
+        "aime24": {
+          "n": 288,
+          "correct": [
+            178,
+            182
+          ],
+          "delta_pp": 1.3888888888888888,
+          "tokens": [
+            20947.322916666668,
+            20834.385416666668
+          ],
+          "truncated": [
+            74,
+            66
+          ],
+          "wrong_to_right": 21,
+          "right_to_wrong": 17
+        },
+        "aime25": {
+          "n": 288,
+          "correct": [
+            242,
+            248
+          ],
+          "delta_pp": 2.0833333333333335,
+          "tokens": [
+            18289.86111111111,
+            18211.60763888889
+          ],
+          "truncated": [
+            44,
+            37
+          ],
+          "wrong_to_right": 13,
+          "right_to_wrong": 7
+        },
+        "amc23": {
+          "n": 384,
+          "correct": [
+            382,
+            382
+          ],
+          "delta_pp": 0.0,
+          "tokens": [
+            8665.372395833334,
+            8784.5078125
+          ],
+          "truncated": [
+            0,
+            0
+          ],
+          "wrong_to_right": 1,
+          "right_to_wrong": 1
+        },
+        "math500": {
+          "n": 150,
+          "correct": [
+            103,
+            102
+          ],
+          "delta_pp": -0.6666666666666666,
+          "tokens": [
+            6868.106666666667,
+            7863.366666666667
+          ],
+          "truncated": [
+            5,
+            11
+          ],
+          "wrong_to_right": 2,
+          "right_to_wrong": 3
+        },
+        "minerva": {
+          "n": 82,
+          "correct": [
+            20,
+            19
+          ],
+          "delta_pp": -1.2195121951219512,
+          "tokens": [
+            10359.768292682927,
+            10090.658536585366
+          ],
+          "truncated": [
+            5,
+            3
+          ],
+          "wrong_to_right": 3,
+          "right_to_wrong": 4
+        },
+        "olympiad": {
+          "n": 203,
+          "correct": [
+            96,
+            99
+          ],
+          "delta_pp": 1.477832512315271,
+          "tokens": [
+            13722.536945812808,
+            13752.985221674877
+          ],
+          "truncated": [
+            26,
+            21
+          ],
+          "wrong_to_right": 7,
+          "right_to_wrong": 4
+        }
+      }
+    },
+    "Margin $1$": {
+      "total": {
+        "n": 1395,
+        "correct": [
+          1030,
+          1028
+        ],
+        "delta_pp": -0.14336917562724014,
+        "tokens": [
+          13847.76129032258,
+          13839.855197132616
+        ],
+        "truncated": [
+          144,
+          143
+        ],
+        "wrong_to_right": 39,
+        "right_to_wrong": 41
+      },
+      "datasets": {
+        "aime24": {
+          "n": 288,
+          "correct": [
+            180,
+            184
+          ],
+          "delta_pp": 1.3888888888888888,
+          "tokens": [
+            20658.76388888889,
+            20822.208333333332
+          ],
+          "truncated": [
+            69,
+            66
+          ],
+          "wrong_to_right": 16,
+          "right_to_wrong": 12
+        },
+        "aime25": {
+          "n": 288,
+          "correct": [
+            243,
+            246
+          ],
+          "delta_pp": 1.0416666666666667,
+          "tokens": [
+            18461.819444444445,
+            18297.336805555555
+          ],
+          "truncated": [
+            45,
+            41
+          ],
+          "wrong_to_right": 13,
+          "right_to_wrong": 10
+        },
+        "amc23": {
+          "n": 384,
+          "correct": [
+            380,
+            380
+          ],
+          "delta_pp": 0.0,
+          "tokens": [
+            8953.861979166666,
+            8786.940104166666
+          ],
+          "truncated": [
+            3,
+            3
+          ],
+          "wrong_to_right": 3,
+          "right_to_wrong": 3
+        },
+        "math500": {
+          "n": 150,
+          "correct": [
+            106,
+            104
+          ],
+          "delta_pp": -1.3333333333333333,
+          "tokens": [
+            6365.626666666667,
+            6250.5
+          ],
+          "truncated": [
+            3,
+            3
+          ],
+          "wrong_to_right": 2,
+          "right_to_wrong": 4
+        },
+        "minerva": {
+          "n": 82,
+          "correct": [
+            20,
+            18
+          ],
+          "delta_pp": -2.4390243902439024,
+          "tokens": [
+            11087.439024390244,
+            11484.085365853658
+          ],
+          "truncated": [
+            7,
+            7
+          ],
+          "wrong_to_right": 3,
+          "right_to_wrong": 5
+        },
+        "olympiad": {
+          "n": 203,
+          "correct": [
+            101,
+            96
+          ],
+          "delta_pp": -2.4630541871921183,
+          "tokens": [
+            13539.91133004926,
+            13727.655172413793
+          ],
+          "truncated": [
+            17,
+            23
+          ],
+          "wrong_to_right": 2,
+          "right_to_wrong": 7
+        }
+      }
+    }
+  }
+}

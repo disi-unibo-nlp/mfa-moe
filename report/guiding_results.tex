@@ -1,0 +1,85 @@
+\section{Held-out Routing Interventions}
+\label{sec:guiding}
+
+\paragraph{Calibration and evaluation population.}
+Both policies split source problems within each benchmark, allocating 1,082
+problems to calibration and 465 to evaluation (70/30, seed 42).
+Calibration uses 3,014 scored traces from 1,001 problems; 238 traces with
+missing saved correctness are excluded. This differs from the correlation
+analyzer, which counts known-gold missing answers as incorrect. The
+problem-weighted calibration accuracy is 0.5817 on this scored subset.
+Consequently, calibration targets may be sensitive to answer-extraction
+failures and must not be interpreted as estimates over all allocated traces.
+Each problem contributes total weight one, divided across its usable attempts.
+Evaluation retains 150 MATH-500, 9 AIME24, 9 AIME25, 203 OlympiadBench,
+12 AMC23, and 82 Minerva problems. With 32 attempts on each AIME/AMC
+problem, this gives 1,395 paired attempts. No evaluation problem is used
+in policy calibration.
+
+\paragraph{Identity policy.}
+At each of the six selected Qwen layers, expert inclusion is weighted by
+its routing fraction and problem weight. Experts require support from at
+least four distinct problems and positive accuracy lift over the calibration
+baseline. At most eight identities per layer are selected; positive lifts
+are normalized to the largest retained lift. A signed strength scales the
+additive router-logit bias. Strength $+1$ promotes these identities;
+strength $-1$ suppresses the same identities. The negative control does
+not learn a separate set of incorrectly associated experts. Unlike the
+pooled-ID observational screen, policy targets are layer-qualified.
+
+\paragraph{Margin policy.}
+The policy calibrates the trace-mean selection-boundary margin
+$p_{(k)}-p_{(k+1)}$, with $k=8$, using five problem-weighted quantile bins.
+Among bins with at least four supporting problems, it selects the
+highest-accuracy positive-lift bin, breaking ties by support and then lower
+margin. At inference, probability mixing moves the token-level gap toward
+the selected interval: uniform mixing reduces the gap, whereas mixing with
+a distribution uniform over the selected top-$k$ increases it.
+Trace-level calibration and token-level application have different units.
+Both policies transfer routing targets from Unsloth 4-bit replay to GPTQ
+generation, which is an additional unisolated deployment difference.
+
+\paragraph{Matched evaluation.}
+Each policy is compared with its own baseline using identical problem IDs,
+prompts, prompt token IDs, per-attempt seeds, sampling settings, engine
+configuration, and recorded software versions. Generation uses temperature
+0.6, top-$p$ 0.95, and a 32,768-token limit. The identity $+1$ and margin
+comparisons use maximum concurrency 16; the identity $-1$ comparison uses
+25. Baseline outputs therefore cannot be treated as interchangeable across
+comparisons. Only complete matched stochastic pairs are reported; the
+strength-$+2$ condition has no complete matched evaluation artifact.
+Separate greedy and restricted-benchmark outputs are not pooled here.
+The engine writes completed records incrementally and can resume without
+continuing a partially generated sequence. Baseline reuse requires matching
+contracts and a verified output hash.
+
+\input{guiding_summary_table}
+\input{guiding_dataset_table}
+
+\paragraph{Observed effects and limits.}
+Identity $+1$ changes 83 correctness outcomes and loses five net correct
+answers; margin guiding changes 80 and loses two. Identity $-1$ changes 83
+and gains eleven. The corresponding pooled changes are $-0.36$, $-0.14$,
+and $+0.79$ percentage points. This does not establish a reliable benefit
+from promoting positive-lift experts or targeting the calibrated margin.
+The negative-strength point estimate is positive, but differences across
+strengths are not a controlled ranking because their baselines and
+concurrency differ. These are exploratory comparisons without paired
+source-problem confidence intervals or a separate strength-selection set.
+Pooled attempt accuracy also weights each AIME/AMC problem 32 times as
+heavily as each single-attempt problem; benchmark counts are reported to
+make this weighting explicit.
+
+\paragraph{What the margin hook actually changes.}
+Full diagnostics for the completed margin comparison record 20,657,039
+hook token evaluations per selected layer. The top-eight identity set changes
+on 32.7--41.8\% of these evaluations. Mean distance to the target interval
+falls from $2.19$--$4.71\times10^{-4}$ to
+$0.285$--$0.902\times10^{-4}$ across layers. Thus the numerical operation
+moves the intended gap, but it does not isolate a membership-preserving
+intervention after finite-precision log-probability conversion and casting.
+These diagnostics describe the hooked logits, not an independent recording
+of the kernel's dispatched expert IDs. Their denominator can include
+prefill, padding, and recomputation and is not a generated-token count.
+The identity $-1$ comparison uses minimal diagnostics, so detailed hook
+statistics are not available on a common basis across all conditions.

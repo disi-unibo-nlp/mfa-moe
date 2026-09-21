@@ -155,7 +155,7 @@ outer evaluation is added, and a genuinely unseen external test set is
 designated.
 
 \paragraph{Completed LLM-judge final fit.}
-The August 11, 2026 run uses seed 42, the 21-example context-aware few-shot
+The Qwen3.6 final fit uses seed 42, the 21-example context-aware few-shot
 prompt, and the same-model informative reward on the original response-grouped
 26/6/6 split (2,382/407/336 units).  Seed and optimized prompts both return a
 valid label for all 407 validation units.  Table~\ref{tab:exp0a-llmjudge}
@@ -243,7 +243,7 @@ prompt should be frozen and compressed or ablated before a one-time test on
 genuinely unseen responses.
 
 \paragraph{Final Qwen3.8 model-alignment pass.}
-The August 27--28, 2026 alignment run uses Qwen3.8-27B
+The final alignment uses Qwen3.8-27B
 \texttt{UD-Q4\_K\_XL}, seed 42, the heavy GEPA budget, and medium reasoning
 effort for the same-model judge.  It keeps the same response-grouped
 2,382/407/336 train/validation/locked-test split.  Rather than drawing new
@@ -313,9 +313,24 @@ classification.  The optimized instruction is shorter (2,591 versus 5,201
 words) but internally inconsistent: an early rule treats ``Let me compute
 that'' as Monitor while a later rule treats ``Let me calculate'' as Plan.
 Plan-to-Monitor errors rise from 6 to 10, consistent with that boundary
-confusion.  The best internal candidate appears by iteration 3 and remains the
-best through iteration 19, so the remaining heavy search adds roughly 14.5
-hours without a better candidate.  The appropriate conclusion is that the
+confusion.  The appropriate conclusion is that the
 final alignment completed correctly and the safety gate worked: GEPA found no
 safe improvement over the existing seed.  The complete artifact is stored at
 \path{results/gepaLLMAsJudge/qwen3.8-27b-medium-final-s42-v3}.
+
+
+\paragraph{Frozen-prompt deployment and reasoning effort.}
+The NVFP4 deployment comparison evaluates the frozen 40-example prompt
+on the same 407 development-validation units, with temperature zero,
+a 4,096-token budget, seed 42, one worker, and one uncached pass.
+Table~\ref{tab:judge-effort} reports the saved outputs. Both settings have
+100\% valid-output coverage and no request errors. They disagree on 41/407
+labels (10.1\%): identical aggregate accuracy does not imply interchangeable
+annotations. This is exploratory evidence on reused validation responses,
+not independent validation of labels on generated benchmark traces.
+\input{judge_effort_table}
+
+The 336-unit partition is excluded from these final fits. Because its
+responses have been inspected in preliminary work, it should not be
+described as genuinely untouched; an independent generalization estimate
+requires unseen responses.

@@ -1,0 +1,29 @@
+\begin{table*}[ht]
+\centering\small
+\caption{Qwen3.5 GPTQ guiding results by benchmark. Correct counts are baseline/guided; accuracy changes are percentage points. Repeated attempts from one source problem are dependent.}
+\label{tab:guiding-datasets}
+\begin{tabular}{llrrr}
+\toprule
+Policy & Dataset & Attempts & Correct B/G & Change \\
+\midrule
+Identity $+1$ & aime24 & 288 & 185/177 & -2.78 \\
+Identity $+1$ & aime25 & 288 & 246/246 & +0.00 \\
+Identity $+1$ & amc23 & 384 & 381/381 & +0.00 \\
+Identity $+1$ & math500 & 150 & 106/106 & +0.00 \\
+Identity $+1$ & minerva & 82 & 16/18 & +2.44 \\
+Identity $+1$ & olympiad & 203 & 97/98 & +0.49 \\
+Identity $-1$ & aime24 & 288 & 178/182 & +1.39 \\
+Identity $-1$ & aime25 & 288 & 242/248 & +2.08 \\
+Identity $-1$ & amc23 & 384 & 382/382 & +0.00 \\
+Identity $-1$ & math500 & 150 & 103/102 & -0.67 \\
+Identity $-1$ & minerva & 82 & 20/19 & -1.22 \\
+Identity $-1$ & olympiad & 203 & 96/99 & +1.48 \\
+Margin $1$ & aime24 & 288 & 180/184 & +1.39 \\
+Margin $1$ & aime25 & 288 & 243/246 & +1.04 \\
+Margin $1$ & amc23 & 384 & 380/380 & +0.00 \\
+Margin $1$ & math500 & 150 & 106/104 & -1.33 \\
+Margin $1$ & minerva & 82 & 20/18 & -2.44 \\
+Margin $1$ & olympiad & 203 & 101/96 & -2.46 \\
+\bottomrule
+\end{tabular}
+\end{table*}

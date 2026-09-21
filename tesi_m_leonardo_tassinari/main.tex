@@ -930,7 +930,7 @@ Quantised generation and replay implementations can differ, so replay
 measurements need not equal the generator's internal activations. Guiding
 policies retain that provenance and are evaluated by changing the actual
 router used for free generation. Expert-identity calibration also preserves
-the full $(\ell,e)$ pair, avoiding the ambiguity of historical screens that
+the full $(\ell,e)$ pair, avoiding the ambiguity of pooled screens that
 pooled equal numeric expert indices across layers.
 
 The contribution pursued by the thesis is an experimentally grounded
@@ -1390,20 +1390,12 @@ fixed throughout these studies. The guiding stage additionally fits routing
 policies on calibration problems and evaluates them on held-out problems,
 as specified in Section~\ref{sec:method-guiding}.
 
-The experiments evolved during development. In particular, benchmark
-generation moved from a GGUF implementation in \texttt{llama.cpp} to a GPTQ
-implementation in vLLM. The completed correlation corpus described below is
-the six-benchmark, untagged snapshot documented on 10 September 2026.
-Subsequent support for sentence annotation and changes to truncation handling
-are identified separately. This distinction makes the experimental population
-and the provenance of each measurement explicit.
-
 \section{Computing infrastructure}
 \label{sec:setup-infrastructure}
 
 Most experiments were executed on the University of Bologna NLP group's
 Slurm-managed GPU cluster, principally on \texttt{moro43}, the node equipped
-with one NVIDIA GeForce RTX 5090 with 32\,GB of VRAM. Earlier annotation
+with one NVIDIA GeForce RTX 5090 with 32\,GB of VRAM. Annotation
 experiments also used one RTX 3090 on \texttt{faretra}, the cluster's master
 node. The cluster guide lists four RTX 3090 GPUs on that machine, each with
 24\,GB of VRAM; these are separate devices, rather than a single shared
@@ -1414,7 +1406,7 @@ memory pool \cite{unibonlpClusterGuide}.
   \small
   \caption{Resources of the principal experimental node. GPU specifications
   follow the cluster guide; CPU and host-memory capacities are the scheduler
-  values displayed by the dashboard on 13 September 2026
+  values displayed by the dashboard
   \cite{unibonlpClusterGuide,unibonlpClusterDashboard}.}
   \label{tab:setup-hardware}
   \begin{tabularx}{\textwidth}{@{}lX@{}}
@@ -1436,7 +1428,7 @@ allocation guaranteed to each job. The GEPA and probe batch launchers request
 one GPU, 64\,GiB of host memory, and a 48-hour time limit; the probe launcher
 also explicitly requests four CPUs. Their retained default node is
 \texttt{faretra}, so reproducing those jobs on the main RTX 5090 machine
-requires overriding the node at submission. The later sentence-tagging
+requires overriding the node at submission. The sentence-tagging
 launcher requests one GPU, eight CPUs, 64\,GiB, and four days. These limits are
 scheduler requests, not measurements of elapsed runtime or peak memory.
 
@@ -1470,7 +1462,7 @@ declared dependencies and image settings.
   \small
   \caption{Software configuration declared by the Dockerfile, project
   metadata, and current launchers. Version intervals are dependency
-  constraints, not exact installed versions for every historical run.}
+  constraints, not exact installed versions for every experiment.}
   \label{tab:setup-software}
   \begin{tabularx}{\textwidth}{@{}lX@{}}
     \toprule
@@ -1485,7 +1477,7 @@ declared dependencies and image settings.
     Probe fitting & scikit-learn $\geq 1.5.0$ \\
     Mathematical scoring & \texttt{math-verify} $\geq 0.9.0$, $<1$ \\
     vLLM server & \texttt{vllm/vllm-openai:v0.29.0} \\
-    Earlier GGUF server & Locally built \texttt{llama.cpp:localcuda} image \\
+    GGUF annotation server & Locally built \texttt{llama.cpp:localcuda} image \\
     \bottomrule
   \end{tabularx}
 \end{table}
@@ -1500,9 +1492,9 @@ shared expert. The backbone alternates Gated DeltaNet and gated-attention
 blocks \cite{qwen2026qwen35}. The experiments use textual problems and
 continuations; they do not evaluate visual inputs.
 
-The annotator is a separate model. The initial GEPA experiments use
+The annotator is a separate model. The Qwen3.6 GEPA experiments use
 Qwen3.6-27B in a GGUF \texttt{Q4\_K\_XL} configuration served through
-\texttt{llama.cpp}. A later alignment run uses Qwen3.8-27B in
+\texttt{llama.cpp}. The model-alignment study uses Qwen3.8-27B in
 \texttt{UD-Q4\_K\_XL} format. These models supply episode predictions and
 optimisation feedback; the routing measurements described in this chapter
 come from Qwen3.5-35B-A3B.
@@ -1511,7 +1503,7 @@ come from Qwen3.5-35B-A3B.
 
 The official \path{Qwen/Qwen3.5-35B-A3B-GPTQ-Int4} checkpoint supplies
 native GPTQ 4-bit weights for the probe experiment.
-The later correlation generation stage serves this same checkpoint identifier
+The correlation generation stage serves this same checkpoint identifier
 through vLLM. Correlation replay instead loads
 \path{unsloth/Qwen3.5-35B-A3B} through Unsloth with runtime 4-bit
 quantisation. Thus, the generator and replay model have corresponding base
@@ -1523,16 +1515,6 @@ The resulting routing and hidden-state features describe how the replay
 implementation processes those tokens. They are not direct recordings of
 the generator's internal activations, and numerical equivalence between the
 two implementations is not assumed.
-
-An earlier correlation pilot loaded a GGUF checkpoint from
-\path{unsloth/Qwen3.5-35B-A3B-MTP-GGUF}.
-Its \texttt{UD-Q4\_K\_XL} weights were served through \texttt{llama.cpp}
-with multi-token prediction (MTP). The alias
-\path{qwen3.5-35b-a3b-mtp-ud-q4-k-xl} identifies these outputs.
-They are kept separate from the
-later GPTQ/vLLM corpus. Differences between these runs are not a controlled
-comparison of inference engines, since the quantisation and generated
-samples also changed.
 
 \section{Datasets and units of observation}
 \label{sec:setup-data}
@@ -1599,7 +1581,7 @@ attempts. These are corpus sizes before any analysis-specific filtering.
 \begin{table}[tbp]
   \centering
   \small
-  \caption{Benchmark coverage of the completed September 10 correlation
+  \caption{Benchmark coverage of the correlation
   corpus. Counts refer to source problems and generated attempts, not to
   the number of independent observations in every statistical analysis.}
   \label{tab:setup-benchmarks}
@@ -1665,15 +1647,15 @@ Configuration comparisons use five-fold nested response-grouped
 cross-validation over the 32 development responses, with the six test
 responses excluded. Each outer fold has its own inner training and
 validation partition. The final-fit studies then use the 26/6/6 partition
-described above. The later Qwen3.8 alignment starts from the 40-example
-prompt produced by the earlier Qwen3.6 fit, uses the heavy GEPA budget and
+described above. The Qwen3.8 alignment starts from the 40-example
+prompt selected by the Qwen3.6 fit, uses the heavy GEPA budget and
 medium reasoning effort, and retains the imported seed after the validation
 gate rejects the new candidate. The selected instruction is subsequently
 frozen for downstream annotation.
 
 Reported classification measures include exact accuracy, balanced accuracy,
 macro-F1, per-class precision and recall, Cohen's $\kappa$, and valid-output
-coverage. Kendall's $\tau_b$ is retained in historical artifacts but is not
+coverage. Kendall's $\tau_b$ is retained in saved artifacts but is not
 a primary measure for the nominal episode categories. The final-fit runs do
 not evaluate the 336-unit test partition. Moreover, those responses had
 already been inspected in preliminary experiments, so their designation as
@@ -1760,34 +1742,34 @@ tensors are reduced during extraction; compact scalar features and selected
 expert IDs are persisted. Original layer indices remain attached to the
 measurements.
 
-The completed untagged run includes whole-continuation, full-reasoning, and
-absolute-position analyses. Position analysis uses ten disjoint windows
+The correlation analysis includes whole-continuation, full-reasoning,
+class-specific, and absolute-position views. Position analysis uses ten disjoint windows
 defined relative to the corpus mean reasoning length, followed by an overflow
 window. These are common absolute token windows, rather than ten equal
 fractions of each response. A shorter trace has no observation in a window
 it never reaches. Coverage is consequently reported alongside each view.
-The reasoning-event outcomes in this snapshot are lexical indicators of
-backtracking, contradiction, and self-correction; no seven-class sentence
-annotation was used.
+Class-specific views use available sentence annotations. Full-reasoning
+and position views use all reasoning tokens independently of annotation
+coverage.
 
-\subsection{Subsequent sentence-annotation extension}
+\subsection{Sentence annotation}
 
-The current pipeline also supports applying the frozen GEPA annotator to
+The pipeline applies the frozen GEPA annotator to
 generated reasoning. Its vLLM judge checkpoint is
 \path{unsloth/Qwen3.8-27B-NVFP4}, with temperature zero, low reasoning effort,
 a 4,096-token completion budget, and a 32,768-token context. The server uses
 eager execution and an FP8 KV cache; judge MTP is disabled in the default
 configuration. This deployment differs from the GGUF model and medium-effort
-setting of the earlier alignment study, so agreement measured there is not
+setting of the alignment study, so agreement measured there is not
 automatically an estimate of downstream annotation accuracy.
 
-Before tagging, the default extension selects attempt zero for repeated
+Before tagging, the Qwen sampling protocol selects attempt zero for repeated
 problems and at most 100,000 sentences across benchmarks. Benchmark quotas
 are proportional to their observed error rates; sentences are sampled
 uniformly within each benchmark with seed 42. The sampling manifest identifies
 the selected units. This outcome-dependent sample has a different population
 from the full repeated-attempt corpus. Class-specific analyses produced from
-it must therefore be reported separately from the completed untagged study.
+it therefore describe the labelled subset rather than the full corpus.
 
 \section{Evaluation and statistical protocol}
 \label{sec:setup-evaluation}
@@ -1823,15 +1805,11 @@ It therefore cannot identify a particular layer-specific expert module
 without a subsequent analysis preserving the full $(\ell,e)$ identity.
 
 \paragraph{Token-budget handling.}
-The completed September 10 snapshot includes all 4,647 attempts, including
-those reaching the generation limit. The current analysis also retains
-supplied token-limit completions and reports their termination status in a
-generation-budget audit. Missing or nonfinite features are omitted only for
-the relevant analysis pair. Problem-level avg@32 requires a complete set of
-attempts and binary outcomes. An intermediate implementation excluded known
-truncations, so reproducing an older table requires its saved inclusion
-counts and matching code revision. Both all-attempt and completed-trace
-analyses remain conditional on the configured generation budget.
+The analysis retains supplied token-limit completions and records their
+termination status in a generation-budget audit. Missing or nonfinite
+features are omitted only for the relevant analysis pair. Problem-level
+avg@32 requires a complete set of attempts and binary outcomes. Estimates
+remain conditional on the configured generation budget.
 
 \section{Artifacts, reproducibility, and experimental scope}
 \label{sec:setup-reproducibility}
@@ -1850,11 +1828,9 @@ recorded configuration matches.
 Probe artifacts use the root \path{results/probeTest} and the run name
 \path{qwen3.5-35b-a3b-gptq-int4}. GEPA runs have separate directories
 under \path{results/gepaLLMAsJudge}. Correlation outputs use the root
-\path{results/correlation_pipeline}, with the completed vLLM snapshot
-named \path{reasoning-vllm-untagged-v1}. Tagged outputs use a separate
-run directory. The numerical snapshot and its fingerprints
-are documented in the accompanying experimental report. Historical numbered
-experiments and earlier GGUF outputs are not pooled with these studies.
+\path{results/correlation_pipeline}, with the Qwen corpus under
+\path{reasoning-vllm-v1}. Saved fingerprints identify the generation,
+annotation, and replay inputs used by each analysis.
 
 The manifests and launchers provide substantial provenance, but several
 dependencies still use version intervals, local image tags, or the mutable
@@ -1869,19 +1845,16 @@ and \path{src/moe_exp/moe_margin_guiding}. These workflows fit separate
 model-specific policies from the correlation artifacts and compare native
 and guided generation on matched held-out problems. Their split, calibration,
 intervention, and evaluation rules are described in
-Section~\ref{sec:method-guiding}. They are distinct from the earlier
-\texttt{moe\_guiding} Mixtral replacement prototype. Split manifests,
+Section~\ref{sec:method-guiding}. Split manifests,
 policy files, per-condition generations, and routing diagnostics provide the
 provenance for a guiding result; implementation checks alone do not establish
 an improvement in generation accuracy.
 
 \chapter{Results}
 
-% Present and discuss the results here.
 
 \chapter{Conclusions}
 
-% Summarize the thesis and future work here.
 
 \cleardoublepage
 \phantomsection

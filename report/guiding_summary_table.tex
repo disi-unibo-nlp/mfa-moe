@@ -1,0 +1,14 @@
+\begin{table*}[ht]
+\centering\small
+\caption{Complete matched Qwen3.5 GPTQ stochastic evaluations, 1,395 attempts on 465 held-out problems per comparison. B/G denotes baseline/guided; changes are percentage points. Flips are wrong-to-right/right-to-wrong. These are descriptive point estimates without cluster confidence intervals.}
+\label{tab:guiding-summary}
+\begin{tabular}{lrrrrrr}
+\toprule
+Policy & B accuracy & G accuracy & Change & Flips & Limit hits B/G & Mean tokens B/G \\
+\midrule
+Identity $+1$ & 0.7391 & 0.7355 & -0.36 & 39/44 & 140/146 & 13863/13706 \\
+Identity $-1$ & 0.7319 & 0.7398 & +0.79 & 47/36 & 154/138 & 13830/13919 \\
+Margin $1$ & 0.7384 & 0.7369 & -0.14 & 39/41 & 144/143 & 13848/13840 \\
+\bottomrule
+\end{tabular}
+\end{table*}

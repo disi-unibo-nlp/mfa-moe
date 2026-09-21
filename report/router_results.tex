@@ -13,7 +13,7 @@ will improve accuracy or reduce length.}
 
 \paragraph{Metric values associated with accuracy.}
 Correlation signs alone do not specify the observed metric ranges associated
-with higher accuracy (42:06--45:17). Figure~\ref{fig:router-value-accuracy}
+with higher accuracy. Figure~\ref{fig:router-value-accuracy}
 therefore reports accuracy directly against router confidence, the
 selection-boundary margin, and the selected/rest mean probability gap.
 Bins are computed separately per benchmark; this is an exploratory
@@ -44,12 +44,10 @@ $M=p_{(1)}-p_{(2)}$; selected probability mass is
 $S=\sum_{j\leq k}p_{(j)}$; selection-boundary margin is
 $B=p_{(k)}-p_{(k+1)}$; and selected/rest mean gap is
 $G=S/k-(1-S)/(E-k)$. Thus $M$ is not a selected-versus-rest statistic.
-These model-independent names replace ambiguous top-8/top-9 plot labels
-without changing the saved metric definitions.
+These definitions apply across models with different native selection counts.
 
-The requested rank-prefix curves (top 2, 4, 6, then all selected versus
-the rest; 20:11--21:07 and 37:29--39:20) require additional probability
-summaries. Only the all-selected endpoint $G$ is saved. Separate entropy
+Rank-prefix curves (top 2, 4, 6, then all selected versus
+the rest) require additional probability summaries. Only the all-selected endpoint $G$ is saved. Separate entropy
 of the selected and unselected distributions also cannot be recovered
 from global entropy, selected mass, or expert IDs. These extensions
-require new feature extraction/replay; no missing curves are fabricated.
+require new feature extraction and replay.

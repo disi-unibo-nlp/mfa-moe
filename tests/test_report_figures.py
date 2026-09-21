@@ -3,7 +3,7 @@ import importlib.util
 from pathlib import Path
 
 spec = importlib.util.spec_from_file_location(
-    'tutor_figures', Path(__file__).resolve().parents[1] / 'report/tutor_figures.py'
+    'descriptive_figures', Path(__file__).resolve().parents[1] / 'report/descriptive_figures.py'
 )
 figures = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(figures)
