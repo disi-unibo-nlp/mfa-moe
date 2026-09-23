@@ -2,10 +2,12 @@
 from __future__ import annotations
 
 from contextlib import contextmanager
+from datetime import date
 import fcntl
 import hashlib
 import json
 import os
+import re
 from pathlib import Path
 import shutil
 
@@ -19,6 +21,8 @@ MATCH_FIELDS = ("prompts_sha256", "sampling_args", "versions", "scoring_contract
 
 
 def add_execution_args(parser):
+    parser.add_argument("--template-date", type=date.fromisoformat, default=None,
+                        help="Frozen date; inherit saved paired date or default to 2026-09-22")
     parser.add_argument("--diagnostics", choices=("minimal", "full"), default="minimal",
                         help="Minimal keeps hook activity checks; full adds router statistics")
     parser.add_argument("--resume", action="store_true",
@@ -113,7 +117,7 @@ def run_lock(directory):
         yield
 
 
-def reuse_baseline(args, manifest, rows, requests):
+def reuse_baseline(args, manifest, rows, requests, rendered, inputs):
     if args.condition != "baseline" or getattr(args, "no_reuse_baseline", False):
         return False
     roots = getattr(args, "baseline_search_root", None) or [
@@ -134,6 +138,7 @@ def reuse_baseline(args, manifest, rows, requests):
                 saved = read_records(source_file, rows, requests, "baseline")
                 if len(saved) != len(rows):
                     continue
+                validate_rendered(source_file, rows, rendered, inputs)
                 provenance = dict(path=str(path.parent.resolve()), manifest=source,
                                   manifest_sha256=file_hash(path),
                                   generations_sha256=file_hash(source_file))
@@ -174,6 +179,47 @@ def finished_outputs(llm, inputs, requests, pending, sampling_class):
         raise RuntimeError("Generation count does not match pending prompts")
 
 
+def load_tokenizer(engine):
+    from transformers import AutoTokenizer
+    return AutoTokenizer.from_pretrained(engine["model"], revision=engine.get("tokenizer_revision"))
+
+
+def render_inputs(tokenizer, rows, template_date):
+    template = getattr(tokenizer, "chat_template", None)
+    template_args = {}
+    if isinstance(template, str) and "strftime_now" in template:
+        template = template.replace('strftime_now("%Y-%m-%d")', 'guiding_template_date')
+        template = template.replace("strftime_now('%Y-%m-%d')", 'guiding_template_date')
+        if "strftime_now" in template:
+            raise ValueError("Unsupported dynamic chat-template clock; freeze it explicitly")
+        template_args["chat_template"] = template
+    rendered = []
+    for row in rows:
+        messages = row.get("generation_messages") or row.get("messages")
+        if messages is None:
+            messages = []
+            if row.get("system_prompt"):
+                messages.append({"role": "system", "content": row["system_prompt"]})
+            messages.append({"role": "user", "content": row["prompt"]})
+        options = dict((row.get("original_generation_config") or {}).get("chat_template_kwargs") or {})
+        options.update(template_args)
+        options["guiding_template_date"] = str(template_date)
+        rendered.append(tokenizer.apply_chat_template(
+            messages, tokenize=False, add_generation_prompt=True, **options))
+    inputs = [{"prompt_token_ids": tokenizer.encode(p, add_special_tokens=False)} for p in rendered]
+    return rendered, inputs
+
+
+def validate_rendered(path, rows, rendered, inputs):
+    expected = {row["id"]: (prompt, tokens["prompt_token_ids"])
+                for row, prompt, tokens in zip(rows, rendered, inputs, strict=True)}
+    with path.open() as handle:
+        for line in handle:
+            record = json.loads(line)
+            if expected.get(record["id"]) != (record.get("rendered_prompt"), record.get("prompt_token_ids")):
+                raise ValueError("Rendered prompts differ; use a matched template date/tokenizer")
+
+
 def execute(args, manifest, rows, requests, kind, check_reports):
     with run_lock(args.output_dir):
         _execute_locked(args, manifest, rows, requests, kind, check_reports)
@@ -183,6 +229,28 @@ def _execute_locked(args, manifest, rows, requests, kind, check_reports):
     path = args.output_dir / "manifest.json"
     generations = args.output_dir / "generations.jsonl"
     manifest.update(execution_schema=1, diagnostics=getattr(args, "diagnostics", "minimal"))
+    requested_date = getattr(args, "template_date", None)
+    partner = args.output_dir.parent / ("guided" if args.condition == "baseline" else "baseline")
+    template_date = str(requested_date or "2026-09-22")
+    if requested_date is None:
+        for existing in (generations, partner / "generations.jsonl"):
+            if existing.exists():
+                with existing.open() as handle:
+                    line = handle.readline()
+                if line:
+                    record = json.loads(line)
+                    found = re.search(r"Current date: (\d{4}-\d{2}-\d{2})", record.get("rendered_prompt", ""))
+                    if found:
+                        template_date = found[1]
+                        break
+        if path.exists():
+            template_date = json.loads(path.read_text()).get("template_date", template_date)
+    manifest["template_date"] = template_date
+    rendered, inputs = render_inputs(load_tokenizer(manifest["engine_args"]), rows, template_date)
+    # Compare against the other condition before loading the GPU model or reusing data.
+    partner = args.output_dir.parent / ("guided" if args.condition == "baseline" else "baseline")
+    if (partner / "generations.jsonl").exists():
+        validate_rendered(partner / "generations.jsonl", rows, rendered, inputs)
     saved = set()
     if path.exists():
         old = json.loads(path.read_text())
@@ -197,6 +265,8 @@ def _execute_locked(args, manifest, rows, requests, kind, check_reports):
             raise ValueError("Cannot change diagnostics while resuming")
         saved = read_records(generations, rows, requests, args.condition,
                              repair_tail=old.get("status") != "complete")
+        if generations.exists():
+            validate_rendered(generations, rows, rendered, inputs)
         if old.get("status") == "complete":
             if len(saved) != len(rows):
                 raise ValueError("Complete manifest has missing attempts")
@@ -208,7 +278,7 @@ def _execute_locked(args, manifest, rows, requests, kind, check_reports):
             {k: old[k] for k in ("completed_count", "routing_diagnostics", "error") if k in old}]
     elif generations.exists():
         raise ValueError("Generations exist without a manifest; refusing to overwrite")
-    elif reuse_baseline(args, manifest, rows, requests):
+    elif reuse_baseline(args, manifest, rows, requests, rendered, inputs):
         return
     manifest.update(status="running", completed_count=len(saved), expected_count=len(rows))
     atomic_json(path, manifest)
@@ -226,27 +296,9 @@ def _execute_locked(args, manifest, rows, requests, kind, check_reports):
         from moe_exp.correlation_pipeline.scoring import score_completion
         llm = LLM(**manifest["engine_args"])
         tokenizer = llm.get_tokenizer()
-        rendered = []
-        for row in rows:
-            messages = row.get("generation_messages") or row.get("messages")
-            if messages is None:
-                messages = []
-                if row.get("system_prompt"):
-                    messages.append({"role": "system", "content": row["system_prompt"]})
-                messages.append({"role": "user", "content": row["prompt"]})
-            rendered.append(tokenizer.apply_chat_template(
-                messages, tokenize=False, add_generation_prompt=True,
-                **((row.get("original_generation_config") or {}).get("chat_template_kwargs") or {})))
-        inputs = [{"prompt_token_ids": tokenizer.encode(p, add_special_tokens=False)} for p in rendered]
-        # Check saved tokenized prompts too, before continuing a partially saved run.
-        if saved:
-            by_id = {row["id"]: i for i, row in enumerate(rows)}
-            with generations.open() as handle:
-                for line in handle:
-                    record = json.loads(line)
-                    i = by_id[record["id"]]
-                    if record["prompt_token_ids"] != inputs[i]["prompt_token_ids"]:
-                        raise ValueError("Saved tokenized prompt differs")
+        engine_rendered, engine_inputs = render_inputs(tokenizer, rows, template_date)
+        if engine_rendered != rendered or engine_inputs != inputs:
+            raise ValueError("CPU and engine tokenizer outputs differ")
         llm.collective_rpc(f"{kind}_configure", kwargs=dict(
             policy=manifest["policy"], strength=args.strength, condition=args.condition,
             diagnostics=manifest["diagnostics"]))

@@ -131,6 +131,8 @@ def main():
     comp = sub.add_parser("compare")
     comp.add_argument("--baseline", type=Path, required=True)
     comp.add_argument("--guided", type=Path, required=True)
+    from moe_exp.moe_identity_guiding.bootstrap import add_arguments
+    add_arguments(comp)
     args = parser.parse_args()
     try:
         if args.command == "prepare":
@@ -163,7 +165,9 @@ def main():
             generate(args)
             print(f"Saved run to {args.output_dir}")
         else:
-            print(json.dumps(compare(args.baseline, args.guided), indent=2))
+            print(json.dumps(compare(args.baseline, args.guided,
+                bootstrap_replicates=args.bootstrap_replicates,
+                bootstrap_seed=args.bootstrap_seed, bootstrap_workers=args.bootstrap_workers), indent=2))
     except (ValueError, RuntimeError, OSError) as error:
         parser.exit(1, f"moe_margin_guiding: {error}\n")
 

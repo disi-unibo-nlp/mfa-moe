@@ -45,4 +45,7 @@ def score_completion(
     verified = _math_verify(model_text, gold)
     if verified is not None:
         return model_answer, verified, "math_verify"
-    return model_answer, answers_match(model_answer, gold), "normalized_exact_numeric_fallback"
+    # With a known gold answer, an absent prediction is an incorrect answer,
+    # not missing ground truth. Keep None only for genuinely missing gold.
+    matched = answers_match(model_answer, gold)
+    return model_answer, bool(matched), "normalized_exact_numeric_fallback"

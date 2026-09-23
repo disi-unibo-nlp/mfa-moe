@@ -1,5 +1,34 @@
 # Correlation pipeline
 
+## Imported stratified labels (September 2026)
+
+The tutor's `data/mfa-moe-labels-stratified` bundle supplies the active GPT-OSS
+and Gemma annotations. Qwen3.6 and Nemotron labels remain in the bundle until
+their matching generation traces are available locally.
+
+`import_stratified_labels.py` verifies the bundle checksums and checks every
+imported sentence against local trace identities, hashes, text, offsets, and
+the pipeline's versioned sentence segmentation. Run from the repository root:
+
+```bash
+PYTHONPATH=src python3 -m moe_exp.correlation_pipeline.import_stratified_labels --apply
+```
+
+Omit `--apply` to validate and stage without replacing active annotations.
+Both models validate before replacement; previous annotation directories,
+including shards, are retained as timestamped backups. Each active annotation
+root contains source/import/sampling manifests and `failures.json`. Unknown
+labels are excluded from units while their indices remain in the selection;
+their traces are marked partial.
+
+See `ANNOTATION_IMPORT.md` in each model's `reasoning-vllm-v1` directory for
+the import status and backup location. Existing `sampling`, `forward`, and
+`analysis` directories predate this import. Recompute label-dependent outputs
+in fresh locations using the original generation traces and the new annotations.
+Use `--skip-annotate` when replaying imported labels; running the default tagging
+workflow would apply the local sampling/judge configuration instead. This import
+does not change Qwen3.5 guiding evaluations or regenerate report tables.
+
 This pipeline generates reasoning attempts through vLLM, tags their sentences
 with the frozen GEPA-selected classifier, teacher-forces the saved attempts
 through the matching Hugging Face MoE checkpoint, and measures associations

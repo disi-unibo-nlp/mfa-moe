@@ -39,7 +39,7 @@ def _add_extraction_arguments(parser: argparse.ArgumentParser) -> None:
 
 
 def _add_probe_arguments(parser: argparse.ArgumentParser) -> None:
-    parser.add_argument("--test-size", type=float, default=0.2)
+    parser.add_argument("--test-size", type=float, default=0.2, help="Test fraction for the sentence protocol")
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--max-iter", type=int, default=2000)
     parser.add_argument("--skip-plot", action="store_true")
@@ -78,6 +78,15 @@ def build_parser() -> argparse.ArgumentParser:
     probe_parser.add_argument("--manifest", type=Path, required=True)
     probe_parser.add_argument("--output-dir", type=Path, required=True)
     _add_probe_arguments(probe_parser)
+    probe_parser.add_argument("--protocol", choices=("sentence", "grouped"), default="sentence",
+                              help="Sentence replication or CPU response-grouped evaluation")
+    probe_parser.add_argument("--outer-folds", type=int, default=5)
+    probe_parser.add_argument("--validation-size", type=float, default=0.2)
+    probe_parser.add_argument("--split-plan", type=Path, default=None,
+                              help="Shared grouped response folds; creates the file if absent")
+    probe_parser.add_argument("--workers", type=int, default=4)
+    probe_parser.add_argument("--bootstrap-replicates", type=int, default=5000)
+    probe_parser.add_argument("--bootstrap-seed", type=int, default=42)
 
     label_parser = subparsers.add_parser(
         "label", help="Apply trained probes to benchmark reasoning for manual inspection"
@@ -124,6 +133,19 @@ def main() -> None:
             max_documents=args.max_documents,
         )
         print(f"Activation manifest: {manifest}")
+        return
+
+    if args.command == "probe" and args.protocol == "grouped":
+        from moe_exp.probeTest.grouped import train_grouped_probes
+
+        results = train_grouped_probes(
+            manifest_path=args.manifest, output_dir=args.output_dir,
+            split_plan_path=args.split_plan, outer_folds=args.outer_folds,
+            validation_size=args.validation_size, seed=args.seed, max_iter=args.max_iter,
+            workers=args.workers, bootstrap_replicates=args.bootstrap_replicates,
+            bootstrap_seed=args.bootstrap_seed,
+        )
+        print(f"Grouped probe results: {results}")
         return
 
     if args.command == "probe":

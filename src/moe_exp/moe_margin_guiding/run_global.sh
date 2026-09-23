@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 cd "$(dirname "${BASH_SOURCE[0]}")/../../.."
+TEMPLATE_ARGS=()
+if [[ -n "${TEMPLATE_DATE:-}" ]]; then
+    TEMPLATE_ARGS=(--template-date "$TEMPLATE_DATE")
+fi
 STAGE="${1:-all}"
 ATTEMPTS="${2:-full}"
 case "$ATTEMPTS" in single|full) ;; *) echo 'Choose single or full attempts' >&2; exit 2;; esac
@@ -52,6 +56,7 @@ if [[ "$STAGE" == generate || "$STAGE" == all ]]; then
     for condition in baseline guided; do
         bash "$RUNNER" generate --model "$MODEL" --policy "$OUTPUT_ROOT/policy.json" \
             --prompts "$OUTPUT_ROOT/split/prompts.$ATTEMPTS.sampling.jsonl" \
+            "${TEMPLATE_ARGS[@]}" \
             --resume --diagnostics "${DIAGNOSTICS:-minimal}" \
             --condition "$condition" --strength "${STRENGTH:-1}" \
             --max-num-seqs "${MAX_NUM_SEQS:-16}" \

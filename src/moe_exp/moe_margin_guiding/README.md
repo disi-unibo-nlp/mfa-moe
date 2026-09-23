@@ -219,3 +219,31 @@ Incomplete legacy runs without the incremental execution marker cannot be
 resumed automatically: they may still be executing in an older process. Let them
 finish, or use a fresh output directory after stopping them. These code changes
 do not alter processes that are already running.
+
+The `compare` command shares the identity workflow's CPU-only paired,
+dataset-stratified problem bootstrap. It accepts `--bootstrap-workers`
+(default up to eight), `--bootstrap-replicates` (default 5000), and
+`--bootstrap-seed` (default 42). See the identity guiding README for the
+batch command that recalculates all completed identity and margin pairs.
+
+
+### Frozen template dates and exact baseline compatibility
+
+GPT-OSS inserts the current date using its chat template clock. Rendering now
+replaces that clock expression with a fixed date without modifying the cached
+tokenizer template. Set `TEMPLATE_DATE=YYYY-MM-DD` in the global launcher or
+`--template-date YYYY-MM-DD` in the generation CLI. With no override, existing
+saved/paired dates are inherited; fresh runs use the fixed reference 2026-09-22.
+The selected date is saved in the manifest.
+
+Before GPU loading, generation renders and tokenizes prompts on CPU. Reuse checks
+every saved rendered prompt and token sequence, including legacy baselines without
+a date field. A paired-condition mismatch fails before generation. The engine's
+own tokenizer must reproduce the same inputs before requests are submitted.
+
+The two mismatched September-21 baseline copies for OSS identity strength 2 and
+margin strength 1 were moved to `results/guiding_archives/oss_date_mismatch_20260922`.
+Their valid September-22 guided outputs remain intact. From the repository root,
+run `bash src/moe_exp/moe_identity_guiding/repair_oss_date.sh` to generate one
+September-22 baseline, reuse it for the other experiment, and compare both runs.
+The script is resumable and does not regenerate completed guided responses.

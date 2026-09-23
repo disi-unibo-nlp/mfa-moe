@@ -242,6 +242,8 @@ def test_generate_preserves_original_request_sampling(tmp_path, monkeypatch):
                 prompt_token_ids=[1], outputs=[SimpleNamespace(
                     text=r"\boxed{B}", token_ids=[2], finish_reason="stop")])]
     monkeypatch.setitem(sys.modules, 'vllm', SimpleNamespace(LLM=LLM, SamplingParams=lambda **k: k))
+    monkeypatch.setattr("moe_exp.moe_identity_guiding.execution.load_tokenizer",
+                        lambda engine: LLM.__new__(LLM).get_tokenizer())
     monkeypatch.setitem(sys.modules, "vllm.sampling_params",
                         SimpleNamespace(RequestOutputKind=SimpleNamespace(FINAL_ONLY="final")))
     monkeypatch.setattr(run, 'version', lambda name: 'test')

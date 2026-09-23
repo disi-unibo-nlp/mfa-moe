@@ -15,7 +15,8 @@ from moe_exp.moe_identity_guiding.run import check_reports, compare
 
 
 def fixture_data(tmp_path, condition="baseline"):
-    rows = [dict(id=str(i), prompt="question", gold_answer="B", answer_type="choice")
+    rows = [dict(id=str(i), dataset="test", source_problem_id=str(i),
+                 prompt="question", gold_answer="B", answer_type="choice")
             for i in range(3)]
     requests = [dict(seed=100+i, temperature=.6) for i in range(3)]
     manifest = dict(experiment="moe_identity_guiding", status="running", condition=condition,
@@ -58,6 +59,8 @@ def fake_vllm(monkeypatch, condition="baseline", fail_after=None):
                 prompt_token_ids=[1, 2], outputs=[SimpleNamespace(
                     text=r"\boxed{B}", token_ids=[3, 4], finish_reason="stop")])]
     monkeypatch.setitem(sys.modules, "vllm", SimpleNamespace(LLM=LLM, SamplingParams=lambda **kw: kw))
+    monkeypatch.setattr("moe_exp.moe_identity_guiding.execution.load_tokenizer",
+                        lambda engine: LLM.__new__(LLM).get_tokenizer())
     monkeypatch.setitem(sys.modules, "vllm.sampling_params",
                         SimpleNamespace(RequestOutputKind=SimpleNamespace(FINAL_ONLY="final")))
     return submitted
@@ -183,9 +186,54 @@ def test_finalize_after_last_saved_attempt_without_loading_model(tmp_path, monke
     assert json.loads(p.read_text())["status"] == "complete"
 
 
-def test_legacy_incomplete_run_is_not_resumed(tmp_path):
+def test_legacy_incomplete_run_is_not_resumed(tmp_path, monkeypatch):
+    fake_vllm(monkeypatch)
     args, manifest, rows, requests = fixture_data(tmp_path)
     args.output_dir.mkdir()
     (args.output_dir / "manifest.json").write_text(json.dumps(manifest))
     with pytest.raises(ValueError, match="legacy incomplete"):
         execute(args, manifest, rows, requests, "identity", check_reports)
+
+
+def test_render_freezes_template_clock_and_retains_options():
+    from moe_exp.moe_identity_guiding.execution import render_inputs
+    from jinja2 import Environment, StrictUndefined
+    template = 'Current date: {{ strftime_now("%Y-%m-%d") }} {{ enable_thinking }}'
+    class Tokenizer:
+        chat_template = template
+        def apply_chat_template(self, messages, **kwargs):
+            return Environment(undefined=StrictUndefined).from_string(kwargs['chat_template']).render(**kwargs)
+        def encode(self, text, **kwargs):
+            return list(text.encode())
+    rows = [dict(prompt='question', original_generation_config={'chat_template_kwargs': {'enable_thinking': True}})]
+    text, tokens = render_inputs(Tokenizer(), rows, '2026-09-22')
+    assert text == ['Current date: 2026-09-22 True']
+    assert tokens[0]['prompt_token_ids'] == list(text[0].encode())
+    assert Tokenizer.chat_template == template
+
+
+def test_mismatched_rendered_baseline_is_rejected_before_gpu(tmp_path, monkeypatch):
+    args, manifest, rows, requests = fixture_data(tmp_path, 'guided')
+    fake_vllm(monkeypatch, 'guided')
+    args.output_dir = tmp_path / 'pair' / 'guided'
+    baseline = args.output_dir.parent / 'baseline'
+    baseline.mkdir(parents=True)
+    (baseline / 'generations.jsonl').write_text(json.dumps(dict(
+        id='0', rendered_prompt='Current date: 2026-09-21', prompt_token_ids=[999]))+'\n')
+    monkeypatch.setitem(sys.modules, 'vllm', None)
+    with pytest.raises(ValueError, match='Rendered prompts differ'):
+        execute(args, manifest, rows, requests, 'identity', check_reports)
+    assert not (args.output_dir / 'manifest.json').exists()
+
+
+def test_reuse_rejects_changed_rendered_prompt(tmp_path, monkeypatch):
+    from moe_exp.moe_identity_guiding.execution import reuse_baseline
+    args, manifest, rows, requests = fixture_data(tmp_path)
+    args.output_dir = tmp_path / 'sources' / 'original'
+    fake_vllm(monkeypatch)
+    execute(args, copy.deepcopy(manifest), rows, requests, 'identity', check_reports)
+    args.output_dir = tmp_path / 'new'
+    args.output_dir.mkdir()
+    assert not reuse_baseline(args, manifest, rows, requests,
+                              ['different date'] * 3, [{'prompt_token_ids': [1,2]}] * 3)
+    assert not (args.output_dir / 'generations.jsonl').exists()
