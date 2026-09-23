@@ -142,7 +142,8 @@ def test_matched_accuracy_and_token_comparison(tmp_path):
             status="complete", condition=name, prompts_sha256="p", policy_sha256="q",
             engine_args={}, sampling_args={}, versions={}, scoring_contract="test", calibration_overlap=[])))
         (p / "generations.jsonl").write_text(json.dumps(dict(
-            id="a", input={"prompt": "x"}, prompt_token_ids=[1], is_correct=correct,
+            id="a", input={"prompt": "x", "dataset": "test", "source_problem_id": "p"},
+            prompt_token_ids=[1], is_correct=correct,
             scoring_method="exact", generated_token_count=count, finish_reason="stop")) + "\n")
     result = compare(tmp_path / "baseline", tmp_path / "guided")
     assert result["accuracy_delta"] == 1
@@ -207,6 +208,8 @@ def test_generate_worker_configuration_and_saved_scoring(tmp_path, monkeypatch, 
                 prompt_token_ids=[1, 2], outputs=[SimpleNamespace(
                     text=r"\boxed{B}", token_ids=[3, 4], finish_reason="stop")])]
     monkeypatch.setitem(sys.modules, "vllm", SimpleNamespace(LLM=LLM, SamplingParams=lambda **kw: kw))
+    monkeypatch.setattr("moe_exp.moe_identity_guiding.execution.load_tokenizer",
+                        lambda engine: LLM.__new__(LLM).get_tokenizer())
     monkeypatch.setitem(sys.modules, "vllm.sampling_params",
                         SimpleNamespace(RequestOutputKind=SimpleNamespace(FINAL_ONLY="final")))
     monkeypatch.setattr(run, "version", lambda name: "test")

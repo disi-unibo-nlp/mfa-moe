@@ -5,15 +5,20 @@ import re
 
 import torch
 
-from .calibration import validate_policy
+from .calibration import validate_policy, validate_options
 
 
 class IdentityBias:
     """Hook vLLM's unquantized gate output before its native expert selection."""
 
-    def __init__(self, scores, strength: float, top_k: int, diagnostics="full"):
+    def __init__(self, scores, strength: float, top_k: int, diagnostics="full",
+                 guiding_method="fixed", paper_epsilon=0.01):
         if not math.isfinite(strength):
             raise ValueError("strength must be finite")
+        validate_options("positive", guiding_method, paper_epsilon)
+        if guiding_method == "paper" and strength not in (-1, 0, 1):
+            raise ValueError("Paper guiding requires strength -1, 0, or 1")
+        self.guiding_method, self.paper_epsilon = guiding_method, paper_epsilon
         self.diagnostics = diagnostics
         self.scores = torch.tensor(scores, dtype=torch.float32)
         if self.scores.ndim != 1 or not 1 <= top_k <= len(scores):
@@ -33,7 +38,27 @@ class IdentityBias:
             raise ValueError("Gate output does not match policy expert count")
         self.scores = self.scores.to(logits.device)
         # Retain the gate dtype expected by the native fused kernel.
-        guided = (logits.float() + self.strength * self.scores).to(logits.dtype)
+        if self.guiding_method == "paper" and self.strength != 0:
+            # Section 3.2: simultaneous replacements against original extrema.
+            scores = logits.float().log_softmax(-1)
+            native_scores = scores.to(logits.dtype)
+            if self.strength > 0:
+                extreme = scores.amax(-1, keepdim=True)
+                target = (extreme + self.paper_epsilon).to(logits.dtype)
+                next_value = torch.nextafter(extreme.to(logits.dtype),
+                                            torch.full_like(target, float("inf")))
+                target = torch.maximum(target, next_value)
+            else:
+                extreme = scores.amin(-1, keepdim=True)
+                target = (extreme - self.paper_epsilon).to(logits.dtype)
+                next_value = torch.nextafter(extreme.to(logits.dtype),
+                                            torch.full_like(target, -float("inf")))
+                target = torch.minimum(target, next_value)
+            # Preserve strict ordering if epsilon is lost in native-dtype rounding.
+            adjusted = torch.where(self.scores > 0, target, native_scores)
+            guided = torch.where((self.scores > 0).any(), adjusted, logits)
+        else:
+            guided = (logits.float() + self.strength * self.scores).to(logits.dtype)
         self.calls += 1
         self.tokens += logits.shape[0]
         if self.diagnostics == "full":
@@ -95,7 +120,9 @@ def install(model, policy: dict, strength: float, family: str = "qwen", diagnost
     hooks, handles = {}, []
     try:
         for layer, gate in found.items():
-            hook = IdentityBias(policy["layers"][layer]["scores"], strength, policy["top_k"], diagnostics=diagnostics)
+            hook = IdentityBias(policy["layers"][layer]["scores"], strength, policy["top_k"], diagnostics=diagnostics,
+                                guiding_method=policy.get("guiding_method", "fixed"),
+                                paper_epsilon=policy.get("paper_epsilon", 0.01))
             handles.append(gate.register_forward_hook(hook))
             hooks[layer] = hook
     except Exception:

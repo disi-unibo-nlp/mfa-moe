@@ -25,12 +25,33 @@ def extract_gold_answer_gsm8k(raw: str) -> str:
 def extract_model_answer(text: str) -> str:
     """Best-effort final-answer extraction from generated CoT text.
 
-    Priority: \\boxed{} → #### marker → "the answer is …" → last number.
+    Priority: last nonempty balanced \\boxed{} → #### marker → "the answer is …" → last number.
     Returns empty string when nothing is found.
     """
-    m = _BOXED_RE.search(text)
-    if m:
-        return m.group(1).strip()
+    boxed = []
+    for match in re.finditer(r"\\boxed\s*\{", text):
+        start = match.end()
+        depth = 1
+        for index in range(start, len(text)):
+            # Escaped braces are literal LaTeX characters, not group delimiters.
+            backslashes = 0
+            previous = index - 1
+            while previous >= 0 and text[previous] == "\\":
+                backslashes += 1
+                previous -= 1
+            if backslashes % 2:
+                continue
+            if text[index] == "{":
+                depth += 1
+            elif text[index] == "}":
+                depth -= 1
+                if depth == 0:
+                    answer = text[start:index].strip()
+                    if answer:
+                        boxed.append(answer)
+                    break
+    if boxed:
+        return boxed[-1]
 
     m = _GSM_GOLD_RE.search(text)
     if m:

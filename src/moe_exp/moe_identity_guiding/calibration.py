@@ -15,7 +15,8 @@ def problem_key(row: dict) -> str:
 
 
 def fit(rows, *, model: str, num_experts: int, top_k: int, tensor_base_dir=Path("."),
-        min_support: int = 4, max_experts: int = 8) -> dict:
+        min_support: int = 4, max_experts: int = 8, expert_polarity: str = "positive",
+        guiding_method: str = "fixed", paper_epsilon: float = 0.01) -> dict:
     """Estimate accuracy weighted by per-trace any-top-k frequency, per layer.
 
     Repeated attempts receive equal weight within each problem. Long traces do
@@ -23,6 +24,8 @@ def fit(rows, *, model: str, num_experts: int, top_k: int, tensor_base_dir=Path(
     """
     import torch
 
+    validate_options(expert_polarity, guiding_method, paper_epsilon)
+    direction = 1 if expert_polarity == "positive" else -1
     rows = list(rows)
     if not rows or not model or not 1 <= top_k <= num_experts:
         raise ValueError("Need calibration rows, model, and valid expert counts")
@@ -97,8 +100,8 @@ def fit(rows, *, model: str, num_experts: int, top_k: int, tensor_base_dir=Path(
                           "frequency_mass": mass, "accuracy": accuracy,
                           "lift": accuracy - baseline if accuracy is not None else None})
         eligible = [s for s in stats if s["problem_support"] >= min_support
-                    and s["lift"] is not None and s["lift"] > 0]
-        eligible.sort(key=lambda s: (-s["lift"], -s["problem_support"], s["expert"]))
+                    and s["lift"] is not None and direction * s["lift"] > 0]
+        eligible.sort(key=lambda s: (-direction * s["lift"], -s["problem_support"], s["expert"]))
         chosen = eligible[:max_experts]
         peak = chosen[0]["lift"] if chosen else 1.0
         scores = [0.0] * num_experts
@@ -106,9 +109,10 @@ def fit(rows, *, model: str, num_experts: int, top_k: int, tensor_base_dir=Path(
             scores[s["expert"]] = s["lift"] / peak
         result[str(layer)] = {"scores": scores, "experts": stats}
     if not any(any(info["scores"]) for info in result.values()):
-        raise ValueError("No supported positive-accuracy identities; no guided policy was created")
+        raise ValueError(f"No supported {expert_polarity}-accuracy identities; no guided policy was created")
     return {"schema_version": 1, "model": model, "num_experts": num_experts, "top_k": top_k,
-            "generation_models": sorted(sources), "baseline_accuracy": baseline,
+            "expert_polarity": expert_polarity, "guiding_method": guiding_method,
+            "paper_epsilon": paper_epsilon, "generation_models": sorted(sources), "baseline_accuracy": baseline,
             "estimator": "problem_balanced_trace_frequency_weighted_accuracy_lift",
             "min_support": min_support, "max_experts": max_experts,
             "calibration_problems": sorted(attempts), "num_traces": len(rows),
@@ -123,6 +127,8 @@ def validate_policy(policy: dict, model: str | None = None) -> None:
         raise ValueError("Unsupported or incomplete identity policy")
     if model is not None and policy["model"] != model:
         raise ValueError("Policy model must exactly match --model; expert IDs are checkpoint-specific")
+    validate_options(policy.get("expert_polarity", "positive"),
+                     policy.get("guiding_method", "fixed"), policy.get("paper_epsilon", 0.01))
     n, k = policy.get("num_experts"), policy.get("top_k")
     if type(n) is not int or type(k) is not int or not 1 <= k <= n:
         raise ValueError("Invalid policy expert counts")
@@ -134,3 +140,12 @@ def validate_policy(policy: dict, model: str | None = None) -> None:
         scores = info["scores"]
         if len(scores) != n or any(not math.isfinite(s) or not 0 <= s <= 1 for s in scores):
             raise ValueError("Policy scores must have E finite values in [0, 1]")
+
+
+def validate_options(expert_polarity, guiding_method, paper_epsilon):
+    if expert_polarity not in ("positive", "negative"):
+        raise ValueError("expert_polarity must be positive or negative")
+    if guiding_method not in ("fixed", "paper"):
+        raise ValueError("guiding_method must be fixed or paper")
+    if not isinstance(paper_epsilon, (int, float)) or not math.isfinite(paper_epsilon) or paper_epsilon <= 0:
+        raise ValueError("paper_epsilon must be finite and positive")

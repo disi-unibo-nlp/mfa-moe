@@ -373,3 +373,111 @@ Use a separate output root for each strength and copy the original policy and
 split to keep evaluation problems fixed. Compatible baseline reuse is independent
 of strength because baseline execution installs no intervention hooks. Treat a
 strength sweep on an already examined evaluation set as exploratory.
+
+### CPU-only paired uncertainty
+
+Both identity and margin `compare` commands calculate 95% percentile intervals
+for guided-minus-baseline accuracy, overall and per dataset. Defaults are
+5,000 resamples, seed 42, and up to eight CPU worker processes. Use
+`--bootstrap-replicates`, `--bootstrap-seed`, and `--bootstrap-workers` to
+configure them. Whole source problems are sampled with replacement within
+each dataset, keeping all attempts and both conditions together. Pooled
+estimates retain attempt weighting. Streams are indexed by replicate, making
+results independent of worker count. Intervals are not multiplicity-adjusted;
+a stratum with fewer than two problems cannot supply an interval. Small
+problem counts and conditioning on the saved policy/attempts limit inference.
+
+Recompute all complete saved identity and margin pairs without GPU inference:
+
+```bash
+PYTHONPATH=src OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 \
+  python3 -m moe_exp.moe_identity_guiding.bootstrap_saved \
+  --bootstrap-workers 8 --bootstrap-replicates 5000 --bootstrap-seed 42
+```
+
+Each pair receives `comparison_bootstrap.json`, including input hashes,
+point estimates, problem counts, and intervals. Incomplete pairs are skipped;
+mismatched complete pairs fail validation. Original generations are unchanged.
+The BLAS thread limits avoid nested oversubscription; eight separate worker
+processes perform the bootstrap. Regenerate report tables afterwards with
+`python3 report/generate_current_results.py`.
+
+
+### Frozen template dates and exact baseline compatibility
+
+GPT-OSS inserts the current date using its chat template clock. Rendering now
+replaces that clock expression with a fixed date without modifying the cached
+tokenizer template. Set `TEMPLATE_DATE=YYYY-MM-DD` in the global launcher or
+`--template-date YYYY-MM-DD` in the generation CLI. With no override, existing
+saved/paired dates are inherited; fresh runs use the fixed reference 2026-09-22.
+The selected date is saved in the manifest.
+
+Before GPU loading, generation renders and tokenizes prompts on CPU. Reuse checks
+every saved rendered prompt and token sequence, including legacy baselines without
+a date field. A paired-condition mismatch fails before generation. The engine's
+own tokenizer must reproduce the same inputs before requests are submitted.
+
+The two mismatched September-21 baseline copies for OSS identity strength 2 and
+margin strength 1 were moved to `results/guiding_archives/oss_date_mismatch_20260922`.
+Their valid September-22 guided outputs remain intact. From the repository root,
+run `bash src/moe_exp/moe_identity_guiding/repair_oss_date.sh` to generate one
+September-22 baseline, reuse it for the other experiment, and compare both runs.
+The script is resumable and does not regenerate completed guided responses.
+
+## Negative experts and paper-style intervention
+
+Two independent options are frozen in the calibration policy:
+
+- `--expert-polarity positive|negative` (launcher: `EXPERT_POLARITY`, default
+  `positive`). Negative selects the most negative accuracy lifts, with the
+  same support and per-layer limits. Scores store normalized magnitudes:
+  positive strength **promotes failure-associated experts**; negative strength
+  suppresses them. Neutral experts are excluded.
+- `--guiding-method fixed|paper` (launcher: `GUIDING_METHOD`, default `fixed`).
+  Paper mode implements [SteerMoE section 3.2](https://arxiv.org/html/2509.09660v1#S3.SS2):
+  convert original logits to log-softmax scores, then simultaneously set
+  selected experts just above the original maximum (strength 1) or below the
+  original minimum (strength -1). Strength 0 is an exact no-op; other strengths
+  are rejected. `--paper-epsilon` / `PAPER_EPSILON` defaults to 0.01.
+  All selected experts receive the same target, without weighting by lift.
+  If native dtype rounding erases the gap, the target moves to the next
+  representable value beyond the extreme, preserving strict ordering; this
+  can make the realized gap larger than epsilon, especially in BF16.
+  Selecting more identities than native top-k cannot force all of them in.
+
+This reproduces the paper's **intervention**, retaining our problem-balanced
+accuracy-lift selection rather than its contrastive risk-difference estimator.
+Older policies without these fields retain positive/fixed behavior. Settings
+are part of the policy hash, so resume and comparison reject policy changes.
+
+Promote failure-associated experts using the existing fixed bias:
+
+```bash
+EXPERT_POLARITY=negative bash src/moe_exp/moe_identity_guiding/run_global.sh all
+```
+
+Promote failure-associated experts using paper steering:
+
+```bash
+EXPERT_POLARITY=negative GUIDING_METHOD=paper STRENGTH=1 \
+  bash src/moe_exp/moe_identity_guiding/run_global.sh all
+```
+
+Use `EXPERT_POLARITY=positive GUIDING_METHOD=paper` to promote success-associated
+experts; add `STRENGTH=-1` to deactivate the selected set. Prefix with
+`DRY_RUN=true` to preview commands. `MAX_EXPERTS` and `MIN_SUPPORT` control fitting.
+
+For every nondefault polarity/method, the global launcher automatically appends
+`variants/<polarity>_<method>[_eps_<epsilon>]/strength_<strength>` to OUTPUT_ROOT,
+even when OUTPUT_ROOT is explicitly supplied. Splits, policies, generations,
+and comparisons therefore live separately from existing results. Direct CLI
+users choose fresh `--output` / `--output-dir` paths themselves; existing
+artifacts remain protected against overwrite. Reusing the same preparation
+seed and population gives the same held-out problems across variants.
+
+The existing paired, dataset-stratified problem bootstrap reports uncertainty
+for the accuracy change. A negative estimate alone does not establish degradation:
+inspect its 95% interval (an interval entirely below zero supports a decrease).
+These intervals are conditional on the saved runs and do not isolate decoding
+seed variability or adjust for trying multiple variants. A decrease is a
+hypothesis to test, not a guaranteed outcome.

@@ -236,3 +236,73 @@ probeTest/qwen3.5-35b-a3b-gptq-int4/
 Only boundary vectors are persisted, not token-by-token hidden states. At
 float32 this is roughly 1 GiB for 3,087 units × 41 hidden-state indices × 2,048
 dimensions, plus small classifier and report files.
+
+## Response-grouped evaluation of saved activations
+
+`probe --protocol grouped` evaluates generalization to unseen responses in the
+same corpus. The default `sentence` protocol and `all` pipeline are unchanged.
+No model loading, extraction, GPU, or generation is required by grouped fitting.
+
+The grouped protocol uses five `StratifiedGroupKFold` outer folds, with complete
+responses as groups and seven-class labels for approximate stratification.
+Inside each outer development set, one `GroupShuffleSplit` reserves 20% of its
+responses for validation. Each target's layer maximizes validation AUROC
+(ties select the lowest index). Its classifier is then refitted on all outer
+development responses and evaluated on the untouched outer test responses.
+Classifier settings match the replication. There is no global best-layer
+selection from these outer test scores and no change to existing routing layers.
+
+A second logistic regression uses only `log1p` of the number of preceding
+annotated units and preceding response tokens. This prefix-position baseline
+uses no total response length or future content; token counts depend on the
+encoder's tokenizer. It controls a simple positional shortcut, not all possible
+position or formatting effects.
+
+From an environment with the project's CPU dependencies installed:
+
+```bash
+for model in qwen3.5-35b-a3b-gptq-int4 gpt-oss-20b gemma-4-26b-a4b-it-nf4; do
+  CUDA_VISIBLE_DEVICES= OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 \
+    python -m moe_exp.probeTest.run probe --protocol grouped \
+    --manifest "results/probeTest/$model/activations/manifest.json" \
+    --output-dir "results/probeTest/$model/probes_grouped_s42" \
+    --split-plan results/probeTest/grouped_s42/split_plan.json \
+    --outer-folds 5 --validation-size 0.2 --seed 42 --workers 4 \
+    --bootstrap-replicates 5000 --bootstrap-seed 42
+done
+```
+
+For the existing Docker image, wrap that loop in `bash -c` with this prefix:
+
+```bash
+docker run --rm --network none --memory 16g \
+  -e CUDA_VISIBLE_DEVICES= -e NVIDIA_VISIBLE_DEVICES=void \
+  -e OPENBLAS_NUM_THREADS=1 -e OMP_NUM_THREADS=1 -e MKL_NUM_THREADS=1 \
+  -e PYTHONPATH=/workspace/src -e MPLCONFIGDIR=/tmp/mpl \
+  -v "$PWD:/workspace" -w /workspace \
+  --entrypoint bash moe-mfa-experiments:latest -c '<loop above>'
+```
+
+The shared split plan verifies response IDs, unit indices, labels, and exact
+text across encoders. A nonempty legacy output directory is rejected. Completed
+fold/target checkpoints resume only when input hashes, code, library versions,
+and settings match; use a new output directory for a changed experiment.
+
+Outputs include `run_config.json`, `split_plan.json`, `unit_index.jsonl`,
+`folds/<fold>/<target>.json` and `.pkl`, `predictions.jsonl`, `results.json`, and
+`status.json`. Each unit has exactly one outer-test prediction per target.
+The summaries report the unweighted mean of the five fold metrics, and macro
+means across the seven targets. Each fold metric weights its sentences equally.
+The 95% percentile intervals resample whole responses independently within each
+outer test fold, preserving all units and pairing probe/baseline scores. They
+condition on the fitted models, chosen layers, and split plan; they do not
+include refitting or split-seed variation. Draws missing a binary class in any
+fold are omitted for AUROC/balanced accuracy and the valid count is retained.
+The legacy/grouped comparison changes splitting and the selection criterion,
+so its difference is not an isolated estimate of response leakage.
+
+Regenerate the shared report/thesis tables and figure from completed runs with:
+
+```bash
+python3 report/generate_grouped_probe_results.py
+```

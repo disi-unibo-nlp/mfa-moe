@@ -35,6 +35,8 @@ def generate(args):
     policy = json.loads(args.policy.read_text())
     validate_policy(policy, args.model)
     rows = load_prompts(args.prompts)
+    if policy.get("guiding_method", "fixed") == "paper" and args.strength not in (-1, 0, 1):
+        raise ValueError("Paper guiding requires strength -1 (deactivate), 0, or 1 (activate)")
     if not math.isfinite(args.strength):
         raise ValueError("strength must be finite")
     if any(value < 1 for value in (args.max_tokens, args.max_model_len,
@@ -74,7 +76,8 @@ def generate(args):
     execute(args, manifest, rows, per_request, "identity", check_reports)
 
 
-def compare(baseline: Path, guided: Path):
+def compare(baseline: Path, guided: Path, *, bootstrap_replicates=5000,
+            bootstrap_seed=42, bootstrap_workers=None):
     manifests = [json.loads((p / "manifest.json").read_text()) for p in (baseline, guided)]
     for manifest, condition in zip(manifests, ("baseline", "guided")):
         if manifest["status"] != "complete" or manifest["condition"] != condition:
@@ -90,7 +93,9 @@ def compare(baseline: Path, guided: Path):
             raise ValueError("Reused baseline provenance or completion hash differs")
     groups = []
     for path in (baseline, guided):
-        rows = list(iter_jsonl(path / "generations.jsonl"))
+        rows = [{k: row[k] for k in ("id", "input", "prompt_token_ids",
+                 "sampling_args", "is_correct", "generated_token_count", "finish_reason")
+                 if k in row} for row in iter_jsonl(path / "generations.jsonl")]
         group = {row["id"]: row for row in rows}
         if len(group) != len(rows) or not rows:
             raise ValueError("Empty or duplicate comparison IDs")
@@ -119,6 +124,9 @@ def compare(baseline: Path, guided: Path):
                                    for k in groups[0])
     result["right_to_wrong"] = sum(groups[0][k]["is_correct"] and not groups[1][k]["is_correct"]
                                    for k in groups[0])
+    from .bootstrap import paired_accuracy_bootstrap
+    result["bootstrap"] = paired_accuracy_bootstrap(
+        *groups, replicates=bootstrap_replicates, seed=bootstrap_seed, workers=bootstrap_workers)
     return result
 
 
@@ -149,6 +157,9 @@ def main():
     fit_parser.add_argument("--top-k", type=int, default=None)
     fit_parser.add_argument("--min-support", type=int, default=4)
     fit_parser.add_argument("--max-experts", type=int, default=8)
+    fit_parser.add_argument("--expert-polarity", choices=("positive", "negative"), default="positive")
+    fit_parser.add_argument("--guiding-method", choices=("fixed", "paper"), default="fixed")
+    fit_parser.add_argument("--paper-epsilon", type=float, default=0.01)
     fit_parser.add_argument("--output", type=Path, required=True)
     gen = sub.add_parser("generate")
     from moe_exp.moe_identity_guiding.execution import add_execution_args
@@ -177,6 +188,8 @@ def main():
     comp = sub.add_parser("compare")
     comp.add_argument("--baseline", type=Path, required=True)
     comp.add_argument("--guided", type=Path, required=True)
+    from moe_exp.moe_identity_guiding.bootstrap import add_arguments
+    add_arguments(comp)
     args = parser.parse_args()
     try:
         if args.command == "prepare":
@@ -199,7 +212,8 @@ def main():
             rows = [row for path in args.traces for row in iter_jsonl(path)]
             policy = fit(rows, model=args.model, num_experts=args.num_experts, top_k=args.top_k,
                          tensor_base_dir=args.tensor_base_dir, min_support=args.min_support,
-                         max_experts=args.max_experts)
+                         max_experts=args.max_experts, expert_polarity=args.expert_polarity,
+                         guiding_method=args.guiding_method, paper_epsilon=args.paper_epsilon)
             policy["sources"] = [{"path": str(p), "sha256": digest(p)} for p in args.traces]
             args.output.parent.mkdir(parents=True, exist_ok=True)
             with args.output.open("x") as handle:
@@ -209,7 +223,9 @@ def main():
             generate(args)
             print(f"Saved run to {args.output_dir}")
         else:
-            print(json.dumps(compare(args.baseline, args.guided), indent=2))
+            print(json.dumps(compare(args.baseline, args.guided,
+                bootstrap_replicates=args.bootstrap_replicates,
+                bootstrap_seed=args.bootstrap_seed, bootstrap_workers=args.bootstrap_workers), indent=2))
     except (ValueError, RuntimeError, OSError) as error:
         parser.exit(1, f"moe_identity_guiding: {error}\n")
 
