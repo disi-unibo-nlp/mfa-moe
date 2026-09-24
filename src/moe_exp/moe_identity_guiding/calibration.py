@@ -15,7 +15,7 @@ def problem_key(row: dict) -> str:
 
 
 def fit(rows, *, model: str, num_experts: int, top_k: int, tensor_base_dir=Path("."),
-        min_support: int = 4, max_experts: int = 8, expert_polarity: str = "positive",
+        min_support: int = 4, max_experts: int | None = None, expert_polarity: str = "positive",
         guiding_method: str = "fixed", paper_epsilon: float = 0.01) -> dict:
     """Estimate accuracy weighted by per-trace any-top-k frequency, per layer.
 
@@ -29,8 +29,10 @@ def fit(rows, *, model: str, num_experts: int, top_k: int, tensor_base_dir=Path(
     rows = list(rows)
     if not rows or not model or not 1 <= top_k <= num_experts:
         raise ValueError("Need calibration rows, model, and valid expert counts")
-    if min_support < 1 or not 1 <= max_experts < num_experts:
-        raise ValueError("min_support must be positive; max_experts must be in [1, E)")
+    if max_experts is None:
+        max_experts = top_k
+    if min_support < 1 or not 1 <= max_experts <= top_k:
+        raise ValueError("min_support must be positive; max_experts must be in [1, top_k]")
     if any(type(row.get("is_correct")) is not bool for row in rows):
         raise ValueError("Every calibration trace must have boolean is_correct; score it first")
     if {row["is_correct"] for row in rows} != {False, True}:
@@ -140,6 +142,10 @@ def validate_policy(policy: dict, model: str | None = None) -> None:
         scores = info["scores"]
         if len(scores) != n or any(not math.isfinite(s) or not 0 <= s <= 1 for s in scores):
             raise ValueError("Policy scores must have E finite values in [0, 1]")
+        if sum(s > 0 for s in scores) > k:
+            raise ValueError(
+                f"Layer {layer} targets more experts than model top_k={k}; "
+                "refit the policy in a new output directory before generating")
 
 
 def validate_options(expert_polarity, guiding_method, paper_epsilon):

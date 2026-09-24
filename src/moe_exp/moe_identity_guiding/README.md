@@ -24,8 +24,14 @@ score(l,e) = positive lift / largest eligible positive lift at this layer
 biased_router_logits(l,e) = router_logits(l,e) + strength * score(l,e)
 ```
 
-Keep at most `--max-experts` identities per layer (default 8), each observed in
+Keep at most `--max-experts` identities per layer (default: model routing top-k,
+4 for GPT-OSS and 8 for Qwen/Gemma), each observed in
 at least `--min-support` distinct problems (default 4). All other scores are zero.
+A smaller explicit budget is allowed; budgets above routing top-k are rejected.
+The support and polarity filters can retain fewer than the budget; unrelated
+experts are never added just to fill it. Existing policies targeting more than
+top-k experts are rejected before generation. Refit into a fresh output directory
+and rerun affected comparisons; old saved results retain their original policies.
 Ties sort by support then expert ID. Layer IDs remain separate: expert 3 at layer
 27 is not expert 3 at layer 39. Layers without positive lift get zero scores;
 a policy with no eligible positive lift anywhere is rejected. This is an

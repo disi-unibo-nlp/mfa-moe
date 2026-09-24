@@ -16,8 +16,11 @@ from moe_exp.probeTest.run import build_parser
 
 
 def corpus():
-    units = [dict(response_id=f"r{r:02d}", unit_index=i, label=label, text=f"{r}:{i}")
-             for r in range(12) for i, label in enumerate(list(EPISODE_LABELS) * 2)]
+    units = [
+        {"response_id": f"r{r:02d}", "unit_index": i, "label": label, "text": f"{r}:{i}"}
+        for r in range(12)
+        for i, label in enumerate(list(EPISODE_LABELS) * 2)
+    ]
     return np.array([u["label"] for u in units]), np.array([u["response_id"] for u in units]), units
 
 
@@ -55,8 +58,12 @@ def test_layer_selection_only_observes_inner_partitions(monkeypatch):
         np.testing.assert_equal(y_fit, y[fit])
         np.testing.assert_equal(y_val, y[validation])
         seen.append(layer)
-        return None, dict(test_auc=[.6, .9, .9][layer], test_f1=.5,
-                          n_iter=1, convergence_warnings=[])
+        return None, {
+            "test_auc": [0.6, 0.9, 0.9][layer],
+            "test_f1": 0.5,
+            "n_iter": 1,
+            "convergence_warnings": [],
+        }
 
     monkeypatch.setattr(grouped, "train_binary_probe", fake_train)
     best, rows = grouped.select_layer(x, y, fit, validation, seed=42, max_iter=10)
@@ -67,20 +74,24 @@ def test_layer_selection_only_observes_inner_partitions(monkeypatch):
 def test_weighted_bootstrap_metrics_match_sklearn_with_ties():
     rng = np.random.default_rng(12)
     y = np.array([0, 1] * 12)
-    scores = rng.choice([.1, .3, .5, .7, .9], size=len(y))
+    scores = rng.choice([0.1, 0.3, 0.5, 0.7, 0.9], size=len(y))
     weights = rng.integers(1, 5, size=(10, len(y)))
     result = grouped.weighted_metrics(y, scores, weights)
     for i, w in enumerate(weights):
         assert result["auc"][i] == pytest.approx(roc_auc_score(y, scores, sample_weight=w))
-        assert result["balanced_accuracy"][i] == pytest.approx(balanced_accuracy_score(y, scores > .5, sample_weight=w))
-        assert result["f1"][i] == pytest.approx(f1_score(y, scores > .5, sample_weight=w))
-        assert result["accuracy"][i] == pytest.approx(accuracy_score(y, scores > .5, sample_weight=w))
+        assert result["balanced_accuracy"][i] == pytest.approx(
+            balanced_accuracy_score(y, scores > 0.5, sample_weight=w)
+        )
+        assert result["f1"][i] == pytest.approx(f1_score(y, scores > 0.5, sample_weight=w))
+        assert result["accuracy"][i] == pytest.approx(
+            accuracy_score(y, scores > 0.5, sample_weight=w)
+        )
     unsupported = grouped.weighted_metrics(y, scores, y)
     assert np.isnan(unsupported["auc"][0])
 
 
 def write_corpus(path: Path):
-    labels, groups, units = corpus()
+    _labels, groups, units = corpus()
     shard_dir = path / "shards"
     shard_dir.mkdir(parents=True)
     rng = np.random.default_rng(5)
@@ -91,13 +102,26 @@ def write_corpus(path: Path):
         for i, u in enumerate(current):
             values[i, :, EPISODE_LABELS.index(u["label"])] += 4
         torch.save(torch.from_numpy(values), shard_dir / f"{response}.pt")
-        shards.append(dict(activation_file=f"{response}.pt", response_id=response,
-                           n_units=len(current), labels=[u["label"] for u in current],
-                           texts=[u["text"] for u in current],
-                           char_spans=[[i, i+1] for i in range(len(current))],
-                           boundary_token_positions=list(range(2, 2+len(current))), prompt_tokens=3))
-    manifest = dict(status="complete", model_id="synthetic", model_revision="main",
-                    quantization="none", boundary_definition="pre-unit", shards=shards)
+        shards.append(
+            {
+                "activation_file": f"{response}.pt",
+                "response_id": response,
+                "n_units": len(current),
+                "labels": [u["label"] for u in current],
+                "texts": [u["text"] for u in current],
+                "char_spans": [[i, i + 1] for i in range(len(current))],
+                "boundary_token_positions": list(range(2, 2 + len(current))),
+                "prompt_tokens": 3,
+            }
+        )
+    manifest = {
+        "status": "complete",
+        "model_id": "synthetic",
+        "model_revision": "main",
+        "quantization": "none",
+        "boundary_definition": "pre-unit",
+        "shards": shards,
+    }
     (path / "manifest.json").write_text(json.dumps(manifest))
     return path / "manifest.json"
 
@@ -105,13 +129,20 @@ def write_corpus(path: Path):
 def test_grouped_run_oof_resume_and_output_protection(tmp_path, monkeypatch):
     manifest = write_corpus(tmp_path / "activations")
     output = tmp_path / "grouped"
-    args = dict(manifest_path=manifest, output_dir=output, outer_folds=3,
-                workers=2, bootstrap_replicates=50)
+    args = {
+        "manifest_path": manifest,
+        "output_dir": output,
+        "outer_folds": 3,
+        "workers": 2,
+        "bootstrap_replicates": 50,
+    }
     result = json.loads(grouped.train_grouped_probes(**args).read_text())
     assert result["status"] == "complete"
     assert "best_by_target" not in result
     assert len(result["folds"]) == 3 * 7
-    predictions = [json.loads(line) for line in (output / "predictions.jsonl").read_text().splitlines()]
+    predictions = [
+        json.loads(line) for line in (output / "predictions.jsonl").read_text().splitlines()
+    ]
     counts = Counter((r["response_id"], r["unit_index"], r["target"]) for r in predictions)
     assert len(counts) == 12 * 14 * 7
     assert set(counts.values()) == {1}
@@ -121,13 +152,16 @@ def test_grouped_run_oof_resume_and_output_protection(tmp_path, monkeypatch):
         assert row["response_id"] in fold["test_responses"]
         assert row["response_id"] not in fold["fit_responses"] + fold["validation_responses"]
     for row in result["folds"]:
-        best = max(row["validation_candidates"], key=lambda r: (r["validation_auc"], -r["layer_idx"]))
+        best = max(
+            row["validation_candidates"], key=lambda r: (r["validation_auc"], -r["layer_idx"])
+        )
         assert row["selected_layer"] == best["layer_idx"]
         assert row["refit_samples"] == row["fit_samples"] + row["validation_samples"]
-    assert result["summary"]["macro"]["probe"]["auc"]["estimate"] > .9
+    assert result["summary"]["macro"]["probe"]["auc"]["estimate"] > 0.9
 
     def no_refit(*args, **kwargs):
         raise AssertionError("Completed checkpoints should not be refitted")
+
     monkeypatch.setattr(grouped, "select_layer", no_refit)
     resumed = json.loads(grouped.train_grouped_probes(**dict(args, workers=1)).read_text())
     assert resumed["summary"] == result["summary"]
@@ -145,7 +179,9 @@ def test_cli_keeps_sentence_protocol_default():
     parser = build_parser()
     args = parser.parse_args(["probe", "--manifest", "x", "--output-dir", "y"])
     assert args.protocol == "sentence"
-    args = parser.parse_args(["probe", "--manifest", "x", "--output-dir", "y", "--protocol", "grouped"])
+    args = parser.parse_args(
+        ["probe", "--manifest", "x", "--output-dir", "y", "--protocol", "grouped"]
+    )
     assert args.protocol == "grouped"
 
 
@@ -154,13 +190,24 @@ def test_bootstrap_resamples_complete_responses_and_pairs_baseline():
     # Resampling two whole responses can therefore yield AUROC 0 or 1.
     groups = np.array(["a"] * 3 + ["b"] * 5)
     y = np.array([0, 0, 1, 0, 1, 0, 1, 0])
-    probability = np.array([0., .1, .9, 1., 0., 1., 0., 1.])
-    point = {k: float(v[0]) for k, v in grouped.weighted_metrics(y, probability, np.ones(len(y))).items()}
-    records = [dict(fold=0, target=t, test_indices=list(range(len(y))), y_test=y.tolist(),
-                    probabilities=probability.tolist(), position_probabilities=probability.tolist(),
-                    metrics={"probe": point, "position": point}) for t in EPISODE_LABELS]
+    probability = np.array([0.0, 0.1, 0.9, 1.0, 0.0, 1.0, 0.0, 1.0])
+    point = {
+        k: float(v[0]) for k, v in grouped.weighted_metrics(y, probability, np.ones(len(y))).items()
+    }
+    records = [
+        {
+            "fold": 0,
+            "target": t,
+            "test_indices": list(range(len(y))),
+            "y_test": y.tolist(),
+            "probabilities": probability.tolist(),
+            "position_probabilities": probability.tolist(),
+            "metrics": {"probe": point, "position": point},
+        }
+        for t in EPISODE_LABELS
+    ]
     summary = grouped.summarize_predictions(records, groups, replicates=500, seed=42)
-    assert summary["macro"]["probe"]["auc"]["ci95"] == [0., 1.]
+    assert summary["macro"]["probe"]["auc"]["ci95"] == [0.0, 1.0]
     for values in summary["macro"]["probe_minus_position"].values():
-        assert values["estimate"] == 0.
-        assert values["ci95"] == [0., 0.]
+        assert values["estimate"] == 0.0
+        assert values["ci95"] == [0.0, 0.0]

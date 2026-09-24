@@ -61,10 +61,15 @@ if [[ "$STAGE" == prepare || ( "$STAGE" == all && ! -f "$OUTPUT_ROOT/split/split
         --calibration-fraction "${CALIBRATION_FRACTION:-0.7}" --seed 42 \
         --output-dir "$OUTPUT_ROOT/split"
 fi
+# Let fit resolve the model routing top-k unless a smaller budget is requested.
+EXPERT_BUDGET_ARGS=()
+if [[ -n "${MAX_EXPERTS:-}" ]]; then
+    EXPERT_BUDGET_ARGS=(--max-experts "$MAX_EXPERTS")
+fi
 if [[ "$STAGE" == fit || ( "$STAGE" == all && ! -f "$OUTPUT_ROOT/policy.json" ) ]]; then
     bash "$RUNNER" fit --model "$MODEL" --traces "$OUTPUT_ROOT/split/calibration.jsonl" \
         --expert-polarity "$EXPERT_POLARITY" --guiding-method "$GUIDING_METHOD" \
-        --paper-epsilon "$PAPER_EPSILON" --max-experts "${MAX_EXPERTS:-8}" \
+        --paper-epsilon "$PAPER_EPSILON" "${EXPERT_BUDGET_ARGS[@]}" \
         --min-support "${MIN_SUPPORT:-4}" --output "$OUTPUT_ROOT/policy.json"
 fi
 if [[ "$STAGE" == generate || "$STAGE" == all ]]; then

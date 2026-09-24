@@ -106,3 +106,44 @@ def test_launcher_isolates_variants_even_with_custom_root(tmp_path, polarity, me
         folder += "_eps_0.01"
     assert f"{folder}/strength_1/sampling/full/guided" in result.stdout
     assert not (tmp_path / "runs").exists()
+
+
+@pytest.mark.parametrize('top_k,num_experts', [(4, 32), (8, 128), (8, 256)])
+@pytest.mark.parametrize('method', ['fixed', 'paper'])
+@pytest.mark.parametrize('polarity', ['positive', 'negative'])
+def test_default_target_budget_matches_native_topk(top_k, num_experts, method, polarity):
+    # More eligible experts than the routing budget, so the cap must take effect.
+    rows = [dict(id=str(i), is_correct=i < 2,
+                 selected_experts=torch.arange(i * top_k, (i + 1) * top_k).reshape(1, 1, top_k))
+            for i in range(4)]
+    policy = fit(rows, model='test', num_experts=num_experts, top_k=top_k,
+                 min_support=1, guiding_method=method, expert_polarity=polarity)
+    assert policy['max_experts'] == top_k
+    assert sum(s > 0 for s in policy['layers']['0']['scores']) == top_k
+    validate_policy(policy)
+    with pytest.raises(ValueError, match='max_experts'):
+        fit(rows, model='test', num_experts=num_experts, top_k=top_k,
+            min_support=1, max_experts=top_k + 1)
+
+
+@pytest.mark.parametrize('method', ['fixed', 'paper'])
+def test_old_oversized_policies_and_direct_hooks_are_rejected(method):
+    policy = dict(schema_version=1, model='test', num_experts=32, top_k=4,
+                  guiding_method=method, layers={'15': {'scores': [1.] * 8 + [0.] * 24}})
+    with pytest.raises(ValueError, match='refit'):
+        validate_policy(policy)
+    with pytest.raises(ValueError, match='refit'):
+        IdentityBias(policy['layers']['15']['scores'], 1, 4, guiding_method=method)
+
+
+@pytest.mark.parametrize('profile', ['oss', 'qwen', 'gemma'])
+def test_launcher_defers_default_budget_to_model(tmp_path, profile):
+    env = dict(os.environ, DRY_RUN='true', MODEL_PROFILE=profile,
+               OUTPUT_ROOT=str(tmp_path / 'new_runs'))
+    env.pop('MAX_EXPERTS', None)
+    command = ['bash', 'src/moe_exp/moe_identity_guiding/run_global.sh', 'fit']
+    result = subprocess.run(command, env=env, capture_output=True, text=True, check=True)
+    assert '--max-experts' not in result.stdout
+    env['MAX_EXPERTS'] = '2'
+    result = subprocess.run(command, env=env, capture_output=True, text=True, check=True)
+    assert '--max-experts 2' in result.stdout

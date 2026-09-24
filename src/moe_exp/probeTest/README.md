@@ -306,3 +306,21 @@ Regenerate the shared report/thesis tables and figure from completed runs with:
 ```bash
 python3 report/generate_grouped_probe_results.py
 ```
+
+### Completed grouped runs (2026-09-23)
+
+All three runs completed on CPU with the shared seed-42 folds:
+
+| Encoder | Macro AUROC (95% response CI) | Position baseline AUROC | Macro binary F1 |
+| --- | --- | ---: | ---: |
+| Qwen | 0.852 [0.838, 0.868] | 0.566 | 0.521 |
+| GPT-OSS | 0.780 [0.761, 0.797] | 0.571 | 0.400 |
+| Gemma | 0.788 [0.772, 0.805] | 0.566 | 0.426 |
+
+Each target exceeds its position baseline under the unadjusted paired AUROC
+interval. This supports response generalization within the released SAT corpus,
+while external-domain and online-detector validity remain open. The intervals
+are conditional as described above. Two inner candidate fits each in GPT-OSS
+and Gemma hit the iteration limit; every selected-layer refit and position
+baseline converged. The CPU image digest, launch command, device restrictions,
+and execution log are saved in `results/probeTest/grouped_s42/`.
