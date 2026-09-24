@@ -8,8 +8,9 @@ to correctness and labelled reasoning episodes. Identity and margin guiding
 then evaluate frozen policies on held-out Qwen problems.
 
 \paragraph{GEPA judge design.}
-The GEPA workflow starts from 3,125 annotated units in 38 released DeepSeek-R1
-SAT responses.  Complete responses are assigned to partitions before their
+The workflow uses GEPA prompt optimization~\cite{agrawal2026gepa}
+and the annotated DeepSeek-R1 SAT responses released by
+Li et al.~\cite{li2025schoenfeld}: 3,125 units in 38 responses.  Complete responses are assigned to partitions before their
 units are flattened, preventing neighboring units from crossing splits.  A
 local \texttt{llama.cpp} server supplies Qwen predictions.  Each request
 contains the SAT problem and the previous, current, and next response units.
@@ -35,9 +36,10 @@ has no corresponding router.
 
 At each index, seven separate target-versus-rest logistic regressions use raw
 activations (2,048 dimensions for Qwen, 2,880 for GPT-OSS, and 2,816 for Gemma), balanced class weights, L2 regularization with
-$C=1$, and no standardization or PCA.  The paper-matched protocol uses a
-target-stratified 80/20 sentence split with seed 42.  This is a replication
-choice rather than a strong generalization design: all 38 response IDs occur
+$C=1$, and no standardization or PCA.  The layerwise binary fitting procedure and target-stratified 80/20 split
+follow Sun et al.~\cite{sun2026trajectories}, adapted here from step-position
+labels to Schoenfeld episodes, with seed 42. This protocol choice limits
+generalization assessment: all 38 response IDs occur
 in both partitions.  The reported layer for each target maximizes accuracy on
 that same test split.  For qualitative transfer inspection, the selected Qwen
 probes are applied to 20 examples each from GSM8K, MATH, PRM800K, and
@@ -46,10 +48,35 @@ uncalibrated; their argmax is an inspection label, not a multiclass probability
 or new gold annotation.  Only boundary vectors are stored; the models do not
 regenerate the released or benchmark solutions.
 
+\paragraph{Additional response-grouped probe evaluation.}
+A separate CPU-only mode reuses the saved activations and the same logistic
+regression settings. Five outer \texttt{StratifiedGroupKFold} folds (seed 42)
+hold out 8, 8, 7, 8, and 7 complete responses. The folds are identical across
+encoders and targets, verified against exact text, labels, and unit identities.
+Within each development set, a single grouped 20\% validation holdout selects
+each target's layer by AUROC, breaking ties toward the lower index. This
+leaves 24 fit and six or seven validation responses; the selected classifier
+is refitted on all 30 or 31 development responses before outer testing.
+The inner seed is $42+f+1$ for zero-based fold $f$.
+
+A position-only logistic baseline uses $\log(1+j)$ and $\log(1+t)$, where $j$
+and $t$ count preceding annotated units and response tokens. Total length
+and future content are excluded. Tokenization makes the token-count feature
+model-specific. Metrics weight units equally within each fold, then average
+folds equally; macro results also average the seven targets equally.
+Confidence intervals resample complete responses within each outer test
+fold (5,000 percentile draws, seed 42), pairing probe and baseline predictions.
+They condition on saved folds, chosen layers, and fits, omitting refitting
+and split-seed variation; no multiple-comparison adjustment is applied.
+The grouped study retains fold-specific estimators and does not replace
+the legacy layers used by the correlation and intervention experiments.
+
 \paragraph{Correlation-pipeline design.}
 Each of the three models has 4,647 attempts from 1,547 source problems:
 32 attempts per AIME24, AIME25, and AMC23 problem, and one per MATH-500,
-OlympiadBench, and Minerva problem. There are 100 complete avg@32 groups.
+OlympiadBench, and Minerva problem. The benchmark selection and
+repeat counts adapt the mathematical subset of SPIRAL's evaluation
+suite~\cite{liu2025spiral}. There are 100 complete avg@32 groups.
 Generation uses temperature 0.6, top-$p$ 0.95, a 32,768-token completion
 budget, and a 49,152-token context. Generation and replay quantizations
 are not identical: Qwen uses GPTQ generation and Unsloth runtime 4-bit
@@ -80,7 +107,9 @@ Sampling settings and prompts match within each pair; original attempt
 seeds are retained. Hooks act during prefill and decoding with native expert
 dispatch, eager execution, and no speculative decoding or prefix cache.
 Section~\ref{sec:guiding} gives the calibration exclusions, policy definitions,
-and numerical comparisons.
+and numerical comparisons. Intervention evaluation outcomes use the
+common offline answer-equivalence rule in Section~\ref{sec:guiding-rescoring};
+calibration and observational labels retain their original values.
 
 \paragraph{Table model and metric conventions.}
 Every table caption identifies the evaluated model or models and the metrics

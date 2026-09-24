@@ -9,6 +9,7 @@
 % | PACKAGES |
 %  ----------
 
+\usepackage{longtable}
 \input{custom_import}
 
 \hypersetup{
@@ -52,11 +53,11 @@
 \annoaccademico{2025 -- 2026}
 
 \parolechiave
-{Keyword 1}
-{Keyword 2}
-{Keyword 3}
-{Keyword 4}
-{Keyword 5}
+{Mixture-of-Experts Language Models}
+{Mathematical Reasoning}
+{Reasoning Episode Annotation}
+{Representation Probing}
+{Expert Routing Intervention}
 
 % Uncomment and edit to add a dedication.
 % \dedica{Dedication}
@@ -73,12 +74,160 @@
 \chapter*{Abstract}
 \markboth{Abstract}{Abstract}
 
-% Write the abstract here.
+Sparse mixture-of-experts language models select a subset of experts for
+each token, making routing a possible point of intervention during reasoning.
+This thesis investigates whether observable reasoning activities and internal
+routing measurements can inform policies that improve mathematical
+problem solving without updating model weights. The experimental pipeline
+connects four stages: automatic annotation of seven reasoning episode
+classes, prospective probing of hidden representations, observational
+analysis of routing and correctness, and interventions during free generation.
+Annotations and probes support measurement and target exploration; the
+evaluated controllers use calibrated expert identities or router margins,
+without online episode predictions.
+
+The correlation study covers Qwen3.5-35B-A3B, Gemma-4-26B-A4B, and GPT-OSS-20B,
+with 4,647 attempts from 1,547 source problems per model across six
+mathematical benchmarks. Probe results indicate that information about upcoming
+episode labels is accessible on held-out responses within the released
+SAT corpus: response-grouped macro-AUROC is 0.852 for Qwen, 0.780 for
+GPT-OSS, and 0.788 for Gemma, exceeding a simple prefix-position baseline.
+This evaluation does not establish external-domain or online-detector validity.
+Routing--correctness associations vary with model, benchmark, and reasoning
+class, motivating controls for difficulty, response length, and termination.
+
+Completed stochastic intervention comparisons each use 1,395 matched
+attempts from 465 held-out problems. A consistent offline answer-equivalence
+audit rescores both conditions without new generation. No complete
+intervention has a positive 95\% paired problem-bootstrap interval excluding
+zero under either attempt or equal-problem weighting. Under the primary
+attempt-weighted metric, Qwen and GPT-OSS fixed positive strength 2 lose
+2.80 and 3.30 percentage points, respectively. GPT-OSS paper-style
+promotion loses 61.65 points for positive targets and 59.57 for negative
+targets and substantially increases token-limit hits. All margin intervals
+contain zero. These exploratory intervals omit multiplicity adjustment.
+Separately, the interrupted Qwen paper-style intervention retains 0.81\%
+accuracy versus 70.45\% on 494 matched IDs, all reaching the guided token
+limit; its partial AIME cohort does not estimate the full evaluation effect.
+The thesis provides an auditable
+framework for connecting reasoning annotations to sparse computation while
+distinguishing representational evidence, observational associations, and
+the measured effects of routing interventions.
 
 \chapter*{Introduction}
 \markboth{Introduction}{Introduction}
 
-% Write the introduction and chapter outline here.
+An answer to a mathematical problem provides a clear outcome, but it gives
+only a partial account of how a language model produced that outcome. A
+generated solution may alternate between interpreting the problem,
+planning, calculating, exploring alternatives, and checking conclusions.
+These activities can accompany both successful and unsuccessful solutions.
+Understanding their role requires measurements of the generated reasoning
+process as well as its final correctness.
+
+Sparse mixture-of-experts (MoE) models offer a computational perspective on
+this question. Their routers select a subset of expert networks to process
+each token. Expert selection and routing weights can therefore vary as a
+solution develops. This creates an opportunity to examine whether particular
+routing patterns accompany particular reasoning activities, and whether
+changing those patterns affects subsequent generation. It also presents an
+interpretation problem: an expert frequently used in correct solutions may
+reflect the problems being solved, the position in the response, or its
+length, rather than a mechanism whose promotion improves correctness.
+
+The objective of this thesis is to investigate guidance of MoE reasoning
+through interventions on routing, with the model weights held fixed. The
+central question is whether signals obtained from reasoning annotations and
+internal measurements can support useful intervention policies. Addressing
+this question requires separating three kinds of evidence. A probe can
+establish that a representation contains information predictive of a label.
+A correlation can establish that a routing statistic varies with an outcome
+in a given population. An intervention comparison measures what happens
+when a specified routing policy is applied during generation. Success at one
+of these levels does not establish success at the next.
+
+\paragraph{Research questions.}
+The investigation is organised around three questions:
+\begin{enumerate}
+  \item Can functional reasoning episodes be annotated automatically, and
+  is information about an upcoming episode accessible from the hidden
+  representation of the preceding response prefix?
+  \item How do expert selection, routing confidence, and representation
+  measurements relate to reasoning episodes and answer correctness across
+  models, benchmarks, and positions in a response?
+  \item Do policies calibrated from these observational measurements
+  improve held-out mathematical accuracy or change token use when applied
+  to expert routing during generation?
+\end{enumerate}
+
+\paragraph{Approach and scope.}
+The proposed pipeline connects four stages. First, an LLM-based annotator
+assigns sentences to seven adapted Schoenfeld episode classes: Read,
+Analyze, Plan, Implement, Explore, Verify, and Monitor. Prompt optimisation
+and validation assess the annotator as a measurement instrument; its
+predictions on generated solutions are not treated as human ground truth.
+Second, prospective probes test the accessibility of episode information
+before the next labelled unit and identify locations for internal
+measurement. These labels describe the function of visible text, without
+assuming that the text exhaustively represents the model's internal
+computation.
+
+Third, saved benchmark solutions are replayed through frozen models to
+extract routing and representation features. Analyses distinguish the whole
+continuation, reasoning tokens, labelled episode classes, and positional
+windows. Repeated attempts are grouped by source problem, and the reported
+bootstrap intervals preserve that dependence. Generation and replay
+configurations are recorded separately because corresponding checkpoints
+under different quantisation settings are not assumed to produce identical
+internal activations. Fourth, calibrated policies promote or suppress
+selected expert identities, or modify the selection-boundary margin during
+free generation. Evaluation compares each policy with its own matched
+baseline on problems excluded from calibration.
+
+The observational study covers Qwen3.5-35B-A3B, Gemma-4-26B-A4B, and
+GPT-OSS-20B on six mathematical benchmarks. Gemma and GPT-OSS share a
+stratified annotation procedure but retain model-specific selected cohorts;
+Qwen uses a separate annotation protocol. Completed intervention evidence
+concerns Qwen and GPT-OSS identity and margin guiding. The interrupted
+Qwen paper-style run supplies a separate descriptive analysis of completed attempts.
+
+\paragraph{Contributions and findings.}
+The thesis contributes an integrated workflow linking functional descriptions
+of reasoning to measurements of sparse expert computation and to explicit
+routing interventions. Saved prompts, trace identities, sentence offsets,
+model configurations, and artifact fingerprints make the connection between
+these stages inspectable. The empirical contribution is a comparison of
+routing--correctness associations across models and reasoning classes,
+together with matched tests of whether selected associations support
+effective steering. The tested contribution is the connection between
+observational routing signals and generation-time intervention outcomes.
+Episode labels organise the measurements and probes inform measurement
+locations, but the evaluated controllers do not predict episodes online or
+condition routing on those predictions. Episode-aware control remains an
+extension requiring separate detector and policy validation.
+
+The grouped results show prospective episode information on held-out
+responses within the probe corpus, beyond a simple prefix-position baseline.
+They do not establish transfer to other domains or the encoders' own generations. Routing associations depend on the model and benchmark,
+including changes of sign within a reasoning class. Under the primary
+attempt-weighted objective, stronger fixed promotion reduces accuracy
+for Qwen and GPT-OSS, and paper-style promotion severely degrades GPT-OSS
+accuracy. After consistent offline rescoring, all margin intervals contain
+zero and no complete intervention has a positive interval excluding zero
+under either reported weighting. These findings motivate a
+qualified view of routing-guided reasoning: observational structure provides
+testable hypotheses, while a reliable improvement requires additional
+evidence from controlled interventions. Annotation uncertainty, problem
+difficulty, response length, termination, and deployment differences remain
+important limits on interpretation.
+
+\paragraph{Thesis organisation.}
+Chapter~\ref{ch:theoretical-framework} introduces the theoretical framework,
+and Chapter~\ref{ch:related-work} reviews related research.
+Chapter~\ref{ch:method} develops the pipeline, while
+Chapter~\ref{ch:experimental-setup} specifies the data, model configurations,
+and evaluation protocols. Chapter~\ref{ch:results} presents the findings,
+and Chapter~\ref{ch:conclusions} discusses their implications and limitations.
 
 \newpage
 \tableofcontents
@@ -339,13 +488,14 @@ possible shortcuts \cite{hewitt2019control}.
 
 The \texttt{probeTest} experiment trains a separate one-versus-rest logistic
 regression for each label and hidden-state index. It teacher-forces released
-DeepSeek-R1 responses through a Qwen encoder. Consequently, its immediate
-subject is Qwen's representation of those supplied prefixes. It does not
-observe Qwen generating the annotated solutions. The current replication
-uses a sentence-level split, so units from a response can appear in both
-partitions; selecting the best layer on that test split also makes the
-selected maximum optimistic. A response-grouped evaluation and a separate
-layer-selection partition are needed to assess generalisation to new traces.
+DeepSeek-R1 responses through frozen Qwen, GPT-OSS, and Gemma encoders.
+Consequently, its subject is each encoder's representation of supplied
+prefixes, rather than its own generation of the annotated solutions.
+The original replication uses a sentence-level split: units from a response
+can appear in both partitions, and test-based layer selection makes the
+selected maximum optimistic. A separate response-grouped evaluation selects
+layers on inner validation responses and measures predictions on outer test
+responses (Section~\ref{sec:setup-grouped-probes}).
 
 Temporal availability and causal influence must also be distinguished. A
 pre-unit representation is prospective, but predicting a future label does
@@ -688,9 +838,10 @@ transfer for correctness prediction than for step-related structure.
 The \texttt{probeTest} experiment combines a boundary-probe design with the
 released semantic episode annotations. It extracts representations immediately
 before the target unit, which creates a prospective prediction task. Its
-current sentence-split replication is useful for comparison with the adopted
+sentence-split replication is useful for comparison with the adopted
 protocol, but shared response identities and test-based layer selection limit
-generalisation claims. Moreover, applying the probes to supplied reference
+its generalisation claims. The additional grouped study separates responses
+and layer selection from outer evaluation. Applying the probes to supplied reference
 solutions tests representation transfer under teacher forcing. Using them
 to control the model's own generation requires additional validation.
 
@@ -756,7 +907,7 @@ expert's mixture weight when that expert is already in the selected set;
 it does not necessarily make an unselected expert participate. The paper's
 description of cognitive experts is a working hypothesis. Reported
 sensitivity to reinforcement strength and normalisation, together with
-limited sampled transfer in one AIME comparison, makes clear that observed
+mixed sampled accuracy changes on AIME, makes clear that observed
 specialisation does not automatically imply a robust intervention benefit.
 
 SteerMoE investigates behaviour-associated expert activation using contrasting
@@ -1119,6 +1270,15 @@ The subsequent experiments preserve this distinction. They use the selected
 locations for routing measurements, without treating the probes as validated
 online episode detectors or optimal intervention selectors.
 
+A separate evaluation mode tests generalisation across responses while
+preserving those original measurement locations. Five outer folds hold out
+complete responses. Within each outer development set, a grouped validation
+partition selects each target's layer by AUROC; the selected classifier is
+refitted on the entire development set before outer testing. This produces
+fold-specific estimators rather than a new globally selected routing layer.
+A prefix-position baseline and response-level uncertainty intervals help
+assess how much signal extends beyond a simple progression-through-trace cue.
+
 \section{Relating routing to reasoning and correctness}
 \label{sec:method-correlation}
 
@@ -1264,25 +1424,81 @@ number of tokens. $A_{\ell,e}$ is a frequency-weighted correctness estimate,
 not the success rate of an expert acting in isolation. Its lift is
 $L_{\ell,e}=A_{\ell,e}-A_0$.
 
-At each layer, experts are eligible if they have positive lift and occur in
-at least four distinct calibration problems. At most eight are retained,
-ordered by lift, then problem support, then expert identifier. Retained lifts
-are divided by the largest retained lift at that layer to produce scores
-$v_{\ell,e}\in(0,1]$; other scores are zero. Layers without eligible experts
-receive zero scores, and calibration fails if no layer has an eligible target.
+Expert polarity specifies which association is targeted. Positive polarity
+retains experts with $L_{\ell,e}>0$; negative polarity retains experts with
+$L_{\ell,e}<0$. In either case, eligibility requires occurrence in at least
+four distinct calibration problems. The default target budget per layer
+matches native routing top-$k$: eight for Qwen and Gemma, four for GPT-OSS.
+An explicitly smaller budget is supported; larger budgets are rejected.
+Eligible experts are retained up to this budget, ordered by decreasing lift magnitude, then problem support, then
+expert identifier. Let $E_\ell$ denote this retained set. Scores are
+normalised magnitudes,
+\begin{equation}
+  v_{\ell,e}=
+  \begin{cases}
+    |L_{\ell,e}|/\max_{j\in E_\ell}|L_{\ell,j}|, & e\in E_\ell,\\
+    0, & e\notin E_\ell.
+  \end{cases}
+\end{equation}
+Layers without eligible experts receive zero scores, and calibration fails
+if no layer has an eligible target. Thus scores are nonnegative for both
+polarities: the selected set and the direction of intervention are separate
+choices.
 
-During generation, the policy adds a fixed bias to each selected layer's
-router logits:
+\paragraph{Fixed additive bias.}
+During generation, the fixed method adds a signed bias to each selected
+layer's router logits:
 \begin{equation}
   \widetilde z_{t,e}^{(\ell)}
-  =z_{t,e}^{(\ell)}+\alpha v_{\ell,e},\qquad \alpha\geq0.
+  =z_{t,e}^{(\ell)}+\alpha v_{\ell,e},\qquad \alpha\in\mathbb{R}.
   \label{eq:method-identity-policy}
 \end{equation}
-Native dispatch then selects and weights experts from the adjusted logits.
-The bias can change both membership and mixture weights. The policy is
-independent of episode labels and does not wait for a particular margin or
-reasoning event. Its purpose is to test whether the calibrated association
-survives an intervention that increases the influence of those identities.
+Positive strength promotes the selected identities; negative strength
+suppresses the same identities; zero leaves routing unchanged. In particular,
+negative strength with positive polarity suppresses success-associated
+experts, whereas positive strength with negative polarity promotes
+failure-associated experts. The completed Qwen fixed-bias evaluations use strengths $+1,+2,-1$
+with positive polarity. Negative polarity is supported by the implementation.
+
+\paragraph{Paper-style steering.}
+The second method implements the extreme-score intervention used by
+SteerMoE, while retaining the calibration estimator above
+\cite{fayyaz2025steermoe}. For each token and selected layer, define the
+original log-softmax scores $s_{t,e}^{(\ell)}=\log\operatorname{softmax}
+(z_t^{(\ell)})_e$. For nonzero strength, replace them simultaneously by
+\begin{equation}
+  \widetilde s_{t,e}^{(\ell)}=
+  \begin{cases}
+    \max_j s_{t,j}^{(\ell)}+\varepsilon,
+      & e\in E_\ell,\ \alpha=+1,\\
+    \min_j s_{t,j}^{(\ell)}-\varepsilon,
+      & e\in E_\ell,\ \alpha=-1,\\
+    s_{t,e}^{(\ell)}, & e\notin E_\ell.
+  \end{cases}
+  \label{eq:method-paper-identity-policy}
+\end{equation}
+The extrema are computed before any replacement. The implementation uses
+$\varepsilon=0.01$ and passes the adjusted scores to native dispatch in
+the router's original dtype. If rounding erases the strict separation,
+the target is moved to the next representable value beyond the original
+extreme in that dtype. All selected experts receive the same target,
+independently of lift magnitude. This method supports strengths $+1$ and
+$-1$, with zero as a no-op; strength $+2$ is unsupported. Layers with no
+selected experts are unchanged. When the target set fills all native top-$k$
+slots, promotion fixes the selected identities and gives them equal scores
+at the hook output. A smaller target budget leaves slots available to
+untargeted experts. This distinction matters when interpreting the
+strength of the intervention.
+
+Paper-style steering reproduces the intervention rule, not the paper's
+contrastive risk-difference expert-selection estimator. Both methods here
+use our problem-balanced, routing-frequency-weighted accuracy lifts.
+Native dispatch selects and weights experts from the modified router
+outputs, so either intervention can change both membership and mixture
+weights. Neither uses episode labels or waits for a particular margin or
+reasoning event. Their purpose is to test whether acting on a calibrated
+association changes held-out performance, without assuming that promotion
+must help or suppression must hurt.
 
 \subsection{Margin guiding}
 \label{sec:method-margin}
@@ -1337,8 +1553,12 @@ experimental assumption tested by the generation comparison.
 
 \subsection{Matched generation and evaluation}
 
-Each policy is evaluated against a freshly generated native-routing baseline
-on identical held-out prompts and attempt identifiers. The two conditions
+Each policy is evaluated against a matched native-routing baseline on
+identical held-out prompts and attempt identifiers. A baseline is generated
+for the comparison or reused after compatibility checks on the saved
+configuration and paired inputs, together with verification of the output
+hash. The Qwen and GPT-OSS margin comparisons at concurrency 25 reuse
+compatible saved baselines. The two conditions
 share the checkpoint, tokenised inputs, chat-template options, sampling
 settings, per-attempt seeds, and completion budget. The default stochastic
 protocol uses temperature 0.6, top-$p=0.95$, and 32,768 output tokens; repeated
@@ -1356,7 +1576,11 @@ distance from the target range. Hook counters can include engine padding or
 recomputation and are not interpreted as independent generated tokens.
 
 The comparison reports final-answer accuracy, generated-token counts,
-truncations, and paired wrong-to-right and right-to-wrong transitions. For
+truncations, and paired wrong-to-right and right-to-wrong transitions.
+All intervention evaluation outcomes $Y_i$ use the common offline
+answer-equivalence rule in Section~\ref{sec:guiding-rescoring}. Frozen
+policies retain their original calibration labels; no policy is refitted
+using evaluation outcomes. For
 $N$ matched attempts, the empirical accuracy change is
 \begin{equation}
   \widehat\Delta_{\pi}
@@ -1568,7 +1792,10 @@ uses a target-stratified 80/20 sentence split with seed 42: 2,469 training
 units and 618 test units for each binary target. All 38 response identifiers
 occur in both probe partitions. Consequently, the probe split measures
 within-corpus predictability and does not provide a response-disjoint
-generalisation estimate.
+generalisation estimate. The additional grouped probe study reuses these
+3,087 units but holds entire responses out, with the same five outer folds
+for all three encoders and all seven targets
+(Section~\ref{sec:setup-grouped-probes}).
 
 \subsection{Mathematical reasoning benchmarks}
 
@@ -1671,12 +1898,15 @@ For a unit beginning at token $b_j$, the stored feature is the hidden state
 at $b_j-1$. The target unit and later text are therefore unavailable at the
 measurement boundary.
 
-All 41 hidden-state indices are retained: index 0 is the embedding output
-and indices 1--40 are successive block outputs. Each feature has 2,048
-dimensions. Following the replication protocol of
-Sun et al.~\cite{sun2026trajectories}, a separate one-versus-rest logistic
-regression is fitted for each label at each index, giving $7\times41=287$
-classifiers. Training uses raw activations, balanced class weights, L2
+For Qwen, all 41 hidden-state indices are retained: index 0 is the embedding
+output and indices 1--40 are successive block outputs. Each feature has 2,048
+dimensions. GPT-OSS supplies 25 indices with 2,880 dimensions, and Gemma
+supplies 31 indices with 2,816 dimensions. Adapting the layerwise binary-probe protocol of
+Sun et al.~\cite{sun2026trajectories} from step-position labels to Schoenfeld
+episodes, a separate one-versus-rest logistic regression is fitted for each
+label at each index, giving $7\times41=287$ classifiers for Qwen,
+175 for GPT-OSS, and 217 for Gemma in the sentence-split replication.
+Training uses raw activations, balanced class weights, L2
 regularisation with $C=1$, the \texttt{lbfgs} solver, and at most 2,000
 iterations. No standardisation or principal-component analysis is applied.
 
@@ -1693,6 +1923,48 @@ $3{,}087\times41\times2{,}048$ values require approximately 0.97\,GiB,
 before metadata and classifier files. This storage choice retains the
 information required for refitting probes without preserving every token's
 full hidden-state trajectory.
+
+
+\subsection{Response-grouped evaluation}
+\label{sec:setup-grouped-probes}
+
+The additional \texttt{probe --protocol grouped} mode operates entirely on
+saved activations using four CPU workers and one BLAS thread per worker.
+Five outer folds use \texttt{StratifiedGroupKFold}, grouping by response ID
+and approximately balancing the seven-class labels (seed 42). The shared
+plan checks exact unit text, labels, and identities across encoders. Outer
+test folds contain 8, 8, 7, 8, and 7 responses; each response is tested once.
+A single \texttt{GroupShuffleSplit} inside each development fold reserves
+20\% of its responses for validation, with seed $42+f+1$ for zero-based fold
+$f$. This leaves 24 fit responses in every fold and six or seven validation
+responses. Every partition contains both classes for every binary target.
+
+For each target, all hidden-state indices are fitted on the inner fit set.
+The index with highest validation AUROC is selected, breaking ties toward
+the lowest index. That classifier is then refitted on all 30 or 31 outer
+development responses. The untouched test responses determine the final
+AUROC, balanced accuracy, binary F1, and accuracy. Regularisation and the
+fixed 2,000-iteration budget match the replication; there is no search over
+thresholds or hyperparameters. The position baseline uses the same logistic
+regression with two features: $\log(1+j)$ for the number $j$ of preceding
+annotated units, and $\log(1+t)$ for the number $t$ of preceding response
+tokens. It excludes total length and future content. Token counts depend
+on each encoder's tokenizer, so the three baselines need not be identical.
+
+The primary summary is the unweighted mean of five outer-fold metrics,
+followed by an equal average across the seven targets. Units have equal
+weight within each fold metric; response grouping governs separation and
+uncertainty rather than assigning equal sentence-metric weight to responses.
+The 95\% percentile intervals use 5,000 draws (seed 42), resampling whole
+responses with replacement independently within each test fold. The same
+draws pair probe and position predictions and all targets. Draws without
+both binary classes are excluded for AUROC and balanced accuracy, with
+valid counts retained. These intervals condition on the saved folds, selected
+layers, and fitted models; they omit refitting and split-seed variation and
+are not adjusted for multiple comparisons. Differences from the legacy
+scores change both splitting and selection criterion and do not isolate a
+leakage effect. External-domain transfer and online generation remain
+separate evaluation questions.
 
 \section{Benchmark generation and routing extraction}
 \label{sec:setup-correlation}
@@ -1825,8 +2097,17 @@ analysis-specific inclusion counts. Generation, annotation, and replay are
 checkpointed independently, allowing completed work to be reused when the
 recorded configuration matches.
 
-Probe artifacts use the root \path{results/probeTest} and the run name
-\path{qwen3.5-35b-a3b-gptq-int4}. GEPA runs have separate directories
+Probe artifacts use the root \path{results/probeTest}, with model directories
+\path{qwen3.5-35b-a3b-gptq-int4}, \path{gpt-oss-20b}, and
+\path{gemma-4-26b-a4b-it-nf4}. Each keeps the original \texttt{probes}
+outputs and a separate \texttt{probes\_grouped\_s42} directory containing
+fold assignments, candidate validation metrics, fitted classifiers, and one
+outer-test prediction per unit and target. The shared plan is saved under
+\path{results/probeTest/grouped_s42}. Grouped configurations fingerprint
+activation shards, source code, and library versions. Tables and the figure
+are regenerated by \path{report/generate_grouped_probe_results.py};
+\path{report/grouped_probe_sources.json} records their sources and checks.
+GEPA runs have separate directories
 under \path{results/gepaLLMAsJudge}. Correlation outputs use the root
 \path{results/correlation_pipeline}, with the Qwen corpus under
 \path{reasoning-vllm-v1}. Saved fingerprints identify the generation,
@@ -1851,9 +2132,1643 @@ provenance for a guiding result; implementation checks alone do not establish
 an improvement in generation accuracy.
 
 \chapter{Results}
+\label{ch:results}
 
+This chapter follows the four stages of the experimental pipeline. The
+annotation and probing experiments assess the available measurements of
+reasoning episodes. The observational analysis then examines routing and
+correctness on generated mathematical solutions. Finally, matched generation
+experiments test whether acting on selected routing measurements changes
+performance. These stages provide different kinds of evidence: agreement
+with an annotation corpus, accessibility of information in representations,
+association with an outcome, and the effect of an implemented intervention.
+They are interpreted separately before drawing conclusions about guidance.
+
+The numerical snapshot uses the completed artifacts available on
+24 September 2026. Unless stated otherwise, intervention results use
+stochastic decoding. Complete matched comparisons and the interrupted
+Qwen paper-style experiment are reported separately; missing guided
+attempts never enter the partial-result denominator. The report's source
+manifests and the thesis companion \path{results_sources.json} identify the
+saved inputs and comparison statistics. The latter includes the additional
+completed margin comparisons found in the results directory. No new model
+inference was performed. Intervention tables use the consistent offline scoring rule in
+Section~\ref{sec:guiding-rescoring}, while calibration and observational
+analyses retain their original labels. The qualitative inspection keeps
+its original sampled IDs and historical outcome frame.
+
+\section{Automatic annotation of reasoning episodes}
+\label{sec:results-annotation}
+
+\subsection{Prompt development and selection}
+
+The judge experiments show that prompt optimisation can improve agreement
+on a development corpus, but the improvement depends on the starting prompt
+and selection protocol. The preliminary response-grouped experiments gave
+66.07\% test accuracy for an optimised base instruction and 69.94\% for the
+matched few-shot condition. These runs preceded the context-aware protocol
+and used per-unit exact match. They therefore motivate the use of examples,
+without establishing the performance of the final annotator on generated
+benchmark traces.
+
+The later nested cross-validation study evaluated 2,789 units from 32
+responses. Macro-F1 selection with a light optimisation budget achieved
+accuracy 0.6734, balanced accuracy 0.6796, and macro-F1 0.6505; the heavy
+budget achieved 0.6669, 0.6737, and 0.6437. Increasing search effort did not
+improve this comparison. The class-recall gate retained the seed in two of
+five light-budget folds and three of five heavy-budget folds. Since the
+outer folds evaluated the selected prompt rather than both seed and
+candidate, these results describe the selection procedure and do not directly
+estimate the paired outer-fold benefit of optimisation.
+
+The completed Qwen3.6 context-aware final fit used 407 development units
+from six responses. Its same-model feedback combined gold agreement with
+functional fit, contextual coherence, and boundary precision. As shown in
+Table~\ref{tab:res-judge}, exact accuracy increased from 0.6683 to 0.7543,
+with corresponding improvements in balanced accuracy and macro-F1. The
+candidate corrected 49 seed errors and introduced 14 new errors, a net gain
+of 35 units. This is a substantial development-set change, but selection
+repeatedly used the same validation responses; it is not a fresh test estimate.
+
+\begin{table}[htbp]
+\centering\small
+\caption{Context-aware final fits on 407 reused development units. The Qwen3.8 seed is the earlier optimised Qwen3.6 prompt; these are successive development stages, not independent model comparisons.}
+\label{tab:res-judge}
+\begin{adjustbox}{max width=\linewidth}%
+\begin{tabular}{llrrr}
+\toprule
+Judge & Prompt & Accuracy & Balanced acc. & Macro-F1 \\
+\midrule
+Qwen3.6 & Seed & 0.6683 & 0.6765 & 0.6132 \\
+Qwen3.6 & GEPA candidate & 0.7543 & 0.7769 & 0.7270 \\
+Qwen3.8 & Seed & 0.7174 & 0.7400 & 0.6938 \\
+Qwen3.8 & GEPA candidate & 0.7125 & 0.7288 & 0.6743 \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}
+
+
+The final Qwen3.8 alignment started from the previously optimised,
+40-example instruction. Its new candidate reduced accuracy from 0.7174 to
+0.7125 and balanced accuracy from 0.7400 to 0.7288. Plan recall fell from
+0.7500 to 0.5625, exceeding the allowed drop of 0.10. The selection gate
+therefore retained the imported seed. The internal optimisation reward
+increased even though exact-label performance declined, illustrating why
+that reward cannot substitute for independently specified reporting metrics.
+The stronger Qwen3.6 final-fit numbers and the Qwen3.8 numbers belong to
+successive deployments and prompt-development stages; they are not a
+controlled comparison of model capabilities.
+
+The final-fit artifacts explicitly leave the 336-unit locked partition
+unevaluated. Its responses had nevertheless been inspected during earlier
+experiments. It cannot serve as a genuinely unseen final assessment merely
+because later code excludes it. Moreover, success on the released episode
+corpus does not establish label quality on long solutions sampled from the
+three benchmark generators.
+
+\subsection{Deployment sensitivity and annotation coverage}
+
+The frozen Qwen3.8 NVFP4 deployment was checked on the same 407 development
+units under low and medium reasoning effort. Both settings achieved accuracy
+0.7101, while balanced accuracy and macro-F1 differed slightly
+(Table~\ref{tab:res-effort}). Approximately 10.1\% of labels changed between
+settings. Equal accuracy therefore masks disagreement about individual
+sentences, which matters when those labels define the tokens used in a
+class-conditioned routing analysis.
+
+\begin{table}[htbp]
+\centering\small
+\caption{Frozen Qwen3.8 NVFP4 judge on the same 407 development units. Equal aggregate accuracy does not imply identical labels.}
+\label{tab:res-effort}
+\begin{adjustbox}{max width=\linewidth}%
+\begin{tabular}{lrrr}
+\toprule
+Effort & Accuracy & Balanced acc. & Macro-F1 \\
+\midrule
+Low & 0.7101 & 0.7415 & 0.6863 \\
+Medium & 0.7101 & 0.7444 & 0.6832 \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}
+
+
+For the generated benchmark corpus, the refreshed Gemma and GPT-OSS
+annotations use a common stratified procedure: 100,000 selected sentences
+per model, with seed 42 and quotas based on dataset, saved correctness, and
+reasoning-length quartile. One completion per source problem is eligible
+for annotation. GPT-OSS has 100,000 valid labels on 1,510 problems; Gemma
+has 99,999 on 1,503 problems, with one missing judge response. The missing
+sentence is excluded from class features while its trace remains partially
+labelled. The four exported parts are pieces of one sample, not independent
+replicates.
+
+Coverage extends to all six benchmarks, but equal sentence budgets do not
+produce equal cohorts. For example, OlympiadBench contributes 54,556 valid
+Gemma labels and 70,215 GPT-OSS labels. Qwen retains a separate annotation
+sampling protocol and deterministic judge deployment. Class proportions and
+class-conditioned correlations must therefore be read with their actual
+model-specific denominators. None of these annotations has an independent
+human accuracy estimate on the generated mathematical solutions. The
+annotation stage supplies an explicit, inspectable measurement instrument,
+with unresolved transfer and boundary errors.
+
+\section{Prospective episode information in hidden states}
+\label{sec:results-probes}
+
+\subsection{Within-corpus decodability}
+
+All three encoders were evaluated on the same 3,087 labelled units, with
+2,469 training and 618 test units. The probes use the hidden state of the
+prefix immediately before the labelled unit, rather than a representation
+computed after reading it. Table~\ref{tab:res-probes} reports each target's
+accuracy-selected hidden-state index and the corresponding F1 and AUROC.
+The indices denote hidden-state outputs and should not be equated directly
+with decoder-block indices without the extraction convention described in
+Chapter~\ref{ch:method}.
+
+\begin{table}[htbp]
+\centering\small
+\caption{Prospective boundary probes on the same sentence-level split. Each model reports the accuracy-selected hidden-state index, F1, and AUROC. Selection uses the evaluation split; these are within-corpus estimates.}
+\label{tab:res-probes}
+\begin{adjustbox}{max width=\linewidth}%
+\begin{tabular}{lrrrrrrrrr}
+\toprule
+ & \multicolumn{3}{c}{Qwen} & \multicolumn{3}{c}{GPT-OSS} & \multicolumn{3}{c}{Gemma} \\ Target & Index & F1 & AUROC & Index & F1 & AUROC & Index & F1 & AUROC \\
+\midrule
+Read & 34 & 0.704 & 0.934 & 19 & 0.686 & 0.906 & 21 & 0.675 & 0.898 \\
+Analyze & 36 & 0.647 & 0.835 & 21 & 0.540 & 0.767 & 27 & 0.611 & 0.816 \\
+Plan & 39 & 0.485 & 0.855 & 15 & 0.434 & 0.852 & 25 & 0.500 & 0.907 \\
+Implement & 38 & 0.771 & 0.930 & 21 & 0.745 & 0.905 & 29 & 0.735 & 0.922 \\
+Explore & 40 & 0.489 & 0.888 & 23 & 0.405 & 0.842 & 16 & 0.447 & 0.835 \\
+Verify & 27 & 0.726 & 0.912 & 21 & 0.667 & 0.880 & 19 & 0.603 & 0.872 \\
+Monitor & 35 & 0.482 & 0.903 & 15 & 0.344 & 0.774 & 22 & 0.382 & 0.831 \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}
+
+
+There is ranking information for every target in every model: selected-layer
+AUROC ranges from 0.835 to 0.934 for Qwen, 0.767 to 0.906 for GPT-OSS, and
+0.816 to 0.922 for Gemma. Implement has the largest F1 in all three models,
+at 0.771, 0.745, and 0.735, respectively. Read and Verify are also more
+accessible at the evaluated decision threshold than several of the rarer
+classes. Monitor illustrates the difference between ranking and thresholded
+classification: Qwen reaches AUROC 0.903 but F1 only 0.482, while GPT-OSS
+has F1 0.344. A high majority-class accuracy is particularly uninformative
+for these imbalanced one-versus-rest tasks.
+
+The estimates have two sources of optimism. All 38 responses appear in
+both sentence partitions, so test sentences share response context with
+training sentences. In addition, the reported index is selected by accuracy
+on the same test partition used for evaluation. The table consequently
+supports prospective within-corpus decodability, not response-held-out
+prediction. It also does not establish that the selected hidden-state
+indices are the best sites for a causal intervention. The probe supplies a
+measurement-location heuristic rather than a validated online controller.
+
+\subsection{Response-grouped validation and a position baseline}
+\label{sec:results-grouped-probes}
+
+The additional grouped study tests the same representations on complete
+responses that are absent from both fitting and layer selection.
+Table~\ref{tab:probe-grouped-summary} reports macro-AUROC 0.852
+($95\%$ interval [0.838,0.868]) for Qwen, 0.780 ([0.761,0.797]) for GPT-OSS,
+and 0.788 ([0.772,0.805]) for Gemma. The corresponding legacy means are
+0.894, 0.847, and 0.869. These differences change both the split and
+the layer-selection criterion, so they cannot be attributed solely to
+response overlap. The grouped results nevertheless establish a stronger
+claim than the original table: upcoming-label information remains accessible
+on held-out responses within the released SAT corpus.
+
+\input{tables/probe_grouped_summary_table.tex}
+
+The prefix-position baseline reaches macro-AUROC 0.566, 0.571, and
+0.566, respectively. Each encoder exceeds its baseline, and all 21
+per-target paired AUROC intervals exclude zero; these intervals are not
+adjusted for multiple comparisons (Table~\ref{tab:probe-grouped-targets}). Figure~\ref{fig:probe-grouped-auc}
+shows both predictions with response-bootstrap uncertainty. Thus the
+signal exceeds this particular two-feature positional rule. The control
+does not exclude more flexible position effects, problem-type or formatting
+shortcuts, or correlations between episodes and lexical prefix content.
+
+\begin{figure*}[tbp]
+\centering
+\includegraphics[width=\textwidth]{figures/probe_grouped_auc.pdf}
+\caption{Prospective AUROC on response-disjoint outer test folds. Points
+are means of five fold scores and horizontal bars are 95\% conditional
+response-bootstrap intervals. Both the hidden-state probe and the simple
+prefix-position baseline are fitted without the test responses.}
+\label{fig:probe-grouped-auc}
+\end{figure*}
+
+\input{tables/probe_grouped_targets_table.tex}
+
+Ranking performance still does not imply reliable seven-class annotation.
+Macro binary F1 is 0.521 for Qwen, 0.400 for GPT-OSS, and 0.426 for
+Gemma at the unchanged decision rule. In Qwen, Explore reaches AUROC 0.823
+but F1 only 0.341; Monitor reaches 0.799 and 0.355. The selected layers also
+vary across folds: Qwen Read uses indices 23--36 and Implement 18--32.
+This variability argues against interpreting one selected index as a unique
+reasoning location. The study intentionally produces fold-specific probes;
+the existing routing experiments retain their original measurement layers.
+
+Across the five folds there are 1,505 Qwen, 945 GPT-OSS, and 1,155 Gemma
+fits, including 35 selected-layer refits and 35 position baselines per model.
+The numbers of inner candidate fits reaching the fixed iteration limit are
+0, 2, and 2, respectively; the selected-layer refits
+have 0, 0, and 0 convergence warnings.
+All position fits converge, and all 5,000 bootstrap draws retain binary
+support for every reported target. Diagnostics and indices are retained
+rather than used to change the solver budget after evaluation.
+
+The remaining inferential limits are the small number of responses and the
+scope of the test. The intervals condition on this single split plan,
+selected layers, and fitted classifiers; they omit refitting and split-seed
+variation. Same-corpus response generalisation does not establish transfer
+to new benchmarks, annotation validity on the encoders' own generations,
+or a causal role for the probed directions. The legacy external Qwen
+inspection below addresses a different population and decision rule.
+
+\subsection{External inspection of the Qwen probes}
+
+The external inspection covers 80 benchmark examples and 581 sentence
+boundaries. The seven-way argmax display assigns 286 units to Implement,
+126 to Read, and 89 to Monitor, while Explore is never selected. Independent
+binary probes do not automatically yield calibrated multiclass probabilities:
+74 units have no score above 0.5, whereas 180 exceed that threshold for more
+than one class. Taking an argmax still produces one label in both cases.
+
+A subsequent rule-assisted pragmatic review provides a provisional reference,
+not independent human consensus or benchmark gold. The probes agree with
+its primary label on 292/581 units (50.3\%) and with any accepted label on
+353/581 (60.8\%). The difference reflects 187 units for which the review
+accepts overlapping functions. Implement has the strongest accepted-membership
+F1, 0.729, while Explore has zero recall. These results identify useful
+qualitative structure and substantial transfer limitations. They do not
+validate the probes as a replacement for the contextual sentence judge,
+and the external review provides no direct evaluation of the Gemma or
+GPT-OSS probes.
+
+\section{Routing associations in generated solutions}
+\label{sec:results-correlations}
+
+\subsection{Population, scoring, and termination}
+
+Each model's observational corpus contains 4,647 attempts from 1,547
+source problems. MATH-500, OlympiadBench, and Minerva contribute 500, 675,
+and 272 single-attempt problems. AIME24 and AIME25 each contribute 30
+problems with 32 attempts, and AMC23 contributes 40 with 32 attempts.
+Consequently, the pooled attempt denominator weights each repeated-attempt
+problem 32 times as heavily as a single-attempt problem. Benchmark-specific
+results are necessary even when the aggregate population is complete.
+
+\begin{table}[htbp]
+\centering\small
+\caption{All-attempt accuracy in the observational generation corpora.
+Invalid answers with known gold are counted as incorrect, and token-limit
+completions remain included. These are generation populations, not the
+held-out guiding baselines.}
+\label{tab:res-population}
+\begin{tabular}{lrrrr}
+\toprule
+Benchmark & Attempts & Qwen & Gemma & GPT-OSS \\
+\midrule
+MATH-500 & 500 & 0.690 & 0.706 & 0.664 \\
+AIME24 & 960 & 0.851 & 0.887 & 0.709 \\
+AIME25 & 960 & 0.805 & 0.824 & 0.696 \\
+OlympiadBench & 675 & 0.477 & 0.517 & 0.422 \\
+AMC23 & 1,280 & 0.967 & 0.976 & 0.900 \\
+Minerva & 272 & 0.268 & 0.301 & 0.114 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The accuracy denominator includes missing or invalid extracted answers
+when gold is known. For Qwen, 3,568 of 4,647 attempts are correct. Of the
+412 token-limit completions, only two are correct; accuracy among the
+remaining 4,235 attempts is 0.842. Excluding limit hits would therefore
+substantially change the population and apparent accuracy. Likewise,
+accuracy restricted to parseable answers would answer a different question.
+The retained failures make length and termination central to the
+interpretation of routing--correctness associations.
+
+\subsection{Confidence and other routing measurements}
+
+Table~\ref{tab:res-confidence} shows that there is no common sign for the
+association between router confidence and correctness. Qwen's coefficients
+are positive on all six benchmarks. Gemma is negative on AMC23 and Minerva;
+GPT-OSS is negative on MATH-500, AIME25, AMC23, and Minerva. Confidence
+summarises the concentration of the router distribution, not the probability
+that the mathematical answer is correct. Different model architectures,
+quantisation settings, and distributions of generated solutions can change
+its association with success.
+
+\begin{table}[htbp]
+\centering\small
+\caption{Whole-continuation router confidence versus correctness: point-biserial coefficients, with all attempts retained. Each model has the same benchmark counts, but these marginal correlations do not estimate controlled model differences.}
+\label{tab:res-confidence}
+\begin{adjustbox}{max width=\linewidth}%
+\begin{tabular}{lrrr}
+\toprule
+Benchmark & Qwen & Gemma & GPT-OSS \\
+\midrule
+MATH-500 & +0.199 & +0.080 & -0.061 \\
+AIME24 & +0.533 & +0.392 & +0.210 \\
+AIME25 & +0.493 & +0.313 & -0.075 \\
+Olympiad & +0.243 & +0.027 & +0.051 \\
+AMC23 & +0.175 & -0.256 & -0.077 \\
+Minerva & +0.112 & -0.037 & -0.160 \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}
+
+
+The Qwen pointwise 95\% source-problem bootstrap intervals exclude zero
+for confidence on five benchmarks. AIME24 gives $r=0.533$ with interval
+$[0.382,0.678]$, while AIME25 gives $r=0.493$ with
+$[0.302,0.608]$. AMC23 has $r=0.175$ with the much wider interval
+$[-0.116,0.678]$. These intervals use 500 resamples and account for repeated
+attempts by retaining whole problems. They do not control for difficulty,
+length, or stopping behaviour, and they are pointwise intervals across an
+exploratory family of features and scopes.
+
+Other measurements also resist a single interpretation. Qwen's
+leading-expert margin is positively associated with correctness across
+benchmarks, but the selection-boundary margin is approximately zero or
+negative on AIME24 and AMC23. The former separates the first two experts;
+the latter concerns the inclusion boundary of the dispatched set. They
+should not be treated as interchangeable confidence measures. Likewise,
+selected probability mass and the mean selected-versus-rest probability
+gap are algebraically related for a fixed expert count and dispatch size;
+agreement between their correlations is not independent corroboration.
+
+Token count is negatively associated with correctness in all reported
+model--benchmark combinations except Gemma on AMC23. For Qwen AIME24 and
+AIME25, its coefficients are $-0.726$ and $-0.727$. This does not imply
+that shortening a solution would improve it: harder problems, unsuccessful
+search, and completion limits can jointly increase length and reduce
+accuracy. Hidden-state measurements also vary across models. On AIME25,
+Qwen's step-distance coefficient is $+0.404$, whereas GPT-OSS gives
+$-0.404$. These descriptive differences argue against transferring a scalar
+routing or representation rule without model-specific validation.
+
+Figures~\ref{fig:thesis-multi-continuation} and
+\ref{fig:thesis-multi-reasoning} extend the confidence comparison to the
+other routing and representation measurements, with their uncertainty.
+Separating the complete continuation from the reasoning span makes the
+measurement scope explicit. The panels compare descriptive estimates;
+interval overlap is not a paired test of differences between models.
+
+\begin{figure}[htbp]\centering
+\includegraphics[width=\linewidth,height=0.68\textheight,keepaspectratio]{figures/multimodel_continuation.pdf}
+\caption{Whole continuation: saved correctness correlations and pointwise source-problem bootstrap intervals. Overlap or separation of intervals is not a paired test of model differences.}
+\label{fig:thesis-multi-continuation}
+\end{figure}
+
+\begin{figure}[htbp]\centering
+\includegraphics[width=\linewidth,height=0.68\textheight,keepaspectratio]{figures/multimodel_reasoning.pdf}
+\caption{Full reasoning: saved correctness correlations and pointwise source-problem bootstrap intervals. Overlap or separation of intervals is not a paired test of model differences.}
+\label{fig:thesis-multi-reasoning}
+\end{figure}
+
+Figure~\ref{fig:qwen-metric-pairs} examines dependence among the candidate
+measurements themselves. This matters because several apparent outcome
+signals can reflect the same variation in length or router concentration.
+For notation, $T$ denotes token count, $C$ confidence, $M$ the leading-expert
+margin, $S$ selected probability mass, $B$ the selection-boundary margin,
+$G$ the selected/rest mean gap, $H$ hidden-state norm, $D$ hidden-state step
+distance, $R$ hidden/router geometry, $W$ top-one switch rate, and $O$
+adjacent selected-set overlap. Definitions are given in the methods chapter.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth,height=0.68\textheight,keepaspectratio]{figures/qwen_metric_pairs.pdf}
+\caption{Whole-continuation metric--metric Spearman correlations across all
+six benchmarks. Lower triangles display each association once; diagonals
+and upper triangles are omitted. Repeated attempts and limit hits remain
+included. These are descriptive metric relationships, not correctness effects.}
+\label{fig:qwen-metric-pairs}
+\end{figure}
+
+A correlation coefficient alone does not identify useful operating values.
+Figure~\ref{fig:router-value-accuracy} therefore shows accuracy against
+observed confidence and margin ranges for Qwen. These bins describe the
+saved population and do not define validated intervention thresholds.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth,height=0.68\textheight,keepaspectratio]{figures/qwen_router_value_accuracy.pdf}
+\caption{Accuracy at observed router-metric values. Each benchmark uses
+up to five quantile bins; horizontal bars show actual value ranges, points
+show mean values and accuracy, and panel labels give attempt counts
+per bin (left to right, or a shared count when equal). Vertical
+bars are pointwise 95\% percentile intervals from 500 whole-source-problem
+bootstrap resamples within each fixed bin (seed 42). Degenerate intervals
+can occur in all-correct/all-incorrect bins and do not imply certainty.
+All attempts and limit hits are retained. Bins can share source problems,
+so their estimates are not independent; neither bin selection nor length
+and termination confounding is addressed by these intervals.}
+\label{fig:router-value-accuracy}
+\end{figure}
+
+\subsection{Repeated problems, reasoning classes, and position}
+
+Aggregation changes the estimand. For Qwen, mean problem-level confidence
+correlates with avg@32 at Spearman $\rho=0.632$ on AIME24 and $0.705$ on
+AIME25, but at $-0.200$ on AMC23, whose interval includes zero. The positive
+attempt-level AMC23 coefficient and negative problem-level rank coefficient
+are therefore not interchangeable evidence. They compare different units
+and different outcome variation.
+
+Figure~\ref{fig:thesis-multi-repeated} compares these problem-level
+associations across the three models. Its units are the 30, 30, and 40
+source problems in AIME24, AIME25, and AMC23, respectively; all 32 attempts
+contribute to each problem's feature mean and accuracy.
+
+\begin{figure}[htbp]\centering
+\includegraphics[width=\linewidth,height=0.68\textheight,keepaspectratio]{figures/multimodel_repeated.pdf}
+\caption{All models: whole-continuation problem means versus avg@32, with saved pointwise problem-bootstrap intervals. All 32 attempts enter each problem mean.}
+\label{fig:thesis-multi-repeated}
+\end{figure}
+
+Within-problem contrasts provide a complementary view. Restricting Qwen
+to problems with both correct and incorrect attempts, mean confidence is
+higher in the correct attempts by 0.00268 on AIME24, 0.00123 on AIME25,
+and 0.01102 on AMC23. Their saved whole-problem intervals are
+$[0.00152,0.00412]$, $[0.00065,0.00176]$, and $[0.00455,0.01709]$,
+respectively. These estimates use only 14, 15, and 6 mixed-outcome problems.
+They remove differences in problem identity but leave attempt-level length,
+termination, and trajectory differences unresolved.
+
+Class-conditioned features retain only tokens assigned to a given episode
+class, while correctness still describes the whole generated answer.
+Figure~\ref{fig:res-class-confidence} illustrates the resulting heterogeneity.
+For Gemma Implement tokens, confidence correlates with correctness at
+$+0.498$ on AIME24 (30 attempts) and $-0.367$ on AMC23 (40 attempts).
+The corresponding GPT-OSS coefficients are $+0.164$ and $-0.098$.
+Gemma's AMC23 Plan, Explore, and Monitor cohorts contain only correct
+attempts, so their correctness correlations are undefined. Nonzero token
+coverage is not sufficient to estimate an association when the outcome
+has no variation. Neither a missing coefficient nor a sparse estimate
+should be interpreted as evidence that the class has no role.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\textwidth]{figures/stratified_class_confidence.pdf}
+\caption{Class-conditioned router confidence versus whole-attempt correctness
+for the stratified Gemma and GPT-OSS cohorts. Cells show point-biserial
+coefficients and finite-attempt counts. Missing coefficients are undefined,
+not zero. The models share an annotation procedure but not matched labelled
+cohorts; this is a descriptive comparison.}
+\label{fig:res-class-confidence}
+\end{figure}
+
+The complementary Qwen class-conditioned screen appears in
+Figure~\ref{fig:qwen-classes}. In addition to confidence, it includes hidden-state
+step distance, showing that class-conditioned associations depend on the
+measurement as well as the benchmark. The counts printed in each cell
+identify the available cohort rather than a common matched class sample.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth,height=0.68\textheight,keepaspectratio]{figures/qwen_class_correlations.pdf}
+\caption{Class-conditioned confidence and hidden-state step distance versus
+whole-attempt correctness. Cells show point-biserial $r$ and finite trace
+count. Classes use sampled Qwen3.8 labels on Qwen3.5 generations, with
+different token-bearing cohorts. No significance markings are implied.}
+\label{fig:qwen-classes}
+\end{figure}
+
+Absolute position windows introduce a further selection effect. In Qwen,
+the mean reasoning length of 12,498.1 tokens defines ten windows of about
+1,250 tokens and an overflow region. Coverage falls from 4,647 traces in
+the first window to 1,789 in overflow. Later-window correlations concern
+solutions that continued long enough to reach those windows; they are not
+within-trace changes on a fixed cohort. All available reasoning tokens
+enter position views irrespective of sentence annotation, so this change
+in coverage is distinct from missing class labels.
+
+Table~\ref{tab:reasoning-length} gives the Qwen reasoning-length
+distribution used to interpret these windows. Figure~\ref{fig:qwen-position}
+shows the corresponding position-dependent confidence associations and
+pointwise intervals. The changing token-bearing population is essential
+to interpreting the later windows.
+
+\clearpage
+\begingroup\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}lrrrr@{}}
+\caption{Reasoning length in tokens, all attempts including limit hits. This replaces the position-coverage count plot; lengths are observed under the generation budget.}\label{tab:reasoning-length}\\
+\toprule
+Dataset & Attempts & Mean & Median & 90th percentile \\
+\midrule\endfirsthead
+\multicolumn{5}{l}{\textit{Continued from previous page}}\\
+\toprule
+Dataset & Attempts & Mean & Median & 90th percentile \\
+\midrule\endhead
+\bottomrule\endfoot
+MATH-500 & 500 & 6,226.5 & 4,250 & 12,772 \\
+AIME24 & 960 & 15,908.4 & 14,011 & 32,766 \\
+AIME25 & 960 & 17,874.9 & 16,620 & 32,768 \\
+Olympiad & 675 & 13,402.5 & 9,150 & 32,768 \\
+AMC23 & 1280 & 8,452.8 & 7,822 & 14,929 \\
+Minerva & 272 & 9,805.0 & 7,465 & 19,533 \\
+\end{longtable}\endgroup
+
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth,height=0.68\textheight,keepaspectratio]{figures/qwen_position_coverage.pdf}
+\caption{Router confidence versus whole-attempt correctness in absolute
+reasoning windows, with saved pointwise 95\% source-problem bootstrap intervals.
+Each benchmark has its own panel. Missing estimates remain blank. Later windows
+use changing token-bearing cohorts; these are not within-trace causal effects.}
+\label{fig:qwen-position}
+\end{figure}
+
+Finally, the observational expert-identity screen is exploratory. It tests
+many top-one, selected-pool, and pair-use features, and a maximum selected
+after inspecting them is subject to selection bias. Some pooled screens
+combine numeric identities across measured layers, whereas an intervention
+requires a specific $(\ell,e)$ pair. A visually strong association cannot
+be promoted directly to a portable expert target. The calibration procedure
+therefore retains layer-qualified identities and evaluates its policies on
+separate source problems.
+
+\subsection{Sampled class composition and outcome associations}
+\label{sec:thesis-class-composition}
+
+The frequency of a predicted reasoning activity is distinct from the router
+features measured within that activity. Figure~\ref{fig:thesis-label-composition}
+shows the sampled label and benchmark composition for Gemma and GPT-OSS.
+These models share a stratified annotation procedure but retain different
+selected problems and traces; equal label budgets do not imply matched
+populations.
+
+\begin{figure}[htbp]\centering
+\includegraphics[width=\linewidth,height=0.68\textheight,keepaspectratio]{figures/stratified_label_composition.pdf}
+\caption{Gemma and GPT-OSS stratified label composition. Denominators are 99,999 and 100,000 valid sampled sentences. Equal sample budgets do not imply equal class or benchmark proportions. These sentence shares are neither complete-corpus token shares nor adjusted model effects.}
+\label{fig:thesis-label-composition}
+\end{figure}
+
+For Qwen, Table~\ref{tab:class-shares} reports mean sentence shares,
+with each labelled sample-zero attempt receiving equal weight. An observed
+sample without a class contributes zero for that class; attempts without
+labels are excluded. These quantities describe the annotation sample,
+not complete-trace class prevalence. Figure~\ref{fig:class-cumulative}
+locates the sampled sentences along relative reasoning progress, while
+Figure~\ref{fig:class-share-correlations} relates their shares to correctness
+and output length. Because class shares sum to one, their correlations
+cannot be interpreted as independent class effects.
+
+\begingroup\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}lrrrrrrrr@{}}
+\caption{Mean sampled sentence share (percent), with equal weight per labelled attempt. Empty-label attempts are excluded; absent classes in an observed sample have zero share. These are not full-corpus class proportions.}\label{tab:class-shares}\\
+\toprule
+Dataset & Attempts & Read & Analyze & Plan & Implement & Explore & Verify & Monitor \\
+\midrule\endfirsthead
+\multicolumn{9}{l}{\textit{Continued from previous page}}\\
+\toprule
+Dataset & Attempts & Read & Analyze & Plan & Implement & Explore & Verify & Monitor \\
+\midrule\endhead
+\bottomrule\endfoot
+MATH-500 & 499 & 8.9 & 19.5 & 9.3 & 29.3 & 4.1 & 11.8 & 17.1 \\
+AIME24 & 30 & 6.7 & 33.9 & 2.9 & 28.3 & 7.0 & 14.4 & 6.8 \\
+AIME25 & 30 & 5.7 & 33.2 & 4.8 & 27.9 & 6.7 & 13.4 & 8.3 \\
+Olympiad & 675 & 6.9 & 26.8 & 6.0 & 29.7 & 6.4 & 13.2 & 11.0 \\
+AMC23 & 40 & 6.6 & 25.9 & 5.8 & 32.0 & 3.8 & 15.2 & 10.6 \\
+Minerva & 272 & 9.4 & 19.8 & 8.4 & 21.8 & 7.7 & 10.3 & 22.6 \\
+\end{longtable}\endgroup
+
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth,height=0.68\textheight,keepaspectratio]{figures/qwen_class_cumulative.pdf}
+\caption{Cumulative counts of sampled sentences by predicted class, pooled
+across benchmarks. Counts start at zero; a sentence is counted when its last
+reasoning token is reached. Progress is normalized by each attempt's full
+reasoning-token length, unlike the absolute windows in
+Figure~\ref{fig:qwen-position}. Legend totals equal the rightmost endpoints.
+These are raw sampled counts, not cumulative percentages or estimates of
+full-corpus counts; longer traces and benchmark sampling quotas affect them.}
+\label{fig:class-cumulative}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth,height=0.68\textheight,keepaspectratio]{figures/qwen_class_share_correlations.pdf}
+\caption{Sampled class proportions versus whole-attempt correctness
+(point-biserial $r$) and total continuation-token count (Spearman $\rho$).
+All labelled attempts enter each class, including observed zero proportions.
+These differ from correlations of router features within class-selected
+tokens. No significance claim is made; class shares sum to one and cannot
+be interpreted as independent effects.}
+\label{fig:class-share-correlations}
+\end{figure}
+
+Appendix~\ref{app:additional-routing-plots} retains the benchmark-specific
+class-share outcome curves, row-normalised transition matrix, and complete
+expert-ID screens. Those views give the denominators and population detail
+behind the compact comparisons without selecting only the largest observed
+associations.
+
+\subsection{Directed class transitions by answer correctness}
+\label{sec:thesis-class-transitions}
+
+For each model, we separate labelled attempts by whole-answer correctness and count directed transitions between originally adjacent labelled sentences. Rows are source classes and columns are destination classes. Self-transitions are retained; missing labels and sampling gaps are never bridged. Each cell is the total observed count divided by the number of labelled attempts in that outcome group: equivalently, the mean per-attempt count, including zero-pair attempts. Empty-label attempts are excluded. These are counts per attempt, not row-normalized probabilities or full-trace transition estimates.
+
+The two panels per model pool the six benchmarks and all six panels share one colour scale. Benchmark-specific counts and denominators are saved in the accompanying statistics JSON. Outcome groups differ in benchmark mix, reasoning length, and label coverage; Qwen also retains a different annotation protocol from Gemma and GPT-OSS. Differences are descriptive associations, not evidence that a transition causes correctness or a controlled comparison between models.
+
+\begin{figure}[p]\centering
+\includegraphics[width=\linewidth]{figures/qwen_class_transitions_by_correctness.pdf}
+\caption{Qwen3.5-35B-A3B: directed class transitions for correct and incorrect answers. Cells show mean observed counts per labelled attempt, including self-transitions on the diagonal. Panel headings give denominators and adjacent-pair coverage; zero-pair attempts remain in the mean. The shared colour scale is identical across all three models. Sampling and population differences limit interpretation.}
+\label{fig:qwen-class-transitions-by-correctness}
+\end{figure}
+
+\begin{figure}[p]\centering
+\includegraphics[width=\linewidth]{figures/gemma_class_transitions_by_correctness.pdf}
+\caption{Gemma-4-26B-A4B: directed class transitions for correct and incorrect answers. Cells show mean observed counts per labelled attempt, including self-transitions on the diagonal. Panel headings give denominators and adjacent-pair coverage; zero-pair attempts remain in the mean. The shared colour scale is identical across all three models. Sampling and population differences limit interpretation.}
+\label{fig:gemma-class-transitions-by-correctness}
+\end{figure}
+
+\begin{figure}[p]\centering
+\includegraphics[width=\linewidth]{figures/gptoss_class_transitions_by_correctness.pdf}
+\caption{GPT-OSS-20B: directed class transitions for correct and incorrect answers. Cells show mean observed counts per labelled attempt, including self-transitions on the diagonal. Panel headings give denominators and adjacent-pair coverage; zero-pair attempts remain in the mean. The shared colour scale is identical across all three models. Sampling and population differences limit interpretation.}
+\label{fig:gptoss-class-transitions-by-correctness}
+\end{figure}
+
+\section{Held-out routing interventions}
+\label{sec:results-guiding}
+
+\subsection{Matched comparisons and uncertainty}
+
+The global intervention split assigns 1,082 source problems to calibration
+and 465 to evaluation. The evaluation set contains 150 MATH-500, 9 AIME24,
+9 AIME25, 203 OlympiadBench, 12 AMC23, and 82 Minerva problems. Keeping
+32 attempts for each AIME and AMC problem produces 1,395 matched attempts.
+All attempts from one problem remain on the same side of the split.
+For the original Qwen policies, calibration uses 3,014 scored traces from
+1,001 problems after excluding 238 traces with missing saved correctness.
+This exclusion differs from counting invalid known-gold answers as incorrect
+in the observational analysis, and can affect the selected expert targets.
+
+Each row in the complete-comparison tables compares baseline and guided runs with matching
+problem IDs, prompts, prompt token IDs, per-attempt sampling settings,
+engine configuration, and recorded software versions. Baselines are not
+interchanged between rows. Stochastic generation uses temperature 0.6,
+top-$p=0.95$, and a 32,768-token output limit. The primary accuracy
+summaries are attempt-weighted. Section~\ref{sec:results-weighting} adds
+benchmark-level results and a secondary analysis giving equal weight to
+each source problem; neither aggregation is a benchmark macro-average.
+
+Accuracy-change intervals use 5,000 paired, dataset-stratified source-problem
+bootstrap resamples with seed 42. A sampled problem carries all of its
+attempts and both conditions together. This preserves the paired contrast
+and dependence between repeated attempts. The intervals are conditional on
+the fitted policy and saved decoding runs. They do not incorporate policy
+refitting, independent decoding seeds, or adjustment for the multiple tested
+strengths and methods. In particular, each AIME evaluation has only nine
+source problems. An interval containing zero does not establish equivalence,
+and an interval excluding zero is interpreted within this exploratory design.
+
+\subsection{Expert-selection comparison with SteerMoE}
+\label{sec:expert-selection-audit}
+
+The comparison separates expert detection from the intervention applied to
+those experts. SteerMoE uses paired contrastive inputs and counts top-$k$
+expert inclusions separately in the two populations. Its score is the
+token-pooled activation-rate difference
+\begin{equation}
+\Delta_{\ell e}^{\mathrm{paper}} =
+\frac{A_{\ell e}^{+}}{N^{+}}-\frac{A_{\ell e}^{-}}{N^{-}},
+\end{equation}
+where $A$ counts tokens selecting the layer--expert identity and $N$ counts
+all tokens in the corresponding population. Detection therefore uses routing
+frequencies, not hidden-state similarity. Positive and negative differences
+identify opposite behavioral associations; steering changes the selected
+experts' log-softmax scores to the original maximum plus $\epsilon$ or minimum
+minus $\epsilon$~\cite{fayyaz2025steermoe}, Sections 3.1--3.2.
+The authors' released custom-steering notebook ranks layer--expert identities
+together by absolute risk difference\footnote{\url{https://github.com/adobe-research/SteerMoE/blob/main/custom_steering.ipynb}}.
+Our policy instead assigns a separate budget to each of a preselected set
+of layers.
+
+\paragraph{Implemented estimator.}
+For calibration attempt $r$, let $y_r\in\{0,1\}$ be correctness,
+$f_{r\ell e}$ the fraction of saved routing tokens selecting expert $e$ at
+layer $\ell$, and $w_r=1/m_{p(r)}$, where $m_{p(r)}$ is the number of usable
+attempts for its source problem. With $W=\sum_r w_r$, the implemented score is
+\begin{equation}
+\pi=\frac{\sum_r w_r y_r}{W},\qquad
+L_{\ell e}=\frac{\sum_r w_r f_{r\ell e}y_r}
+                       {\sum_r w_r f_{r\ell e}}-\pi.
+\end{equation}
+Thus calibration gives every problem total weight one and first normalizes
+routing counts within each trace. It contrasts observed correct and incorrect
+completions; it does not construct paired counterfactual behavioral inputs.
+Experts need at least four supporting problems in the audited policies.
+Within each selected layer, eligible experts are ordered by signed lift,
+then support, then expert ID, and capped at native top-$k$
+(eight for Qwen and four for GPT-OSS). Fixed bias scales each
+retained lift by the largest retained magnitude; paper-style steering uses
+only membership in the selected set, not those relative magnitudes.
+
+\paragraph{Why activation-based scores need not select the same experts.}
+Define $\mu_1=E_w[f_{r\ell e}\mid y_r=1]$,
+$\mu_0=E_w[f_{r\ell e}\mid y_r=0]$, and
+$\bar f=E_w[f_{r\ell e}]$. Algebra applied to our estimator gives
+\begin{equation}
+L_{\ell e}=\frac{\pi(1-\pi)}{\bar f}(\mu_1-\mu_0),\qquad \bar f>0.
+\end{equation}
+Under these same weights, lift and activation-rate difference have the same
+sign but can have different rankings: lift additionally divides by the
+expert's mean activation frequency. This identity does not equate either
+score to the paper's token-pooled estimate on different, paired inputs.
+
+The saved frequency masses, activation-weighted accuracies, and calibration
+baseline suffice to reconstruct $\mu_1-\mu_0$ without replaying a model.
+Table~\ref{tab:selection-audit} changes only the ranking score and retains
+our weights, sign filter, support threshold, layers, and target budget.
+The audit also reconstructs every saved selected set and normalized score.
+Only 14 of 48 Qwen positive layer--expert identities remain selected;
+the four-target GPT-OSS policies retain 6 of 16 positive identities and
+7 of 16 negative identities.
+This demonstrates selection sensitivity even before changing the data
+construction or token weighting. It does not measure intervention performance
+for these alternative sets.
+
+\begin{table}[ht]\centering\small
+\caption{Selection sensitivity using saved calibration sufficient statistics. RD here uses the same problem-balanced trace weights, support filter, polarity, layer set, and per-layer budget as lift; it is not a reproduction of the paper\textquotesingle s token-pooled contrastive estimator. Overlap counts layer--expert identities.}
+\label{tab:selection-audit}
+\begin{adjustbox}{max width=\linewidth}%
+\begin{tabular}{llrrl}\toprule
+Model & Polarity & Layers & Overlap & Overlap per layer \\\midrule
+GPT-OSS & negative & 4 & 7/16 & 15: 1/4, 19: 2/4, 21: 1/4, 23: 3/4 \\
+GPT-OSS & positive & 4 & 6/16 & 15: 2/4, 19: 1/4, 21: 1/4, 23: 2/4 \\
+Qwen & positive & 6 & 14/48 & 27: 4/8, 34: 3/8, 35: 2/8, 36: 1/8, 38: 3/8, 39: 1/8 \\
+\bottomrule\end{tabular}
+\end{adjustbox}\end{table}
+
+
+\paragraph{Interpretation of the intervention comparison.}
+The completed Qwen fixed runs share selection statistics and target sets.
+The completed GPT-OSS fixed and paper-style conditions use four targets
+per layer, with the same selected identities within each polarity.
+These comparisons retain our selector and do not evaluate the full
+SteerMoE detection and steering pipeline.
+
+The completed OSS comparison already holds the selected identities fixed
+within each polarity while changing the intervention rule. A selector
+comparison should instead fix the split, generation contract, layers, budget,
+and intervention, changing only the ranking estimator. The present OSS
+budget is four targets per layer, matching native dispatch; smaller budgets
+of one or two targets would test less extensive promotion. Matched random
+sets would help separate selector information from generic perturbation. A faithful detection replication additionally requires
+paired contrastive inputs and token-pooled activation counts. The analysis uses saved calibration statistics and does not evaluate
+new intervention runs for the alternative selected sets.
+
+\subsection{Consistent offline answer-equivalence audit}
+\label{sec:guiding-rescoring}
+
+The qualitative inspection identified equivalent final answers rejected by
+the historical normalized-string/numeric fallback. A uniform offline pass
+therefore rescores both conditions in every saved, manifested identity and
+margin evaluation: 13 complete full stochastic comparisons, two complete
+greedy comparisons, the 39-problem Minerva comparison, and the interrupted
+Qwen subset. It reads 40,097 stored condition records, including reused
+baseline copies; this is not a count of independent generated solutions.
+The original text, tokens, manifests, policies, and judgments are preserved.
+Revised decisions and all changed answers are recorded separately in
+\path{report/guiding_rescoring.json}.
+
+The rule first extracts the last nonempty balanced boxed candidate, then
+uses the existing answer-marker and last-number fallbacks when no such box
+is present. Only that candidate is compared with the gold answer. It
+normalizes display notation, plain-text labels, common units, currency,
+and explicit list separators. Mathematical comparison uses Math-Verify
+0.9.0 with latex2sympy2\_extended 1.11.0, ANTLR 4.13.2, and SymPy 1.14.0\footnote{\url{https://github.com/huggingface/Math-Verify}}.
+Variables and structured objects use strict comparison; exact-number
+answers require equality, while decimal/scientific scalar answers allow
+relative tolerance $10^{-6}$ with no absolute floor. Thus zero does not
+match a small nonzero answer merely because its magnitude is below
+$10^{-6}$. Scientific notation is parsed numerically, rather than as a
+symbolic expression involving $e$. Text denoting multiple answers is not
+silently reduced to its first number. Standard unit annotations follow the
+parser's normalization conventions; this is not a dimensional-analysis check.
+
+The pass changes 4,054 stored judgments from incorrect to correct and one
+from correct to incorrect. It also changes the extracted candidate in
+2,065 records. The single downward change concerns a capped Qwen baseline
+whose extracted box contains the literal placeholder ``answer'' rather
+than its earlier saved numeric fallback. These counts include repeated
+baseline copies. Changes occur on every benchmark, mainly OlympiadBench,
+MATH-500, and Minerva. The analysis reruns the same 5,000 paired,
+dataset-stratified source-problem bootstrap resamples (seed 42), including
+the equal-problem sensitivity statistic. The 494-ID interrupted comparison
+remains separate and its accuracy counts are unchanged.
+
+\begin{table}[htbp]
+\centering\small
+\caption{Selected changes after applying the same revised scoring rule to both conditions. Changes and 95\% intervals are percentage points. Attempt weighting is primary; problem weighting is secondary. Historical values are retained here only to document the audit and are not mixed into current result tables.}
+\label{tab:guiding-rescoring-audit}
+\begin{adjustbox}{max width=\linewidth}%
+\begin{tabular}{lllrr}
+\toprule
+Condition & Weighting & Historical change & Revised change & Revised 95\% CI \\
+\midrule
+Qwen margin (c=25) & Attempt & +1.08 & +0.93 & [0.00, +1.86] \\
+GPT-OSS margin & Attempt & -3.15 & -0.86 & [-2.87, +1.15] \\
+GPT-OSS fixed positive +2 & Attempt & -1.43 & -3.30 & [-6.16, -0.93] \\
+GPT-OSS fixed positive +2 & Problem & +4.87 & -0.10 & [-3.12, +3.08] \\
+GPT-OSS fixed negative +1 & Problem & +4.94 & +2.35 & [-0.58, +5.44] \\
+Qwen greedy margin & Attempt & +2.15 & +0.86 & [-1.29, +3.01] \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}
+
+No revised positive accuracy interval excludes zero in the complete
+comparisons under either reported weighting. In particular, the earlier
+positive secondary OSS findings and greedy Qwen margin interval do not
+survive the common scoring rule. The Qwen concurrency-25 margin lower
+endpoint is exactly zero. Strong negative effects under paper-style
+promotion remain. Generation costs and termination flags are unchanged.
+
+The checker is tested on equivalent and distinct fractions, text labels,
+scientific notation, ordered answers, units, currency, multiple-answer text,
+and very small numerical values, as well as final-candidate extraction.
+It does not provide independent human adjudication. There are 699 records
+with an unparsed candidate or reference, 332 with unsupported embedded
+text, and 30 parser/comparison errors; these receive an incorrect decision
+unless normalized display equality already succeeds. Error categories
+and changed judgments remain available for further review. A two-second
+parser/comparison timeout and a 2,048-character limit for nonnumeric
+expressions bound degenerate inputs. Calibration and observational
+correlation labels retain their original values: the revised evaluations
+test the existing frozen policies, not policies refitted with revised labels.
+
+
+\subsection{Identity selection and intervention strength}
+
+Table~\ref{tab:res-identity} distinguishes polarity, which defines the
+selected expert set, from signed strength, which defines whether that set
+is promoted or suppressed. The fixed method uses the lift-weighted additive
+bias. The implementation also supports the paper-style extreme-score
+replacement described in Section~\ref{sec:method-identity}; the completed
+comparisons in this table evaluate fixed bias.
+
+\begin{table}[htbp]
+\centering\small
+\caption{Complete stochastic identity comparisons. B/G denotes baseline/guided accuracy in percent; changes and intervals are percentage points. Each row uses its own matched baseline and 1,395 attempts on 465 problems. Intervals use 5,000 paired, dataset-stratified problem resamples, seed 42.}
+\label{tab:res-identity}
+\begin{adjustbox}{max width=\linewidth}%
+\begin{tabular}{llllrrrr}
+\toprule
+Model & Method & Polarity & Strength & B accuracy & G accuracy & Change & 95\% CI \\
+\midrule
+GPT-OSS & Fixed & Negative & +1 & 77.85 & 78.42 & +0.57 & [-1.58, +2.65] \\
+GPT-OSS & Paper & Negative & +1 & 77.85 & 18.28 & -59.57 & [-67.24, -51.40] \\
+GPT-OSS & Paper & Positive & -1 & 77.85 & 75.63 & -2.22 & [-4.16, -0.43] \\
+GPT-OSS & Paper & Positive & +1 & 77.85 & 16.20 & -61.65 & [-69.32, -53.41] \\
+GPT-OSS & Fixed & Positive & -1 & 77.85 & 76.85 & -1.00 & [-3.44, +1.22] \\
+GPT-OSS & Fixed & Positive & +1 & 77.85 & 77.85 & +0.00 & [-2.15, +2.01] \\
+GPT-OSS & Fixed & Positive & +2 & 77.85 & 74.55 & -3.30 & [-6.16, -0.93] \\
+Qwen & Fixed & Positive & +1 & 84.95 & 84.66 & -0.29 & [-1.15, +0.65] \\
+Qwen & Fixed & Positive & -1 & 84.09 & 85.16 & +1.08 & [-0.14, +2.37] \\
+Qwen & Fixed & Positive & +2 & 84.09 & 81.29 & -2.80 & [-5.16, -0.72] \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}
+
+
+For Qwen fixed positive-polarity guiding, strength $+1$ changes accuracy
+by $-0.29$ points with interval $[-1.15,+0.65]$, and strength $-1$ gives
+$+1.08$ with $[-0.14,+2.37]$. Increasing promotion to strength $+2$
+gives $-2.80$ points with $[-5.16,-0.72]$. Thus stronger promotion
+reduces primary attempt-weighted accuracy under the revised scorer.
+
+All seven GPT-OSS identity conditions use four targets at each of layers
+15, 19, 21, and 23, matching native routing top-$k=4$. Each evaluates
+1,395 matched attempts from 465 held-out problems at concurrency 25,
+with a frozen chat-template date of 22 September 2026. Rescored baseline
+accuracy is 77.85\% (1,086/1,395) in every condition.
+Fixed positive strengths $+1$, $+2$, and $-1$ give changes of $0.00$,
+$-3.30$, and $-1.00$ points. Only the strength-$+2$ interval excludes
+zero: $[-6.16,-0.93]$. Fixed negative-polarity promotion gives $+0.57$
+points with $[-1.58,+2.65]$ and does not establish a benefit.
+
+Paper-style promotion at strength $+1$ reduces accuracy to 16.20\%
+(226/1,395) for positive targets and 18.28\% (255/1,395) for negative
+targets. Changes are $-61.65$ points with $[-69.32,-53.41]$ and
+$-59.57$ with $[-67.24,-51.40]$, respectively. Mean generated length
+rises from 6,497 to 22,489 and 23,639 tokens; token-limit hits increase
+from 74 to 670 and 815. Suppressing the positive set with paper-style
+strength $-1$ gives 75.63\% accuracy and a smaller but below-zero
+primary change of $-2.22$ points ($[-4.16,-0.43]$); mean length is
+6,698 tokens with 106 limit hits.
+
+Paper-style steering adapts the extreme-score intervention with
+$\epsilon=0.01$ while retaining our accuracy-lift selector
+\cite{fayyaz2025steermoe}; it is not a full reproduction of SteerMoE.
+The four-target budget does not prevent severe degradation from promotion.
+Promoting a full top-$k$ set fixes membership and equalises its hook scores;
+this is a possible mechanism, not a verified explanation of termination.
+
+\subsection{Interrupted Qwen paper-style intervention: partial results}
+
+\label{sec:partial-qwen-paper}
+
+The Qwen positive-expert paper-style intervention at strength $+1$ was interrupted after 494 of 1,395 planned attempts (35.4\%). 901 attempts have no saved guided result. This policy targets eight experts at each of six layers, matching the model routing top-$k=8$. The intervention uses epsilon 0.01, concurrency 25, and a 32,768-token completion budget. Only saved completed attempts are analysed.
+
+On the 494 exact matched baseline/guided IDs (16 source problems), baseline accuracy is 70.45\% (348/494), and guided accuracy is 0.81\% (4/494), a change of $-69.64$ percentage points. There are 4 wrong-to-right and 348 right-to-wrong flips. Mean generated length changes from 19,352 to 32,768 tokens (medians 17,252 and 32,768); token-limit hits change from 110/494 to 494/494.
+
+\begin{table}[ht]\centering\small
+
+\caption{Partial Qwen paper-style intervention. Accuracy and token counts compare only the same completed IDs in each condition. B/G denotes baseline/guided. A dash indicates no completed guided attempts, not zero accuracy.}
+
+\label{tab:partial-qwen-paper}
+
+\begin{adjustbox}{max width=\linewidth}\begin{tabular}{lrrrrrr}\toprule
+
+Benchmark & Completed/planned & Problems & Accuracy B/G (\%) & Change (pp) & Mean tokens B/G & Limit hits B/G \\\midrule
+
+AIME24 & 288/288 & 9 & 61.81/0.00 & $-61.81$ & 20,947/32,768 & 74/288 \\
+
+AIME25 & 206/288 & 7 & 82.52/1.94 & $-80.58$ & 17,121/32,768 & 36/206 \\
+
+AMC23 & 0/384 & 0 & --- & --- & --- & --- \\
+
+MATH-500 & 0/150 & 0 & --- & --- & --- & --- \\
+
+Minerva & 0/82 & 0 & --- & --- & --- & --- \\
+
+Olympiad & 0/203 & 0 & --- & --- & --- & --- \\
+
+\bottomrule\end{tabular}
+\end{adjustbox}\end{table}
+
+These are descriptive partial results, excluded from the complete-run comparison and weighting tables. The completed subset is not a random sample: benchmark submission order, scheduling, and generation length can affect which requests have finished. Multiple attempts from one problem are also dependent. Consequently the pooled difference is not an estimate for the full 1,395-attempt evaluation, and no population confidence interval or significance claim is reported. Missing attempts are not counted as wrong or filled from the baseline. Increased token-limit incidence does not by itself establish repetitive looping.
+
+All saved guided records have unique IDs, scored boolean outcomes, matching baseline inputs, prompt token IDs, and per-attempt sampling settings. Policy, engine, software, scoring, and template-date contracts also match; hook diagnostics confirm activity at all selected layers. Source hashes and benchmark denominators are saved in \path{report/partial_guiding_statistics.json}.
+
+\subsection{Qualitative inspection of paper-style failures}
+\label{sec:paper-failure-inspection}
+
+A reproducible, assistant-assisted excerpt inspection examines 22 saved
+historically baseline-correct/guided-incorrect pairs from strength-$+1$ paper-style
+promotion. For each complete GPT-OSS polarity, four cases are sampled
+without replacement from outputs ending at the token limit and four from
+outputs ending normally. Six additional capped cases are sampled from the
+interrupted Qwen positive run. Sampling uses sorted attempt IDs and seed
+20260924, with separate streams per condition and termination stratum.
+The OSS samples cover eight and seven distinct problems; the Qwen sample
+covers four. Selection conditions on recorded correctness loss and
+termination, and repeated attempts can share a problem. The resulting
+counts describe this sample, not the prevalence of failure modes.
+
+The review examines fixed beginning, middle, and ending excerpts, together
+with the most frequent exact 16-word span, against the corresponding
+baseline answer. Repetition is described from the text, not inferred from
+output length alone. The whole-text diagnostic counts case-sensitive,
+whitespace-delimited spans, allowing overlap; it does not capture every
+form of repetition, particularly unspaced symbol chains. This is neither
+independent human annotation nor exhaustive verification of the derivations.
+
+\begin{table}[htbp]
+\centering\small
+\caption{Descriptions of 22 cases sampled as correctness losses under the original scorer. Capped/stopped gives the sampled termination strata. Repetition can coexist with mathematical errors; the arithmetic-error column describes the remaining case without an observed long cycle. Formatting disagreement denotes an equivalent final answer rejected by the saved scorer. Counts are conditional on the sampling design.}
+\label{tab:paper-failure-review}
+\begin{adjustbox}{max width=\linewidth}%
+\begin{tabular}{lrrrrr}
+\toprule
+Condition & Capped/stopped & Repetition & Arithmetic error & Formatting & No box \\
+\midrule
+GPT-OSS positive & 4/4 & 6 & 0 & 2 & 4 \\
+GPT-OSS negative & 4/4 & 7 & 1 & 0 & 4 \\
+Qwen positive (partial) & 6/0 & 6 & 0 & 0 & 6 \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}
+
+\paragraph{Repetition and termination.}
+All 14 sampled capped outputs contain repeated arithmetic or verbal
+cycles and lack a boxed-answer marker. Five of the eight normally ended
+OSS outputs also contain cycles before returning an incorrect boxed
+answer. Across these 19 repetitive outputs, the most frequent exact
+16-word span occurs 62--9,906 times; the matched baseline maxima range
+from one to four. For example, positive OSS case P03 repeats
+\texttt{390?} while its baseline returns 49. Qwen case Q06 repeatedly
+emits ``Wait, wait.'' while its baseline returns 82. Negative OSS case
+N06 repeats an unresolved sum and eventually returns 112 instead of 144.
+Thus repetition can accompany both failure to finish and a normally
+terminated wrong answer. The separate non-cyclic arithmetic example N05
+correctly enumerates three, two, and two choices but evaluates
+$3\times2\times2=6$, returning 6 instead of 12.
+
+\paragraph{Scoring disagreement.}
+Two normally ended positive OSS cases expose formatting sensitivity in
+the saved fallback scorer. Case P05 returns \texttt{14/15}, equivalent
+to the gold $\frac{14}{15}$; case P08 returns \texttt{East}, equivalent
+to the gold \verb|\text{east}|. Both are stored as incorrect, whereas
+their baselines use the gold LaTeX representation and are stored as correct.
+The recorded method is \texttt{normalized\_exact\_numeric\_fallback};
+its normalized-string or floating-point comparison rejects these pairs.
+The classification concerns final-answer equivalence, not the validity
+of every intermediate step. The subsequent offline audit in
+Section~\ref{sec:guiding-rescoring} corrects both examples and applies the
+same rule to all saved baseline and guided evaluations. Current accuracy
+and bootstrap tables use those revised decisions. This qualitative sample
+retains its original IDs and selection based on historical judgments;
+P05 and P08 are consequently no longer correctness losses under the
+revised rule. Resampling after correction would answer a different
+qualitative question.
+
+\paragraph{Scope of interpretation.}
+The review supplies direct text examples of repetition, incorrect arithmetic,
+and scoring artefacts. It does not isolate why the routing intervention
+causes a particular trajectory, quantify population-level looping, or
+extend the interrupted Qwen result to its missing attempts. Full-population
+termination counts remain those in the generation-diagnostic tables.
+The sampled IDs, source hashes, excerpts, text diagnostics, and case-level
+notes are stored in \path{report/paper_failure_inspection.json} and
+\path{report/paper_failure_review.json}.
+
+\subsection{Margin guiding and generation cost}
+
+All three complete stochastic margin comparisons have intervals containing
+zero after consistent rescoring. Qwen at concurrency 16 gives $+0.07$
+points ($[-0.86,+1.01]$); Qwen at concurrency 25 gains 13 net correct
+attempts, or $+0.93$ points ($[0.00,+1.86]$). GPT-OSS loses 12 net
+correct attempts, or $-0.86$ points ($[-2.87,+1.15]$). The Qwen
+concurrency-25 lower endpoint is zero, so its positive point estimate does
+not establish a direction under this interval criterion.
+
+\begin{table}[htbp]
+\centering\small
+\caption{Complete stochastic margin-guiding comparisons at strength 1. B/G denotes baseline/guided accuracy in percent; changes and intervals are percentage points. Concurrency is the maximum number of active sequences. Each row has its own matched baseline; differences between rows are not a controlled concurrency experiment.}
+\label{tab:res-margin}
+\begin{adjustbox}{max width=\linewidth}%
+\begin{tabular}{lrrrrr}
+\toprule
+Model & Concurrency & B & G & Change & 95\% CI \\
+\midrule
+Qwen & 16 & 84.30 & 84.37 & +0.07 & [-0.86, +1.01] \\
+Qwen & 25 & 84.09 & 85.02 & +0.93 & [+0.00, +1.86] \\
+GPT-OSS & 25 & 77.85 & 76.99 & -0.86 & [-2.87, +1.15] \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}
+
+
+The small margin effects do not establish benefit or harm after rescoring.
+The two Qwen configurations have different baseline contracts, so their
+point-estimate difference cannot be attributed specifically to concurrency.
+No independent configuration-selection set was used.
+
+Table~\ref{tab:res-tokens} reports generation cost and limit hits. In the
+positive Qwen margin comparison, mean generated tokens change from 13,830
+to 13,810 and limit hits from 154 to 146. GPT-OSS margin guiding changes
+mean tokens from 6,497 to 6,409 with an accuracy interval containing zero. A reduction in
+average tokens is therefore not sufficient to claim useful efficiency.
+These are descriptive token statistics; no paired token-cost confidence
+interval or equal-accuracy compute comparison is available here.
+
+\begin{table}[htbp]
+\centering\small
+\caption{Generation diagnostics for the stochastic comparisons. Means count all generated tokens, including final answers; limit hits are counts among 1,395 attempts. B/G denotes baseline/guided, and c denotes concurrency. Token differences are descriptive and have no uncertainty interval here.}
+\label{tab:res-tokens}
+\begin{adjustbox}{max width=\linewidth}%
+\begin{tabular}{lrrrr}
+\toprule
+Condition & Mean tokens B & Mean tokens G & Limit hits B & Limit hits G \\
+\midrule
+Qwen fixed positive +1 & 13863 & 13706 & 140 & 146 \\
+Qwen fixed positive +2 & 13830 & 14092 & 154 & 169 \\
+Qwen fixed positive -1 & 13830 & 13919 & 154 & 138 \\
+GPT-OSS fixed positive +1 & 6497 & 6580 & 74 & 72 \\
+GPT-OSS fixed positive +2 & 6497 & 8629 & 74 & 164 \\
+GPT-OSS fixed positive -1 & 6497 & 6371 & 74 & 60 \\
+GPT-OSS fixed negative +1 & 6497 & 6900 & 74 & 87 \\
+GPT-OSS paper positive +1 & 6497 & 22489 & 74 & 670 \\
+GPT-OSS paper positive -1 & 6497 & 6698 & 74 & 106 \\
+GPT-OSS paper negative +1 & 6497 & 23639 & 74 & 815 \\
+Qwen margin (c=16) & 13848 & 13840 & 144 & 143 \\
+Qwen margin (c=25) & 13830 & 13810 & 154 & 146 \\
+GPT-OSS margin (c=25) & 6497 & 6409 & 74 & 83 \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}
+
+
+The original Qwen margin run also contains full hook diagnostics. Across
+selected layers, the top-eight identity set changes on 32.7--41.8\% of
+20,657,039 hook token evaluations per layer. Mean distance to the target
+interval decreases, from $2.19$--$4.71\times10^{-4}$ to
+$0.285$--$0.902\times10^{-4}$. The implementation moves the requested
+margin, but finite-precision conversion and casting do not preserve expert
+membership in this run. These diagnostics concern hooked logits, not an
+independent record of the kernel's dispatched experts, and their denominator
+can include prefill, padding, and recomputation. The outcome cannot be
+attributed solely to a membership-preserving gap adjustment.
+
+The separate greedy comparisons use 465 attempts on 465 problems.
+Qwen identity guiding gives $-0.22$ points ($[-2.58,+2.15]$), and
+margin guiding gives $+0.86$ ($[-1.29,+3.01]$). The 39-problem
+Minerva-only identity comparison changes from 24 to 25 correct answers,
+or $+2.56$ points ($[-5.13,+12.82]$). All three intervals contain zero.
+These distinct decoding protocols and populations remain separate from
+the full stochastic comparisons.
+
+\subsection{Benchmark contributions and weighting sensitivity}
+\label{sec:results-weighting}
+
+Table~\ref{tab:res-benchmark-changes} separates the benchmark contributions
+to the thirteen completed stochastic comparisons reported here. The primary pooled statistic
+weights attempts equally, so a problem with 32 attempts contributes 32
+times as much as a problem with one. As a secondary sensitivity analysis,
+let $n_q$ be the number of attempts for evaluation problem $q$ and define
+\begin{equation}
+  \widehat\Delta_{\mathrm{problem}}
+  =\frac{1}{P}\sum_{q=1}^{P}
+    \frac{1}{n_q}\sum_{i:q(i)=q}(Y_i^{\pi}-Y_i^0),
+  \qquad P=465.
+  \label{eq:results-problem-weighted-effect}
+\end{equation}
+This estimates the change in mean per-problem correctness over the saved
+attempts. It is not pass@32 or a benchmark macro-average: a benchmark's
+weight remains proportional to its number of evaluation problems. The
+attempt-weighted statistic remains the primary analysis; the secondary
+statistic tests how the interpretation depends on the evaluation unit.
+
+Both statistics use the same 5,000 paired bootstrap samples of whole
+problems within each benchmark. Only the aggregation of a sampled
+problem's outcomes changes. Recomputed attempt-level and benchmark
+intervals agree with the original saved comparisons. The complete
+benchmark counts, intervals, and problem-weighted results are recorded in
+\path{report/guiding_sensitivity.json} and the thesis source snapshot.
+All intervals remain exploratory and unadjusted for multiple comparisons.
+
+\begin{table}[htbp]
+\centering\small
+\caption{Benchmark-level accuracy changes in percentage points for the thirteen reported stochastic interventions. Positive/negative denotes expert polarity; c denotes concurrency. Entries are point estimates, not significance decisions. Benchmark counts (problems/attempts) are shown in the header. Full benchmark intervals and correct counts are saved in guiding\_sensitivity.json.}
+\label{tab:res-benchmark-changes}
+\begin{adjustbox}{max width=\linewidth}%
+\begin{tabular}{lrrrrrr}
+\toprule
+Condition & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\ & 150/150 & 9/288 & 9/288 & 203/203 & 12/384 & 82/82 \\
+\midrule
+Qwen fixed positive +1 & +0.00 & -2.78 & +0.00 & -0.49 & +0.52 & +3.66 \\
+Qwen fixed positive +2 & +0.00 & -5.90 & -1.74 & -0.99 & -3.91 & +0.00 \\
+Qwen fixed positive -1 & -1.33 & +1.39 & +2.08 & +1.97 & +0.00 & +3.66 \\
+GPT-OSS fixed positive +1 & +5.33 & +1.39 & -0.35 & -2.46 & -1.30 & -1.22 \\
+GPT-OSS fixed positive +2 & +2.00 & -8.33 & -7.64 & -2.46 & -0.26 & +3.66 \\
+GPT-OSS fixed positive -1 & +3.33 & -2.08 & -3.12 & -2.96 & +0.78 & -1.22 \\
+GPT-OSS fixed negative +1 & +4.67 & -1.04 & -1.39 & +0.00 & +1.04 & +4.88 \\
+GPT-OSS paper positive +1 & -47.33 & -56.60 & -76.39 & -60.10 & -68.75 & -24.39 \\
+GPT-OSS paper positive -1 & +2.67 & -3.47 & -5.21 & -3.45 & -0.78 & +0.00 \\
+GPT-OSS paper negative +1 & -47.33 & -56.60 & -74.31 & -56.16 & -63.80 & -29.27 \\
+Qwen margin (c=16) & +0.67 & +1.39 & +1.39 & -3.45 & +0.26 & -2.44 \\
+Qwen margin (c=25) & -0.67 & +2.43 & +2.43 & +0.00 & +0.00 & +0.00 \\
+GPT-OSS margin (c=25) & +2.67 & -1.04 & -0.69 & -3.45 & -1.30 & +1.22 \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}
+
+
+\begin{table}[htbp]
+\centering\small
+\caption{Sensitivity to the evaluation unit: accuracy changes and 95\% intervals in percentage points. Attempt weighting is the primary statistic; equal-problem weighting first averages correctness over each problem's attempts and then averages the 465 problems. Both use the same 5,000 paired, dataset-stratified problem resamples (seed 42). Equal problem weights are not equal benchmark weights. This is a secondary exploratory analysis without multiplicity adjustment.}
+\label{tab:res-weighting}
+\begin{adjustbox}{max width=\linewidth}%
+\begin{tabular}{lrrrr}
+\toprule
+Condition & Attempt change & 95\% CI & Problem change & 95\% CI \\
+\midrule
+Qwen fixed positive +1 & -0.29 & [-1.15, +0.65] & +0.39 & [-1.51, +2.31] \\
+Qwen fixed positive +2 & -2.80 & [-5.16, -0.72] & -0.68 & [-2.76, +1.33] \\
+Qwen fixed positive -1 & +1.08 & [-0.14, +2.37] & +1.14 & [-0.75, +2.94] \\
+GPT-OSS fixed positive +1 & +0.00 & [-2.15, +2.01] & +0.42 & [-2.37, +3.12] \\
+GPT-OSS fixed positive +2 & -3.30 & [-6.16, -0.93] & -0.10 & [-3.12, +3.08] \\
+GPT-OSS fixed positive -1 & -1.00 & [-3.44, +1.22] & -0.51 & [-3.41, +2.49] \\
+GPT-OSS fixed negative +1 & +0.57 & [-1.58, +2.65] & +2.35 & [-0.58, +5.44] \\
+GPT-OSS paper positive +1 & -61.65 & [-69.32, -53.41] & -50.15 & [-54.88, -45.45] \\
+GPT-OSS paper positive -1 & -2.22 & [-4.16, -0.43] & -0.83 & [-3.76, +2.23] \\
+GPT-OSS paper negative +1 & -59.57 & [-67.24, -51.40] & -49.13 & [-53.80, -44.56] \\
+Qwen margin (c=16) & +0.07 & [-0.86, +1.01] & -1.66 & [-3.67, +0.45] \\
+Qwen margin (c=25) & +0.93 & [+0.00, +1.86] & -0.12 & [-2.07, +1.80] \\
+GPT-OSS margin (c=25) & -0.86 & [-2.87, +1.15] & -0.50 & [-3.49, +2.46] \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}
+
+
+The Qwen margin benchmark breakdown in Table~\ref{tab:res-qwen-margin-breakdown}
+uses corrected judgments for both conditions. Its positive point estimate
+comes from AIME24 and AIME25, offset by one loss on MATH-500. The
+primary interval includes zero.
+
+\begin{table}[htbp]
+\centering\small
+\caption{Benchmark contributions to Qwen margin guiding at concurrency 25. B/G denotes baseline/guided correct counts; net is guided minus baseline correct attempts. Changes and pointwise 95\% intervals are percentage points, with 5,000 paired problem resamples (seed 42).}
+\label{tab:res-qwen-margin-breakdown}
+\begin{adjustbox}{max width=\linewidth}%
+\begin{tabular}{lrrrrrr}
+\toprule
+Benchmark & Problems & Attempts & Correct B/G & Net & Change & 95\% CI \\
+\midrule
+MATH-500 & 150 & 150 & 148/147 & -1 & -0.67 & [-2.00, +0.00] \\
+AIME24 & 9 & 288 & 178/185 & +7 & +2.43 & [+0.00, +5.56] \\
+AIME25 & 9 & 288 & 242/249 & +7 & +2.43 & [+1.04, +4.17] \\
+Olympiad & 203 & 203 & 171/171 & +0 & +0.00 & [-3.45, +3.45] \\
+AMC23 & 12 & 384 & 384/384 & +0 & +0.00 & [+0.00, +0.00] \\
+Minerva & 82 & 82 & 50/50 & +0 & +0.00 & [-6.10, +6.10] \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}
+
+
+Qwen margin guiding at concurrency 25 gains seven correct attempts on
+AIME24 and seven on AIME25, with zero net change on AMC23. MATH-500
+loses one correct attempt; Minerva and OlympiadBench each have zero net
+change. The AIME improvements involve nine improved problems and one
+worsened problem. Equal-problem weighting gives $-0.12$ points with
+$[-2.07,+1.80]$, compared with the primary $+0.93$ and $[0.00,+1.86]$.
+Neither weighting establishes a beneficial direction.
+
+For GPT-OSS fixed positive strength $+2$, the revised equal-problem
+estimate is $-0.10$ points ($[-3.12,+3.08]$), while fixed negative-polarity
+promotion gives $+2.35$ ($[-0.58,+5.44]$). The previous secondary
+positive intervals do not survive rescoring. For positive strength $+2$,
+MATH-500 and Minerva gain three correct attempts each, OlympiadBench
+loses five, and AIME24, AIME25, and AMC23 lose 24, 22, and one.
+Qwen fixed strength $+2$ gives $-0.68$ equal-problem points
+($[-2.76,+1.33]$), and GPT-OSS paper-style suppression gives $-0.83$
+($[-3.76,+2.23]$); their below-zero primary intervals do not persist
+under this secondary weighting. GPT-OSS paper-style positive and negative
+promotion remain strongly negative: $-50.15$ ($[-54.88,-45.45]$) and
+$-49.13$ ($[-53.80,-44.56]$) points. No complete stochastic comparison
+has a positive interval excluding zero under either weighting.
+
+\section{What the combined evidence establishes}
+
+The four stages do not support a single unqualified claim that reasoning
+can be improved by increasing the use of apparently successful experts.
+The judge supplies usable but imperfect labels on a development corpus;
+the probes reveal prospective information on held-out responses within
+their SAT corpus, beyond the simple position baseline;
+and the routing analysis identifies associations that depend on model,
+benchmark, scope, and aggregation. The intervention stage provides the
+strongest test of actionability.
+After consistent offline rescoring, no complete intervention establishes
+a beneficial accuracy direction using the reported 95\% interval criterion.
+Qwen fixed positive strength $+2$ loses $2.80$ attempt-weighted points
+($[-5.16,-0.72]$); GPT-OSS fixed positive strength $+2$ loses $3.30$
+($[-6.16,-0.93]$). GPT-OSS paper-style suppression loses $2.22$ points
+($[-4.16,-0.43]$), and positive/negative paper-style promotion loses
+$61.65$ and $59.57$ points with intervals well below zero.
+All stochastic margin intervals contain zero: Qwen concurrency 25 gives
+$+0.93$ points ($[0.00,+1.86]$), while GPT-OSS gives $-0.86$
+($[-2.87,+1.15]$). Equal-problem weighting removes the below-zero
+intervals for fixed strength $+2$ and paper-style suppression, but
+paper-style promotion remains strongly negative. The earlier positive
+OSS secondary intervals and greedy Qwen margin interval do not survive
+rescoring. These exploratory intervals remain conditional on saved
+attempts and frozen policies and are not adjusted for multiple comparisons.
+
+This pattern separates the existence of measurable routing structure from
+the usefulness of a particular control rule. The evidence supports continued
+testing of carefully specified policies, with attention to numerical
+behaviour and evaluation contracts. It does not establish a transferable
+routing heuristic, nor does it rule out improvements from policies,
+selection procedures, and controls that were not evaluated.
 
 \chapter{Conclusions}
+\label{ch:conclusions}
+
+This thesis investigated whether reasoning annotations and internal routing
+measurements can support interventions in sparse mixture-of-experts models
+without changing model weights. The implemented pipeline connects automatic
+sentence annotation, prospective representation probing, observational routing
+analysis, and matched free-generation experiments. Its main empirical
+finding is a gap between observable structure and reliable control:
+reasoning-related information and routing--correctness associations are
+measurable, but promoting associated experts does not generally improve
+held-out mathematical accuracy under the tested policies.
+
+\section{Answers to the research questions}
+
+The first question concerned automatic episode annotation and the
+accessibility of upcoming episode information in prefix representations.
+The annotation experiments demonstrate that context-aware prompts can
+achieve useful agreement on the available labelled corpus and that prompt
+selection benefits from explicit class-level safeguards. The final alignment
+retained its seed when an optimised candidate damaged Plan recall, even
+though its internal optimisation reward increased. The NVFP4 deployment
+check further showed that unchanged aggregate accuracy can conceal changes
+in individual labels. Automatic annotations are therefore informative
+measurements with uncertainty, not independently established ground truth
+for the generated benchmark solutions.
+
+All three frozen encoders contain linearly accessible information about
+upcoming episode labels on held-out responses from the SAT corpus. With
+response-disjoint outer folds and inner-validation layer selection,
+macro-AUROC is 0.852 for Qwen, 0.780 for GPT-OSS, and 0.788 for Gemma;
+all exceed the simple prefix-position baseline. This strengthens the
+answer to the decodability question beyond the original sentence split.
+It does not establish transfer to other domains or to the models' own
+generations, and thresholded classification remains uneven across labels.
+The external Qwen inspection reinforces this distinction: Implement
+transfers more coherently than several other classes, while the provisional
+review does not support a robust seven-class online detector.
+
+The second question concerned relationships between routing, reasoning
+activity, and correctness. The three-model corpus shows substantial but
+heterogeneous structure. Confidence is positively associated with correctness
+across Qwen benchmarks, but its sign varies in Gemma and GPT-OSS. Class
+conditioning does not remove that variation, and problem-level aggregation
+can yield a different association from pooling attempts. The analysis
+therefore identifies hypotheses for model-specific interventions rather
+than a common scalar measure of successful reasoning. Length, termination,
+problem difficulty, and annotation coverage remain plausible contributors
+to the observed patterns.
+
+Directed class-transition matrices additionally separate correct and incorrect
+attempts for all three models while retaining original adjacency and sampling
+gaps. The expert-selection audit shows that activation-based lift and risk
+difference need not choose the same targets, even with identical calibration
+weights and budgets: overlap is 14/48 layer--expert identities for Qwen and
+6/16 for GPT-OSS positive and 7/16 for GPT-OSS negative policies.
+
+The third question asked whether calibrated policies improve held-out
+accuracy or change token use.
+After consistent offline rescoring, no complete intervention establishes
+a beneficial accuracy direction using the reported 95\% interval criterion.
+Qwen fixed positive strength $+2$ loses $2.80$ attempt-weighted points
+($[-5.16,-0.72]$); GPT-OSS fixed positive strength $+2$ loses $3.30$
+($[-6.16,-0.93]$). GPT-OSS paper-style suppression loses $2.22$ points
+($[-4.16,-0.43]$), and positive/negative paper-style promotion loses
+$61.65$ and $59.57$ points with intervals well below zero.
+All stochastic margin intervals contain zero: Qwen concurrency 25 gives
+$+0.93$ points ($[0.00,+1.86]$), while GPT-OSS gives $-0.86$
+($[-2.87,+1.15]$). Equal-problem weighting removes the below-zero
+intervals for fixed strength $+2$ and paper-style suppression, but
+paper-style promotion remains strongly negative. The earlier positive
+OSS secondary intervals and greedy Qwen margin interval do not survive
+rescoring. These exploratory intervals remain conditional on saved
+attempts and frozen policies and are not adjusted for multiple comparisons.
+
+
+
+The interrupted
+Qwen paper-style run shows severe degradation on its completed subset:
+4/494 correct answers and 494/494 token-limit hits. Its coverage is restricted
+to AIME24 and part of AIME25, so it remains separate from the complete-run
+evidence. Promoting a full top-$k$ target set fixes the selected identities
+and equalises their hook scores; this is a possible mechanism, not a verified
+causal explanation of the observed termination behaviour.
+
+The qualitative review supplies direct examples of repetition in both
+capped and normally ended outputs, while also identifying two formatting
+disagreements with the saved scorer. It does not estimate failure-mode
+prevalence or establish the routing mechanism.
+
+The revised evaluations provide evidence of harm for specific interventions
+and no positive accuracy interval excluding zero. A change of evaluation
+unit cannot replace an unfavourable primary result; both scoring rules and
+objectives should be fixed before independent replication. Token counts
+also change, but lower token use without established preservation of accuracy
+is not a demonstrated efficiency improvement.
+
+\section{Contributions and interpretation}
+
+The methodological contribution is an integrated and auditable experimental
+path from functional descriptions of reasoning to routing perturbations.
+The completed control experiments test the actionability of calibrated
+routing associations. They do not evaluate a controller driven by online
+episode predictions: annotation and probing support measurement and target
+exploration, and their usefulness as control inputs remains to be tested.
+The workflow preserves problem identities, generation settings, sentence
+spans, replay provenance, and frozen calibration policies. It separates
+sentence-level annotation quality from prefix-state decodability, and both
+from the effect of intervening during generation. This makes it possible
+to identify where a promising signal fails to support the next inference.
+
+The observational contribution is a comparison of routing and representation
+measurements across three sparse models, six benchmarks, multiple reasoning
+classes, and response positions. Its most consequential lesson is
+heterogeneity: an association that appears strong in one population may be
+weak, undefined, or oppositely signed in another. The distinction between
+attempt-level, problem-level, and within-problem evidence is necessary for
+interpreting repeated mathematical sampling.
+
+The intervention contribution is a set of paired held-out evaluations
+that expose both weak effects and substantial degradation. The large
+losses under GPT-OSS paper-style promotion do not support a monotonic
+reading of the calibration association under that intervention rule. They
+do not show that the selected experts are intrinsically harmful: forcing
+a fixed target set can disrupt coordinated, input-dependent computation. The changes after rescoring also show why conclusions require validated
+answer equivalence as well as an explicit evaluation objective. Acting on a routing statistic changes an entire generation
+trajectory, and the measured effect belongs to that complete policy.
+
+\section{Limitations}
+
+The annotation reference contains few responses and ambiguous functional
+boundaries. Repeated prompt development on its validation responses limits
+generalisation claims, and the generated benchmark labels lack an independent
+human assessment. Class-conditioned results inherit these errors and the
+sampling scheme. Although Gemma and GPT-OSS share a stratified procedure,
+their labelled problem cohorts differ; Qwen uses a different deployment and
+sampling protocol.
+
+The original probe scores and routing-layer choices remain exploratory
+because responses cross the sentence split and layer selection uses test
+outcomes. The separate grouped study removes those two evaluation overlaps,
+but has only 38 responses from one corpus and one split seed. Its bootstrap
+conditions on the fitted classifiers and selected layers; neither external
+transfer nor online detection is established by that result. Exceeding a
+two-feature position baseline also does not eliminate richer shortcuts.
+The correlation study retains
+all attempts and respects problem clusters in the main bootstrap intervals,
+but clustering does not remove confounding. Late-position views condition
+on continued generation, class views condition on available labels and
+class tokens, and missing-outcome exclusions in policy calibration differ
+from the observational scoring denominator. Generation-to-replay transfer
+across quantisations adds uncertainty about the measured router state.
+
+The failure inspection identified answer-formatting sensitivity, addressed
+by consistent offline rescoring of the saved intervention evaluations.
+The revised scorer still has a defined extraction hierarchy, numerical
+tolerance, unit conventions, and unsupported formats; it is not independent
+human adjudication. The observational analysis and frozen policy calibration
+retain their original correctness labels. The current results therefore
+evaluate those existing policies under a revised outcome rule; they do not
+estimate what a policy refitted using revised calibration labels would do.
+
+Intervention uncertainty is conditional on frozen policies and saved
+attempts. The confidence intervals do not include variation from recalibration,
+new decoding seeds, or configuration search, and no multiple-comparison
+adjustment is applied. Nine held-out problems in each AIME benchmark limit
+benchmark-specific precision. The Qwen comparisons with different baseline contracts and concurrency
+settings do not isolate one experimental factor across rows. The seven
+OSS identity conditions share those settings and retain the same targets
+within polarity, allowing a more direct comparison of intervention rules. Finally, margin diagnostics reveal membership
+changes in finite precision, while identity interventions change routing
+weights as well as selected sets. These experiments do not isolate all of
+the mechanisms through which the policies affect generation.
+
+\section{Directions for further work}
+
+The next measurement step is an independent, response-grouped annotation
+assessment on generated mathematical solutions. It should include examples
+from every model and benchmark, explicit treatment of ambiguous units, and
+adjudication of a representative sample. The judge and its decoding settings
+should be frozen before that assessment. The completed response-grouped
+probe study should be extended to new domains and the encoders' own
+generations, with repeated response splits and thresholds and abstention
+rules selected on development data. More flexible position controls would
+further test shortcut explanations. These extensions would assess whether
+the available episode information supports a reliable online measurement.
+
+For observational modelling, matched problem cohorts and common annotation
+protocols would make cross-model comparisons more interpretable. Analyses
+should separate within-problem variation from between-problem difficulty
+and account for length and termination without simply discarding failed
+completions. Candidate features and hypotheses should be chosen before a
+fresh evaluation, reducing the temptation to treat the strongest result in
+a broad screen as a confirmed mechanism.
+
+The offline answer-equivalence audit is complete for the saved intervention
+evaluations. A further validation study should adjudicate residual parser
+failures and ambiguous or structured answers, assess robustness to tolerance
+and extraction choices, and examine calibration-label sensitivity before
+refitting policies on development data.
+
+The next generation study should replicate the Qwen margin configuration
+and test GPT-OSS identity guiding with independent decoding seeds
+and an untouched evaluation set. The attempt-weighted or problem-weighted
+objective must be specified in advance, with benchmark-level reporting
+retained. Strength, target-selection rules, and other settings should be
+selected on a separate validation partition. The OSS negative-lift
+controls and target budgets matching native dispatch are already complete.
+Matched random-expert controls and smaller budgets of one or two targets
+per layer remain useful for distinguishing selector information from
+generic perturbation and from forcing a full top-$k$ target set. Applying hooks separately during
+prefill and decoding would localise when their effects arise. Recording
+actual dispatched identities and mixture weights would also clarify the
+numerical behaviour of the margin operation.
+
+A later extension could condition guidance on a validated prediction of the
+current reasoning activity. The completed interventions do not yet test
+such a controller: they use fixed identities or current router margins,
+without an online episode prediction. Any class-conditioned policy would
+need to account for detector errors and forbid access to the future
+continuation used to define its reference labels. Its evaluation should
+jointly report accuracy, token use, and failure modes under a matched budget.
+
+The evidence thus supports routing as a measurable and consequential part
+of mathematical generation, while leaving reliable guidance an open
+empirical problem. Progress depends on validating the measurements,
+specifying what an intervention changes, and testing its benefit on data
+that did not determine the policy.
+
+
+\appendix
+\chapter{Additional descriptive routing plots}
+\label{app:additional-routing-plots}
+
+This appendix supplements the main results with benchmark-specific outcome
+curves and expert screens from the same saved populations. These are
+exploratory descriptions; they do not supply independent replications of
+the aggregate analyses.
+
+\section{Class shares and observed outcomes}
+
+Figures~\ref{fig:class-share-outcomes} and \ref{fig:class-share-tokens}
+show observed accuracy and generation cost across sampled class-share bins.
+The attempt counts make sparse bins visible. Lines connect occupied bins
+and do not fit an optimal class composition or establish a causal response.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth,height=0.68\textheight,keepaspectratio]{figures/qwen_class_share_accuracy.pdf}
+\caption{Actual outcome levels versus sampled class proportions. Fixed share
+bins are $[0,20)$, $[20,40)$, $[40,60)$, $[60,80)$, and $[80,100]$ percent.
+Each point is at the mean observed share and shows accuracy; small labels give attempt counts. Empty
+bins are omitted. Colours distinguish benchmarks; lines only connect
+occupied bins. Sparse bins, sentence sampling, length, and difficulty can
+explain apparent trends; these descriptive plots do not identify optimal
+class proportions or a validated accuracy--length Pareto frontier.}
+\label{fig:class-share-outcomes}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=.95\linewidth]{figures/qwen_class_share_tokens.pdf}
+\caption{Mean total continuation tokens versus sampled class share. Bin
+boundaries, colours, sample-count labels, and sampling limitations are as in
+Figure~\ref{fig:class-share-outcomes}. Token count includes the final answer
+and token-limit completions; lines are descriptive, not intervention effects.}
+\label{fig:class-share-tokens}
+\end{figure}
+
+\section{Benchmark-specific directed transitions}
+
+Figure~\ref{fig:class-transitions} complements the correctness-stratified
+mean-count matrices in the main chapter. It pools outcomes within each
+benchmark and normalises each source-class row to percentages, describing
+the observed destination distribution conditional on an adjacent labelled
+pair. These percentages have a different denominator from mean counts per
+attempt; a missing row is undefined, not a zero transition probability.
+
+\begin{figure}[htbp]
+\centering
+\includegraphics[width=\linewidth,height=0.68\textheight,keepaspectratio]{figures/qwen_class_transitions.pdf}
+\caption{Observed class-state transitions by benchmark. Rows are the current
+class, columns the next class; cells are row percentages and row labels give
+pair counts. Only originally consecutive sentence indices with both labels
+are counted. Gaps in sampling are never bridged. Self-transitions are retained;
+empty rows are undefined. This describes the observed adjacent-pair sample,
+not the complete transition process or an effect of changing state.}
+\label{fig:class-transitions}
+\end{figure}
+
+\section{Expert-frequency screens across models}
+
+Figures~\ref{fig:thesis-experts-qwen}, \ref{fig:thesis-experts-gemma}, and
+\ref{fig:thesis-experts-gptoss} show every model-local expert ID in its
+original order. Pooling a numeric ID across measured layers does not turn
+it into a single shared module. The steering policies instead target
+layer-qualified identities. These screens show association with correctness
+and token count; they neither rank causal usefulness nor identify matching
+experts across architectures.
+
+\begin{figure}[htbp]\centering
+\includegraphics[width=\linewidth,height=0.68\textheight,keepaspectratio]{figures/qwen_multimodel_experts.pdf}
+\caption{Qwen3.5-35B-A3B: selected-pool expert frequency correlations with correctness and token count. IDs are model-local and pooled across selected layers; they do not identify matching experts across models. Missing coefficients are blank.}
+\label{fig:thesis-experts-qwen}
+\end{figure}
+
+\begin{figure}[htbp]\centering
+\includegraphics[width=\linewidth,height=0.68\textheight,keepaspectratio]{figures/gemma_multimodel_experts.pdf}
+\caption{Gemma-4-26B-A4B: selected-pool expert frequency correlations with correctness and token count. IDs are model-local and pooled across selected layers; they do not identify matching experts across models. Missing coefficients are blank.}
+\label{fig:thesis-experts-gemma}
+\end{figure}
+
+\begin{figure}[htbp]\centering
+\includegraphics[width=\linewidth,height=0.68\textheight,keepaspectratio]{figures/gptoss_multimodel_experts.pdf}
+\caption{GPT-OSS-20B: selected-pool expert frequency correlations with correctness and token count. IDs are model-local and pooled across selected layers; they do not identify matching experts across models. Missing coefficients are blank.}
+\label{fig:thesis-experts-gptoss}
+\end{figure}
 
 
 \cleardoublepage

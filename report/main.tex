@@ -34,18 +34,25 @@ artifacts and retain their model, population, and deployment limitations.
 \input{probeTest}
 \input{correlation_pipeline}
 \input{multimodel_correlation_results}
+\input{class_transition_results}
 \input{guiding_results}
 \input{active_synthesis}
 
 \section{Immediate Work}
 
 The remaining priorities are independent assessment of generated-trace
-labels; response-grouped probe validation with layer selection inside the
-training folds; matched annotation coverage across models; and
+labels; external-domain probe validation with thresholds and abstention
+rules selected inside training folds; matched problem cohorts and annotation
+protocols across models; and
 length-/termination-aware correlation models evaluated on held-out problems.
-For routing interventions, uncertainty should respect source-problem clusters,
-and further controls should assess random expert targets, calibration
-sensitivity, and transfer across quantizations. Strength selection and final
+The offline equivalence audit is complete for all saved baseline and
+guided evaluations. Further scoring validation should adjudicate residual
+parser failures and ambiguous structured answers and assess sensitivity
+to extraction and tolerance choices.
+Routing intervention intervals resample source-problem clusters. OSS
+negative-lift controls and four-target policies are complete; remaining
+controls concern random expert targets, smaller target budgets, calibration
+sensitivity, independent decoding seeds, and transfer across quantizations. Strength selection and final
 evaluation require separate problem sets. Class-conditioned routing remains
 unevaluated.
 

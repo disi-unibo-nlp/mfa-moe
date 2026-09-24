@@ -11,6 +11,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import generate_correlation_tables as api
 from audit_tagged_correlation_run import check_coefficients, check_repeated
+from stratified_label_results import render as render_stratified
 
 MODELS = [
     ('qwen', 'Qwen3.5-35B-A3B', 'reasoning-vllm-v1', 'unsloth--Qwen3.5-35B-A3B'),
@@ -154,12 +155,14 @@ def main():
             coverage.append(label+' & '+c+' & '+' & '.join(str(v['coverage']['datasets'][d]['traces_with_tokens']) for d in api.DATASETS))
         loaded.append((slug,label,b,views[1][2]))
         print(label, 'audited 20 scopes', flush=True)
+    audit['stratified_import'] = render_stratified(api, figure)
     text = [r'\section{Three-model correlation results}', r'\label{sec:multimodel}',
-        r'Forward replay and saved correlation analyses are complete for Qwen3.5-35B-A3B, Gemma-4-26B-A4B, and GPT-OSS-20B. Each includes 4,647 attempts from 1,547 source problems on the same six benchmarks, with 100 complete avg@32 groups. All token-limit completions are retained. Completion of class analysis means analysis of available labels, not full annotation coverage. GPT-OSS class tokens occur only in MATH-500 and part of AIME24; the other four benchmarks have no class estimates.',
-        r'Qwen uses the local deterministic NVFP4 judge described above. Gemma and GPT-OSS use imported Qwen3.8-27B labels, with temperature 1, top-$p$ 0.95, top-$k$ 20, low reasoning effort and a 16,384-token judge budget. Consequently class comparisons also differ in annotation protocol and cohort. Generation uses Qwen GPTQ-Int4, Gemma NVFP4, and GPT-OSS checkpoints respectively; replay settings and selected decoder indices are below. Token counts and absolute position windows are model-specific. Correlations are marginal descriptive associations, not controlled model effects.',
+        r'Forward replay and saved correlation analyses are complete for Qwen3.5-35B-A3B, Gemma-4-26B-A4B, and GPT-OSS-20B. Each includes 4,647 attempts from 1,547 source problems on the same six benchmarks, with 100 complete avg@32 groups. All token-limit completions are retained. Completion of class analysis means analysis of available labels, not full annotation coverage. The refreshed Gemma and GPT-OSS class analyses use the imported stratified labels and cover all six benchmarks; individual class estimates still depend on token-bearing and finite-outcome support.',
+        r'Qwen uses the local deterministic NVFP4 judge described above. Gemma and GPT-OSS use imported Qwen3.8-27B labels, with temperature 1, top-$p$ 0.95, top-$k$ 20, low reasoning effort and a 16,384-token judge budget. Gemma and GPT-OSS share the stratified sampling procedure and judge settings, but have model-specific selected problems and sentence quotas. Qwen retains a different annotation protocol. Generation uses Qwen GPTQ-Int4, Gemma NVFP4, and GPT-OSS checkpoints respectively; replay settings and selected decoder indices are below. Token counts and absolute position windows are model-specific. Correlations are marginal descriptive associations, not controlled model effects.',
         api.table('Replay configuration and mean reasoning length used for position windows.', 'tab:multi-protocol', ['Model','Replay','Decoder indices','Mean tokens'], protocol, 'llll'),
         api.table('All-attempt accuracy and termination by model. Invalid known-gold answers count as incorrect; repeated attempts are not independent problems.', 'tab:multi-population', ['Model','Dataset','Attempts','Correct','Accuracy','Limit hits'], overview, 'llrrrr'),
         api.table('Class token-bearing attempts; classes overlap. Zero coverage implies unavailable estimates.', 'tab:multi-coverage', ['Model','Class',*api.DATASETS.values()], coverage, 'llrrrrrr')]
+    text.append(r'\input{stratified_label_results}')
     for scope, vi in [('Whole continuation',2),('Full reasoning',3)]:
         fig, axes = plt.subplots(1, 3, figsize=(13,5), sharey=True, layout='constrained')
         for ax, feature in zip(axes, ['router_confidence_mean_layers','router_margin_mean_layers','token_count']):
@@ -193,7 +196,7 @@ def main():
                 r=repeated.get((d,feature));cells.append('---' if r is None else api.number(r['spearman_rho'])+f" ({r['n_problems']})")
             rr.append(api.FEATURES[feature][1]+' & '+' & '.join(cells))
         text.append(api.table(label+': problem mean versus avg@32, Spearman $\\rho$ (problems).','tab:multi-repeated-'+slug,['Metric','AIME24','AIME25','AMC23'],rr))
-    text.append(r'Aggregate correctness and metric-pair coefficients were independently recomputed from saved CSVs in all 60 model/scope combinations; repeated-problem mean correlations and within-problem contrasts were also checked. This validates numerical consistency, not judge accuracy or replay fidelity. Audit counts and numerical errors are saved in \path{report/multimodel_correlation_audit.json}; input SHA-256 hashes are in \path{report/multimodel_correlation_sources.json}. The appended atlases include every Gemma and GPT-OSS scope, including empty class panels. Full correctness tables are available in \path{report/multimodel_correlation_tables.tex}.')
+    text.append(r'Aggregate correctness and metric-pair coefficients were independently recomputed from saved CSVs in all 60 model/scope combinations; repeated-problem mean correlations and within-problem contrasts were also checked. This validates numerical consistency, not judge accuracy or replay fidelity. Audit counts and numerical errors are saved in \path{report/multimodel_correlation_audit.json}; input SHA-256 hashes are in \path{report/multimodel_correlation_sources.json}. The appended atlases include every Gemma and GPT-OSS scope, with unavailable coefficients explicitly marked. Full correctness tables are available in \path{report/multimodel_correlation_tables.tex}.')
     supplementary_plots(loaded)
     text.append(r'\input{multimodel_supplementary_plots}')
     for name, parts in [('multimodel_correlation_results.tex',text),('multimodel_correlation_atlas.tex',atlas),('multimodel_correlation_tables.tex',numeric)]:

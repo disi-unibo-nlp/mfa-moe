@@ -1,0 +1,25 @@
+\begin{table*}[ht]
+\centering\small
+\caption{Benchmark-level accuracy changes in percentage points for all completed stochastic interventions. Positive/negative denotes expert polarity; c denotes concurrency. Entries are point estimates, not significance decisions. Benchmark counts (problems/attempts) are shown in the header. Full benchmark intervals and correct counts are saved in guiding\_sensitivity.json.}
+\label{tab:guiding-benchmark-changes}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lrrrrrr}
+\toprule
+Condition & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva \\ & 150/150 & 9/288 & 9/288 & 203/203 & 12/384 & 82/82 \\
+\midrule
+Qwen fixed positive +1 & +0.00 & -2.78 & +0.00 & -0.49 & +0.52 & +3.66 \\
+Qwen fixed positive +2 & +0.00 & -5.90 & -1.74 & -0.99 & -3.91 & +0.00 \\
+Qwen fixed positive -1 & -1.33 & +1.39 & +2.08 & +1.97 & +0.00 & +3.66 \\
+GPT-OSS fixed positive +1 & +5.33 & +1.39 & -0.35 & -2.46 & -1.30 & -1.22 \\
+GPT-OSS fixed positive +2 & +2.00 & -8.33 & -7.64 & -2.46 & -0.26 & +3.66 \\
+GPT-OSS fixed positive -1 & +3.33 & -2.08 & -3.12 & -2.96 & +0.78 & -1.22 \\
+GPT-OSS fixed negative +1 & +4.67 & -1.04 & -1.39 & +0.00 & +1.04 & +4.88 \\
+GPT-OSS paper positive +1 & -47.33 & -56.60 & -76.39 & -60.10 & -68.75 & -24.39 \\
+GPT-OSS paper positive -1 & +2.67 & -3.47 & -5.21 & -3.45 & -0.78 & +0.00 \\
+GPT-OSS paper negative +1 & -47.33 & -56.60 & -74.31 & -56.16 & -63.80 & -29.27 \\
+Qwen margin (c=16) & +0.67 & +1.39 & +1.39 & -3.45 & +0.26 & -2.44 \\
+Qwen margin (c=25) & -0.67 & +2.43 & +2.43 & +0.00 & +0.00 & +0.00 \\
+GPT-OSS margin (c=25) & +2.67 & -1.04 & -0.69 & -3.45 & -1.30 & +1.22 \\
+\bottomrule
+\end{tabular}}
+\end{table*}

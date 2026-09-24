@@ -1,0 +1,35 @@
+\subsection{Interrupted Qwen paper-style intervention: partial results}
+
+\label{sec:partial-qwen-paper}
+
+The Qwen positive-expert paper-style intervention at strength $+1$ was stopped by user request after 494 of 1,395 planned attempts (35.4\%). The manifest records a KeyboardInterrupt; 901 attempts have no saved guided result. This policy targets eight experts at each of six layers, matching the model routing top-$k=8$; it is unaffected by the OSS target-count correction. The intervention uses epsilon 0.01, concurrency 25, and a 32,768-token completion budget. The saved outputs remain resumable; the run is not marked complete.
+
+On the 494 exact matched baseline/guided IDs (16 source problems), baseline accuracy is 70.45\% (348/494), and guided accuracy is 0.81\% (4/494), a change of $-69.64$ percentage points. There are 4 wrong-to-right and 348 right-to-wrong flips. Mean generated length changes from 19,352 to 32,768 tokens (medians 17,252 and 32,768); token-limit hits change from 110/494 to 494/494.
+
+\begin{table}[ht]\centering\small
+
+\caption{Partial Qwen paper-style intervention. Accuracy and token counts compare only the same completed IDs in each condition. B/G denotes baseline/guided. A dash indicates no completed guided attempts, not zero accuracy.}
+
+\label{tab:partial-qwen-paper}
+
+\resizebox{\linewidth}{!}{\begin{tabular}{lrrrrrr}\toprule
+
+Benchmark & Completed/planned & Problems & Accuracy B/G (\%) & Change (pp) & Mean tokens B/G & Limit hits B/G \\\midrule
+
+AIME24 & 288/288 & 9 & 61.81/0.00 & $-61.81$ & 20,947/32,768 & 74/288 \\
+
+AIME25 & 206/288 & 7 & 82.52/1.94 & $-80.58$ & 17,121/32,768 & 36/206 \\
+
+AMC23 & 0/384 & 0 & --- & --- & --- & --- \\
+
+MATH-500 & 0/150 & 0 & --- & --- & --- & --- \\
+
+Minerva & 0/82 & 0 & --- & --- & --- & --- \\
+
+Olympiad & 0/203 & 0 & --- & --- & --- & --- \\
+
+\bottomrule\end{tabular}}\end{table}
+
+These are descriptive partial results, excluded from the complete-run comparison and weighting tables. The completed subset is not a random sample: benchmark submission order, scheduling, and generation length can affect which requests have finished. Multiple attempts from one problem are also dependent. Consequently the pooled difference is not an estimate for the full 1,395-attempt evaluation, and no population confidence interval or significance claim is reported. Missing attempts are not counted as wrong or filled from the baseline. Increased token-limit incidence does not by itself establish repetitive looping.
+
+All saved guided records have unique IDs, scored boolean outcomes, matching baseline inputs, prompt token IDs, and per-attempt sampling settings. Policy, engine, software, scoring, and template-date contracts also match; hook diagnostics confirm activity at all selected layers. Source hashes and benchmark denominators are saved in \path{report/partial_guiding_statistics.json}.

@@ -1,0 +1,182 @@
+{
+  "reviewer": "Codex assistant; qualitative excerpt inspection, not independent human annotation",
+  "interpretation": "Primary mutually exclusive descriptions of the inspected excerpts; repetition may coexist with mathematical errors. Formatting disagreement refers only to the requested final answer, not proof validity. Counts describe this stratified sample only.",
+  "cases": [
+    {
+      "case": "P01",
+      "run": "oss_positive",
+      "id": "[\"aime24\", \"aime24_68__sample_11\", 11]",
+      "guided_text_sha256": "cb5fbfb565b7b97e3e1fd3cea930eae3b5b1bd1f50823b8530667535a1b40074",
+      "category": "repetition",
+      "observation": "Arithmetic cycling while dividing 2024 by 5; tail repeatedly asserts incorrect products. No boxed answer."
+    },
+    {
+      "case": "P02",
+      "run": "oss_positive",
+      "id": "[\"aime24\", \"aime24_78__sample_14\", 14]",
+      "guided_text_sha256": "20b87e82e9223e36c37f6cd2c687fe6099708ce9ea172ca5f941662b071b7aae",
+      "category": "repetition",
+      "observation": "Repeated decimal operations in the middle and tail without resolution; no boxed answer."
+    },
+    {
+      "case": "P03",
+      "run": "oss_positive",
+      "id": "[\"aime25\", \"aime25_16__sample_06\", 6]",
+      "guided_text_sha256": "babce263bcd0754667489c995f51a6146d8cf576fe66091f95bf6cf2387acfb1",
+      "category": "repetition",
+      "observation": "Long runs of the token-like word 390? dominate middle and tail; no boxed answer."
+    },
+    {
+      "case": "P04",
+      "run": "oss_positive",
+      "id": "[\"aime25\", \"aime25_17__sample_06\", 6]",
+      "guided_text_sha256": "57d7d081a7f3c3c8a1d4d5ddd1c23211a38bb0dd55b98007f89707cf68541fea",
+      "category": "repetition",
+      "observation": "Repeated intermediate arithmetic (1024*4) and reformulation; tail resumes a combinatorial argument with candidate 52 but no boxed answer."
+    },
+    {
+      "case": "P05",
+      "run": "oss_positive",
+      "id": "[\"olympiad\", \"olympiad_2263__sample_00\", 0]",
+      "guided_text_sha256": "fe5ba1b594b8e0060658c9ad498cb30c9eedb7f2146058f7033a581c5197c204",
+      "category": "formatting_disagreement",
+      "observation": "Final boxed 14/15 is mathematically identical to gold \\frac{14}{15}; saved fallback scorer rejects the representation. This is not an incorrect final answer."
+    },
+    {
+      "case": "P06",
+      "run": "oss_positive",
+      "id": "[\"amc23\", \"amc23_48__sample_13\", 13]",
+      "guided_text_sha256": "eec3ce8f07fefe15c333489c5d82a15d4144139ff2c8f82ef6e5fcfc5979ec1c",
+      "category": "repetition",
+      "observation": "Repeated faulty summation and self-correction culminate in boxed 70 rather than 144; generation ends normally."
+    },
+    {
+      "case": "P07",
+      "run": "oss_positive",
+      "id": "[\"aime25\", \"aime25_28__sample_11\", 11]",
+      "guided_text_sha256": "373e99cb59a4c1862d02dcb9c1bec983538d5eff1e384cb68f195c7bbae38643",
+      "category": "repetition",
+      "observation": "Repeated unresolved multiplication culminates in boxed 42 rather than 104; generation ends normally."
+    },
+    {
+      "case": "P08",
+      "run": "oss_positive",
+      "id": "[\"math500\", \"math500_test/prealgebra/105.json__sample_00\", 0]",
+      "guided_text_sha256": "658cecfe5be13a49fc8e00a70bdb091347ab5790b960391d202570de21e62446",
+      "category": "formatting_disagreement",
+      "observation": "Final boxed East agrees with gold \\text{east}; the fallback rejects the wrapper difference. Intermediate arithmetic is flawed, but the requested final direction is correct."
+    },
+    {
+      "case": "N01",
+      "run": "oss_negative",
+      "id": "[\"aime24\", \"aime24_78__sample_11\", 11]",
+      "guided_text_sha256": "33fdeb8dfb80e35ea4af7bcb4d8f213a50b14078dce42254dff606b0cf1b9481",
+      "category": "repetition",
+      "observation": "Repeated decimal subtraction in middle and tail; no boxed answer."
+    },
+    {
+      "case": "N02",
+      "run": "oss_negative",
+      "id": "[\"math500\", \"math500_test/number_theory/488.json__sample_00\", 0]",
+      "guided_text_sha256": "ef0b16a06ae42f194cc80187b10e0044d3cf80dba72ff0e612edd835b07bdfa2",
+      "category": "repetition",
+      "observation": "Repeated faulty arithmetic and restarting, including a commentary segment; no boxed answer."
+    },
+    {
+      "case": "N03",
+      "run": "oss_negative",
+      "id": "[\"olympiad\", \"olympiad_2884__sample_00\", 0]",
+      "guided_text_sha256": "d8e03140b8a682b1b26ab0910a89c0884ae68fa5d12d9352ebf17cc09d2af8ce",
+      "category": "repetition",
+      "observation": "Tail cycles through 18 - 4 = 18 AE; no boxed answer."
+    },
+    {
+      "case": "N04",
+      "run": "oss_negative",
+      "id": "[\"amc23\", \"amc23_10__sample_28\", 28]",
+      "guided_text_sha256": "997a5f4f7ee81b05c307ddb456c918f367a2edcd5cd50610ad690a90a31a4743",
+      "category": "repetition",
+      "observation": "Unresolved arithmetic gives way to a long unspaced 210+210 chain; no boxed answer. Whitespace-based repetition metrics do not capture all unspaced repetition."
+    },
+    {
+      "case": "N05",
+      "run": "oss_negative",
+      "id": "[\"olympiad\", \"olympiad_3092__sample_00\", 0]",
+      "guided_text_sha256": "ea4c06f2cbfff4caf29243fa7cfc376ea3a05c282972c7a6be289881eb6e502a",
+      "category": "arithmetic_error",
+      "observation": "Correctly enumerates exponent choices 3, 2, 2, but repeatedly states 3*2*2=6 and returns boxed 6 rather than 12. No long exact 16-word cycle is observed."
+    },
+    {
+      "case": "N06",
+      "run": "oss_negative",
+      "id": "[\"amc23\", \"amc23_48__sample_01\", 1]",
+      "guided_text_sha256": "6fb6811b817f0593869070b4eca8212f43c0b01a356ec38edda217629292a26a",
+      "category": "repetition",
+      "observation": "Repeated faulty summation ends normally with boxed 112 rather than 144."
+    },
+    {
+      "case": "N07",
+      "run": "oss_negative",
+      "id": "[\"aime24\", \"aime24_78__sample_10\", 10]",
+      "guided_text_sha256": "5fa77bf52c409a8c28a43664ae5980c066f72a88e05ca0d734309ed493baa32b",
+      "category": "repetition",
+      "observation": "Repeated unresolved multiplication 9*3 ends normally with boxed 9 rather than 23."
+    },
+    {
+      "case": "N08",
+      "run": "oss_negative",
+      "id": "[\"math500\", \"math500_test/number_theory/1172.json__sample_00\", 0]",
+      "guided_text_sha256": "389f544066c6abddff41b4a0b1b649bd7a354c98feb1d54a654b21df1a47e90c",
+      "category": "repetition",
+      "observation": "Wrong modular inverse followed by repeated subtraction; ends normally with boxed 106 rather than 103."
+    },
+    {
+      "case": "Q01",
+      "run": "qwen_positive_partial",
+      "id": "[\"aime25\", \"aime25_28__sample_09\", 9]",
+      "guided_text_sha256": "ac2de518e74776d1b082ff16d9c1ec405d7533804fe7428374602418049a191d",
+      "category": "repetition",
+      "observation": "Geometry restatement cycles involving AK=BK=14 and the triangle sides; no boxed answer."
+    },
+    {
+      "case": "Q02",
+      "run": "qwen_positive_partial",
+      "id": "[\"aime25\", \"aime25_17__sample_16\", 16]",
+      "guided_text_sha256": "7c5f3949fe8f967c99cee877aa1093fd014a4567de3d7230bc2a79dd17bb4301",
+      "category": "repetition",
+      "observation": "Repeated grid coordinates and edge-sharing statements; no boxed answer."
+    },
+    {
+      "case": "Q03",
+      "run": "qwen_positive_partial",
+      "id": "[\"aime25\", \"aime25_16__sample_07\", 7]",
+      "guided_text_sha256": "7e5717ff293b867608e9d69b999fafa54d1240c5d8ae24ab5468221a77fe0a60",
+      "category": "repetition",
+      "observation": "Cycles through an incorrect evaluation of 3^3 as 6; no boxed answer."
+    },
+    {
+      "case": "Q04",
+      "run": "qwen_positive_partial",
+      "id": "[\"aime24\", \"aime24_72__sample_13\", 13]",
+      "guided_text_sha256": "c3c975ea14b5af921e64f2a8f91042d14548063d0c3d2cf2ea1651bfd8a88bef",
+      "category": "repetition",
+      "observation": "Repeats an arithmetically correct product 75*4=300 followed by No; earlier incorrectly evaluates 144/16 as 3. No boxed answer."
+    },
+    {
+      "case": "Q05",
+      "run": "qwen_positive_partial",
+      "id": "[\"aime25\", \"aime25_16__sample_23\", 23]",
+      "guided_text_sha256": "0043290729aeb8c6186384bb8d401dbf6f82ba3d41a2731dbf40874fcadd9ace",
+      "category": "repetition",
+      "observation": "Repeats the incorrect simplification 12x-4x=12x; no boxed answer."
+    },
+    {
+      "case": "Q06",
+      "run": "qwen_positive_partial",
+      "id": "[\"aime25\", \"aime25_17__sample_06\", 6]",
+      "guided_text_sha256": "c23218db3a8ee06527e58d1d0de893d08e88164e5a36b65f38d823666a93b05b",
+      "category": "repetition",
+      "observation": "Middle and tail repeat Wait, wait. without a boxed answer."
+    }
+  ]
+}

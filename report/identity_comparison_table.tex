@@ -1,0 +1,22 @@
+\begin{table*}[ht]
+\centering\small
+\caption{Complete identity-guiding stochastic comparisons. Accuracy is percent; changes and 95\% intervals are percentage points relative to each matched baseline. Fixed denotes the lift-weighted additive bias; Paper denotes extreme-score steering with epsilon 0.01. Polarity identifies the selected expert set, independently of signed strength. Each comparison has 1,395 attempts on 465 problems; intervals use 5,000 paired, dataset-stratified source-problem bootstrap resamples (seed 42).}
+\label{tab:identity-comparison}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{llllrrrr}
+\toprule
+Model & Method & Polarity & Strength & B accuracy & G accuracy & Change & 95\% CI \\
+\midrule
+GPT-OSS & Fixed & Negative & +1 & 77.85 & 78.42 & +0.57 & [-1.58, +2.65] \\
+GPT-OSS & Paper & Negative & +1 & 77.85 & 18.28 & -59.57 & [-67.24, -51.40] \\
+GPT-OSS & Paper & Positive & -1 & 77.85 & 75.63 & -2.22 & [-4.16, -0.43] \\
+GPT-OSS & Paper & Positive & +1 & 77.85 & 16.20 & -61.65 & [-69.32, -53.41] \\
+GPT-OSS & Fixed & Positive & -1 & 77.85 & 76.85 & -1.00 & [-3.44, +1.22] \\
+GPT-OSS & Fixed & Positive & +1 & 77.85 & 77.85 & +0.00 & [-2.15, +2.01] \\
+GPT-OSS & Fixed & Positive & +2 & 77.85 & 74.55 & -3.30 & [-6.16, -0.93] \\
+Qwen & Fixed & Positive & +1 & 84.95 & 84.66 & -0.29 & [-1.15, +0.65] \\
+Qwen & Fixed & Positive & -1 & 84.09 & 85.16 & +1.08 & [-0.14, +2.37] \\
+Qwen & Fixed & Positive & +2 & 84.09 & 81.29 & -2.80 & [-5.16, -0.72] \\
+\bottomrule
+\end{tabular}}
+\end{table*}

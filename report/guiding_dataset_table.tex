@@ -1,29 +1,29 @@
 \begin{table*}[ht]
 \centering\small
-\caption{Qwen3.5 GPTQ guiding results by benchmark. Correct counts are baseline/guided; accuracy changes are percentage points. Repeated attempts from one source problem are dependent.}
+\caption{Qwen3.5 GPTQ guiding results by benchmark. Correct counts are baseline/guided; accuracy changes are percentage points. Intervals resample whole problems (5,000 resamples, seed 42); each AIME benchmark contains only nine evaluation problems.}
 \label{tab:guiding-datasets}
-\begin{tabular}{llrrr}
+\begin{tabular}{llrrrr}
 \toprule
-Policy & Dataset & Attempts & Correct B/G & Change \\
+Policy & Dataset & Attempts & Correct B/G & Change & 95\% CI \\
 \midrule
-Identity $+1$ & aime24 & 288 & 185/177 & -2.78 \\
-Identity $+1$ & aime25 & 288 & 246/246 & +0.00 \\
-Identity $+1$ & amc23 & 384 & 381/381 & +0.00 \\
-Identity $+1$ & math500 & 150 & 106/106 & +0.00 \\
-Identity $+1$ & minerva & 82 & 16/18 & +2.44 \\
-Identity $+1$ & olympiad & 203 & 97/98 & +0.49 \\
-Identity $-1$ & aime24 & 288 & 178/182 & +1.39 \\
-Identity $-1$ & aime25 & 288 & 242/248 & +2.08 \\
-Identity $-1$ & amc23 & 384 & 382/382 & +0.00 \\
-Identity $-1$ & math500 & 150 & 103/102 & -0.67 \\
-Identity $-1$ & minerva & 82 & 20/19 & -1.22 \\
-Identity $-1$ & olympiad & 203 & 96/99 & +1.48 \\
-Margin $1$ & aime24 & 288 & 180/184 & +1.39 \\
-Margin $1$ & aime25 & 288 & 243/246 & +1.04 \\
-Margin $1$ & amc23 & 384 & 380/380 & +0.00 \\
-Margin $1$ & math500 & 150 & 106/104 & -1.33 \\
-Margin $1$ & minerva & 82 & 20/18 & -2.44 \\
-Margin $1$ & olympiad & 203 & 101/96 & -2.46 \\
+Identity $+1$ & aime24 & 288 & 185/177 & -2.78 & [-4.17, -1.39] \\
+Identity $+1$ & aime25 & 288 & 246/246 & +0.00 & [-1.74, +2.78] \\
+Identity $+1$ & amc23 & 384 & 382/384 & +0.52 & [+0.00, +1.56] \\
+Identity $+1$ & math500 & 150 & 148/148 & +0.00 & [+0.00, +0.00] \\
+Identity $+1$ & minerva & 82 & 51/54 & +3.66 & [-2.44, +9.76] \\
+Identity $+1$ & olympiad & 203 & 173/172 & -0.49 & [-3.94, +2.96] \\
+Identity $-1$ & aime24 & 288 & 178/182 & +1.39 & [-2.08, +4.86] \\
+Identity $-1$ & aime25 & 288 & 242/248 & +2.08 & [-1.39, +6.25] \\
+Identity $-1$ & amc23 & 384 & 384/384 & +0.00 & [+0.00, +0.00] \\
+Identity $-1$ & math500 & 150 & 148/146 & -1.33 & [-3.33, +0.00] \\
+Identity $-1$ & minerva & 82 & 50/53 & +3.66 & [-1.22, +8.54] \\
+Identity $-1$ & olympiad & 203 & 171/175 & +1.97 & [-1.48, +5.42] \\
+Margin $1$ & aime24 & 288 & 180/184 & +1.39 & [-0.69, +3.82] \\
+Margin $1$ & aime25 & 288 & 243/247 & +1.39 & [-0.35, +3.47] \\
+Margin $1$ & amc23 & 384 & 381/382 & +0.26 & [-0.52, +1.04] \\
+Margin $1$ & math500 & 150 & 147/148 & +0.67 & [+0.00, +2.00] \\
+Margin $1$ & minerva & 82 & 51/49 & -2.44 & [-9.76, +3.66] \\
+Margin $1$ & olympiad & 203 & 174/167 & -3.45 & [-7.39, +0.00] \\
 \bottomrule
 \end{tabular}
 \end{table*}

@@ -1,0 +1,163 @@
+{
+  "selection_rationale": "Main-text comparisons for uncertainty, class populations, length, and metric dependence; dense class-share, transition and expert-ID breakdowns in appendix. Full repeated correlation atlas omitted.",
+  "added": [
+    {
+      "type": "figure",
+      "source": "multimodel_correlation_results.tex",
+      "asset": "report/figures/multimodel_continuation.pdf",
+      "sha256": {
+        "report/multimodel_correlation_results.tex": "ff43a596708493bcc6ce95f777a9078e238f4ea4920a56f60170a3beb9b10556",
+        "report/figures/multimodel_continuation.pdf": "529f0dd66ae4168ac741382fcce7603fb3693a110ac9b5cee4316443ab482aff"
+      }
+    },
+    {
+      "type": "figure",
+      "source": "multimodel_correlation_results.tex",
+      "asset": "report/figures/multimodel_reasoning.pdf",
+      "sha256": {
+        "report/multimodel_correlation_results.tex": "ff43a596708493bcc6ce95f777a9078e238f4ea4920a56f60170a3beb9b10556",
+        "report/figures/multimodel_reasoning.pdf": "29f365d636a7d56459604cffd4c3c2bb307f08cdd04380985a9fb115d3642a67"
+      }
+    },
+    {
+      "type": "figure",
+      "source": "correlation_results.tex",
+      "asset": "report/figures/qwen_metric_pairs.pdf",
+      "sha256": {
+        "report/correlation_results.tex": "316ffc3cc47976d5d7c7e9d9c5628a991a317484efa7eec92330c6524abd6385",
+        "report/figures/qwen_metric_pairs.pdf": "23516ff7e84e4c2e3f32c6fbcc73d151b114d0f95b93d112a5e3894c85fe7343"
+      }
+    },
+    {
+      "type": "figure",
+      "source": "router_results.tex",
+      "asset": "report/figures/qwen_router_value_accuracy.pdf",
+      "sha256": {
+        "report/router_results.tex": "5244634f1c8e276d195dcf33ca270658636b2068bf4ae600457b4c2c125094fd",
+        "report/figures/qwen_router_value_accuracy.pdf": "05da1ebbebfe508f5fd6baaa0a7a6c5082302ebf4f13fd147368174fb3ea61c7"
+      }
+    },
+    {
+      "type": "figure",
+      "source": "multimodel_supplementary_plots.tex",
+      "asset": "report/figures/multimodel_repeated.pdf",
+      "sha256": {
+        "report/multimodel_supplementary_plots.tex": "94eabd7dffa2133734dc550fc1682139799946e185711ba62b07049d545db282",
+        "report/figures/multimodel_repeated.pdf": "758bb762f1050bc80f45c24683bc624d94ddf436a9c4b11dfe232a0a7bb84702"
+      }
+    },
+    {
+      "type": "figure",
+      "source": "correlation_results.tex",
+      "asset": "report/figures/qwen_class_correlations.pdf",
+      "sha256": {
+        "report/correlation_results.tex": "316ffc3cc47976d5d7c7e9d9c5628a991a317484efa7eec92330c6524abd6385",
+        "report/figures/qwen_class_correlations.pdf": "a8988b39762e258d86d1795f145edc59aad8152a86eb726c6d10dd18d1cd7e73"
+      }
+    },
+    {
+      "type": "table",
+      "source": "reasoning_length_table.tex",
+      "sha256": {
+        "report/reasoning_length_table.tex": "d69ae8f055bc3ffd2db5190a987fa0148ca6628acb42c6053766279a07e4cbce"
+      }
+    },
+    {
+      "type": "figure",
+      "source": "correlation_results.tex",
+      "asset": "report/figures/qwen_position_coverage.pdf",
+      "sha256": {
+        "report/correlation_results.tex": "316ffc3cc47976d5d7c7e9d9c5628a991a317484efa7eec92330c6524abd6385",
+        "report/figures/qwen_position_coverage.pdf": "0bb7116b1cfcf6b4893e9dd6a71605a253a7ebc51662eca4c91381fd819298d4"
+      }
+    },
+    {
+      "type": "figure",
+      "source": "stratified_label_results.tex",
+      "asset": "report/figures/stratified_label_composition.pdf",
+      "sha256": {
+        "report/stratified_label_results.tex": "3d3857fa9fefac0a1f90b9bcae1b35d0f86b28d0610e1fce83cd1d2bbbe3c1a2",
+        "report/figures/stratified_label_composition.pdf": "b6e0e10a95924bf32244de0cc17e0889ff465486e80c1b9907d05ad761219ffe"
+      }
+    },
+    {
+      "type": "table",
+      "source": "class_share_table.tex",
+      "sha256": {
+        "report/class_share_table.tex": "3b28da39e5d45923feb41f201fadd3b8b9fff79debc45176d28ed6b179107ed9"
+      }
+    },
+    {
+      "type": "figure",
+      "source": "class_results.tex",
+      "asset": "report/figures/qwen_class_cumulative.pdf",
+      "sha256": {
+        "report/class_results.tex": "defb74148b2aa1c75aacfcf12c3d0ea1b339122a23d48770d3ee2e457a827b27",
+        "report/figures/qwen_class_cumulative.pdf": "31972a6177e6e4566a6a64d43e340bc4325687b65efa2a2e16327add61836dd5"
+      }
+    },
+    {
+      "type": "figure",
+      "source": "class_results.tex",
+      "asset": "report/figures/qwen_class_share_correlations.pdf",
+      "sha256": {
+        "report/class_results.tex": "defb74148b2aa1c75aacfcf12c3d0ea1b339122a23d48770d3ee2e457a827b27",
+        "report/figures/qwen_class_share_correlations.pdf": "067fc47bf6a80faf377571c5d8e0226da861a576d9e635d89d5527dd405e3bcc"
+      }
+    },
+    {
+      "type": "figure",
+      "source": "class_results.tex",
+      "asset": "report/figures/qwen_class_share_accuracy.pdf",
+      "sha256": {
+        "report/class_results.tex": "defb74148b2aa1c75aacfcf12c3d0ea1b339122a23d48770d3ee2e457a827b27",
+        "report/figures/qwen_class_share_accuracy.pdf": "ae52ff72dc37a81690d5fa64514dff37ee9050bdf84c59ae0a1ad34fd66e35a2"
+      }
+    },
+    {
+      "type": "figure",
+      "source": "class_results.tex",
+      "asset": "report/figures/qwen_class_share_tokens.pdf",
+      "sha256": {
+        "report/class_results.tex": "defb74148b2aa1c75aacfcf12c3d0ea1b339122a23d48770d3ee2e457a827b27",
+        "report/figures/qwen_class_share_tokens.pdf": "7f0e8628c6cabf5a3821b81747470c3dafc2bda9f7bc675178d9388dc8a04ba0"
+      }
+    },
+    {
+      "type": "figure",
+      "source": "class_results.tex",
+      "asset": "report/figures/qwen_class_transitions.pdf",
+      "sha256": {
+        "report/class_results.tex": "defb74148b2aa1c75aacfcf12c3d0ea1b339122a23d48770d3ee2e457a827b27",
+        "report/figures/qwen_class_transitions.pdf": "d64f8cb5f5cc9a0a2ab53116ab48745cb5f99f67efeafa5ba8c854d13924f6ba"
+      }
+    },
+    {
+      "type": "figure",
+      "source": "multimodel_supplementary_plots.tex",
+      "asset": "report/figures/qwen_multimodel_experts.pdf",
+      "sha256": {
+        "report/multimodel_supplementary_plots.tex": "94eabd7dffa2133734dc550fc1682139799946e185711ba62b07049d545db282",
+        "report/figures/qwen_multimodel_experts.pdf": "3a48508d05f39ba18d6c38e5735a66545d114665bbcc68fdf14866c0f6bb986d"
+      }
+    },
+    {
+      "type": "figure",
+      "source": "multimodel_supplementary_plots.tex",
+      "asset": "report/figures/gemma_multimodel_experts.pdf",
+      "sha256": {
+        "report/multimodel_supplementary_plots.tex": "94eabd7dffa2133734dc550fc1682139799946e185711ba62b07049d545db282",
+        "report/figures/gemma_multimodel_experts.pdf": "aa2bb956aa51a635a65627f647a294cb278446343a8a724efa20ec5c81271782"
+      }
+    },
+    {
+      "type": "figure",
+      "source": "multimodel_supplementary_plots.tex",
+      "asset": "report/figures/gptoss_multimodel_experts.pdf",
+      "sha256": {
+        "report/multimodel_supplementary_plots.tex": "94eabd7dffa2133734dc550fc1682139799946e185711ba62b07049d545db282",
+        "report/figures/gptoss_multimodel_experts.pdf": "7a1294e77bf03dc6ec85345f70d075510b54583bff568018d0a32a483c65e832"
+      }
+    }
+  ]
+}

@@ -1,0 +1,78 @@
+\subsection{Consistent offline answer-equivalence audit}
+\label{sec:guiding-rescoring}
+
+The qualitative inspection identified equivalent final answers rejected by
+the historical normalized-string/numeric fallback. A uniform offline pass
+therefore rescores both conditions in every saved, manifested identity and
+margin evaluation: 13 complete full stochastic comparisons, two complete
+greedy comparisons, the 39-problem Minerva comparison, and the interrupted
+Qwen subset. It reads 40,097 stored condition records, including reused
+baseline copies; this is not a count of independent generated solutions.
+The original text, tokens, manifests, policies, and judgments are preserved.
+Revised decisions and all changed answers are recorded separately in
+\path{report/guiding_rescoring.json}.
+
+The rule first extracts the last nonempty balanced boxed candidate, then
+uses the existing answer-marker and last-number fallbacks when no such box
+is present. Only that candidate is compared with the gold answer. It
+normalizes display notation, plain-text labels, common units, currency,
+and explicit list separators. Mathematical comparison uses Math-Verify
+0.9.0 with latex2sympy2\_extended 1.11.0, ANTLR 4.13.2, and SymPy 1.14.0\footnote{\url{https://github.com/huggingface/Math-Verify}}.
+Variables and structured objects use strict comparison; exact-number
+answers require equality, while decimal/scientific scalar answers allow
+relative tolerance $10^{-6}$ with no absolute floor. Thus zero does not
+match a small nonzero answer merely because its magnitude is below
+$10^{-6}$. Scientific notation is parsed numerically, rather than as a
+symbolic expression involving $e$. Text denoting multiple answers is not
+silently reduced to its first number. Standard unit annotations follow the
+parser's normalization conventions; this is not a dimensional-analysis check.
+
+The pass changes 4,054 stored judgments from incorrect to correct and one
+from correct to incorrect. It also changes the extracted candidate in
+2,065 records. The single downward change concerns a capped Qwen baseline
+whose extracted box contains the literal placeholder ``answer'' rather
+than its earlier saved numeric fallback. These counts include repeated
+baseline copies. Changes occur on every benchmark, mainly OlympiadBench,
+MATH-500, and Minerva. The analysis reruns the same 5,000 paired,
+dataset-stratified source-problem bootstrap resamples (seed 42), including
+the equal-problem sensitivity statistic. The 494-ID interrupted comparison
+remains separate and its accuracy counts are unchanged.
+
+\begin{table}[htbp]
+\centering\small
+\caption{Selected changes after applying the same revised scoring rule to both conditions. Changes and 95\% intervals are percentage points. Attempt weighting is primary; problem weighting is secondary. Historical values are retained here only to document the audit and are not mixed into current result tables.}
+\label{tab:guiding-rescoring-audit}
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{lllrr}
+\toprule
+Condition & Weighting & Historical change & Revised change & Revised 95\% CI \\
+\midrule
+Qwen margin (c=25) & Attempt & +1.08 & +0.93 & [0.00, +1.86] \\
+GPT-OSS margin & Attempt & -3.15 & -0.86 & [-2.87, +1.15] \\
+GPT-OSS fixed positive +2 & Attempt & -1.43 & -3.30 & [-6.16, -0.93] \\
+GPT-OSS fixed positive +2 & Problem & +4.87 & -0.10 & [-3.12, +3.08] \\
+GPT-OSS fixed negative +1 & Problem & +4.94 & +2.35 & [-0.58, +5.44] \\
+Qwen greedy margin & Attempt & +2.15 & +0.86 & [-1.29, +3.01] \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+No revised positive accuracy interval excludes zero in the complete
+comparisons under either reported weighting. In particular, the earlier
+positive secondary OSS findings and greedy Qwen margin interval do not
+survive the common scoring rule. The Qwen concurrency-25 margin lower
+endpoint is exactly zero. Strong negative effects under paper-style
+promotion remain. Generation costs and termination flags are unchanged.
+
+The checker is tested on equivalent and distinct fractions, text labels,
+scientific notation, ordered answers, units, currency, multiple-answer text,
+and very small numerical values, as well as final-candidate extraction.
+It does not provide independent human adjudication. There are 699 records
+with an unparsed candidate or reference, 332 with unsupported embedded
+text, and 30 parser/comparison errors; these receive an incorrect decision
+unless normalized display equality already succeeds. Error categories
+and changed judgments remain available for further review. A two-second
+parser/comparison timeout and a 2,048-character limit for nonnumeric
+expressions bound degenerate inputs. Calibration and observational
+correlation labels retain their original values: the revised evaluations
+test the existing frozen policies, not policies refitted with revised labels.

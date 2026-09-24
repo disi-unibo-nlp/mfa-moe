@@ -1,0 +1,15 @@
+\begin{table*}[ht]
+\centering\small
+\caption{Complete stochastic margin comparisons at strength 1, with 1,395 attempts on 465 problems each. B/G denotes baseline/guided accuracy in percent; changes and intervals are percentage points. Concurrency is the maximum active-sequence count. Each row uses its own matched baseline; this is not a controlled concurrency comparison.}
+\label{tab:margin-comparison}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lrrrrr}
+\toprule
+Model & Concurrency & B & G & Change & 95\% CI \\
+\midrule
+Qwen & 16 & 84.30 & 84.37 & +0.07 & [-0.86, +1.01] \\
+Qwen & 25 & 84.09 & 85.02 & +0.93 & [+0.00, +1.86] \\
+GPT-OSS & 25 & 77.85 & 76.99 & -0.86 & [-2.87, +1.15] \\
+\bottomrule
+\end{tabular}}
+\end{table*}
