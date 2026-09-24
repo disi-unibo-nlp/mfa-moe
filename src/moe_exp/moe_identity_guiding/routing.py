@@ -25,6 +25,8 @@ class IdentityBias:
             raise ValueError("Invalid score vector or top_k")
         if not torch.isfinite(self.scores).all() or (self.scores < 0).any():
             raise ValueError("Scores must be finite and nonnegative")
+        if (self.scores > 0).sum().item() > top_k:
+            raise ValueError("Target expert count cannot exceed model top_k; refit the policy")
         self.strength, self.top_k = strength, top_k
         self.reset()
 

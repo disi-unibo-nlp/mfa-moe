@@ -156,7 +156,8 @@ def main():
     fit_parser.add_argument("--num-experts", type=int, default=None)
     fit_parser.add_argument("--top-k", type=int, default=None)
     fit_parser.add_argument("--min-support", type=int, default=4)
-    fit_parser.add_argument("--max-experts", type=int, default=8)
+    fit_parser.add_argument("--max-experts", type=int, default=None,
+                            help="Target budget per layer (default: model routing top-k; cannot exceed it)")
     fit_parser.add_argument("--expert-polarity", choices=("positive", "negative"), default="positive")
     fit_parser.add_argument("--guiding-method", choices=("fixed", "paper"), default="fixed")
     fit_parser.add_argument("--paper-epsilon", type=float, default=0.01)
