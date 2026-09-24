@@ -1,0 +1,84 @@
+\subsection{Expert-selection comparison with SteerMoE}
+\label{sec:expert-selection-audit}
+
+The comparison separates expert detection from the intervention applied to
+those experts. SteerMoE uses paired contrastive inputs and counts top-$k$
+expert inclusions separately in the two populations. Its score is the
+token-pooled activation-rate difference
+\begin{equation}
+\Delta_{\ell e}^{\mathrm{paper}} =
+\frac{A_{\ell e}^{+}}{N^{+}}-\frac{A_{\ell e}^{-}}{N^{-}},
+\end{equation}
+where $A$ counts tokens selecting the layer--expert identity and $N$ counts
+all tokens in the corresponding population. Detection therefore uses routing
+frequencies, not hidden-state similarity. Positive and negative differences
+identify opposite behavioral associations; steering changes the selected
+experts' log-softmax scores to the original maximum plus $\epsilon$ or minimum
+minus $\epsilon$~\cite{fayyaz2025steermoe}, Sections 3.1--3.2.
+The authors' released custom-steering notebook ranks layer--expert identities
+together by absolute risk difference\footnote{\url{https://github.com/adobe-research/SteerMoE/blob/main/custom_steering.ipynb}}.
+Our policy instead assigns a separate budget to each of a preselected set
+of layers.
+
+\paragraph{Implemented estimator.}
+For calibration attempt $r$, let $y_r\in\{0,1\}$ be correctness,
+$f_{r\ell e}$ the fraction of saved routing tokens selecting expert $e$ at
+layer $\ell$, and $w_r=1/m_{p(r)}$, where $m_{p(r)}$ is the number of usable
+attempts for its source problem. With $W=\sum_r w_r$, the implemented score is
+\begin{equation}
+\pi=\frac{\sum_r w_r y_r}{W},\qquad
+L_{\ell e}=\frac{\sum_r w_r f_{r\ell e}y_r}
+                       {\sum_r w_r f_{r\ell e}}-\pi.
+\end{equation}
+Thus calibration gives every problem total weight one and first normalizes
+routing counts within each trace. It contrasts observed correct and incorrect
+completions; it does not construct paired counterfactual behavioral inputs.
+Experts need at least four supporting problems in the audited policies.
+Within each selected layer, eligible experts are ordered by signed lift,
+then support, then expert ID, and capped at native top-$k$
+(eight for Qwen and four for GPT-OSS). Fixed bias scales each
+retained lift by the largest retained magnitude; paper-style steering uses
+only membership in the selected set, not those relative magnitudes.
+
+\paragraph{Why activation-based scores need not select the same experts.}
+Define $\mu_1=E_w[f_{r\ell e}\mid y_r=1]$,
+$\mu_0=E_w[f_{r\ell e}\mid y_r=0]$, and
+$\bar f=E_w[f_{r\ell e}]$. Algebra applied to our estimator gives
+\begin{equation}
+L_{\ell e}=\frac{\pi(1-\pi)}{\bar f}(\mu_1-\mu_0),\qquad \bar f>0.
+\end{equation}
+Under these same weights, lift and activation-rate difference have the same
+sign but can have different rankings: lift additionally divides by the
+expert's mean activation frequency. This identity does not equate either
+score to the paper's token-pooled estimate on different, paired inputs.
+
+The saved frequency masses, activation-weighted accuracies, and calibration
+baseline suffice to reconstruct $\mu_1-\mu_0$ without replaying a model.
+Table~\ref{tab:selection-audit} changes only the ranking score and retains
+our weights, sign filter, support threshold, layers, and target budget.
+The audit also reconstructs every saved selected set and normalized score.
+Only 14 of 48 Qwen positive layer--expert identities remain selected;
+the four-target GPT-OSS policies retain 6 of 16 positive identities and
+7 of 16 negative identities.
+This demonstrates selection sensitivity even before changing the data
+construction or token weighting. It does not measure intervention performance
+for these alternative sets.
+
+\input{expert_selection_audit_table}
+
+\paragraph{Interpretation of the intervention comparison.}
+The completed Qwen fixed runs share selection statistics and target sets.
+The completed GPT-OSS fixed and paper-style conditions use four targets
+per layer, with the same selected identities within each polarity.
+Their results compare intervention rules using our selector; they do not
+evaluate the full SteerMoE detection and steering pipeline.
+
+The completed OSS comparison already holds the selected identities fixed
+within each polarity while changing the intervention rule. A selector
+comparison should instead fix the split, generation contract, layers, budget,
+and intervention, changing only the ranking estimator. The present OSS
+budget is four targets per layer, matching native dispatch; smaller budgets
+of one or two targets would test less extensive promotion. Matched random
+sets would help separate selector information from generic perturbation. A faithful detection replication additionally requires
+paired contrastive inputs and token-pooled activation counts. The present
+audit changes no policies and launches no generation runs.

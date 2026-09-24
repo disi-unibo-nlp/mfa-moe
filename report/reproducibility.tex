@@ -7,11 +7,33 @@ The judge includes grouped prompt-selection studies, final-fit validation,
 and a frozen-prompt NVFP4 effort comparison. Boundary probes are complete
 for Qwen, GPT-OSS, and Gemma; external probe inspection covers Qwen only.
 Each correlation model has a complete six-benchmark corpus, with differing
-class-label coverage. Guiding tables use complete Qwen identity $+1$,
-identity $-1$, and margin-$1$ matched stochastic pairs. Incomplete conditions
-are excluded from numerical comparisons. Independent annotation assessment,
-response-grouped probe evaluation, and problem-cluster intervention
-uncertainty remain outstanding.
+class-label coverage. Guiding tables use complete Qwen fixed identity
+$+1,+2,-1$, both Qwen margin-$1$ pairs (concurrency 16 and 25),
+and GPT-OSS margin-$1$, plus GPT-OSS fixed positive-polarity
+$+1,+2,-1$, fixed negative-polarity $+1$, and paper positive-polarity
+$+1,-1$ and negative-polarity $+1$ pairs. The interrupted Qwen paper-style condition is reported separately on its
+494 completed IDs and excluded from complete-run summaries. Independent annotation assessment
+and independent intervention-strength selection remain outstanding.
+Response-grouped probe evaluation is complete for all three encoders.
+
+\paragraph{Grouped probe artifacts and regeneration.}
+The original \texttt{probes} directories remain the source of the routing
+layer choices. Each encoder additionally has a \texttt{probes\_grouped\_s42}
+directory under \path{results/probeTest}, with a run configuration, shared
+split plan, unit index, fold/target validation metrics and classifiers,
+outer-test predictions, final summaries, and completion status. The shared
+plan is \path{results/probeTest/grouped_s42/split_plan.json}. Source and code
+hashes and package versions identify the fitting inputs; incompatible
+checkpoints are rejected. The README in \path{src/moe_exp/probeTest} gives
+the CPU-only commands for all three encoders.
+
+Run \texttt{python3 report/generate\_grouped\_probe\_results.py} to rebuild
+the grouped tables and figure. The generator checks shared folds, one
+outer-test prediction per unit and target, validation-based selection, and
+mean-fold summaries. It records input and output fingerprints plus
+convergence and bootstrap-support diagnostics in
+\path{report/grouped_probe_sources.json}. All runs use four CPU workers
+with one BLAS thread each and expose no GPU to the fitting container.
 
 \paragraph{Regenerating probe, effort, and guiding tables.}
 Run \texttt{python3 report/generate\_current\_results.py} from the repository
@@ -21,8 +43,30 @@ and verifies unique matching IDs, prompts, prompt tokens, per-attempt
 sampling settings, and Boolean outcomes. It then recomputes pooled and
 benchmark-specific correctness, flips, token counts, and truncation counts.
 \path{report/current_results_sources.json} records input SHA-256 hashes
-and the derived guiding statistics. The generator does not run inference,
-rejudge answers, or calculate uncertainty intervals.
+and the derived guiding statistics. The generator does not run inference or
+rejudge answers itself. It reads the uniform corrected decisions and
+bootstrap comparisons from \path{report/guiding_rescoring.json}, checking
+that raw source hashes and historical outcomes match the preserved inputs.
+The primary intervals use 5,000 paired source-problem resamples with seed
+42. Margin and weighting tables read \path{report/guiding_sensitivity.json},
+which verifies the rescoring sidecar hash and reproduces its primary
+intervals before computing the equal-problem statistic. The complete
+rescoring and regeneration command sequence is given below.
+
+The following older command regenerates comparisons under the original
+saved judgments, for historical verification only. It does not regenerate
+the current rescored tables:
+
+\begin{verbatim}
+PYTHONPATH=src OPENBLAS_NUM_THREADS=1 OMP_NUM_THREADS=1 \
+  python3 -m moe_exp.moe_identity_guiding.bootstrap_saved \
+  --bootstrap-workers 8 --bootstrap-replicates 5000 --bootstrap-seed 42
+\end{verbatim}
+Each complete pair receives a separate \texttt{comparison\_bootstrap.json};
+incomplete pairs are skipped. Intervals resample source problems within
+benchmarks, preserve paired attempts, and use percentile endpoints.
+Random streams are indexed by replicate, so worker count does not change
+the estimates. Single-problem strata do not receive uncertainty intervals.
 
 \subsection{Completed run and independent checks}
 
@@ -97,3 +141,73 @@ then writes comparison tables, figures, and both additional model atlases.
 Source hashes and check results are recorded separately in
 \path{report/multimodel_correlation_sources.json} and
 \path{report/multimodel_correlation_audit.json}.
+
+
+\paragraph{Stratified annotation refresh.}
+Gemma and GPT-OSS use the September 21 stratified export, imported on
+September 22. The active annotation directories preserve the source, sampling,
+and import manifests and the failed-response record. The report checks the
+annotation hashes against every available replay checkpoint, including
+unlabelled traces, and compares class features in the analysis CSVs with the
+checkpoint values. It verifies 100,000 valid GPT-OSS labels and 99,999 valid
+Gemma labels, with one Gemma sentence missing and its trace marked partial.
+These checks and source fingerprints are included in the three-model audit
+and source manifest. \path{report/stratified_label_results.py}, invoked by the
+three-model generator, renders annotation counts, sentence composition, and
+class-conditioned confidence plots. The imported sampling manifests describe
+these labels; the older local error-weighted sampling directories do not.
+
+\paragraph{Outcome-conditioned class transitions.}
+Run \texttt{python3 report/generate\_class\_transitions.py} before rebuilding the report.
+This reads the three models' active sentence annotations and saved attempt correctness,
+checks unique sentence indices and one labelled attempt per source problem, and
+counts only originally adjacent labelled pairs. Raw counts, mean counts per labelled
+attempt (including zero-pair attempts), and denominators are saved both pooled and
+by benchmark in \path{report/class_transition_statistics.json}; input SHA-256 hashes
+are recorded in \path{report/class_transition_sources.json}. No inference is required.
+
+\paragraph{Expert-selection audit.}
+Run \texttt{python3 report/audit\_expert\_selection.py} to reconstruct saved
+selection sets and compare lift ranking with an activation-rate difference
+under the same problem-balanced weights. This uses completed full-sampling
+guided manifests and writes \path{report/expert_selection_audit.json},
+including source hashes, per-expert statistics, selected IDs, and overlap
+counts, plus the report table. It does not recompute token-pooled paper
+scores, change policies, or run inference.
+
+\paragraph{Interrupted Qwen intervention.}
+Run \texttt{python3 report/analyze\_partial\_guiding.py} to regenerate
+the separate partial-results subsection. It checks the interrupted manifest,
+unique completed IDs, matched baseline records, generation contracts, and hook
+diagnostics. Coverage, paired accuracy, output length, limit hits, and source
+hashes are saved in \path{report/partial_guiding_statistics.json}.
+It leaves the experiment interrupted and resumable, excludes missing attempts,
+and does not insert partial results into the complete-run tables.
+
+\paragraph{Regenerating rescored intervention results.}
+Install the pinned packages from \path{report/rescoring_requirements.txt}
+in an isolated environment. From the repository root run:
+\begin{verbatim}
+PYTHONPATH=src python3 report/rescore_guiding.py
+python3 report/generate_guiding_sensitivity.py
+PYTHONPATH=src python3 report/generate_current_results.py
+python3 report/analyze_partial_guiding.py
+python3 report/audit_expert_selection.py
+\end{verbatim}
+The scoring pass validates paired generation contracts and preserves raw
+outputs. Its sidecar records original and revised judgments, extracted
+answers, methods, source hashes, package versions, and new bootstrap
+comparisons. The weighting and report generators verify raw hashes and
+read revised decisions; the historical tables are archived in
+\path{report/guiding_legacy_scores.json}. The selection audit intentionally
+retains the frozen policies and their original calibration labels.
+
+\paragraph{Qualitative failure inspection.}
+Run \texttt{python3 report/inspect\_paper\_failures.py} to reproduce the
+22-case sample and text diagnostics from saved generations. The seed,
+termination strata, sampling unit, paired IDs, and source hashes are saved
+in \path{report/paper_failure_inspection.json}. Case-level assistant review
+notes are in \path{report/paper_failure_review.json}; they are interpretive
+annotations, not outputs of a fitted classifier or independent human labels.
+The qualitative sample uses historical judgments to preserve its original
+selection frame; current numerical tables use the offline rescoring sidecar.

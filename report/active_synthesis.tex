@@ -5,16 +5,21 @@ candidate fails the per-class recall gate. Its NVFP4 deployment reaches
 0.710 accuracy on 407 reused validation units under both low and medium
 effort, while changing 10.1\% of labels between settings. Neither prompt
 selection nor this deployment check establishes annotation accuracy on the
-generated benchmark traces. Imported Gemma and GPT-OSS labels additionally
-use a different sampling protocol and inference configuration.
+generated benchmark traces. Gemma and GPT-OSS now share a stratified 100,000-sentence sampling
+protocol and judge configuration, with 99,999 and 100,000 valid labels
+respectively. Their selected cohorts remain model-specific; Qwen uses a
+different sampling protocol and judge deployment.
 
-All three models have linearly decodable information about upcoming
-Schoenfeld labels in the released response prefixes. Selected-layer AUROC
-ranges are 0.835--0.934 for Qwen, 0.767--0.906 for GPT-OSS, and
-0.816--0.922 for Gemma. However, every response appears in both sentence
-partitions, and the reported layers are selected on the same test split.
-The results support within-corpus decodability rather than generalization
-to unseen responses. Qwen's external 581-unit inspection has 50.3\%
+All three models retain prospective episode information on held-out
+responses from the released SAT corpus. Five response-disjoint outer folds
+with inner-validation layer selection give macro-AUROC 0.852 ([0.838,0.868])
+for Qwen, 0.780 ([0.761,0.797]) for GPT-OSS, and 0.788 ([0.772,0.805]) for Gemma.
+Each exceeds its two-feature prefix-position baseline. These 95\% intervals
+resample responses conditional on the saved folds and fits. The study
+strengthens same-corpus generalization evidence but leaves external transfer,
+richer shortcut controls, and online detector validity unresolved.
+The original sentence-split scores and routing-layer choices retain their
+overlap and test-selection limitations. Qwen's external 581-unit inspection has 50.3\%
 primary and 60.8\% compatible agreement under a provisional hybrid review;
 it is neither independent human validation nor evidence for the other encoders.
 
@@ -26,17 +31,58 @@ whereas AMC23 gives $-0.200$ with an interval containing zero.
 These estimates do not control length, termination, or difficulty.
 Problem-respecting bootstrap intervals address repeated attempts for the
 reported primary features; naive attempt-level significance screens remain
-exploratory. Sparse and unmatched class coverage further limits comparisons.
+exploratory. Class coverage now spans all six benchmarks for Gemma and GPT-OSS.
+Sparse class/outcome cells and unmatched problem cohorts still limit
+comparisons; equal sentence budgets do not balance benchmark or class shares.
 No common causal interpretation of router confidence follows from these data.
 
-The held-out interventions provide direct perturbation evidence for Qwen,
-but no consistent accuracy improvement: identity promotion and margin
-guiding lose five and two net correct answers, while identity suppression
-gains eleven out of 1,395 attempts. Each effect is relative to its own
-matched baseline. The policy calibration excludes unscored traces,
-transfers between quantizations, and selects targets from observational
-associations. Margin manipulation also changes expert membership in
-finite precision. These limitations prevent attributing a small aggregate
-effect exclusively to the intended routing statistic or claiming a portable
-improvement. Problem-cluster uncertainty and independent selection of
-intervention strength remain necessary.
+The stratified class analysis also shows benchmark-dependent signs. For
+Gemma's Implement-labelled tokens, confidence correlates with correctness
+at $r=0.498$ on AIME24 (30 attempts) and $-0.367$ on AMC23 (40 attempts).
+For GPT-OSS, the corresponding coefficients are $0.164$ and $-0.098$.
+These are descriptive estimates on different model-specific cohorts,
+not paired tests of model differences. Gemma's AMC23 Plan, Explore, and
+Monitor cohorts contain only correct attempts, so their correctness
+correlations are undefined despite nonzero label coverage.
+
+After consistent offline rescoring, no complete intervention establishes
+a beneficial accuracy direction using the reported 95\% interval criterion.
+Qwen fixed positive strength $+2$ loses $2.80$ attempt-weighted points
+($[-5.16,-0.72]$); GPT-OSS fixed positive strength $+2$ loses $3.30$
+($[-6.16,-0.93]$). GPT-OSS paper-style suppression loses $2.22$ points
+($[-4.16,-0.43]$), and positive/negative paper-style promotion loses
+$61.65$ and $59.57$ points with intervals well below zero.
+All stochastic margin intervals contain zero: Qwen concurrency 25 gives
+$+0.93$ points ($[0.00,+1.86]$), while GPT-OSS gives $-0.86$
+($[-2.87,+1.15]$). Equal-problem weighting removes the below-zero
+intervals for fixed strength $+2$ and paper-style suppression, but
+paper-style promotion remains strongly negative. The earlier positive
+OSS secondary intervals and greedy Qwen margin interval do not survive
+rescoring. These exploratory intervals remain conditional on saved
+attempts and frozen policies and are not adjusted for multiple comparisons.
+
+The Qwen paper-style positive intervention was interrupted after 494 of
+1,395 attempts. On those same completed IDs, baseline accuracy is 70.45\%
+and guided accuracy is 0.81\%; all 494 guided outputs hit the 32,768-token
+limit. This subset covers all AIME24 attempts and part of AIME25 only,
+so it does not estimate the full evaluation effect
+(Section~\ref{sec:partial-qwen-paper}). Each effect uses
+its own matched baseline, generated or reused after compatibility and
+output-hash checks. Calibration excludes unscored traces and selects targets
+from observational associations; Qwen also transfers across quantizations.
+Margin manipulation changes expert membership in finite precision. Strong
+paper steering retains our selection estimator and is not a full replication
+of the paper. The evaluated controllers do not use online episode
+predictions: annotations and probes support measurement and target exploration.
+The qualitative sample in Section~\ref{sec:paper-failure-inspection}
+contains direct repetition examples in capped and normally ended outputs,
+an arithmetic error, and two equivalent final answers rejected by the saved
+scorer. These descriptions are conditional on a small stratified sample;
+they establish neither population failure-mode frequencies nor a causal
+mechanism. The documented formatting discrepancies motivated the completed offline
+rescoring pass; the 22-case inspection retains its original sampling frame.
+These findings test the actionability of routing associations, without
+establishing a portable policy or isolating identity from mixture-weight
+changes. Intervals are conditional on saved runs, omit independent seed
+variation, and are not adjusted for multiple comparisons. Objective and
+strength selection require an independent evaluation design.

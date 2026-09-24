@@ -1,7 +1,7 @@
 \section{Three-model correlation results}
 \label{sec:multimodel}
-Forward replay and saved correlation analyses are complete for Qwen3.5-35B-A3B, Gemma-4-26B-A4B, and GPT-OSS-20B. Each includes 4,647 attempts from 1,547 source problems on the same six benchmarks, with 100 complete avg@32 groups. All token-limit completions are retained. Completion of class analysis means analysis of available labels, not full annotation coverage. GPT-OSS class tokens occur only in MATH-500 and part of AIME24; the other four benchmarks have no class estimates.
-Qwen uses the local deterministic NVFP4 judge described above. Gemma and GPT-OSS use imported Qwen3.8-27B labels, with temperature 1, top-$p$ 0.95, top-$k$ 20, low reasoning effort and a 16,384-token judge budget. Consequently class comparisons also differ in annotation protocol and cohort. Generation uses Qwen GPTQ-Int4, Gemma NVFP4, and GPT-OSS checkpoints respectively; replay settings and selected decoder indices are below. Token counts and absolute position windows are model-specific. Correlations are marginal descriptive associations, not controlled model effects.
+Forward replay and saved correlation analyses are complete for Qwen3.5-35B-A3B, Gemma-4-26B-A4B, and GPT-OSS-20B. Each includes 4,647 attempts from 1,547 source problems on the same six benchmarks, with 100 complete avg@32 groups. All token-limit completions are retained. Completion of class analysis means analysis of available labels, not full annotation coverage. The refreshed Gemma and GPT-OSS class analyses use the imported stratified labels and cover all six benchmarks; individual class estimates still depend on token-bearing and finite-outcome support.
+Qwen uses the local deterministic NVFP4 judge described above. Gemma and GPT-OSS use imported Qwen3.8-27B labels, with temperature 1, top-$p$ 0.95, top-$k$ 20, low reasoning effort and a 16,384-token judge budget. Gemma and GPT-OSS share the stratified sampling procedure and judge settings, but have model-specific selected problems and sentence quotas. Qwen retains a different annotation protocol. Generation uses Qwen GPTQ-Int4, Gemma NVFP4, and GPT-OSS checkpoints respectively; replay settings and selected decoder indices are below. Token counts and absolute position windows are model-specific. Correlations are marginal descriptive associations, not controlled model effects.
 \begingroup\scriptsize\setlength{\tabcolsep}{4pt}
 \begin{longtable}{@{}llll@{}}
 \caption{Replay configuration and mean reasoning length used for position windows.}\label{tab:multi-protocol}\\
@@ -67,22 +67,23 @@ Qwen3.5-35B-A3B & Implement & 477 & 30 & 30 & 667 & 39 & 271 \\
 Qwen3.5-35B-A3B & Explore & 260 & 28 & 27 & 474 & 22 & 251 \\
 Qwen3.5-35B-A3B & Verify & 400 & 29 & 30 & 617 & 38 & 270 \\
 Qwen3.5-35B-A3B & Monitor & 451 & 30 & 29 & 583 & 29 & 272 \\
-Gemma-4-26B-A4B & Read & 393 & 28 & 29 & 528 & 34 & 271 \\
-Gemma-4-26B-A4B & Analyze & 424 & 30 & 30 & 615 & 40 & 269 \\
-Gemma-4-26B-A4B & Plan & 294 & 27 & 28 & 397 & 20 & 244 \\
-Gemma-4-26B-A4B & Implement & 478 & 30 & 30 & 656 & 39 & 271 \\
-Gemma-4-26B-A4B & Explore & 202 & 26 & 25 & 387 & 20 & 235 \\
-Gemma-4-26B-A4B & Verify & 408 & 30 & 30 & 597 & 37 & 261 \\
-Gemma-4-26B-A4B & Monitor & 280 & 30 & 29 & 461 & 28 & 251 \\
-GPT-OSS-20B & Read & 474 & 68 & 0 & 0 & 0 & 0 \\
-GPT-OSS-20B & Analyze & 433 & 68 & 0 & 0 & 0 & 0 \\
-GPT-OSS-20B & Plan & 324 & 68 & 0 & 0 & 0 & 0 \\
-GPT-OSS-20B & Implement & 500 & 68 & 0 & 0 & 0 & 0 \\
-GPT-OSS-20B & Explore & 291 & 44 & 0 & 0 & 0 & 0 \\
-GPT-OSS-20B & Verify & 435 & 68 & 0 & 0 & 0 & 0 \\
-GPT-OSS-20B & Monitor & 496 & 68 & 0 & 0 & 0 & 0 \\
+Gemma-4-26B-A4B & Read & 434 & 28 & 30 & 601 & 37 & 265 \\
+Gemma-4-26B-A4B & Analyze & 433 & 30 & 30 & 628 & 40 & 265 \\
+Gemma-4-26B-A4B & Plan & 313 & 26 & 28 & 501 & 27 & 194 \\
+Gemma-4-26B-A4B & Implement & 490 & 30 & 30 & 639 & 40 & 266 \\
+Gemma-4-26B-A4B & Explore & 215 & 24 & 23 & 459 & 20 & 200 \\
+Gemma-4-26B-A4B & Verify & 430 & 30 & 30 & 629 & 39 & 251 \\
+Gemma-4-26B-A4B & Monitor & 329 & 30 & 29 & 542 & 34 & 217 \\
+GPT-OSS-20B & Read & 314 & 28 & 28 & 517 & 32 & 177 \\
+GPT-OSS-20B & Analyze & 341 & 30 & 30 & 587 & 34 & 216 \\
+GPT-OSS-20B & Plan & 216 & 28 & 30 & 450 & 26 & 114 \\
+GPT-OSS-20B & Implement & 470 & 30 & 30 & 634 & 40 & 248 \\
+GPT-OSS-20B & Explore & 212 & 27 & 28 & 441 & 19 & 128 \\
+GPT-OSS-20B & Verify & 346 & 30 & 30 & 583 & 32 & 169 \\
+GPT-OSS-20B & Monitor & 368 & 30 & 30 & 577 & 29 & 221 \\
 \end{longtable}\endgroup
 
+\input{stratified_label_results}
 \begin{figure}[p]\centering
 \includegraphics[width=\linewidth]{figures/multimodel_continuation.pdf}
 \caption{Whole continuation: saved correctness correlations and pointwise source-problem bootstrap intervals. Overlap or separation of intervals is not a paired test of model differences.}
@@ -246,5 +247,5 @@ Top-1 switch rate & $0.162$ (30) & $0.546$ (30) & $-0.151$ (40) \\
 Adjacent selected-set overlap & $-0.029$ (30) & $-0.340$ (30) & $-0.089$ (40) \\
 \end{longtable}\endgroup
 
-Aggregate correctness and metric-pair coefficients were independently recomputed from saved CSVs in all 60 model/scope combinations; repeated-problem mean correlations and within-problem contrasts were also checked. This validates numerical consistency, not judge accuracy or replay fidelity. Audit counts and numerical errors are saved in \path{report/multimodel_correlation_audit.json}; input SHA-256 hashes are in \path{report/multimodel_correlation_sources.json}. The appended atlases include every Gemma and GPT-OSS scope, including empty class panels. Full correctness tables are available in \path{report/multimodel_correlation_tables.tex}.
+Aggregate correctness and metric-pair coefficients were independently recomputed from saved CSVs in all 60 model/scope combinations; repeated-problem mean correlations and within-problem contrasts were also checked. This validates numerical consistency, not judge accuracy or replay fidelity. Audit counts and numerical errors are saved in \path{report/multimodel_correlation_audit.json}; input SHA-256 hashes are in \path{report/multimodel_correlation_sources.json}. The appended atlases include every Gemma and GPT-OSS scope, with unavailable coefficients explicitly marked. Full correctness tables are available in \path{report/multimodel_correlation_tables.tex}.
 \input{multimodel_supplementary_plots}

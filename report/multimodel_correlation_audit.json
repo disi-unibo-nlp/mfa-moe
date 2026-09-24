@@ -237,8 +237,8 @@
       },
       "class-Read": {
         "correctness": {
-          "coefficients_checked": 66,
-          "maximum_absolute_error": 8.326672684688674e-17
+          "coefficients_checked": 77,
+          "maximum_absolute_error": 1.6653345369377348e-16
         },
         "metric_pairs": {
           "coefficients_checked": 385,
@@ -257,8 +257,8 @@
       },
       "class-Plan": {
         "correctness": {
-          "coefficients_checked": 77,
-          "maximum_absolute_error": 3.3306690738754696e-16
+          "coefficients_checked": 66,
+          "maximum_absolute_error": 1.6653345369377348e-16
         },
         "metric_pairs": {
           "coefficients_checked": 385,
@@ -268,7 +268,7 @@
       "class-Implement": {
         "correctness": {
           "coefficients_checked": 77,
-          "maximum_absolute_error": 4.996003610813204e-16
+          "maximum_absolute_error": 1.6653345369377348e-16
         },
         "metric_pairs": {
           "coefficients_checked": 385,
@@ -278,7 +278,7 @@
       "class-Explore": {
         "correctness": {
           "coefficients_checked": 66,
-          "maximum_absolute_error": 1.6653345369377348e-16
+          "maximum_absolute_error": 1.1102230246251565e-16
         },
         "metric_pairs": {
           "coefficients_checked": 385,
@@ -287,8 +287,8 @@
       },
       "class-Verify": {
         "correctness": {
-          "coefficients_checked": 66,
-          "maximum_absolute_error": 1.3877787807814457e-16
+          "coefficients_checked": 77,
+          "maximum_absolute_error": 5.551115123125783e-16
         },
         "metric_pairs": {
           "coefficients_checked": 385,
@@ -298,7 +298,7 @@
       "class-Monitor": {
         "correctness": {
           "coefficients_checked": 66,
-          "maximum_absolute_error": 8.326672684688674e-17
+          "maximum_absolute_error": 1.6653345369377348e-16
         },
         "metric_pairs": {
           "coefficients_checked": 385,
@@ -448,71 +448,71 @@
       },
       "class-Read": {
         "correctness": {
-          "coefficients_checked": 33,
-          "maximum_absolute_error": 1.1102230246251565e-16
+          "coefficients_checked": 77,
+          "maximum_absolute_error": 1.6653345369377348e-16
         },
         "metric_pairs": {
-          "coefficients_checked": 165,
+          "coefficients_checked": 385,
           "maximum_absolute_error": 1.1102230246251565e-16
         }
       },
       "class-Analyze": {
         "correctness": {
-          "coefficients_checked": 33,
-          "maximum_absolute_error": 1.1102230246251565e-16
+          "coefficients_checked": 77,
+          "maximum_absolute_error": 1.6653345369377348e-16
         },
         "metric_pairs": {
-          "coefficients_checked": 165,
+          "coefficients_checked": 385,
           "maximum_absolute_error": 1.1102230246251565e-16
         }
       },
       "class-Plan": {
         "correctness": {
-          "coefficients_checked": 33,
-          "maximum_absolute_error": 1.6653345369377348e-16
+          "coefficients_checked": 77,
+          "maximum_absolute_error": 2.220446049250313e-16
         },
         "metric_pairs": {
-          "coefficients_checked": 165,
+          "coefficients_checked": 385,
           "maximum_absolute_error": 1.1102230246251565e-16
         }
       },
       "class-Implement": {
         "correctness": {
-          "coefficients_checked": 33,
-          "maximum_absolute_error": 2.498001805406602e-16
+          "coefficients_checked": 77,
+          "maximum_absolute_error": 2.7755575615628914e-16
         },
         "metric_pairs": {
-          "coefficients_checked": 165,
+          "coefficients_checked": 385,
           "maximum_absolute_error": 1.1102230246251565e-16
         }
       },
       "class-Explore": {
         "correctness": {
-          "coefficients_checked": 33,
+          "coefficients_checked": 77,
           "maximum_absolute_error": 1.3877787807814457e-16
         },
         "metric_pairs": {
-          "coefficients_checked": 165,
+          "coefficients_checked": 385,
           "maximum_absolute_error": 1.1102230246251565e-16
         }
       },
       "class-Verify": {
         "correctness": {
-          "coefficients_checked": 33,
-          "maximum_absolute_error": 1.1102230246251565e-16
+          "coefficients_checked": 77,
+          "maximum_absolute_error": 1.3877787807814457e-16
         },
         "metric_pairs": {
-          "coefficients_checked": 165,
+          "coefficients_checked": 385,
           "maximum_absolute_error": 1.1102230246251565e-16
         }
       },
       "class-Monitor": {
         "correctness": {
-          "coefficients_checked": 33,
+          "coefficients_checked": 77,
           "maximum_absolute_error": 2.7755575615628914e-16
         },
         "metric_pairs": {
-          "coefficients_checked": 165,
+          "coefficients_checked": 385,
           "maximum_absolute_error": 1.1102230246251565e-16
         }
       },
@@ -630,6 +630,58 @@
         "coefficients_checked": 378,
         "maximum_absolute_error": 1.1102230246251565e-16
       }
+    }
+  },
+  "stratified_import": {
+    "gemma": {
+      "labelled_traces": 1503,
+      "source_problems": 1503,
+      "valid_labels": 99999,
+      "unknown_labels": 1,
+      "replay_checkpoints_checked": 4647,
+      "datasets": {
+        "aime24": 2887,
+        "aime25": 3861,
+        "amc23": 2573,
+        "math500": 20825,
+        "minerva": 15297,
+        "olympiad": 54556
+      },
+      "labels": {
+        "Read": 8422,
+        "Analyze": 24118,
+        "Implement": 39234,
+        "Verify": 14447,
+        "Monitor": 5154,
+        "Explore": 5336,
+        "Plan": 3288
+      },
+      "partial_traces": 1
+    },
+    "gpt": {
+      "labelled_traces": 1510,
+      "source_problems": 1510,
+      "valid_labels": 100000,
+      "unknown_labels": 0,
+      "replay_checkpoints_checked": 4647,
+      "datasets": {
+        "aime24": 4128,
+        "aime25": 4987,
+        "amc23": 1373,
+        "math500": 14050,
+        "minerva": 5247,
+        "olympiad": 70215
+      },
+      "labels": {
+        "Analyze": 26322,
+        "Implement": 29483,
+        "Verify": 12737,
+        "Monitor": 8966,
+        "Plan": 6035,
+        "Read": 3702,
+        "Explore": 12755
+      },
+      "partial_traces": 0
     }
   }
 }

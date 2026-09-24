@@ -1,0 +1,9 @@
+\begin{table}[ht]\centering\small
+\caption{Selection sensitivity using saved calibration sufficient statistics. RD here uses the same problem-balanced trace weights, support filter, polarity, layer set, and per-layer budget as lift; it is not a reproduction of the paper\textquotesingle s token-pooled contrastive estimator. Overlap counts layer--expert identities.}
+\label{tab:selection-audit}
+\begin{tabular}{llrrl}\toprule
+Model & Polarity & Layers & Overlap & Overlap per layer \\\midrule
+GPT-OSS & negative & 4 & 7/16 & 15: 1/4, 19: 2/4, 21: 1/4, 23: 3/4 \\
+GPT-OSS & positive & 4 & 6/16 & 15: 2/4, 19: 1/4, 21: 1/4, 23: 2/4 \\
+Qwen & positive & 6 & 14/48 & 27: 4/8, 34: 3/8, 35: 2/8, 36: 1/8, 38: 3/8, 39: 1/8 \\
+\bottomrule\end{tabular}\end{table}

@@ -6,7 +6,7 @@ representation of the prefix
 immediately before a sentence contains linearly accessible information about
 the upcoming Schoenfeld episode.  It therefore measures prospective
 prefix-state decodability, not semantic classification after reading the
-sentence and not the latent dynamics of a Qwen-generated trace.
+sentence or the latent dynamics of an encoder's own generated trace.
 
 \paragraph{Three-model comparison.}
 All three encoders use the same 3,087 units and target-stratified sentence
@@ -76,7 +76,71 @@ responses, the effective independent sample size is much closer to the number
 of responses than to the number of sentences.  Test-based layer selection
 adds further optimism.
 
-\paragraph{External benchmark inspection.}
+\subsection{Response-grouped validation and a position baseline}
+\label{sec:report-grouped-probes}
+
+The additional grouped study tests the same representations on complete
+responses that are absent from both fitting and layer selection.
+Table~\ref{tab:probe-grouped-summary} reports macro-AUROC 0.852
+($95\%$ interval [0.838,0.868]) for Qwen, 0.780 ([0.761,0.797]) for GPT-OSS,
+and 0.788 ([0.772,0.805]) for Gemma. The corresponding legacy means are
+0.894, 0.847, and 0.869. These differences change both the split and
+the layer-selection criterion, so they cannot be attributed solely to
+response overlap. The grouped results nevertheless establish a stronger
+claim than the original table: upcoming-label information remains accessible
+on held-out responses within the released SAT corpus.
+
+\input{probe_grouped_summary_table}
+
+The prefix-position baseline reaches macro-AUROC 0.566, 0.571, and
+0.566, respectively. Each encoder exceeds its baseline, and all 21
+per-target paired AUROC intervals exclude zero; these intervals are not
+adjusted for multiple comparisons (Table~\ref{tab:probe-grouped-targets}). Figure~\ref{fig:probe-grouped-auc}
+shows both predictions with response-bootstrap uncertainty. Thus the
+signal exceeds this particular two-feature positional rule. The control
+does not exclude more flexible position effects, problem-type or formatting
+shortcuts, or correlations between episodes and lexical prefix content.
+
+\begin{figure*}[tbp]
+\centering
+\includegraphics[width=\textwidth]{figures/probe_grouped_auc.pdf}
+\caption{Prospective AUROC on response-disjoint outer test folds. Points
+are means of five fold scores and horizontal bars are 95\% conditional
+response-bootstrap intervals. Both the hidden-state probe and the simple
+prefix-position baseline are fitted without the test responses.}
+\Description{Three panels compare seven episode targets for Qwen, GPT-OSS, and Gemma. Hidden-state probes have higher mean held-out-response AUROC than the prefix-position baseline for every target. Horizontal bars show conditional 95 percent response-bootstrap intervals.}
+\label{fig:probe-grouped-auc}
+\end{figure*}
+
+\input{probe_grouped_targets_table}
+
+Ranking performance still does not imply reliable seven-class annotation.
+Macro binary F1 is 0.521 for Qwen, 0.400 for GPT-OSS, and 0.426 for
+Gemma at the unchanged decision rule. In Qwen, Explore reaches AUROC 0.823
+but F1 only 0.341; Monitor reaches 0.799 and 0.355. The selected layers also
+vary across folds: Qwen Read uses indices 23--36 and Implement 18--32.
+This variability argues against interpreting one selected index as a unique
+reasoning location. The study intentionally produces fold-specific probes;
+the existing routing experiments retain their original measurement layers.
+
+Across the five folds there are 1,505 Qwen, 945 GPT-OSS, and 1,155 Gemma
+fits, including 35 selected-layer refits and 35 position baselines per model.
+The numbers of inner candidate fits reaching the fixed iteration limit are
+0, 2, and 2, respectively; the selected-layer refits
+have 0, 0, and 0 convergence warnings.
+All position fits converge, and all 5,000 bootstrap draws retain binary
+support for every reported target. Diagnostics and indices are retained
+rather than used to change the solver budget after evaluation.
+
+The remaining inferential limits are the small number of responses and the
+scope of the test. The intervals condition on this single split plan,
+selected layers, and fitted classifiers; they omit refitting and split-seed
+variation. Same-corpus response generalisation does not establish transfer
+to new benchmarks, annotation validity on the encoders' own generations,
+or a causal role for the probed directions. The legacy external Qwen
+inspection below addresses a different population and decision rule.
+
+\subsection{External benchmark inspection}
 All 80 benchmark examples complete without omitted units, yielding 581
 sentence boundaries.  Table~\ref{tab:schoenfeld-external-labels} shows that
 the seven-way inspection behavior collapses mainly to Implement, Read, and

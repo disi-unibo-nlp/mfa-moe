@@ -84,8 +84,8 @@ whole source problems, keeping attempts from the same problem together.  Xu et
 al. provide relevant precedent for bootstrap intervals and use 10,000
 resamples in one category--feature analysis~\cite{xu-etal-2025-conceptual}; the
 resample count in this pipeline remains explicit and configurable rather than
-being justified by that number alone.  Benjamini--Hochberg $q$-values are
-computed separately within each declared dataset/scope, target, aggregation,
+being justified by that number alone.  Benjamini--Hochberg adjusted $p$-values (stored as $q$-values)
+\cite{benjamini1995fdr} are computed separately within each declared dataset/scope, target, aggregation,
 or cross-feature family.  Naive trace-level $p$-values are retained only as
 diagnostics when a dataset contains repeated attempts, and layerwise and
 expert-identity screens remain exploratory.

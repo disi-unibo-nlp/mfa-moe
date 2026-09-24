@@ -2,7 +2,8 @@
 \label{sec:guiding}
 
 \paragraph{Calibration and evaluation population.}
-Both policies split source problems within each benchmark, allocating 1,082
+The original Qwen identity and margin policies split source problems within
+each benchmark, allocating 1,082
 problems to calibration and 465 to evaluation (70/30, seed 42).
 Calibration uses 3,014 scored traces from 1,001 problems; 238 traces with
 missing saved correctness are excluded. This differs from the correlation
@@ -23,8 +24,8 @@ least four distinct problems and positive accuracy lift over the calibration
 baseline. At most eight identities per layer are selected; positive lifts
 are normalized to the largest retained lift. A signed strength scales the
 additive router-logit bias. Strength $+1$ promotes these identities;
-strength $-1$ suppresses the same identities. The negative control does
-not learn a separate set of incorrectly associated experts. Unlike the
+strength $-1$ suppresses the same identities. This negative-strength control suppresses positive-lift experts; the additional
+negative-polarity conditions below select a separate set of negative-lift experts. Unlike the
 pooled-ID observational screen, policy targets are layer-qualified.
 
 \paragraph{Margin policy.}
@@ -43,32 +44,147 @@ generation, which is an additional unisolated deployment difference.
 Each policy is compared with its own baseline using identical problem IDs,
 prompts, prompt token IDs, per-attempt seeds, sampling settings, engine
 configuration, and recorded software versions. Generation uses temperature
-0.6, top-$p$ 0.95, and a 32,768-token limit. The identity $+1$ and margin
-comparisons use maximum concurrency 16; the identity $-1$ comparison uses
-25. Baseline outputs therefore cannot be treated as interchangeable across
-comparisons. Only complete matched stochastic pairs are reported; the
-strength-$+2$ condition has no complete matched evaluation artifact.
+0.6, top-$p$ 0.95, and a 32,768-token limit. The original Qwen identity $+1$ and margin
+comparisons use maximum concurrency 16; Qwen identity $-1$ and $+2$
+use 25. The seven OSS identity conditions share concurrency 25 and the
+same recorded generation contract. Baselines are interchangeable only
+after compatibility and output-hash checks. Primary summary tables include
+complete matched stochastic pairs. All ten complete identity comparisons
+appear in Table~\ref{tab:identity-comparison}; the Qwen paper run was interrupted and its completed subset is reported
+separately in Section~\ref{sec:partial-qwen-paper}.
 Separate greedy and restricted-benchmark outputs are not pooled here.
 The engine writes completed records incrementally and can resume without
 continuing a partially generated sequence. Baseline reuse requires matching
-contracts and a verified output hash.
+contracts and a verified output hash; the Qwen and GPT-OSS margin runs at
+concurrency 25 reuse compatible saved baselines. The evaluated controllers
+use calibrated identities or current margins, without online episode
+predictions. Annotation and probing support measurement and target exploration.
+Accuracy tables use the uniform offline equivalence rule in
+Section~\ref{sec:guiding-rescoring}; original judgments remain archived.
+Calibration labels and fitted policies are held fixed.
+
+\input{guiding_rescoring_results}
 
 \input{guiding_summary_table}
 \input{guiding_dataset_table}
 
 \paragraph{Observed effects and limits.}
-Identity $+1$ changes 83 correctness outcomes and loses five net correct
-answers; margin guiding changes 80 and loses two. Identity $-1$ changes 83
-and gains eleven. The corresponding pooled changes are $-0.36$, $-0.14$,
-and $+0.79$ percentage points. This does not establish a reliable benefit
-from promoting positive-lift experts or targeting the calibrated margin.
-The negative-strength point estimate is positive, but differences across
+Qwen identity $+1$ changes 80 recorded outcomes and loses four net correct
+answers; margin guiding changes 79 and gains one. Identity $-1$ changes
+77 and gains 15. The corresponding rescored changes are $-0.29$,
+$+0.07$, and $+1.08$ points. These original three comparisons do not
+establish a beneficial direction. The negative-strength point estimate is positive, but differences across
 strengths are not a controlled ranking because their baselines and
-concurrency differ. These are exploratory comparisons without paired
-source-problem confidence intervals or a separate strength-selection set.
+concurrency differ. These are exploratory comparisons without a separate strength-selection set.
+Paired, dataset-stratified source-problem bootstrap intervals use 5,000
+resamples with seed 42. All attempts and both conditions remain together
+when a problem is sampled; pooled accuracy retains its attempt weighting.
+The 95\% intervals for identity $+1$, identity $-1$, and margin guiding
+are respectively $[-1.15,+0.65]$, $[-0.14,+2.37]$, and
+$[-0.86,+1.01]$ percentage points. All include zero, so these comparisons
+do not establish the direction of the accuracy effect. They do not establish
+equivalence either. Each AIME evaluation has only nine source problems,
+which limits the precision of benchmark-specific bootstrap estimates.
+Intervals are conditional on the frozen policies and saved attempts, and
+are not adjusted for multiple comparisons.
 Pooled attempt accuracy also weights each AIME/AMC problem 32 times as
 heavily as each single-attempt problem; benchmark counts are reported to
 make this weighting explicit.
+
+\paragraph{Completed identity comparisons.}
+For Qwen fixed positive-polarity guiding, strength $+1$ changes accuracy
+by $-0.29$ points with interval $[-1.15,+0.65]$, and strength $-1$ gives
+$+1.08$ with $[-0.14,+2.37]$. Increasing promotion to strength $+2$
+gives $-2.80$ points with $[-5.16,-0.72]$. Thus stronger promotion
+reduces primary attempt-weighted accuracy under the revised scorer.
+
+All seven GPT-OSS identity conditions use four targets at each of layers
+15, 19, 21, and 23, matching native routing top-$k=4$. Each evaluates
+1,395 matched attempts from 465 held-out problems at concurrency 25,
+with a frozen chat-template date of 22 September 2026. Rescored baseline
+accuracy is 77.85\% (1,086/1,395) in every condition.
+Fixed positive strengths $+1$, $+2$, and $-1$ give changes of $0.00$,
+$-3.30$, and $-1.00$ points. Only the strength-$+2$ interval excludes
+zero: $[-6.16,-0.93]$. Fixed negative-polarity promotion gives $+0.57$
+points with $[-1.58,+2.65]$ and does not establish a benefit.
+
+Paper-style promotion at strength $+1$ reduces accuracy to 16.20\%
+(226/1,395) for positive targets and 18.28\% (255/1,395) for negative
+targets. Changes are $-61.65$ points with $[-69.32,-53.41]$ and
+$-59.57$ with $[-67.24,-51.40]$, respectively. Mean generated length
+rises from 6,497 to 22,489 and 23,639 tokens; token-limit hits increase
+from 74 to 670 and 815. Suppressing the positive set with paper-style
+strength $-1$ gives 75.63\% accuracy and a smaller but below-zero
+primary change of $-2.22$ points ($[-4.16,-0.43]$); mean length is
+6,698 tokens with 106 limit hits.
+
+Paper-style steering adapts the extreme-score intervention with
+$\epsilon=0.01$ while retaining our accuracy-lift selector
+\cite{fayyaz2025steermoe}; it is not a full reproduction of SteerMoE.
+The four-target budget does not prevent severe degradation from promotion.
+Promoting a full top-$k$ set fixes membership and equalises its hook scores;
+this is a possible mechanism, not a verified explanation of termination.
+
+\input{identity_comparison_table}
+
+\input{partial_guiding_results}
+
+\input{paper_failure_results}
+
+\input{expert_selection_audit}
+
+\paragraph{Additional completed margin comparisons.}
+All three complete stochastic margin comparisons have intervals containing
+zero after consistent rescoring. Qwen at concurrency 16 gives $+0.07$
+points ($[-0.86,+1.01]$); Qwen at concurrency 25 gains 13 net correct
+attempts, or $+0.93$ points ($[0.00,+1.86]$). GPT-OSS loses 12 net
+correct attempts, or $-0.86$ points ($[-2.87,+1.15]$). The Qwen
+concurrency-25 lower endpoint is zero, so its positive point estimate does
+not establish a direction under this interval criterion.
+
+\input{margin_comparison_table}
+
+\input{guiding_token_table}
+
+\paragraph{Benchmark contributions and evaluation weighting.}
+Table~\ref{tab:guiding-benchmark-changes} shows the benchmark-level point
+estimates. The primary statistic weights all 1,395 attempts equally.
+Table~\ref{tab:guiding-weighting} adds a secondary statistic that first
+averages correctness across each problem's attempts and then averages the
+465 problems. A benchmark's weight remains proportional to its problem
+count; this is neither a benchmark macro-average nor pass@32. Both
+statistics use the same 5,000 paired, dataset-stratified problem resamples
+(seed 42), retaining all attempts when a problem is drawn. Full benchmark
+counts and intervals are saved in \path{report/guiding_sensitivity.json}.
+
+\input{guiding_benchmark_changes}
+\input{guiding_weighting_table}
+\input{guiding_qwen_margin_breakdown}
+
+Qwen margin guiding at concurrency 25 gains seven correct attempts on
+AIME24 and seven on AIME25, with zero net change on AMC23. MATH-500
+loses one correct attempt; Minerva and OlympiadBench each have zero net
+change. The AIME improvements involve nine improved problems and one
+worsened problem. Equal-problem weighting gives $-0.12$ points with
+$[-2.07,+1.80]$, compared with the primary $+0.93$ and $[0.00,+1.86]$.
+Neither weighting establishes a beneficial direction.
+
+For GPT-OSS fixed positive strength $+2$, the revised equal-problem
+estimate is $-0.10$ points ($[-3.12,+3.08]$), while fixed negative-polarity
+promotion gives $+2.35$ ($[-0.58,+5.44]$). The previous secondary
+positive intervals do not survive rescoring. For positive strength $+2$,
+MATH-500 and Minerva gain three correct attempts each, OlympiadBench
+loses five, and AIME24, AIME25, and AMC23 lose 24, 22, and one.
+Qwen fixed strength $+2$ gives $-0.68$ equal-problem points
+($[-2.76,+1.33]$), and GPT-OSS paper-style suppression gives $-0.83$
+($[-3.76,+2.23]$); their below-zero primary intervals do not persist
+under this secondary weighting. GPT-OSS paper-style positive and negative
+promotion remain strongly negative: $-50.15$ ($[-54.88,-45.45]$) and
+$-49.13$ ($[-53.80,-44.56]$) points. No complete stochastic comparison
+has a positive interval excluding zero under either weighting.
+
+These intervals do not account for configuration search, independent decoding-seed
+variation, or multiple comparisons.
 
 \paragraph{What the margin hook actually changes.}
 Full diagnostics for the completed margin comparison record 20,657,039
@@ -83,3 +199,13 @@ of the kernel's dispatched expert IDs. Their denominator can include
 prefill, padding, and recomputation and is not a generated-token count.
 The identity $-1$ comparison uses minimal diagnostics, so detailed hook
 statistics are not available on a common basis across all conditions.
+
+
+\paragraph{Separate generation protocols.}
+The separate greedy comparisons use 465 attempts on 465 problems.
+Qwen identity guiding gives $-0.22$ points ($[-2.58,+2.15]$), and
+margin guiding gives $+0.86$ ($[-1.29,+3.01]$). The 39-problem
+Minerva-only identity comparison changes from 24 to 25 correct answers,
+or $+2.56$ points ($[-5.13,+12.82]$). All three intervals contain zero.
+These distinct decoding protocols and populations remain separate from
+the full stochastic comparisons.

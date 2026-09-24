@@ -1,0 +1,281 @@
+{
+  "checked_at_utc": "2026-09-24T17:40:14.074147+00:00",
+  "table_checks": [
+    {
+      "table": "res-identity",
+      "source": "identity_comparison_table.tex",
+      "rows": 10,
+      "status": "matches"
+    },
+    {
+      "table": "res-margin",
+      "source": "margin_comparison_table.tex",
+      "rows": 3,
+      "status": "matches"
+    },
+    {
+      "table": "res-benchmark-changes",
+      "source": "guiding_benchmark_changes.tex",
+      "rows": 13,
+      "status": "matches"
+    },
+    {
+      "table": "res-weighting",
+      "source": "guiding_weighting_table.tex",
+      "rows": 13,
+      "status": "matches"
+    },
+    {
+      "table": "res-qwen-margin-breakdown",
+      "source": "guiding_qwen_margin_breakdown.tex",
+      "rows": 6,
+      "status": "matches"
+    },
+    {
+      "table": "res-tokens",
+      "source": "guiding_token_table.tex",
+      "rows": 13,
+      "status": "matches"
+    },
+    {
+      "table": "guiding-rescoring-audit",
+      "source": "guiding_rescoring_results.tex",
+      "rows": 6,
+      "status": "matches"
+    },
+    {
+      "table": "paper-failure-review",
+      "source": "paper_failure_results.tex",
+      "rows": 3,
+      "status": "matches"
+    },
+    {
+      "table": "selection-audit",
+      "source": "expert_selection_audit_table.tex",
+      "rows": 3,
+      "status": "matches"
+    }
+  ],
+  "verified_retained_sources": 86,
+  "updated_generated_source_hashes": [
+    "report/current_results_sources.json",
+    "report/guiding_sensitivity.json",
+    "report/guiding_benchmark_changes.tex",
+    "report/guiding_weighting_table.tex",
+    "report/active_synthesis.tex",
+    "report/reproducibility.tex",
+    "report/inspect_paper_failures.py",
+    "report/paper_failure_inspection.json",
+    "report/paper_failure_review.json",
+    "report/paper_failure_results.tex",
+    "report/guiding_results.tex",
+    "report/expert_selection_audit.tex",
+    "report/main.tex"
+  ],
+  "interventions": [
+    {
+      "path": "results/moe_identity_guiding/minerva/batch16/guided/manifest.json",
+      "status": "complete",
+      "attempts": 39,
+      "baseline_correct": 24,
+      "guided_correct": 25,
+      "delta_pp": 2.564102564102566,
+      "scoring_contract": "extracted_answer_equivalence_v1",
+      "thesis_status": "reported; corrected matched outcomes and paired intervals verified"
+    },
+    {
+      "path": "results/moe_identity_guiding/oss_global/variants/negative_fixed/strength_1/sampling/full/guided/manifest.json",
+      "status": "complete",
+      "attempts": 1395,
+      "baseline_correct": 1086,
+      "guided_correct": 1094,
+      "delta_pp": 0.5734767025089682,
+      "scoring_contract": "extracted_answer_equivalence_v1",
+      "thesis_status": "reported; corrected matched outcomes and paired intervals verified"
+    },
+    {
+      "path": "results/moe_identity_guiding/oss_global/variants/negative_paper_eps_0.01/strength_1/sampling/full/guided/manifest.json",
+      "status": "complete",
+      "attempts": 1395,
+      "baseline_correct": 1086,
+      "guided_correct": 255,
+      "delta_pp": -59.56989247311828,
+      "scoring_contract": "extracted_answer_equivalence_v1",
+      "thesis_status": "reported; corrected matched outcomes and paired intervals verified"
+    },
+    {
+      "path": "results/moe_identity_guiding/oss_global/variants/positive_paper_eps_0.01/strength_-1/sampling/full/guided/manifest.json",
+      "status": "complete",
+      "attempts": 1395,
+      "baseline_correct": 1086,
+      "guided_correct": 1055,
+      "delta_pp": -2.2222222222222143,
+      "scoring_contract": "extracted_answer_equivalence_v1",
+      "thesis_status": "reported; corrected matched outcomes and paired intervals verified"
+    },
+    {
+      "path": "results/moe_identity_guiding/oss_global/variants/positive_paper_eps_0.01/strength_1/sampling/full/guided/manifest.json",
+      "status": "complete",
+      "attempts": 1395,
+      "baseline_correct": 1086,
+      "guided_correct": 226,
+      "delta_pp": -61.64874551971325,
+      "scoring_contract": "extracted_answer_equivalence_v1",
+      "thesis_status": "reported; corrected matched outcomes and paired intervals verified"
+    },
+    {
+      "path": "results/moe_identity_guiding/oss_strength_-1/sampling/full/guided/manifest.json",
+      "status": "complete",
+      "attempts": 1395,
+      "baseline_correct": 1086,
+      "guided_correct": 1072,
+      "delta_pp": -1.003584229390675,
+      "scoring_contract": "extracted_answer_equivalence_v1",
+      "thesis_status": "reported; corrected matched outcomes and paired intervals verified"
+    },
+    {
+      "path": "results/moe_identity_guiding/oss_strength_1/sampling/full/guided/manifest.json",
+      "status": "complete",
+      "attempts": 1395,
+      "baseline_correct": 1086,
+      "guided_correct": 1086,
+      "delta_pp": 0.0,
+      "scoring_contract": "extracted_answer_equivalence_v1",
+      "thesis_status": "reported; corrected matched outcomes and paired intervals verified"
+    },
+    {
+      "path": "results/moe_identity_guiding/oss_strength_2/sampling/full/guided/manifest.json",
+      "status": "complete",
+      "attempts": 1395,
+      "baseline_correct": 1086,
+      "guided_correct": 1040,
+      "delta_pp": -3.2974910394265144,
+      "scoring_contract": "extracted_answer_equivalence_v1",
+      "thesis_status": "reported; corrected matched outcomes and paired intervals verified"
+    },
+    {
+      "path": "results/moe_identity_guiding/qwen_global/sampling/full/guided/manifest.json",
+      "status": "complete",
+      "attempts": 1395,
+      "baseline_correct": 1185,
+      "guided_correct": 1181,
+      "delta_pp": -0.28673835125447855,
+      "scoring_contract": "extracted_answer_equivalence_v1",
+      "thesis_status": "reported; corrected matched outcomes and paired intervals verified"
+    },
+    {
+      "path": "results/moe_identity_guiding/qwen_global/single/guided/manifest.json",
+      "status": "complete",
+      "attempts": 465,
+      "baseline_correct": 386,
+      "guided_correct": 385,
+      "delta_pp": -0.21505376344085336,
+      "scoring_contract": "extracted_answer_equivalence_v1",
+      "thesis_status": "reported; corrected matched outcomes and paired intervals verified"
+    },
+    {
+      "path": "results/moe_identity_guiding/qwen_global/variants/positive_paper_eps_0.01/strength_1/sampling/full/guided/manifest.json",
+      "status": "partial",
+      "attempts": 494,
+      "baseline_correct": 348,
+      "guided_correct": 4,
+      "delta_pp": -69.63562753036437,
+      "scoring_contract": "extracted_answer_equivalence_v1",
+      "thesis_status": "reported separately without a population interval"
+    },
+    {
+      "path": "results/moe_identity_guiding/qwen_strength_-1/sampling/full/guided/manifest.json",
+      "status": "complete",
+      "attempts": 1395,
+      "baseline_correct": 1173,
+      "guided_correct": 1188,
+      "delta_pp": 1.0752688172043001,
+      "scoring_contract": "extracted_answer_equivalence_v1",
+      "thesis_status": "reported; corrected matched outcomes and paired intervals verified"
+    },
+    {
+      "path": "results/moe_identity_guiding/qwen_strength_2/sampling/full/guided/manifest.json",
+      "status": "complete",
+      "attempts": 1395,
+      "baseline_correct": 1173,
+      "guided_correct": 1134,
+      "delta_pp": -2.7956989247311825,
+      "scoring_contract": "extracted_answer_equivalence_v1",
+      "thesis_status": "reported; corrected matched outcomes and paired intervals verified"
+    },
+    {
+      "path": "results/moe_margin_guiding/oss_strength_1/sampling/full/guided/manifest.json",
+      "status": "complete",
+      "attempts": 1395,
+      "baseline_correct": 1086,
+      "guided_correct": 1074,
+      "delta_pp": -0.8602150537634357,
+      "scoring_contract": "extracted_answer_equivalence_v1",
+      "thesis_status": "reported; corrected matched outcomes and paired intervals verified"
+    },
+    {
+      "path": "results/moe_margin_guiding/qwen_global/sampling/full/guided/manifest.json",
+      "status": "complete",
+      "attempts": 1395,
+      "baseline_correct": 1176,
+      "guided_correct": 1177,
+      "delta_pp": 0.07168458781361409,
+      "scoring_contract": "extracted_answer_equivalence_v1",
+      "thesis_status": "reported; corrected matched outcomes and paired intervals verified"
+    },
+    {
+      "path": "results/moe_margin_guiding/qwen_global/single/guided/manifest.json",
+      "status": "complete",
+      "attempts": 465,
+      "baseline_correct": 386,
+      "guided_correct": 390,
+      "delta_pp": 0.8602150537634468,
+      "scoring_contract": "extracted_answer_equivalence_v1",
+      "thesis_status": "reported; corrected matched outcomes and paired intervals verified"
+    },
+    {
+      "path": "results/moe_margin_guiding/qwen_strength_1/sampling/full/guided/manifest.json",
+      "status": "complete",
+      "attempts": 1395,
+      "baseline_correct": 1173,
+      "guided_correct": 1186,
+      "delta_pp": 0.9318996415770608,
+      "scoring_contract": "extracted_answer_equivalence_v1",
+      "thesis_status": "reported; corrected matched outcomes and paired intervals verified"
+    }
+  ],
+  "not_in_thesis": [],
+  "scope": "All 13 complete full stochastic comparisons, preserved separate greedy/restricted protocols and interrupted Qwen subset.",
+  "added_analysis_tests": "43 passed; all rescored counts, paired flips, source identities, and inline table equality verified",
+  "qualitative_inspection": {
+    "sample_size": 22,
+    "source_contracts": "verified against saved numerical source hashes and paired manifests",
+    "review_counts": {
+      "oss_positive": {
+        "repetition": 6,
+        "formatting_disagreement": 2
+      },
+      "oss_negative": {
+        "repetition": 7,
+        "arithmetic_error": 1
+      },
+      "qwen_positive_partial": {
+        "repetition": 6
+      }
+    },
+    "scoring_disagreements": 2,
+    "scoring_disagreement_scope": "Two cases corrected by the offline pass; qualitative sample retains its original sampling frame.",
+    "new_model_calls": 0
+  },
+  "offline_rescoring": {
+    "condition_records": 40097,
+    "judgment_changes": {
+      "False->True": 4054,
+      "True->False": 1
+    },
+    "original_source_hashes_matched": 56,
+    "contract": "extracted_answer_equivalence_v1",
+    "primary_positive_intervals_excluding_zero": 0,
+    "secondary_positive_intervals_excluding_zero": 0
+  }
+}

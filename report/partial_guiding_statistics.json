@@ -1,0 +1,132 @@
+{
+  "scoring_contract": "extracted_answer_equivalence_v1",
+  "status": "interrupted_partial",
+  "completed_attempts": 494,
+  "planned_attempts": 1395,
+  "remaining_attempts": 901,
+  "overall": {
+    "attempts": 494,
+    "problems": 16,
+    "baseline": {
+      "correct": 348,
+      "accuracy": 0.7044534412955465,
+      "mean_tokens": 19351.755060728745,
+      "median_tokens": 17252.5,
+      "limit_hits": 110,
+      "finish_reasons": {
+        "length": 110,
+        "stop": 384
+      }
+    },
+    "guided": {
+      "correct": 4,
+      "accuracy": 0.008097165991902834,
+      "mean_tokens": 32768,
+      "median_tokens": 32768.0,
+      "limit_hits": 494,
+      "finish_reasons": {
+        "length": 494
+      }
+    },
+    "accuracy_delta_pp": -69.63562753036437,
+    "mean_tokens_delta": 13416.244939271255,
+    "wrong_to_right": 4,
+    "right_to_wrong": 348
+  },
+  "datasets": {
+    "aime24": {
+      "planned_attempts": 288,
+      "completed_attempts": 288,
+      "summary": {
+        "attempts": 288,
+        "problems": 9,
+        "baseline": {
+          "correct": 178,
+          "accuracy": 0.6180555555555556,
+          "mean_tokens": 20947.322916666668,
+          "median_tokens": 21399.5,
+          "limit_hits": 74,
+          "finish_reasons": {
+            "length": 74,
+            "stop": 214
+          }
+        },
+        "guided": {
+          "correct": 0,
+          "accuracy": 0.0,
+          "mean_tokens": 32768,
+          "median_tokens": 32768.0,
+          "limit_hits": 288,
+          "finish_reasons": {
+            "length": 288
+          }
+        },
+        "accuracy_delta_pp": -61.80555555555556,
+        "mean_tokens_delta": 11820.677083333332,
+        "wrong_to_right": 0,
+        "right_to_wrong": 178
+      }
+    },
+    "aime25": {
+      "planned_attempts": 288,
+      "completed_attempts": 206,
+      "summary": {
+        "attempts": 206,
+        "problems": 7,
+        "baseline": {
+          "correct": 170,
+          "accuracy": 0.8252427184466019,
+          "mean_tokens": 17121.058252427185,
+          "median_tokens": 16131.0,
+          "limit_hits": 36,
+          "finish_reasons": {
+            "stop": 170,
+            "length": 36
+          }
+        },
+        "guided": {
+          "correct": 4,
+          "accuracy": 0.019417475728155338,
+          "mean_tokens": 32768,
+          "median_tokens": 32768.0,
+          "limit_hits": 206,
+          "finish_reasons": {
+            "length": 206
+          }
+        },
+        "accuracy_delta_pp": -80.58252427184466,
+        "mean_tokens_delta": 15646.941747572815,
+        "wrong_to_right": 4,
+        "right_to_wrong": 170
+      }
+    },
+    "amc23": {
+      "planned_attempts": 384,
+      "completed_attempts": 0,
+      "summary": null
+    },
+    "math500": {
+      "planned_attempts": 150,
+      "completed_attempts": 0,
+      "summary": null
+    },
+    "minerva": {
+      "planned_attempts": 82,
+      "completed_attempts": 0,
+      "summary": null
+    },
+    "olympiad": {
+      "planned_attempts": 203,
+      "completed_attempts": 0,
+      "summary": null
+    }
+  },
+  "source_sha256": {
+    "results/moe_identity_guiding/qwen_global/variants/positive_paper_eps_0.01/strength_1/sampling/full/baseline/manifest.json": "ad19a5a4ad5a63cb88e1ba044c476a1d372c8999f8f232a554aaa43f10c09601",
+    "results/moe_identity_guiding/qwen_global/variants/positive_paper_eps_0.01/strength_1/sampling/full/guided/manifest.json": "4e51a957c0b6d2d0d70ec7d3f4f37ca19d9d26123a1cc27184090a5319d25ce1",
+    "results/moe_identity_guiding/qwen_global/variants/positive_paper_eps_0.01/strength_1/sampling/full/baseline/generations.jsonl": "6c9c2c3406653dff0f91a8e95806a5769f52b5700e6a8b431ad9e6e7dd3394ba",
+    "results/moe_identity_guiding/qwen_global/variants/positive_paper_eps_0.01/strength_1/sampling/full/guided/generations.jsonl": "71764cb4ece19c6b8134623836ae3f04e916a9ae8953eacd5489d7c6e75bb996",
+    "report/guiding_rescoring.json": "7ab2ed3d0fc2acd5c684450ab54c0ebc4660e363b3d25f81ae7afb0bc83271c8"
+  },
+  "limitations": "Completed-ID subset only; scheduling, benchmark order and output length can affect completion. No full-run estimate or causal population claim; no intervals reported for this selected partial cohort."
+}

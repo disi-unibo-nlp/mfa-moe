@@ -1,0 +1,18 @@
+\begin{table*}[ht]
+\centering\small
+\caption{Benchmark contributions to Qwen margin guiding at concurrency 25. B/G denotes baseline/guided correct counts; net is guided minus baseline correct attempts. Changes and pointwise 95\% intervals are percentage points, with 5,000 paired problem resamples (seed 42).}
+\label{tab:guiding-qwen-margin-breakdown}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lrrrrrr}
+\toprule
+Benchmark & Problems & Attempts & Correct B/G & Net & Change & 95\% CI \\
+\midrule
+MATH-500 & 150 & 150 & 148/147 & -1 & -0.67 & [-2.00, +0.00] \\
+AIME24 & 9 & 288 & 178/185 & +7 & +2.43 & [+0.00, +5.56] \\
+AIME25 & 9 & 288 & 242/249 & +7 & +2.43 & [+1.04, +4.17] \\
+Olympiad & 203 & 203 & 171/171 & +0 & +0.00 & [-3.45, +3.45] \\
+AMC23 & 12 & 384 & 384/384 & +0 & +0.00 & [+0.00, +0.00] \\
+Minerva & 82 & 82 & 50/50 & +0 & +0.00 & [-6.10, +6.10] \\
+\bottomrule
+\end{tabular}}
+\end{table*}

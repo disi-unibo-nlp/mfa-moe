@@ -5,7 +5,7 @@
   author = {{University of Bologna NLP Group}},
   title = {{UniBoNLP} GPU Cluster: Guide},
   url = {http://137.204.107.40:37339/slurm/guide},
-  urldate = {2026-09-13}
+  urldate = {2026-09-23}
 }
 
 @online{unibonlpClusterDashboard,
@@ -19,42 +19,42 @@
   author = {{Hugging Face H4}},
   title = {{MATH-500}: Dataset Release},
   url = {https://huggingface.co/datasets/HuggingFaceH4/MATH-500},
-  urldate = {2026-09-13}
+  urldate = {2026-09-23}
 }
 
 @online{aime24Dataset,
   author = {{math-ai}},
   title = {{AIME 2024}: Dataset Release},
   url = {https://huggingface.co/datasets/math-ai/aime24},
-  urldate = {2026-09-13}
+  urldate = {2026-09-23}
 }
 
 @online{aime25Dataset,
   author = {{math-ai}},
   title = {{AIME 2025}: Dataset Release},
   url = {https://huggingface.co/datasets/math-ai/aime25},
-  urldate = {2026-09-13}
+  urldate = {2026-09-23}
 }
 
 @online{olympiadbenchDataset,
   author = {{Hothan}},
   title = {{OlympiadBench}: Dataset Release},
   url = {https://huggingface.co/datasets/Hothan/OlympiadBench},
-  urldate = {2026-09-13}
+  urldate = {2026-09-23}
 }
 
 @online{amc23Dataset,
   author = {{math-ai}},
   title = {{AMC 2023}: Dataset Release},
   url = {https://huggingface.co/datasets/math-ai/amc23},
-  urldate = {2026-09-13}
+  urldate = {2026-09-23}
 }
 
 @online{minervaDataset,
   author = {{math-ai}},
   title = {Minerva Math: Dataset Release},
   url = {https://huggingface.co/datasets/math-ai/minervamath},
-  urldate = {2026-09-13}
+  urldate = {2026-09-23}
 }
 
 @inproceedings{wei2022cot,
@@ -64,7 +64,9 @@
   booktitle = {Advances in Neural Information Processing Systems},
   volume = {35},
   year = {2022},
-  url = {https://proceedings.neurips.cc/paper/2022/hash/9d5609613524ecf4f15af0f7b31abca4-Abstract-Conference.html}
+  url = {https://proceedings.neurips.cc/paper/2022/hash/9d5609613524ecf4f15af0f7b31abca4-Abstract-Conference.html},
+  pages = {24824--24837},
+  doi = {10.52202/068431-1800}
 }
 
 @inproceedings{turpin2023unfaithful,
@@ -74,7 +76,9 @@
   booktitle = {Advances in Neural Information Processing Systems},
   volume = {36},
   year = {2023},
-  url = {https://proceedings.neurips.cc/paper_files/paper/2023/hash/ed3fea9033a80fea1376299fa7863f4a-Abstract-Conference.html}
+  url = {https://proceedings.neurips.cc/paper_files/paper/2023/hash/ed3fea9033a80fea1376299fa7863f4a-Abstract-Conference.html},
+  pages = {74952--74965},
+  doi = {10.52202/075280-3275}
 }
 
 @inproceedings{shazeer2017sparselygated,
@@ -114,10 +118,11 @@
   eprint = {2401.04088},
   eprinttype = {arxiv},
   eprintclass = {cs.LG},
-  doi = {10.48550/arXiv.2401.04088}
+  doi = {10.48550/arXiv.2401.04088},
+  note = {Preprint}
 }
 
-@misc{dai2024deepseekmoe,
+@inproceedings{dai2024deepseekmoe,
   author = {Damai Dai and Chengqi Deng and Chenggang Zhao and R. X. Xu
     and Huazuo Gao and Deli Chen and Jiashi Li and Wangding Zeng
     and Xingkai Yu and Y. Wu and Zhenda Xie and Y. K. Li
@@ -126,10 +131,11 @@
   title = {{DeepSeekMoE}: Towards Ultimate Expert Specialization
     in Mixture-of-Experts Language Models},
   year = {2024},
-  eprint = {2401.06066},
-  eprinttype = {arxiv},
-  eprintclass = {cs.CL},
-  doi = {10.48550/arXiv.2401.06066}
+  booktitle = {Proceedings of the 62nd Annual Meeting of the Association for Computational Linguistics (Volume 1: Long Papers)},
+  publisher = {Association for Computational Linguistics},
+  pages = {1280--1297},
+  doi = {10.18653/v1/2024.acl-long.70},
+  url = {https://aclanthology.org/2024.acl-long.70/}
 }
 
 @online{qwen2026qwen35,
@@ -137,7 +143,7 @@
   title = {{Qwen3.5-35B-A3B} Model Card},
   year = {2026},
   url = {https://huggingface.co/Qwen/Qwen3.5-35B-A3B},
-  urldate = {2026-09-07}
+  urldate = {2026-09-23}
 }
 
 @book{schoenfeld1985problem,
@@ -146,7 +152,8 @@
   publisher = {Academic Press},
   year = {1985},
   isbn = {978-0-12-628870-4},
-  doi = {10.1016/C2013-0-05012-8}
+  doi = {10.1016/C2013-0-05012-8},
+  url = {https://www.sciencedirect.com/book/monograph/9780126288704/mathematical-problem-solving}
 }
 
 @inproceedings{li2025schoenfeld,
@@ -227,28 +234,25 @@
   doi = {10.1111/j.2517-6161.1995.tb02031.x}
 }
 
-@misc{lightman2023verify,
+@inproceedings{lightman2023verify,
   author = {Hunter Lightman and Vineet Kosaraju and Yura Burda and Harri Edwards
     and Bowen Baker and Teddy Lee and Jan Leike and John Schulman
     and Ilya Sutskever and Karl Cobbe},
   title = {Let's Verify Step by Step},
-  year = {2023},
-  eprint = {2305.20050},
-  eprinttype = {arxiv},
-  eprintclass = {cs.LG},
-  doi = {10.48550/arXiv.2305.20050}
+  year = {2024},
+  booktitle = {International Conference on Learning Representations},
+  url = {https://proceedings.iclr.cc/paper_files/paper/2024/hash/aca97732e30bcf1303bc22ac3924fd16-Abstract-Conference.html}
 }
 
-@misc{liu2025spiral,
-  author = {Bo Liu and Leon Guertler and Simon Yu and Zichen Liu
+@inproceedings{liu2025spiral,
+  author = {Bo Liu and Simon Yu and Zichen Liu and Leon Guertler
     and Penghui Qi and Daniel Balcells and Mickel Liu and Cheston Tan
     and Weiyan Shi and Min Lin and Wee Sun Lee and Natasha Jaques},
   title = {{SPIRAL}: Self-Play on Zero-Sum Games Incentivizes Reasoning
     via Multi-Agent Multi-Turn Reinforcement Learning},
-  year = {2025},
-  eprint = {2506.24119},
-  eprinttype = {arxiv},
-  doi = {10.48550/arXiv.2506.24119}
+  year = {2026},
+  booktitle = {International Conference on Learning Representations},
+  url = {https://proceedings.iclr.cc/paper_files/paper/2026/hash/3ba7c8c36b71b2fc31fae3361aefefbf-Abstract-Conference.html}
 }
 
 @inproceedings{sun2026trajectories,
@@ -279,14 +283,15 @@
 }
 
 @misc{chen2026beyondtrace,
-  author = {Kang Chen and Sihan Zhao and Yixin Cao and Yugang Jiang},
+  author = {Kang Chen and Sihan Zhao and Yixin Cao and Yu-Gang Jiang},
   title = {Beyond the Trace: Coupling an Interpretable Reasoning-State
     Readout to Native {MoE} Routing},
   year = {2026},
   eprint = {2608.17638},
   eprinttype = {arxiv},
   doi = {10.48550/arXiv.2608.17638},
-  note = {Preprint}
+  note = {Preprint, version 2},
+  url = {https://arxiv.org/abs/2608.17638v2}
 }
 
 @misc{ye2026polysemantic,
@@ -312,7 +317,7 @@
   note = {Preprint}
 }
 
-@misc{wang2025rice,
+@inproceedings{wang2025rice,
   author = {Mengru Wang and Xingyu Chen and Yue Wang and Zhiwei He
     and Jiahao Xu and Tian Liang and Qiuzhi Liu and Yunzhi Yao
     and Wenxuan Wang and Ruotian Ma and Haitao Mi and Ningyu Zhang
@@ -321,23 +326,21 @@
     Reinforcing Cognitive Effort in {MoE} Reasoning Models
     Without Additional Training},
   year = {2025},
-  eprint = {2505.14681},
-  eprinttype = {arxiv},
-  eprintclass = {cs.AI},
-  doi = {10.48550/arXiv.2505.14681}
+  booktitle = {Advances in Neural Information Processing Systems},
+  volume = {38},
+  pages = {140699--140724},
+  doi = {10.52202/085713-4701},
+  url = {https://proceedings.neurips.cc/paper_files/paper/2025/hash/cdcfd67988fea858bb22317497105053-Abstract-Conference.html}
 }
 
-@misc{fayyaz2025steermoe,
+@inproceedings{fayyaz2025steermoe,
   author = {Mohsen Fayyaz and Ali Modarressi and Hanieh Deilamsalehy
     and Franck Dernoncourt and Ryan Rossi and Trung Bui
     and Hinrich Sch{\"u}tze and Nanyun Peng},
   title = {Steering {MoE} {LLMs} via Expert (De)Activation},
-  year = {2025},
-  eprint = {2509.09660},
-  eprinttype = {arxiv},
-  eprintclass = {cs.CL},
-  doi = {10.48550/arXiv.2509.09660},
-  note = {Version 2, February 2026}
+  year = {2026},
+  booktitle = {International Conference on Learning Representations},
+  url = {https://proceedings.iclr.cc/paper_files/paper/2026/hash/0d61c5f5ef91e7e8a091b7b8f72b853c-Abstract-Conference.html}
 }
 
 @misc{yoon2026misrouted,
@@ -347,7 +350,8 @@
   year = {2026},
   eprint = {2605.07260},
   eprinttype = {arxiv},
-  doi = {10.48550/arXiv.2605.07260}
+  doi = {10.48550/arXiv.2605.07260},
+  note = {Preprint}
 }
 
 @inproceedings{rimsky2024caa,
@@ -385,7 +389,8 @@
   number = {44},
   pages = {e2512514122},
   year = {2025},
-  doi = {10.1073/pnas.2512514122}
+  doi = {10.1073/pnas.2512514122},
+  url = {https://doi.org/10.1073/pnas.2512514122}
 }
 
 @inproceedings{zhang2023uncertainty,
