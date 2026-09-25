@@ -1,5 +1,5 @@
 {
-  "selection_rationale": "Main-text comparisons for uncertainty, class populations, length, and metric dependence; dense class-share, transition and expert-ID breakdowns in appendix. Full repeated correlation atlas omitted.",
+  "selection_rationale": "All retained figures appear in the Results chapter, including benchmark-specific class-share outcomes and row-normalised transitions. Complete pooled expert-ID screens and the full repeated correlation atlas are omitted; the limitations of pooled expert identities are discussed in the text.",
   "added": [
     {
       "type": "figure",
