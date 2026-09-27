@@ -1,0 +1,23 @@
+\begin{table}[ht]
+\centering\small
+\caption{Gemma, 100 held-out problems: simulated decode-only expert loads. Every response starts cold; initial pin loads are included. Slots are per layer.}
+\label{tab:gemma-cache-100-loads}
+\begin{tabular}{llrrr}
+\toprule
+Policy & Slots & Loads/answer & Loads/token & Hit rate (\%) \\
+\midrule
+Baseline LRU & 16 & 827,247.1 & 85.78 & 64.26 \\
+Baseline LRU & 32 & 354,596.5 & 36.77 & 84.68 \\
+Baseline LRU & 64 & 60,310.1 & 6.25 & 97.39 \\
+Baseline frequency pins & 16 & 821,327.3 & 85.16 & 64.52 \\
+Baseline frequency pins & 32 & 352,565.2 & 36.56 & 84.77 \\
+Baseline frequency pins & 64 & 60,283.8 & 6.25 & 97.40 \\
+Guided target pins & 16 & 912,591.3 & 96.17 & 59.93 \\
+Guided target pins & 32 & 378,812.5 & 39.92 & 83.37 \\
+Guided target pins & 64 & 61,556.1 & 6.49 & 97.30 \\
+Guided LRU & 16 & 825,810.8 & 87.02 & 63.74 \\
+Guided LRU & 32 & 353,664.2 & 37.27 & 84.47 \\
+Guided LRU & 64 & 59,938.7 & 6.32 & 97.37 \\
+\bottomrule
+\end{tabular}
+\end{table}

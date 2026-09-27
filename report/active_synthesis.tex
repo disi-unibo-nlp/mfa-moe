@@ -86,3 +86,34 @@ establishing a portable policy or isolating identity from mixture-weight
 changes. Intervals are conditional on saved runs, omit independent seed
 variation, and are not adjusted for multiple comparisons. Objective and
 strength selection require an independent evaluation design.
+
+
+The full-diagnostics GPT-OSS rerun additionally tests a fixed-cache proxy
+(Section~\ref{sec:oss-cache-diagnostics}). Target-expert coverage increases
+from $5.08\%$ to $35.17\%$, with a rescored accuracy change of $+0.14$
+points ($[-2.37,+2.37]$). Yet a calibration-frequency cache already covers
+$36.87\%$ before bias, and guided outputs are $4.88\%$ longer on average.
+Greater target reuse therefore does not by itself establish fewer expert
+loads or faster inference. A modest accuracy loss may be useful if offset
+by sufficient speed, but the accuracy--latency trade-off remains unmeasured.
+
+
+
+The completed Gemma fixed-bias $+1$ evaluation gives $87.67\%$ baseline
+and $87.60\%$ guided accuracy, a $-0.07$-point change
+($[-1.15,+1.00]$). Across both diagnostic sessions, target coverage rises
+from $0.64\%$ to $5.03\%$, still far below the $41.81\%$ pre-bias
+frequency-cache coverage. The interrupted-session counters include
+execution work beyond the final scored outputs.
+
+The matched 100-problem ordered-cache experiments
+(Section~\ref{sec:multimodel-cache-100}) reveal model-dependent effects.
+Rescored accuracy changes are $-1$ point for OSS and Qwen and zero for
+Gemma, with all intervals including zero. Qwen reduces loads per token
+by $5.20$--$6.82\%$, with intervals below zero, and has promising
+$6.20$--$7.81\%$ reductions in observed loads per answer whose intervals
+still include zero. Gemma target pinning increases loads per answer by
+$10.32\%$ at 16 slots ($[+2.69,+18.68]\%$), while guided LRU avoids most
+of that cost. OSS's longer outputs offset its 16-slot per-token savings.
+These results distinguish routing locality, pinning policy and total
+answer cost; none measures actual SSD traffic or offloaded-inference speed.

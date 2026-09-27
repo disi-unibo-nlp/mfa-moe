@@ -211,3 +211,56 @@ notes are in \path{report/paper_failure_review.json}; they are interpretive
 annotations, not outputs of a fitted classifier or independent human labels.
 The qualitative sample uses historical judgments to preserve its original
 selection frame; current numerical tables use the offline rescoring sidecar.
+
+
+\paragraph{Full-diagnostics GPT-OSS cache proxy.}
+The separate diagnostic rerun is stored under
+\path{results/moe_identity_guiding/oss_cache_diagnostics_20260924T190912Z/sampling/full}.
+Run \path{report/analyze_oss_cache_diagnostics.py} with the dependencies in
+\path{report/rescoring_requirements.txt} and the project source on the Python path.
+The sidecar \path{report/oss_cache_diagnostics.json} records source hashes,
+rescored outcomes, paired bootstrap intervals and layer-level routing counts.
+The historical intervention tables retain their original run sources.
+The new \path{src/moe_exp/moe_cache_streaming} experiment captures ordered
+decode traces for equal-memory cache simulations; short plumbing checks are
+not substantive accuracy or SSD-speed evidence.
+
+
+\paragraph{Ordered OSS cache experiment, 100 problems.}
+The completed source run is
+\path{results/moe_cache_streaming/oss_100_20260925T071519Z}.
+Its baseline and guided manifests, generated answers, compressed ordered
+routing traces and original cache summary are retained unchanged.
+Report-only scripts \path{report/analyze_cache_100.py},
+\path{report/analyze_cache_100_traces.py} and
+\path{report/summarize_cache_100.py} respectively rescore quality, compute
+per-answer cache counts in eight CPU workers, and verify totals against
+the original summary before producing paired bootstrap intervals and the
+load table. Run with the project source on the Python path; rescoring also
+requires \path{report/rescoring_requirements.txt}. The resulting
+\path{report/oss_cache_100_rescoring.json},
+\path{report/oss_cache_100_traces.json} and
+\path{report/oss_cache_100_findings.json} retain the analysis evidence.
+No new GPU generation is required to reproduce these results.
+
+
+\paragraph{Completed cross-model cache and Gemma diagnostic extension.}
+The Qwen and Gemma cache roots are
+\path{results/moe_cache_streaming/qwen_100_20260925T071519Z} and
+\path{results/moe_cache_streaming/gemma_100_20260925T071519Z}.
+The three cache-analysis scripts above now accept
+\texttt{--model oss|qwen|gemma}; their per-model sidecars retain rescored
+records, per-answer simulated counts and bootstrap effects. Each computed
+count is checked against the saved experiment summary. Run
+\path{report/generate_multimodel_cache_tables.py} to regenerate the
+combined tables. The 100 source-problem identities match across all models.
+
+The full Gemma run is
+\path{results/moe_identity_guiding/gemma_detailed_20260924T232401Z/sampling/full}.
+Run \path{report/analyze_gemma_cache_diagnostics.py} using the pinned
+rescoring dependencies. Its sidecar \path{report/gemma_cache_diagnostics.json}
+records answer hashes, rescored outcomes, paired intervals and the combined
+histograms from both execution sessions. The two diagnostic snapshots are
+not treated as two independent samples; interrupted-session work can be
+represented again after resumption. Historical intervention tables retain
+their original sources; the completed Gemma run is reported separately.

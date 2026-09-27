@@ -1,0 +1,92 @@
+\section{Ordered cache simulation on 100 GPT-OSS problems}
+\label{sec:oss-cache-100}
+
+The first completed 100-problem cache experiment tests fixed positive
+identity bias $+1$ on GPT-OSS, with one baseline and one guided generation
+per held-out problem. It uses the frozen OSS policy, matched prompts and
+per-request seeds, temperature 0.6, top-$p$ 0.95, a 32,768-token output
+limit, and synchronous single-sequence execution. The deterministic
+round-robin selection contains 9 AIME24, 9 AIME25, 12 AMC23, 24 MATH-500,
+23 Minerva and 23 OlympiadBench problems. Dataset sizes are unequal because
+the smaller held-out pools are exhausted. This is a separate generation
+experiment from the full-diagnostics run in
+Section~\ref{sec:oss-cache-diagnostics}; their aggregate effects need not agree.
+
+\paragraph{Quality and generation length.}
+The original generation scorer gives 53/100 correct baseline answers and
+48/100 guided answers. Applying the report's offline extracted-answer
+equivalence contract to both conditions gives 76/100 and 75/100 instead.
+The rescored change is $-1.00$ percentage point, with a paired,
+dataset-stratified problem-bootstrap 95\% interval $[-7.00,+5.00]$
+(5,000 resamples, seed 42). Six answers change from wrong to right and
+seven from right to wrong. Neither accuracy preservation nor a systematic
+accuracy loss is established. The large scoring discrepancy reinforces
+why the original and rescored results must remain explicitly distinguished.
+
+Mean generated tokens increase from 4,418.86 to 5,392.95 ($+22.04\%$), and
+token-limit hits rise from 2 to 6. The largest length increase is on AIME24
+(8,957.0 to 16,580.1 mean tokens). Rescored correct counts change from 4 to 5
+on AIME24, 8 to 4 on AIME25, 12 to 11 on AMC23, 23 to 23 on MATH-500,
+13 to 13 on Minerva, and 16 to 19 on OlympiadBench. These small
+benchmark cohorts describe the composition of the aggregate effect rather
+than establishing general model-level performance differences.
+
+\paragraph{Cache measurement and controls.}
+Ordered top-4 routing sets are recorded at all 24 layers, excluding all
+prefill chunks and the first output token predicted by prefill. Every
+trace is checked against its generation length and source hash. The
+simulation starts with a cold cache for each answer and uses equal
+capacity at each layer. It compares baseline LRU, baseline with
+calibration-frequency pins, guided routing with target pins, and guided
+LRU. Four experts are pinned at each of the four policy layers; other
+layers use LRU. Initial pin loads count, including pins never requested.
+Simultaneous top-$k$ requests cannot evict each other, and sorted expert
+IDs break simultaneous recency ties. Frequency pins are chosen from
+calibration statistics, not evaluation traces.
+
+\input{oss_cache_100_table}
+
+\paragraph{Findings.}
+At eight slots per layer, guided target pinning increases mean loads per
+answer from 134,007.03 to 162,649.30 ($+21.37\%$), while loads per decode
+token change by only $-0.55\%$. At 16 slots, loads per token fall from
+9.07 to 8.55 ($-5.77\%$), but loads per answer increase from 40,079.70 to
+46,092.03 ($+15.00\%$). Thus improved per-token locality is insufficient
+to offset the additional generated tokens in the observed sample.
+
+Paired dataset-stratified problem resampling of the trace-derived totals
+(5,000 resamples, Python random seed 42, percentile intervals) gives a
+95\% interval of $[-9.06,-2.56]\%$ for the 16-slot per-token change and
+$[-13.33,+53.22]\%$ for its per-answer change. At eight slots, the
+corresponding intervals are $[-2.74,+1.66]\%$ and $[-8.92,+62.53]\%$.
+Intervals are conditional on saved generations and the frozen policy,
+with no adjustment for multiple comparisons. The per-token reduction at
+16 slots is supported under this resampling procedure; a population-level
+increase or decrease in total loads per answer is not resolved.
+
+On the same guided traces, ordinary LRU uses fewer loads than target
+pinning: 158,902.83 versus 162,649.30 per answer at eight slots, and
+45,581.32 versus 46,092.03 at 16 slots. Pinning therefore adds overhead
+relative to adaptive caching for these trajectories. The frequency-pinned
+baseline is close to baseline LRU (134,747.10 and 40,068.22 loads per
+answer at eight and 16 slots). At 32 slots all 32 OSS experts fit at each
+layer: the small decrease from 722.75 to 717.10 loads per answer concerns
+initial loading of distinct experts, not reduced eviction under memory
+pressure. Its relative change is $-0.78\%$ ($[-1.05,-0.50]\%$).
+
+\paragraph{Interpretation and limits.}
+This run provides evidence of improved per-token locality at one
+constrained cache budget, but no demonstrated total-loading or speed
+advantage for the tested guided-and-pinned policy. A modest quality loss
+could be acceptable if compensated by sufficient speed; this experiment
+does not establish that compensation. Output length and loads per answer
+must accompany hit rates when judging an efficiency trade-off.
+
+These are simulated equal-sized expert loads, not measured SSD reads or
+bytes. Capture derives top-$k$ identities from router-hook logits rather
+than observing native dispatch, so tied scores can differ. The simulation
+omits prefill warming, cross-answer reuse, batching, prefetch and transfer
+costs. All expert weights remain resident during generation, and recorder
+overhead prevents interpreting captured generation time as offloaded
+inference latency. The result is limited to one fixed policy, one sampled
+trajectory per condition per problem, and this 100-problem cohort.

@@ -97,15 +97,23 @@ This evaluation does not establish external-domain or online-detector validity.
 Routing--correctness associations vary with model, benchmark, and reasoning
 class, motivating controls for difficulty, response length, and termination.
 
-Completed stochastic intervention comparisons each use 1,395 matched
+The main completed stochastic intervention comparisons each use 1,395 matched
 attempts from 465 held-out problems. A consistent offline answer-equivalence
-audit rescores both conditions without new generation. No complete
-intervention has a positive 95\% paired problem-bootstrap interval excluding
-zero under either attempt or equal-problem weighting. Under the primary
+audit rescores both conditions without new generation. In the original
+Qwen and GPT-OSS comparisons, no complete intervention has a positive
+95\% paired problem-bootstrap interval excluding zero under either
+attempt or equal-problem weighting. Under the primary
 attempt-weighted metric, Qwen and GPT-OSS fixed positive strength 2 lose
 2.80 and 3.30 percentage points, respectively. All margin intervals
 contain zero. These exploratory intervals omit multiplicity adjustment.
-The thesis provides an auditable
+Separately, the interrupted Qwen paper-style intervention retains 0.81\%
+accuracy versus 70.45\% on 494 matched IDs, all reaching the guided token
+limit; its partial AIME cohort does not estimate the full evaluation effect.
+Additional ordered-cache experiments on 100 matched problems per model
+show lower per-token expert-loading demand for Qwen, while total-loading
+benefits remain uncertain. Gemma target pinning incurs extra simulated
+loads, and OSS's longer outputs offset local savings. Actual SSD latency
+is not measured. The thesis provides an auditable
 framework for connecting reasoning annotations to sparse computation while
 distinguishing representational evidence, observational associations, and
 the measured effects of routing interventions.
@@ -184,7 +192,10 @@ The observational study covers Qwen3.5-35B-A3B, Gemma-4-26B-A4B, and
 GPT-OSS-20B on six mathematical benchmarks. Gemma and GPT-OSS share a
 stratified annotation procedure but retain model-specific selected cohorts;
 Qwen uses a separate annotation protocol. Completed intervention evidence
-concerns Qwen and GPT-OSS identity and margin guiding.
+includes Qwen and GPT-OSS identity and margin guiding, Gemma fixed
+identity guiding, and ordered-cache simulations on 100 matched problems
+for each of the three models. The interrupted
+Qwen paper-style run supplies a separate descriptive analysis of completed attempts.
 
 \paragraph{Research contributions.}
 The thesis contributes an integrated workflow linking functional descriptions
@@ -3015,7 +3026,7 @@ completions; it does not construct paired counterfactual behavioral inputs.
 Experts need at least four supporting problems in the audited policies.
 Within each selected layer, eligible experts are ordered by signed lift,
 then support, then expert ID, and capped at native top-$k$
-(eight for Qwen and four for GPT-OSS). Fixed bias scales each
+(eight for Qwen and Gemma, and four for GPT-OSS). Fixed bias scales each
 retained lift by the largest retained magnitude; paper-style steering uses
 only membership in the selected set, not those relative magnitudes.
 
@@ -3160,7 +3171,7 @@ selected expert set, from signed strength, which defines whether that set
 is promoted or suppressed. The fixed method uses the lift-weighted additive
 bias. The study also considers the paper-style extreme-score
 replacement described in Section~\ref{sec:method-identity}; the completed
-comparisons in this table evaluate fixed bias.
+comparisons in this table evaluate both fixed bias and paper-style steering.
 
 \begin{table}[!ht]
 \centering\small
@@ -3181,6 +3192,7 @@ GPT-OSS & Fixed & Positive & +2 & 77.85 & 74.55 & -3.30 & [-6.16, -0.93] \\
 Qwen & Fixed & Positive & +1 & 84.95 & 84.66 & -0.29 & [-1.15, +0.65] \\
 Qwen & Fixed & Positive & -1 & 84.09 & 85.16 & +1.08 & [-0.14, +2.37] \\
 Qwen & Fixed & Positive & +2 & 84.09 & 81.29 & -2.80 & [-5.16, -0.72] \\
+Gemma & Fixed & Positive & +1 & 87.67 & 87.60 & -0.07 & [-1.15, +1.00] \\
 \bottomrule
 \end{tabular}
 \end{adjustbox}
@@ -3192,6 +3204,25 @@ by $-0.29$ points with interval $[-1.15,+0.65]$, and strength $-1$ gives
 $+1.08$ with $[-0.14,+2.37]$. Increasing promotion to strength $+2$
 gives $-2.80$ points with $[-5.16,-0.72]$. Thus stronger promotion
 reduces primary attempt-weighted accuracy under the revised scorer.
+
+Gemma-4-26B-A4B NVFP4 uses fixed positive
+identity bias $+1$ on 1,395 held-out attempts from 465 problems, with
+concurrency 16 and the frozen model-specific policy. Eight experts are
+targeted at each of layers 16, 19, 21, 22, 25, 27 and 29. Calibration
+uses replay routing from the corresponding Gemma checkpoint under a
+different quantization; expert-identity transfer is therefore an assumption.
+No held-out result is used to refit targets or choose the strength.
+
+The original scorer gives 1,117 baseline and 1,113 guided correct answers.
+Under the same offline extracted-answer equivalence contract used for
+the other intervention evaluations, the counts are 1,223 and 1,222:
+$87.67\%$ versus $87.60\%$. The change is $-0.07$ percentage points,
+with a paired, dataset-stratified problem-bootstrap 95\% interval
+$[-1.15,+1.00]$ (5,000 resamples, seed 42). There are 33 wrong-to-right
+and 34 right-to-wrong changes. Mean generated tokens decrease from
+11,695.48 to 11,562.61 ($-1.14\%$), and token-limit hits decrease from
+67 to 66. These results show a small observed accuracy difference,
+not established non-inferiority or an accuracy improvement.
 
 All seven GPT-OSS identity conditions use four targets at each of layers
 15, 19, 21, and 23, matching native routing top-$k=4$. Each evaluates
@@ -3407,6 +3438,7 @@ GPT-OSS paper negative +1 & 6497 & 23639 & 74 & 815 \\
 Qwen margin (c=16) & 13848 & 13840 & 144 & 143 \\
 Qwen margin (c=25) & 13830 & 13810 & 154 & 146 \\
 GPT-OSS margin (c=25) & 6497 & 6409 & 74 & 83 \\
+Gemma fixed positive +1 & 11695 & 11563 & 67 & 66 \\
 \bottomrule
 \end{tabular}
 \end{adjustbox}
@@ -3464,7 +3496,7 @@ All intervals remain exploratory and unadjusted for multiple comparisons.
 
 \begin{table}[!ht]
 \centering\small
-\caption{Benchmark-level accuracy changes in percentage points for the thirteen reported stochastic interventions. Positive/negative denotes expert polarity; c denotes concurrency. Entries are point estimates, not significance decisions. Benchmark counts (problems/attempts) are shown in the header.}
+\caption{Benchmark-level accuracy changes in percentage points for the fourteen reported stochastic interventions. Positive/negative denotes expert polarity; c denotes concurrency. Entries are point estimates, not significance decisions. Benchmark counts (problems/attempts) are shown in the header.}
 \label{tab:res-benchmark-changes}
 \begin{adjustbox}{max width=\linewidth}%
 \begin{tabular}{lrrrrrr}
@@ -3484,6 +3516,7 @@ GPT-OSS paper negative +1 & -47.33 & -56.60 & -74.31 & -56.16 & -63.80 & -29.27 
 Qwen margin (c=16) & +0.67 & +1.39 & +1.39 & -3.45 & +0.26 & -2.44 \\
 Qwen margin (c=25) & -0.67 & +2.43 & +2.43 & +0.00 & +0.00 & +0.00 \\
 GPT-OSS margin (c=25) & +2.67 & -1.04 & -0.69 & -3.45 & -1.30 & +1.22 \\
+Gemma fixed positive +1 & -0.67 & +1.04 & -1.74 & +1.48 & +0.26 & -2.44 \\
 \bottomrule
 \end{tabular}
 \end{adjustbox}
@@ -3512,11 +3545,17 @@ GPT-OSS paper negative +1 & -59.57 & [-67.24, -51.40] & -49.13 & [-53.80, -44.56
 Qwen margin (c=16) & +0.07 & [-0.86, +1.01] & -1.66 & [-3.67, +0.45] \\
 Qwen margin (c=25) & +0.93 & [+0.00, +1.86] & -0.12 & [-2.07, +1.80] \\
 GPT-OSS margin (c=25) & -0.86 & [-2.87, +1.15] & -0.50 & [-3.49, +2.46] \\
+Gemma fixed positive +1 & -0.07 & [-1.15, +1.00] & -0.01 & [-2.16, +1.96] \\
 \bottomrule
 \end{tabular}
 \end{adjustbox}
 \end{table}
 
+
+For Gemma fixed positive strength $+1$, equal-problem weighting gives
+$-0.01$ points ($[-2.16,+1.96]$), compared with the primary
+$-0.07$ points ($[-1.15,+1.00]$). Neither weighting establishes a
+beneficial or harmful accuracy direction.
 
 The Qwen margin benchmark breakdown in Table~\ref{tab:res-qwen-margin-breakdown}
 uses corrected judgments for both conditions. Its positive point estimate
@@ -3565,6 +3604,305 @@ under this secondary weighting. GPT-OSS paper-style positive and negative
 promotion remain strongly negative: $-50.15$ ($[-54.88,-45.45]$) and
 $-49.13$ ($[-53.80,-44.56]$) points. No complete stochastic comparison
 has a positive interval excluding zero under either weighting.
+
+\section{Expert reuse under a fixed-cache proxy}
+
+\subsection{GPT-OSS}
+\label{sec:oss-cache-diagnostics}
+
+A separate full-diagnostics rerun evaluates GPT-OSS fixed positive identity
+steering at strength $+1$, using the frozen policy and the same 1,395 held-out
+attempts on 465 problems. The compatible baseline is reused with output-hash provenance;
+the guided generations are new. This diagnostic rerun is kept separate from
+the historical minimal-diagnostics comparison and is not an independent
+problem-set replication. No new target or strength is selected from these results.
+
+Under the same offline answer-equivalence scoring contract as the main
+intervention analysis, accuracy is $1086/1395=77.85\%$ for baseline and
+$1088/1395=77.99\%$ for guidance. The change is $+0.14$ percentage points,
+with a paired, dataset-stratified source-problem bootstrap 95\% interval
+$[-2.37,+2.37]$ (5,000 resamples, seed 42). There are 94 wrong-to-right and
+92 right-to-wrong changes. Mean generated tokens increase from 6,497.2 to
+6,813.9 ($+4.88\%$), and token-limit hits increase from 74 to 77.
+Thus the observed aggregate accuracy difference is small, but accuracy
+preservation and an efficiency improvement are not established.
+
+The routing counters permit a fixed resident-cache proxy at the four steered
+layers, 15, 19, 21 and 23. Four target experts per layer would occupy 16
+layer--expert slots in total. Define $H$ as the fraction of top-$k$ expert
+selections covered by that fixed resident set; the proxy for nonresident
+selections is $1-H$. Both pre-bias and post-bias counters are evaluated on
+the guided trajectory's hidden states. The pre-bias counts are therefore
+not routing measurements from the separately generated baseline.
+
+\begin{table}[ht]
+\centering\small
+\caption{GPT-OSS diagnostic rerun: static-cache coverage as a percentage of
+expert selections. Target and frequency caches each have four slots per layer.
+Frequency pins are selected from calibration statistics only. All columns
+use states visited by guided generation.}
+\label{tab:oss-cache-coverage}
+\begin{tabular}{lrrr}
+\toprule
+Layer & Target, pre-bias & Target, post-bias & Frequency, pre-bias \\
+\midrule
+15 & 5.19 & 31.40 & 30.40 \\
+19 & 8.70 & 45.23 & 37.42 \\
+21 & 2.20 & 22.58 & 41.36 \\
+23 & 4.23 & 41.48 & 38.32 \\
+All four & 5.08 & 35.17 & 36.87 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Target-cache coverage rises from $5.08\%$ to $35.17\%$. Relative to pinning
+those same targets without the bias on these states, this corresponds to
+$31.70\%$ fewer nonresident selections:
+$(H_{\mathrm{after}}-H_{\mathrm{before}})/(1-H_{\mathrm{before}})$.
+However, a same-budget cache of calibration-frequent experts already covers
+$36.87\%$ of pre-bias selections. Guided target pinning therefore has
+$2.70\%$ more nonresident selections than this control. A hindsight-optimal
+static cache covers $37.39\%$ before the bias; against it, guided target
+pinning has $3.55\%$ more nonresident selections. The hindsight cache is an
+analytical control, not a deployable policy or a bound on adaptive caching.
+
+The supported result is greater reuse of the boosted expert identities,
+alongside a small observed aggregate accuracy difference. For this OSS
+policy, that concentration does not outperform the calibration-frequency
+static-cache control in the measured proxy. This distinction prevents
+increased target frequency alone from being interpreted as a systems gain.
+
+These counters include prefill, decode and engine padding, cover only the
+four selected layers, and compute top-$k$ from hook logits rather than
+separately observing native dispatch. They retain neither temporal order
+nor per-attempt routing, so no cache-effect confidence interval is available.
+The proxy assumes an already resident pinned set and excludes cold-start
+loads, dynamic caching, shared loads across batched tokens and prefetch.
+It measures neither SSD bytes nor latency and must not be extrapolated to
+whole-model speed. A small accuracy loss could be acceptable if it buys
+sufficient speed, but that trade-off requires ordered decode traces and
+ultimately an equal-memory offloaded-inference benchmark. Longer guided
+outputs make total loads and latency per answer especially important.
+
+\subsection{Gemma}
+\label{sec:gemma-cache-diagnostics}
+
+For the Gemma fixed-bias condition in Table~\ref{tab:res-identity},
+the routing histograms measure executed router evaluations, including
+prefill, padding and repeated computations. Their population therefore
+differs from one decode-only routing trace per scored answer. Pre-bias
+and post-bias counters refer to the same guided hidden states, not
+separate baseline generations.
+
+\begin{table}[ht]
+\centering\small
+\caption{Gemma full-diagnostics fixed guiding: expert-selection coverage
+in percent, aggregated across recorded router evaluations. Each static cache
+contains eight experts per measured layer. Frequency pins use calibration
+frequencies.}
+\label{tab:gemma-cache-coverage}
+\begin{tabular}{lrrr}
+\toprule
+Layer & Target, pre-bias & Target, post-bias & Frequency, pre-bias \\
+\midrule
+16 & 0.05 & 3.26 & 35.42 \\
+19 & 0.03 & 1.06 & 39.41 \\
+21 & 0.04 & 1.26 & 43.19 \\
+22 & 0.11 & 2.02 & 53.53 \\
+25 & 0.16 & 5.31 & 43.37 \\
+27 & 1.38 & 6.42 & 41.37 \\
+29 & 2.67 & 15.90 & 36.38 \\
+All seven & 0.64 & 5.03 & 41.81 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The target set's share of expert selections increases from $0.64\%$ to
+$5.03\%$. For an already resident target cache this gives $4.43\%$ fewer
+nonresident selections relative to the same targets before bias. However,
+a same-budget frequency-selected cache covers $41.81\%$ before bias
+(and $40.64\%$ after it). Guided target pinning consequently has
+$63.20\%$ more nonresident selections than the pre-bias frequency cache.
+The bias increases use of the selected identities but does not make them
+a competitive static cache set for this model and strength.
+
+These aggregate counters describe only seven policy layers and do not
+measure ordered cache loads, cold-start cost, SSD traffic or latency.
+They establish neither a whole-model speed effect nor a confidence interval
+for cache coverage. The ordered experiments below test adaptive-cache
+controls and all-layer loads separately.
+
+\section{Ordered cache experiments across three models}
+\label{sec:multimodel-cache-100}
+\label{sec:oss-cache-100}
+
+The completed cache study compares GPT-OSS, Qwen and Gemma on the same
+100 held-out source problems, with one baseline and one fixed positive
+bias-$+1$ generation per model and problem. Source-problem identities
+match across all three cohorts. The deterministic selection contains
+9 AIME24, 9 AIME25, 12 AMC23, 24 MATH-500, 23 Minerva and 23 OlympiadBench
+problems; smaller held-out pools are exhausted before the larger pools.
+Each model retains its own frozen calibration policy. Per-model paired
+prompts, seeds and generation settings match. Generation uses temperature
+0.6, top-$p$ 0.95, a 32,768-token output limit, and synchronous
+single-sequence execution. These are separate generations from the
+1,395-attempt detailed runs and do not constitute independent seed
+replications of those runs.
+
+\paragraph{Measurement and cache controls.}
+Ordered router-hook top-$k$ sets cover all 24 OSS, 40 Qwen and 30 Gemma
+layers. All prefill chunks are excluded, so $N$ returned tokens correspond
+to $N-1$ recorded decode steps at every layer. Source hashes, paired inputs,
+layer coverage and trace lengths are validated. Hook top-$k$ is not an
+independent observation of native dispatch; tied scores may differ.
+
+Each answer starts with a cold per-layer cache. Initial pinned-expert loads
+count, even if a pin is never subsequently used. The four conditions are
+baseline LRU, baseline with calibration-frequency pins, guided LRU, and
+guided routing with target pins; remaining slots use LRU. Pins are restricted
+to each model's policy layers, with equal pin counts for frequency and target
+controls. Other layers use LRU. Simultaneous top-$k$ requests cannot evict
+one another; sorted expert IDs break simultaneous recency ties.
+
+OSS uses four of 32 experts and budgets of 8, 16 and 32 slots per layer.
+Qwen uses eight of 256 and Gemma eight of 128, with budgets of 16, 32 and
+64 slots. Capacities are equal across conditions within a model. They do
+not represent equal bytes or equal fractions of expert capacity across
+models. Shared experts, dense operations and KV-cache memory are outside
+the expert-load metric. No SSD reads, transfer bandwidth or latency are measured.
+
+\paragraph{Accuracy and output length.}
+Offline extracted-answer equivalence rescoring gives baseline/guided
+correct counts of 76/75 for OSS, 83/82 for Qwen, and 84/84 for Gemma.
+Their accuracy changes have 95\% intervals of $[-7,+5]$, $[-5,+3]$ and
+$[-4,+4]$ percentage points, respectively. These use 5,000 paired,
+dataset-stratified source-problem resamples with seed 42. The original
+saved scorer instead gives 53/48, 62/61 and 59/59; those labels remain
+unchanged in the source artifacts. No model establishes accuracy
+non-inferiority from these intervals alone.
+
+OSS outputs are $22.04\%$ longer on average; Qwen outputs are $1.06\%$
+shorter and Gemma outputs $1.61\%$ shorter. Token-limit counts are 2/6,
+7/7 and 3/5, respectively. The distinct length responses make total loads
+per answer necessary alongside loads per token.
+
+\begin{table}[ht]
+\centering\small
+\caption{Matched 100-problem cache experiments. B/G denotes baseline/guided. Accuracy uses offline equivalence rescoring; changes and intervals are percentage points. Token changes are relative percentages.}
+\label{tab:cache-multimodel-quality}
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{llrrrr}
+\toprule
+Model & Correct B/G & Change [95\% CI] & Mean tokens B/G & Token change (\%) & Capped B/G \\
+\midrule
+GPT-OSS & 76/75 & -1.0 [-7.0, +5.0] & 4,418.9/5,392.9 & +22.04 & 2/6 \\
+Qwen & 83/82 & -1.0 [-5.0, +3.0] & 12,116.1/11,988.0 & -1.06 & 7/7 \\
+Gemma & 84/84 & +0.0 [-4.0, +4.0] & 9,645.4/9,490.5 & -1.61 & 3/5 \\
+\bottomrule
+\end{tabular}
+}
+\end{table}
+\begin{table}[ht]
+\centering\small
+\caption{Simulated mean expert loads per complete answer, including cold-start pin loads, across all routed layers. Capacity is slots per layer; frequency and target pins use the same slot budget within each model.}
+\label{tab:cache-multimodel-loads}
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{llrrrr}
+\toprule
+Model & Slots & Baseline LRU & Baseline frequency & Guided LRU & Guided targets \\
+\midrule
+GPT-OSS & 8 & 134,007 & 134,747 & 158,903 & 162,649 \\
+GPT-OSS & 16 & 40,080 & 40,068 & 45,581 & 46,092 \\
+GPT-OSS & 32 & 723 & 723 & 717 & 717 \\
+Qwen & 16 & 2,400,863 & 2,410,567 & 2,266,939 & 2,252,038 \\
+Qwen & 32 & 1,900,161 & 1,901,191 & 1,772,502 & 1,767,504 \\
+Qwen & 64 & 1,184,307 & 1,184,273 & 1,092,516 & 1,091,858 \\
+Gemma & 16 & 827,247 & 821,327 & 825,811 & 912,591 \\
+Gemma & 32 & 354,596 & 352,565 & 353,664 & 378,813 \\
+Gemma & 64 & 60,310 & 60,284 & 59,939 & 61,556 \\
+\bottomrule
+\end{tabular}
+}
+\end{table}
+\begin{table}[ht]
+\centering\small
+\caption{Relative change (percent) for guided target pinning versus baseline LRU, with paired dataset-stratified problem-bootstrap 95\% intervals. Negative values mean fewer simulated loads. Intervals use 5,000 resamples, seed 42, and no multiplicity correction.}
+\label{tab:cache-multimodel-effects}
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{llrr}
+\toprule
+Model & Slots & Loads/answer: change [CI] & Loads/token: change [CI] \\
+\midrule
+GPT-OSS & 8 & +21.37 [-8.92, +62.53] & -0.55 [-2.74, +1.66] \\
+GPT-OSS & 16 & +15.00 [-13.33, +53.22] & -5.77 [-9.06, -2.56] \\
+GPT-OSS & 32 & -0.78 [-1.05, -0.50] & -18.71 [-39.53, +8.83] \\
+Qwen & 16 & -6.20 [-16.35, +5.50] & -5.20 [-6.34, -4.00] \\
+Qwen & 32 & -6.98 [-17.12, +4.72] & -5.99 [-7.19, -4.65] \\
+Qwen & 64 & -7.81 [-14.90, +0.08] & -6.82 [-10.26, -2.14] \\
+Gemma & 16 & +10.32 [+2.69, +18.68] & +12.12 [+10.23, +14.44] \\
+Gemma & 32 & +6.83 [-0.72, +15.07] & +8.57 [+5.84, +11.73] \\
+Gemma & 64 & +2.07 [-4.74, +9.97] & +3.73 [+0.08, +7.76] \\
+\bottomrule
+\end{tabular}
+}
+\end{table}
+
+
+\paragraph{Qwen: a promising loading reduction.}
+Guided target pinning reduces mean simulated loads per answer by
+$6.20\%$, $6.98\%$ and $7.81\%$ at 16, 32 and 64 slots per layer.
+It also uses fewer loads than the same-budget frequency-pinned baseline.
+Guided LRU already achieves most of the reduction; target pinning adds a
+smaller improvement on the same guided traces. Thus the result belongs
+primarily to the changed routing trajectories, with a smaller incremental
+benefit from reserving slots for the targets. The accuracy point estimate
+is one fewer correct answer out of 100, and output length is slightly lower.
+Per-token reductions are $5.20\%$, $5.99\%$ and $6.82\%$, with
+all three 95\% intervals below zero. All per-answer intervals still
+include zero: $[-16.35,+5.50]\%$, $[-17.12,+4.72]\%$ and
+$[-14.90,+0.08]\%$. Thus per-token locality improves under the reported
+resampling criterion, while a population-level reduction in total loads
+per answer remains unresolved. These are not end-to-end speed measurements.
+
+\paragraph{Gemma: pinning rare targets is costly.}
+Guided target pinning increases loads per answer by $10.32\%$, $6.83\%$
+and $2.07\%$ at 16, 32 and 64 slots. At 16 slots the 95\% interval is
+$[+2.69,+18.68]\%$; at 32 and 64 slots the intervals include zero.
+Loads per token increase at all three budgets. Ordinary LRU on the guided
+traces instead gives 825,810.8, 353,664.2 and 59,938.7 loads per answer,
+slightly below the respective baseline-LRU means. Explicit target pinning
+therefore consumes capacity that adaptive LRU uses more effectively.
+This agrees with the full-diagnostics finding that the accuracy-associated
+Gemma targets remain infrequent even after bias. There is no aggregate
+accuracy difference in the 100-problem sample.
+
+\paragraph{OSS: local savings are outweighed by longer answers.}
+At 16 slots, guided target pinning reduces loads per token by $5.77\%$
+($[-9.06,-2.56]\%$), but increases observed loads per answer by $15.00\%$
+($[-13.33,+53.22]\%$). At eight slots, the per-answer increase is
+$21.37\%$ ($[-8.92,+62.53]\%$). Ordinary LRU uses fewer loads than target
+pinning on the same guided traces. At 32 slots all OSS experts fit, so the
+small reduction in loads concerns initial loading of distinct experts,
+not reduced eviction under memory pressure.
+
+\paragraph{Interpretation.}
+The three models do not support a universal cache benefit from promoting
+accuracy-associated identities. Qwen is the strongest candidate for a
+subsequent offloaded-inference benchmark; Gemma exposes the cost of pinning
+rare targets, and OSS shows how longer outputs can offset per-token locality.
+A small accuracy loss could be acceptable in exchange for sufficient speed,
+but establishing that trade-off requires actual answer latency under equal
+memory and transfer budgets. Predictive prefetching is not evaluated here.
+
+Cache intervals resample paired problems within datasets (5,000 resamples,
+Python random seed 42), recomputing ratios of total loads and token counts.
+They condition on the frozen policies and saved generations and are not
+adjusted for multiple budgets or models. They do not include independent
+seed or policy-fitting variation. Prefill warming, cross-answer reuse,
+batching, prefetch and transfer costs are excluded. Weights remain resident
+during generation; instrumentation time cannot be interpreted as SSD-backed
+inference time. The matched cohort strengthens descriptive comparison but
+does not isolate architectural causes of differences between models.
 
 \section{What the combined evidence establishes}
 
@@ -3658,28 +3996,63 @@ weights and budgets: overlap is 14/48 layer--expert identities for Qwen and
 
 The third question asked whether calibrated policies improve held-out
 accuracy or change token use.
-After consistent offline rescoring, none of the complete intervention
-evaluations provides statistically supported evidence of an accuracy gain.
-The clearest result is the severe degradation under GPT-OSS paper-style
-promotion: both polarities lose roughly 60 attempt-weighted percentage
-points, and the harm remains clear under equal-problem weighting.
-Other policies produce smaller or inconclusive effects whose interpretation
-can depend on the evaluation weighting; stochastic margin guiding does not
-establish a reliable benefit.
+After consistent offline rescoring, no complete intervention establishes
+a beneficial accuracy direction using the reported 95\% interval criterion.
+Qwen fixed positive strength $+2$ loses $2.80$ attempt-weighted points
+($[-5.16,-0.72]$); GPT-OSS fixed positive strength $+2$ loses $3.30$
+($[-6.16,-0.93]$). GPT-OSS paper-style suppression loses $2.22$ points
+($[-4.16,-0.43]$), and positive/negative paper-style promotion loses
+$61.65$ and $59.57$ points with intervals well below zero.
+All stochastic margin intervals contain zero: Qwen concurrency 25 gives
+$+0.93$ points ($[0.00,+1.86]$), while GPT-OSS gives $-0.86$
+($[-2.87,+1.15]$). Equal-problem weighting removes the below-zero
+intervals for fixed strength $+2$ and paper-style suppression, but
+paper-style promotion remains strongly negative. The earlier positive
+OSS secondary intervals and greedy Qwen margin interval do not survive
+rescoring. These exploratory intervals remain conditional on saved
+attempts and frozen policies and are not adjusted for multiple comparisons.
 
-The interrupted Qwen paper-style run also shows severe degradation and
-persistent token-limit exhaustion, although its partial benchmark coverage
-limits the conclusion. Qualitative examples reveal repetitive generation,
-but do not establish how frequently it occurs or its causal mechanism.
-Together, these findings show that promoting experts associated with
-correct answers is insufficient to improve reasoning under the tested
-policies.
 
-Changes in token use likewise do not establish an efficiency improvement
-without evidence that accuracy is preserved. The sensitivity of some
-findings to rescoring and evaluation weighting reinforces the need to
-validate scoring rules and fix evaluation objectives before independent
-replication.
+
+The interrupted
+Qwen paper-style run shows severe degradation on its completed subset:
+4/494 correct answers and 494/494 token-limit hits. Its coverage is restricted
+to AIME24 and part of AIME25, so it remains separate from the complete-run
+evidence. Promoting a full top-$k$ target set fixes the selected identities
+and equalises their hook scores; this is a possible mechanism, not a verified
+causal explanation of the observed termination behaviour.
+
+The qualitative review supplies direct examples of repetition in both
+capped and normally ended outputs, while also identifying two formatting
+disagreements with the saved scorer. It does not estimate failure-mode
+prevalence or establish the routing mechanism.
+
+The revised evaluations provide evidence of harm for specific interventions
+and no positive accuracy interval excluding zero. A change of evaluation
+unit cannot replace an unfavourable primary result; both scoring rules and
+objectives should be fixed before independent replication. Token counts
+also change, but lower token use without established preservation of accuracy
+is not a demonstrated efficiency improvement.
+
+
+The completed Gemma fixed-bias $+1$ evaluation gives $87.67\%$ baseline
+and $87.60\%$ guided accuracy, a $-0.07$-point change
+($[-1.15,+1.00]$). Target coverage rises
+from $0.64\%$ to $5.03\%$, still far below the $41.81\%$ pre-bias
+frequency-cache coverage. Coverage describes executed router evaluations rather than a
+decode-only cache trace.
+
+The matched 100-problem ordered-cache experiments
+(Section~\ref{sec:multimodel-cache-100}) reveal model-dependent effects.
+Rescored accuracy changes are $-1$ point for OSS and Qwen and zero for
+Gemma, with all intervals including zero. Qwen reduces loads per token
+by $5.20$--$6.82\%$, with intervals below zero, and has promising
+$6.20$--$7.81\%$ reductions in observed loads per answer whose intervals
+still include zero. Gemma target pinning increases loads per answer by
+$10.32\%$ at 16 slots ($[+2.69,+18.68]\%$), while guided LRU avoids most
+of that cost. OSS's longer outputs offset its 16-slot per-token savings.
+These results distinguish routing locality, pinning policy and total
+answer cost; none measures actual SSD traffic or offloaded-inference speed.
 
 \section{Research contributions}
 

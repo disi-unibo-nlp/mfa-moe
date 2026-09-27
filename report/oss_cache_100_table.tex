@@ -1,0 +1,23 @@
+\begin{table}[ht]
+\centering\small
+\caption{GPT-OSS, 100 held-out problems: simulated decode-only expert loads. Every response starts cold; initial pin loads are included. Slots are per layer.}
+\label{tab:oss-cache-100-loads}
+\begin{tabular}{llrrr}
+\toprule
+Policy & Slots & Loads/answer & Loads/token & Hit rate (\%) \\
+\midrule
+Baseline LRU & 8 & 134,007.0 & 30.33 & 68.40 \\
+Baseline LRU & 16 & 40,079.7 & 9.07 & 90.55 \\
+Baseline LRU & 32 & 722.8 & 0.16 & 99.83 \\
+Baseline frequency pins & 8 & 134,747.1 & 30.50 & 68.23 \\
+Baseline frequency pins & 16 & 40,068.2 & 9.07 & 90.56 \\
+Baseline frequency pins & 32 & 722.8 & 0.16 & 99.83 \\
+Guided target pins & 8 & 162,649.3 & 30.17 & 68.58 \\
+Guided target pins & 16 & 46,092.0 & 8.55 & 91.10 \\
+Guided target pins & 32 & 717.1 & 0.13 & 99.86 \\
+Guided LRU & 8 & 158,902.8 & 29.47 & 69.30 \\
+Guided LRU & 16 & 45,581.3 & 8.45 & 91.19 \\
+Guided LRU & 32 & 717.1 & 0.13 & 99.86 \\
+\bottomrule
+\end{tabular}
+\end{table}

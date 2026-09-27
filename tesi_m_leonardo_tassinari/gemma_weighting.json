@@ -1,0 +1,12 @@
+{
+  "source": "report/gemma_cache_diagnostics.json",
+  "source_sha256": "3cf0bf6008f3c0ab3ba5ef220699152bbc5404620b6d0c710b0e7bacb66a73fb",
+  "method": "paired_dataset_stratified_problem_percentile; equal_problem; numpy SeedSequence([42, replicate]); same strata ordering as report/generate_guiding_sensitivity.py",
+  "replicates": 5000,
+  "num_problems": 465,
+  "accuracy_delta": -6.720430107526882e-05,
+  "ci95": [
+    -0.02157258064516129,
+    0.01962533602150535
+  ]
+}

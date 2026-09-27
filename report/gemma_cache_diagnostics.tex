@@ -1,0 +1,68 @@
+\section{Gemma fixed guiding with full diagnostics}
+\label{sec:gemma-cache-diagnostics}
+
+The completed Gemma-4-26B-A4B NVFP4 experiment applies fixed positive
+identity bias $+1$ on 1,395 held-out attempts from 465 problems, with
+concurrency 16 and the frozen model-specific policy. Eight experts are
+targeted at each of layers 16, 19, 21, 22, 25, 27 and 29. Calibration
+uses replay routing from the corresponding Gemma checkpoint under a
+different quantization; expert-identity transfer is therefore an assumption.
+No held-out result is used to refit targets or choose the strength.
+
+The original scorer gives 1,117 baseline and 1,113 guided correct answers.
+Under the same offline extracted-answer equivalence contract used for
+the other intervention evaluations, the counts are 1,223 and 1,222:
+$87.67\%$ versus $87.60\%$. The change is $-0.07$ percentage points,
+with a paired, dataset-stratified problem-bootstrap 95\% interval
+$[-1.15,+1.00]$ (5,000 resamples, seed 42). There are 33 wrong-to-right
+and 34 right-to-wrong changes. Mean generated tokens decrease from
+11,695.48 to 11,562.61 ($-1.14\%$), and token-limit hits decrease from
+67 to 66. These results show a small observed accuracy difference,
+not established non-inferiority or an accuracy improvement.
+
+The guided run was interrupted after 243 completed attempts and resumed
+to full coverage. Answer-level analysis joins each completed ID exactly
+once. Routing histograms sum the two saved execution sessions; they
+include prefill, padding and potentially unfinished work from before the
+interruption that was later regenerated. Consequently the diagnostic
+population is execution work, not exactly one routing trace per scored
+answer. Within each session the pre-bias and post-bias counters refer
+to the same guided hidden states, not separate baseline generations.
+
+\begin{table}[ht]
+\centering\small
+\caption{Gemma full-diagnostics fixed guiding: expert-selection coverage
+in percent, aggregated across both execution sessions. Each static cache
+contains eight experts per measured layer. Frequency pins use calibration
+frequencies.}
+\label{tab:gemma-cache-coverage}
+\begin{tabular}{lrrr}
+\toprule
+Layer & Target, pre-bias & Target, post-bias & Frequency, pre-bias \\
+\midrule
+16 & 0.05 & 3.26 & 35.42 \\
+19 & 0.03 & 1.06 & 39.41 \\
+21 & 0.04 & 1.26 & 43.19 \\
+22 & 0.11 & 2.02 & 53.53 \\
+25 & 0.16 & 5.31 & 43.37 \\
+27 & 1.38 & 6.42 & 41.37 \\
+29 & 2.67 & 15.90 & 36.38 \\
+All seven & 0.64 & 5.03 & 41.81 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The target set's share of expert selections increases from $0.64\%$ to
+$5.03\%$. For an already resident target cache this gives $4.43\%$ fewer
+nonresident selections relative to the same targets before bias. However,
+a same-budget frequency-selected cache covers $41.81\%$ before bias
+(and $40.64\%$ after it). Guided target pinning consequently has
+$63.20\%$ more nonresident selections than the pre-bias frequency cache.
+The bias increases use of the selected identities but does not make them
+a competitive static cache set for this model and strength.
+
+These aggregate counters describe only seven policy layers and do not
+measure ordered cache loads, cold-start cost, SSD traffic or latency.
+They establish neither a whole-model speed effect nor a confidence interval
+for cache coverage. The ordered experiments below test adaptive-cache
+controls and all-layer loads separately.
