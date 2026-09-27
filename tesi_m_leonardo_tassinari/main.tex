@@ -75,51 +75,37 @@
 \chapter*{Abstract}
 \markboth{Abstract}{Abstract}
 
-Sparse mixture-of-experts language models select a subset of experts for
-each token, making routing a possible point of intervention during reasoning.
-This thesis investigates whether observable reasoning activities and internal
-routing measurements can inform policies that improve mathematical
-problem solving without updating model weights. Our experimental framework
-connects four stages: automatic annotation of seven reasoning episode
-classes, prospective probing of hidden representations, observational
-analysis of routing and correctness, and interventions during free generation.
-Annotations and probes support measurement and target exploration; the
-evaluated controllers use calibrated expert identities or router margins,
-without online episode predictions.
+Sparse mixture-of-experts language models offer a distinctive opportunity to
+study and influence reasoning through the experts activated for each token.
+This thesis develops an auditable framework for investigating that opportunity
+without updating model weights, connecting automatic annotation of seven
+reasoning activities, representation probing, routing analysis, and controlled
+interventions.
 
-The correlation study covers Qwen3.5-35B-A3B, Gemma-4-26B-A4B, and GPT-OSS-20B,
-with 4,647 attempts from 1,547 source problems per model across six
-mathematical benchmarks. Probe results indicate that information about upcoming
-episode labels is accessible on held-out responses within the released
-SAT corpus: response-grouped macro-AUROC is 0.852 for Qwen, 0.780 for
-GPT-OSS, and 0.788 for Gemma, exceeding a simple prefix-position baseline.
-This evaluation does not establish external-domain or online-detector validity.
-Routing--correctness associations vary with model, benchmark, and reasoning
-class, motivating controls for difficulty, response length, and termination.
+Experiments cover Qwen3.5-35B-A3B, Gemma-4-26B-A4B, and GPT-OSS-20B across six
+mathematical benchmarks, with 4,647 attempts from 1,547 problems per model.
+A key finding is that hidden representations contain information about upcoming
+reasoning activities: probes achieve macro-AUROC scores of 0.852, 0.788, and
+0.780, respectively, outperforming a prefix-position baseline on held-out SAT
+responses. This supports their value as research instruments, while broader
+transfer and online detection remain unvalidated.
 
-The main completed stochastic intervention comparisons each use 1,395 matched
-attempts from 465 held-out problems. A consistent offline answer-equivalence
-audit rescores both conditions without new generation. In the original
-Qwen and GPT-OSS comparisons, no complete intervention has a positive
-95\% paired problem-bootstrap interval excluding zero under either
-attempt or equal-problem weighting. Under the primary
-attempt-weighted metric, Qwen and GPT-OSS fixed positive strength 2 lose
-2.80 and 3.30 percentage points, respectively. All margin intervals
-contain zero. Gemma fixed positive strength $+1$ changes accuracy from
-$87.67\%$ to $87.60\%$ ($-0.07$ percentage points; 95\% interval
-$[-1.15,+1.00]$), a small observed difference without established
-non-inferiority. These exploratory intervals omit multiplicity adjustment.
-Separately, the interrupted Qwen paper-style intervention retains 0.81\%
-accuracy versus 70.45\% on 494 matched IDs, all reaching the guided token
-limit; its partial AIME cohort does not estimate the full evaluation effect.
-Additional ordered-cache experiments on 100 matched problems per model
-show lower per-token expert-loading demand for Qwen, while total-loading
-benefits remain uncertain. Gemma target pinning incurs extra simulated
-loads, and OSS's longer outputs offset local savings. Actual SSD latency
-is not measured. The thesis provides an auditable
-framework for connecting reasoning annotations to sparse computation while
-distinguishing representational evidence, observational associations, and
-the measured effects of routing interventions.
+The intervention results reveal an important distinction between identifying
+informative patterns and using them to improve reasoning. Routing--correctness
+associations depend on the model, benchmark, and reasoning activity. In
+comparisons of 1,395 matched attempts per intervention, stronger fixed expert
+promotion reduces Qwen and GPT-OSS accuracy by 2.80 and 3.30 percentage points.
+Gemma changes by only $-0.07$ points, although non-inferiority is not established.
+No completed intervention establishes a statistically supported accuracy gain.
+
+Cache simulations identify a separate opportunity: Qwen requires fewer expert
+loads per token under the tested conditions. However, total savings remain
+uncertain, and longer outputs can offset local benefits; actual SSD latency is
+not measured.
+
+Together, these findings provide tools for studying reasoning, evidence about
+the limits of correlation-based steering, and a practical basis for evaluating
+future routing policies against both accuracy and computational cost.
 
 \chapter*{Introduction}
 \markboth{Introduction}{Introduction}
