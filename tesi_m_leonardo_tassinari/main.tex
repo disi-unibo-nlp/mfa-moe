@@ -156,7 +156,7 @@ The investigation is organised around three questions:
   to expert routing during generation?
 \end{enumerate}
 
-\paragraph{Approach and scope.}
+\paragraph{Research approach.}
 Our experimental framework connects four stages. First, an LLM-based annotator
 assigns sentences to seven adapted Schoenfeld episode classes: Read,
 Analyze, Plan, Implement, Explore, Verify, and Monitor. Prompt optimisation
@@ -186,7 +186,7 @@ stratified annotation procedure but retain model-specific selected cohorts;
 Qwen uses a separate annotation protocol. Completed intervention evidence
 concerns Qwen and GPT-OSS identity and margin guiding.
 
-\paragraph{Contributions and findings.}
+\paragraph{Research contributions.}
 The thesis contributes an integrated workflow linking functional descriptions
 of reasoning to measurements of sparse expert computation and to explicit
 routing interventions. Saved prompts, trace identities, sentence offsets,
@@ -809,7 +809,7 @@ not claim to reproduce every evaluation setting of the SPIRAL paper.
 Self-play changes the training process, whereas the thesis's intended control
 mechanism acts on routing during inference.
 
-\subsection{Reasoning effort, efficiency, and stopping}
+\subsection{Regulating reasoning effort}
 
 Reasoning length is itself a target of intervention.
 Chen et al. characterise overthinking through outcome and process efficiency
@@ -938,7 +938,7 @@ separate experimental step.
 \section{Functional perspectives on expert routing}
 \label{sec:related-routing}
 
-\subsection{Specialisation, lexical controls, and routing paths}
+\subsection{Characterising expert routing behaviour}
 
 Early sparse MoE work establishes conditional computation as a way to scale
 capacity while limiting active computation \cite{shazeer2017sparselygated}.
@@ -997,7 +997,7 @@ functions, with specificity emerging through its combination with other
 layers. Path-level analysis is consequently a possible extension of the
 present measurements, rather than a property demonstrated by them.
 
-\subsection{Expert intervention and test-time route selection}
+\subsection{Inference-time routing control}
 
 RICE is a close precedent for reasoning-directed expert intervention
 \cite{wang2025rice}. Wang et al. associate experts with reasoning-related
@@ -1759,7 +1759,7 @@ with 24\,GB of device memory \cite{unibonlpClusterGuide}.
     GPU & One NVIDIA GeForce RTX 5090 \\
     GPU memory & 32\,GB \\
     Scheduler CPU capacity & 32 CPU resources \\
-    Scheduler host memory & Approximately 121\,GB, as displayed \\
+    Scheduler host memory & 121 GB \\
     \bottomrule
   \end{tabularx}
 \end{table}
@@ -1799,7 +1799,7 @@ Qwen3.8-27B with a different 4-bit quantisation configuration. These models supp
 optimisation feedback; the routing measurements described in this chapter
 come from Qwen3.5-35B-A3B.
 
-\subsection{Generation and replay configurations}
+\subsection{Model execution configurations}
 
 The probe experiment uses the official Qwen3.5-35B-A3B model with GPTQ
 4-bit weights. The correlation study uses the same quantised model for
@@ -2249,12 +2249,11 @@ with an annotation corpus, accessibility of information in representations,
 association with an outcome, and the effect of an implemented intervention.
 They are interpreted separately before drawing conclusions about guidance.
 
-The numerical snapshot uses the completed experiments available on
-24 September 2026. Unless stated otherwise, intervention results use
+Unless stated otherwise, intervention results use
 stochastic decoding. Complete matched comparisons and the interrupted
 Qwen paper-style experiment are reported separately; missing guided
 attempts never enter the partial-result denominator. The analysis includes
-all completed margin comparisons available at that date and uses existing
+all completed margin comparisons available and uses existing
 generations without additional model inference. Intervention tables use the consistent offline scoring rule in
 Section~\ref{sec:guiding-rescoring}, while calibration and observational
 analyses retain their original labels. The qualitative inspection keeps
@@ -3302,7 +3301,7 @@ Qwen positive (partial) & 6/0 & 6 & 0 & 0 & 6 \\
 \end{adjustbox}
 \end{table}
 
-\paragraph{Repetition and termination.}
+\paragraph{Generation pathologies.}
 All 14 sampled capped outputs contain repeated arithmetic or verbal
 cycles and lack a boxed-answer marker. Five of the eight normally ended
 OSS outputs also contain cycles before returning an incorrect boxed
