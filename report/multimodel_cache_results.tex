@@ -1,0 +1,111 @@
+\section{Ordered cache experiments across three models}
+\label{sec:multimodel-cache-100}
+\label{sec:oss-cache-100}
+
+The completed cache study compares GPT-OSS, Qwen and Gemma on the same
+100 held-out source problems, with one baseline and one fixed positive
+bias-$+1$ generation per model and problem. Source-problem identities
+match across all three cohorts. The deterministic selection contains
+9 AIME24, 9 AIME25, 12 AMC23, 24 MATH-500, 23 Minerva and 23 OlympiadBench
+problems; smaller held-out pools are exhausted before the larger pools.
+Each model retains its own frozen calibration policy. Per-model paired
+prompts, seeds and generation settings match. Generation uses temperature
+0.6, top-$p$ 0.95, a 32,768-token output limit, and synchronous
+single-sequence execution. These are separate generations from the
+1,395-attempt detailed runs and do not constitute independent seed
+replications of those runs.
+
+\paragraph{Measurement and cache controls.}
+Ordered router-hook top-$k$ sets cover all 24 OSS, 40 Qwen and 30 Gemma
+layers. All prefill chunks are excluded, so $N$ returned tokens correspond
+to $N-1$ recorded decode steps at every layer. Source hashes, paired inputs,
+layer coverage and trace lengths are validated. Hook top-$k$ is not an
+independent observation of native dispatch; tied scores may differ.
+
+Each answer starts with a cold per-layer cache. Initial pinned-expert loads
+count, even if a pin is never subsequently used. The four conditions are
+baseline LRU, baseline with calibration-frequency pins, guided LRU, and
+guided routing with target pins; remaining slots use LRU. Pins are restricted
+to each model's policy layers, with equal pin counts for frequency and target
+controls. Other layers use LRU. Simultaneous top-$k$ requests cannot evict
+one another; sorted expert IDs break simultaneous recency ties.
+
+OSS uses four of 32 experts and budgets of 8, 16 and 32 slots per layer.
+Qwen uses eight of 256 and Gemma eight of 128, with budgets of 16, 32 and
+64 slots. Capacities are equal across conditions within a model. They do
+not represent equal bytes or equal fractions of expert capacity across
+models. Shared experts, dense operations and KV-cache memory are outside
+the expert-load metric. No SSD reads, transfer bandwidth or latency are measured.
+
+\paragraph{Accuracy and output length.}
+Offline extracted-answer equivalence rescoring gives baseline/guided
+correct counts of 76/75 for OSS, 83/82 for Qwen, and 84/84 for Gemma.
+Their accuracy changes have 95\% intervals of $[-7,+5]$, $[-5,+3]$ and
+$[-4,+4]$ percentage points, respectively. These use 5,000 paired,
+dataset-stratified source-problem resamples with seed 42. The original
+saved scorer instead gives 53/48, 62/61 and 59/59; those labels remain
+unchanged in the source artifacts. No model establishes accuracy
+non-inferiority from these intervals alone.
+
+OSS outputs are $22.04\%$ longer on average; Qwen outputs are $1.06\%$
+shorter and Gemma outputs $1.61\%$ shorter. Token-limit counts are 2/6,
+7/7 and 3/5, respectively. The distinct length responses make total loads
+per answer necessary alongside loads per token.
+
+\input{multimodel_cache_tables}
+
+\paragraph{Qwen: a promising loading reduction.}
+Guided target pinning reduces mean simulated loads per answer by
+$6.20\%$, $6.98\%$ and $7.81\%$ at 16, 32 and 64 slots per layer.
+It also uses fewer loads than the same-budget frequency-pinned baseline.
+Guided LRU already achieves most of the reduction; target pinning adds a
+smaller improvement on the same guided traces. Thus the result belongs
+primarily to the changed routing trajectories, with a smaller incremental
+benefit from reserving slots for the targets. The accuracy point estimate
+is one fewer correct answer out of 100, and output length is slightly lower.
+Per-token reductions are $5.20\%$, $5.99\%$ and $6.82\%$, with
+all three 95\% intervals below zero. All per-answer intervals still
+include zero: $[-16.35,+5.50]\%$, $[-17.12,+4.72]\%$ and
+$[-14.90,+0.08]\%$. Thus per-token locality improves under the reported
+resampling criterion, while a population-level reduction in total loads
+per answer remains unresolved. These are not end-to-end speed measurements.
+
+\paragraph{Gemma: pinning rare targets is costly.}
+Guided target pinning increases loads per answer by $10.32\%$, $6.83\%$
+and $2.07\%$ at 16, 32 and 64 slots. At 16 slots the 95\% interval is
+$[+2.69,+18.68]\%$; at 32 and 64 slots the intervals include zero.
+Loads per token increase at all three budgets. Ordinary LRU on the guided
+traces instead gives 825,810.8, 353,664.2 and 59,938.7 loads per answer,
+slightly below the respective baseline-LRU means. Explicit target pinning
+therefore consumes capacity that adaptive LRU uses more effectively.
+This agrees with the full-diagnostics finding that the accuracy-associated
+Gemma targets remain infrequent even after bias. There is no aggregate
+accuracy difference in the 100-problem sample.
+
+\paragraph{OSS: local savings are outweighed by longer answers.}
+At 16 slots, guided target pinning reduces loads per token by $5.77\%$
+($[-9.06,-2.56]\%$), but increases observed loads per answer by $15.00\%$
+($[-13.33,+53.22]\%$). At eight slots, the per-answer increase is
+$21.37\%$ ($[-8.92,+62.53]\%$). Ordinary LRU uses fewer loads than target
+pinning on the same guided traces. At 32 slots all OSS experts fit, so the
+small reduction in loads concerns initial loading of distinct experts,
+not reduced eviction under memory pressure.
+
+\paragraph{Interpretation.}
+The three models do not support a universal cache benefit from promoting
+accuracy-associated identities. Qwen is the strongest candidate for a
+subsequent offloaded-inference benchmark; Gemma exposes the cost of pinning
+rare targets, and OSS shows how longer outputs can offset per-token locality.
+A small accuracy loss could be acceptable in exchange for sufficient speed,
+but establishing that trade-off requires actual answer latency under equal
+memory and transfer budgets. Predictive prefetching is not evaluated here.
+
+Cache intervals resample paired problems within datasets (5,000 resamples,
+Python random seed 42), recomputing ratios of total loads and token counts.
+They condition on the frozen policies and saved generations and are not
+adjusted for multiple budgets or models. They do not include independent
+seed or policy-fitting variation. Prefill warming, cross-answer reuse,
+batching, prefetch and transfer costs are excluded. Weights remain resident
+during generation; instrumentation time cannot be interpreted as SSD-backed
+inference time. The matched cohort strengthens descriptive comparison but
+does not isolate architectural causes of differences between models.

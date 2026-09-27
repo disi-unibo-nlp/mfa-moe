@@ -1,0 +1,60 @@
+\begin{table}[ht]
+\centering\small
+\caption{Matched 100-problem cache experiments. B/G denotes baseline/guided. Accuracy uses offline equivalence rescoring; changes and intervals are percentage points. Token changes are relative percentages.}
+\label{tab:cache-multimodel-quality}
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{llrrrr}
+\toprule
+Model & Correct B/G & Change [95\% CI] & Mean tokens B/G & Token change (\%) & Capped B/G \\
+\midrule
+GPT-OSS & 76/75 & -1.0 [-7.0, +5.0] & 4,418.9/5,392.9 & +22.04 & 2/6 \\
+Qwen & 83/82 & -1.0 [-5.0, +3.0] & 12,116.1/11,988.0 & -1.06 & 7/7 \\
+Gemma & 84/84 & +0.0 [-4.0, +4.0] & 9,645.4/9,490.5 & -1.61 & 3/5 \\
+\bottomrule
+\end{tabular}
+}
+\end{table}
+\begin{table}[ht]
+\centering\small
+\caption{Simulated mean expert loads per complete answer, including cold-start pin loads, across all routed layers. Capacity is slots per layer; frequency and target pins use the same slot budget within each model.}
+\label{tab:cache-multimodel-loads}
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{llrrrr}
+\toprule
+Model & Slots & Baseline LRU & Baseline frequency & Guided LRU & Guided targets \\
+\midrule
+GPT-OSS & 8 & 134,007 & 134,747 & 158,903 & 162,649 \\
+GPT-OSS & 16 & 40,080 & 40,068 & 45,581 & 46,092 \\
+GPT-OSS & 32 & 723 & 723 & 717 & 717 \\
+Qwen & 16 & 2,400,863 & 2,410,567 & 2,266,939 & 2,252,038 \\
+Qwen & 32 & 1,900,161 & 1,901,191 & 1,772,502 & 1,767,504 \\
+Qwen & 64 & 1,184,307 & 1,184,273 & 1,092,516 & 1,091,858 \\
+Gemma & 16 & 827,247 & 821,327 & 825,811 & 912,591 \\
+Gemma & 32 & 354,596 & 352,565 & 353,664 & 378,813 \\
+Gemma & 64 & 60,310 & 60,284 & 59,939 & 61,556 \\
+\bottomrule
+\end{tabular}
+}
+\end{table}
+\begin{table}[ht]
+\centering\small
+\caption{Relative change (percent) for guided target pinning versus baseline LRU, with paired dataset-stratified problem-bootstrap 95\% intervals. Negative values mean fewer simulated loads. Intervals use 5,000 resamples, seed 42, and no multiplicity correction.}
+\label{tab:cache-multimodel-effects}
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{llrr}
+\toprule
+Model & Slots & Loads/answer: change [CI] & Loads/token: change [CI] \\
+\midrule
+GPT-OSS & 8 & +21.37 [-8.92, +62.53] & -0.55 [-2.74, +1.66] \\
+GPT-OSS & 16 & +15.00 [-13.33, +53.22] & -5.77 [-9.06, -2.56] \\
+GPT-OSS & 32 & -0.78 [-1.05, -0.50] & -18.71 [-39.53, +8.83] \\
+Qwen & 16 & -6.20 [-16.35, +5.50] & -5.20 [-6.34, -4.00] \\
+Qwen & 32 & -6.98 [-17.12, +4.72] & -5.99 [-7.19, -4.65] \\
+Qwen & 64 & -7.81 [-14.90, +0.08] & -6.82 [-10.26, -2.14] \\
+Gemma & 16 & +10.32 [+2.69, +18.68] & +12.12 [+10.23, +14.44] \\
+Gemma & 32 & +6.83 [-0.72, +15.07] & +8.57 [+5.84, +11.73] \\
+Gemma & 64 & +2.07 [-4.74, +9.97] & +3.73 [+0.08, +7.76] \\
+\bottomrule
+\end{tabular}
+}
+\end{table}

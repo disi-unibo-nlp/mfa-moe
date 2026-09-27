@@ -1,0 +1,23 @@
+\begin{table}[ht]
+\centering\small
+\caption{Qwen, 100 held-out problems: simulated decode-only expert loads. Every response starts cold; initial pin loads are included. Slots are per layer.}
+\label{tab:qwen-cache-100-loads}
+\begin{tabular}{llrrr}
+\toprule
+Policy & Slots & Loads/answer & Loads/token & Hit rate (\%) \\
+\midrule
+Baseline LRU & 16 & 2,400,863.0 & 198.17 & 38.07 \\
+Baseline LRU & 32 & 1,900,161.3 & 156.84 & 50.99 \\
+Baseline LRU & 64 & 1,184,306.6 & 97.75 & 69.45 \\
+Baseline frequency pins & 16 & 2,410,566.6 & 198.97 & 37.82 \\
+Baseline frequency pins & 32 & 1,901,191.1 & 156.93 & 50.96 \\
+Baseline frequency pins & 64 & 1,184,273.1 & 97.75 & 69.45 \\
+Guided target pins & 16 & 2,252,038.0 & 187.87 & 41.29 \\
+Guided target pins & 32 & 1,767,504.1 & 147.45 & 53.92 \\
+Guided target pins & 64 & 1,091,858.1 & 91.09 & 71.54 \\
+Guided LRU & 16 & 2,266,939.2 & 189.12 & 40.90 \\
+Guided LRU & 32 & 1,772,502.2 & 147.87 & 53.79 \\
+Guided LRU & 64 & 1,092,515.9 & 91.14 & 71.52 \\
+\bottomrule
+\end{tabular}
+\end{table}

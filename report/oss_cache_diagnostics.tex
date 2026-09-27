@@ -1,0 +1,77 @@
+\section{GPT-OSS expert reuse under a fixed-cache proxy}
+\label{sec:oss-cache-diagnostics}
+
+A separate full-diagnostics rerun evaluates GPT-OSS fixed positive identity
+steering at strength $+1$, using the frozen policy and the same 1,395 held-out
+attempts on 465 problems. It uses concurrency 25 and the frozen template date
+2026-09-22. The compatible baseline is reused with output-hash provenance;
+the guided generations are new. This diagnostic rerun is kept separate from
+the historical minimal-diagnostics comparison and is not an independent
+problem-set replication. No new target or strength is selected from these results.
+
+Under the same offline answer-equivalence scoring contract as the main
+intervention analysis, accuracy is $1086/1395=77.85\%$ for baseline and
+$1088/1395=77.99\%$ for guidance. The change is $+0.14$ percentage points,
+with a paired, dataset-stratified source-problem bootstrap 95\% interval
+$[-2.37,+2.37]$ (5,000 resamples, seed 42). There are 94 wrong-to-right and
+92 right-to-wrong changes. Mean generated tokens increase from 6,497.2 to
+6,813.9 ($+4.88\%$), and token-limit hits increase from 74 to 77.
+Thus the observed aggregate accuracy difference is small, but accuracy
+preservation and an efficiency improvement are not established.
+
+The routing counters permit a fixed resident-cache proxy at the four steered
+layers, 15, 19, 21 and 23. Four target experts per layer would occupy 16
+layer--expert slots in total. Define $H$ as the fraction of top-$k$ expert
+selections covered by that fixed resident set; the proxy for nonresident
+selections is $1-H$. Both pre-bias and post-bias counters are evaluated on
+the guided trajectory's hidden states. The pre-bias counts are therefore
+not routing measurements from the separately generated baseline.
+
+\begin{table}[ht]
+\centering\small
+\caption{GPT-OSS diagnostic rerun: static-cache coverage as a percentage of
+expert selections. Target and frequency caches each have four slots per layer.
+Frequency pins are selected from calibration statistics only. All columns
+use states visited by guided generation.}
+\label{tab:oss-cache-coverage}
+\begin{tabular}{lrrr}
+\toprule
+Layer & Target, pre-bias & Target, post-bias & Frequency, pre-bias \\
+\midrule
+15 & 5.19 & 31.40 & 30.40 \\
+19 & 8.70 & 45.23 & 37.42 \\
+21 & 2.20 & 22.58 & 41.36 \\
+23 & 4.23 & 41.48 & 38.32 \\
+All four & 5.08 & 35.17 & 36.87 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Target-cache coverage rises from $5.08\%$ to $35.17\%$. Relative to pinning
+those same targets without the bias on these states, this corresponds to
+$31.70\%$ fewer nonresident selections:
+$(H_{\mathrm{after}}-H_{\mathrm{before}})/(1-H_{\mathrm{before}})$.
+However, a same-budget cache of calibration-frequent experts already covers
+$36.87\%$ of pre-bias selections. Guided target pinning therefore has
+$2.70\%$ more nonresident selections than this control. A hindsight-optimal
+static cache covers $37.39\%$ before the bias; against it, guided target
+pinning has $3.55\%$ more nonresident selections. The hindsight cache is an
+analytical control, not a deployable policy or a bound on adaptive caching.
+
+The supported result is greater reuse of the boosted expert identities,
+alongside a small observed aggregate accuracy difference. For this OSS
+policy, that concentration does not outperform the calibration-frequency
+static-cache control in the measured proxy. This distinction prevents
+increased target frequency alone from being interpreted as a systems gain.
+
+These counters include prefill, decode and engine padding, cover only the
+four selected layers, and compute top-$k$ from hook logits rather than
+separately observing native dispatch. They retain neither temporal order
+nor per-attempt routing, so no cache-effect confidence interval is available.
+The proxy assumes an already resident pinned set and excludes cold-start
+loads, dynamic caching, shared loads across batched tokens and prefetch.
+It measures neither SSD bytes nor latency and must not be extrapolated to
+whole-model speed. A small accuracy loss could be acceptable if it buys
+sufficient speed, but that trade-off requires ordered decode traces and
+ultimately an equal-memory offloaded-inference benchmark. Longer guided
+outputs make total loads and latency per answer especially important.
