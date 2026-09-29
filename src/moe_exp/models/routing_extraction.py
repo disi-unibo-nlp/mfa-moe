@@ -88,7 +88,10 @@ def process_file(
     save_raw_tensors: bool = True,
     view_reducer: Callable[..., dict[str, Any]] | None = None,
     view_config: dict[str, Any] | None = None,
-    trace_annotations: dict[str, dict[str, Any]] | None = None,
+    trace_annotations: dict[Any, dict[str, Any]] | None = None,
+    forward_provenance: dict[str, Any] | None = None,
+    dynamics_reducer: Callable[..., dict[str, Any]] | None = None,
+    dynamics_config: dict[str, Any] | None = None,
 ):
     """
     Run the offline extraction loop over traces to compute routing dynamics.
@@ -140,6 +143,12 @@ def process_file(
     else:
         logger.info("Using preloaded model %s", model_id)
 
+    from moe_exp.correlation_pipeline.provenance import file_sha256
+    from moe_exp.correlation_pipeline.spans import digest
+    if forward_provenance is None:
+        from moe_exp.correlation_pipeline.provenance import forward_provenance as describe_forward
+        forward_provenance = describe_forward(model, tokenizer)
+
     if layer_indices is not None:
         layer_indices = sorted(set(layer_indices))
         if not layer_indices or layer_indices[0] < 0:
@@ -177,16 +186,29 @@ def process_file(
     logger.info(f"Processing {len(traces)} traces for offline routing metrics computation...")
     tmp_output_path = output_path.with_name(f".{output_path.name}.tmp")
     n_with_routing = 0
+    n_forwards = 0
+    seen_identities = set()
     with open(tmp_output_path, "w", encoding="utf-8") as out_f:
         for trace_dict in tqdm(traces, desc="Extracting Routing"):
             trace = TraceRecord(**trace_dict)
+            identity = (trace.model_id, trace.dataset, trace.problem_id, trace.sample_id)
+            if identity in seen_identities:
+                raise ValueError("Duplicate composite trace identity")
+            seen_identities.add(identity)
+            trace.metadata["forward_provenance"] = forward_provenance
+            trace.metadata["router_capture_version"] = ROUTER_CAPTURE_VERSION
+            trace.metadata["sampling_manifest_sha256"] = (
+                trace.metadata.get("sentence_selection") or {}
+            ).get("manifest_sha256")
             if native_routing:
                 trace.metadata["router_distribution"] = (
                     "normalized_sigmoid" if model_family(model) in SIGMOID_ROUTERS else "softmax"
                 )
             if trace_annotations is not None:
                 from moe_exp.correlation_pipeline.spans import validate_annotation
-                annotation = trace_annotations.get(trace.problem_id)
+                annotation = trace_annotations.get(identity)
+                if annotation is None:
+                    annotation = trace_annotations.get(trace.problem_id)  # legacy callers
                 if annotation is None:
                     raise ValueError(f"Missing reasoning annotation for {trace.problem_id}")
                 validate_annotation(trace, annotation)
@@ -197,7 +219,7 @@ def process_file(
                 continue
                 
             safe_problem_id = trace.problem_id.replace("/", "_").replace("\\", "_")
-            trace_id = f"{trace.dataset}_{safe_problem_id}"
+            trace_id = f"{trace.dataset}_{safe_problem_id[:100]}_{digest(identity)[:16]}"
             logits_path = tensor_dir / f"{trace_id}_logits.pt"
             hidden_path = tensor_dir / f"{trace_id}_hidden.pt"
             experts_path = tensor_dir / f"{trace_id}_experts.pt"
@@ -220,6 +242,10 @@ def process_file(
             expected_checkpoint = {
                 "trace_sha256": trace_digest,
                 "model_id": model_id,
+                "identity": list(identity),
+                "forward_provenance": forward_provenance,
+                "sentence_selection": trace.metadata.get("sentence_selection"),
+                "router_capture_version": ROUTER_CAPTURE_VERSION,
                 "quantization": quantization,
                 "top_k": top_k,
                 "hidden_states": extract_hidden_states,
@@ -241,6 +267,9 @@ def process_file(
                 expected_checkpoint["annotation_sha256"] = hashlib.sha256(json.dumps(
                     trace.metadata.get("reasoning_annotation"), sort_keys=True,
                 ).encode()).hexdigest()
+            if dynamics_reducer is not None:
+                expected_checkpoint["dynamics_config"] = dynamics_config or {}
+                expected_checkpoint["dynamics_annotation_sha256"] = digest(trace.metadata.get("reasoning_annotation"))
             checkpoint = None
             if checkpoint_path.is_file():
                 try:
@@ -254,9 +283,18 @@ def process_file(
                 required_paths.append(weights_path)
             if extract_hidden_states and save_raw_tensors:
                 required_paths.append(hidden_path)
-            checkpoint_config_matches = checkpoint == expected_checkpoint
-            if feature_reducer is not None and isinstance(checkpoint, dict):
-                checkpoint_config_matches = checkpoint.get("config") == expected_checkpoint
+            checkpoint_config_matches = (
+                isinstance(checkpoint, dict) and checkpoint.get("config") == expected_checkpoint
+            )
+            checkpoint_integrity = False
+            if checkpoint_config_matches:
+                hashes = checkpoint.get("tensor_sha256", {})
+                checkpoint_integrity = all(
+                    path.is_file() and hashes.get(path.name) == file_sha256(path)
+                    for path in required_paths
+                ) and checkpoint.get("payload_sha256") == digest(
+                    {key: value for key, value in checkpoint.items() if key != "payload_sha256"}
+                )
             checkpoint_has_features = feature_reducer is None or (
                 isinstance(checkpoint, dict)
                 and isinstance(checkpoint.get("correlation_features"), dict)
@@ -266,7 +304,8 @@ def process_file(
             if (
                 checkpoint_config_matches
                 and checkpoint_has_features
-                and all(path.is_file() for path in required_paths)
+                and checkpoint_integrity
+                and (dynamics_reducer is None or isinstance(checkpoint.get("routing_dynamics"), dict))
             ):
                 if not save_raw_tensors:
                     logits_path.unlink(missing_ok=True)
@@ -291,6 +330,8 @@ def process_file(
                     trace.metadata["correlation_storage"] = checkpoint["correlation_storage"]
                     if view_reducer is not None:
                         trace.metadata["correlation_views"] = checkpoint["correlation_views"]
+                if dynamics_reducer is not None:
+                    trace.metadata["routing_dynamics"] = checkpoint["routing_dynamics"]
                 n_with_routing += 1
                 out_f.write(trace.model_dump_json() + "\n")
                 continue
@@ -301,6 +342,7 @@ def process_file(
                 extra_args["routing_details"] = routing_details
             if "token_replay" in trace.metadata:
                 extra_args["token_replay"] = trace.metadata["token_replay"]
+            n_forwards += 1
             extracted = extract_logs_single_pass(
                 model=model,
                 tokenizer=tokenizer,
@@ -342,7 +384,7 @@ def process_file(
                 # when this run is configured to persist them.
                 if routing_details is not None:
                     selected = routing_details["selected_experts"]
-                    weights = routing_details["expert_weights"] if save_expert_weights else None
+                    weights = routing_details["expert_weights"] if (save_expert_weights or dynamics_reducer is not None) else None
                     if selected.shape[-1] != top_k:
                         raise ValueError("Requested top_k differs from the captured native routing")
                     trace.metadata["router_distribution"] = routing_details["router_distribution"]
@@ -364,7 +406,8 @@ def process_file(
                     trace.model_logs.router_logits = None
                     trace.model_logs.hidden_states = None
 
-                _save_tensor_atomic(selected.to(torch.int16), experts_path)
+                expert_dtype = torch.int16 if int(selected.max()) <= 32767 else torch.int32
+                _save_tensor_atomic(selected.to(expert_dtype), experts_path)
                 trace.model_logs.selected_experts = experts_path.as_posix()
 
                 if save_expert_weights:
@@ -400,6 +443,19 @@ def process_file(
                     )
                     trace.metadata["correlation_views"] = correlation_views
 
+                routing_dynamics = None
+                if dynamics_reducer is not None:
+                    semantics = (routing_details or {}).get("semantics", {
+                        "native_selection": False, "deterministic_topk": False,
+                        "selection_scores": "unavailable", "executed_weights": "unavailable",
+                    })
+                    routing_dynamics = dynamics_reducer(
+                        trace, router_logits, selected,
+                        weights if routing_details is not None else None,
+                        layer_indices or list(range(router_logits.shape[0])), semantics,
+                    )
+                    trace.metadata["routing_dynamics"] = routing_dynamics
+
                 tensor_audit = {
                     "router_logits": _tensor_audit(
                         router_logits,
@@ -408,7 +464,7 @@ def process_file(
                     ),
                     "selected_experts": _tensor_audit(
                         selected,
-                        persisted_dtype=torch.int16,
+                        persisted_dtype=expert_dtype,
                         path=experts_path,
                     ),
                 }
@@ -422,7 +478,7 @@ def process_file(
                     tensor_audit["expert_weights"] = _tensor_audit(
                         weights,
                         persisted_dtype=torch.float16,
-                        path=weights_path,
+                        path=weights_path if save_expert_weights else None,
                     )
                 correlation_storage = {
                     "tokens_retained": int(router_logits.shape[1]),
@@ -446,7 +502,7 @@ def process_file(
                     trace.metadata["correlation_storage"] = correlation_storage
 
                 temporary_checkpoint = checkpoint_path.with_name(f".{checkpoint_path.name}.tmp")
-                checkpoint_payload: dict[str, Any] = expected_checkpoint
+                checkpoint_payload: dict[str, Any] = {"config": expected_checkpoint}
                 if feature_reducer is not None:
                     checkpoint_payload = {
                         "config": expected_checkpoint,
@@ -455,6 +511,12 @@ def process_file(
                     }
                     if view_reducer is not None:
                         checkpoint_payload["correlation_views"] = correlation_views
+                if dynamics_reducer is not None:
+                    checkpoint_payload["routing_dynamics"] = routing_dynamics
+                checkpoint_payload["tensor_sha256"] = {
+                    path.name: file_sha256(path) for path in required_paths
+                }
+                checkpoint_payload["payload_sha256"] = digest(checkpoint_payload)
                 temporary_checkpoint.write_text(
                     json.dumps(checkpoint_payload, indent=2, allow_nan=False) + "\n",
                     encoding="utf-8",
@@ -482,6 +544,7 @@ def process_file(
     tmp_output_path.replace(output_path)
 
     logger.info(f"Finished extracting routing context. Output saved to {output_path}")
+    return {"traces": n_with_routing, "forwards": n_forwards, "reused": n_with_routing - n_forwards}
 
 
 def build_parser() -> argparse.ArgumentParser:

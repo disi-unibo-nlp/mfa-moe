@@ -5,6 +5,39 @@ with the frozen GEPA-selected classifier, teacher-forces the saved attempts
 through the matching Hugging Face MoE checkpoint, and measures associations
 among correctness, reasoning events, hidden-state trajectories and routing.
 
+## Native LEONARDO forward validation
+
+Use `sbatch/native_forward_cpu_tests.sbatch --prepare-qwen36` for the approved
+serial CPU gate. It tests the installed tensor stack, verifies the existing
+Qwen3.6 stratified labels, and freezes four complete labeled MATH-500 attempts
+(two correct and two incorrect, each at most 4,096 completion tokens).
+
+After that job succeeds and the pinned source weights are available, submit:
+
+```bash
+sbatch sbatch/native_forward_debug.sbatch qwen36 \
+  "$PWD/results/correlation_pipeline/forward-validation-v1/cpu-CPU_JOB_ID/gate.json"
+```
+
+The native runner uses the existing project Python environment, Python 3.11.7
+and CUDA 12.6 modules, two A100s, and a 30-minute limit on
+`boost_usr_prod` / `boost_qos_dbg`. Use this debug QoS for all GPU debug runs.
+Its default Qwen3.6
+forward target is `unsloth/Qwen3.6-35B-A3B` loaded in bitsandbytes NF4; add
+`--quantization bnb-8bit` to request int8. The routed experts are explicitly
+quantized, while routers and recurrent-attention projections stay floating point.
+The FP8 generation checkpoint is not substituted for the forward target.
+
+Outputs are isolated under
+`results/correlation_pipeline/forward-validation-v2/runs/qwen36-JOB_ID/`.
+The job tests tiny quantized checkpoints, runs four forwards with full/class/position
+views, verifies that unchanged resume executes no new forwards, audits raw tensors,
+and reads back the analysis tables and JSON. Success requires `acceptance.json`
+with `status: complete`; a Slurm submission alone does not establish success.
+These four traces validate execution, not statistical significance.
+See [the validation report](../../../report/FORWARD_VALIDATION.md) for observed jobs
+and checkpoint/download status.
+
 `run_all.sh` uses eight concurrent requests for both generation and tagging.
 Tagging logs overall selected-sentence totals, percentage complete, remaining
 sentences, reused checkpoints, processing speed, and estimated time remaining
@@ -631,3 +664,16 @@ Naive independent-sample p-values and layer-specific feature rankings are
 retained only as exploratory diagnostics and are labelled as such. Any later episode classifier can add numeric values under
 `TraceRecord.metadata["episode_features"]`; the analyzer automatically includes
 them as `episode_*` columns.
+
+## Routing and reasoning dynamics
+
+The opt-in `correlation-dynamics` command analyzes class-only, routing-only, or
+combined artifacts. `correlation-forward --dynamics --all-router-layers --router-only`
+collects native temporal summaries with trailing 64/256-token windows, while
+keeping full probabilities and executed mixture weights separate. Existing compact
+outputs remain readable; absent signals are explicitly unavailable.
+
+See [the implementation and pilot report](../../../report/ROUTING_DYNAMICS.md)
+for metric definitions, validation evidence, the frozen 64-trace Qwen3.6 pilot,
+and the unsubmitted 32-GPU-hour resource proposal. No pilot workload is authorized
+by preparing its manifest or passing Slurm test-only validation.

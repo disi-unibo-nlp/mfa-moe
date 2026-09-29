@@ -147,3 +147,42 @@ def test_both_apis_send_the_same_batch_payload(monkeypatch):
     strict_payloads = _patch_transport(monkeypatch, choices)
     assert classify_batch(items, **_kwargs()) == ["Analyze", "Plan"]
     assert tolerant_payloads == strict_payloads
+
+
+def _patch_context_limit(monkeypatch, too_long="HUGE", code=400):
+    """Server stand-in: a batch containing an over-long conversation is rejected whole."""
+    import io
+    import urllib.error
+
+    requests = []
+
+    def fake_post(payload, *, base_url, api_key, timeout=600.0):
+        texts = [conversation[0]["content"] for conversation in payload["messages"]]
+        requests.append(texts)
+        if any(text == too_long for text in texts):
+            raise urllib.error.HTTPError(base_url, code, "Bad Request", {},
+                                         io.BytesIO(b'{"message": "maximum context length exceeded"}'))
+        return {"choices": [choice(i, "Plan") for i in range(len(texts))]}
+
+    monkeypatch.setattr(batch_predictor, "post_batch", fake_post)
+    return requests
+
+
+def test_a_context_rejection_marks_only_the_offending_item_unknown(monkeypatch):
+    items = [dict(ITEM, sentence=f"s{i}") for i in range(8)]
+    items[5] = dict(ITEM, sentence="HUGE")
+    requests = _patch_context_limit(monkeypatch)
+    outcomes = classify_batch_outcomes(items, **_kwargs())
+    assert [o.get("label") for o in outcomes] == ["Plan"] * 5 + [None] + ["Plan"] * 2
+    assert outcomes[5]["status"] == "unknown"
+    assert outcomes[5]["failure"]["kind"] == "request_rejected"
+    assert "maximum context length" in outcomes[5]["failure"]["message"]
+    assert len(requests) <= 1 + 2 * 3  # bisection, not one request per item
+
+
+def test_other_http_errors_still_raise(monkeypatch):
+    import urllib.error
+
+    _patch_context_limit(monkeypatch, code=500)
+    with pytest.raises(urllib.error.HTTPError):
+        classify_batch_outcomes([dict(ITEM, sentence="HUGE")], **_kwargs())

@@ -77,7 +77,7 @@ def compute_views(
             indices, segments = [], []
             for unit in annotation["units"]:
                 owned = layout["unit_tokens"][unit["index"]]
-                if unit["label"] == label:
+                if unit.get("label") == label:
                     indices.extend(owned)
                     segments.extend([unit["index"]] * len(owned))
             scopes.append({"view": "class", "name": label, "tokens": indices, "segments": segments})
@@ -118,7 +118,7 @@ def compute_views(
                 "values": json_safe_features(values),
             }
         )
-    labels = {unit["index"]: unit["label"] for unit in annotation["units"]} if annotation else {}
+    labels = {unit["index"]: unit["label"] for unit in annotation["units"] if "label" in unit} if annotation else {}
     return {
         "schema_version": SPAN_SCHEMA_VERSION,
         "trace_sha256": trace_digest(trace),
@@ -126,6 +126,12 @@ def compute_views(
         "sentence_selection": trace.metadata.get("sentence_selection"),
         "position_reference": reference,
         "annotation_sha256": digest(annotation) if annotation else None,
+        "label_coverage": {
+            "selected": len(selected),
+            "labeled": len(labels),
+            "unknown": sum(unit.get("status") == "unknown" for unit in annotation["units"])
+                       if annotation else 0,
+        },
         "token_assignment": "max_character_overlap; preceding unit for whitespace; earlier ties",
         "sentence_spans": [
             {

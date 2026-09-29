@@ -1,0 +1,1246 @@
+{
+  "schema_version": 1,
+  "kind": "analysis",
+  "inputs": {
+    "inventory": "79f51a7b01f1556faeadadbdbf34c3e4aa57cf7133a57037a81d73f1a40881db"
+  },
+  "config": {
+    "bootstrap": 1000,
+    "seed": 42
+  },
+  "population": "original_budget_A_and_B_union",
+  "code": {
+    "git_revision": "0722caa7dc4068b2e3eee37bb2f7bc9ef78dca76",
+    "source_sha256": "1863e6d09c3db65c2c732caa93fe483002f4ec008b8e26b3de88fd6be78064b1"
+  },
+  "payload": {
+    "tables": [
+      {
+        "model": "gemma",
+        "cohort": "A",
+        "scope": "fixed_budget",
+        "metric": "is_correct",
+        "estimate": 0.9093851132686084,
+        "ci": [
+          0.8950777202072538,
+          0.9236889435938658
+        ],
+        "questions": 1545,
+        "attempts": 1545,
+        "unresolved": 2,
+        "population": "question_balanced_A",
+        "claim": "descriptive",
+        "uncertainty": "joint_question_bootstrap_across_models"
+      },
+      {
+        "model": "gemma",
+        "cohort": "A",
+        "scope": "fixed_budget",
+        "metric": "completion_tokens",
+        "estimate": 8749.981254040078,
+        "ci": [
+          8072.346913380737,
+          9475.00753070459
+        ],
+        "questions": 1547,
+        "attempts": 1547,
+        "unresolved": 2,
+        "population": "question_balanced_A",
+        "claim": "descriptive",
+        "uncertainty": "joint_question_bootstrap_across_models"
+      },
+      {
+        "model": "gemma",
+        "cohort": "A",
+        "scope": "fixed_budget",
+        "metric": "capped",
+        "estimate": 0.010342598577892695,
+        "ci": [
+          0.005817711700064641,
+          0.015513897866839044
+        ],
+        "questions": 1547,
+        "attempts": 1547,
+        "unresolved": 2,
+        "population": "question_balanced_A",
+        "claim": "descriptive",
+        "uncertainty": "joint_question_bootstrap_across_models"
+      },
+      {
+        "model": "gemma",
+        "cohort": "A",
+        "scope": "natural_completion_sensitivity",
+        "metric": "is_correct",
+        "estimate": 0.9189012426422498,
+        "ci": [
+          0.9052891121613026,
+          0.9328584712354395
+        ],
+        "questions": 1529,
+        "attempts": 1529,
+        "unresolved": 2,
+        "population": "question_balanced_A",
+        "claim": "descriptive",
+        "uncertainty": "joint_question_bootstrap_across_models"
+      },
+      {
+        "model": "gemma",
+        "cohort": "A",
+        "scope": "natural_completion_sensitivity",
+        "metric": "completion_tokens",
+        "estimate": 7471.632266492488,
+        "ci": [
+          7112.1677569064805,
+          7837.7789855877245
+        ],
+        "questions": 1531,
+        "attempts": 1531,
+        "unresolved": 2,
+        "population": "question_balanced_A",
+        "claim": "descriptive",
+        "uncertainty": "joint_question_bootstrap_across_models"
+      },
+      {
+        "model": "gemma",
+        "cohort": "A",
+        "scope": "natural_completion_sensitivity",
+        "metric": "capped",
+        "estimate": 0.0,
+        "ci": [
+          0.0,
+          0.0
+        ],
+        "questions": 1531,
+        "attempts": 1531,
+        "unresolved": 2,
+        "population": "question_balanced_A",
+        "claim": "descriptive",
+        "uncertainty": "joint_question_bootstrap_across_models"
+      },
+      {
+        "model": "gemma",
+        "cohort": "B",
+        "scope": "fixed_budget",
+        "metric": "is_correct",
+        "estimate": 0.73573704272629,
+        "ci": [
+          0.5812723600168997,
+          0.8613214809384164
+        ],
+        "questions": 15,
+        "attempts": 107,
+        "unresolved": 0,
+        "population": "question_balanced_B_eligible_only",
+        "claim": "descriptive",
+        "uncertainty": "joint_question_bootstrap_across_models"
+      },
+      {
+        "model": "gemma",
+        "cohort": "B",
+        "scope": "fixed_budget",
+        "metric": "completion_tokens",
+        "estimate": 30166.99228963987,
+        "ci": [
+          23310.88101723126,
+          38987.58917852742
+        ],
+        "questions": 15,
+        "attempts": 107,
+        "unresolved": 0,
+        "population": "question_balanced_B_eligible_only",
+        "claim": "descriptive",
+        "uncertainty": "joint_question_bootstrap_across_models"
+      },
+      {
+        "model": "gemma",
+        "cohort": "B",
+        "scope": "fixed_budget",
+        "metric": "capped",
+        "estimate": 0.08850388647095637,
+        "ci": [
+          0.035999710192632456,
+          0.15971216260404766
+        ],
+        "questions": 15,
+        "attempts": 107,
+        "unresolved": 0,
+        "population": "question_balanced_B_eligible_only",
+        "claim": "descriptive",
+        "uncertainty": "joint_question_bootstrap_across_models"
+      },
+      {
+        "model": "gemma",
+        "cohort": "B",
+        "scope": "natural_completion_sensitivity",
+        "metric": "is_correct",
+        "estimate": 0.7808325990249458,
+        "ci": [
+          0.6273506657321319,
+          0.906858434277674
+        ],
+        "questions": 15,
+        "attempts": 90,
+        "unresolved": 0,
+        "population": "question_balanced_B_eligible_only",
+        "claim": "descriptive",
+        "uncertainty": "joint_question_bootstrap_across_models"
+      },
+      {
+        "model": "gemma",
+        "cohort": "B",
+        "scope": "natural_completion_sensitivity",
+        "metric": "completion_tokens",
+        "estimate": 20534.84921566054,
+        "ci": [
+          18059.04413159153,
+          22821.933213358832
+        ],
+        "questions": 15,
+        "attempts": 90,
+        "unresolved": 0,
+        "population": "question_balanced_B_eligible_only",
+        "claim": "descriptive",
+        "uncertainty": "joint_question_bootstrap_across_models"
+      },
+      {
+        "model": "gemma",
+        "cohort": "B",
+        "scope": "natural_completion_sensitivity",
+        "metric": "capped",
+        "estimate": 0.0,
+        "ci": [
+          0.0,
+          0.0
+        ],
+        "questions": 15,
+        "attempts": 90,
+        "unresolved": 0,
+        "population": "question_balanced_B_eligible_only",
+        "claim": "descriptive",
+        "uncertainty": "joint_question_bootstrap_across_models"
+      },
+      {
+        "model": "glm",
+        "cohort": "B",
+        "scope": "fixed_budget",
+        "metric": "is_correct",
+        "estimate": 0.7276785714285714,
+        "ci": [
+          0.5663736979166667,
+          0.8671875
+        ],
+        "questions": 14,
+        "attempts": 101,
+        "unresolved": 0,
+        "population": "question_balanced_B_eligible_only",
+        "claim": "descriptive",
+        "uncertainty": "joint_question_bootstrap_across_models"
+      },
+      {
+        "model": "glm",
+        "cohort": "B",
+        "scope": "fixed_budget",
+        "metric": "completion_tokens",
+        "estimate": 49232.80803571428,
+        "ci": [
+          34205.655986483136,
+          65595.77993977864
+        ],
+        "questions": 14,
+        "attempts": 101,
+        "unresolved": 0,
+        "population": "question_balanced_B_eligible_only",
+        "claim": "descriptive",
+        "uncertainty": "joint_question_bootstrap_across_models"
+      },
+      {
+        "model": "glm",
+        "cohort": "B",
+        "scope": "fixed_budget",
+        "metric": "capped",
+        "estimate": 0.007254464285714286,
+        "ci": [
+          0.0,
+          0.023448988970588225
+        ],
+        "questions": 14,
+        "attempts": 101,
+        "unresolved": 0,
+        "population": "question_balanced_B_eligible_only",
+        "claim": "descriptive",
+        "uncertainty": "joint_question_bootstrap_across_models"
+      },
+      {
+        "model": "glm",
+        "cohort": "B",
+        "scope": "natural_completion_sensitivity",
+        "metric": "is_correct",
+        "estimate": 0.7324728260869565,
+        "ci": [
+          0.5762944002329192,
+          0.8683244977678571
+        ],
+        "questions": 14,
+        "attempts": 100,
+        "unresolved": 0,
+        "population": "question_balanced_B_eligible_only",
+        "claim": "descriptive",
+        "uncertainty": "joint_question_bootstrap_across_models"
+      },
+      {
+        "model": "glm",
+        "cohort": "B",
+        "scope": "natural_completion_sensitivity",
+        "metric": "completion_tokens",
+        "estimate": 48776.9411587733,
+        "ci": [
+          33701.60599895485,
+          64890.156806640625
+        ],
+        "questions": 14,
+        "attempts": 100,
+        "unresolved": 0,
+        "population": "question_balanced_B_eligible_only",
+        "claim": "descriptive",
+        "uncertainty": "joint_question_bootstrap_across_models"
+      },
+      {
+        "model": "glm",
+        "cohort": "B",
+        "scope": "natural_completion_sensitivity",
+        "metric": "capped",
+        "estimate": 0.0,
+        "ci": [
+          0.0,
+          0.0
+        ],
+        "questions": 14,
+        "attempts": 100,
+        "unresolved": 0,
+        "population": "question_balanced_B_eligible_only",
+        "claim": "descriptive",
+        "uncertainty": "joint_question_bootstrap_across_models"
+      },
+      {
+        "model": "gpt",
+        "cohort": "A",
+        "scope": "fixed_budget",
+        "metric": "is_correct",
+        "estimate": 0.8564036222509702,
+        "ci": [
+          0.8396845340077779,
+          0.8726567550096962
+        ],
+        "questions": 1546,
+        "attempts": 1546,
+        "unresolved": 1,
+        "population": "question_balanced_A",
+        "claim": "descriptive",
+        "uncertainty": "joint_question_bootstrap_across_models"
+      },
+      {
+        "model": "gpt",
+        "cohort": "A",
+        "scope": "fixed_budget",
+        "metric": "completion_tokens",
+        "estimate": 3934.831932773109,
+        "ci": [
+          3587.925064641241,
+          4308.701454427925
+        ],
+        "questions": 1547,
+        "attempts": 1547,
+        "unresolved": 1,
+        "population": "question_balanced_A",
+        "claim": "descriptive",
+        "uncertainty": "joint_question_bootstrap_across_models"
+      },
+      {
+        "model": "gpt",
+        "cohort": "A",
+        "scope": "fixed_budget",
+        "metric": "capped",
+        "estimate": 0.0,
+        "ci": [
+          0.0,
+          0.0
+        ],
+        "questions": 1547,
+        "attempts": 1547,
+        "unresolved": 1,
+        "population": "question_balanced_A",
+        "claim": "descriptive",
+        "uncertainty": "joint_question_bootstrap_across_models"
+      },
+      {
+        "model": "gpt",
+        "cohort": "A",
+        "scope": "natural_completion_sensitivity",
+        "metric": "is_correct",
+        "estimate": 0.8564036222509702,
+        "ci": [
+          0.8396845340077779,
+          0.8726567550096962
+        ],
+        "questions": 1546,
+        "attempts": 1546,
+        "unresolved": 1,
+        "population": "question_balanced_A",
+        "claim": "descriptive",
+        "uncertainty": "joint_question_bootstrap_across_models"
+      },
+      {
+        "model": "gpt",
+        "cohort": "A",
+        "scope": "natural_completion_sensitivity",
+        "metric": "completion_tokens",
+        "estimate": 3934.831932773109,
+        "ci": [
+          3587.925064641241,
+          4308.701454427925
+        ],
+        "questions": 1547,
+        "attempts": 1547,
+        "unresolved": 1,
+        "population": "question_balanced_A",
+        "claim": "descriptive",
+        "uncertainty": "joint_question_bootstrap_across_models"
+      },
+      {
+        "model": "gpt",
+        "cohort": "A",
+        "scope": "natural_completion_sensitivity",
+        "metric": "capped",
+        "estimate": 0.0,
+        "ci": [
+          0.0,
+          0.0
+        ],
+        "questions": 1547,
+        "attempts": 1547,
+        "unresolved": 1,
+        "population": "question_balanced_A",
+        "claim": "descriptive",
+        "uncertainty": "joint_question_bootstrap_across_models"
+      },
+      {
+        "model": "gpt",
+        "cohort": "B",
+        "scope": "fixed_budget",
+        "metric": "is_correct",
+        "estimate": 0.7485364901191514,
+        "ci": [
+          0.6762418514052554,
+          0.8108179939516129
+        ],
+        "questions": 37,
+        "attempts": 276,
+        "unresolved": 0,
+        "population": "question_balanced_B_eligible_only",
+        "claim": "descriptive",
+        "uncertainty": "joint_question_bootstrap_across_models"
+      },
+      {
+        "model": "gpt",
+        "cohort": "B",
+        "scope": "fixed_budget",
+        "metric": "completion_tokens",
+        "estimate": 12031.399534110722,
+        "ci": [
+          9659.479620361088,
+          14650.646435484246
+        ],
+        "questions": 37,
+        "attempts": 276,
+        "unresolved": 0,
+        "population": "question_balanced_B_eligible_only",
+        "claim": "descriptive",
+        "uncertainty": "joint_question_bootstrap_across_models"
+      },
+      {
+        "model": "gpt",
+        "cohort": "B",
+        "scope": "fixed_budget",
+        "metric": "capped",
+        "estimate": 0.0,
+        "ci": [
+          0.0,
+          0.0
+        ],
+        "questions": 37,
+        "attempts": 276,
+        "unresolved": 0,
+        "population": "question_balanced_B_eligible_only",
+        "claim": "descriptive",
+        "uncertainty": "joint_question_bootstrap_across_models"
+      },
+      {
+        "model": "gpt",
+        "cohort": "B",
+        "scope": "natural_completion_sensitivity",
+        "metric": "is_correct",
+        "estimate": 0.7485364901191514,
+        "ci": [
+          0.6762418514052554,
+          0.8108179939516129
+        ],
+        "questions": 37,
+        "attempts": 276,
+        "unresolved": 0,
+        "population": "question_balanced_B_eligible_only",
+        "claim": "descriptive",
+        "uncertainty": "joint_question_bootstrap_across_models"
+      },
+      {
+        "model": "gpt",
+        "cohort": "B",
+        "scope": "natural_completion_sensitivity",
+        "metric": "completion_tokens",
+        "estimate": 12031.399534110722,
+        "ci": [
+          9659.479620361088,
+          14650.646435484246
+        ],
+        "questions": 37,
+        "attempts": 276,
+        "unresolved": 0,
+        "population": "question_balanced_B_eligible_only",
+        "claim": "descriptive",
+        "uncertainty": "joint_question_bootstrap_across_models"
+      },
+      {
+        "model": "gpt",
+        "cohort": "B",
+        "scope": "natural_completion_sensitivity",
+        "metric": "capped",
+        "estimate": 0.0,
+        "ci": [
+          0.0,
+          0.0
+        ],
+        "questions": 37,
+        "attempts": 276,
+        "unresolved": 0,
+        "population": "question_balanced_B_eligible_only",
+        "claim": "descriptive",
+        "uncertainty": "joint_question_bootstrap_across_models"
+      },
+      {
+        "model": "nemotron",
+        "cohort": "A",
+        "scope": "fixed_budget",
+        "metric": "is_correct",
+        "estimate": 0.8946347769877182,
+        "ci": [
+          0.8791208791208791,
+          0.9095184227537169
+        ],
+        "questions": 1547,
+        "attempts": 1547,
+        "unresolved": 0,
+        "population": "question_balanced_A",
+        "claim": "descriptive",
+        "uncertainty": "joint_question_bootstrap_across_models"
+      },
+      {
+        "model": "nemotron",
+        "cohort": "A",
+        "scope": "fixed_budget",
+        "metric": "completion_tokens",
+        "estimate": 8750.455720749838,
+        "ci": [
+          8047.196331609566,
+          9447.688445378151
+        ],
+        "questions": 1547,
+        "attempts": 1547,
+        "unresolved": 0,
+        "population": "question_balanced_A",
+        "claim": "descriptive",
+        "uncertainty": "joint_question_bootstrap_across_models"
+      },
+      {
+        "model": "nemotron",
+        "cohort": "A",
+        "scope": "fixed_budget",
+        "metric": "capped",
+        "estimate": 0.0006464124111182935,
+        "ci": [
+          0.0,
+          0.0019392372333548805
+        ],
+        "questions": 1547,
+        "attempts": 1547,
+        "unresolved": 0,
+        "population": "question_balanced_A",
+        "claim": "descriptive",
+        "uncertainty": "joint_question_bootstrap_across_models"
+      },
+      {
+        "model": "nemotron",
+        "cohort": "A",
+        "scope": "natural_completion_sensitivity",
+        "metric": "is_correct",
+        "estimate": 0.8952134540750324,
+        "ci": [
+          0.8797653472773327,
+          0.9101486748545572
+        ],
+        "questions": 1546,
+        "attempts": 1546,
+        "unresolved": 0,
+        "population": "question_balanced_A",
+        "claim": "descriptive",
+        "uncertainty": "joint_question_bootstrap_across_models"
+      },
+      {
+        "model": "nemotron",
+        "cohort": "A",
+        "scope": "natural_completion_sensitivity",
+        "metric": "completion_tokens",
+        "estimate": 8671.334411384218,
+        "ci": [
+          7963.361599222213,
+          9373.76393036516
+        ],
+        "questions": 1546,
+        "attempts": 1546,
+        "unresolved": 0,
+        "population": "question_balanced_A",
+        "claim": "descriptive",
+        "uncertainty": "joint_question_bootstrap_across_models"
+      },
+      {
+        "model": "nemotron",
+        "cohort": "A",
+        "scope": "natural_completion_sensitivity",
+        "metric": "capped",
+        "estimate": 0.0,
+        "ci": [
+          0.0,
+          0.0
+        ],
+        "questions": 1546,
+        "attempts": 1546,
+        "unresolved": 0,
+        "population": "question_balanced_A",
+        "claim": "descriptive",
+        "uncertainty": "joint_question_bootstrap_across_models"
+      },
+      {
+        "model": "nemotron",
+        "cohort": "B",
+        "scope": "fixed_budget",
+        "metric": "is_correct",
+        "estimate": 0.7008928571428571,
+        "ci": [
+          0.5103125,
+          0.8771354166666666
+        ],
+        "questions": 14,
+        "attempts": 96,
+        "unresolved": 0,
+        "population": "question_balanced_B_eligible_only",
+        "claim": "descriptive",
+        "uncertainty": "joint_question_bootstrap_across_models"
+      },
+      {
+        "model": "nemotron",
+        "cohort": "B",
+        "scope": "fixed_budget",
+        "metric": "completion_tokens",
+        "estimate": 36319.64006696428,
+        "ci": [
+          28478.7923828125,
+          43991.32091796874
+        ],
+        "questions": 14,
+        "attempts": 96,
+        "unresolved": 0,
+        "population": "question_balanced_B_eligible_only",
+        "claim": "descriptive",
+        "uncertainty": "joint_question_bootstrap_across_models"
+      },
+      {
+        "model": "nemotron",
+        "cohort": "B",
+        "scope": "fixed_budget",
+        "metric": "capped",
+        "estimate": 0.018973214285714284,
+        "ci": [
+          0.0,
+          0.05859375
+        ],
+        "questions": 14,
+        "attempts": 96,
+        "unresolved": 0,
+        "population": "question_balanced_B_eligible_only",
+        "claim": "descriptive",
+        "uncertainty": "joint_question_bootstrap_across_models"
+      },
+      {
+        "model": "nemotron",
+        "cohort": "B",
+        "scope": "natural_completion_sensitivity",
+        "metric": "is_correct",
+        "estimate": 0.704347608859212,
+        "ci": [
+          0.5107090334300876,
+          0.8815270282561243
+        ],
+        "questions": 14,
+        "attempts": 94,
+        "unresolved": 0,
+        "population": "question_balanced_B_eligible_only",
+        "claim": "descriptive",
+        "uncertainty": "joint_question_bootstrap_across_models"
+      },
+      {
+        "model": "nemotron",
+        "cohort": "B",
+        "scope": "natural_completion_sensitivity",
+        "metric": "completion_tokens",
+        "estimate": 34535.918322527745,
+        "ci": [
+          26957.724751878,
+          41602.95726593198
+        ],
+        "questions": 14,
+        "attempts": 94,
+        "unresolved": 0,
+        "population": "question_balanced_B_eligible_only",
+        "claim": "descriptive",
+        "uncertainty": "joint_question_bootstrap_across_models"
+      },
+      {
+        "model": "nemotron",
+        "cohort": "B",
+        "scope": "natural_completion_sensitivity",
+        "metric": "capped",
+        "estimate": 0.0,
+        "ci": [
+          0.0,
+          0.0
+        ],
+        "questions": 14,
+        "attempts": 94,
+        "unresolved": 0,
+        "population": "question_balanced_B_eligible_only",
+        "claim": "descriptive",
+        "uncertainty": "joint_question_bootstrap_across_models"
+      },
+      {
+        "model": "qwen330b",
+        "cohort": "A",
+        "scope": "fixed_budget",
+        "metric": "is_correct",
+        "estimate": 0.8711974110032362,
+        "ci": [
+          0.8528816070736592,
+          0.8880277006744621
+        ],
+        "questions": 1545,
+        "attempts": 1545,
+        "unresolved": 2,
+        "population": "question_balanced_A",
+        "claim": "descriptive",
+        "uncertainty": "joint_question_bootstrap_across_models"
+      },
+      {
+        "model": "qwen330b",
+        "cohort": "A",
+        "scope": "fixed_budget",
+        "metric": "completion_tokens",
+        "estimate": 7988.750484809309,
+        "ci": [
+          7642.685423400129,
+          8352.81284744667
+        ],
+        "questions": 1547,
+        "attempts": 1547,
+        "unresolved": 2,
+        "population": "question_balanced_A",
+        "claim": "descriptive",
+        "uncertainty": "joint_question_bootstrap_across_models"
+      },
+      {
+        "model": "qwen330b",
+        "cohort": "A",
+        "scope": "fixed_budget",
+        "metric": "capped",
+        "estimate": 0.008403361344537815,
+        "ci": [
+          0.003878474466709761,
+          0.013574660633484163
+        ],
+        "questions": 1547,
+        "attempts": 1547,
+        "unresolved": 2,
+        "population": "question_balanced_A",
+        "claim": "descriptive",
+        "uncertainty": "joint_question_bootstrap_across_models"
+      },
+      {
+        "model": "qwen330b",
+        "cohort": "A",
+        "scope": "natural_completion_sensitivity",
+        "metric": "is_correct",
+        "estimate": 0.8785900783289817,
+        "ci": [
+          0.8614306439655394,
+          0.8950473416882901
+        ],
+        "questions": 1532,
+        "attempts": 1532,
+        "unresolved": 2,
+        "population": "question_balanced_A",
+        "claim": "descriptive",
+        "uncertainty": "joint_question_bootstrap_across_models"
+      },
+      {
+        "model": "qwen330b",
+        "cohort": "A",
+        "scope": "natural_completion_sensitivity",
+        "metric": "completion_tokens",
+        "estimate": 7726.689048239896,
+        "ci": [
+          7379.293721503705,
+          8074.504777289218
+        ],
+        "questions": 1534,
+        "attempts": 1534,
+        "unresolved": 2,
+        "population": "question_balanced_A",
+        "claim": "descriptive",
+        "uncertainty": "joint_question_bootstrap_across_models"
+      },
+      {
+        "model": "qwen330b",
+        "cohort": "A",
+        "scope": "natural_completion_sensitivity",
+        "metric": "capped",
+        "estimate": 0.0,
+        "ci": [
+          0.0,
+          0.0
+        ],
+        "questions": 1534,
+        "attempts": 1534,
+        "unresolved": 2,
+        "population": "question_balanced_A",
+        "claim": "descriptive",
+        "uncertainty": "joint_question_bootstrap_across_models"
+      },
+      {
+        "model": "qwen330b",
+        "cohort": "B",
+        "scope": "fixed_budget",
+        "metric": "is_correct",
+        "estimate": 0.7288306451612904,
+        "ci": [
+          0.6223828125,
+          0.816994724025974
+        ],
+        "questions": 31,
+        "attempts": 219,
+        "unresolved": 0,
+        "population": "question_balanced_B_eligible_only",
+        "claim": "descriptive",
+        "uncertainty": "joint_question_bootstrap_across_models"
+      },
+      {
+        "model": "qwen330b",
+        "cohort": "B",
+        "scope": "fixed_budget",
+        "metric": "completion_tokens",
+        "estimate": 18442.0451108871,
+        "ci": [
+          16482.809457539926,
+          20496.949107572113
+        ],
+        "questions": 31,
+        "attempts": 219,
+        "unresolved": 0,
+        "population": "question_balanced_B_eligible_only",
+        "claim": "descriptive",
+        "uncertainty": "joint_question_bootstrap_across_models"
+      },
+      {
+        "model": "qwen330b",
+        "cohort": "B",
+        "scope": "fixed_budget",
+        "metric": "capped",
+        "estimate": 0.0234375,
+        "ci": [
+          0.009370404411764706,
+          0.04199302936422414
+        ],
+        "questions": 31,
+        "attempts": 219,
+        "unresolved": 0,
+        "population": "question_balanced_B_eligible_only",
+        "claim": "descriptive",
+        "uncertainty": "joint_question_bootstrap_across_models"
+      },
+      {
+        "model": "qwen330b",
+        "cohort": "B",
+        "scope": "natural_completion_sensitivity",
+        "metric": "is_correct",
+        "estimate": 0.7444128746111428,
+        "ci": [
+          0.6336270128398753,
+          0.8385323562726658
+        ],
+        "questions": 31,
+        "attempts": 204,
+        "unresolved": 0,
+        "population": "question_balanced_B_eligible_only",
+        "claim": "descriptive",
+        "uncertainty": "joint_question_bootstrap_across_models"
+      },
+      {
+        "model": "qwen330b",
+        "cohort": "B",
+        "scope": "natural_completion_sensitivity",
+        "metric": "completion_tokens",
+        "estimate": 18037.7621544312,
+        "ci": [
+          15954.80532499716,
+          20105.0056204884
+        ],
+        "questions": 31,
+        "attempts": 204,
+        "unresolved": 0,
+        "population": "question_balanced_B_eligible_only",
+        "claim": "descriptive",
+        "uncertainty": "joint_question_bootstrap_across_models"
+      },
+      {
+        "model": "qwen330b",
+        "cohort": "B",
+        "scope": "natural_completion_sensitivity",
+        "metric": "capped",
+        "estimate": 0.0,
+        "ci": [
+          0.0,
+          0.0
+        ],
+        "questions": 31,
+        "attempts": 204,
+        "unresolved": 0,
+        "population": "question_balanced_B_eligible_only",
+        "claim": "descriptive",
+        "uncertainty": "joint_question_bootstrap_across_models"
+      },
+      {
+        "model": "qwen35",
+        "cohort": "A",
+        "scope": "fixed_budget",
+        "metric": "is_correct",
+        "estimate": 0.9146183699870634,
+        "ci": [
+          0.9003880983182406,
+          0.9276018099547512
+        ],
+        "questions": 1546,
+        "attempts": 1546,
+        "unresolved": 1,
+        "population": "question_balanced_A",
+        "claim": "descriptive",
+        "uncertainty": "joint_question_bootstrap_across_models"
+      },
+      {
+        "model": "qwen35",
+        "cohort": "A",
+        "scope": "fixed_budget",
+        "metric": "completion_tokens",
+        "estimate": 14699.984486102134,
+        "ci": [
+          13886.484599224304,
+          15503.313671622496
+        ],
+        "questions": 1547,
+        "attempts": 1547,
+        "unresolved": 1,
+        "population": "question_balanced_A",
+        "claim": "descriptive",
+        "uncertainty": "joint_question_bootstrap_across_models"
+      },
+      {
+        "model": "qwen35",
+        "cohort": "A",
+        "scope": "fixed_budget",
+        "metric": "capped",
+        "estimate": 0.0019392372333548805,
+        "ci": [
+          0.0,
+          0.004524886877828055
+        ],
+        "questions": 1547,
+        "attempts": 1547,
+        "unresolved": 1,
+        "population": "question_balanced_A",
+        "claim": "descriptive",
+        "uncertainty": "joint_question_bootstrap_across_models"
+      },
+      {
+        "model": "qwen35",
+        "cohort": "A",
+        "scope": "natural_completion_sensitivity",
+        "metric": "is_correct",
+        "estimate": 0.9157485418016851,
+        "ci": [
+          0.9014890056176045,
+          0.9293137263555004
+        ],
+        "questions": 1543,
+        "attempts": 1543,
+        "unresolved": 1,
+        "population": "question_balanced_A",
+        "claim": "descriptive",
+        "uncertainty": "joint_question_bootstrap_across_models"
+      },
+      {
+        "model": "qwen35",
+        "cohort": "A",
+        "scope": "natural_completion_sensitivity",
+        "metric": "completion_tokens",
+        "estimate": 14473.873056994818,
+        "ci": [
+          13694.382653721683,
+          15265.298965551865
+        ],
+        "questions": 1544,
+        "attempts": 1544,
+        "unresolved": 1,
+        "population": "question_balanced_A",
+        "claim": "descriptive",
+        "uncertainty": "joint_question_bootstrap_across_models"
+      },
+      {
+        "model": "qwen35",
+        "cohort": "A",
+        "scope": "natural_completion_sensitivity",
+        "metric": "capped",
+        "estimate": 0.0,
+        "ci": [
+          0.0,
+          0.0
+        ],
+        "questions": 1544,
+        "attempts": 1544,
+        "unresolved": 1,
+        "population": "question_balanced_A",
+        "claim": "descriptive",
+        "uncertainty": "joint_question_bootstrap_across_models"
+      },
+      {
+        "model": "qwen35",
+        "cohort": "B",
+        "scope": "fixed_budget",
+        "metric": "is_correct",
+        "estimate": 0.6964285714285714,
+        "ci": [
+          0.4256556919642857,
+          0.9125
+        ],
+        "questions": 7,
+        "attempts": 49,
+        "unresolved": 0,
+        "population": "question_balanced_B_eligible_only",
+        "claim": "descriptive",
+        "uncertainty": "joint_question_bootstrap_across_models"
+      },
+      {
+        "model": "qwen35",
+        "cohort": "B",
+        "scope": "fixed_budget",
+        "metric": "completion_tokens",
+        "estimate": 46622.03571428572,
+        "ci": [
+          38621.86145833333,
+          55405.9747265625
+        ],
+        "questions": 7,
+        "attempts": 49,
+        "unresolved": 0,
+        "population": "question_balanced_B_eligible_only",
+        "claim": "descriptive",
+        "uncertainty": "joint_question_bootstrap_across_models"
+      },
+      {
+        "model": "qwen35",
+        "cohort": "B",
+        "scope": "fixed_budget",
+        "metric": "capped",
+        "estimate": 0.0,
+        "ci": [
+          0.0,
+          0.0
+        ],
+        "questions": 7,
+        "attempts": 49,
+        "unresolved": 0,
+        "population": "question_balanced_B_eligible_only",
+        "claim": "descriptive",
+        "uncertainty": "joint_question_bootstrap_across_models"
+      },
+      {
+        "model": "qwen35",
+        "cohort": "B",
+        "scope": "natural_completion_sensitivity",
+        "metric": "is_correct",
+        "estimate": 0.6964285714285714,
+        "ci": [
+          0.4256556919642857,
+          0.9125
+        ],
+        "questions": 7,
+        "attempts": 49,
+        "unresolved": 0,
+        "population": "question_balanced_B_eligible_only",
+        "claim": "descriptive",
+        "uncertainty": "joint_question_bootstrap_across_models"
+      },
+      {
+        "model": "qwen35",
+        "cohort": "B",
+        "scope": "natural_completion_sensitivity",
+        "metric": "completion_tokens",
+        "estimate": 46622.03571428572,
+        "ci": [
+          38621.86145833333,
+          55405.9747265625
+        ],
+        "questions": 7,
+        "attempts": 49,
+        "unresolved": 0,
+        "population": "question_balanced_B_eligible_only",
+        "claim": "descriptive",
+        "uncertainty": "joint_question_bootstrap_across_models"
+      },
+      {
+        "model": "qwen35",
+        "cohort": "B",
+        "scope": "natural_completion_sensitivity",
+        "metric": "capped",
+        "estimate": 0.0,
+        "ci": [
+          0.0,
+          0.0
+        ],
+        "questions": 7,
+        "attempts": 49,
+        "unresolved": 0,
+        "population": "question_balanced_B_eligible_only",
+        "claim": "descriptive",
+        "uncertainty": "joint_question_bootstrap_across_models"
+      },
+      {
+        "model": "qwen36",
+        "cohort": "B",
+        "scope": "fixed_budget",
+        "metric": "is_correct",
+        "estimate": 0.5677083333333334,
+        "ci": [
+          0.3513671875,
+          0.8321874999999992
+        ],
+        "questions": 6,
+        "attempts": 47,
+        "unresolved": 0,
+        "population": "question_balanced_B_eligible_only",
+        "claim": "descriptive",
+        "uncertainty": "joint_question_bootstrap_across_models"
+      },
+      {
+        "model": "qwen36",
+        "cohort": "B",
+        "scope": "fixed_budget",
+        "metric": "completion_tokens",
+        "estimate": 54612.6953125,
+        "ci": [
+          46034.7466796875,
+          64333.401579241065
+        ],
+        "questions": 6,
+        "attempts": 47,
+        "unresolved": 0,
+        "population": "question_balanced_B_eligible_only",
+        "claim": "descriptive",
+        "uncertainty": "joint_question_bootstrap_across_models"
+      },
+      {
+        "model": "qwen36",
+        "cohort": "B",
+        "scope": "fixed_budget",
+        "metric": "capped",
+        "estimate": 0.0,
+        "ci": [
+          0.0,
+          0.0
+        ],
+        "questions": 6,
+        "attempts": 47,
+        "unresolved": 0,
+        "population": "question_balanced_B_eligible_only",
+        "claim": "descriptive",
+        "uncertainty": "joint_question_bootstrap_across_models"
+      },
+      {
+        "model": "qwen36",
+        "cohort": "B",
+        "scope": "natural_completion_sensitivity",
+        "metric": "is_correct",
+        "estimate": 0.5677083333333334,
+        "ci": [
+          0.3513671875,
+          0.8321874999999992
+        ],
+        "questions": 6,
+        "attempts": 47,
+        "unresolved": 0,
+        "population": "question_balanced_B_eligible_only",
+        "claim": "descriptive",
+        "uncertainty": "joint_question_bootstrap_across_models"
+      },
+      {
+        "model": "qwen36",
+        "cohort": "B",
+        "scope": "natural_completion_sensitivity",
+        "metric": "completion_tokens",
+        "estimate": 54612.6953125,
+        "ci": [
+          46034.7466796875,
+          64333.401579241065
+        ],
+        "questions": 6,
+        "attempts": 47,
+        "unresolved": 0,
+        "population": "question_balanced_B_eligible_only",
+        "claim": "descriptive",
+        "uncertainty": "joint_question_bootstrap_across_models"
+      },
+      {
+        "model": "qwen36",
+        "cohort": "B",
+        "scope": "natural_completion_sensitivity",
+        "metric": "capped",
+        "estimate": 0.0,
+        "ci": [
+          0.0,
+          0.0
+        ],
+        "questions": 6,
+        "attempts": 47,
+        "unresolved": 0,
+        "population": "question_balanced_B_eligible_only",
+        "claim": "descriptive",
+        "uncertainty": "joint_question_bootstrap_across_models"
+      }
+    ],
+    "routing_results": "pending_verified_feature_extraction"
+  },
+  "binding": "751ba7aa85b8d904952a2476985c59d4869732938d3351b4eb2a7135a39a5103"
+}

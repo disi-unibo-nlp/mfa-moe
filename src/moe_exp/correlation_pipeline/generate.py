@@ -6,6 +6,7 @@ import json
 import logging
 import os
 import re
+import time
 from concurrent.futures import ThreadPoolExecutor
 from functools import lru_cache
 from pathlib import Path
@@ -27,21 +28,36 @@ from moe_exp.correlation_pipeline.defaults import (
     DEFAULT_GENERATION_MODEL,
     DEFAULT_MTP_MODEL,
 )
-from moe_exp.correlation_pipeline.scoring import score_completion
-from moe_exp.correlation_pipeline.model_profiles import model_profile
+from moe_exp.correlation_pipeline.scoring import score_completion_detailed
+from moe_exp.correlation_pipeline.model_profiles import CARD_PROFILES, model_profile
 from moe_exp.schemas import TraceRecord
 from moe_exp.models.token_replay import TOKEN_REPLAY_VERSION, make_token_replay
 from moe_exp.utils import write_jsonl
 
 logger = logging.getLogger(__name__)
 _SAFE_FILENAME = re.compile(r"[^A-Za-z0-9_.-]+")
-_SCORING_CONTRACT_VERSION = 2
+_SCORING_CONTRACT_VERSION = 3
+_GENERATION_CONTRACT_VERSION = 3
 
 
 @lru_cache(maxsize=8)
-def _replay_tokenizer(model: str):
+def _replay_tokenizer(model: str, revision: str | None = None):
     from transformers import AutoTokenizer
-    return AutoTokenizer.from_pretrained(model)
+    # a pinned revision resolves offline even when the hub cache has no refs/ entry
+    return AutoTokenizer.from_pretrained(model, revision=revision) if revision else \
+        AutoTokenizer.from_pretrained(model)
+
+
+def _tokenizer_ref(args: argparse.Namespace) -> tuple[str, str | None]:
+    """(name or local path, pinned revision or None) for the replay tokenizer."""
+    if getattr(args, "tokenizer", None):
+        return args.tokenizer, None
+    card = CARD_PROFILES.get(getattr(args, "profile", None) or "")
+    if card is not None:
+        if card["weights"]:
+            return card["weights"], None
+        return card["tokenizer"] or card["model"], card["revision"]
+    return args.model, None
 
 
 def _model_slug(model: str) -> str:
@@ -99,17 +115,19 @@ def _load_reusable_shard(
     return trace
 
 
-def _generate_trace(
-    *,
-    dataset: str,
-    example: dict[str, Any],
-    example_index: int,
-    sample_id: int,
-    samples_per_problem: int,
-    spec: Any,
+def _load_assembled(job: dict[str, Any]) -> TraceRecord | None:
+    """Load a finished shard file for assembly, re-verifying its example and contract hashes."""
+    contract = _job_contract(job["dataset"], job["example"], job["example_index"],
+                             job["sample_id"], job["args"])
+    return _load_reusable_shard(job["shard_path"], example_sha256=contract["example_sha256"],
+                                generation_sha256=contract["generation_sha256"])
+
+
+def _job_contract(
+    dataset: str, example: dict[str, Any], example_index: int, sample_id: int,
     args: argparse.Namespace,
-    shard_path: Path,
-) -> TraceRecord:
+) -> dict[str, Any]:
+    """Example and generation contract of one attempt (shared by generation and assembly)."""
     example = sample_variant(dataset, example, sample_id)
     messages = generation_messages(example)
     example_sha256 = _digest(
@@ -122,27 +140,82 @@ def _generate_trace(
         }
     )
     sample_seed = args.seed + example_index * 1000 + sample_id
-    generation_config = {
-        "base_url": args.base_url,
-        "served_model": args.model,
-        "target_model_id": args.target_model_id,
-        "draft_model_id": args.draft_model_id,
-        "max_tokens": args.max_tokens,
-        "temperature": args.temperature,
-        "top_p": args.top_p,
-        "top_k": args.top_k,
-        "seed": sample_seed,
-        "scoring_contract_version": _SCORING_CONTRACT_VERSION,
-    }
+    card = CARD_PROFILES[args.profile] if getattr(args, "profile", None) else None
+    extra_sampling: dict[str, Any] = {}
+    if card is None:
+        generation_config = {
+            "base_url": args.base_url,
+            "served_model": args.model,
+            "target_model_id": args.target_model_id,
+            "draft_model_id": args.draft_model_id,
+            "max_tokens": args.max_tokens,
+            "temperature": args.temperature,
+            "top_p": args.top_p,
+            "top_k": args.top_k,
+            "seed": sample_seed,
+            "scoring_contract_version": _SCORING_CONTRACT_VERSION,
+        }
+        template_kwargs = (
+            {"enable_thinking": True} if model_profile(args.model).family == "gemma4" else {}
+        )
+        if template_kwargs:
+            generation_config["chat_template_kwargs"] = template_kwargs
+    else:
+        # v3 card contract: every sampler/context/runtime field that can change the
+        # output is hashed; the server address is not (resume must survive new ports).
+        sampler = card["sampler"]
+        extra_sampling = {key: sampler.get(key) for key in
+                          ("min_p", "presence_penalty", "repetition_penalty")}
+        extra_sampling["reasoning_effort"] = card["reasoning_effort"]
+        template_kwargs = dict(card["template_kwargs"])
+        generation_config = {
+            "generation_contract_version": _GENERATION_CONTRACT_VERSION,
+            "profile": args.profile,
+            "served_model": card["model"],
+            "revision": card["revision"],
+            "max_tokens": card["max_tokens"],
+            "max_model_len": card["max_model_len"],
+            "sampler": dict(sampler),
+            "reasoning_effort": card["reasoning_effort"],
+            "chat_template_kwargs": template_kwargs,
+            "speculation": card["speculation"],
+            "weights": card["weights"],
+            "attention": card["attention"],
+            "language_model_only": card["language_model_only"],
+            "server_extra_args": list(card["extra_args"]),
+            "kv_cache_dtype": "bfloat16",
+            "vllm_version": args.vllm_version,
+            "card": card["card"],
+            "seed": sample_seed,
+            "scoring_contract_version": _SCORING_CONTRACT_VERSION,
+        }
     save_token_ids = getattr(args, "save_token_ids", False)
-    template_kwargs = (
-        {"enable_thinking": True} if model_profile(args.model).family == "gemma4" else {}
-    )
-    if template_kwargs:
-        generation_config["chat_template_kwargs"] = template_kwargs
     if save_token_ids:
         generation_config["token_replay_version"] = TOKEN_REPLAY_VERSION
     generation_sha256 = _digest(generation_config)
+    return dict(example=example, messages=messages, example_sha256=example_sha256,
+                sample_seed=sample_seed, card=card, extra_sampling=extra_sampling,
+                template_kwargs=template_kwargs, generation_config=generation_config,
+                generation_sha256=generation_sha256, save_token_ids=save_token_ids)
+
+
+def _generate_trace(
+    *,
+    dataset: str,
+    example: dict[str, Any],
+    example_index: int,
+    sample_id: int,
+    samples_per_problem: int,
+    spec: Any,
+    args: argparse.Namespace,
+    shard_path: Path,
+) -> TraceRecord:
+    contract = _job_contract(dataset, example, example_index, sample_id, args)
+    example, messages = contract["example"], contract["messages"]
+    example_sha256, sample_seed = contract["example_sha256"], contract["sample_seed"]
+    card, extra_sampling = contract["card"], contract["extra_sampling"]
+    template_kwargs, generation_config = contract["template_kwargs"], contract["generation_config"]
+    generation_sha256, save_token_ids = contract["generation_sha256"], contract["save_token_ids"]
     reusable = _load_reusable_shard(
         shard_path,
         example_sha256=example_sha256,
@@ -150,34 +223,48 @@ def _generate_trace(
     )
     if reusable is not None:
         return reusable
+    deadline = getattr(args, "deadline_epoch", None)
+    if deadline and time.time() > deadline:
+        return None  # drain: leave for the resumed array task
 
     completion = generate_completion(
         base_url=args.base_url,
         api_key=args.api_key,
         model=args.model,
         messages=messages,
-        max_tokens=args.max_tokens,
-        temperature=args.temperature,
-        top_p=args.top_p,
-        top_k=args.top_k,
+        max_tokens=card["max_tokens"] if card else args.max_tokens,
+        temperature=card["sampler"]["temperature"] if card else args.temperature,
+        top_p=card["sampler"]["top_p"] if card else args.top_p,
+        top_k=card["sampler"]["top_k"] if card else args.top_k,
         seed=sample_seed,
         timeout=args.timeout,
         max_retries=args.max_retries,
         **({"return_token_ids": True} if save_token_ids else {}),
         **({"chat_template_kwargs": template_kwargs} if template_kwargs else {}),
+        **({"extra_sampling": extra_sampling} if extra_sampling else {}),
     )
     cot_text = completion.text
     replay = None
     if save_token_ids:
         cot_text, replay = make_token_replay(
-            _replay_tokenizer(args.model), completion.prompt_token_ids, completion.token_ids,
+            _replay_tokenizer(*_tokenizer_ref(args)), completion.prompt_token_ids,
+            completion.token_ids,
         )
     scoring_text, scoring_input = _scoring_text(completion)
-    model_answer, is_correct, scoring_method = score_completion(
+    scored = score_completion_detailed(
         example,
         answer_type=spec.answer_type,
         model_text=scoring_text,
     )
+    model_answer, is_correct, scoring_method = (
+        scored["model_answer"], scored["is_correct"], scored["method"])
+    prompt_tokens = (completion.usage or {}).get("prompt_tokens")
+    if card is not None:
+        room = card["max_model_len"] - prompt_tokens if prompt_tokens else None
+        requested = card["max_tokens"]
+        effective_cap = min(requested, room) if (requested and room) else (requested or room)
+    else:
+        effective_cap = args.max_tokens
     steps = split_steps(cot_text)
     source_problem_id = str(example["problem_id"])
     problem_id = f"{source_problem_id}__sample_{sample_id:02d}"
@@ -199,6 +286,9 @@ def _generate_trace(
             "reasoning_content": completion.reasoning_content,
             "scoring_contract_version": _SCORING_CONTRACT_VERSION,
             "scoring_input": scoring_input,
+            "scoring_status": scored["math_verify_status"],
+            "termination": completion.finish_reason,
+            "effective_max_tokens": effective_cap,
         }
     )
     if replay is not None:
@@ -256,8 +346,8 @@ def generate_dataset(dataset: str, args: argparse.Namespace) -> dict[str, Any]:
     examples = [example for example in spec.loader(args.max_items) if example.get("prompt")]
     if not examples:
         raise RuntimeError(f"Benchmark {dataset!r} produced zero usable examples")
-    if getattr(args, "save_token_ids", False):
-        _replay_tokenizer(args.model)  # Load once before concurrent requests.
+    if getattr(args, "save_token_ids", False) and not getattr(args, "assemble_only", False):
+        _replay_tokenizer(*_tokenizer_ref(args))  # Load once before concurrent requests.
     samples_per_problem = args.samples_per_problem or spec.default_samples
     dataset_dir = args.output_dir / _model_slug(args.model) / dataset
     shard_dir = dataset_dir / "generation_shards"
@@ -280,20 +370,39 @@ def generate_dataset(dataset: str, args: argparse.Namespace) -> dict[str, Any]:
                 }
             )
 
-    if args.workers == 1:
-        traces = [
-            _generate_trace(**job)
-            for job in tqdm(jobs, desc=f"Generating {dataset}")
-        ]
+    num_shards = getattr(args, "num_shards", 1) or 1
+    if getattr(args, "assemble_only", False):
+        traces = [_load_assembled(job) for job in jobs]
+        missing = [job["shard_path"].name for job, trace in zip(jobs, traces) if trace is None]
+        if missing:
+            raise RuntimeError(f"{dataset}: {len(missing)} of {len(jobs)} traces missing or stale, "
+                               f"e.g. {missing[:3]}")
     else:
-        with ThreadPoolExecutor(max_workers=args.workers) as executor:
-            traces = list(
-                tqdm(
-                    executor.map(lambda job: _generate_trace(**job), jobs),
-                    total=len(jobs),
-                    desc=f"Generating {dataset}",
+        if num_shards > 1:
+            jobs = [job for index, job in enumerate(jobs) if index % num_shards == args.shard_index]
+        if args.workers == 1:
+            traces = [
+                _generate_trace(**job)
+                for job in tqdm(jobs, desc=f"Generating {dataset}")
+            ]
+        else:
+            with ThreadPoolExecutor(max_workers=args.workers) as executor:
+                traces = list(
+                    tqdm(
+                        executor.map(lambda job: _generate_trace(**job), jobs),
+                        total=len(jobs),
+                        desc=f"Generating {dataset}",
+                    )
                 )
-            )
+        pending = sum(trace is None for trace in traces)
+        if pending or num_shards > 1:
+            status = "drained" if pending else "shard_complete"
+            summary = {"dataset": dataset, "status": status, "shard_index": args.shard_index,
+                       "num_shards": num_shards, "jobs": len(jobs), "pending": pending}
+            _write_json_atomic(summary, dataset_dir / f"shard_{args.shard_index:02d}_of_{num_shards:02d}.json")
+            if pending:
+                raise SystemExit(f"{dataset}: {pending} traces left for the resumed task (deadline)")
+            return summary
 
     traces.sort(key=lambda trace: (trace.source_problem_id or trace.problem_id, trace.sample_id))
     trace_path = dataset_dir / "traces.jsonl"
@@ -348,6 +457,15 @@ def build_parser() -> argparse.ArgumentParser:
         help="Base sampling seed (SPIRAL uses 0).",
     )
     parser.add_argument("--workers", type=int, default=8)
+    parser.add_argument("--profile", choices=sorted(CARD_PROFILES), default=None,
+                        help="Card-sampler v3 contract (overrides model/sampler/max-tokens)")
+    parser.add_argument("--tokenizer", default=None, help="Replay tokenizer path/id override")
+    parser.add_argument("--vllm-version", default=os.environ.get("VLLM_VERSION_RECORD", "unknown"))
+    parser.add_argument("--num-shards", type=int, default=1)
+    parser.add_argument("--shard-index", type=int, default=0)
+    parser.add_argument("--assemble-only", action="store_true")
+    parser.add_argument("--deadline-epoch", type=float, default=None,
+                        help="Do not start new requests after this UNIX time (drain mode)")
     parser.add_argument("--timeout", type=int, default=3600)
     parser.add_argument("--max-retries", type=int, default=4)
     return parser
@@ -360,7 +478,13 @@ def main(argv: list[str] | None = None) -> None:
         raise ValueError("--samples-per-problem must be at least 1")
     if args.workers < 1:
         raise ValueError("--workers must be at least 1")
+    if not 0 <= args.shard_index < max(1, args.num_shards):
+        raise ValueError("--shard-index must be in [0, --num-shards)")
+    if args.profile:
+        args.model = CARD_PROFILES[args.profile]["model"]
     summaries = [generate_dataset(dataset, args) for dataset in args.datasets]
+    if args.num_shards > 1 and not args.assemble_only:
+        return
     summary_path = args.output_dir / _model_slug(args.model) / "summary.json"
     _write_json_atomic({"status": "complete", "datasets": summaries}, summary_path)
     logger.info("Generation complete: %s", summary_path)

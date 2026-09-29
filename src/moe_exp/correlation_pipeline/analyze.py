@@ -54,6 +54,9 @@ _IDENTIFIERS = {
     "scoring_method",
     "evaluation_metric",
     "generation_sha256",
+    "completion_text_sha256",
+    "generation_config_sha256",
+    "sampling_stratum",
     "generation_finish_reason",
     "generation_completion_tokens",
     "generation_max_tokens",
@@ -84,7 +87,7 @@ def _resolve_tensor(path_value: str | None, input_path: Path) -> Path | None:
     if not path_value:
         return None
     path = Path(path_value)
-    candidates = (path, input_path.parent / path, input_path.parent / "tensors" / path.name)
+    candidates = (input_path.parent / "tensors" / path.name, input_path.parent / path, path)
     for candidate in candidates:
         if candidate.is_file():
             return candidate
@@ -140,7 +143,10 @@ def extract_trace_features(
         "model_id": trace.model_id,
         "scoring_method": trace.scoring_method,
         "evaluation_metric": trace.metadata.get("evaluation_metric"),
+        # Legacy alias retained for consumers and repeated-attempt deduplication.
         "generation_sha256": hashlib.sha256(trace.cot_text.encode("utf-8")).hexdigest(),
+        "completion_text_sha256": hashlib.sha256(trace.cot_text.encode("utf-8")).hexdigest(),
+        "generation_config_sha256": trace.metadata.get("generation_sha256"),
         "generation_finish_reason": finish_reason,
         "generation_completion_tokens": completion_tokens,
         "generation_max_tokens": max_tokens,
@@ -159,6 +165,9 @@ def extract_trace_features(
         "character_count": len(trace.cot_text),
     }
     if isinstance(compact_values, dict):
+        from moe_exp.correlation_pipeline.features import FEATURE_SCHEMA_VERSION
+        if compact.get("schema_version") != FEATURE_SCHEMA_VERSION:
+            raise ValueError("Incompatible compact feature schema; rerun forward extraction")
         row.update(restore_features(compact_values))
     else:
         router_path = _resolve_tensor(trace.model_logs.router_logits, input_path)

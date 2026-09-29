@@ -632,7 +632,7 @@ def test_generation_scores_submitted_content_not_private_reasoning(tmp_path, mon
     assert saved["is_correct"] is False
     assert saved["model_answer"] == "A"
     assert saved["metadata"]["scoring_input"] == "assistant_content"
-    assert saved["metadata"]["scoring_contract_version"] == 2
+    assert saved["metadata"]["scoring_contract_version"] == 3
 
 
 def test_tensor_features_include_router_hidden_and_geometry(tmp_path) -> None:
@@ -887,9 +887,9 @@ def test_correlation_features_are_reduced_on_the_fly_without_raw_tensors(
         )
         if run_index == 0:
             tensor_dir = output_path.parent / "tensors"
-            (tensor_dir / "synthetic_problem__sample_00_logits.pt").write_bytes(b"stale")
-            (tensor_dir / "synthetic_problem__sample_00_hidden.pt").write_bytes(b"stale")
-            (tensor_dir / "synthetic_problem__sample_00_weights.pt").write_bytes(b"stale")
+            prefix = next(tensor_dir.glob("*_experts.pt")).name.removesuffix("_experts.pt")
+            for suffix in ("logits", "hidden", "weights"):
+                (tensor_dir / f"{prefix}_{suffix}.pt").write_bytes(b"stale")
 
     assert calls == 1
     saved = TraceRecord(**json.loads(output_path.read_text(encoding="utf-8")))
@@ -1200,3 +1200,133 @@ def test_gpqa_is_excluded_from_within_problem_correctness_contrasts() -> None:
     )
     assert result["within_problem"] == []
     assert "gpqa_diamond" in result["within_problem_exclusions"]
+
+
+def test_hand_computed_metrics_and_undefined_statistics():
+    from moe_exp.correlation_pipeline.forward_audit import numerical_oracle
+    probabilities = torch.tensor([[[.75, .25], [.75, .25], [.25, .75], [.25, .75]]])
+    hidden = torch.tensor([[[1., 0.], [1., 0.], [0., 1.], [0., 1.]]])
+    experts = probabilities.argmax(-1).unsqueeze(-1)
+    actual = compute_layer_features(probabilities.log(), hidden, experts, max_geometry_tokens=4)
+    oracle = numerical_oracle(probabilities.log().numpy(), hidden.numpy(), experts.numpy(), [0], 4)
+    expected = {"router_selected_mass": .75, "router_boundary_margin": .5,
+                "router_switch_rate": 1/3, "router_topk_overlap": 2/3,
+                "hidden_norm": 1., "hidden_step_distance": 1/3, "hidden_router_geometry": 1.}
+    for name, value in expected.items():
+        assert actual[name+"_l00"] == pytest.approx(value, abs=1e-6)
+        assert oracle[name+"_l00"] == pytest.approx(value, abs=1e-6)
+    assert (experts == 0).float().mean() == .5
+    assert (experts == 1).float().mean() == .5
+    one = compute_layer_features(probabilities[:, :1].log(), hidden[:, :1],
+                                 experts[:, :1], max_geometry_tokens=4)
+    for name in ("router_switch_rate", "router_topk_overlap", "hidden_step_distance", "hidden_router_geometry"):
+        assert np.isnan(one[name+"_l00"])
+
+
+@pytest.mark.parametrize("damage", ["tensor_corruption", "missing_tensor", "revision", "sampling", "schema"])
+def test_forward_extraction_invalidates_changed_artifacts(tmp_path, monkeypatch, damage):
+    item = TraceRecord(dataset="math500", problem_id="p", prompt="Q", gold_answer="1",
+                       model_id="source", model_answer="1", cot_text="ABCD", is_correct=True)
+    source = tmp_path / "input.jsonl"
+    source.write_text(item.model_dump_json()+"\n")
+    output = tmp_path / "forward/traces_with_routing.jsonl"
+    calls = []
+    logits = torch.tensor([[[.75, .25], [.75, .25], [.25, .75], [.25, .75]]]).log()
+    hidden = torch.tensor([[[1., 0.], [1., 0.], [0., 1.], [0., 1.]]])
+    def fake(**kwargs):
+        calls.append(1)
+        return logits, hidden
+    monkeypatch.setattr("moe_exp.models.routing_extraction.extract_logs_single_pass", fake)
+    options = dict(input_path=source, output_path=output, model_id="forward",
+                   model=SimpleNamespace(config=SimpleNamespace(num_experts_per_tok=1)),
+                   tokenizer=object(), extract_hidden_states=True, layer_indices=[0],
+                   save_expert_weights=False, save_raw_tensors=True,
+                   forward_provenance={"requested_revision": "a"},
+                   feature_schema_version=FEATURE_SCHEMA_VERSION,
+                   feature_config={"max_geometry_tokens": 4},
+                   feature_reducer=lambda r,h,e,l: json_safe_features(compute_layer_features(
+                       r,h,e,max_geometry_tokens=4,layer_indices=l)))
+    assert process_file(**options)["forwards"] == 1
+    assert process_file(**options)["forwards"] == 0
+    saved = TraceRecord(**json.loads(output.read_text()))
+    if damage == "tensor_corruption":
+        Path(saved.model_logs.selected_experts).write_bytes(b"broken")
+    elif damage == "missing_tensor":
+        Path(saved.model_logs.hidden_states).unlink()
+    elif damage == "revision":
+        options["forward_provenance"] = {"requested_revision": "b"}
+    elif damage == "sampling":
+        item.metadata["sentence_selection"] = {"schema_version": 1, "indices": [0]}
+        source.write_text(item.model_dump_json()+"\n")
+    else:
+        options["feature_schema_version"] += 1
+    if damage in {"tensor_corruption", "missing_tensor"}:
+        from moe_exp.correlation_pipeline.forward_audit import audit_bundle
+        assert audit_bundle(output, require_raw=True)["status"] == "failed"
+    assert process_file(**options)["forwards"] == 1
+    assert len(calls) == 2
+    if damage == "schema":
+        with pytest.raises(ValueError, match="schema"):
+            extract_trace_features(TraceRecord(**json.loads(output.read_text())),
+                                   input_path=output, max_geometry_tokens=4)
+    else:
+        from moe_exp.correlation_pipeline.forward_audit import audit_bundle
+        import shutil
+        moved = tmp_path / "relocated"
+        shutil.move(str(output.parent), moved)
+        report = audit_bundle(moved / output.name, require_raw=True)
+        assert report["status"] == "complete", report
+        assert report["traces"][0]["expert_frequencies_by_layer"] == {"0": {"0": .5, "1": .5}}
+        assert report["traces"][0]["expert_by_class_ready"] is False
+
+
+def test_forward_extraction_preserves_large_expert_ids(tmp_path, monkeypatch):
+    item = TraceRecord(dataset="math500", problem_id="p", prompt="Q", gold_answer="1",
+                       model_id="source", model_answer="1", cot_text="AB", is_correct=True)
+    source = tmp_path / "input.jsonl"
+    source.write_text(item.model_dump_json()+"\n")
+    router = torch.zeros(1, 2, 40001)
+    router[:, :, 40000] = 1
+    monkeypatch.setattr("moe_exp.models.routing_extraction.extract_logs_single_pass", lambda **kw: router)
+    output = tmp_path / "forward/traces_with_routing.jsonl"
+    process_file(source, "forward", output,
+                 model=SimpleNamespace(config=SimpleNamespace(num_experts_per_tok=1)),
+                 tokenizer=object(), save_expert_weights=False, layer_indices=[0])
+    saved = TraceRecord(**json.loads(output.read_text()))
+    experts = torch.load(saved.model_logs.selected_experts, weights_only=True)
+    assert experts.dtype == torch.int32 and experts.tolist() == [[[40000], [40000]]]
+
+
+def test_forward_extraction_revision_loader_pins_model_and_tokenizer(tmp_path, monkeypatch):
+    import transformers
+    import huggingface_hub
+    from moe_exp.models.loader import load_model_and_tokenizer
+    from moe_exp.correlation_pipeline.provenance import forward_provenance
+    revision = "a" * 40
+    snapshot = str(tmp_path / "snapshots" / revision)
+    paths = []
+    def resolve(model_id, **kwargs):
+        assert model_id == "source/model"
+        assert kwargs == {"revision": revision, "local_files_only": True}
+        return snapshot
+    config = SimpleNamespace(architectures=["TestForCausalLM"], _name_or_path=snapshot)
+    tokenizer = SimpleNamespace(pad_token_id=0, name_or_path=snapshot, init_kwargs={})
+    model = SimpleNamespace(config=config, eval=lambda: None)
+    model.to = lambda device: model
+    def record(value):
+        def load(path, **kwargs):
+            paths.append(path)
+            return value
+        return load
+    monkeypatch.setattr(huggingface_hub, "snapshot_download", resolve)
+    monkeypatch.setattr(transformers.AutoConfig, "from_pretrained", record(config))
+    monkeypatch.setattr(transformers.AutoTokenizer, "from_pretrained", record(tokenizer))
+    monkeypatch.setattr(transformers.AutoModelForCausalLM, "from_pretrained", record(model))
+    loaded, tok = load_model_and_tokenizer(
+        "source/model", device="cpu", revision=revision, local_files_only=True,
+    )
+    assert paths == [snapshot] * 3
+    provenance = forward_provenance(loaded, tok, revision=revision, local_files_only=True)
+    assert provenance["resolved_model_revision"] == revision
+    assert provenance["resolved_tokenizer_revision"] == revision
+    assert provenance["requested_revision"] == revision

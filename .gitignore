@@ -342,5 +342,35 @@ TSWLatexianTemp*
 
 .hermes/
 local_codex/
-tests/
-sbatch/
+tests/*
+!tests/test_labels_export.py
+!tests/test_native_source_generate.py
+sbatch/*
+!sbatch/native_forward_debug.sbatch
+!sbatch/native_forward_cpu_tests.sbatch
+
+!tests/test_qwen_quantized.py
+
+# Routing dynamics implementation and resource proposals.
+!tests/test_routing_dynamics.py
+!sbatch/routing_dynamics_label.sbatch
+!sbatch/routing_dynamics_replay.sbatch
+
+
+report/
+.codex_sql_db/
+
+# Reviewable routing-steering implementation, tests and bounded reports.
+!tests/test_routing_steering.py
+!sbatch/routing_steering_size.sbatch
+!sbatch/routing_steering_extract.sbatch
+!sbatch/routing_steering_extract_packed.sbatch
+!sbatch/routing_steering_merge.sbatch
+!report/
+report/*
+!report/ROUTING_STEERING.md
+!report/routing-steering-audit-20260928/
+report/routing-steering-audit-20260928/*
+!report/routing-steering-audit-20260928/evidence-reproduced.json
+!report/routing-steering-audit-20260928/frozen-baselines.json
+!report/routing-steering-audit-20260928/frozen-baselines.md
