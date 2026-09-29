@@ -47,6 +47,9 @@ def trace_digest(trace: Any) -> str:
     )
 
 
+_RESERVED_TOKEN = re.compile(r"<\|reserved_\d+\|>")
+
+
 def reasoning_bounds(trace: Any) -> tuple[int, int]:
     """Return the envelope of the reasoning (which may have message gaps)."""
     ranges = reasoning_ranges(trace)
@@ -60,6 +63,14 @@ def reasoning_ranges(trace: Any) -> list[tuple[int, int]]:
     if reasoning:
         start = text.find(reasoning)
         if start < 0:
+            # GPT-OSS can emit reserved special tokens inside its reasoning: vLLM's parsed
+            # reasoning keeps them as literal text while the exact replay decodes them to
+            # nothing, so they are dropped before locating the text (offsets stay in cot_text).
+            stripped = _RESERVED_TOKEN.sub("", reasoning)
+            if stripped != reasoning:
+                start = text.find(stripped)
+                if start >= 0:
+                    return [(start, start + len(stripped))]
             # GPT-OSS can emit consecutive analysis messages. vLLM joins their
             # bodies with newlines, while exact replay retains Harmony headers.
             if "token_replay" in trace.metadata:
@@ -68,7 +79,7 @@ def reasoning_ranges(trace: Any) -> list[tuple[int, int]]:
                     r"(?=<\|end\|>|<\|return\|>|<\|call\|>|\Z)",
                     text, flags=re.DOTALL,
                 ))
-                if messages and "\n".join(m[1] for m in messages).strip() == reasoning:
+                if messages and "\n".join(m[1] for m in messages).strip() in (reasoning, stripped):
                     return [m.span(1) for m in messages]
             raise ValueError("Saved reasoning_content does not occur in cot_text")
         return [(start, start + len(reasoning))]
@@ -332,6 +343,10 @@ def selected_sentence_indices(trace: Any, units: list[dict[str, Any]]) -> list[i
 
 
 def validate_annotation(trace: Any, annotation: dict[str, Any]) -> None:
+    for key, value in (("dataset", trace.dataset), ("problem_id", trace.problem_id),
+                       ("sample_id", trace.sample_id), ("source_model", trace.model_id)):
+        if key in annotation and annotation[key] != value:
+            raise ValueError("Annotation composite identity does not match generation")
     if annotation.get("schema_version") != SPAN_SCHEMA_VERSION:
         raise ValueError("Unsupported reasoning annotation schema")
     if annotation.get("trace_sha256") != trace_digest(trace):
@@ -346,7 +361,12 @@ def validate_annotation(trace: Any, annotation: dict[str, Any]) -> None:
     for unit, labeled in zip(expected, actual, strict=True):
         if any(labeled.get(key) != value for key, value in unit.items()):
             raise ValueError("Annotation sentence offsets/text do not match generation")
-        if labeled.get("label") not in SENTENCE_LABELS:
+        if labeled.get("status") == "unknown":
+            if "label" in labeled:
+                raise ValueError("Unknown outcomes cannot carry a class label")
+            from moe_exp.correlation_pipeline.annotation_batch import _unknown_record
+            _unknown_record({}, labeled)
+        elif labeled.get("label") not in SENTENCE_LABELS:
             raise ValueError("Invalid reasoning class")
 
 

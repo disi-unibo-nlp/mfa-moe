@@ -24,11 +24,14 @@ def tiny_qwen(monkeypatch):
     modeling = pytest.importorskip("transformers.models.qwen3_5_moe.modeling_qwen3_5_moe")
     # Exercise the same PyTorch linear-attention fallback as the reported OOM,
     # without downloading weights or requiring CUDA/optional fused kernels.
-    for name in (
-        "FusedRMSNormGated", "causal_conv1d_fn", "causal_conv1d_update",
-        "chunk_gated_delta_rule", "fused_recurrent_gated_delta_rule",
-    ):
-        monkeypatch.setattr(modeling, name, None)
+    # 5.17 exposes callable PyTorch fallbacks directly; replacing them with
+    # None would disable the computation instead of disabling optional kernels.
+    if hasattr(modeling, "FusedRMSNormGated"):
+        for name in (
+            "FusedRMSNormGated", "causal_conv1d_fn", "causal_conv1d_update",
+            "chunk_gated_delta_rule", "fused_recurrent_gated_delta_rule",
+        ):
+            monkeypatch.setattr(modeling, name, None)
     config = modeling.Qwen3_5MoeTextConfig(
         vocab_size=32,
         hidden_size=32,
@@ -77,7 +80,7 @@ def test_streamed_qwen_matches_hf_full_capture(
         )
     selected = [i for i in range(3) if layer_indices is None or i in layer_indices]
     expected_router = torch.stack([
-        reference.router_logits[i][6:].clamp_min(torch.finfo(torch.float32).tiny).log()
+        reference.router_logits[i][6:].float()
         for i in selected
     ]) if selected else torch.empty(0)
     expected_hidden = torch.stack([

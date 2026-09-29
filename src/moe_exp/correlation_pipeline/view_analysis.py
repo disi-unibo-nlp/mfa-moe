@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import json
 from typing import Any
 
 import numpy as np
@@ -56,6 +57,9 @@ def collect_view_rows(trace: Any, base_row: dict[str, Any], modes: list[str]):
         row.update(restore_features(scope["values"]))
         row["selected_token_count"] = scope["token_count"]
         row["transition_count"] = scope["transition_count"]
+        row["sampling_stratum"] = json.dumps(
+            (payload.get("sentence_selection") or {}).get("stratum"), sort_keys=True
+        )
         # Absence of a class/window is missing feature data, not a zero-valued
         # routing statistic. Keep the attempt row for avg@n completeness audits.
         row["token_count"] = scope["token_count"] if scope["token_count"] else np.nan
@@ -67,7 +71,7 @@ def collect_view_rows(trace: Any, base_row: dict[str, Any], modes: list[str]):
         "classifier": annotation.get("classifier") if annotation and "class" in modes else None,
         "position_reference": reference if "position" in modes else None,
         "sentence_sampling": (
-            {key: value for key, value in payload["sentence_selection"].items() if key != "indices"}
+            {key: value for key, value in payload["sentence_selection"].items() if key not in {"indices", "stratum"}}
             if payload.get("sentence_selection") else None
         ),
     }

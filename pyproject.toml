@@ -37,6 +37,7 @@ probe-test = "moe_exp.probeTest.run:main"
 correlation-generate = "moe_exp.correlation_pipeline.generate:main"
 correlation-forward = "moe_exp.correlation_pipeline.extract:main"
 correlation-analyze = "moe_exp.correlation_pipeline.analyze:main"
+correlation-dynamics = "moe_exp.correlation_pipeline.dynamics:main"
 moe-guiding = "moe_exp.moe_guiding.run:main"
 
 [project.entry-points."vllm.general_plugins"]

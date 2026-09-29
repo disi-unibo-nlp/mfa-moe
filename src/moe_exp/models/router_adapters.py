@@ -7,10 +7,10 @@ from typing import Any
 import torch
 import torch.nn.functional as F
 
-ROUTER_CAPTURE_VERSION = 1
-PROBABILITY_ROUTERS = {"qwen3_5_moe", "qwen3_5_moe_text", "gemma4", "gemma4_text"}
+ROUTER_CAPTURE_VERSION = 3
+PROBABILITY_ROUTERS = {"gemma4", "gemma4_text"}
 SIGMOID_ROUTERS = {"nemotron_h", "glm4_moe_lite"}
-SUPPORTED_ROUTERS = PROBABILITY_ROUTERS | SIGMOID_ROUTERS | {"qwen3_moe", "gpt_oss"}
+SUPPORTED_ROUTERS = PROBABILITY_ROUTERS | SIGMOID_ROUTERS | {"qwen3_moe", "qwen3_5_moe", "qwen3_5_moe_text", "gpt_oss"}
 
 
 def model_family(model: Any) -> str | None:
@@ -47,6 +47,24 @@ def configured_top_k(config: Any) -> int | None:
         if value is not None:
             return int(value)
     return None
+
+
+
+def unpack_mxfp4_routes(routing, gather, token_count):
+    """Invert native expert-sorted routing, preserving Triton's tie decisions."""
+    hist = routing.expt_hist.detach().to(device="cpu", dtype=torch.int64)
+    order = gather.src_indx.detach().to(device="cpu", dtype=torch.int64)
+    values = routing.gate_scal.detach().to(device="cpu", dtype=torch.float32)
+    count = token_count * routing.n_expts_act
+    if (hist.ndim != 1 or len(hist) != routing.n_expts_tot or (hist < 0).any()
+            or int(hist.sum()) != count or order.numel() != count or values.numel() != count
+            or not torch.equal(order.sort().values, torch.arange(count))):
+        raise ValueError("Invalid native MXFP4 routing permutation or histogram")
+    ids = torch.empty(count, dtype=torch.int64)
+    weights = torch.empty(count, dtype=torch.float32)
+    ids[order] = torch.repeat_interleave(torch.arange(len(hist)), hist)
+    weights[order] = values
+    return ids.reshape(token_count, -1), weights.reshape(token_count, -1)
 
 
 def stream_router_signals(
@@ -103,6 +121,21 @@ def stream_router_signals(
             capture_selection(index, ids, values)
         return capture
 
+    def mxfp4_experts_hook(index):
+        def capture(module, args, kwargs):
+            value = args[0]
+            routing = args[1] if len(args) > 1 else kwargs["routing_data"]
+            gather = args[2] if len(args) > 2 else kwargs["gather_idx"]
+            ids, values = unpack_mxfp4_routes(routing, gather, value.shape[0])
+            capture_selection(index, ids, values)
+        return capture
+
+    def mxfp4_mlp_hook(index):
+        def capture(module, args, output):
+            # HF's MXFP4 MLP calls F.linear directly, bypassing router.forward.
+            routers[index] = cpu_slice(output[1]).float()
+        return capture
+
     def hidden_hook(index):
         def capture(module, args, kwargs):
             value = args[0] if args else kwargs["hidden_states"]
@@ -113,7 +146,16 @@ def stream_router_signals(
         for index in selected:
             layer = layers[index]
             gate = router_module(layer, family)
-            handles.append(gate.register_forward_hook(router_hook(index)))
+            block = getattr(layer, "mlp", None)
+            quantized_gpt = (family == "gpt_oss" and
+                             type(getattr(block, "experts", None)).__name__ == "Mxfp4GptOssExperts")
+            if quantized_gpt:
+                handles.append(block.register_forward_hook(mxfp4_mlp_hook(index)))
+                handles.append(block.experts.register_forward_pre_hook(
+                    mxfp4_experts_hook(index), with_kwargs=True,
+                ))
+            else:
+                handles.append(gate.register_forward_hook(router_hook(index)))
             # Transformers 5.5 GLM/Nemotron gates expose logits only; expert
             # inputs carry the actual bias- and group-adjusted routing decision.
             if family in SIGMOID_ROUTERS:
@@ -141,6 +183,13 @@ def stream_router_signals(
             "expert_weights": torch.stack([weights[i] for i in selected]),
             "layer_indices": selected,
             "router_distribution": "normalized_sigmoid" if family in SIGMOID_ROUTERS else "softmax",
+            "semantics": {
+                "native_selection": True,
+                "executed_weights": "native_expert_input_weights",
+                "full_distribution": "normalized_sigmoid_affinity" if family in SIGMOID_ROUTERS else "softmax_probability",
+                "deterministic_topk": family in {"qwen3_moe", "qwen3_5_moe", "qwen3_5_moe_text", "gpt_oss"},
+                "selection_scores": "router_signal" if family in {"qwen3_moe", "qwen3_5_moe", "qwen3_5_moe_text", "gpt_oss"} else "unavailable",
+            },
         })
     router_tensor = torch.stack([routers[i] for i in selected]) if selected else torch.empty(0)
     if extract_hidden_states:

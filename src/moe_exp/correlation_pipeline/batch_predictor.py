@@ -16,6 +16,7 @@ Two APIs share that one request path:
 
 from __future__ import annotations
 
+import urllib.error
 from typing import Any
 
 from moe_exp.correlation_pipeline.batch_judge import (
@@ -166,25 +167,38 @@ def classify_batch_outcomes(
     A non-stop choice is unknown even when its text happens to contain a valid label,
     because a truncated answer is not a valid annotation. Structural batch failures
     (missing, duplicated or out-of-range indices, wrong choice count) and transport
-    failures still raise.
+    failures still raise. An HTTP 400 rejects the whole batch when one conversation does
+    not fit the judge context (a degenerate, unpunctuated "sentence" of a looping trace);
+    the batch is bisected so only the rejected conversation becomes `unknown`.
     """
+    request = dict(adapter=adapter, predict=predict, model=model, base_url=base_url,
+                   api_key=api_key, max_tokens=max_tokens, temperature=temperature,
+                   reasoning_effort=reasoning_effort, timeout=timeout, top_p=top_p, top_k=top_k,
+                   min_p=min_p, presence_penalty=presence_penalty,
+                   repetition_penalty=repetition_penalty)
+    try:
+        return _classify_outcomes(items, **request)
+    except urllib.error.HTTPError as error:
+        if error.code != 400:
+            raise
+        if len(items) > 1:
+            middle = len(items) // 2
+            return (classify_batch_outcomes(items[:middle], **request)
+                    + classify_batch_outcomes(items[middle:], **request))
+        body = error.read().decode("utf-8", "replace") if error.fp is not None else ""
+        return [_unknown_outcome("request_rejected", error_type="HTTPError",
+                                 message=f"HTTP 400: {body[:300]}", finish_reason=None,
+                                 raw_completion=None)]
+
+
+def _classify_outcomes(items: list[dict[str, Any]], **request: Any) -> list[dict[str, Any]]:
+    """One batch request mapped to per-choice outcomes (see classify_batch_outcomes)."""
+    adapter, predict = request["adapter"], request["predict"]
     mapped = _request_items(
         items,
         mapper=map_batch_choices,
         adapter=adapter,
-        predict=predict,
-        model=model,
-        base_url=base_url,
-        api_key=api_key,
-        max_tokens=max_tokens,
-        temperature=temperature,
-        reasoning_effort=reasoning_effort,
-        timeout=timeout,
-        top_p=top_p,
-        top_k=top_k,
-        min_p=min_p,
-        presence_penalty=presence_penalty,
-        repetition_penalty=repetition_penalty,
+        **{key: value for key, value in request.items() if key != "adapter"},
     )
     failure_types = parse_failure_types()
     outcomes: list[dict[str, Any]] = []

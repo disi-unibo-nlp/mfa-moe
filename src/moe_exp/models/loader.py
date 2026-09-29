@@ -83,15 +83,31 @@ def load_model_and_tokenizer(
     trust_remote_code: bool = False,
     offload_folder: str = "offload",
     quantization: str = "none",
+    revision: str | None = None,
+    local_files_only: bool = False,
 ) -> tuple:
     """Load a HuggingFace causal-LM model and tokenizer.
 
     - Uses bfloat16 precision by default.
     - Supports bitsandbytes 4-bit / 8-bit quantization.
-    - Skips user quantization when the model is already pre-quantized (e.g. FP8).
+    - Rejects incompatible quantization requests instead of changing precision.
     - Uses device_map='auto' for GPU; falls back to CPU if device='cpu'.
     - Sets padding_side='left' for correct decoder-only batched generation.
     """
+    if quantization not in QUANTIZATION_CHOICES:
+        raise ValueError(f"Unknown quantization: {quantization}")
+    if device == "cpu" and quantization != "none":
+        raise ValueError("Quantized replay requires a CUDA device")
+    # Resolve once so custom loaders, tokenizer, and model use the same snapshot.
+    if revision is not None or local_files_only:
+        from pathlib import Path
+        if not Path(model_id).is_dir():
+            from huggingface_hub import snapshot_download
+            model_id = snapshot_download(
+                model_id, revision=revision, local_files_only=local_files_only,
+            )
+        elif revision is not None and Path(model_id).name != revision:
+            raise ValueError("Local checkpoint directory does not match requested revision")
     if quantization == "unsloth-4bit":
         if device == "cpu":
             raise ValueError("Unsloth 4-bit loading requires a CUDA device")
@@ -116,6 +132,17 @@ def load_model_and_tokenizer(
         tokenizer.pad_token_id = tokenizer.eos_token_id
 
     config = AutoConfig.from_pretrained(model_id, trust_remote_code=trust_remote_code)
+    if (getattr(config, "model_type", None) in {"qwen3_5_moe", "qwen3_5_moe_text"}
+            and quantization in {"bnb-4bit", "bnb-8bit"}):
+        from .qwen_quantized import load_qwen_quantized
+
+        model = load_qwen_quantized(
+            model_id, config, offload_folder=offload_folder,
+            bits=4 if quantization == "bnb-4bit" else 8,
+        )
+        model.eval()
+        model.config.use_cache = False
+        return model, tokenizer
     if getattr(config, "model_type", None) in {"gemma4", "gemma4_text"} and quantization == "bnb-4bit":
         if device == "cpu":
             raise ValueError("Gemma 4-bit expert replay requires a CUDA device")
@@ -143,21 +170,16 @@ def load_model_and_tokenizer(
     )
 
     bnb_config = _make_bnb_config(quantization)
-    if bnb_config and getattr(config, "quantization_config", None) is not None:
-        console.print(
-            f"[bold red]Warning:[/] Model is already pre-quantized. "
-            f"Ignoring --quantization {quantization}; loading with native config."
+    text_config = getattr(config, "text_config", config)
+    if bnb_config and any(
+        getattr(c, "quantization_config", None) is not None for c in (config, text_config)
+    ):
+        raise ValueError(
+            f"{quantization} requires an unquantized source checkpoint; "
+            "refusing to ignore the requested precision for prequantized weights"
         )
-        bnb_config = None
-    elif bnb_config:
+    if bnb_config:
         console.print(f"[bold yellow]Quantization:[/] {quantization}")
-
-    if device == "cpu" and bnb_config is not None:
-        console.print(
-            "[bold red]Warning:[/] bitsandbytes quantization requires CUDA. "
-            "Ignoring quantization on CPU."
-        )
-        bnb_config = None
 
     console.print(f"[bold blue]Loading model:[/] {model_id} with {model_class.__name__}")
     if device == "cpu":

@@ -143,6 +143,8 @@ def tiny_model(family):
     if family == "glm4_moe_lite":
         from transformers import Glm4MoeLiteConfig, Glm4MoeLiteForCausalLM
         common.pop("head_dim")  # GLM aliases head_dim to qk_rope_head_dim.
+        # MLA expands latent keys to every query head before attention.
+        common["num_key_value_heads"] = common["num_attention_heads"]
         return Glm4MoeLiteForCausalLM(Glm4MoeLiteConfig(
             **common, n_routed_experts=4, n_shared_experts=1, num_experts_per_tok=2,
             moe_intermediate_size=16, first_k_dense_replace=1, n_group=1, topk_group=1,
@@ -270,7 +272,7 @@ def test_generation_persists_exact_ids_and_reuses_them_on_resume(byte_tokenizer,
         ],
     )
     monkeypatch.setitem(generate.BENCHMARKS, "synthetic", spec)
-    monkeypatch.setattr(generate, "_replay_tokenizer", lambda _: byte_tokenizer)
+    monkeypatch.setattr(generate, "_replay_tokenizer", lambda *_: byte_tokenizer)
     raw = "<|channel|>analysis<|message|>Reason.<|end|>" \
           "<|start|>assistant<|channel|>final<|message|>\\boxed{B}<|return|>"
     ids = byte_tokenizer.encode(raw, add_special_tokens=False)
@@ -325,3 +327,78 @@ def test_client_requests_and_preserves_vllm_token_ids(monkeypatch):
 def test_missing_or_invalid_server_token_ids_are_rejected(byte_tokenizer, prompt, completion):
     with pytest.raises(ValueError, match="requires non-empty"):
         make_token_replay(byte_tokenizer, prompt, completion)
+
+
+def test_mxfp4_native_routing_inverse_preserves_ties_and_weights():
+    from moe_exp.models.router_adapters import unpack_mxfp4_routes
+    # Token-slot order: [2,0], [1,2], [0,1]; expert-sorted order below.
+    routing = SimpleNamespace(expt_hist=torch.tensor([2, 2, 2]), n_expts_tot=3,
+                              n_expts_act=2, gate_scal=torch.tensor([.5, .7, .8, .3, .5, .2]))
+    gather = SimpleNamespace(src_indx=torch.tensor([1, 4, 2, 5, 0, 3]))
+    ids, weights = unpack_mxfp4_routes(routing, gather, 3)
+    torch.testing.assert_close(ids, torch.tensor([[2, 0], [1, 2], [0, 1]]))
+    torch.testing.assert_close(weights, torch.tensor([[.5, .5], [.8, .2], [.7, .3]]))
+    gather.src_indx[1] = gather.src_indx[0]
+    with pytest.raises(ValueError, match="permutation"):
+        unpack_mxfp4_routes(routing, gather, 3)
+
+
+def test_mxfp4_streaming_captures_bypassed_router():
+    from moe_exp.models.router_adapters import stream_router_signals
+
+    class Mxfp4GptOssExperts(torch.nn.Module):
+        def forward(self, hidden_states, routing_data, gather_idx):
+            return hidden_states
+
+    class Block(torch.nn.Module):
+        def __init__(self):
+            super().__init__()
+            self.router = torch.nn.Linear(3, 3, bias=False)
+            self.experts = Mxfp4GptOssExperts()
+
+        def forward(self, hidden):
+            logits = torch.nn.functional.linear(hidden, self.router.weight)
+            ids = torch.tensor([[2, 0], [1, 2], [0, 1]])
+            weights = logits.gather(-1, ids).softmax(-1)
+            order = ids.flatten().argsort(stable=True)
+            routing = SimpleNamespace(expt_hist=torch.tensor([2, 2, 2]), n_expts_tot=3,
+                                      n_expts_act=2, gate_scal=weights.flatten()[order])
+            result = self.experts(hidden, routing, SimpleNamespace(src_indx=order))
+            return result, logits
+
+    class Layer(torch.nn.Module):
+        def __init__(self):
+            super().__init__()
+            self.mlp = Block()
+
+        def forward(self, hidden):
+            return self.mlp(hidden)[0]
+
+    class Backbone(torch.nn.Module):
+        def __init__(self):
+            super().__init__()
+            self.layers = torch.nn.ModuleList([Layer()])
+
+        def forward(self, hidden_states, **kwargs):
+            return self.layers[0](hidden_states)
+
+    backbone = Backbone()
+    model = SimpleNamespace(model=backbone, config=SimpleNamespace(model_type="gpt_oss"))
+    inputs = torch.eye(3)
+    expected_logits = torch.nn.functional.linear(inputs, backbone.layers[0].mlp.router.weight)
+    gate_calls = []
+    handle = backbone.layers[0].mlp.router.register_forward_hook(lambda *args: gate_calls.append(1))
+    details = {}
+    try:
+        routers, hidden = stream_router_signals(model, backbone, {"hidden_states": inputs},
+                                               1, {0}, True, details)
+    finally:
+        handle.remove()
+    assert not gate_calls
+    torch.testing.assert_close(routers[0], expected_logits[1:])
+    torch.testing.assert_close(hidden[0], inputs[1:])
+    expected_ids = torch.tensor([[1, 2], [0, 1]])
+    expected_weights = expected_logits[1:].gather(-1, expected_ids).softmax(-1)
+    order = expected_weights.argsort(dim=-1, descending=True, stable=True)
+    torch.testing.assert_close(details["selected_experts"][0], expected_ids.gather(-1, order))
+    torch.testing.assert_close(details["expert_weights"][0], expected_weights.gather(-1, order))

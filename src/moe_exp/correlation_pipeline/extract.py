@@ -88,7 +88,7 @@ def _storage_summary(output_path: Path) -> tuple[int, dict[str, int]]:
     }
 
 
-def extract_all(args: argparse.Namespace) -> list[dict[str, Any]]:
+def extract_all(args: argparse.Namespace, *, model_and_tokenizer=None) -> list[dict[str, Any]]:
     from moe_exp.correlation_pipeline.spans import SPAN_SCHEMA_VERSION
     from moe_exp.correlation_pipeline.views import compute_views, position_reference
 
@@ -121,11 +121,19 @@ def extract_all(args: argparse.Namespace) -> list[dict[str, Any]]:
         inputs.append((dataset, input_path, output_path))
 
     logger.info("Loading forward-pass checkpoint %s once for %d datasets", args.model_id, len(inputs))
-    model, tokenizer = load_model_and_tokenizer(
+    model, tokenizer = model_and_tokenizer or load_model_and_tokenizer(
         args.model_id,
         device=args.device,
         trust_remote_code=args.trust_remote_code,
         quantization=args.quantization,
+        revision=getattr(args, "revision", None),
+        local_files_only=getattr(args, "local_files_only", False),
+        offload_folder=str(output_root / "offload"),
+    )
+    from moe_exp.correlation_pipeline.provenance import forward_provenance
+    provenance = forward_provenance(
+        model, tokenizer, revision=getattr(args, "revision", None),
+        local_files_only=getattr(args, "local_files_only", False),
     )
     text_config = getattr(model.config, "text_config", None)
     num_router_layers = getattr(text_config, "num_hidden_layers", None)
@@ -194,16 +202,31 @@ def extract_all(args: argparse.Namespace) -> list[dict[str, Any]]:
                     annotation_path = args.annotation_dir / _model_slug(args.generation_model) / dataset / "annotations.jsonl"
                     annotations = {}
                     for annotation in iter_jsonl(annotation_path):
-                        if annotation["problem_id"] in annotations:
+                        key = (annotation.get("source_model", args.generation_model),
+                               annotation["dataset"], annotation["problem_id"],
+                               annotation.get("sample_id", 0))
+                        if "sample_id" not in annotation:
+                            key = annotation["problem_id"]  # existing per-trace annotation files
+                        if key in annotations:
                             raise ValueError(f"Duplicate annotation in {annotation_path}")
                         if annotation.get("status") != "complete":
                             raise ValueError(f"Incomplete annotation in {annotation_path}")
-                        annotations[annotation["problem_id"]] = annotation
+                        annotations[key] = annotation
                 view_kwargs = {"view_reducer": reduce_views,
                                "view_config": {"schema_version": SPAN_SCHEMA_VERSION,
                                                "modes": sorted(modes), "position_reference": reference},
                                "trace_annotations": annotations}
-            process_file(
+            if getattr(args, "dynamics", False):
+                from moe_exp.correlation_pipeline.dynamics import SCHEMA_VERSION as DYNAMICS_SCHEMA
+                from moe_exp.correlation_pipeline.dynamics.common import DEFAULT_CONFIG
+                from moe_exp.correlation_pipeline.dynamics.routing import reduce_trace
+                from moe_exp.correlation_pipeline.provenance import code_provenance
+                view_kwargs.update(
+                    dynamics_reducer=reduce_trace,
+                    dynamics_config={"schema_version": DYNAMICS_SCHEMA,
+                                     **DEFAULT_CONFIG, "code": code_provenance()},
+                )
+            execution = process_file(
                 input_path=input_path,
                 model_id=args.model_id,
                 output_path=output_path,
@@ -220,6 +243,7 @@ def extract_all(args: argparse.Namespace) -> list[dict[str, Any]]:
                 feature_schema_version=FEATURE_SCHEMA_VERSION,
                 feature_config={"max_geometry_tokens": args.max_geometry_tokens},
                 save_raw_tensors=args.save_raw_tensors,
+                forward_provenance=provenance,
                 **view_kwargs,
             )
             if not output_path.is_file() or output_path.stat().st_size == 0:
@@ -233,6 +257,7 @@ def extract_all(args: argparse.Namespace) -> list[dict[str, Any]]:
                     "input": input_path.as_posix(),
                     "output": output_path.as_posix(),
                     "storage": storage,
+                    "execution": execution,
                 }
             )
     finally:
@@ -244,6 +269,7 @@ def extract_all(args: argparse.Namespace) -> list[dict[str, Any]]:
     summary = {
         "status": "complete",
         "forward_model": args.model_id,
+        "forward_provenance": provenance,
         "generation_model": args.generation_model,
         "quantization": args.quantization,
         "router_only": args.router_only,
@@ -272,6 +298,8 @@ def build_parser() -> argparse.ArgumentParser:
         default=DEFAULT_FORWARD_MODEL,
         help="Hugging Face target checkpoint matching the generation manifest",
     )
+    parser.add_argument("--revision", help="Pinned forward checkpoint/tokenizer revision")
+    parser.add_argument("--local-files-only", action="store_true")
     parser.add_argument("--generation-model", default=DEFAULT_GENERATION_MODEL)
     parser.add_argument("--datasets", nargs="+", choices=tuple(BENCHMARKS), default=DEFAULT_BENCHMARKS)
     parser.add_argument(
@@ -288,6 +316,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--views", nargs="+", choices=("full", "class", "position"), default=None,
                         help="Opt in to versioned reasoning-span views; legacy features are retained")
     parser.add_argument("--annotation-dir", type=Path, default=None)
+    parser.add_argument("--dynamics", action="store_true", help="Reduce native temporal routing before releasing raw signals")
     parser.add_argument("--position-bins", type=int, default=10)
     parser.add_argument("--top-k", type=int, default=None)
     parser.add_argument(
