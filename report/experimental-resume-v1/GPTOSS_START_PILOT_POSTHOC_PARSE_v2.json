@@ -1,0 +1,48 @@
+{
+ "schema": "gptoss-start-pilot-posthoc-parse-v2",
+ "frame_sha256": "18a7f804a90dd6c96e1976928312d1f834cf95a9c9cba4b2253bf02b834a5cc3",
+ "binding_sha256": "4eaaf891a7456fac2439f66ac46ba88c5db377cba1bf321b2816f1919280d6cf",
+ "result_sha256": "4fed6a7878f3564ff98b1b07d2d0bf9df3a842e0de52b0acaba15c69ce9c9cbd",
+ "parser_sha256": "1fbb07aa7dee64426ea1f73846f29930bf636da0213ea56210a475a107776430",
+ "rows": [
+  {
+   "uid": "17969c3af4f3924920ca9c9906f1a04c7303d1e950fb26c33aa21a3ece12a22b",
+   "finish_reason": "stop",
+   "old_parser": null,
+   "v2_final_parser": {
+    "start": true
+   },
+   "raw_completion_sha256": "2d815eea74dba350c6e9a353bfdfbbc75120cad02c52e4c98164633ec0ef4d39"
+  },
+  {
+   "uid": "26020cb348ca7b04dc448060071c070a359ac86cbbf4a9188c77afe6eb49762f",
+   "finish_reason": "stop",
+   "old_parser": null,
+   "v2_final_parser": {
+    "start": true
+   },
+   "raw_completion_sha256": "e5e8200b65c58570012788be69e1df5feec7c98614b88bb24242bf98c879d7f7"
+  },
+  {
+   "uid": "2dfd1211acf8dd21bfa50826d3cf477e4ec86789ac53b7a7da48115974446e65",
+   "finish_reason": "stop",
+   "old_parser": null,
+   "v2_final_parser": {
+    "start": true
+   },
+   "raw_completion_sha256": "79d36cdccbc90926844b8a0b6ca6a223f8688bd64a0e889270f88b39d6cd7b71"
+  },
+  {
+   "uid": "2ef5d44b4d41aa216122a5204196ee01e8a42fee55232deeb3a0d4bad7c577a9",
+   "finish_reason": "stop",
+   "old_parser": null,
+   "v2_final_parser": {
+    "start": true
+   },
+   "raw_completion_sha256": "7d8df221cc15cbbbd537e0ee0a5bdd07cd18c64fe49f6517c291cef64fcfd228"
+  }
+ ],
+ "parsed_natural_stops": 4,
+ "interpretation": "Versioned parse repair of saved raw output, not a new GPT-OSS model draw or human truth",
+ "sha256": "f259a255b52e60a769b63110602c771cc9be72cea9a5481792723e17a6cafbde"
+}

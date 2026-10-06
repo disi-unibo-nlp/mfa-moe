@@ -1,0 +1,24 @@
+{
+ "schema": "overnight-submit-receipt-v1",
+ "name": "b-frame-price-adjudicated",
+ "binding": {
+  "manifest_sha256": "9c3dc95fda9cf5e9ed03285529f0279d8da7796b3b9f42a4ac9a38b41ad746ab",
+  "generation_job": "59344808",
+  "adjudication_plan_sha256": "450eac668d69a0d3cc52661610db0d956e17d8b6203c21c93b855df1701e323b",
+  "files": {
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/submit_overnight_operational_recovery_v3.py": "664c2dc72e83f683601a2209576db5890ad8c2f1f9938d2a2a5f9585dc530c04",
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/dispatch_overnight_readers_v1.py": "0c142175df5db52fdf00a85d0e8dd46099209a76c5161994b4279332d6c84a10",
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/build_price_overnight_semantics_adjudicated_v1.sbatch": "e6711d3a8ad816fdb9c830a25348d8c9ba1b87ca0b3fdc83a7cb7e63bbf5cbe8",
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/adjudicate_overnight_ab_seals_v1.py": "c6a0469c7e30134d6b4d10f6e200cac1b948fcc88be8ec58b8493b6449d558e0"
+  }
+ },
+ "arguments": [
+  "--dependency=afterany:59344808",
+  "--job-name=st-overnight-B-price-adjudicated",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/build_price_overnight_semantics_adjudicated_v1.sbatch"
+ ],
+ "job_id": "59347824",
+ "submission": "59347824",
+ "removed_parent_environment_keys": [],
+ "sha256": "6988a0257c216b4c8760f39155fc526fb6ad1cfbe5e70b26c322eebdc91b5260"
+}

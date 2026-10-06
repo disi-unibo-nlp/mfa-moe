@@ -1,0 +1,12 @@
+{
+ "schema": "native-finalization-tests-v1",
+ "stdout": ".................                                                        [100%]\n17 passed in 0.61s\n...................                                                      [100%]\n19 passed in 0.58s\n",
+ "python": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/.venv-native-finalization-tests/bin/python",
+ "test_sources": {
+  "tests/experimental_resume/test_native_finalization_v1.py": "84c41053703696efeb5031d423c30d477fe6e91eed11e40e8dbdc9f265afe448",
+  "tests/experimental_resume/test_operator_panel_v1.py": "54f78e53e9a6aa83d9983ae1e45e9d0df81e889cb40aa3824b4e33ec5c3e3d80",
+  "tests/experimental_resume/test_utility_controller_v2.py": "3723e0287c04243251777365d853aa06181a20775b74686172445b8d680c2c75",
+  "tests/experimental_resume/test_overnight_routing_dose_audit_v3.py": "bfc6c43d168b6b617607cdda12b088cb6d8ee7001fc267f283f1cd5210b7e255"
+ },
+ "sha256": "4037d958bd4fd026340b51ba7c5f414562a3fb5800c1f1225b2e0db54115ae13"
+}

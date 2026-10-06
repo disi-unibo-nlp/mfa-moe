@@ -1,0 +1,198 @@
+{
+ "schema": "native-finalization-study-index-v1",
+ "status": "J1_PRICED_AWAITING_NATIVE_LOGIN_DISPATCH",
+ "observed_utc": "2026-10-05T16:04:22.588145+00:00",
+ "previous_study_indices": [
+  {
+   "path": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/routing-study-closeout-v2/audit-59389128/STUDY_INDEX.json",
+   "sha256": "60a490bf8b7922087b517be9b20201e49468db8af4e5df5c162ab2fbcf39b761"
+  },
+  {
+   "path": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/routing-study-closeout-v2/audit-59389450/STUDY_INDEX.json",
+   "sha256": "ce328f0516b454a2eff23941583833a0c9d39468091a97c0e130f79152e59710"
+  }
+ ],
+ "manifest": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/native-finalization-v1/correction-v2/MANIFEST.json",
+ "manifest_sha256": "6cd588eebb3edb4096613fbd49cf25ca6a51f5d6301724e0475784703ac2e7ba",
+ "saved_audit_sha256": "724fb15e25173b35d3caea253b902919f8661e2ed2c7e1c4263b75f782db442a",
+ "accounting": {
+  "jobs": [
+   {
+    "job_id": "59421210",
+    "name": "preparation-correction-v2",
+    "state": "COMPLETED",
+    "exit_code": "0:0",
+    "elapsed_seconds": 73,
+    "allocated_tres": {
+     "billing": "2",
+     "cpu": "2",
+     "gres/tmpfs": "10737418240",
+     "mem": "32G",
+     "node": "1"
+    },
+    "allocated_GPU_hours": 0.0,
+    "billing_core_hours": 0.04055555555555555,
+    "provisional": false,
+    "raw": "59421210|COMPLETED|0:0|73|billing=2,cpu=2,gres/tmpfs=10737418240,mem=32G,node=1\n"
+   },
+   {
+    "job_id": "59421662",
+    "name": "generation",
+    "state": "FAILED",
+    "exit_code": "1:0",
+    "elapsed_seconds": 634,
+    "allocated_tres": {
+     "billing": "16",
+     "cpu": "16",
+     "gres/gpu": "2",
+     "mem": "120G",
+     "node": "1"
+    },
+    "allocated_GPU_hours": 0.3522222222222222,
+    "billing_core_hours": 2.8177777777777777,
+    "provisional": false,
+    "raw": "59421662|FAILED|1:0|634|billing=16,cpu=16,gres/gpu=2,mem=120G,node=1\n"
+   },
+   {
+    "job_id": "59421664",
+    "name": "measurement",
+    "state": "RUNNING",
+    "exit_code": "0:0",
+    "elapsed_seconds": 31,
+    "allocated_tres": {
+     "billing": "2",
+     "cpu": "2",
+     "gres/tmpfs": "10737418240",
+     "mem": "32G",
+     "node": "1"
+    },
+    "allocated_GPU_hours": 0.0,
+    "billing_core_hours": 0.017222222222222222,
+    "provisional": true,
+    "raw": "59421664|RUNNING|0:0|31|billing=2,cpu=2,gres/tmpfs=10737418240,mem=32G,node=1\n"
+   },
+   {
+    "job_id": "59416713",
+    "name": "preserved-parent:preparation",
+    "state": "FAILED",
+    "exit_code": "127:0",
+    "elapsed_seconds": 2,
+    "allocated_tres": {
+     "billing": "2",
+     "cpu": "2",
+     "gres/tmpfs": "10737418240",
+     "mem": "32G",
+     "node": "1"
+    },
+    "allocated_GPU_hours": 0.0,
+    "billing_core_hours": 0.0011111111111111111,
+    "provisional": false,
+    "raw": "59416713|FAILED|127:0|2|billing=2,cpu=2,gres/tmpfs=10737418240,mem=32G,node=1\n"
+   },
+   {
+    "job_id": "59417057",
+    "name": "preserved-parent:preparation-v2",
+    "state": "FAILED",
+    "exit_code": "1:0",
+    "elapsed_seconds": 5,
+    "allocated_tres": {
+     "billing": "2",
+     "cpu": "2",
+     "gres/tmpfs": "10737418240",
+     "mem": "32G",
+     "node": "1"
+    },
+    "allocated_GPU_hours": 0.0,
+    "billing_core_hours": 0.002777777777777778,
+    "provisional": false,
+    "raw": "59417057|FAILED|1:0|5|billing=2,cpu=2,gres/tmpfs=10737418240,mem=32G,node=1\n"
+   },
+   {
+    "job_id": "59417570",
+    "name": "preserved-parent:preparation-v3",
+    "state": "FAILED",
+    "exit_code": "1:0",
+    "elapsed_seconds": 18,
+    "allocated_tres": {
+     "billing": "2",
+     "cpu": "2",
+     "gres/tmpfs": "10737418240",
+     "mem": "32G",
+     "node": "1"
+    },
+    "allocated_GPU_hours": 0.0,
+    "billing_core_hours": 0.01,
+    "provisional": false,
+    "raw": "59417570|FAILED|1:0|18|billing=2,cpu=2,gres/tmpfs=10737418240,mem=32G,node=1\n"
+   },
+   {
+    "job_id": "59417845",
+    "name": "preserved-parent:preparation-v4",
+    "state": "COMPLETED",
+    "exit_code": "0:0",
+    "elapsed_seconds": 170,
+    "allocated_tres": {
+     "billing": "2",
+     "cpu": "2",
+     "gres/tmpfs": "10737418240",
+     "mem": "32G",
+     "node": "1"
+    },
+    "allocated_GPU_hours": 0.0,
+    "billing_core_hours": 0.09444444444444444,
+    "provisional": false,
+    "raw": "59417845|COMPLETED|0:0|170|billing=2,cpu=2,gres/tmpfs=10737418240,mem=32G,node=1\n"
+   },
+   {
+    "job_id": "59418248",
+    "name": "preserved-parent:generation",
+    "state": "FAILED",
+    "exit_code": "1:0",
+    "elapsed_seconds": 706,
+    "allocated_tres": {
+     "billing": "16",
+     "cpu": "16",
+     "gres/gpu": "2",
+     "mem": "120G",
+     "node": "1"
+    },
+    "allocated_GPU_hours": 0.39222222222222225,
+    "billing_core_hours": 3.137777777777778,
+    "provisional": false,
+    "raw": "59418248|FAILED|1:0|706|billing=16,cpu=16,gres/gpu=2,mem=120G,node=1\n"
+   },
+   {
+    "job_id": "59418250",
+    "name": "preserved-parent:measurement",
+    "state": "COMPLETED",
+    "exit_code": "0:0",
+    "elapsed_seconds": 20,
+    "allocated_tres": {
+     "billing": "2",
+     "cpu": "2",
+     "gres/tmpfs": "10737418240",
+     "mem": "32G",
+     "node": "1"
+    },
+    "allocated_GPU_hours": 0.0,
+    "billing_core_hours": 0.011111111111111112,
+    "provisional": false,
+    "raw": "59418250|COMPLETED|0:0|20|billing=2,cpu=2,gres/tmpfs=10737418240,mem=32G,node=1\n"
+   }
+  ],
+  "allocated_GPU_hours_so_far": 0.7444444444444445,
+  "billing_core_hours_so_far": 6.132777777777778,
+  "unknown_accounting_jobs": [],
+  "scope": "This corrected cycle plus all preserved preparation and failed engineering allocations; no duplicate jobs.",
+  "ancestor_checkpoint_sha256": "95ab28c95e2827ad3ceeb45ec954f28726fdd19012b684671cc2385562cce13b"
+ },
+ "analysis": null,
+ "unresolved": [
+  "Small discovery sample; no equivalence or accuracy-retention inference.",
+  "Saved short continuations and original-prompt generations are separate.",
+  "Missing execution and unfinished grades are unknown.",
+  "External DeepSeek review is general methods advice; no private transfer or API use in this cycle."
+ ],
+ "next_step": "Wait for qualified native generation and offline grading; no downstream experiment authorized here.",
+ "sha256": "2928bbe73537600fe4f346eb1f87d07d11fb397740726ca968d2144d0cba42b1"
+}

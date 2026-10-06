@@ -1,0 +1,26 @@
+{
+ "schema": "overnight-submit-attempt-v1",
+ "name": "fresh-dense-attach",
+ "binding": {
+  "amendment_sha256": "1d6f34dde5f7a7406d3aede0b35e5a7d5285dad93688821586724fa006dee32d",
+  "enrollment_sha256": "7190b1dc34f8cc6e9aeac337dc66f993cd91ce139972112333f076887d4cb5ee",
+  "enrollment_job": "59344223",
+  "enrollment_sacct": "59344223|COMPLETED|0:0\n",
+  "submit_code_sha256": "c25f0f1774de9b45e04b595558e0c6b11a42a06e6644b0a32fd70e7853410b4f",
+  "shared_submit_sha256": "0c142175df5db52fdf00a85d0e8dd46099209a76c5161994b4279332d6c84a10",
+  "stage": "FRESH",
+  "generation_dispatch_job": "59349585",
+  "wrapper_sha256": "c5719561e6d516de51626eab9ec62654628d8fa2656916d77575683fb5f1054a"
+ },
+ "arguments": [
+  "--dependency=afterok:59349585",
+  "--job-name=st-dense-FRESH-attach-v4",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/submit_generated_dense_chain_v1.sbatch",
+  "--stage",
+  "FRESH"
+ ],
+ "time_ns": 1791151147972184981,
+ "dispatcher_job_id": null,
+ "removed_parent_environment_keys": [],
+ "sha256": "a6c98a29f101f2cd490ac146675f42bbddfc1a61309b130cdb3936074aac1e2e"
+}

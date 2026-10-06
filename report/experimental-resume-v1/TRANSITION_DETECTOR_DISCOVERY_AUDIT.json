@@ -1,0 +1,222 @@
+{
+ "schema": "transition-detector-discovery-audit-v1",
+ "job_id": "59121293",
+ "candidate_frame_sha256": "f5b2e28c000ea276c5a9c60fa4956ccecba9451eb121ff00b756859bdcb8e17e",
+ "dense_fixture_sha256": "41fdd999e59db84fdc1d0675ac8c2c1af0bab23dfa2b02ba90a5b48f2cb45d79",
+ "rating_summary_sha256": "84951b879e5fef23419f117774b8306a06d8146f1c956cd85b9a8ca11bc8a6e0",
+ "rating_binding_sha256": "cfd28f10dfafe5b41aedc8ab828e3f05009eb7ef1b328f4b683bcdf44a7b73f5",
+ "analysis_driver_sha256": "d98323d2df19b44251538385df192050999d4762db1c353a8673267fd53d040c",
+ "class_coverage_gate": "PASS",
+ "unknown_label_rows": 8,
+ "families": 48,
+ "contiguous_pairs": 5523,
+ "by_transition": {
+  "candidate_to_verify": {
+   "frame": {
+    "fired": 15,
+    "nonfire": 5508
+   },
+   "rated_counts": {
+    "nonfire": 200,
+    "nonfire_covered": 199,
+    "nonfire_start_agree": 190,
+    "nonfire_target_agree": 197,
+    "nonfire_start_reader0": 58,
+    "nonfire_start_reader1": 57,
+    "nonfire_start_both": 53,
+    "nonfire_start_either": 62,
+    "nonfire_target_both": 6,
+    "nonfire_local_transition_both": 6,
+    "fired": 15,
+    "fired_covered": 15,
+    "fired_start_agree": 14,
+    "fired_target_agree": 15,
+    "fired_start_reader0": 10,
+    "fired_start_reader1": 9,
+    "fired_start_both": 9,
+    "fired_start_either": 10,
+    "fired_target_both": 0,
+    "fired_local_transition_both": 0,
+    "nonfire_unresolved": 1
+   },
+   "families_all_fires": 9,
+   "families_with_both_reader_valid_fires": 6,
+   "families_with_sampled_missed_starts": 28,
+   "all_fire_family_ids": [
+    "421df3311b63519148633d7f05bf01edde6ac27c0dd0af1360ea511ec72f8fc1",
+    "49ec3c017e319d5cd2434f5e06b4ac2f238fc41bb7c50ed90a99481328187dc6",
+    "6332f3952a4d310f59b492e2d5cfbe5d42d4d7b9eea81a06bdeec6ad10bcd2db",
+    "6494e4f831e13dddbce16e0998f963598de7e9e907149cc29baadf62d22c5834",
+    "707ab7621174d1305ed9fb7370a65a7984a70d929ccb758a88557e35c8364c4f",
+    "7e97810d4ff8730d30541a719c4ccc4b5f7dc9862da5c3c812d6705efc43110d",
+    "9f6de64123e79af466d77c24675abb4fa45f391964e54f226f7508115cd1b66d",
+    "ab015c38c561307237f1d9f12b40aac5bc6b79d7838cc302e16a59c01effc212",
+    "cb29cac11a2366d8754b75ac881c7b2786645be6cf34d6d23d5b5f43bd8e8d04"
+   ],
+   "both_reader_valid_fire_family_ids": [
+    "421df3311b63519148633d7f05bf01edde6ac27c0dd0af1360ea511ec72f8fc1",
+    "6332f3952a4d310f59b492e2d5cfbe5d42d4d7b9eea81a06bdeec6ad10bcd2db",
+    "6494e4f831e13dddbce16e0998f963598de7e9e907149cc29baadf62d22c5834",
+    "707ab7621174d1305ed9fb7370a65a7984a70d929ccb758a88557e35c8364c4f",
+    "9f6de64123e79af466d77c24675abb4fa45f391964e54f226f7508115cd1b66d",
+    "ab015c38c561307237f1d9f12b40aac5bc6b79d7838cc302e16a59c01effc212"
+   ],
+   "valid_fire_prefix_token_positions": [
+    424,
+    642,
+    825,
+    1583,
+    1714,
+    2076,
+    4702,
+    67469,
+    67683
+   ],
+   "fired_source_class_counts": {
+    "Monitor": 10,
+    "Explore": 2,
+    "Implement": 2,
+    "Verify": 1
+   },
+   "fired_class_pair_counts": {
+    "Monitor\u2192Monitor": 6,
+    "Monitor\u2192Verify": 2,
+    "Explore\u2192Plan": 1,
+    "Implement\u2192Verify": 1,
+    "Monitor\u2192Explore": 1,
+    "Monitor\u2192Plan": 1,
+    "Implement\u2192Monitor": 1,
+    "Explore\u2192Implement": 1,
+    "Verify\u2192Verify": 1
+   },
+   "reader_coverage": 0.9953488372093023,
+   "fired_start_agreement": 0.9333333333333333,
+   "fired_start_precision_both_readers": 0.6,
+   "fired_start_precision_either_reader": 0.6666666666666666,
+   "sampled_nonfire_inverse_probability_weight": 27.54,
+   "estimated_missed_starts_from_nonfire_sample": 1459.62,
+   "estimated_start_recall_two_reader_audit": 0.006128201985537444,
+   "immediate_next_sentence_transition_count_both_readers": 0,
+   "interpretation": "LLM-audited local starts and immediate next sentence only; sampled misses are descriptive, not validated population truth"
+  },
+  "approach_to_commit": {
+   "frame": {
+    "fired": 3,
+    "nonfire": 5520
+   },
+   "rated_counts": {
+    "nonfire": 200,
+    "nonfire_covered": 196,
+    "nonfire_start_agree": 183,
+    "nonfire_target_agree": 188,
+    "nonfire_start_reader0": 67,
+    "nonfire_start_reader1": 66,
+    "nonfire_start_both": 60,
+    "nonfire_start_either": 73,
+    "nonfire_target_both": 31,
+    "nonfire_local_transition_both": 31,
+    "nonfire_unresolved": 4,
+    "fired": 3,
+    "fired_covered": 3,
+    "fired_start_agree": 3,
+    "fired_target_agree": 3,
+    "fired_start_reader0": 2,
+    "fired_start_reader1": 2,
+    "fired_start_both": 2,
+    "fired_start_either": 2,
+    "fired_target_both": 1,
+    "fired_local_transition_both": 1
+   },
+   "families_all_fires": 3,
+   "families_with_both_reader_valid_fires": 2,
+   "families_with_sampled_missed_starts": 34,
+   "all_fire_family_ids": [
+    "45cb78a1df75e9c0052ca94e400d2007351ead1d91a9f1e3042e806639cb8670",
+    "6332f3952a4d310f59b492e2d5cfbe5d42d4d7b9eea81a06bdeec6ad10bcd2db",
+    "fe413656eb88bcd59b91fafc8491dfc9b6106bd5eeeead02398d8ee95f45c3f8"
+   ],
+   "both_reader_valid_fire_family_ids": [
+    "45cb78a1df75e9c0052ca94e400d2007351ead1d91a9f1e3042e806639cb8670",
+    "6332f3952a4d310f59b492e2d5cfbe5d42d4d7b9eea81a06bdeec6ad10bcd2db"
+   ],
+   "valid_fire_prefix_token_positions": [
+    1117,
+    7884
+   ],
+   "fired_source_class_counts": {
+    "Verify": 1,
+    "Implement": 1,
+    "Plan": 1
+   },
+   "fired_class_pair_counts": {
+    "Verify\u2192Verify": 1,
+    "Implement\u2192Plan": 1,
+    "Plan\u2192Monitor": 1
+   },
+   "reader_coverage": 0.9802955665024631,
+   "fired_start_agreement": 1.0,
+   "fired_start_precision_both_readers": 0.6666666666666666,
+   "fired_start_precision_either_reader": 0.6666666666666666,
+   "sampled_nonfire_inverse_probability_weight": 27.6,
+   "estimated_missed_starts_from_nonfire_sample": 1656.0,
+   "estimated_start_recall_two_reader_audit": 0.0012062726176115801,
+   "immediate_next_sentence_transition_count_both_readers": 1,
+   "interpretation": "LLM-audited local starts and immediate next sentence only; sampled misses are descriptive, not validated population truth"
+  },
+  "failed_check_to_revise": {
+   "frame": {
+    "fired": 1,
+    "nonfire": 5522
+   },
+   "rated_counts": {
+    "nonfire": 200,
+    "nonfire_covered": 198,
+    "nonfire_start_agree": 196,
+    "nonfire_target_agree": 197,
+    "nonfire_start_reader0": 3,
+    "nonfire_start_reader1": 3,
+    "nonfire_start_both": 2,
+    "nonfire_start_either": 4,
+    "nonfire_target_both": 2,
+    "nonfire_local_transition_both": 2,
+    "nonfire_unresolved": 2,
+    "fired": 1,
+    "fired_covered": 1,
+    "fired_start_agree": 1,
+    "fired_target_agree": 1,
+    "fired_start_reader0": 0,
+    "fired_start_reader1": 0,
+    "fired_start_both": 0,
+    "fired_start_either": 0,
+    "fired_target_both": 1,
+    "fired_local_transition_both": 0
+   },
+   "families_all_fires": 1,
+   "families_with_both_reader_valid_fires": 0,
+   "families_with_sampled_missed_starts": 2,
+   "all_fire_family_ids": [
+    "9d9ec1487c5d634f86ae97fca43b0f72a814c369baa2f2384aa88dec35978f5c"
+   ],
+   "both_reader_valid_fire_family_ids": [],
+   "valid_fire_prefix_token_positions": [],
+   "fired_source_class_counts": {
+    "Plan": 1
+   },
+   "fired_class_pair_counts": {
+    "Plan\u2192Analyze": 1
+   },
+   "reader_coverage": 0.9900497512437811,
+   "fired_start_agreement": 1.0,
+   "fired_start_precision_both_readers": 0.0,
+   "fired_start_precision_either_reader": 0.0,
+   "sampled_nonfire_inverse_probability_weight": 27.61,
+   "estimated_missed_starts_from_nonfire_sample": 55.22,
+   "estimated_start_recall_two_reader_audit": 0.0,
+   "immediate_next_sentence_transition_count_both_readers": 0,
+   "interpretation": "LLM-audited local starts and immediate next sentence only; sampled misses are descriptive, not validated population truth"
+  }
+ },
+ "status": "DESCRIPTIVE_DISCOVERY_ONLY_THRESHOLDS_AND_ELIGIBILITY_NOT_YET_SEALED",
+ "scope": "same-model independent blinded LLM draws; no human truth or causal routing effect",
+ "sha256": "e238676428602a626588484ccc14a6ad91f49f7e9f714365df76b57811735b5b"
+}

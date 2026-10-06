@@ -1,0 +1,138 @@
+{
+ "schema": "native-finalization-corrected-design-v2",
+ "parent_manifest_sha256": "6cd588eebb3edb4096613fbd49cf25ca6a51f5d6301724e0475784703ac2e7ba",
+ "corrected_manifest_sha256": "02400561137e8ae86087c54f5ee685eb4cb71a40a953efb6c1827be7d93ef925",
+ "same_prompts_families_seeds_order_sampler": true,
+ "assignment_count": 32,
+ "assignment_lineage": [
+  {
+   "parent_uid": "native-finalization-v1|3dbf9b90d00a10d394a9bdedffdf445f",
+   "corrected_uid": "native-finalization-v1|fd19edd654aef399776ad4d35808ff75"
+  },
+  {
+   "parent_uid": "native-finalization-v1|eb95b28baf5f5b876c134004f1d0fc73",
+   "corrected_uid": "native-finalization-v1|d3a4ba5d4535f3e3245b5a122c841da4"
+  },
+  {
+   "parent_uid": "native-finalization-v1|1f5ec4ef83894692845f092de378a82c",
+   "corrected_uid": "native-finalization-v1|228239bf1c86af344ace543864f5777d"
+  },
+  {
+   "parent_uid": "native-finalization-v1|e2697e91fcb35addaabf735f8356b66e",
+   "corrected_uid": "native-finalization-v1|cbbbc278776e556feb668337797c2094"
+  },
+  {
+   "parent_uid": "native-finalization-v1|c257319e98d6c3625169a8dc5aad315c",
+   "corrected_uid": "native-finalization-v1|f4ba66878d6f6834f0a24ecdf192d0dc"
+  },
+  {
+   "parent_uid": "native-finalization-v1|e42998ca85ea4c31caf7cf0abb53c0d3",
+   "corrected_uid": "native-finalization-v1|79c8b22d16ef1ff948132d8fcd166fb5"
+  },
+  {
+   "parent_uid": "native-finalization-v1|f830c052d6678868a8e5e4393a3792f0",
+   "corrected_uid": "native-finalization-v1|ef073222f1c19ae0ad4233b3ad074545"
+  },
+  {
+   "parent_uid": "native-finalization-v1|669db77137fb7e7b2fc20ebe3d371235",
+   "corrected_uid": "native-finalization-v1|73f3492aabd889cd3524a5da08fe77bf"
+  },
+  {
+   "parent_uid": "native-finalization-v1|973b327ab1fd4b8ae7fc4e9483bbc3ae",
+   "corrected_uid": "native-finalization-v1|54b14b59d02e5376fa0e154c741dd24e"
+  },
+  {
+   "parent_uid": "native-finalization-v1|0957dd0107f33c353ffca4d289d10799",
+   "corrected_uid": "native-finalization-v1|659a9b65d35a9cc5288fb3bb8bb694e1"
+  },
+  {
+   "parent_uid": "native-finalization-v1|530dc08e17e670ffd040cb0142759bab",
+   "corrected_uid": "native-finalization-v1|246aa08d3d051382964bd2eea4723a0b"
+  },
+  {
+   "parent_uid": "native-finalization-v1|e594c1282300a6d32cc1f27782c5cc79",
+   "corrected_uid": "native-finalization-v1|1db4cf9b8a9931fa5d212e476f383697"
+  },
+  {
+   "parent_uid": "native-finalization-v1|090f8d826c2b27c04860a9225b368709",
+   "corrected_uid": "native-finalization-v1|fc8f44e4ed3048da5bc0b20576263149"
+  },
+  {
+   "parent_uid": "native-finalization-v1|c390f158d86222f57c8063b5a0df7753",
+   "corrected_uid": "native-finalization-v1|5880f1c36ccced21282ee2565fb25c35"
+  },
+  {
+   "parent_uid": "native-finalization-v1|d3f01419a6c34391dbb7077b33953efa",
+   "corrected_uid": "native-finalization-v1|5fc0a35cb248b8ac665b8f6062603615"
+  },
+  {
+   "parent_uid": "native-finalization-v1|a3b235139f1b2e4ca3e934f986ba642c",
+   "corrected_uid": "native-finalization-v1|7d5d82600ecf0b8c2ca4c789da178f1c"
+  },
+  {
+   "parent_uid": "native-finalization-v1|faebad0d2e00ae41461c840e2176b169",
+   "corrected_uid": "native-finalization-v1|98425ef48f2f51b0f59255ebb452304e"
+  },
+  {
+   "parent_uid": "native-finalization-v1|7d6869fb4c3a9b0ec0069d0081371c8a",
+   "corrected_uid": "native-finalization-v1|0e899eeed7aea8fd2039308fe0d6b4e7"
+  },
+  {
+   "parent_uid": "native-finalization-v1|b415045bbb5cf18273a82cbfa1d0d273",
+   "corrected_uid": "native-finalization-v1|ff10409c1d309901eb5dcc3417dc8798"
+  },
+  {
+   "parent_uid": "native-finalization-v1|33089908a9d99ff8d056d73525621679",
+   "corrected_uid": "native-finalization-v1|5d538119121470f5715e127c82931fa3"
+  },
+  {
+   "parent_uid": "native-finalization-v1|21178c11617ef179cbe5f33a2222bc66",
+   "corrected_uid": "native-finalization-v1|86ecc7f9d9ebcd2da81815f3a673cba8"
+  },
+  {
+   "parent_uid": "native-finalization-v1|efccfc0f9fa68f8c47bb36b576bc2725",
+   "corrected_uid": "native-finalization-v1|0905f0bc11504cb68d2a2409b50c527e"
+  },
+  {
+   "parent_uid": "native-finalization-v1|e09d04420e6e2e0eaab0703a97e7dbde",
+   "corrected_uid": "native-finalization-v1|0ef242b7b4e6350d551b30196890b13d"
+  },
+  {
+   "parent_uid": "native-finalization-v1|36ae990d144272fd5eca4b3768498a07",
+   "corrected_uid": "native-finalization-v1|cea4f31606d5876df31bd399858d762f"
+  },
+  {
+   "parent_uid": "native-finalization-v1|88adc5f161d682516373d75fa9af3b9c",
+   "corrected_uid": "native-finalization-v1|a333711fab87961130b4a0b037aa28fe"
+  },
+  {
+   "parent_uid": "native-finalization-v1|b0047bfe1674c71d28be38c673eecf96",
+   "corrected_uid": "native-finalization-v1|8d0c36fe0342d18d1b3ce248f189dbe0"
+  },
+  {
+   "parent_uid": "native-finalization-v1|80542dd71c95c15c81f6b0a49830916d",
+   "corrected_uid": "native-finalization-v1|af2e7b54f8ad81b3e12177aa8c1d9e45"
+  },
+  {
+   "parent_uid": "native-finalization-v1|5b63b91a41521a3173761faccd2c8bdf",
+   "corrected_uid": "native-finalization-v1|7ba3c83b00ada5ba45db6b1a318df672"
+  },
+  {
+   "parent_uid": "native-finalization-v1|749538743f8d0d340acb6bc73114bcea",
+   "corrected_uid": "native-finalization-v1|e05dd9dd3a4bc32c0a85a6f6ecf6cb0f"
+  },
+  {
+   "parent_uid": "native-finalization-v1|34866cf781f6cf2b7e9776bc6c2ddabc",
+   "corrected_uid": "native-finalization-v1|8917dc23358d80d09d70f66657523e9f"
+  },
+  {
+   "parent_uid": "native-finalization-v1|c49431a94d4786df4e6d04694e0a60a4",
+   "corrected_uid": "native-finalization-v1|34fbdd2f3d6d55992954dd97629a8842"
+  },
+  {
+   "parent_uid": "native-finalization-v1|5c535cd208a2cc1b335a774c39ca18fe",
+   "corrected_uid": "native-finalization-v1|f508f13ea886eb2d03f0d91895e5d755"
+  }
+ ],
+ "sha256": "4dc882b73133cfbbd933bbbed6f7d6fd8198880a8cbb9876d09b308e60a23361"
+}

@@ -1,0 +1,22 @@
+{
+ "schema": "overnight-submit-attempt-v1",
+ "name": "operator-qualification-adjudication",
+ "binding": {
+  "amendment_sha256": "cdd08711f540d9e694452c035c5f7a4e13b48fbdb2936b7030775c53de916382",
+  "files": {
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/submit_overnight_operational_recovery_v3.py": "664c2dc72e83f683601a2209576db5890ad8c2f1f9938d2a2a5f9585dc530c04",
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/dispatch_overnight_readers_v1.py": "0c142175df5db52fdf00a85d0e8dd46099209a76c5161994b4279332d6c84a10",
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/adjudicate_overnight_operator_qualification_v3.sbatch": "70998d4260dc3846a74b39ceadcdea8ac61ab60257b076caf9ee677097ee783a",
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/prepare_overnight_operator_stage_v3.sbatch": "07d43831b9b7470750fc271a07db448438d6263e6eb302c2151bb3354eb160b3",
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/dispatch_overnight_stage_v3.sbatch": "ac4c9384ccb7b9148c433bf7d0d91d73b3c609c852e100b85ffc5299cf154640"
+  }
+ },
+ "arguments": [
+  "--dependency=afterany:59344841",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/adjudicate_overnight_operator_qualification_v3.sbatch"
+ ],
+ "time_ns": 1791150106524184416,
+ "dispatcher_job_id": null,
+ "removed_parent_environment_keys": [],
+ "sha256": "99fe03f5c6d6070634273278773951eed2bbf38f40c3e44666cbe8697d0565b3"
+}

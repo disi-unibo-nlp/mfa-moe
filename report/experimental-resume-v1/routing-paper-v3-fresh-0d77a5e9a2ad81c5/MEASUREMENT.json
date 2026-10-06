@@ -1,0 +1,249 @@
+{
+ "schema": "routing-paper-measurement-v3",
+ "stage": "FRESH",
+ "source_sha256": "0d77a5e9a2ad81c52bc591ee10389e7d21e70d3c3a8b4e2c7dac21d55632eda3",
+ "arm_summary": {
+  "native": {
+   "assigned": 268,
+   "gradeable": 268,
+   "reader_pair_valid": 223,
+   "both_positive": 156,
+   "at_least_one_positive": 184,
+   "reader_disagreement": 16,
+   "reasoning_closed": 42,
+   "hit_cap": 241,
+   "emitted_tokens": 263816,
+   "statuses": {
+    "cap": 197,
+    "early_finish": 26,
+    "unscored": 45
+   }
+  },
+  "native_duplicate": {
+   "assigned": 268,
+   "gradeable": 268,
+   "reader_pair_valid": 234,
+   "both_positive": 154,
+   "at_least_one_positive": 190,
+   "reader_disagreement": 27,
+   "reasoning_closed": 50,
+   "hit_cap": 233,
+   "emitted_tokens": 263526,
+   "statuses": {
+    "cap": 199,
+    "early_finish": 35,
+    "unscored": 34
+   }
+  },
+  "bias": {
+   "assigned": 268,
+   "gradeable": 268,
+   "reader_pair_valid": 226,
+   "both_positive": 152,
+   "at_least_one_positive": 190,
+   "reader_disagreement": 25,
+   "reasoning_closed": 42,
+   "hit_cap": 245,
+   "emitted_tokens": 265182,
+   "statuses": {
+    "cap": 204,
+    "early_finish": 22,
+    "unscored": 42
+   }
+  },
+  "random_bias": {
+   "assigned": 268,
+   "gradeable": 268,
+   "reader_pair_valid": 216,
+   "both_positive": 145,
+   "at_least_one_positive": 188,
+   "reader_disagreement": 23,
+   "reasoning_closed": 45,
+   "hit_cap": 235,
+   "emitted_tokens": 263309,
+   "statuses": {
+    "cap": 184,
+    "early_finish": 32,
+    "unscored": 52
+   }
+  },
+  "repeat": {
+   "assigned": 268,
+   "gradeable": 268,
+   "reader_pair_valid": 229,
+   "both_positive": 154,
+   "at_least_one_positive": 185,
+   "reader_disagreement": 21,
+   "reasoning_closed": 42,
+   "hit_cap": 246,
+   "emitted_tokens": 265671,
+   "statuses": {
+    "cap": 208,
+    "early_finish": 21,
+    "unscored": 39
+   }
+  },
+  "random_repeat": {
+   "assigned": 268,
+   "gradeable": 268,
+   "reader_pair_valid": 226,
+   "both_positive": 152,
+   "at_least_one_positive": 186,
+   "reader_disagreement": 22,
+   "reasoning_closed": 45,
+   "hit_cap": 240,
+   "emitted_tokens": 262861,
+   "statuses": {
+    "cap": 198,
+    "early_finish": 28,
+    "unscored": 42
+   }
+  },
+  "force": {
+   "assigned": 268,
+   "gradeable": 268,
+   "reader_pair_valid": 228,
+   "both_positive": 164,
+   "at_least_one_positive": 193,
+   "reader_disagreement": 19,
+   "reasoning_closed": 48,
+   "hit_cap": 245,
+   "emitted_tokens": 264986,
+   "statuses": {
+    "cap": 206,
+    "early_finish": 22,
+    "unscored": 40
+   }
+  },
+  "random_force": {
+   "assigned": 268,
+   "gradeable": 268,
+   "reader_pair_valid": 231,
+   "both_positive": 144,
+   "at_least_one_positive": 183,
+   "reader_disagreement": 28,
+   "reasoning_closed": 45,
+   "hit_cap": 240,
+   "emitted_tokens": 263210,
+   "statuses": {
+    "cap": 203,
+    "early_finish": 28,
+    "unscored": 37
+   }
+  },
+  "reweight": {
+   "assigned": 268,
+   "gradeable": 268,
+   "reader_pair_valid": 240,
+   "both_positive": 158,
+   "at_least_one_positive": 193,
+   "reader_disagreement": 27,
+   "reasoning_closed": 44,
+   "hit_cap": 241,
+   "emitted_tokens": 264974,
+   "statuses": {
+    "cap": 216,
+    "early_finish": 24,
+    "unscored": 28
+   }
+  },
+  "random_reweight": {
+   "assigned": 268,
+   "gradeable": 268,
+   "reader_pair_valid": 226,
+   "both_positive": 151,
+   "at_least_one_positive": 191,
+   "reader_disagreement": 24,
+   "reasoning_closed": 41,
+   "hit_cap": 242,
+   "emitted_tokens": 264335,
+   "statuses": {
+    "cap": 200,
+    "unscored": 42,
+    "early_finish": 26
+   }
+  },
+  "expert189": {
+   "assigned": 200,
+   "gradeable": 200,
+   "reader_pair_valid": 161,
+   "both_positive": 86,
+   "at_least_one_positive": 120,
+   "reader_disagreement": 22,
+   "reasoning_closed": 39,
+   "hit_cap": 180,
+   "emitted_tokens": 197245,
+   "statuses": {
+    "cap": 141,
+    "unscored": 39,
+    "early_finish": 20
+   }
+  },
+  "random_expert189": {
+   "assigned": 200,
+   "gradeable": 200,
+   "reader_pair_valid": 160,
+   "both_positive": 83,
+   "at_least_one_positive": 122,
+   "reader_disagreement": 26,
+   "reasoning_closed": 45,
+   "hit_cap": 174,
+   "emitted_tokens": 195503,
+   "statuses": {
+    "cap": 135,
+    "unscored": 40,
+    "early_finish": 25
+   }
+  },
+  "expert9": {
+   "assigned": 200,
+   "gradeable": 200,
+   "reader_pair_valid": 165,
+   "both_positive": 83,
+   "at_least_one_positive": 120,
+   "reader_disagreement": 27,
+   "reasoning_closed": 44,
+   "hit_cap": 173,
+   "emitted_tokens": 195749,
+   "statuses": {
+    "cap": 139,
+    "unscored": 35,
+    "early_finish": 26
+   }
+  },
+  "random_expert9": {
+   "assigned": 200,
+   "gradeable": 200,
+   "reader_pair_valid": 155,
+   "both_positive": 85,
+   "at_least_one_positive": 115,
+   "reader_disagreement": 19,
+   "reasoning_closed": 39,
+   "hit_cap": 176,
+   "emitted_tokens": 196527,
+   "statuses": {
+    "cap": 134,
+    "early_finish": 21,
+    "unscored": 45
+   }
+  }
+ },
+ "available_sensitivity_fields": [
+  "either_reader_sensitivity",
+  "missing_measurement_sensitivity",
+  "strict_veto_sensitivity"
+ ],
+ "accuracy_change": {
+  "status": "NOT_MEASURED_BY_CONTINUATION_STUDY"
+ },
+ "utility_16k": {
+  "status": "SEPARATE_ORIGINAL_PROMPT_STUDY_PENDING"
+ },
+ "gate_weight_trajectory": {
+  "status": "NOT_SAVED; ROUTE_ARRAYS_CONTAIN_EXPERT_IDS"
+ },
+ "historical_confirm_exposure": "Previously exposed; retain original disclosure",
+ "population_status": "FRESH",
+ "no_new_fits": true,
+ "sha256": "a9b931a370bbf3c8f996515d92b43b5a8f9a979b653d5e39d5b2ecf187c959b8"
+}

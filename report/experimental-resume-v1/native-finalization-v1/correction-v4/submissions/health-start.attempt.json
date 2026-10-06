@@ -1,0 +1,22 @@
+{
+ "schema": "native-finalization-health-submission-attempt-v1",
+ "watched_job_id": "59430300",
+ "manifest_sha256": "b5f8f361cbe7ddffbdfa1ced12c4a3fba52a73fe958a52b73caaeb367eb0e008",
+ "budget_sha256": "0dcb8147af5d895b8eef4312deff562899bf3c66dad9561731701190e31d2348",
+ "dependency": "after:59430300",
+ "cpu_envelope": {
+  "partition": "lrd_all_viz",
+  "qos": "normal",
+  "cpus": 2,
+  "memory_GiB": 32,
+  "wall_seconds": 60
+ },
+ "sources": {
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/record_native_finalization_start_v2.py": "8ecccc65738fe0e8b357f5f227d1c6e7966a2dab4b4219e6ebd0c9b6fde94c48",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/native_finalization_start_signal_v1.py": "b1036930ec96e702c23d2c4d61dfd7014e099b09df2bdefdc9228277c48373c8",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/native_finalization_start_signal_v1.sbatch": "ba1fb797c14bd9c6590f65c36a40df06890bf0277b29b1ea75b743bfc3f703df"
+ },
+ "export": "NIL",
+ "scope": "User-requested one-shot health notification only; no scientific output or additional GPU allocation.",
+ "sha256": "e5c6168e513d55b32b2ea7bf28ac6ea3f36713bc4aff1c50385a9b276713f7b1"
+}

@@ -1,0 +1,23 @@
+{
+ "schema": "overnight-submit-attempt-v1",
+ "name": "b-dispatch",
+ "binding": {
+  "stage": "B",
+  "phase": "dispatch",
+  "parent": "59344828",
+  "files": {
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/routing_paper_v3.sbatch": "e2ca1dd722dfc10a7af59aa00aa6b6a94c0a48319e895fdfb6d7674b11d17583",
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/routing_paper_v3.py": "57496a379a2ed9094749bc684fa8e679db306f7c7ffae8249ba75badc54840fe"
+  }
+ },
+ "arguments": [
+  "--dependency=afterok:59344828",
+  "--job-name=st-paper-B-dispatch",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/routing_paper_v3.sbatch",
+  "B",
+  "dispatch"
+ ],
+ "time_ns": 1791147620266730689,
+ "dispatcher_job_id": null,
+ "sha256": "088cc91953f5d562c678e81cad651e8214641f705b1b1417e6c02fa7e46859a6"
+}

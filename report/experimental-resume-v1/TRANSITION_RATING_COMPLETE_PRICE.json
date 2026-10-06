@@ -1,0 +1,35 @@
+{
+ "schema": "transition-two-reader-complete-price-v1",
+ "status": "PASS_COMPLETE_STAGE",
+ "job_id": "59121002",
+ "fixture_sha256": "f5b2e28c000ea276c5a9c60fa4956ccecba9451eb121ff00b756859bdcb8e17e",
+ "rating_driver_sha256": "598664c419cdfe94447021d95592250daddffd3bea4e37b5cd4c010b1cf22afe",
+ "rubric_sha256": "84bf517481c4f7d3ddb94e05e2a940e89ca4fffce8336c1e3f6300a1bf374225",
+ "parity_sha256": "cfd88c8a002ac6b3ca3901b992d483f8f257681658ac558603b6ea7c8d6da707",
+ "rows": 619,
+ "ratings": 1238,
+ "prompt_tokens_exact_twice": 2476,
+ "prompt_tokens_min": 2,
+ "prompt_tokens_max": 2,
+ "max_decode_tokens": 633856,
+ "observed_parity_decode_tokens_per_s": 134.49267971894108,
+ "pessimistic_decode_tokens_per_s": 87.4202418173117,
+ "pessimistic_prefill_tokens_per_s": 9828.032010549021,
+ "repeat_work_factor": 1.25,
+ "components_seconds": {
+  "decode": 9063.347155407868,
+  "prefill": 0.3149155392125249,
+  "two_cold_loads": 1806.3911320251646,
+  "two_shutdowns": 392
+ },
+ "complete_stage_projected_GPU_h": 6.25669622387347,
+ "allocation_plan": {
+  "first_slice_GPU_h_max": 6.0,
+  "one_recovery_GPU_h_max": 2.5,
+  "combined_GPU_h_ceiling": 8.5
+ },
+ "previous_discovery_GPU_h_line": 2.0,
+ "additional_capacity_under_current_user_authorization_GPU_h": 6.5,
+ "interpretation": "Two same-model independent arm-blind LLM draws, discovery-only; no human truth or causal effect",
+ "sha256": "60250a75291bb8778d699fc3ac9ed141671d20876a8c8b93f2e93d1bca7aa51d"
+}

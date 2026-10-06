@@ -1,0 +1,28 @@
+{
+ "schema": "causal-reader-output-length-audit-v1",
+ "status": "COMPLETE_METADATA_ONLY",
+ "reader_model": "Qwen3.8-27B",
+ "population": "prior micro-screen independent arm-blind reader batches; not new eligible deactivation ratings",
+ "counts": {
+  "all_assigned_ratings": 104,
+  "natural_stops": 101,
+  "length_stops_at_1024": 3,
+  "valid_stopped_ratings": 97,
+  "valid_stopped_over_256_tokens": 44,
+  "all_ratings_over_256_tokens": 49
+ },
+ "batch_file_sha256": {
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/micro-screen-semantic-v22-1e56570b050828e3/batches/start-reader0.json": "e365a185a54064b5552fa8be4e4e092c93b8f2524e468820b3cab87d89de8f36",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/micro-screen-semantic-v22-1e56570b050828e3/batches/start-reader1.json": "a404c3963581a2cee993e98e64e7814370970417ee61761d5785092b10457416",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/micro-screen-semantic-v22-1e56570b050828e3/batches/target-000-reader0.json": "25913bbfb218be30b06c9f980bb3cf1f0887da7b3834298f1df43cdf576b1b06",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/micro-screen-semantic-v22-1e56570b050828e3/batches/target-000-reader1.json": "03361ab2710ccef3df2b4c6d655b0238661060128a976fe215cef97032571538",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/micro-screen-semantic-v22-1e56570b050828e3/batches/target-012-reader0.json": "019c137897b886fbc11fcdcd415297bf93d6594339173f5e47095e48c9e086d7",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/micro-screen-semantic-v22-1e56570b050828e3/batches/target-012-reader1.json": "cadbd699399a6464faa82e686946ccd992a9677950ba864572f4637ca7b1db47",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/micro-screen-semantic-v22-1e56570b050828e3/batches/target-024-reader0.json": "2823121e9afbcd9dfadcdb62df9768a01ff35d6279dcc936918a0a07a5724d86",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/micro-screen-semantic-v22-1e56570b050828e3/batches/target-024-reader1.json": "87f4b7004eb79a602dade39aa430ae83481f14e7c8e8e279a8a7d297488939cb",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/micro-screen-semantic-v22-1e56570b050828e3/batches/target-036-reader0.json": "237d596adea80319bd1cb02cef6e6ad7b3254ff503e56d2e343750ebdeb667b3",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/micro-screen-semantic-v22-1e56570b050828e3/batches/target-036-reader1.json": "947fc8e6bff3a6fdcdb2bf758d9f12c6a08751f618eeaab89321db6aa7e6ad5f"
+ },
+ "interpretation": "A 256-output-token price underestimates the observed reader tail. Three prior ratings exhausted the 1,024-token cap. These counts are pricing/measurement evidence, not a causal semantic effect; no raw completion text is copied.",
+ "sha256": "6d6bb55bfc96f6ee50525903e46dfb2158b86c4f53a0bb111c9e6d60ae287d09"
+}

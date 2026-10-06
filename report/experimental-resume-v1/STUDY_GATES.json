@@ -1,0 +1,269 @@
+{
+ "schema": "routing-control-resource-gates-v1",
+ "authorization": {
+  "approved_utc": "2026-10-01T10:05:42.986646+00:00",
+  "source": "explicit current user reply",
+  "verbatim": "Authorize recovery and separate study: +11.25 GPU-hours total",
+  "h14_recovery_gpu_hours": 0.75,
+  "routing_action_study_gpu_hours": 10.5,
+  "additional_total_gpu_hours": 11.25,
+  "stage_ceilings": {
+   "qualification": 0.75,
+   "discovery": 2.0,
+   "mechanism": 2.25,
+   "utility": 4.75,
+   "reserve": 0.75
+  },
+  "gates_preserved": [
+   "qualification",
+   "family-disjoint behavioral eligibility",
+   "complete stage pricing"
+  ]
+ },
+ "cost_input_sha256": "6573e656cc0598817f65b34977a064c0b4498f72b6247dce622b1e4f4e5b2372",
+ "family_freeze_sha256": "592a71b1fa2223a29168ee29afae73de406b3a4d4408d38b69080bee152143f6",
+ "parent_family_capacity": "PASS",
+ "behavioral_eligibility": "UNKNOWN: 48-family discovery windows are prepared; dense class labels and qualified semantic transition ratings remain pending",
+ "prefix_candidate_parser": "CPU edge-case qualification exists; semantic transition detector unqualified",
+ "ordered_worker": {
+  "per_action_dose_implemented": true,
+  "mechanical_GPU_pass": true,
+  "semantic_detector_qualified": false,
+  "original_prompt_controller_qualified": false
+ },
+ "qualification_stage": {
+  "GPU_hour_ceiling": 1.1,
+  "status": "PASS_ENGINEERING_ONLY",
+  "recovery_authorization": {
+   "schema": "experimental-resume-expanded-authorization-v1",
+   "user_message": "use all the needed GPU hours. Sbatch everything you need to do all the naalisis and runs to finish the paper succesfully",
+   "interpretation": "Authorize the named experimental resume workloads and their necessary GPU hours, with complete per-stage pricing, live account checks, qualification gates, and verified Slurm accounting before each submission.",
+   "qualification_recovery_v2": {
+    "additional_qualification_GPU_hours": 0.2,
+    "one_attempt": true,
+    "proposed_stage_ceiling_GPU_hours": 1.1,
+    "proposal": "report/experimental-resume-v1/QUALIFICATION_RECOVERY_PROPOSAL_v2.json"
+   },
+   "other_stages": "Resource ceilings may be revised to measured complete-stage prices under this user authorization; enrollment, causal validation, scientific quality gates and available CINECA account balance remain binding.",
+   "additional_qualification_GPU_hours": 0.2
+  },
+  "jobs": [
+   {
+    "job_id": "59103206",
+    "job_name": "st-gpu-13",
+    "state": "FAILED",
+    "exit_code": "3:0",
+    "elapsed_seconds": 234,
+    "allocated_CPUs": 16,
+    "allocated_TRES": "billing=16,cpu=16,gres/gpu=2,mem=120G,node=1",
+    "task": "ordered-qualify-cpu-recovery",
+    "receipt": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/resume-v1/ordered-qualify-cpu-recovery-submission.json",
+    "final": true,
+    "unit": "GPU-h",
+    "actual_resource_hours": 0.13,
+    "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/ordered-qualification-v1/results-cpu-recovery/QUALIFICATION.json",
+    "artifact_present": true,
+    "artifact_sha256": "02a4ba712a32e3fd2a199ee9652a2f63f79be90d32566753deb5b67d73a895de",
+    "verified_completion": false,
+    "artifact_status": null
+   },
+   {
+    "job_id": "59108983",
+    "job_name": "st-gpu-13",
+    "state": "COMPLETED",
+    "exit_code": "0:0",
+    "elapsed_seconds": 1010,
+    "allocated_CPUs": 16,
+    "allocated_TRES": "billing=16,cpu=16,gres/gpu=2,mem=120G,node=1",
+    "task": "ordered-qualify-cpu-recovery-v2",
+    "receipt": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/resume-v1/ordered-qualify-cpu-recovery-v2-submission.json",
+    "final": true,
+    "unit": "GPU-h",
+    "actual_resource_hours": 0.5611111111111111,
+    "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/ordered-qualification-v1/results-cpu-recovery-v2/QUALIFICATION.json",
+    "artifact_present": true,
+    "artifact_sha256": "88795549b29c75b72c1a22b90b0458951d96b0e161a132c1380a60691fc0c6aa",
+    "verified_completion": true,
+    "artifact_status": null
+   },
+   {
+    "job_id": "59098926",
+    "job_name": "st-gpu-13",
+    "state": "FAILED",
+    "exit_code": "3:0",
+    "elapsed_seconds": 243,
+    "allocated_CPUs": 16,
+    "allocated_TRES": "billing=16,cpu=16,gres/gpu=2,mem=120G,node=1",
+    "task": "ordered-qualify-retry",
+    "receipt": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/resume-v1/ordered-qualify-retry-submission.json",
+    "final": true,
+    "unit": "GPU-h",
+    "actual_resource_hours": 0.135,
+    "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/ordered-qualification-v1/results-retry/QUALIFICATION.json",
+    "artifact_present": true,
+    "artifact_sha256": "d2965324a274d33f72a51c40ac125b13ee5d4210b60fc96a6fb6ef1349b598bb",
+    "verified_completion": false,
+    "artifact_status": null
+   },
+   {
+    "job_id": "59096925",
+    "job_name": "st-gpu-13",
+    "state": "FAILED",
+    "exit_code": "1:0",
+    "elapsed_seconds": 13,
+    "allocated_CPUs": 16,
+    "allocated_TRES": "billing=16,cpu=16,gres/gpu=2,mem=120G,node=1",
+    "task": "ordered-qualify",
+    "receipt": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/resume-v1/ordered-qualify-submission.json",
+    "final": true,
+    "unit": "GPU-h",
+    "actual_resource_hours": 0.007222222222222222,
+    "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/ordered-qualification-v1/results/QUALIFICATION.json",
+    "artifact_present": false,
+    "artifact_sha256": null,
+    "verified_completion": false
+   }
+  ],
+  "audit_observed_utc": "2026-10-01T16:13:32.080232+00:00",
+  "GPU_hours_spent": 0.8333333333333334,
+  "GPU_hours_remaining": 0.2666666666666667,
+  "successful_artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/ordered-qualification-v1/results-cpu-recovery-v2/QUALIFICATION.json",
+  "prior_price_receipt_failed_before_model_load": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/ordered-qualification-v1/PREPARED.retry.json",
+  "current_driver_minimum_load_test_allowance_seconds": 950,
+  "observed_scheduler_shutdown_seconds": 196,
+  "minimum_allowance_and_shutdown_GPUh": 0.6366666666666667,
+  "fits_remaining_even_with_zero_CPU_preparation": false,
+  "CPU_prefix_preparation": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/ordered-qualification-v1/CPU_PREFIXES.json",
+  "recovery_proposal": "completed as job 59108983; 17/17 worker checks passed; semantic and throughput gates remain"
+ },
+ "dense_measurement": {
+  "parity_audit": "PASS_COMPLETE_LABEL_STAGE_PRICE",
+  "operational_coverage": 0.995,
+  "historical_class_agreement": 0.87,
+  "label_stage_price": {
+   "audit_generation_seconds": 413.45001167501323,
+   "audit_load_seconds": 722.5564528100658,
+   "full_to_audit_count_ratio": 28.295,
+   "generation_safety_factor": 2.0,
+   "extra_cold_loads_for_resume": 1,
+   "shutdown_allowances_seconds": 392,
+   "complete_stage_seconds": 25234.249066309127,
+   "complete_stage_GPU_hours": 14.019027259060627,
+   "revised_stage_ceiling_GPU_hours": 14.25,
+   "first_job_time_limit_hours": 7.0,
+   "unit": "two A100 GPU allocation hours",
+   "coverage_scope": "all 5659 prompts, prefill, decode, one retry load, shutdown",
+   "qualification_limits": "direct LLM class consistency only; no semantic or online detector qualification"
+  },
+  "jobs": [
+   {
+    "job_id": "59112590",
+    "job_name": "st-dense-judge-parity",
+    "state": "COMPLETED",
+    "exit_code": "0:0",
+    "elapsed_seconds": 1153,
+    "allocated_CPUs": 16,
+    "allocated_TRES": "billing=16,cpu=16,gres/gpu=2,mem=120G,node=1",
+    "task": "dense-judge-parity",
+    "receipt": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/DIRECT_JOB_REGISTRY.json",
+    "final": true,
+    "unit": "GPU-h",
+    "actual_resource_hours": 0.6405555555555555,
+    "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/dense-judge-parity/results-8e939bee-2341bac1/PARITY.json",
+    "artifact_present": true,
+    "artifact_sha256": "a5a19e3f45f7e4c661f4a2569738e917d38243cd30030f59a35dfdba527a2d72",
+    "verified_completion": true,
+    "artifact_status": null
+   },
+   {
+    "job_id": "59114230",
+    "job_name": "st-dense-discovery-labels",
+    "state": "PENDING",
+    "exit_code": "0:0",
+    "elapsed_seconds": 0,
+    "allocated_CPUs": 0,
+    "allocated_TRES": "",
+    "task": "dense-discovery-labels",
+    "receipt": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/DIRECT_JOB_REGISTRY.json",
+    "final": false,
+    "unit": "GPU-h",
+    "actual_resource_hours": 0.0,
+    "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/dense-discovery/results-84a85c92-b2633756/SUMMARY.json",
+    "artifact_present": false,
+    "artifact_sha256": null,
+    "verified_completion": false
+   }
+  ],
+  "status": "LABELS_SUBMITTED_CLASS_AUDIT_ONLY; semantic and online detector gates remain"
+ },
+ "stages": {
+  "discovery": {
+   "maximum_requests": 672,
+   "maximum_decode_tokens": 688128,
+   "GPU_hour_ceiling": 2.0,
+   "scenario_source": "historical X1, not qualified controller timing",
+   "historical_decode_only_central_GPU_h": 0.4599892047253527,
+   "historical_decode_only_pessimistic_GPU_h": 0.6133189396338037,
+   "one_observed_load_and_qualification_allocation_GPU_h": 0.5611111111111111,
+   "pessimistic_decode_plus_one_observed_allocation_GPU_h": 1.1744300507449148,
+   "missing_costs": [
+    "qualified adapter decode timing at relevant contexts",
+    "prefix preparation",
+    "complete prefill token count",
+    "native NLL if required",
+    "independent blind ratings / GPU labeling",
+    "retries and per-stage overhead"
+   ],
+   "stage_price_status": "HOLD_UNQUALIFIED_AND_INCOMPLETE",
+   "over_ceiling_in_historical_pessimistic_scenario": false
+  },
+  "mechanism": {
+   "maximum_requests": 1024,
+   "maximum_decode_tokens": 1048576,
+   "GPU_hour_ceiling": 2.25,
+   "scenario_source": "historical X1, not qualified controller timing",
+   "historical_decode_only_central_GPU_h": 0.7009359310100612,
+   "historical_decode_only_pessimistic_GPU_h": 0.9345812413467484,
+   "one_observed_load_and_qualification_allocation_GPU_h": 0.5611111111111111,
+   "pessimistic_decode_plus_one_observed_allocation_GPU_h": 1.4956923524578594,
+   "missing_costs": [
+    "qualified adapter decode timing at relevant contexts",
+    "prefix preparation",
+    "complete prefill token count",
+    "native NLL if required",
+    "independent blind ratings / GPU labeling",
+    "retries and per-stage overhead"
+   ],
+   "stage_price_status": "HOLD_UNQUALIFIED_AND_INCOMPLETE",
+   "over_ceiling_in_historical_pessimistic_scenario": false
+  },
+  "utility": {
+   "maximum_requests": 384,
+   "maximum_decode_tokens": 6291456,
+   "GPU_hour_ceiling": 4.75,
+   "scenario_source": "historical X1, not qualified controller timing",
+   "historical_decode_only_central_GPU_h": 4.205615586060368,
+   "historical_decode_only_pessimistic_GPU_h": 5.60748744808049,
+   "one_observed_load_and_qualification_allocation_GPU_h": 0.5611111111111111,
+   "pessimistic_decode_plus_one_observed_allocation_GPU_h": 6.168598559191601,
+   "missing_costs": [
+    "qualified adapter decode timing at relevant contexts",
+    "prefix preparation",
+    "complete prefill token count",
+    "native NLL if required",
+    "independent blind ratings / GPU labeling",
+    "retries and per-stage overhead"
+   ],
+   "stage_price_status": "HOLD_UNQUALIFIED_AND_INCOMPLETE",
+   "over_ceiling_in_historical_pessimistic_scenario": true
+  }
+ },
+ "new_study_GPU_hours_spent": 1.4738888888888888,
+ "decision": "HOLD action discovery/mechanism/utility until dense labels, semantic detector, eligible families and complete intervention price pass; direct-judge class consistency passed",
+ "revised_proposal": {
+  "status": "HISTORICAL_SCENARIO_ONLY_NOT_COMPLETE_PRICE",
+  "utility_historical_pessimistic_scenario_GPU_h": 6.168598559191601,
+  "other_missing_components": "must be measured and added to a versioned complete price before submission",
+  "expanded_authorization": "RESOURCE_AUTHORIZATION_EXPANDED.json"
+ }
+}

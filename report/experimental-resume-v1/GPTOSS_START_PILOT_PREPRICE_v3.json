@@ -1,0 +1,36 @@
+{
+ "schema": "gptoss-start-pilot-preprice-v3",
+ "job_id": "59185128",
+ "status": "HOLD_SELECTED_FRAME",
+ "source_frame_sha256": "6c10499bf71c7223b5c90fa6c2a1b13e13e9fb5c9c2af584d3ba67b4272290b2",
+ "driver_sha256": "eda3cc4515b22f8c9105cac3f5604498795c7891fcac4652ddac50e38a16d411",
+ "qwen_prompt_driver_sha256": "06f8fabda8aa5e2fcf43eec4b6c6286c28e6856fc048731f8b966e0e7410cfe7",
+ "model_cache": {
+  "snapshot": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/cache/hf/hub/models--openai--gpt-oss-20b/snapshots/6cee5e81ee83917806bbde320786a8fb61efebee",
+  "config_sha256": "3a2a26ded679375b7928ddeca59764df7cea83220c1961035f6d6e232659e9ce",
+  "index_sha256": "0e085b977c4c9942f85938828e8c989ed7d5cdabf852e4da6a67c116cd502cd1",
+  "tokenizer_sha256": "0614fe83cadab421296e664e1f48f4261fa8fef6e03e63bb75c20f38e37d07d3",
+  "template_sha256": "a4c9919cbbd4acdd51ccffe22da049264b1b73e59055fa58811a99efbd7c8146",
+  "weight_shard_bytes": {
+   "model-00000-of-00002.safetensors": 4792272488,
+   "model-00001-of-00002.safetensors": 4798702184,
+   "model-00002-of-00002.safetensors": 4170342232
+  }
+ },
+ "source_rows": 372,
+ "prompt_tokens_min": 266,
+ "prompt_tokens_max": 8178,
+ "prompt_tokens_sum": 716169,
+ "max_selected_four_prefill_tokens": 32712,
+ "max_decode_tokens": 2048,
+ "max_context_tokens": 8690,
+ "context_limit": 16384,
+ "qualification_ceiling": {
+  "gpu_type": "A100",
+  "gpus": 1,
+  "wall_seconds": 3600,
+  "gpu_hours": 1.0
+ },
+ "interpretation": "Upper bound over all 372 eligible discovery full-prefix rows; no four-row ambiguity/control frame exists yet. GPT-OSS cold load and decoding are unmeasured; exact selected-frame CPU price and runtime parity gate remain required.",
+ "sha256": "468d86c6ea05f4e79313136ac633d56b04e74fc5261bc4235f707d23a3439904"
+}

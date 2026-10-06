@@ -1,0 +1,16 @@
+{
+ "schema": "overnight-submit-attempt-v1",
+ "name": "checkpoint-initial",
+ "binding": {
+  "plan_sha256": "d2aad5a712d9b65d5f3d945d376092b057de579fb4bab2e3639abb077834bc0e",
+  "label": "initial"
+ },
+ "arguments": [
+  "--job-name=routing-closeout-initial",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/routing_study_closeout_v1.sbatch"
+ ],
+ "time_ns": 1791193695496023043,
+ "dispatcher_job_id": null,
+ "removed_parent_environment_keys": [],
+ "sha256": "dfd19a778bf4b8de390ceb4dde3a5e0914c8483bac7eecb4ab463b1b29ef7e60"
+}

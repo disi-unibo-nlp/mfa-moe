@@ -1,0 +1,70 @@
+{
+ "schema": "r3e-clean-b4-confirm-exclusion-cv-price-v1",
+ "status": "READY_CV_SMOKE_AND_FULL",
+ "population": {
+  "assigned_questions": 483,
+  "families": 479,
+  "role": "confirm-connected-family exclusion sensitivity of the 509-question primary"
+ },
+ "freeze_seal": "758f0f2d2f475d6026a930a268c6fc21b25fbe84e6cf7390136642f2577fd6eb",
+ "fold_keys_sha256": "e63fea1860ff82d2f941dab4cabb9a57fe4733e4d4b80388b088beba8cc0e8e3",
+ "driver_sha256": "6e5d555e7b780880ac0dc1d4b3410f5fb3dcbcc9c2cc8ffad058a5f5c8cc866a",
+ "input_sha256": {
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/resume-v1/r3e-b4-features-confirm-exclusion-v3/FEATURES_FROZEN_B4.json": "fca60f122bf00d39eeab5cd97ce56760b153a3731d32d5aaf5158a5dabd5e250",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/resume-v1/r3e-b4-features-confirm-exclusion-v3/features_A.npz": "8f436427313b7f5158c392d3c900bdc48339ac5ff3ad3758d2739a945a17e6e9",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/family-freeze.json": "0835287393adf5e144ef43531f7f245ea7fd30c3f23765d1576e811b7b9a67e9",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/manifests/split-v1.json": "635990b85e2e1b67d6c85422e2d2dfd4b5c6363358aed1c9b8988c7975c3446b",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/R3E_CLEAN_PREFLIGHT_v1.json": "6ed95266bde65543a7763d8870005c07248df0e22c1c9fbf5df6206d41c95a41",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/R3E_RESOURCE_AND_METHODS_AMENDMENT_v0.3.md": "11fdd16398fab4a71a85cb069c575cd2303e65491165210961e777e2e42b19d3",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/v3_analysis/results-r2/gpt/A/attempts.parquet": "9df93457c8104d8fef0caca0be876d1f2b41bfe231fc4208ede4eb56a0427c09",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/r3e_clean_v3/dynrt/cv.py": "a7664b17d5808d842d84cbc9ea48d2a2d4511e59cd3ddfea50b88d179044d823",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/r3e_clean_v3/dynrt/controls.py": "9f83942ac49d52caaf553fdb46a8681663cae0104f58df9e721d535d41ff3f0c",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/r3e_clean_v3/dynrt/common.py": "a7b502dd0207e5ff21bf2cbee30b1c3b9bf42932be888f2b3b0596e0c1f23875",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/r3e_clean_v3/dynrt/data.py": "82e870bd05ea0dce534b8e3007e41b11e33086826faf586c4724455e2fd144bc",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/r3e_clean_v3/dynrt/d3c_cv.py": "8069425a310a4f7b534a93da6d55be49f19b3c0c871e0b10c1360f23d8f8c030",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/r3e_clean_v3/dynrt/d3c_features.py": "1edf734969028152c016b0963816558166db8951749dff5ffffa650ceef56586",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/r3e_clean_v3/dynrt/d3c_freeze.py": "10ee8691d4bc0d92444b9f46a25edc835b0c7010592ee96b39ecba3c6220bc27",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/r3e_clean_v3/dynrt/features.py": "1a15eb3c5560a082621a1f05548dba338179ab3c0a9f95023c41944702ee5e87",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/r3e_clean_v3/dynrt/extract.py": "0b01714996c8db9825bb54785a596b67216b77e7a7fa07073cc7ef6f94c35701"
+ },
+ "output_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/resume-v1/r3e-cv-clean-confirm-v1",
+ "design": {
+  "outer": 5,
+  "inner": 3,
+  "full_repeats": 5,
+  "models": 6,
+  "family_clustered_bootstrap_full": 5000,
+  "simultaneous_comparisons": 5,
+  "outcome": "observed correctness; retain all assigned and record any missing outcomes",
+  "no_GPT_B_outcomes_in_primary": true
+ },
+ "stages": {
+  "smoke": {
+   "cpus": 2,
+   "wall_seconds": 1200,
+   "repeats": 1,
+   "bootstrap": 200,
+   "memory": "32G",
+   "max_core_hours": 0.6666666666666666
+  },
+  "full": {
+   "cpus": 8,
+   "wall_seconds": 14400,
+   "repeats": 5,
+   "bootstrap": 5000,
+   "memory": "64G",
+   "max_core_hours": 32.0,
+   "requires_smoke_pass": true
+  }
+ },
+ "total_max_core_hours": 32.666666666666664,
+ "compute_rationale": "Smoke runs one repeat of five outer folds and estimates full runtime; full stage covers 25 outer folds, six nested ridge models, family-clustered bootstrap and saved predictions. CPU remains appropriate for small tabular matrices; GPU load overhead is not justified.",
+ "slurm": {
+  "account": "iscrc_miosr",
+  "partition": "boost_usr_prod",
+  "qos": "normal",
+  "gpus": 0
+ },
+ "reprice_rule": "If the full stage cannot fit its four-hour allocation based on smoke, stop before submission and amend.",
+ "sha256": "82b29682dce311af9c7e631e54e04e82f1420d65017ec57421b7329173fd7fe8"
+}

@@ -1,0 +1,130 @@
+{
+ "schema": "candidate-veto-family-cv-v1",
+ "job_id": "59200261",
+ "version": "candidate-prefix-veto-charlogit-v1-discovery",
+ "source": "full",
+ "source_frame_sha256": "6c10499bf71c7223b5c90fa6c2a1b13e13e9fb5c9c2af584d3ba67b4272290b2",
+ "rating_binding_sha256": "55bf87eaee530a3a3e48d9782430fae12dbe30a42b291c54c3ec4fd3d6bb5bc3",
+ "rating_summary_sha256": "afb15fc47a5cac1f26691fe33fbe1a7e23fb64b883100b8a5c7767b962168972",
+ "rating_batch_sha256s": [
+  "13c05764f36071056c1b9cb18ddb792d5173d28db4ba5d1dc7a5fe7ad65ad8b0",
+  "12e565d108db185f440d547d1de838cdf530a496cc8e0ddc694d206ea05ab573",
+  "c28fe90767183401ae9eb4af015ec565b88edc78ddfc8d186c3293b6603e930d",
+  "50629bd0c66e6a04f78e7243436a5a0a3b979e5e6e2a87a0cc0283446caccfb7",
+  "21d60e40d7f847e617be5fff6c62eb9221b1aa534f3463149e24d34da87cbfce",
+  "c805214ca3733aa551bff57e3eb604ccca4578faefb3f5dbd650af8aecc1b19a",
+  "3d95e96210ccfbd789f2a40db62075fae4ab308035baa8a8b3e71bfca1b62bdb",
+  "e50971a8915b32e2fde562d99ba659a234dde9e5fca21759301858cac9dab6af",
+  "76d7a637e6ac96d26a3e106a4ede1fd384a4ab597c75d80eb00fb3aacc2bc697",
+  "109114cffcefb2fe63a169e347877fe3c6193defdf81268114621e92c812670e",
+  "121f6074350c8ad56c51bf531d5abd67ad95c395a873377efea0da9a2aacc83b",
+  "0a0f2ea3d8c4286883b0043a3493b3dffe167a9425977c415a002cb4b6cc4def",
+  "ddce842f4e251a62c3b6ed675af5f6c2b88c0c1d0a4b6357d6b2aa74fd753908",
+  "9856ca4d449380f2dd50e26107dad27380e5dd5cbe2b29a44234e55f083f0cc5",
+  "69b9e62c039c664cc5e6e509b2d5b35e90c9d1e85bb41850d63ac7f6cf8b7a4d",
+  "8ec216ae3b7e396e343b2197ba771a96251a062c15de8a80ed7424fc5677ba62",
+  "c39cbb6d0484a3634031d8703c41791beaef1896ffe837ad704e53c55a156e77",
+  "a68f51d789386406fb24262b052d2c57a8e8ba39de2035d4bbd39e8ab2688bbf",
+  "713e21d32cf25c272aa7df00797af0b881d3321131074208fdb59798c7f4e7e5",
+  "13a4e2e1011762bbacf8eb30b3e9734cde7164935de1de6c96b29a32beeaccad",
+  "b2dfeeab8dfb74d958b520480e1aa78a817642d8110588b2791552e71984244e",
+  "dd8395ea3908c7277b19e5d2d0166710bcb8bda4b312746c4ec7c423bdec839f",
+  "a5e80e7904a56f1a87707321c17ef61560e107168d53d0a5cae8070c55738408",
+  "4b73af35177e23f7f718c3f36632a5809fa67a7ca38b8cf977c600dcacca9860"
+ ],
+ "units_sha256": "84a85c92b595a7829446b6a53b376e1126df3b6c36eabaddb3b4e884eb52fa72",
+ "v22_sensitivity_sha256": "1507899309aedf2ecb5ef5dedbc337a8f445b20140543764fc939068fcd54c27",
+ "driver_sha256": "d906acc7aae0a0135b133597ea55024b1af404b6384aa7a8e4aeeb225fad0319",
+ "features_allowlist": [
+  "problem_statement",
+  "previous_sentence",
+  "sentence"
+ ],
+ "model": "char 3-5 TF-IDF (20k max, min_df=2) + balanced logistic C=0.5",
+ "threshold_policy": "inner family CV: maximal recall at >=0.70 apparent precision and >=4 selected; otherwise abstain",
+ "outer_family_cv": [
+  {
+   "fold": 0,
+   "train_families": 37,
+   "heldout_families": 9,
+   "heldout_rows": 21,
+   "threshold": 1.01,
+   "inner": {
+    "reason": "no_inner_threshold_at_70pct_precision_and_four_fires"
+   },
+   "heldout_selected": 0,
+   "heldout_true_selected": 0
+  },
+  {
+   "fold": 1,
+   "train_families": 37,
+   "heldout_families": 9,
+   "heldout_rows": 21,
+   "threshold": 1.01,
+   "inner": {
+    "reason": "no_inner_threshold_at_70pct_precision_and_four_fires"
+   },
+   "heldout_selected": 0,
+   "heldout_true_selected": 0
+  },
+  {
+   "fold": 2,
+   "train_families": 36,
+   "heldout_families": 10,
+   "heldout_rows": 21,
+   "threshold": 1.01,
+   "inner": {
+    "reason": "no_inner_threshold_at_70pct_precision_and_four_fires"
+   },
+   "heldout_selected": 0,
+   "heldout_true_selected": 0
+  },
+  {
+   "fold": 3,
+   "train_families": 37,
+   "heldout_families": 9,
+   "heldout_rows": 20,
+   "threshold": 1.01,
+   "inner": {
+    "reason": "no_inner_threshold_at_70pct_precision_and_four_fires"
+   },
+   "heldout_selected": 0,
+   "heldout_true_selected": 0
+  },
+  {
+   "fold": 4,
+   "train_families": 37,
+   "heldout_families": 9,
+   "heldout_rows": 20,
+   "threshold": 1.01,
+   "inner": {
+    "reason": "no_inner_threshold_at_70pct_precision_and_four_fires"
+   },
+   "heldout_selected": 0,
+   "heldout_true_selected": 0
+  }
+ ],
+ "outer_oof": {
+  "resolved_rated_fires": 103,
+  "positive_both_readers": 25,
+  "unresolved": {
+   "parse_or_length": 30,
+   "reader_disagreement": 9
+  },
+  "selected": 0,
+  "selected_true": 0,
+  "sample_precision": null,
+  "sample_recall": 0.0,
+  "selected_families": 0
+ },
+ "full_native_fire_burden_exploratory": {
+  "all_v22_fires": 1816,
+  "all_v22_families": 48,
+  "exploratory_model_threshold": 1.01,
+  "inner": {
+   "reason": "no_inner_threshold_at_70pct_precision_and_four_fires"
+  }
+ },
+ "interpretation": "Qwen full-prefix starts are same-model LLM audits, not independent human truth. Nested family CV is within discovery families; the final native-fire burden is fitted on discovery and cannot be treated as validation.",
+ "sha256": "4299c8d9c7783895e172fcc7b4fd7267aacbe2bef861c410a8b46ff2984c6243"
+}

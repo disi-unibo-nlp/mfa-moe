@@ -1,0 +1,22 @@
+{
+ "schema": "native-finalization-execution-correction-v3",
+ "parent_manifest_sha256": "6cd588eebb3edb4096613fbd49cf25ca6a51f5d6301724e0475784703ac2e7ba",
+ "parent_index_sha256": "1322674e4221c60d291fe3af812583819186714a5f7152658bd1dd4ce062bef4",
+ "failed_generation_job": "59421662",
+ "parent_measurement_job": "59421664",
+ "failure": "Strict stochastic fixture comparison failed after the native-forward correction; its reference/captured output differences were not preserved.",
+ "evidence": "Event-driven health receipt and traceback show replay comparison failure before every scientific attempt; captured rank files are preserved.",
+ "correction": "Retain the v2 native-forward fix; save owned native/reference, native/repeat and instrumented tokens/routes before qualification checks. Do not weaken either exact replay gate.",
+ "affected_scientific_results": [],
+ "missing_original_assignments": 32,
+ "parent_accounting": {
+  "path": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/native-finalization-v1/correction-v2/CHECKPOINT-20261005T170710Z.json",
+  "sha256": "9e41ffdced232cab0eb7269af3d8e7023cd5ad558f1f64ed4820275cc7284f95",
+  "billing_core_hours": 6.133888888888889,
+  "GPU_hours": 0.7444444444444445
+ },
+ "design": "Same first eight frozen families, seeds 0/1, two prompts, sampler, native routing and cap; corrected execution bindings are separate.",
+ "preserved_parent_directory": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/native-finalization-v1/correction-v2",
+ "automatic_downstream_experiments": false,
+ "sha256": "7cd580a9110d64b927bd3f40c530e384bf3d07363932fec183ef06b4351dabaa"
+}

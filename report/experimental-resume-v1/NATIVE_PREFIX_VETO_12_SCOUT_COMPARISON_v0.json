@@ -1,0 +1,210 @@
+{
+ "schema": "native-prefix-veto-12-scout-comparison-v0",
+ "frame_sha256": "d8f50b7e4c309716d054fafa52cc22e2b77c3c9bb4b9bbdef829fe303271863a",
+ "qwen_binding_sha256": "4cc204daf2be568649693d6658cf2ec7f8a7e95159d3ae3f427e71a2381c61c0",
+ "qwen_summary_sha256": "962dc15fe82e82a549a6d17122a7fe3606c8235b8a37094644a3e5d048545357",
+ "native_binding_sha256": "7f5316a9cb4d9c7ec250cf9060d26155451284035d1cda48b85e60331689fd80",
+ "native_summary_sha256": "d3e470ae46656b4235b2c1351eccc5b88ef7c96baeac8724d17aad4587bf0c8f",
+ "counts": {
+  "candidate_to_verify|fire|rows": 6,
+  "candidate_to_verify|fire|qwen_joint_true": 1,
+  "candidate_to_verify|fire|native_joint_true": 1,
+  "candidate_to_verify|fire|qwen_joint_false": 3,
+  "candidate_to_verify|fire|native_joint_false": 3,
+  "candidate_to_verify|fire|qwen_disagreement": 1,
+  "candidate_to_verify|fire|native_disagreement": 2,
+  "candidate_to_verify|fire|either_unresolved": 1,
+  "candidate_to_verify|nonfire|rows": 6,
+  "candidate_to_verify|nonfire|qwen_joint_true": 0,
+  "candidate_to_verify|nonfire|native_joint_true": 1,
+  "candidate_to_verify|nonfire|qwen_joint_false": 6,
+  "candidate_to_verify|nonfire|native_joint_false": 5,
+  "candidate_to_verify|nonfire|qwen_disagreement": 0,
+  "candidate_to_verify|nonfire|native_disagreement": 0,
+  "candidate_to_verify|nonfire|either_unresolved": 0
+ },
+ "records": [
+  {
+   "uid": "11ec44ee28d8cee143c420193473aa535a98a78c39833eda2bdff5c8284dee6d",
+   "family": "49ec3c017e319d5cd2434f5e06b4ac2f238fc41bb7c50ed90a99481328187dc6",
+   "transition": "candidate_to_verify",
+   "v22_fired": true,
+   "qwen_votes": [
+    false,
+    false
+   ],
+   "native_votes": [
+    false,
+    false
+   ],
+   "triggering_sentence": "*   $2n = 74$."
+  },
+  {
+   "uid": "1cd2da32252fcf4030f143bb1458b31f5434d8ddd8dec576af10186cd58b6a16",
+   "family": "4f5f62a271804f66bfa38042e820f38f7a0b5f2b9b7a87ff62cdb58b07ead678",
+   "transition": "candidate_to_verify",
+   "v22_fired": false,
+   "qwen_votes": [
+    false,
+    false
+   ],
+   "native_votes": [
+    false,
+    false
+   ],
+   "triggering_sentence": "But equation 2 has $y^3$."
+  },
+  {
+   "uid": "2a6c3f314f7a417fb9c8f7712b4d0923038bb807345a00b97765b1fa697e6313",
+   "family": "fe413656eb88bcd59b91fafc8491dfc9b6106bd5eeeead02398d8ee95f45c3f8",
+   "transition": "candidate_to_verify",
+   "v22_fired": false,
+   "qwen_votes": [
+    false,
+    false
+   ],
+   "native_votes": [
+    false,
+    false
+   ],
+   "triggering_sentence": "Seems straightforward."
+  },
+  {
+   "uid": "32f116ae257ab21bdb14e16f8aec0846be60c3d98c060068768e31355cd6a304",
+   "family": "52543cd453052b5d707943b34a1ec31df532d3be7c1a15dbcb51f49e99028f61",
+   "transition": "candidate_to_verify",
+   "v22_fired": true,
+   "qwen_votes": [
+    false,
+    false
+   ],
+   "native_votes": [
+    true,
+    false
+   ],
+   "triggering_sentence": "*   Since $b \\cos C = CD$ and $c \\cos B = BD$ (assuming acute angles $B, C$), the result is 10."
+  },
+  {
+   "uid": "4ddfeef8207433baa99ecb7bb7cc99d30f7e69300f5582f430b11b543b4e00a1",
+   "family": "7c51cc705eaaa49e75c76878c8a6b8d02d4518391cb71779a4fe5fba7852d941",
+   "transition": "candidate_to_verify",
+   "v22_fired": true,
+   "qwen_votes": [
+    null,
+    false
+   ],
+   "native_votes": [
+    false,
+    false
+   ],
+   "triggering_sentence": "The problem asks for the number of \"Eden sequences\" from the set $\\{1, 2, 3, \\ldots, N\\}$ where $N=5$."
+  },
+  {
+   "uid": "68663c5c96bfbc9a81b0708514049dba3d1f63a9c033df9ebd7a45ce2a3268aa",
+   "family": "67928e1673c5c7b82613df7d95a765e72dd694296f41d4eb5bd77fa6a549196b",
+   "transition": "candidate_to_verify",
+   "v22_fired": true,
+   "qwen_votes": [
+    false,
+    true
+   ],
+   "native_votes": [
+    true,
+    true
+   ],
+   "triggering_sentence": "$r = 205/60 = 41/12$."
+  },
+  {
+   "uid": "7b57937c1d1b8e09965dce5a27ded846fbbc1404be597f5a2f33c095a8d1e138",
+   "family": "b2fbed68b5770889117d45148541a367c98d2a8c1b6c5f73fe5f7e3eda952ac2",
+   "transition": "candidate_to_verify",
+   "v22_fired": false,
+   "qwen_votes": [
+    false,
+    false
+   ],
+   "native_votes": [
+    false,
+    false
+   ],
+   "triggering_sentence": "*   Show the addition/subtraction steps."
+  },
+  {
+   "uid": "9186e9071c2b613c754b37a6ae0274d6880c3c19064fcc2d45c873baabc5055e",
+   "family": "550fd432263445b7a658cbf3f7b32ad019cc13b611f7f4df5094527f0a938047",
+   "transition": "candidate_to_verify",
+   "v22_fired": true,
+   "qwen_votes": [
+    true,
+    true
+   ],
+   "native_votes": [
+    false,
+    true
+   ],
+   "triggering_sentence": "State becomes $B=3, G=3$."
+  },
+  {
+   "uid": "9cc095e606521f4d3feaf17fec27cc7ea531a329252666a3781654549f3cf6a5",
+   "family": "29cc45551546f60dfdd6c11bb74844950c5c81bb611825509d86bd244697ef37",
+   "transition": "candidate_to_verify",
+   "v22_fired": false,
+   "qwen_votes": [
+    false,
+    false
+   ],
+   "native_votes": [
+    true,
+    true
+   ],
+   "triggering_sentence": "2. Exactly two equal."
+  },
+  {
+   "uid": "c04ffe064440988222979f29a4165aa8a98e4ce3e5a70f2c252bf8deb149f6ed",
+   "family": "3367fc3d3cb10721c5ca4d2dab40e29e369042f3e801709985eb83b35caffac1",
+   "transition": "candidate_to_verify",
+   "v22_fired": false,
+   "qwen_votes": [
+    false,
+    false
+   ],
+   "native_votes": [
+    false,
+    false
+   ],
+   "triggering_sentence": "So yes, it is a trapezoid (specifically a right trapezoid)."
+  },
+  {
+   "uid": "cb1273f60897dff9ea964bb341734823e4aff34c3f2d620ec1cf303ce21358cd",
+   "family": "f5f2880171dac17ac29f10527d0398d26e859c729d70eaa39445d71e5299825e",
+   "transition": "candidate_to_verify",
+   "v22_fired": true,
+   "qwen_votes": [
+    false,
+    false
+   ],
+   "native_votes": [
+    false,
+    false
+   ],
+   "triggering_sentence": "From $x = 10/u$ and $y = 5u/2$, let's calculate $x^u$."
+  },
+  {
+   "uid": "ecec064cb62cc65e5cf01e76114102d464c19f04270bc37b5f2a1f8ef1ef4ce6",
+   "family": "d6ae4ef46b2c4f3b62f45bc6e349fd688412934445ba76de81f0f3bf15ada027",
+   "transition": "candidate_to_verify",
+   "v22_fired": false,
+   "qwen_votes": [
+    false,
+    false
+   ],
+   "native_votes": [
+    false,
+    false
+   ],
+   "triggering_sentence": "Did I miss something?"
+  }
+ ],
+ "interpretation": "Context-stratified 12 discovery windows, not a population estimate. Same-model pairs are correlated; native and Qwen prompts/rubrics differ slightly. No behavioral effect or independent human truth.",
+ "sha256": "77c879543163f2379f0892892f8b19d2b4a0fe2a046c438d8f5e7296ca6dac75"
+}

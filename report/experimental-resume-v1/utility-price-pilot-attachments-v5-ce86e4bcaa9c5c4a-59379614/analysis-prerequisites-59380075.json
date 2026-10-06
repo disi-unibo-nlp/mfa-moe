@@ -1,0 +1,28 @@
+{
+ "schema": "utility-prerequisite-resolution-v4",
+ "proposal_sha256": "ce86e4bcaa9c5c4a12f9c9456f118662dccdb57ed355f952cabc9617a83152fa",
+ "manifest_sha256": "6b5aa286e46cb818969c939346f448a6577b307779041ec2d35d7fce0562f074",
+ "accounting": "59346566|COMPLETED|0:0\n59380008|PENDING|0:0\n",
+ "decisions": [
+  {
+   "kind": "analysis",
+   "job_id": "59380008",
+   "state": "PENDING",
+   "exit_code": "0:0",
+   "decision": "RETAIN_ACTIVE_AFTEROK_EDGE",
+   "sealed_artifacts": {}
+  },
+  {
+   "kind": "qualification",
+   "job_id": "59346566",
+   "state": "COMPLETED",
+   "exit_code": "0:0",
+   "decision": "SATISFIED_ACCOUNTING_AND_SEALED_ARTIFACT_OMIT_SLURM_EDGE",
+   "sealed_artifacts": {
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/utility-pair-qualification-v2-4fcfe479aecf4afc/QUALIFICATION.json": "196732c3f01ea6b2884817521b42c19112374c945c4bda41c97845f6e5b4c5e3",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/utility-pair-qualification-v2-4fcfe479aecf4afc/BINDING.json": "9a0ae5b84c1252e5016ba82c6712bcb7a7db73481f370d150345629582d9ad64"
+   }
+  }
+ ],
+ "sha256": "f9a6cdaa5fc90716d13ba6d2df0633ccb254d9d7711d400beb1f7f9538f6bb7b"
+}

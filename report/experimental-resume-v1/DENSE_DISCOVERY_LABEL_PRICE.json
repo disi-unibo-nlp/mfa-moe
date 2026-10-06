@@ -1,0 +1,40 @@
+{
+ "schema": "dense-discovery-label-price-v1",
+ "parity_sha256": "cfd88c8a002ac6b3ca3901b992d483f8f257681658ac558603b6ea7c8d6da707",
+ "units_sha256": "84a85c92b595a7829446b6a53b376e1126df3b6c36eabaddb3b4e884eb52fa72",
+ "label_driver_sha256": "b26337569f1e43dff3ca3de3223708fb29b7b8b877f950d6054c6126722e0ae5",
+ "audit_job_id": "59112590",
+ "audit_final_state": "COMPLETED",
+ "audit_exit_code": "0:0",
+ "operational_coverage": 0.995,
+ "all_assigned_agreement": 0.87,
+ "per_historical_class_agreement": {
+  "Analyze": 0.8620689655172413,
+  "Explore": 0.9285714285714286,
+  "Implement": 1.0,
+  "Monitor": 0.8214285714285714,
+  "Plan": 0.7931034482758621,
+  "Read": 0.8620689655172413,
+  "Verify": 0.8214285714285714
+ },
+ "weak_historical_classes": [],
+ "status": "PASS_COMPLETE_LABEL_STAGE_PRICE",
+ "complete_price": {
+  "audit_generation_seconds": 413.45001167501323,
+  "audit_load_seconds": 722.5564528100658,
+  "full_to_audit_count_ratio": 28.295,
+  "generation_safety_factor": 2.0,
+  "extra_cold_loads_for_resume": 1,
+  "shutdown_allowances_seconds": 392,
+  "complete_stage_seconds": 25234.249066309127,
+  "complete_stage_GPU_hours": 14.019027259060627,
+  "revised_stage_ceiling_GPU_hours": 14.25,
+  "first_job_time_limit_hours": 7.0,
+  "unit": "two A100 GPU allocation hours",
+  "coverage_scope": "all 5659 prompts, prefill, decode, one retry load, shutdown",
+  "qualification_limits": "direct LLM class consistency only; no semantic or online detector qualification"
+ },
+ "user_authorization": "RESOURCE_AUTHORIZATION_EXPANDED.json; measured revised stage ceiling",
+ "scientific_limit": "No human ground truth; class agreement is operational consistency.",
+ "sha256": "7d2e1d31df32f678a5d85b9026e69e847b83c1ee140290b814d2c4c1c9eab03e"
+}

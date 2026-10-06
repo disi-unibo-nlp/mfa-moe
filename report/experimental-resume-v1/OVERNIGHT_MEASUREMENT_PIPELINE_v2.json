@@ -1,0 +1,42 @@
+{
+  "schema": "overnight-measurement-pipeline-freeze-v2",
+  "status": "FROZEN_SYNTHETIC_TESTS_PASS",
+  "code_files": {
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/build_overnight_blind_frame_v2.py": "890195c3afb4880d7c8d61404357b39a8714bfb8da822641b60e0855dfcd7646",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/price_overnight_semantics_v2.py": "f76bbe1dbd165206c4606471f93f3ac0b3353819f08d1f3802438d82df00193c",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/rate_overnight_semantics_v2.py": "44dccecd8e1e315a256d49e278efa4e87086c5b27be3fd0d9bf06c2445bfecd4",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/analyze_overnight_semantics_v2.py": "900a814038de6bf284902e480e9f5979ee58d7a23988b9ea272a786e785e12c5",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/build_price_overnight_semantics_v2.sbatch": "44b2e5bef07537baa5b1fc6830aae7ebbe07e61cb0d9cceb42c714f3c8195c80",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/rate_overnight_semantics_v2.sbatch": "b0cde95fed15cc193b34d74ee3c81fe64ace59eb0252dc438adb2fb19e47d81c",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/analyze_overnight_semantics_v2.sbatch": "084caff2c8cc0745795c9236904bcefcd1043da9484b2fb26dda898352f323c0",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/OVERNIGHT_SEMANTIC_RUBRIC_2026-10-04_v2.md": "9930b5b7029ad206a4989cb11325fb910d679a896946351b632afa847bc3d1d7",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/tests/experimental_resume/test_overnight_semantics_v2.py": "fc4681074ce605c92354a6127cff686068565f9a6ac5b3e72e8291055554abd1"
+  },
+  "validation": {
+    "unit_tests": 13,
+    "seconds": 0.191,
+    "v2_wrapper_bash_syntax": "PASS",
+    "declared_python_environment_import_smoke": "PASS",
+    "gpu_end_to_end": "NOT_EXECUTED_BY_THIS_AGENT"
+  },
+  "analysis": {
+    "bootstrap_replicates": 50000,
+    "primary": "both positive valid naturally stopped readers; explicit scoped contrasts only",
+    "secondary": "emitted continuation tokens in separate family",
+    "sensitivity": [
+      "either reader",
+      "adversarial missing-measurement bounds",
+      "pretreatment strict-veto subset"
+    ],
+    "weighting": "seeds within start; starts within family; equal family weights",
+    "intervals": "Bonferroni percentile family bootstrap approximation",
+    "horizons_separate": [
+      256,
+      1024
+    ]
+  },
+  "wrapper_environment_prefix": "OVERNIGHT_",
+  "empty_gradeable_frame": "skip GPU reader array, seal zero-rating stage, run ITT CPU analysis",
+  "submissions_by_this_agent": [],
+  "sha256": "3490ffbc0023943eeb0733db982016c07e7b2a90671b464fbc2eb086fbdda11d"
+}

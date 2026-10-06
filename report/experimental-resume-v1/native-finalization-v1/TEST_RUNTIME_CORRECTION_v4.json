@@ -1,0 +1,10 @@
+{
+ "schema": "native-finalization-test-runtime-correction-v4",
+ "failed_job_id": "59417570",
+ "observed_failure": "Two frozen-contract tests rejected a live package cached by legacy test collection; 34 other tests passed.",
+ "temporary_directory_observation": "Slurm reset TMPDIR to /tmp inside srun; prior test basetemp was /tmp/pytest.",
+ "correction": "Separate native/frozen and legacy test processes in the same allocation; v2 wrappers explicitly pass user staging TMPDIR through srun env.",
+ "affected_scientific_results": [],
+ "scientific_manifest_existed_at_failure": false,
+ "sha256": "38447bbbf676228b4efc679b090088a8cf6c64bd3b95620d63de4259eb128167"
+}

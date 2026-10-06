@@ -1,0 +1,13 @@
+{
+ "schema": "native-finalization-health-v1",
+ "job_id": "59427818",
+ "phase": "preparation",
+ "signal": "PREPARED",
+ "readiness_sha256": "d5def96d79c1661fb6f96f1f86ab0e72acaba355d66ab86be3658795e302bf2e",
+ "observed_utc": "2026-10-05T17:16:30.553778+00:00",
+ "observer_host": "viz09.leonardo.local",
+ "manifest_sha256": "02400561137e8ae86087c54f5ee685eb4cb71a40a953efb6c1827be7d93ef925",
+ "no_scheduler_polling": true,
+ "no_new_allocation": true,
+ "sha256": "96a6729f489ee7b8fc04be6be1839d95165857e2a67ad2d4a7b920afd0efee8f"
+}

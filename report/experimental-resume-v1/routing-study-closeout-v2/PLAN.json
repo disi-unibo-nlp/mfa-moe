@@ -1,0 +1,46 @@
+{
+ "schema": "routing-study-closeout-plan-v2",
+ "prior_audit_failure": {
+  "job_id": "59388426",
+  "state": "FAILED",
+  "exit_code": "1:0",
+  "elapsed_seconds": 27,
+  "allocated_TRES": "billing=2,cpu=2,gres/tmpfs=10737418240,mem=32G,node=1",
+  "allocated_GPU_hours": 0.0,
+  "billing_unit_hours": 0.015
+ },
+ "operational_repair": "Dense validation runs in a clean subprocess with the frozen repository namespace; utility retains its separately pinned scoring namespace. No scientific or outcome changes.",
+ "operations_path": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/utility-production-root-submissions-v3-a5a6d77abd5ec32e/OPERATIONS.json",
+ "operations_sha256": "8a3000cc60dfef0bb5872cc7615ceabc919a5bf67f2ffc43f02daf4c1732a946",
+ "fresh_chain": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/overnight-submissions-v2-6b5aa286e46cb818/MEASUREMENT_CHAIN.json",
+ "dense_chain": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/generated-dense-fresh-metadata-recovery-v1/dense-generated-v1-6b5aa286e46c-a77287237f3a/dispatch-v1/CHAIN.json",
+ "pinned_files": {
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/utility-production-root-submissions-v3-a5a6d77abd5ec32e/OPERATIONS.json": "8e0e7c9bfff90b9d1db768e39936415cf2a6b0a877d5d72245e79adf52923df6",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/overnight-submissions-v2-6b5aa286e46cb818/MEASUREMENT_CHAIN.json": "f5cdd852f9165eb929a5243cd475d5f8f835fcfb6b39d3effae0470722b9698d",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/generated-dense-fresh-metadata-recovery-v1/dense-generated-v1-6b5aa286e46c-a77287237f3a/dispatch-v1/CHAIN.json": "c45d2675082ee5dc5b76c906a459d155afbffcd24896296975dba85ddae79269",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/X2_COMPLETION_AUDIT_v1.json": "5c39e7e14c8c93b398624e00e5e4b5cec992bc48c731232e602b0603096dd6c5",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/OVERNIGHT_FRESH_FRAME_RECOVERY_AMENDMENT_v1.json": "4f6af8dc2b828195362042afe5b4865bf0a637e0542b5efcd2d0544b30a8c4c8",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/GENERATED_DENSE_FRESH_METADATA_RECOVERY_AMENDMENT_v1.json": "018f71fd3f79c414960878dbba692cb5b48cae75deeb105bbcb1bc44939761f2",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/INDEPENDENT_REVIEW_ADJUDICATION_2026-10-02.md": "56bd35ee203255c324a43ac83a32d29be15aabd9175af538d57cfc997e6a69b2",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/DEEPSEEK_REVIEW_DEBATE_2026-10-02_A.md": "98eee2008d0620774f4b1fa78f4e0c7f6dea11b88a990b43c51a56ab35243276",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/DEEPSEEK_REVIEW_DEBATE_2026-10-02_D.md": "16ab299a9fd1d0bf63c054dfd3ebce1d69a3709402b5d88668138c6c225f8c16",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/DEEPSEEK_REVIEW_DEBATE_2026-10-02_D2.md": "8736b4e0afc203ddd270804d38543abb86fab9bcf071c29203e78e3093d6c4cf",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/JOB_AUDIT.json": "692cbb31206403a5b057142e987898a54ba9f07e33baa0886095a2cfbe328f3e",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/routing-study-closeout-v1/PLAN.json": "42dff9ac05a5310496e21b3514b670d0f2c8801a65062bdc910503751612089f",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/routing-study-closeout-v1/checkpoint-initial.json": "ac137a8e054bb7e555f4fda4b6476bcd3de05468320219665f634b106d85b74c"
+ },
+ "code_files": {
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/routing_study_closeout_v2.py": "0967b390d196b9eb64a3b7123360aec153bef631c05b4363d375677c0ad7e079",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/routing_study_closeout_v2.sbatch": "8d9e0e2b59459834305699c9fb63c7cb5fae5bee530f2b1203f53d80788f928d"
+ },
+ "resources": {
+  "partition": "lrd_all_viz",
+  "qos": "normal",
+  "cpus": 2,
+  "memory_GiB": 32,
+  "wall_seconds": 3600,
+  "GPU_hours": 0
+ },
+ "scope": "Read saved outcomes and exact receipts. Separate routing engagement, semantic steering and original-prompt utility. No new fit, cohort, GPU replay, sequence study, commit or push.",
+ "sha256": "1df6c1de122cf9d3bd81ba8ac8a474b94445a78fe4849354bf8af126886ac200"
+}

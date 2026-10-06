@@ -1,0 +1,22 @@
+{
+ "schema": "native-finalization-execution-correction-v2",
+ "parent_manifest_sha256": "d043f3f887beb7e18457ea8ae9130481f029b823873581c6f1a56128ee27be73",
+ "parent_index_sha256": "e533a6c8237bc1c01eff3d1cc9b8fb4ae8d60c973fe567c4cecdefe7167fbc4d",
+ "failed_generation_job": "59418248",
+ "parent_measurement_job": "59418250",
+ "failure": "Frozen validator import installed a class forward requiring an absent steering controller.",
+ "evidence": "Reference native fixture succeeded; captured fixture failed before qualification and before all scientific attempts.",
+ "correction": "Pin the native bound instance forward before importing the same frozen validators; retain all capture and engineering checks.",
+ "affected_scientific_results": [],
+ "missing_original_assignments": 32,
+ "parent_accounting": {
+  "path": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/native-finalization-v1/CHECKPOINT-20261005T154728Z.json",
+  "sha256": "95ab28c95e2827ad3ceeb45ec954f28726fdd19012b684671cc2385562cce13b",
+  "billing_core_hours": 3.2572222222222225,
+  "GPU_hours": 0.39222222222222225
+ },
+ "design": "Same first eight frozen families, seeds 0/1, two prompts, sampler, native routing and cap; corrected execution bindings are separate.",
+ "preserved_parent_directory": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/native-finalization-v1",
+ "automatic_downstream_experiments": false,
+ "sha256": "3f8a954d2d5ea351beaee6d65e86a491a65fc3f5664c473a30d2aa0469f24380"
+}

@@ -1,0 +1,15 @@
+{
+ "schema": "reader-cap-recovery-attach-v2",
+ "preparation_job": "59346633",
+ "dispatch_job": "59346635",
+ "binding": {
+  "code_freeze_sha256": "035cfac8878e978ee386496ab1383713b512304acbadc6bd89d64f3e3e07fa26",
+  "preserved_failed_preparation_job": "59346127",
+  "complete_gpu_hour_ceiling": 20,
+  "files": {
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/prepare_mechanism_semantic_cap_recovery_v2.sbatch": "c9ca8bf413300b623c1bc9765573be4a9c7065b83cbd1c7539f99145c635c9be",
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/dispatch_mechanism_semantic_cap_recovery_v2.sbatch": "0ed26be47c1e067830f865d0691c7477e07de3bb47a517853173a32ce82df097"
+  }
+ },
+ "sha256": "61b9d2b58c15503a1a3923be962c1d886ff2a5824c6717107f89405f33e7c613"
+}

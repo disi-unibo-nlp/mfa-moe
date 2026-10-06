@@ -1,0 +1,27 @@
+{
+ "receipt": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/ordered-qualification-v1/PREPARED.cpu-recovery.json",
+ "sha256": "4f4355d13fcb70f5c316a625a0da1d531fdb4e88ccb1696ebc9cd5b6cf6293ed",
+ "budget": {
+  "stage_GPU_hour_ceiling_current": 0.75,
+  "stage_GPU_hours_already_spent": 0.14222222222222222,
+  "requested_additional_GPU_hours": 0.15,
+  "stage_GPU_hour_ceiling_proposed": 0.9,
+  "GPU_count": 2,
+  "wall_limit_minutes": 19,
+  "observed_shutdown_allowance_seconds": 196,
+  "maximum_new_allocation_including_shutdown_GPUh": 0.7422222222222222,
+  "maximum_stage_total_GPUh": 0.8844444444444445,
+  "cold_load_and_fixed_batches_driver_allowance_seconds": 950,
+  "deadline_margin_seconds": 30,
+  "all_preparation_prefill_decoding_recovery_and_failures_charged": true,
+  "no_allocation_transfer": true,
+  "no_further_retry_authorized": true
+ },
+ "status": "PREPARED_REQUIRES_USER_APPROVAL_FOR_STAGE_INCREASE",
+ "does_not_qualify": [
+  "semantic transition detector",
+  "discovery behavioral eligibility",
+  "original-prompt controller",
+  "complete discovery/mechanism/utility prices"
+ ]
+}

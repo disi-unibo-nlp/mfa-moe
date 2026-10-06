@@ -1,0 +1,22 @@
+{
+  "schema": "experimental-resume-resource-authorization-v2",
+  "date": "2026-10-02",
+  "user_message": "Go on. You are authorized to launch long jobs if neeed. NO cap on that",
+  "followup": "keeo going",
+  "scope": "The experimental resume analyses, engineering recovery, causal routing discovery, independent mechanism evaluation, utility runs and paper artifacts described in this session.",
+  "interpretation": "The user authorizes the necessary longer Slurm jobs and revised measured resource envelopes, including the prepared 16 GPU-hour full-prefix semantic audit. Resource authorization no longer depends on the earlier 11.25 GPU-hour increment or original 10.5 GPU-hour study proposal.",
+  "supersedes_resource_only": [
+    "RESOURCE_AUTHORIZATION_EXPANDED.json",
+    "Earlier resource ceilings and pending permission question for the additional 16 GPU-hour full-prefix audit"
+  ],
+  "requirements_retained": [
+    "Live LEONARDO identity, allocation, partition and QoS checks",
+    "Complete stage pricing including loads, prefill, decoding, grading, failures and recovery",
+    "Versioned scientific amendments and fixed enrollment before results",
+    "Qualified interventions, prefix-only decisions and arm-blind measurement",
+    "Family-disjoint validation, all-assigned accounting and declared multiplicity",
+    "Exact Slurm job-ID, final-state, exit-code and artifact verification",
+    "Writes only in the user's approved HOME and WORK folders; no commit or push"
+  ],
+  "not_a_result": "Expanded compute authority does not establish semantic steering, accuracy retention, token benefit, or engine equivalence."
+}

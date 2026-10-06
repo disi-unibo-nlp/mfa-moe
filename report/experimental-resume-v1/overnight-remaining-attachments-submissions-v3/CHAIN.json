@@ -1,0 +1,25 @@
+{
+ "schema": "overnight-remaining-attachments-v3",
+ "fresh_preparation_job": "59348046",
+ "fresh_generation_dispatch_job": "59348048",
+ "c_generation_dispatch_job": "59347830",
+ "routing_first_stage_attachments": [
+  {
+   "stage": "A",
+   "attachment_job": "59348050"
+  },
+  {
+   "stage": "B",
+   "attachment_job": "59348052"
+  },
+  {
+   "stage": "C",
+   "attachment_job": "59348054"
+  },
+  {
+   "stage": "FRESH",
+   "attachment_job": "59348056"
+  }
+ ],
+ "sha256": "054a8fb33b50bc73369f7284d6c9ed5f55d2cedc912060f86b43a071c7b97fad"
+}

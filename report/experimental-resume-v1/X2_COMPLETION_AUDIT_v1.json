@@ -1,0 +1,64 @@
+{
+ "schema": "legacy-X2-completion-audit-v1",
+ "status": "COMPLETE_NO_SUBMISSION",
+ "manifest_sha256": "2f10f3dbaefd0839c3ec16d0768581e0863c26ee18e70911de40f1643b4feebe",
+ "manifest_file_sha256": "751d5a7af1c28a9c0c64f2897c91e8e30fe83f25937821234a47ade1830bd064",
+ "freeze_file_sha256": "761176ac88aa5bec32adaeacfb69d2b8ceea1692b4505d430549455ed40a3544",
+ "generation_status_sha256": "321ba87b7acf9a85b2cfb1cc7c3f8bc123895c324cbd137d6dd0cf8f030e741b",
+ "generation_index_sha256": "86ddcbac3e27f2a09b97078a4133dc62e2b40a03c7042dab1843dc14c3b53690",
+ "native_nll_file_sha256": "0f83c9a9ae7bcdac191397f21b67b43c4cb4ebdc701cc9db623ce4b25f4939a6",
+ "generation": {
+  "assigned_requests": 6630,
+  "completed_requests": 6630,
+  "unique_uids": 6630,
+  "cap": 1024,
+  "arms": {
+   "E+": 1638,
+   "M-": 1638,
+   "E-": 1638,
+   "M+": 1638,
+   "N": 78
+  },
+  "status": "complete",
+  "errored": 0,
+  "aborted_in_flight": 0
+ },
+ "native_nll": {
+  "assigned_N_E_uids": 3354,
+  "measured_uids": 3354,
+  "tokens_per_record": 256,
+  "tf1_parity_pass": true,
+  "tf8_parity_pass": true
+ },
+ "slurm": [
+  {
+   "job_id": 59093506,
+   "state": "COMPLETED",
+   "exit_code": "0:0",
+   "elapsed_seconds": 6629,
+   "gpus": 2,
+   "gpu_hours": 3.682777777777778
+  },
+  {
+   "job_id": 59095712,
+   "state": "FAILED",
+   "exit_code": "1:0",
+   "elapsed_seconds": 866,
+   "gpus": 2,
+   "gpu_hours": 0.4811111111111111
+  },
+  {
+   "job_id": 59101870,
+   "state": "COMPLETED",
+   "exit_code": "0:0",
+   "elapsed_seconds": 1734,
+   "gpus": 2,
+   "gpu_hours": 0.9633333333333334
+  }
+ ],
+ "original_ceiling_GPU_h": 8.0,
+ "actual_GPU_h": 5.127222222222223,
+ "unused_ceiling_GPU_h": 2.8727777777777774,
+ "action": "No X2 GPU launch: the registered generation and native-NLL workload is already complete. Preserve failed attempt and saved analysis separately.",
+ "sha256": "c060025098d4c575307f5574854e6614c6f9902630ad6ab93f16922393f0124f"
+}

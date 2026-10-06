@@ -1,0 +1,49 @@
+{
+ "schema": "G3-dose-selection-v1",
+ "version": "v2-registered-dose-support",
+ "native_nll_parity_pass": true,
+ "manifest_sha256": "2f10f3dbaefd0839c3ec16d0768581e0863c26ee18e70911de40f1643b4feebe",
+ "selected": [
+  {
+   "policy": "reweight_m1_L1_landmark",
+   "scope": "L1",
+   "operator": "reweight",
+   "sign": -1,
+   "magnitude": 1.0,
+   "G3_pass": true,
+   "random_magnitudes": {
+    "0": 2.0,
+    "1": 2.0
+   },
+   "random_dose_ratios": {
+    "0": 1.042215780500557,
+    "1": 1.0604771490941396
+   },
+   "registered_G3_pass": true
+  },
+  {
+   "policy": "reweight_p2_BAND_landmark",
+   "scope": "BAND",
+   "operator": "reweight",
+   "sign": 1,
+   "magnitude": 2.0,
+   "G3_pass": true,
+   "random_magnitudes": {
+    "0": 2.0,
+    "1": 2.0
+   },
+   "random_dose_ratios": {
+    "0": 0.9971487261664798,
+    "1": 0.9459614025652124
+   },
+   "registered_G3_pass": true
+  }
+ ],
+ "old_selection_sha256": "50a1462bf403f997a00969a5f711f47c76dea1fc8c1dc72cdfd72e46fc53fd37",
+ "registered_amendment_sha256": "4915666875f1f8f35bf65cecc6dd2d88e5d15d31376e50110b106361030388cf",
+ "registered_passing_cells": 2,
+ "population": "39 eligible of 48 dev-cal questions; two seeds; no replacement",
+ "interpretation": "registered point-estimate dose selection only; no semantic steering claim",
+ "X3_launch": "HOLD eligibility, all-in price and new-study priority",
+ "sha256": "0ecb13095d5ef60fd83270d2017150c6cdcd7a5c2cc3b79b1dd126ebf7cfd122"
+}

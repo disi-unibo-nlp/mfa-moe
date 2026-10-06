@@ -1,0 +1,37 @@
+{
+  "schema": "routing-paper-argument-recovery-v4",
+  "status": "FROZEN_READY_CPU_ONLY",
+  "failed_jobs_preserved": [
+    "59349561",
+    "59349594"
+  ],
+  "diagnosis": "Both original paper attachment invocations passed attach as the stage positional argument. Argparse rejected before chain submission. Frozen v3 requires stage then phase.",
+  "correction": "Explicit named stage and phase parsed in a source-bound v4 adapter and normalized to unchanged v3 positional order. V3 children and all queued A/B sources remain unchanged.",
+  "code_files": {
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/routing_paper_entry_v4.py": "53d249573da47944a40d2293b2459bfdb8357ae8a0079657d897fd64da066a1d",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/routing_paper_entry_v4.sbatch": "1bf7b4bd2fc5a98de5bc888b01029b6c3a2f362d6613c5dc4f54b632cc5c256c",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/tests/experimental_resume/test_routing_paper_entry_v4.py": "18153166a81e1a23c4277fc62b536ee7a27ef1d422ca33e69b07262459572acc"
+  },
+  "frozen_delegate_files": {
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/routing_paper_v3.py": "57496a379a2ed9094749bc684fa8e679db306f7c7ffae8249ba75badc54840fe",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/routing_paper_v3.sbatch": "e2ca1dd722dfc10a7af59aa00aa6b6a94c0a48319e895fdfb6d7674b11d17583"
+  },
+  "current_exact_reader_dependencies": {
+    "C": "59351438",
+    "FRESH": "59351437"
+  },
+  "generation_manifest_tags": {
+    "C": "65e402b7e4fea3fe",
+    "FRESH": "6b5aa286e46cb818"
+  },
+  "validation": [
+    "6 focused CPU tests passed",
+    "new wrapper bash-n passed",
+    "actual C/fresh source and generation-chain readback passed",
+    "no existing C/fresh paper child receipt found"
+  ],
+  "scientific_driver_changed": false,
+  "gpu_work_required": false,
+  "submission_by_this_agent": false,
+  "sha256": "9d7c590f1591dbd95b780248e0242e2cdf860fcbda46331a324d7c482a4ffb8a"
+}

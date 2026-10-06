@@ -1,0 +1,26 @@
+{
+ "schema": "routing-paper-snapshot-v3",
+ "stage": "LEGACY",
+ "source": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/MECHANISM_1024_SEMANTIC_ITT_v1.json",
+ "source_sha256": "104ee9fbd9387320dac669fa74a5697c7c5f9b584a63f7b1e7aa9bb75e95d618",
+ "driver_sha256": "57496a379a2ed9094749bc684fa8e679db306f7c7ffae8249ba75badc54840fe",
+ "analysis_slurm": {
+  "job_id": "59343015",
+  "state": "COMPLETED",
+  "exit_code": "0:0",
+  "elapsed": "00:00:30",
+  "end": "2026-10-04T22:50:31"
+ },
+ "report_slurm_job": "59345662",
+ "artifacts": {
+  "CLAIM_LEDGER.json": "e63c001e7ed1c2c70fe7f2c7c0b6cae1f95d918bd507619b7f29cd05a72f7f49",
+  "MEASUREMENT.json": "462837fd6cdac08d8974dda083adbaf39b2264f4cc3e94eeed945b84a0f9ab89",
+  "reader_coverage.pdf": "96e55ef11d87549ca1b102c1a8e4c3e44ca8ec70dae4f1337f21055b09c52d89",
+  "semantic_contrasts.tsv": "76f16226364b2efd14fc9d432ad9c43677ca43910a1b4350ad10cba9fd10c9d0",
+  "semantic_effects.pdf": "0cd1ebaf90f140c26ed4b8032e8451e15a483d3d26c3abef7ceba32aaa045cce",
+  "semantic_effects.svg": "44ec69d1cee793fe1cbf489d28cf970697819d8a8708511834a2748515b7d3cd"
+ },
+ "new_claims": 12,
+ "status": "COMPLETE_SAVED_RESULT_ADDENDUM",
+ "sha256": "5143fccf2bf3bb4a6aebda2d0746dbb960d086e17053feb2452c8ca874178940"
+}
