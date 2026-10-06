@@ -1,4 +1,6 @@
 **/__pycache__/**
+*.pyc
+*.pyo
 **.venv
 **/results/**
 slurm_logs/**
@@ -374,3 +376,26 @@ report/routing-steering-audit-20260928/*
 !report/routing-steering-audit-20260928/evidence-reproduced.json
 !report/routing-steering-audit-20260928/frozen-baselines.json
 !report/routing-steering-audit-20260928/frozen-baselines.md
+
+# Versioned experimental resume code, protocols, and bounded evidence receipts.
+!tests/test_routing_control.py
+!tests/experimental_resume/
+!tests/experimental_resume/**
+tests/experimental_resume/**/__pycache__/
+tests/experimental_resume/**/*.pyc
+!report/experimental-resume-v1/
+!report/experimental-resume-v1/**
+
+# Local test environments, temporary fixtures, locks, and raw reviewer transcripts.
+.venv-native-finalization-tests/
+report/experimental-resume-v1/**/.pytest-*/
+report/experimental-resume-v1/**/test-temp-*/
+report/experimental-resume-v1/**/test-tmp-*/
+report/experimental-resume-v1/**/*.lock
+report/experimental-resume-v1/**/*.jsonl
+report/experimental-resume-v1/**/*.stderr
+report/experimental-resume-v1/unit-tests.xml
+report/experimental-resume-v1/DEEPSEEK_*.txt
+report/experimental-resume-v1/INDEPENDENT_REVIEW_*_PACK_*.txt
+report/experimental-resume-v1/JOB_AUDIT_RUN_*.txt
+scripts/experimental_resume/*.superseded-v3-copy
