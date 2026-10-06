@@ -1,0 +1,18 @@
+{
+ "schema": "overnight-ab-recovery-chain-v1",
+ "records": [
+  {
+   "lane": "A",
+   "generation_job": "59344807",
+   "frame_price_job": "59344822",
+   "dispatch_job": "59344824"
+  },
+  {
+   "lane": "B",
+   "generation_job": "59344808",
+   "frame_price_job": "59344826",
+   "dispatch_job": "59344828"
+  }
+ ],
+ "sha256": "31aeaccadd4a711fbc0de56a2c479aa025bf3f152e9576a797c237c4b29eb7df"
+}

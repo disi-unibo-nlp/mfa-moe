@@ -1,0 +1,20 @@
+{
+ "schema": "overnight-ab-adjudicated-chain-v3",
+ "records": [
+  {
+   "stage": "A",
+   "generation_job": "59344807",
+   "frame_price_job": "59347821",
+   "reader_dispatch_job": "59344824",
+   "dense_preparation_job": "59345851"
+  },
+  {
+   "stage": "B",
+   "generation_job": "59344808",
+   "frame_price_job": "59347824",
+   "reader_dispatch_job": "59344828",
+   "dense_preparation_job": "59345850"
+  }
+ ],
+ "sha256": "e8b8ce03fd3d4cc061053db6a710d9a621bee60e2dd494eb8c5ff8279aeb542d"
+}

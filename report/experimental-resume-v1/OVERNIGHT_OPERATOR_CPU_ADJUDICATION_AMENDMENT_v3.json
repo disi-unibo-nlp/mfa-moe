@@ -1,0 +1,56 @@
+{
+ "schema": "overnight-operator-cpu-adjudication-amendment-v3",
+ "status": "FROZEN_TESTED_AWAITING_ALL_ORIGINAL_RAW_QUALIFICATION_CASES",
+ "original_qualification_job": "59344841",
+ "original_qualification_manifest_sha256": "ff451a9d3749d6655534c25800a566db2da365b72fafd827d2b0ba637b67243f",
+ "source_files": {
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/overnight_routing_dose_audit_v3.py": "25954a18784403d7600c4a16f78366871759675f5043bf8d71b1baae2da3bf87",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/adjudicate_overnight_operator_qualification_v3.py": "e410281c9da726a5d6a13f9a61fe48461a4e421d0f98016d99f169a319c41572",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/adjudicate_overnight_operator_qualification_v3.sbatch": "70998d4260dc3846a74b39ceadcdea8ac61ab60257b076caf9ee677097ee783a",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/overnight_routing_adjudicated_v3.py": "fe995dd07852b599c438f6575371da5bd255e77c20a96021410fff5af74cb2b9",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/overnight_routing_entry_v3.py": "8eff8b39e5cd83ea0b5593c735b2ef6b78dd702f15535262e5a555d5697b18b5",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/overnight_routing_run_v3.sbatch": "ad198d5d0c35d948349d50f2378402c30ae09c4c30b73438ef31249c8d7df01a",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/prepare_overnight_operator_stage_v3.py": "1a82f3d49fb0516fce07ff6d89d093d918ebb74658cbf399e9e4db158d0b22fd",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/prepare_overnight_operator_stage_v3.sbatch": "07d43831b9b7470750fc271a07db448438d6263e6eb302c2151bb3354eb160b3",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/dispatch_overnight_stage_v3.py": "bd3571fe4c5a7e95f0d7795bf082fcab946b827c8d0046349190c6c06a9c62ff",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/dispatch_overnight_stage_v3.sbatch": "ac4c9384ccb7b9148c433bf7d0d91d73b3c609c852e100b85ffc5299cf154640",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/build_price_overnight_semantics_v3.sbatch": "407a351dff99eeb1fa8e13686afa8150e1aa9740afa28872c9175c2fa04b7198",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/tests/experimental_resume/test_overnight_routing_dose_audit_v3.py": "bfc6c43d168b6b617607cdda12b088cb6d8ee7001fc267f283f1cd5210b7e255",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/tests/experimental_resume/test_overnight_operator_adjudication_v3.py": "40b72bca26b013bfd7cf312031bfeb73379be7986d1d283f023b21f2941aa4af",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/tests/experimental_resume/test_overnight_operator_dispatch_v3.py": "6ccb34ae8b29cf05d6f9fa0c07377b5edc1472644e9543fe7fc6ce1107cda8e4"
+ },
+ "original_sources_unchanged": {
+  "scripts/experimental_resume/overnight_routing_runner_v1.py": "28993c11e6f1222627825c4df9cb52e9ca18fb401e403367555b687c596c30f7",
+  "scripts/experimental_resume/overnight_routing_runner_v2.py": "22817ec3f3dd5b834b8bea98d73557477b4b5b2ba3ac9be5fe827cc569ad102c",
+  "scripts/experimental_resume/overnight_routing_worker_v2.py": "c575f44da829970690f14d32eba7b66c7ed9253baab22f458404b9254389d666",
+  "scripts/experimental_resume/overnight_routing_qualify_v2.py": "66274f5b5b38dbce2bfbfe9c3b907e22fa7be560d184e5a2dd7e00a28aaec546"
+ },
+ "defect": "membership_changes counts inserted expert slots, but original CPU checker bounded it by active token rows. Observed force example27 slots on24 rows with2targets is valid.",
+ "corrected_hard_bounds": {
+  "targeted_bias_or_force_inserted_slots": "8*active_rows",
+  "reweight_inserted_slots": 0,
+  "untargeted_layer_changes": 0,
+  "target_hits": "target_count*active_rows"
+ },
+ "diagnostic_bound": "target_count*active_rows is reported only; untouched top-k tie/rounding reselection prevents assuming it universally.",
+ "preserved_gates": [
+  "all28rawUIDs and original raw hashes",
+  "all original failures except demonstrated combined membership/L1 reason, and only when full replacement audit passes",
+  "original CUDA operator formula checks",
+  "sampler caps/finish, closure, pulse boundaries and full second-pulse coverage",
+  "native/inactive parity, top8IDs/shape/uniqueness, TPdose agreement",
+  "strictforce actualtargethits and rawNPZ targetinclusion",
+  "strictreweight same-state membership0 and nativehits==actualhits",
+  "originalpreemption/reset/recompute checks"
+ ],
+ "gpu_reexecution": false,
+ "tests": {
+  "passed": 20,
+  "pytest_seconds": 0.48,
+  "all_new_wrappers_bash_n": "PASS",
+  "clean_cpu_import_and_adapter_pin": "PASS"
+ },
+ "adjudication_result": "report/experimental-resume-v1/OVERNIGHT_OPERATOR_QUAL_ADJUDICATION_v3.json",
+ "downstream": "Retain v2 designs, manifest/measurement schemas and output naming. New manifests bind corrected adapter and all v3 operational sources; new seals include explicit adjudication provenance. Original failed qualification remains immutable.",
+ "sha256": "cdd08711f540d9e694452c035c5f7a4e13b48fbdb2936b7030775c53de916382"
+}

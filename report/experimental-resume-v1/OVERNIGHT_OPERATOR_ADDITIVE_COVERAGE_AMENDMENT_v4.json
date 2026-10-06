@@ -1,0 +1,61 @@
+{
+  "schema": "overnight-operator-additive-coverage-amendment-v4",
+  "status": "FROZEN_READY_FOR_SUPPLEMENTAL_GPU_AND_COMBINED_CPU_QUALIFICATION",
+  "original_gpu_job_id": "59344841",
+  "original_adjudication_sha256": "3f91261bdd55098a69a3f743ffa8739faceed290fed30fd6c11963ff7d451b9b",
+  "original_status_preserved": "FAIL_REMAINING_QUALIFICATION_CHECKS",
+  "remaining_coverage_gap": {
+    "case": 20,
+    "reason": "second complete pulse not exercised",
+    "reasoning_closure_token_position": 24
+  },
+  "supplemental_manifest_path": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/OVERNIGHT_PULSE_SUPPLEMENT_MANIFEST_v4.json",
+  "supplemental_manifest_sha256": "90bc646d66eb2dcc0af6490b60f28a14bf94186feee6f4e02414078b7d2002be",
+  "fixed_original_fixture_index": 2,
+  "new_requests": 3,
+  "maximum_decode_tokens": 3072,
+  "gpus": 2,
+  "requested_wall_seconds": 3600,
+  "requested_gpu_hour_ceiling": 2.0,
+  "estimated_complete_gpu_hours": 1.2566678660498727,
+  "selection_scope": "First original engineering fixture whose five existing runs all reached1024 without reasoning closure. No correctness, semantic score or effect estimate consulted. Fixed index2; no further stochastic prefix search.",
+  "combined_rule": "Preserve27 original accepted cases and both original FAIL receipts. Certify the single missing coverage obligation only from all3 supplementary actual GPU traces after exact top8/TP/pulse/native/closure/cap/source checks.",
+  "worker_changed": false,
+  "original_gpu_requests_rerun": 0,
+  "manifest_and_measurement_schema": "Unchanged v2 schemas and paths; new manifest hashes bind all replacement adapters and combined receipt.",
+  "source_files": {
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/overnight_routing_pulse_supplement_v4.py": "76ef056ca9f618e6fe29cc41f56af1bec87800840e739a65851aac3f76984f81",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/overnight_routing_pulse_entry_v4.py": "65c6f3ff641046948cfc0050c56f2f0c0cc2655ab5b3a8903cda9dcbba8a7087",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/overnight_routing_pulse_supplement_v4.sbatch": "ac551c14aa72bd824c0a6d76fa6032206c33f8e0c513e02f3b4f31621ae329cd",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/combine_overnight_operator_qualification_v4.py": "7be7d55e1221e0260d12d0cc52fdd46b96c10ab668ec48a45ebb360b6e13043f",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/combine_overnight_operator_qualification_v4.sbatch": "b170501f7dee90d3173a1c73e3e258241fb78264deb697f08b20f2918e9aa730",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/overnight_routing_adjudicated_v4.py": "4df91ba621670231af3a0c28921befe044abf2588b714ad1b0b398fd2e67078b",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/overnight_routing_entry_v4.py": "8950716df66b7b9c7d322e4523cbf36923cf6840d5c0922ab85fb044bc3f7c00",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/overnight_routing_run_v4.sbatch": "fa05cc64c60c5fa2dbae2d58f1cad20df6752aba7f43c4b31eb5779ded0c971c",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/prepare_overnight_operator_stage_v4.py": "54c98561fc81cc6ac46e16d71a6a35bad5a0dd45fe1830f6ba3edabc1c3fa1f5",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/prepare_overnight_operator_stage_v4.sbatch": "a299f63bed32a13f63a079b10278087c5e308326b026f456b3bb2893b0fd3b8f",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/dispatch_overnight_stage_v4.py": "3cad9c79938bba0843d7a990f705331d8a2740453258d0233d3dcd3941021441",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/dispatch_overnight_stage_v4.sbatch": "80728bd412902c2852c5d15fd6d3b9f0737ad80efc97779c7eb309ee84f88ebd",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/build_price_overnight_semantics_v4.sbatch": "554681f0d89cf7753f5025a554150d8b42030a471b405649220eadebc7e4e39d",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/tests/experimental_resume/test_overnight_pulse_supplement_v4.py": "2d8ad10b67f2305406e324628065ee12b80708538e09616c14583bd1702206ab",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/tests/experimental_resume/test_overnight_operator_combined_v4.py": "d169b69f7d2aca62ee5ec9af227f890a40763216df209c076aab96650ae95782",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/tests/experimental_resume/test_overnight_operator_dispatch_v4.py": "989e7c74648d1aff72bf45cb39f605db367e2f5bb7ff22fc2f26ea2433f07cb8"
+  },
+  "preserved_frozen_sources": {
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/overnight_routing_worker_v2.py": "c575f44da829970690f14d32eba7b66c7ed9253baab22f458404b9254389d666",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/overnight_routing_runner_v2.py": "22817ec3f3dd5b834b8bea98d73557477b4b5b2ba3ac9be5fe827cc569ad102c",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/overnight_routing_qualify_v2.py": "66274f5b5b38dbce2bfbfe9c3b907e22fa7be560d184e5a2dd7e00a28aaec546",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/overnight_routing_dose_audit_v3.py": "25954a18784403d7600c4a16f78366871759675f5043bf8d71b1baae2da3bf87",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/adjudicate_overnight_operator_qualification_v3.py": "e410281c9da726a5d6a13f9a61fe48461a4e421d0f98016d99f169a319c41572",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/overnight_routing_adjudicated_v3.py": "fe995dd07852b599c438f6575371da5bd255e77c20a96021410fff5af74cb2b9"
+  },
+  "validation": [
+    "17 focused CPU tests passed",
+    "Exact qualified-worker supplemental entry startup check passed without model load",
+    "Combined adapter pinned import passed without model load",
+    "Supplemental and five replacement shell wrappers passed bash-n",
+    "All new Python files parsed"
+  ],
+  "claim_limit": "Engineering qualification only; supplementary traces are excluded from semantic effect analyses.",
+  "sha256": "1d6f34dde5f7a7406d3aede0b35e5a7d5285dad93688821586724fa006dee32d"
+}

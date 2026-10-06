@@ -1,0 +1,22 @@
+{
+  "schema": "r3d-anticipation-guarded-chain-submission-v1",
+  "date_local": "2026-10-01",
+  "account": "iscrc_miosr",
+  "partition": "boost_usr_prod",
+  "qos": "normal",
+  "driver_sha256": "4f1e0e1aa57126eb3757a554560992314ffabbaf65310e007be40cb638f717ca",
+  "frozen_spec_sha256": "62f1038003b18b09816635ada31d68136856477df335cbd54665942d159baa92",
+  "guard_sha256": "caf7e12ca5c92cde604e4d7f41d14b59c1e4477684af1f35d9b84aa8f11c6393",
+  "per_job_maximum": {"walltime_hours": 24, "cpu_cores": 4, "memory_GiB": 64, "cpu_core_hours": 96},
+  "total_six_guard_allocation_max_CPU_core_hours": 576,
+  "stage_ceiling_CPU_core_hours": 1500,
+  "jobs": [
+    {"slice": 1, "job_id": 59115320, "dependency": "afterany:59111360"},
+    {"slice": 2, "job_id": 59115408, "dependency": "afterok:59115320", "kill_on_invalid_dependency": true},
+    {"slice": 3, "job_id": 59115420, "dependency": "afterok:59115408", "kill_on_invalid_dependency": true},
+    {"slice": 4, "job_id": 59115433, "dependency": "afterok:59115420", "kill_on_invalid_dependency": true},
+    {"slice": 5, "job_id": 59115442, "dependency": "afterok:59115433", "kill_on_invalid_dependency": true},
+    {"slice": 6, "job_id": 59115443, "dependency": "afterok:59115442", "kill_on_invalid_dependency": true}
+  ],
+  "current_state": "PENDING_DEPENDENCY; completion, exit codes and artifacts must be verified later"
+}

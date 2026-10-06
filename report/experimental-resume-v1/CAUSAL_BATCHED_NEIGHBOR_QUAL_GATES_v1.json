@@ -1,0 +1,32 @@
+{
+ "schema": "routing-boundary-neighbor-qualification-gates-v1",
+ "manifest_sha256": "e0c498b65dce4dc71be1a72fba95318e2be88e01a2d383c8cdf833c4e0ed386f",
+ "native_only_replay_audit_sha256": "52921d769820c703341c3d3823c62a22698264468006d89fc9166826e8560f19",
+ "registered_population": "four frozen semantically ineligible pilot families, two seeds",
+ "prior_native_replay_baseline": {
+  "pairs": 8,
+  "first_token_target_mask_equal_pairs": 8,
+  "first_token_unordered_topk_equal_pairs": 0,
+  "tokens_equal_pairs": 4
+ },
+ "hard_engine_gates": {
+  "completed_assigned_requests": 80,
+  "completed_checkpoint_batches": 10,
+  "missing_routed_arrays_or_telemetry": 0,
+  "inactive_native_expert_identity_mismatches_per_token": 0,
+  "inactive_native_weight_mismatches_per_token": 0,
+  "native_sentinel_cpu_active_rows": 0,
+  "policy_table_hash_matches_original_pilot": true
+ },
+ "behavioral_sensitivity_gates": {
+  "comparison": "At first generated token, compare the same family and seed zero-policy sentinel in each edited-condition batch against the zero-condition sentinel; also compare first emitted token. Four edited conditions each have eight paired sentinels.",
+  "maximum_target_mask_discordant_pairs_per_edited_condition": 2,
+  "maximum_first_emitted_token_discordant_pairs_per_edited_condition": 2,
+  "baseline_zero_condition_active_vs_sentinel_reported_separately": true,
+  "unordered_topk_set_discordance": "report per condition and compare with the frozen native-only replay 8-pair baseline; no equality gate because native-only pairs already diverged at token zero",
+  "all_256_token_trajectories": "report overlap only until first text divergence; report family-clustered descriptive intervals, not a bitwise identity gate"
+ },
+ "consequence": "Any hard-gate failure or >2/8 behavioral discordance in any condition holds this batched profile; serial/eager is fallback. Passing is a limited four-family engineering screen, not engine equivalence or tight population bound.",
+ "provenance": "All gates fixed before native-sentinel qualification outputs; tolerance 2/8 is an engineering sensitivity threshold informed by 0/8 target-mask and first-token-token discordance in native-only replay, not chosen from edited-neighbor results.",
+ "sha256": "551af3232942d13afcc4c63fef58def8ab2f880c20dfcae43248fe9269536fb0"
+}

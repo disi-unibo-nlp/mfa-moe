@@ -1,0 +1,21 @@
+{
+ "schema": "routing-discovery-layer24-hook-qual-price-v1",
+ "manifest_sha256": "87bda38632b0205451a535db017a336234a8dbc7f0691c55aeeb4664729e4aae",
+ "expected_requests": 64,
+ "expected_batches": 8,
+ "expected_prefill_tokens": 183568,
+ "maximum_decode_tokens": 16384,
+ "maximum_context_tokens": 7944,
+ "source_neighbor_profile_manifest": "CAUSAL_BATCHED_NEIGHBOR_QUAL_MANIFEST_v1.json",
+ "stress_aggregate_decode_tokens_per_second": 50.0,
+ "stress_prefill_tokens_per_second": 1000.0,
+ "repeat_factor": 1.25,
+ "cold_load_seconds": 685.0234088897705,
+ "shutdown_seconds": 196.0,
+ "estimated_complete_wall_seconds": 1520.0834088897705,
+ "requested_wall_seconds": 3600,
+ "gpus": 2,
+ "gpu_hour_ceiling": 2,
+ "status": "engineering price and CPU preflight only; do not submit until ownership reconciliation and accepted neighbor result",
+ "sha256": "b6a5e9c3fc6433692ee135f27d89558fca8a01c824b1a92823a2d4ad4f500d74"
+}

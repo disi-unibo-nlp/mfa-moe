@@ -1,0 +1,17 @@
+{
+ "schema": "overnight-measurement-chain-v2",
+ "binding": {
+  "manifest_sha256": "65e402b7e4fea3febb7e63a8acce9aa022cc22381315c56b46390c4ed3445ffd",
+  "frame_sha256": "90347e46ef6f2698064954569dcb94c1f3ba93a12711a25aac0f45c8b4f71563",
+  "price_sha256": "000675fa4d63da6c4d6b1ce1a506ce421d4bb48d947d762b3fd0e361412519f5",
+  "envelope_sha256": "d3e40e3d4db6af77752aa7098ce98ec8aa68b851e63c83942911cc4b094a46ec",
+  "wrapper_hashes": {
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/rate_overnight_semantics_v2.sbatch": "b0cde95fed15cc193b34d74ee3c81fe64ace59eb0252dc438adb2fb19e47d81c",
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/analyze_overnight_semantics_v2.sbatch": "084caff2c8cc0745795c9236904bcefcd1043da9484b2fb26dda898352f323c0"
+  }
+ },
+ "reader_job": "59356203",
+ "analysis_job": "59356205",
+ "analysis_output": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/OVERNIGHT_DISCOVERY_C_ANALYSIS_v2",
+ "sha256": "4eea195e9d0e5c01aca8396e86a2d61a1732857fd823ac3caaed27d2aa94eb05"
+}

@@ -1,0 +1,17 @@
+{
+ "schema": "overnight-submit-receipt-v1",
+ "name": "checkpoint-dense",
+ "binding": {
+  "plan_sha256": "1df6c1de122cf9d3bd81ba8ac8a474b94445a78fe4849354bf8af126886ac200",
+  "label": "dense"
+ },
+ "arguments": [
+  "--dependency=afterany:59385736",
+  "--job-name=routing-closeout-dense",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/routing_study_closeout_v2.sbatch"
+ ],
+ "job_id": "59389577",
+ "submission": "59389577",
+ "removed_parent_environment_keys": [],
+ "sha256": "09cc5d32389f0a582de9e5959844b3b2679027369186c4efe4fbb794ecd66480"
+}

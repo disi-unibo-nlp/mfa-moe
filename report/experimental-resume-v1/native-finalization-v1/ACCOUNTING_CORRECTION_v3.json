@@ -1,0 +1,10 @@
+{
+ "schema": "native-finalization-accounting-correction-v3",
+ "failed_job_id": "59417057",
+ "observed_failure": "saldo executable unavailable on compute node; exit 1 in 5 seconds before tests/generation",
+ "correction": "CPU prepares sealed readiness; actual native login performs fresh saldo and finite submission.",
+ "affected_scientific_results": [],
+ "scientific_manifest_existed_at_failure": false,
+ "preserved_transport_correction": "TRANSPORT_CORRECTION_v2.json",
+ "sha256": "56632767cc72c053b9c9d66e07f7397b991d2028f53725679a54742e64c2f618"
+}

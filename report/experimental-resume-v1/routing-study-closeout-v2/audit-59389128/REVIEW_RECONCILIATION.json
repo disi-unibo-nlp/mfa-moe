@@ -1,0 +1,74 @@
+{
+ "schema": "routing-study-review-reconciliation-v1",
+ "sources": [
+  {
+   "path": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/INDEPENDENT_REVIEW_ADJUDICATION_2026-10-02.md",
+   "file_sha256": "56bd35ee203255c324a43ac83a32d29be15aabd9175af538d57cfc997e6a69b2",
+   "bytes": 4811
+  },
+  {
+   "path": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/DEEPSEEK_REVIEW_DEBATE_2026-10-02_A.md",
+   "file_sha256": "98eee2008d0620774f4b1fa78f4e0c7f6dea11b88a990b43c51a56ab35243276",
+   "bytes": 14326
+  },
+  {
+   "path": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/DEEPSEEK_REVIEW_DEBATE_2026-10-02_D.md",
+   "file_sha256": "16ab299a9fd1d0bf63c054dfd3ebce1d69a3709402b5d88668138c6c225f8c16",
+   "bytes": 6909
+  },
+  {
+   "path": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/DEEPSEEK_REVIEW_DEBATE_2026-10-02_D2.md",
+   "file_sha256": "8736b4e0afc203ddd270804d38543abb86fab9bcf071c29203e78e3093d6c4cf",
+   "bytes": 4625
+  }
+ ],
+ "dispositions": [
+  {
+   "finding": "Fixed serial arm order and pooled random sets",
+   "disposition": "RESOLVED_IN_CANONICAL_ASSIGNMENTS",
+   "evidence_and_limit": "The October 2 adjudication records counterbalanced positive-v3 and per-transition/per-seed random sets; held duplicates consumed zero GPU time."
+  },
+  {
+   "finding": "Reader schema, price and failure-cost accounting",
+   "disposition": "RESOLVED_FOR_CURRENT_MEASUREMENT",
+   "evidence_and_limit": "The sealed fresh metadata amendment preserves science and binds 6,960 exact ratings, cold loads, allowances and immutable attempted/committed batches."
+  },
+  {
+   "finding": "CPU placement and native balance transport",
+   "disposition": "RESOLVED_OPERATIONALLY",
+   "evidence_and_limit": "Sanitized child environments and finite v3 native-login dispatch preserve failed jobs and query fresh balance and queue commitments."
+  },
+  {
+   "finding": "Batched-neighbor differences and serial stochasticity",
+   "disposition": "REMAINING_SCOPE_LIMIT",
+   "evidence_and_limit": "Engineering qualification does not establish global engine equivalence or exact hidden-state pairing. Interpret assigned-policy effects and same-forward inactive telemetry within their frozen scope."
+  },
+  {
+   "finding": "Detector and contiguous dense windows",
+   "disposition": "VERSIONED_REPAIRS_AND_SCOPE_LIMIT",
+   "evidence_and_limit": "Precomputed starts are used for continuations. The frozen dense analyzer breaks adjacency at invalid labels and incomplete tails; the separately qualified utility controller retains its own source bindings."
+  },
+  {
+   "finding": "Seven-class trajectories and action ordering",
+   "disposition": "CLASS_MEASUREMENTS_AVAILABLE_ORDERING_DEFERRED",
+   "evidence_and_limit": "A/B/C dense outputs are complete; fresh class labeling is assigned. Per-sentence substantive votes and distinct-action ordering remain a separate unperformed study."
+  },
+  {
+   "finding": "Approach expert proxy",
+   "disposition": "REMAINING_CONSTRUCT_LIMIT",
+   "evidence_and_limit": "Preserve the frozen commitment proxy and semantic rubric; class transitions alone do not establish semantic commitment."
+  },
+  {
+   "finding": "Utility price and accuracy accounting",
+   "disposition": "PROSPECTIVE_RESERVATIONS_RESULT_PENDING",
+   "evidence_and_limit": "The 4.75-GPU-hour line was superseded by the measured pilot and 16,000 billing-hour generation/recovery plus 216-GPU-hour grading allowances. Utility requires canonical strict/J1 outcomes and paired token inference."
+  },
+  {
+   "finding": "Small-family intervals and prior confirm exposure",
+   "disposition": "REMAINING_INFERENCE_LIMIT",
+   "evidence_and_limit": "Keep separate multiplicity families, bootstrap approximations, exposure disclosures, K1 scope, K2 uncertainty, G2 non-rejection and G3 dose-selection roles."
+  }
+ ],
+ "scope": "Current reconciliation of existing advisory reviews. No new external review call or claim of completed independent moderator review.",
+ "sha256": "cd9d17ba516e0eb852490944031186ab786e8d9eba33ee9f276211ad718859ad"
+}

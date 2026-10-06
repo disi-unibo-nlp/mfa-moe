@@ -1,0 +1,12 @@
+{
+ "schema": "utility-native-price-cpu-chain-v3",
+ "native_operations_sha256": "8a3000cc60dfef0bb5872cc7615ceabc919a5bf67f2ffc43f02daf4c1732a946",
+ "config_sha256": "a5a6d77abd5ec32e2ee7cd01462da1dfc75919478dd91c7956e8207a3fbcd4b6",
+ "pilot_attachment": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/utility-price-pilot-attachments-v5-ce86e4bcaa9c5c4a-59379614",
+ "prepare_job": "59405635",
+ "pilot_predecessor": {
+  "accounting": "59405561|PENDING|0:0\n",
+  "active_predecessor": "59405561"
+ },
+ "sha256": "38c88d7c27983baa33d045cb00efed709970561d9a1c556546e539c440651991"
+}

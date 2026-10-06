@@ -1,0 +1,19 @@
+{
+ "schema": "overnight-submit-receipt-v1",
+ "name": "probe",
+ "binding": {
+  "source_files": {
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/utility_account_transport_v1.py": "ca72c410b74f5258cba01a270070ed53755c6d5f4c0bddea78c4db8a1717a25f",
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/probe_utility_account_transport_v1.sbatch": "75227627eb50583c89c694712faf4948a059219ec57f1c49e7f2f6ffdc7bde3c"
+  },
+  "output": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/utility-account-transport-probe-v1/PROBE.json"
+ },
+ "arguments": [
+  "--job-name=utility-account-transport-probe-v1",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/probe_utility_account_transport_v1.sbatch"
+ ],
+ "job_id": "59381728",
+ "submission": "59381728",
+ "removed_parent_environment_keys": [],
+ "sha256": "1f442d8a0666730a44a8d73b9c34cdaecb0352a9d5e733e770efbf92635a78ab"
+}

@@ -1,0 +1,24 @@
+{
+ "schema": "overnight-submit-attempt-v1",
+ "name": "analysis",
+ "binding": {
+  "manifest_sha256": "f87b514ad8b7125e741391b36303491f8cf82f30d73e491347975d683d38f9aa",
+  "qualification_price_sha256": "21aefda88e9546b5188beb2e19b12de043a5603cdba87a6b397efe73b08ccf99",
+  "generation_price_sha256": "98e4a7256579ee2b21c42ebd9a1a468480e60e6558b35a6787eb368028a36d29",
+  "complete_gpu_hour_ceiling": 20.0,
+  "source_hashes": {
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/dispatch_mechanism_semantic_cap_recovery_v2.py": "6ec78edef8bd6a61afde80b56d49a2235a18c228f6d04e686eb09f63b21b8ff0",
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/dispatch_mechanism_semantic_cap_recovery_v2.sbatch": "0ed26be47c1e067830f865d0691c7477e07de3bb47a517853173a32ce82df097",
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/run_mechanism_semantic_cap_recovery_v2.sbatch": "43a8d997377e82db81e7c5c9712df9213c14005a23a24c572f5af7fa03fad5f8",
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/analyze_mechanism_semantic_cap_recovery_v2.sbatch": "c3647053e178b44c7239a59dba325370845ffc248fce90b8accee5e72b4427c4"
+  }
+ },
+ "arguments": [
+  "--dependency=afterok:59346755",
+  "--job-name=mechanism-cap-sensitivity-analysis-v2",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/analyze_mechanism_semantic_cap_recovery_v2.sbatch"
+ ],
+ "time_ns": 1791148963985672154,
+ "dispatcher_job_id": "59346635",
+ "sha256": "9fe7bea956e3259f4266e8fa31d68543a8746e5366f1d8a67c16957163283d66"
+}

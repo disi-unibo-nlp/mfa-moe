@@ -1,0 +1,18 @@
+{
+  "schema": "slurm-parent-environment-recovery-v1",
+  "original_helper_sha256": "338a3efe19b13c39b08ba98f934e1cd38fbef3a6b834b30649b830b75c1ed672",
+  "original_helper_archive": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/orchestration-recovery-338a3efe19b13c39/dispatch_overnight_readers_v1.py",
+  "corrected_helper_sha256": "0c142175df5db52fdf00a85d0e8dd46099209a76c5161994b4279332d6c84a10",
+  "helper": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/dispatch_overnight_readers_v1.py",
+  "observed_failed_job": "59346750",
+  "observed_exit_code": "64:0",
+  "observed_elapsed_seconds": 3,
+  "observed_error": "CPU binding outside of job step allocation; Unable to satisfy cpu bind request",
+  "cancelled_dependents": [
+    "59346755",
+    "59346757"
+  ],
+  "scope": "Scheduling environment only; sampler, prompts, manifests, selection and measurement are unchanged. Parent scheduler, step/rank and device placement variables are removed only from the environment supplied to sbatch. Child allocations establish their own placement. Prior receipts are preserved.",
+  "validation": "See test_submission_environment_v1.py; regression tests run separately.",
+  "sha256": "ab07cde7f1f559549e2fb72e495964866af1a1c46ed86fbfe3c3107533b09574"
+}

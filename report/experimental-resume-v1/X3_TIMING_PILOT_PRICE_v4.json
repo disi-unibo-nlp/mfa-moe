@@ -1,0 +1,79 @@
+{
+ "schema": "x3-32k-timing-pilot-price-v4",
+ "status": "READY_TIMING_ONLY_RECOVERY",
+ "source_price_sha256": "2ad13bba7463a1acdf0a03005f65eafc775d0de10eee34edca93c2f49b081f74",
+ "previous_job_id": "59185118",
+ "previous_job_state": "COMPLETED",
+ "previous_job_exit_code": "0:0",
+ "previous_status_sha256": "25b5784873bc90a3ee79f0168025b7da0a62f213a4fa9fdcc5476d9543c61c7b",
+ "previous_result": {
+  "n_done": 0,
+  "tokens_this_run": 0,
+  "status": "deadline",
+  "engine_build_seconds": 735.159,
+  "cause": "snapshot runner default three-hour admission margin exceeded two-hour allocation"
+ },
+ "scope": "40 capped requests on four frozen dev-disc long-prefix families; cost-only measurement; no X3 causal estimates",
+ "manifest_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/resume-v1/x3-timing-pilot-v1/x3-timing-pilot-v1-8f7c67d6b2a06e42.json",
+ "manifest_sha256": "8f7c67d6b2a06e425c4f65d2f7c7fecca1b035a9f207500ca53900df890b8377",
+ "request_count": 40,
+ "max_decode_tokens": 1040440,
+ "prefill_tokens_without_cache_reuse": 274110,
+ "builder_sha256": "08663897479a275691d7585d41dd8d9fc497000943b2187a7f734e9cbe86d548",
+ "preparation_sha256": "1649d21d36841d7d888a228525584a08cf750ede927706c0b3baf9585fc5881b",
+ "launcher_sha256": "7020a1ce38b9a01f97de32255d53bdbbd3c42b863e89c8293aa7a9edfb6a3c19",
+ "planner_sha256": "a3a01cc599ff5d043458e39b89db532a704d441c0679e4f5d18c6ebdbe26874a",
+ "snapshot_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/code/s1-9a61e32f48c04c24",
+ "snapshot_manifest_file_sha256": "57eab2a46be2df852e1e252730e2ede3152341e5c14db596922cceede7ce53e8",
+ "snapshot_tree_sha256": "9a61e32f48c04c242acccc89c529bd750776c553cdfc776347151d359bc53430",
+ "runner_sha256": "480ef8a70565ee179be44c86f10cbaff61e0dd759c7526d9ac25b992f7ea8f8b",
+ "runner_flags": [
+  "--margin-seconds",
+  "900",
+  "--abort-margin-seconds",
+  "600"
+ ],
+ "output_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/resume-v1/x3-timing-pilot-v1/results-8f7c67d6b2a06e42-v4",
+ "output_binding_rule": "fresh results-<manifest seal first16>-v4; launcher writes immutable digest/price/code binding",
+ "proposed_job_walltime_seconds": 10800,
+ "proposed_GPUs": 2,
+ "proposed_stage_ceiling_GPUh": 6.0,
+ "projected_components_seconds": {
+  "observed_engine_build": 735.159,
+  "prior_generation_model_for_40_capped_requests": 6079.8471053341445,
+  "retry_and_shutdown_reserve": 600,
+  "guarded_total": 7415.006105334144
+ },
+ "projected_admission_window_seconds": 9900,
+ "projected_admission_slack_seconds": 2484.993894665856,
+ "uncertainty": "Previous pilot yielded no decode throughput; generation projection remains historical, not measured on 32k batch. Stop/resume with a new receipt if the 40 requests do not finish.",
+ "slurm": {
+  "account": "iscrc_miosr",
+  "partition": "boost_usr_prod",
+  "qos": "normal",
+  "nodes": 1,
+  "gpus": 2,
+  "cpus": 16,
+  "memory": "120G",
+  "time": "03:00:00"
+ },
+ "resubmission_rule": "No second allocation under this six-GPU-hour receipt; checkpoint resume requires separately priced amendment.",
+ "post_run_allowed_fields": [
+  "elapsed",
+  "load",
+  "prefill_tokens",
+  "decoded_tokens",
+  "finish_reason",
+  "per-request wall_seconds",
+  "batch_shape"
+ ],
+ "post_run_embargoed_fields": [
+  "text",
+  "answer",
+  "correctness",
+  "semantic_labels",
+  "routing_effects"
+ ],
+ "full_X3": "still HOLD; separately price 770-request generation, frozen GEPA labels, grading, any NLL, loads, retries and shutdown, then amend 12 GPU-hour ceiling if needed",
+ "sha256": "1ff4cd1f151802c97038930aeb92cd045320e426347c899d288b91ac9705a810"
+}

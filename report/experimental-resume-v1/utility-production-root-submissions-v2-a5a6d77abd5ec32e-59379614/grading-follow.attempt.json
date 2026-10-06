@@ -1,0 +1,23 @@
+{
+ "schema": "overnight-submit-attempt-v1",
+ "name": "grading-follow",
+ "binding": {
+  "operational_recovery_sha256": "83f59261f8fdbd244225b989d442f11106a646c0a02de4ca6a314fd5e9242bf0",
+  "config_sha256": "a5a6d77abd5ec32e2ee7cd01462da1dfc75919478dd91c7956e8207a3fbcd4b6",
+  "pilot_operational_recovery_sha256": "383f1a2d5c7d18e09be5a364a5fb285f9a19ab242ad508ae91d48a487b0154b6",
+  "pilot_proposal_sha256": "ce86e4bcaa9c5c4a12f9c9456f118662dccdb57ed355f952cabc9617a83152fa",
+  "production_follow_job": "59379679",
+  "grading_plan_sha256": "de108d8736ea5969d2e03260c2e4bb1a18064d59dfc0ee4cb0588d8e3d6e0313"
+ },
+ "arguments": [
+  "--dependency=afterok:59379679",
+  "--job-name=utility-grading-follow-v2-recovery",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/utility_j1_attach_v2.sbatch",
+  "--chain-dir",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/utility-production-submissions-v1-a5a6d77abd5ec32e"
+ ],
+ "time_ns": 1791188808291114827,
+ "dispatcher_job_id": null,
+ "removed_parent_environment_keys": [],
+ "sha256": "f1b41b491dfd9d07073c13fc04dcac62f4470dce1b9222b335bd97278c658025"
+}

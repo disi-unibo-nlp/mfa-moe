@@ -1,0 +1,104 @@
+{
+ "schema": "utility-native-live-account-v3",
+ "hostname": "login05.leonardo.local",
+ "outputs": {
+  "balance": "-----------------------------------------------------------------------------------------------------------------------------------------\naccount                start         end         total        localCluster   totConsumed     totConsumed     monthTotal     monthConsumed\n                                             (local h)   Consumed(local h)     (local h)               %      (local h)         (local h)\n-----------------------------------------------------------------------------------------------------------------------------------------\nIscrC_MIOSR         20260504    20270204         68000               21350         21350            31.4          7391               1251\n",
+  "queue_commitments": "59380006_[3-39]                                                                                     |PENDING|2:00:00|2:00:00|16|gres/gpu:2|1\n59380006_2                                                                                          |RUNNING|2:00:00|1:45:31|16|gres/gpu:2|1\n59380006_0                                                                                          |RUNNING|2:00:00|1:35:33|16|gres/gpu:2|1\n59380006_1                                                                                          |RUNNING|2:00:00|1:35:33|16|gres/gpu:2|1\n59380029                                                                                            |PENDING|10:00|10:00|2|gres/tmpfs:10g|1\n59380073                                                                                            |PENDING|15:00|15:00|2|gres/tmpfs:10g|1\n59380092                                                                                            |PENDING|30:00|30:00|2|gres/tmpfs:10g|1\n59380077                                                                                            |PENDING|30:00|30:00|2|gres/tmpfs:10g|1\n59380008                                                                                            |PENDING|30:00|30:00|2|gres/tmpfs:10g|1\n59380018                                                                                            |RUNNING|2:00:00|1:33:16|2|gres/tmpfs:10g|1\n",
+  "cpu_partition": "PartitionName=lrd_all_viz\n   AllowGroups=ALL AllowAccounts=ALL AllowQos=ALL\n   AllocNodes=ALL Default=NO QoS=lrd_all_viz\n   DefaultTime=00:30:00 DisableRootJobs=NO ExclusiveUser=NO ExclusiveTopo=NO GraceTime=0 Hidden=NO\n   MaxNodes=UNLIMITED MaxTime=12:00:00 MinNodes=0 LLN=NO MaxCPUsPerNode=UNLIMITED MaxCPUsPerSocket=UNLIMITED\n   Nodes=viz[02-16]\n   PriorityJobFactor=1 PriorityTier=1 RootOnly=NO ReqResv=NO OverSubscribe=NO\n   OverTimeLimit=NONE PreemptMode=OFF\n   State=UP TotalCPUs=1920 TotalNodes=15 SelectTypeParameters=NONE\n   JobDefaults=(null)\n   DefMemPerCPU=15400 MaxMemPerNode=UNLIMITED\n   TRES=cpu=1920,mem=7710000M,node=15,billing=1920,gres/gpu=30,gres/tmpfs=164926744166400\n\n",
+  "gpu_partition": "PartitionName=boost_usr_prod\n   AllowGroups=ALL AllowAccounts=ALL AllowQos=ALL\n   AllocNodes=ALL Default=NO QoS=boost_usr_prod\n   DefaultTime=00:30:00 DisableRootJobs=NO ExclusiveUser=NO ExclusiveTopo=NO GraceTime=0 Hidden=NO\n   MaxNodes=64 MaxTime=1-00:00:00 MinNodes=0 LLN=NO MaxCPUsPerNode=UNLIMITED MaxCPUsPerSocket=UNLIMITED\n   Nodes=lrdn[0002-0038,0040,0042-0053,0055-0148,0150-0159,0161-0232,0234-0235,0237-0252,0254-0315,0317-0334,0336-0346,0348-0350,0352-0358,0360-0370,0372-0374,0376-0406,0408-0433,0435-0457,0459-0469,0471-0491,0493-0494,0496-0543,0545-0551,0553-0609,0611-0612,0614-0637,0639,0641-0664,0666-0681,0683-0688,0690-0737,0739-0782,0784-0797,0799-0808,0810-0823,0825-0845,0847-0880,0882-0884,0886,0888-0901,0903-0904,0906-0925,0927-0943,0945-0955,0957-0960,0962-1013,1015-1024,1026-1027,1029-1031,1033-1038,1040-1060,1062-1068,1070-1079,1081-1087,1089-1094,1096-1115,1117-1132,1134-1176,1178-1181,1183-1205,1207-1251,1253-1358,1360-1415,1418-1429,1431-1442,1444-1463,1465-1473,1475-1485,1487-1495,1497-1517,1519-1537,1539-1541,1543-1564,1566-1589,1591-1611,1613-1617,1619-1645,1647-1677,1679-1696,1698-1732,1734-1760,1762-1775,1777-1812,1814-1821,1823-1857,1859-1903,1906-1910,1912-1932,1934-1943,1945-1970,1972,1974-1987,1989-1994,1996-2005,2007-2029,2031-2036,2038-2042,2044-2064,2066-2110,2112-2121,2123-2124,2126-2128,2130-2133,2135-2162,2164-2188,2190,2192-2306,2308-2324,2326-2337,2339-2382,2384-2387,2389-2396,2398-2404,2406-2433,2435-2464,2466-2477,2479-2509,2511-2539,2541-2560,2562-2592,2594-2603,2605,2607-2631,2633-2639,2641,2643,2645-2661,2663-2672,2674-2689,2691-2716,2718-2753,2756-2790,2792-2832,2834-2876,2878-2879,2881-2900,2902-2919,2921-2932,2934-2946,2948-2951,2953-2955,2957-2960,2963-3001,3003-3010,3012,3014-3018,3020-3023,3025-3029,3031-3052,3055-3059,3061-3069,3071-3074,3076-3086,3088-3090,3092-3098,3100-3102,3104-3135,3137-3157,3159-3177,3179-3198,3200-3225,3227-3229,3231-3294,3299-3319,3321-3326,3328-3363,3366-3394,3396-3407,3409-3413,3415-3419,3421-3430,3432-3439,3441-3456]\n   PriorityJobFactor=1 PriorityTier=1 RootOnly=NO ReqResv=NO OverSubscribe=NO\n   OverTimeLimit=NONE PreemptMode=OFF\n   State=UP TotalCPUs=104768 TotalNodes=3274 SelectTypeParameters=NONE\n   JobDefaults=(null)\n   DefMemPerCPU=15400 MaxMemPerNode=UNLIMITED\n   TRES=cpu=104768,mem=1682836000M,node=3274,billing=104768,gres/gpu=13096\n\n",
+  "associations": "lmolfett|iscrc_miosr||boost_qos_bprod,boost_qos_dbg,boost_qos_lprod,normal\n",
+  "normal_qos": "normal||||\n"
+ },
+ "budget": {
+  "reported_remaining_billing_core_hours": 46650.0,
+  "active_remaining_commitment_billing_core_hours": 1270.04,
+  "uncommitted_reported_billing_core_hours": 45379.96,
+  "commitments": [
+   {
+    "job_or_array": "59380006_[3-39]",
+    "state": "PENDING",
+    "tasks": 37,
+    "remaining_seconds": 7200,
+    "billing_cores_each": 16,
+    "remaining_billing_core_hours": 1184.0
+   },
+   {
+    "job_or_array": "59380006_2",
+    "state": "RUNNING",
+    "tasks": 1,
+    "remaining_seconds": 6331,
+    "billing_cores_each": 16,
+    "remaining_billing_core_hours": 28.137777777777778
+   },
+   {
+    "job_or_array": "59380006_0",
+    "state": "RUNNING",
+    "tasks": 1,
+    "remaining_seconds": 5733,
+    "billing_cores_each": 16,
+    "remaining_billing_core_hours": 25.48
+   },
+   {
+    "job_or_array": "59380006_1",
+    "state": "RUNNING",
+    "tasks": 1,
+    "remaining_seconds": 5733,
+    "billing_cores_each": 16,
+    "remaining_billing_core_hours": 25.48
+   },
+   {
+    "job_or_array": "59380029",
+    "state": "PENDING",
+    "tasks": 1,
+    "remaining_seconds": 600,
+    "billing_cores_each": 2,
+    "remaining_billing_core_hours": 0.3333333333333333
+   },
+   {
+    "job_or_array": "59380073",
+    "state": "PENDING",
+    "tasks": 1,
+    "remaining_seconds": 900,
+    "billing_cores_each": 2,
+    "remaining_billing_core_hours": 0.5
+   },
+   {
+    "job_or_array": "59380092",
+    "state": "PENDING",
+    "tasks": 1,
+    "remaining_seconds": 1800,
+    "billing_cores_each": 2,
+    "remaining_billing_core_hours": 1.0
+   },
+   {
+    "job_or_array": "59380077",
+    "state": "PENDING",
+    "tasks": 1,
+    "remaining_seconds": 1800,
+    "billing_cores_each": 2,
+    "remaining_billing_core_hours": 1.0
+   },
+   {
+    "job_or_array": "59380008",
+    "state": "PENDING",
+    "tasks": 1,
+    "remaining_seconds": 1800,
+    "billing_cores_each": 2,
+    "remaining_billing_core_hours": 1.0
+   },
+   {
+    "job_or_array": "59380018",
+    "state": "RUNNING",
+    "tasks": 1,
+    "remaining_seconds": 5596,
+    "billing_cores_each": 2,
+    "remaining_billing_core_hours": 3.108888888888889
+   }
+  ],
+  "limit": "Conservative active-resource estimate; saldo can lag usage and future jobs are not yet queue commitments. Preserve the separately recorded generation allowance and project headroom."
+ },
+ "required_billing_core_hours": 17984.0,
+ "status": "PASS_LIVE_ACCOUNT",
+ "scope": "Current native saldo and complete queued project commitments. Reported account consumption can lag; this snapshot is observed evidence, not cached capacity for a later submission.",
+ "sha256": "2d08f3dd7421fe6d4db926ae3a9f334a69c7421d1f0ff3e0673a8f6211118c95"
+}

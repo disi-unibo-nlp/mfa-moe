@@ -1,0 +1,27 @@
+{
+ "schema": "overnight-submit-receipt-v1",
+ "name": "fresh-generation-dispatch",
+ "binding": {
+  "files": {
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/submit_overnight_operational_recovery_v3.py": "664c2dc72e83f683601a2209576db5890ad8c2f1f9938d2a2a5f9585dc530c04",
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/dispatch_overnight_readers_v1.py": "0c142175df5db52fdf00a85d0e8dd46099209a76c5161994b4279332d6c84a10",
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/prepare_overnight_operator_stage_v3.sbatch": "07d43831b9b7470750fc271a07db448438d6263e6eb302c2151bb3354eb160b3",
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/dispatch_overnight_stage_v3.sbatch": "ac4c9384ccb7b9148c433bf7d0d91d73b3c609c852e100b85ffc5299cf154640"
+  },
+  "enrollment_sha256": "7190b1dc34f8cc6e9aeac337dc66f993cd91ce139972112333f076887d4cb5ee",
+  "completed_enrollment_job": "59344223",
+  "enrollment_sacct": "59344223|COMPLETED|0:0\n",
+  "scheduler_note": "Completed enrollment aged out of scheduler dependency cache; successful accounting and sealed artifact verified before submit.",
+  "qualification_adjudication_job": "59347826",
+  "preparation_job": "59348046"
+ },
+ "arguments": [
+  "--dependency=afterok:59348046",
+  "--job-name=st-overnight-FRESH-launch-v3",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/dispatch_overnight_stage_v3.sbatch"
+ ],
+ "job_id": "59348048",
+ "submission": "59348048",
+ "removed_parent_environment_keys": [],
+ "sha256": "a61d723dbba91d9fd02cfb22b9008c73c86096df7a5cd419cef639cc2b380fdb"
+}

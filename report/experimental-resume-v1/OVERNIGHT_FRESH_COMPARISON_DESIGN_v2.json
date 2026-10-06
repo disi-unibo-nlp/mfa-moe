@@ -1,0 +1,1058 @@
+{
+ "schema": "overnight-routing-design-v2",
+ "protocol_sha256": "2864678d94e44bb7d9d105ea8af780db36a4e9bdf6c60d458180f4f550f3c80f",
+ "dictionary_sha256": "144458193e294152f92703c854a11055fa49929cee0e85289d0cb4eb2ab0aef0",
+ "horizon": 1024,
+ "transitions": [
+  "candidate_to_verify",
+  "approach_to_commit"
+ ],
+ "source_enrollment_path": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/MECHANISM_EXTENSION_OVERNIGHT_ENROLLMENT_v1.json",
+ "source_frame_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/dense-mechanism-extension-220/MECHANISM_EXTENSION_START_FRAME_v1.json",
+ "actions": [
+  {
+   "name": "candidate_to_verify_bias",
+   "transition": "candidate_to_verify",
+   "experts": [
+    [
+     28,
+     [
+      9,
+      189
+     ]
+    ]
+   ],
+   "kind": "bias",
+   "sign": 1,
+   "magnitude": 1.0
+  },
+  {
+   "name": "candidate_to_verify_bias_random0",
+   "transition": "candidate_to_verify",
+   "experts": [
+    [
+     28,
+     [
+      120,
+      139
+     ]
+    ]
+   ],
+   "kind": "bias",
+   "sign": 1,
+   "magnitude": 1.0
+  },
+  {
+   "name": "candidate_to_verify_bias_random1",
+   "transition": "candidate_to_verify",
+   "experts": [
+    [
+     28,
+     [
+      133,
+      255
+     ]
+    ]
+   ],
+   "kind": "bias",
+   "sign": 1,
+   "magnitude": 1.0
+  },
+  {
+   "name": "candidate_to_verify_bias_random2",
+   "transition": "candidate_to_verify",
+   "experts": [
+    [
+     28,
+     [
+      5,
+      43
+     ]
+    ]
+   ],
+   "kind": "bias",
+   "sign": 1,
+   "magnitude": 1.0
+  },
+  {
+   "name": "candidate_to_verify_bias_random3",
+   "transition": "candidate_to_verify",
+   "experts": [
+    [
+     28,
+     [
+      24,
+      196
+     ]
+    ]
+   ],
+   "kind": "bias",
+   "sign": 1,
+   "magnitude": 1.0
+  },
+  {
+   "name": "candidate_to_verify_force",
+   "transition": "candidate_to_verify",
+   "experts": [
+    [
+     28,
+     [
+      9,
+      189
+     ]
+    ]
+   ],
+   "kind": "force",
+   "sign": 1,
+   "magnitude": 0.0
+  },
+  {
+   "name": "candidate_to_verify_force_random0",
+   "transition": "candidate_to_verify",
+   "experts": [
+    [
+     28,
+     [
+      120,
+      139
+     ]
+    ]
+   ],
+   "kind": "force",
+   "sign": 1,
+   "magnitude": 0.0
+  },
+  {
+   "name": "candidate_to_verify_force_random1",
+   "transition": "candidate_to_verify",
+   "experts": [
+    [
+     28,
+     [
+      133,
+      255
+     ]
+    ]
+   ],
+   "kind": "force",
+   "sign": 1,
+   "magnitude": 0.0
+  },
+  {
+   "name": "candidate_to_verify_force_random2",
+   "transition": "candidate_to_verify",
+   "experts": [
+    [
+     28,
+     [
+      5,
+      43
+     ]
+    ]
+   ],
+   "kind": "force",
+   "sign": 1,
+   "magnitude": 0.0
+  },
+  {
+   "name": "candidate_to_verify_force_random3",
+   "transition": "candidate_to_verify",
+   "experts": [
+    [
+     28,
+     [
+      24,
+      196
+     ]
+    ]
+   ],
+   "kind": "force",
+   "sign": 1,
+   "magnitude": 0.0
+  },
+  {
+   "name": "candidate_to_verify_reweight",
+   "transition": "candidate_to_verify",
+   "experts": [
+    [
+     28,
+     [
+      9,
+      189
+     ]
+    ]
+   ],
+   "kind": "reweight",
+   "sign": 1,
+   "magnitude": 1.0
+  },
+  {
+   "name": "candidate_to_verify_reweight_random0",
+   "transition": "candidate_to_verify",
+   "experts": [
+    [
+     28,
+     [
+      120,
+      139
+     ]
+    ]
+   ],
+   "kind": "reweight",
+   "sign": 1,
+   "magnitude": 1.0
+  },
+  {
+   "name": "candidate_to_verify_reweight_random1",
+   "transition": "candidate_to_verify",
+   "experts": [
+    [
+     28,
+     [
+      133,
+      255
+     ]
+    ]
+   ],
+   "kind": "reweight",
+   "sign": 1,
+   "magnitude": 1.0
+  },
+  {
+   "name": "candidate_to_verify_reweight_random2",
+   "transition": "candidate_to_verify",
+   "experts": [
+    [
+     28,
+     [
+      5,
+      43
+     ]
+    ]
+   ],
+   "kind": "reweight",
+   "sign": 1,
+   "magnitude": 1.0
+  },
+  {
+   "name": "candidate_to_verify_reweight_random3",
+   "transition": "candidate_to_verify",
+   "experts": [
+    [
+     28,
+     [
+      24,
+      196
+     ]
+    ]
+   ],
+   "kind": "reweight",
+   "sign": 1,
+   "magnitude": 1.0
+  },
+  {
+   "name": "candidate_to_verify_expert189",
+   "transition": "candidate_to_verify",
+   "experts": [
+    [
+     28,
+     [
+      189
+     ]
+    ]
+   ],
+   "kind": "bias",
+   "sign": 1,
+   "magnitude": 1.0
+  },
+  {
+   "name": "candidate_to_verify_expert189_random0",
+   "transition": "candidate_to_verify",
+   "experts": [
+    [
+     28,
+     [
+      139
+     ]
+    ]
+   ],
+   "kind": "bias",
+   "sign": 1,
+   "magnitude": 1.0
+  },
+  {
+   "name": "candidate_to_verify_expert189_random1",
+   "transition": "candidate_to_verify",
+   "experts": [
+    [
+     28,
+     [
+      255
+     ]
+    ]
+   ],
+   "kind": "bias",
+   "sign": 1,
+   "magnitude": 1.0
+  },
+  {
+   "name": "candidate_to_verify_expert189_random2",
+   "transition": "candidate_to_verify",
+   "experts": [
+    [
+     28,
+     [
+      43
+     ]
+    ]
+   ],
+   "kind": "bias",
+   "sign": 1,
+   "magnitude": 1.0
+  },
+  {
+   "name": "candidate_to_verify_expert189_random3",
+   "transition": "candidate_to_verify",
+   "experts": [
+    [
+     28,
+     [
+      196
+     ]
+    ]
+   ],
+   "kind": "bias",
+   "sign": 1,
+   "magnitude": 1.0
+  },
+  {
+   "name": "candidate_to_verify_expert9",
+   "transition": "candidate_to_verify",
+   "experts": [
+    [
+     28,
+     [
+      9
+     ]
+    ]
+   ],
+   "kind": "bias",
+   "sign": 1,
+   "magnitude": 1.0
+  },
+  {
+   "name": "candidate_to_verify_expert9_random0",
+   "transition": "candidate_to_verify",
+   "experts": [
+    [
+     28,
+     [
+      120
+     ]
+    ]
+   ],
+   "kind": "bias",
+   "sign": 1,
+   "magnitude": 1.0
+  },
+  {
+   "name": "candidate_to_verify_expert9_random1",
+   "transition": "candidate_to_verify",
+   "experts": [
+    [
+     28,
+     [
+      133
+     ]
+    ]
+   ],
+   "kind": "bias",
+   "sign": 1,
+   "magnitude": 1.0
+  },
+  {
+   "name": "candidate_to_verify_expert9_random2",
+   "transition": "candidate_to_verify",
+   "experts": [
+    [
+     28,
+     [
+      5
+     ]
+    ]
+   ],
+   "kind": "bias",
+   "sign": 1,
+   "magnitude": 1.0
+  },
+  {
+   "name": "candidate_to_verify_expert9_random3",
+   "transition": "candidate_to_verify",
+   "experts": [
+    [
+     28,
+     [
+      24
+     ]
+    ]
+   ],
+   "kind": "bias",
+   "sign": 1,
+   "magnitude": 1.0
+  },
+  {
+   "name": "approach_to_commit_bias",
+   "transition": "approach_to_commit",
+   "experts": [
+    [
+     24,
+     [
+      159
+     ]
+    ]
+   ],
+   "kind": "bias",
+   "sign": 1,
+   "magnitude": 1.0
+  },
+  {
+   "name": "approach_to_commit_bias_random0",
+   "transition": "approach_to_commit",
+   "experts": [
+    [
+     24,
+     [
+      109
+     ]
+    ]
+   ],
+   "kind": "bias",
+   "sign": 1,
+   "magnitude": 1.0
+  },
+  {
+   "name": "approach_to_commit_bias_random1",
+   "transition": "approach_to_commit",
+   "experts": [
+    [
+     24,
+     [
+      63
+     ]
+    ]
+   ],
+   "kind": "bias",
+   "sign": 1,
+   "magnitude": 1.0
+  },
+  {
+   "name": "approach_to_commit_bias_random2",
+   "transition": "approach_to_commit",
+   "experts": [
+    [
+     24,
+     [
+      40
+     ]
+    ]
+   ],
+   "kind": "bias",
+   "sign": 1,
+   "magnitude": 1.0
+  },
+  {
+   "name": "approach_to_commit_bias_random3",
+   "transition": "approach_to_commit",
+   "experts": [
+    [
+     24,
+     [
+      26
+     ]
+    ]
+   ],
+   "kind": "bias",
+   "sign": 1,
+   "magnitude": 1.0
+  },
+  {
+   "name": "approach_to_commit_force",
+   "transition": "approach_to_commit",
+   "experts": [
+    [
+     24,
+     [
+      159
+     ]
+    ]
+   ],
+   "kind": "force",
+   "sign": 1,
+   "magnitude": 0.0
+  },
+  {
+   "name": "approach_to_commit_force_random0",
+   "transition": "approach_to_commit",
+   "experts": [
+    [
+     24,
+     [
+      109
+     ]
+    ]
+   ],
+   "kind": "force",
+   "sign": 1,
+   "magnitude": 0.0
+  },
+  {
+   "name": "approach_to_commit_force_random1",
+   "transition": "approach_to_commit",
+   "experts": [
+    [
+     24,
+     [
+      63
+     ]
+    ]
+   ],
+   "kind": "force",
+   "sign": 1,
+   "magnitude": 0.0
+  },
+  {
+   "name": "approach_to_commit_force_random2",
+   "transition": "approach_to_commit",
+   "experts": [
+    [
+     24,
+     [
+      40
+     ]
+    ]
+   ],
+   "kind": "force",
+   "sign": 1,
+   "magnitude": 0.0
+  },
+  {
+   "name": "approach_to_commit_force_random3",
+   "transition": "approach_to_commit",
+   "experts": [
+    [
+     24,
+     [
+      26
+     ]
+    ]
+   ],
+   "kind": "force",
+   "sign": 1,
+   "magnitude": 0.0
+  },
+  {
+   "name": "approach_to_commit_reweight",
+   "transition": "approach_to_commit",
+   "experts": [
+    [
+     24,
+     [
+      159
+     ]
+    ]
+   ],
+   "kind": "reweight",
+   "sign": 1,
+   "magnitude": 1.0
+  },
+  {
+   "name": "approach_to_commit_reweight_random0",
+   "transition": "approach_to_commit",
+   "experts": [
+    [
+     24,
+     [
+      109
+     ]
+    ]
+   ],
+   "kind": "reweight",
+   "sign": 1,
+   "magnitude": 1.0
+  },
+  {
+   "name": "approach_to_commit_reweight_random1",
+   "transition": "approach_to_commit",
+   "experts": [
+    [
+     24,
+     [
+      63
+     ]
+    ]
+   ],
+   "kind": "reweight",
+   "sign": 1,
+   "magnitude": 1.0
+  },
+  {
+   "name": "approach_to_commit_reweight_random2",
+   "transition": "approach_to_commit",
+   "experts": [
+    [
+     24,
+     [
+      40
+     ]
+    ]
+   ],
+   "kind": "reweight",
+   "sign": 1,
+   "magnitude": 1.0
+  },
+  {
+   "name": "approach_to_commit_reweight_random3",
+   "transition": "approach_to_commit",
+   "experts": [
+    [
+     24,
+     [
+      26
+     ]
+    ]
+   ],
+   "kind": "reweight",
+   "sign": 1,
+   "magnitude": 1.0
+  }
+ ],
+ "arms_by_transition": {
+  "candidate_to_verify": [
+   {
+    "name": "native",
+    "role": "native",
+    "policies": {},
+    "slots": []
+   },
+   {
+    "name": "native_duplicate",
+    "role": "native",
+    "policies": {},
+    "slots": []
+   },
+   {
+    "name": "bias",
+    "role": "target",
+    "policies": {
+     "candidate_to_verify": [
+      "candidate_to_verify_bias"
+     ]
+    },
+    "slots": [
+     0
+    ]
+   },
+   {
+    "name": "random_bias",
+    "role": "random",
+    "policies": {
+     "candidate_to_verify": [
+      "candidate_to_verify_bias_random{random_set}"
+     ]
+    },
+    "slots": [
+     0
+    ]
+   },
+   {
+    "name": "repeat",
+    "role": "target",
+    "policies": {
+     "candidate_to_verify": [
+      "candidate_to_verify_bias",
+      "candidate_to_verify_bias"
+     ]
+    },
+    "slots": [
+     0,
+     512
+    ]
+   },
+   {
+    "name": "random_repeat",
+    "role": "random",
+    "policies": {
+     "candidate_to_verify": [
+      "candidate_to_verify_bias_random{random_set}",
+      "candidate_to_verify_bias_random{random_set}"
+     ]
+    },
+    "slots": [
+     0,
+     512
+    ]
+   },
+   {
+    "name": "force",
+    "role": "target",
+    "policies": {
+     "candidate_to_verify": [
+      "candidate_to_verify_force"
+     ]
+    },
+    "slots": [
+     0
+    ]
+   },
+   {
+    "name": "random_force",
+    "role": "random",
+    "policies": {
+     "candidate_to_verify": [
+      "candidate_to_verify_force_random{random_set}"
+     ]
+    },
+    "slots": [
+     0
+    ]
+   },
+   {
+    "name": "reweight",
+    "role": "target",
+    "policies": {
+     "candidate_to_verify": [
+      "candidate_to_verify_reweight"
+     ]
+    },
+    "slots": [
+     0
+    ]
+   },
+   {
+    "name": "random_reweight",
+    "role": "random",
+    "policies": {
+     "candidate_to_verify": [
+      "candidate_to_verify_reweight_random{random_set}"
+     ]
+    },
+    "slots": [
+     0
+    ]
+   },
+   {
+    "name": "expert189",
+    "role": "target",
+    "policies": {
+     "candidate_to_verify": [
+      "candidate_to_verify_expert189"
+     ]
+    },
+    "slots": [
+     0
+    ]
+   },
+   {
+    "name": "random_expert189",
+    "role": "random",
+    "policies": {
+     "candidate_to_verify": [
+      "candidate_to_verify_expert189_random{random_set}"
+     ]
+    },
+    "slots": [
+     0
+    ]
+   },
+   {
+    "name": "expert9",
+    "role": "target",
+    "policies": {
+     "candidate_to_verify": [
+      "candidate_to_verify_expert9"
+     ]
+    },
+    "slots": [
+     0
+    ]
+   },
+   {
+    "name": "random_expert9",
+    "role": "random",
+    "policies": {
+     "candidate_to_verify": [
+      "candidate_to_verify_expert9_random{random_set}"
+     ]
+    },
+    "slots": [
+     0
+    ]
+   }
+  ],
+  "approach_to_commit": [
+   {
+    "name": "native",
+    "role": "native",
+    "policies": {},
+    "slots": []
+   },
+   {
+    "name": "native_duplicate",
+    "role": "native",
+    "policies": {},
+    "slots": []
+   },
+   {
+    "name": "bias",
+    "role": "target",
+    "policies": {
+     "approach_to_commit": [
+      "approach_to_commit_bias"
+     ]
+    },
+    "slots": [
+     0
+    ]
+   },
+   {
+    "name": "random_bias",
+    "role": "random",
+    "policies": {
+     "approach_to_commit": [
+      "approach_to_commit_bias_random{random_set}"
+     ]
+    },
+    "slots": [
+     0
+    ]
+   },
+   {
+    "name": "repeat",
+    "role": "target",
+    "policies": {
+     "approach_to_commit": [
+      "approach_to_commit_bias",
+      "approach_to_commit_bias"
+     ]
+    },
+    "slots": [
+     0,
+     512
+    ]
+   },
+   {
+    "name": "random_repeat",
+    "role": "random",
+    "policies": {
+     "approach_to_commit": [
+      "approach_to_commit_bias_random{random_set}",
+      "approach_to_commit_bias_random{random_set}"
+     ]
+    },
+    "slots": [
+     0,
+     512
+    ]
+   },
+   {
+    "name": "force",
+    "role": "target",
+    "policies": {
+     "approach_to_commit": [
+      "approach_to_commit_force"
+     ]
+    },
+    "slots": [
+     0
+    ]
+   },
+   {
+    "name": "random_force",
+    "role": "random",
+    "policies": {
+     "approach_to_commit": [
+      "approach_to_commit_force_random{random_set}"
+     ]
+    },
+    "slots": [
+     0
+    ]
+   },
+   {
+    "name": "reweight",
+    "role": "target",
+    "policies": {
+     "approach_to_commit": [
+      "approach_to_commit_reweight"
+     ]
+    },
+    "slots": [
+     0
+    ]
+   },
+   {
+    "name": "random_reweight",
+    "role": "random",
+    "policies": {
+     "approach_to_commit": [
+      "approach_to_commit_reweight_random{random_set}"
+     ]
+    },
+    "slots": [
+     0
+    ]
+   }
+  ]
+ },
+ "planned_contrasts": [
+  {
+   "transition": "candidate_to_verify",
+   "a": "bias",
+   "b": "native"
+  },
+  {
+   "transition": "candidate_to_verify",
+   "a": "bias",
+   "b": "random_bias"
+  },
+  {
+   "transition": "candidate_to_verify",
+   "a": "force",
+   "b": "native"
+  },
+  {
+   "transition": "candidate_to_verify",
+   "a": "force",
+   "b": "random_force"
+  },
+  {
+   "transition": "candidate_to_verify",
+   "a": "reweight",
+   "b": "native"
+  },
+  {
+   "transition": "candidate_to_verify",
+   "a": "reweight",
+   "b": "random_reweight"
+  },
+  {
+   "transition": "candidate_to_verify",
+   "a": "force",
+   "b": "bias"
+  },
+  {
+   "transition": "candidate_to_verify",
+   "a": "reweight",
+   "b": "bias"
+  },
+  {
+   "transition": "candidate_to_verify",
+   "a": "repeat",
+   "b": "native"
+  },
+  {
+   "transition": "candidate_to_verify",
+   "a": "repeat",
+   "b": "random_repeat"
+  },
+  {
+   "transition": "candidate_to_verify",
+   "a": "repeat",
+   "b": "bias"
+  },
+  {
+   "transition": "candidate_to_verify",
+   "a": "expert189",
+   "b": "native"
+  },
+  {
+   "transition": "candidate_to_verify",
+   "a": "expert189",
+   "b": "random_expert189"
+  },
+  {
+   "transition": "candidate_to_verify",
+   "a": "expert9",
+   "b": "native"
+  },
+  {
+   "transition": "candidate_to_verify",
+   "a": "expert9",
+   "b": "random_expert9"
+  },
+  {
+   "transition": "candidate_to_verify",
+   "a": "bias",
+   "b": "expert189"
+  },
+  {
+   "transition": "candidate_to_verify",
+   "a": "bias",
+   "b": "expert9"
+  },
+  {
+   "transition": "approach_to_commit",
+   "a": "bias",
+   "b": "native"
+  },
+  {
+   "transition": "approach_to_commit",
+   "a": "bias",
+   "b": "random_bias"
+  },
+  {
+   "transition": "approach_to_commit",
+   "a": "force",
+   "b": "native"
+  },
+  {
+   "transition": "approach_to_commit",
+   "a": "force",
+   "b": "random_force"
+  },
+  {
+   "transition": "approach_to_commit",
+   "a": "reweight",
+   "b": "native"
+  },
+  {
+   "transition": "approach_to_commit",
+   "a": "reweight",
+   "b": "random_reweight"
+  },
+  {
+   "transition": "approach_to_commit",
+   "a": "force",
+   "b": "bias"
+  },
+  {
+   "transition": "approach_to_commit",
+   "a": "reweight",
+   "b": "bias"
+  },
+  {
+   "transition": "approach_to_commit",
+   "a": "repeat",
+   "b": "native"
+  },
+  {
+   "transition": "approach_to_commit",
+   "a": "repeat",
+   "b": "random_repeat"
+  },
+  {
+   "transition": "approach_to_commit",
+   "a": "repeat",
+   "b": "bias"
+  }
+ ],
+ "analysis_scopes": [
+  "all",
+  "candidate_to_verify",
+  "approach_to_commit"
+ ],
+ "analysis_seed": 20261004,
+ "bootstrap_replicates": 50000,
+ "claim_limit": "All three approaches compared prospectively; no winner selection from13-family screens. No accuracy or token-utility claim.",
+ "sha256": "c9a8633048dfab3971a35d8c0b58c583ff7d18779a4dbde47c70a1f14f435386"
+}

@@ -1,0 +1,17 @@
+{
+ "schema": "overnight-submit-receipt-v1",
+ "name": "format-adjudication",
+ "binding": {
+  "plan_sha256": "6b2fe84a01e8170046acaff3f359ef1cc81ab076edd0045f0a69efa8a97f248f",
+  "wrapper_sha256": "e44191156d3cf6e098945cd7c0350e4898039c5ffd2280ad622aae2f43ae587a",
+  "shared_submit_sha256": "0c142175df5db52fdf00a85d0e8dd46099209a76c5161994b4279332d6c84a10"
+ },
+ "arguments": [
+  "--job-name=extension-veto-format-v1",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/adjudicate_extension_veto_format_v1.sbatch"
+ ],
+ "job_id": "59348469",
+ "submission": "59348469",
+ "removed_parent_environment_keys": [],
+ "sha256": "81aadff6a96f4e206e40d486a69bbecd1a750d3c06245cb0e952e5dd3a1f899b"
+}

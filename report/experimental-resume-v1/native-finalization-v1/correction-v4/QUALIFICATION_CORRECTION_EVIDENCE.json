@@ -1,0 +1,84 @@
+{
+ "schema": "native-finalization-qualification-evidence-v4",
+ "parent_engineering_replay_sha256": "3fc21b7968a7c4857a39049fea83176747291012ae9a037d3c59e5a254236193",
+ "agreement": {
+  "ids_match_returned_routes": true,
+  "rank_ids_agree": true,
+  "rank_weights_agree": true,
+  "statistical_observations": 1,
+  "ranks_are_not_independent_observations": true
+ },
+ "checks": {
+  "status": "PASS_TOKEN_REPLAY_AND_SAME_EXECUTION_ROUTING",
+  "cross_run_expert_ID_equality_required": false,
+  "reason": "Native repeated executions showed different expert selections with identical token outputs; per-execution IDs and weights must still be captured faithfully on both ranks."
+ },
+ "native_repeat": {
+  "tokens_equal": true,
+  "token_lengths": [
+   64,
+   64
+  ],
+  "first_token_difference": null,
+  "routes_equal": false,
+  "route_sets_equal": false,
+  "route_shapes": [
+   [
+    64,
+    40,
+    8
+   ],
+   [
+    64,
+    40,
+    8
+   ]
+  ],
+  "first_route_difference": {
+   "position": [
+    0,
+    13,
+    1
+   ],
+   "left": 47,
+   "right": 134
+  },
+  "routes_status": "CAPTURED_NATIVE",
+  "differing_expert_slots": 2829
+ },
+ "instrumented_repeat": {
+  "tokens_equal": true,
+  "token_lengths": [
+   64,
+   64
+  ],
+  "first_token_difference": null,
+  "routes_equal": false,
+  "route_sets_equal": false,
+  "route_shapes": [
+   [
+    64,
+    40,
+    8
+   ],
+   [
+    64,
+    40,
+    8
+   ]
+  ],
+  "first_route_difference": {
+   "position": [
+    0,
+    6,
+    2
+   ],
+   "left": 60,
+   "right": 65
+  },
+  "routes_status": "CAPTURED_NATIVE",
+  "differing_expert_slots": 3455
+ },
+ "excluded_from_outcomes": true,
+ "sha256": "e4a505337471e78026f59e9798bfc7d95fc1ba6ff7a8e49290d5b165a4a66a53"
+}

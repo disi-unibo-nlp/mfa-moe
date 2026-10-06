@@ -1,0 +1,14 @@
+{
+ "schema": "utility-native-attachment-chain-v3",
+ "native_operations_sha256": "8a3000cc60dfef0bb5872cc7615ceabc919a5bf67f2ffc43f02daf4c1732a946",
+ "config_sha256": "a5a6d77abd5ec32e2ee7cd01462da1dfc75919478dd91c7956e8207a3fbcd4b6",
+ "pilot_attachment": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/utility-price-pilot-attachments-v5-ce86e4bcaa9c5c4a-59379614",
+ "after_pilot_job": "59386634",
+ "selector_predecessor": {
+  "accounting": "59380092|PENDING|0:0\n",
+  "active_predecessor": "59380092"
+ },
+ "live_preflight_sha256": "d757f6c3d88532a44f065dff383d0a7206a4cc98ca2df1810a41809fa3963194",
+ "initial_readiness_path": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/utility-production-root-submissions-v3-a5a6d77abd5ec32e/INITIAL_READY.json",
+ "sha256": "337d8667f0b4bbdb6c048de4882b01223a15f168ba67f2d5bd647fd6ce9cb62b"
+}

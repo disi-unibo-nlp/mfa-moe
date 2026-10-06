@@ -1,0 +1,31 @@
+{
+ "schema": "overnight-submit-receipt-v1",
+ "job_id": "59430380",
+ "name": "health-start",
+ "attempt_sha256": "e5c6168e513d55b32b2ea7bf28ac6ea3f36713bc4aff1c50385a9b276713f7b1",
+ "binding": {
+  "schema": "native-finalization-health-submission-attempt-v1",
+  "watched_job_id": "59430300",
+  "manifest_sha256": "b5f8f361cbe7ddffbdfa1ced12c4a3fba52a73fe958a52b73caaeb367eb0e008",
+  "budget_sha256": "0dcb8147af5d895b8eef4312deff562899bf3c66dad9561731701190e31d2348",
+  "dependency": "after:59430300",
+  "cpu_envelope": {
+   "partition": "lrd_all_viz",
+   "qos": "normal",
+   "cpus": 2,
+   "memory_GiB": 32,
+   "wall_seconds": 60
+  },
+  "sources": {
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/record_native_finalization_start_v2.py": "8ecccc65738fe0e8b357f5f227d1c6e7966a2dab4b4219e6ebd0c9b6fde94c48",
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/native_finalization_start_signal_v1.py": "b1036930ec96e702c23d2c4d61dfd7014e099b09df2bdefdc9228277c48373c8",
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/native_finalization_start_signal_v1.sbatch": "ba1fb797c14bd9c6590f65c36a40df06890bf0277b29b1ea75b743bfc3f703df"
+  },
+  "export": "NIL",
+  "scope": "User-requested one-shot health notification only; no scientific output or additional GPU allocation.",
+  "sha256": "e5c6168e513d55b32b2ea7bf28ac6ea3f36713bc4aff1c50385a9b276713f7b1"
+ },
+ "verified_scontrol": "JobId=59430380 JobName=native-finalization-start-signal UserId=lmolfett(133943) GroupId=interactive(25200) MCS_label=N/A Priority=136402 Nice=0 Account=iscrc_miosr QOS=normal JobState=PENDING Reason=None Dependency=(null) Requeue=0 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0 RunTime=00:00:00 TimeLimit=00:01:00 TimeMin=N/A SubmitTime=2026-10-05T19:59:29 EligibleTime=2026-10-05T19:59:29 AccrueTime=2026-10-05T19:59:29 StartTime=Unknown EndTime=Unknown Deadline=N/A SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-10-05T19:59:29 Scheduler=Main Partition=lrd_all_viz AllocNode:Sid=login05-interconnect-1:3839113 ReqNodeList=(null) ExcNodeList=(null) NodeList= NumNodes=1-1 NumCPUs=2 NumTasks=1 CPUs/Task=2 ReqB:S:C:T=0:0:*:* ReqTRES=cpu=2,mem=32G,node=1,billing=2,gres/tmpfs=10737418240 AllocTRES=(null) Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=* MinCPUsNode=2 MinMemoryNode=32G MinTmpDiskNode=0 Features=(null) DelayBoot=00:00:00 OverSubscribe=OK Contiguous=0 Licenses=(null) LicensesAlloc=(null) Network=(null) Command=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/native_finalization_start_signal_v1.sbatch WorkDir=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo StdErr=/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/logs/native-finalization-start-signal-59430380.err StdIn=/dev/null StdOut=/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/logs/native-finalization-start-signal-59430380.out TresPerNode=gres/tmpfs:10g TresPerTask=cpu=2 \n",
+ "no_new_GPU_allocation": true,
+ "sha256": "cd1cea4fd9f7057ac6df759e8382c8898e3080539e3ab9a4df49e7c7b35f629f"
+}

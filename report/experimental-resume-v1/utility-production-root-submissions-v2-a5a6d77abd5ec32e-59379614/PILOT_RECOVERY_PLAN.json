@@ -1,0 +1,31 @@
+{
+ "schema": "utility-pilot-operational-recovery-v5",
+ "proposal_path": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/UTILITY_RUNTIME_PILOT_PROPOSAL_v4.json",
+ "proposal_sha256": "ce86e4bcaa9c5c4a12f9c9456f118662dccdb57ed355f952cabc9617a83152fa",
+ "manifest_sha256": "6b5aa286e46cb818969c939346f448a6577b307779041ec2d35d7fce0562f074",
+ "measurement_source_dir": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/overnight-submissions-v2-6b5aa286e46cb818",
+ "attachment_dir": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/utility-price-pilot-attachments-v5-ce86e4bcaa9c5c4a-59379614",
+ "prior_generation_attachment_path": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/utility-price-pilot-attachments-v4-ce86e4bcaa9c5c4a/GENERATION_ATTACHMENT.json",
+ "prior_generation_attachment_sha256": "55b6a51e6060871ee801c8dd847b6ab565cd3e12bba4988873697564d5a4eda0",
+ "fresh_generation_dispatch_job": "59349585",
+ "reader_recovery_chain_path": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/overnight-fresh-frame-recovery-submissions-v1/RECOVERY_CHAIN.json",
+ "reader_recovery_chain_sha256": "906ecee1007c941324ccc6c0b94e673167f01203ae65dec6ce5f5c3f4a2a6f7b",
+ "reader_dispatch_key": "reader_dispatch_job",
+ "reader_dispatch_job": "59379614",
+ "reader_amendment_path": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/OVERNIGHT_FRESH_FRAME_RECOVERY_AMENDMENT_v1.json",
+ "reader_amendment_sha256": "ae2dc509e2951056e315322a6c9f887bfae07b74c82a9aac4dd7f63b40e3bada",
+ "guarded_selector_path": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/select_utility_policy_fresh_adapter_v1.py",
+ "guarded_selector_sha256": "11e7aefabb5dc56b3286550ea57a276aea296a27ec4c40cf9d1bf9b169ae38ac",
+ "operational_code_files": {
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/submit_utility_completion_chain_v2.py": "d9bb9cf6189d753aa52f018b0dd419f39c049b5ea2e0c3bea7549f39043fcb1d",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/dispatch_utility_production_v2.py": "e595072c60cb0afe79f43b3159947e520b1d28dd0d1be3a2b3e664120461e069",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/dispatch_utility_production_v2.sbatch": "714fc13e4348b84ec8cc762e567f4e5408768469ae326677655b33a4887325c0",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/attach_utility_price_pilot_v5.py": "501701f4d1573bfc2c84d32baf7bd98812212e27fef30ebcdf8c1cfbeefb46d9",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/attach_utility_price_pilot_v5.sbatch": "ad8750b6373e0c6adecc27ba9cb67b72fc27b813a7fb275d1afb32b55619fbcd",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/run_utility_price_pilot_v5.sbatch": "223e1b8ed3c4ae3df23ebc4b532c01212a23de9b3388bd0b3e97afa2a021b8d4",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/fresh_frame_recovery_v1.py": "19dceced9aca5320540960bbf1987e8f1e57605cb1549a19e00a1e4d7985549f",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/select_utility_policy_fresh_adapter_v1.py": "11e7aefabb5dc56b3286550ea57a276aea296a27ec4c40cf9d1bf9b169ae38ac"
+ },
+ "scope": "Only exact fresh-reader predecessor and separate attachment/entry paths change; v4 proposal, deterministic selection, qualification, first two families and eight canonical assignments remain frozen.",
+ "sha256": "383f1a2d5c7d18e09be5a364a5fb285f9a19ab242ad508ae91d48a487b0154b6"
+}

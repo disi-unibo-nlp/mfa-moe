@@ -1,0 +1,17 @@
+{
+ "schema": "overnight-submit-attempt-v1",
+ "name": "pilot-1",
+ "binding": {
+  "operations_sha256": "b61bc98be974f5848da96c8c0bdcfd6faa0466dd696ba14f82a006438599f71e",
+  "pilot_index": 1
+ },
+ "arguments": [
+  "--dependency=afterok:59400756",
+  "--job-name=operator-panel-pilot-1",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/run_operator_panel_v1.sbatch"
+ ],
+ "time_ns": 1791202113857540236,
+ "dispatcher_job_id": null,
+ "removed_parent_environment_keys": [],
+ "sha256": "35679631a44c51b99082b2ef51c9395efe47742ce2ee8834fc3e2f94686a94f5"
+}

@@ -1,0 +1,11 @@
+{
+ "schema": "routing-study-native-finalization-addendum-v1",
+ "directory": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/native-finalization-v1",
+ "manifest_sha256": "d043f3f887beb7e18457ea8ae9130481f029b823873581c6f1a56128ee27be73",
+ "initial_checkpoint_sha256": "9fd7fb06f25a6d554c413d1d1be4bc4321beada3c4ab587309ff892113fcacf1",
+ "prior_study_index": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/native-finalization-v1/STUDY_INDEX-59417845.json",
+ "saved_review_table": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/native-finalization-v1/saved-review.csv",
+ "readout": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/native-finalization-v1/README.md",
+ "status": "GENERATION_SUBMITTED; refer to subsequent immutable checkpoints and study indices",
+ "sha256": "07b228249ee5f9211d09b0e3d44ea06e6b21e9f3da8dab2157107363df43e1cb"
+}

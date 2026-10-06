@@ -1,0 +1,20 @@
+{
+ "schema": "overnight-submit-receipt-v1",
+ "name": "after-pilot",
+ "binding": {
+  "native_operations_sha256": "8a3000cc60dfef0bb5872cc7615ceabc919a5bf67f2ffc43f02daf4c1732a946",
+  "config_sha256": "a5a6d77abd5ec32e2ee7cd01462da1dfc75919478dd91c7956e8207a3fbcd4b6",
+  "pilot_attachment": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/utility-price-pilot-attachments-v5-ce86e4bcaa9c5c4a-59379614",
+  "pilot_analysis_attachment_sha256": "a81a4977f8dd6d56f9fab31c5fa2379f0d31219e083ada209310a23ed37068b3"
+ },
+ "arguments": [
+  "--dependency=afterok:59380092",
+  "--time=00:05:00",
+  "--job-name=utility-native-after-pilot-v3",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/utility_native_cpu_v3.sbatch"
+ ],
+ "job_id": "59386634",
+ "submission": "59386634",
+ "removed_parent_environment_keys": [],
+ "sha256": "373867595a531d9c8e52a65d82a2cb89266b7e85f3de8893bf80545e2a08e1f3"
+}

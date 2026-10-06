@@ -1,0 +1,21 @@
+{
+ "schema": "overnight-submit-attempt-v1",
+ "name": "attachment",
+ "binding": {
+  "plan_sha256": "18134429066bc9f83ab86a184a84166caca940d552c0be31dfffd6e76d7216b7",
+  "wrapper_sha256": "757f70895fffb9bd9a4984f1e911492dc20eebfb12749e7277efce424e87a3e5",
+  "fresh_generation_dispatch_job": "59349585",
+  "shared_submit_sha256": "0c142175df5db52fdf00a85d0e8dd46099209a76c5161994b4279332d6c84a10"
+ },
+ "arguments": [
+  "--dependency=afterok:59349585",
+  "--job-name=fresh-veto-sensitivity-attach-v2",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/submit_fresh_veto_sensitivity_v2.sbatch",
+  "--phase",
+  "generation"
+ ],
+ "time_ns": 1791151321214316794,
+ "dispatcher_job_id": null,
+ "removed_parent_environment_keys": [],
+ "sha256": "7821e532d134c70a69bab284fe7192407d5280b64b6eef68a7803b2f58e0bc08"
+}

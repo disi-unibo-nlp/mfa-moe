@@ -1,0 +1,26 @@
+{
+ "schema": "overnight-submit-attempt-v1",
+ "name": "fresh-engagement-attach",
+ "binding": {
+  "amendment_sha256": "1d6f34dde5f7a7406d3aede0b35e5a7d5285dad93688821586724fa006dee32d",
+  "enrollment_sha256": "7190b1dc34f8cc6e9aeac337dc66f993cd91ce139972112333f076887d4cb5ee",
+  "enrollment_job": "59344223",
+  "enrollment_sacct": "59344223|COMPLETED|0:0\n",
+  "submit_code_sha256": "c25f0f1774de9b45e04b595558e0c6b11a42a06e6644b0a32fd70e7853410b4f",
+  "shared_submit_sha256": "0c142175df5db52fdf00a85d0e8dd46099209a76c5161994b4279332d6c84a10",
+  "stage": "FRESH",
+  "generation_dispatch_job": "59349585",
+  "wrapper_sha256": "add959578a5df2beec57546df8e2166250e97a981c407f6ef4eb1c02b776ec57"
+ },
+ "arguments": [
+  "--dependency=afterok:59349585",
+  "--job-name=st-engagement-FRESH-attach-v4",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/submit_routing_first_stage_v2.sbatch",
+  "--stage",
+  "FRESH"
+ ],
+ "time_ns": 1791151149917260466,
+ "dispatcher_job_id": null,
+ "removed_parent_environment_keys": [],
+ "sha256": "48c9d62312ad98a8243ac6f0420d1d6efab30cacc67dc6419e7121bca1fdfad5"
+}

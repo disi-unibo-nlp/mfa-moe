@@ -1,0 +1,21 @@
+{
+ "schema": "overnight-submit-receipt-v1",
+ "name": "production-follow",
+ "binding": {
+  "config_sha256": "a5a6d77abd5ec32e2ee7cd01462da1dfc75919478dd91c7956e8207a3fbcd4b6",
+  "pilot_proposal_sha256": "ce86e4bcaa9c5c4a12f9c9456f118662dccdb57ed355f952cabc9617a83152fa",
+  "grading_plan_sha256": "de108d8736ea5969d2e03260c2e4bb1a18064d59dfc0ee4cb0588d8e3d6e0313",
+  "grading_envelope_sha256": "05f658caa209e2331c838658a883bcfceef5e6861d4c2cb5bbdedc4319e6ba77",
+  "submission_source_sha256": "c2315fc4ac976cf988a73d378ad777864520494f0aa19f0e8c3f25385c89988a",
+  "production_chain_dir": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/utility-production-submissions-v1-a5a6d77abd5ec32e",
+  "pilot_attachment_dir": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/utility-price-pilot-attachments-v4-ce86e4bcaa9c5c4a"
+ },
+ "arguments": [
+  "--job-name=utility-production-follow-v1",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/dispatch_utility_production_v1.sbatch"
+ ],
+ "job_id": "59351999",
+ "submission": "59351999",
+ "removed_parent_environment_keys": [],
+ "sha256": "76cea20b0293ef69cb5e55744d5d9773f342d63371bf53f017dce7e2921f78a3"
+}

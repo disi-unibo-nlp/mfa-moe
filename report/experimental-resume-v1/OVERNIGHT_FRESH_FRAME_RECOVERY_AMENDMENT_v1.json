@@ -1,0 +1,103 @@
+{
+ "schema": "overnight-fresh-frame-recovery-amendment-v1",
+ "status": "FROZEN_ADDITIVE_OPERATIONAL_SCHEMA_RECOVERY",
+ "reason": "59351434 failed before frame publication because extension reader records omit top-level family, attempt_id, sentence_index and prefix_tokens; canonical identities are in sealed selection and prefix length is in analysis_meta.",
+ "manifest_sha256": "6b5aa286e46cb818969c939346f448a6577b307779041ec2d35d7fce0562f074",
+ "source_frame_sha256": "6a8b55ff69995bb7337bb97a52f6f9e6b056bb9b2de75bb64830be1e20ffc2d7",
+ "source_enrollment_sha256": "7190b1dc34f8cc6e9aeac337dc66f993cd91ce139972112333f076887d4cb5ee",
+ "measurement_freeze_sha256": "3490ffbc0023943eeb0733db982016c07e7b2a90671b464fbc2eb086fbdda11d",
+ "frozen_code_files": {
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/overnight_routing_runner_v2.py": "22817ec3f3dd5b834b8bea98d73557477b4b5b2ba3ac9be5fe827cc569ad102c",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/overnight_routing_worker_v2.py": "c575f44da829970690f14d32eba7b66c7ed9253baab22f458404b9254389d666",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/overnight_routing_runner_v1.py": "28993c11e6f1222627825c4df9cb52e9ca18fb401e403367555b687c596c30f7",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/run_boundary_micro_screen.py": "fff0503d01e0ee16ac608af998ca704f1d0cce17adfe9026c8d96967a6a6b97b",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/overnight_routing_qualify_v2.py": "66274f5b5b38dbce2bfbfe9c3b907e22fa7be560d184e5a2dd7e00a28aaec546",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/overnight_routing_entry_v1.py": "c7397112f398040b4a92d825d80f6e2414172f8fb40ac48c26c0e87f27bfaf0a",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/diagnose_mechanism_validation_v3.py": "c90534682b4a9ac7a1ef5608785c4e8f2962ed8ccbe450a842ab4524dd398c5b",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/overnight_routing_run_v2.sbatch": "3ce251bb44ffc57df550833cd438af5b261bfdc725410b09fe557759b757f0c9",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/overnight_routing_adjudicated_v4.py": "4df91ba621670231af3a0c28921befe044abf2588b714ad1b0b398fd2e67078b",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/overnight_routing_dose_audit_v3.py": "25954a18784403d7600c4a16f78366871759675f5043bf8d71b1baae2da3bf87",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/adjudicate_overnight_operator_qualification_v3.py": "e410281c9da726a5d6a13f9a61fe48461a4e421d0f98016d99f169a319c41572",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/combine_overnight_operator_qualification_v4.py": "7be7d55e1221e0260d12d0cc52fdd46b96c10ab668ec48a45ebb360b6e13043f",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/combine_overnight_operator_qualification_v4.sbatch": "b170501f7dee90d3173a1c73e3e258241fb78264deb697f08b20f2918e9aa730",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/overnight_routing_pulse_supplement_v4.py": "76ef056ca9f618e6fe29cc41f56af1bec87800840e739a65851aac3f76984f81",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/overnight_routing_pulse_entry_v4.py": "65c6f3ff641046948cfc0050c56f2f0c0cc2655ab5b3a8903cda9dcbba8a7087",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/overnight_routing_pulse_supplement_v4.sbatch": "ac551c14aa72bd824c0a6d76fa6032206c33f8e0c513e02f3b4f31621ae329cd",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/overnight_routing_entry_v4.py": "8950716df66b7b9c7d322e4523cbf36923cf6840d5c0922ab85fb044bc3f7c00",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/overnight_routing_run_v4.sbatch": "fa05cc64c60c5fa2dbae2d58f1cad20df6752aba7f43c4b31eb5779ded0c971c",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/prepare_overnight_operator_stage_v4.py": "54c98561fc81cc6ac46e16d71a6a35bad5a0dd45fe1830f6ba3edabc1c3fa1f5",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/prepare_overnight_operator_stage_v4.sbatch": "a299f63bed32a13f63a079b10278087c5e308326b026f456b3bb2893b0fd3b8f",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/dispatch_overnight_stage_v4.py": "3cad9c79938bba0843d7a990f705331d8a2740453258d0233d3dcd3941021441",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/dispatch_overnight_stage_v4.sbatch": "80728bd412902c2852c5d15fd6d3b9f0737ad80efc97779c7eb309ee84f88ebd",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/build_price_overnight_semantics_v4.sbatch": "554681f0d89cf7753f5025a554150d8b42030a471b405649220eadebc7e4e39d",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/rate_overnight_semantics_v2.sbatch": "b0cde95fed15cc193b34d74ee3c81fe64ace59eb0252dc438adb2fb19e47d81c",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/analyze_overnight_semantics_v2.sbatch": "084caff2c8cc0745795c9236904bcefcd1043da9484b2fb26dda898352f323c0",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/build_overnight_blind_frame_v2.py": "890195c3afb4880d7c8d61404357b39a8714bfb8da822641b60e0855dfcd7646",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/price_overnight_semantics_v2.py": "f76bbe1dbd165206c4606471f93f3ac0b3353819f08d1f3802438d82df00193c",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/rate_overnight_semantics_v2.py": "44dccecd8e1e315a256d49e278efa4e87086c5b27be3fd0d9bf06c2445bfecd4",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/analyze_overnight_semantics_v2.py": "900a814038de6bf284902e480e9f5979ee58d7a23988b9ea272a786e785e12c5",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/build_price_overnight_semantics_v2.sbatch": "44b2e5bef07537baa5b1fc6830aae7ebbe07e61cb0d9cceb42c714f3c8195c80",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/OVERNIGHT_SEMANTIC_RUBRIC_2026-10-04_v2.md": "9930b5b7029ad206a4989cb11325fb910d679a896946351b632afa847bc3d1d7",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/tests/experimental_resume/test_overnight_semantics_v2.py": "fc4681074ce605c92354a6127cff686068565f9a6ac5b3e72e8291055554abd1"
+ },
+ "frozen_artifacts": {
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/OVERNIGHT_FRESH_COMPARISON_MANIFEST_v2.json": "6b5aa286e46cb818969c939346f448a6577b307779041ec2d35d7fce0562f074",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/OVERNIGHT_FRESH_COMPARISON_PRICE_v2.json": "3fd70bb258ef2563f655d41336814dd0cde1baec4e97ad66e5da90797eb7986a",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/OVERNIGHT_FRESH_COMPARISON_ENVELOPE_v2.json": "79fb5210b6065bce2e865183d44e173dc787b15862cd7276fddd1481185e2889",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/OVERNIGHT_MEASUREMENT_PIPELINE_v2.json": "3490ffbc0023943eeb0733db982016c07e7b2a90671b464fbc2eb086fbdda11d",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/dense-mechanism-extension-220/MECHANISM_EXTENSION_START_FRAME_v1.json": "6a8b55ff69995bb7337bb97a52f6f9e6b056bb9b2de75bb64830be1e20ffc2d7",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/MECHANISM_EXTENSION_OVERNIGHT_ENROLLMENT_v1.json": "7190b1dc34f8cc6e9aeac337dc66f993cd91ce139972112333f076887d4cb5ee",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/MECHANISM_EXTENSION_START_SELECTION_v1.json": "23758cee43febfc61a941024e2141554d3aef86bb91601e224b4ab61f48c00f6",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/dense-mechanism-extension-220/MECHANISM_EXTENSION_UNITS_v1.json": "2270d9e9bbe6934a2ab0497e50bb93617e555171d38d3f2dd7f89fa070359579",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/overnight-submissions-v2-6b5aa286e46cb818/GENERATION_CHAIN.json": "10e6a1579a359b7acac1298354e7d20ecc39137c2cdd3845002332b8f4a37f97"
+ },
+ "operational_code_files": {
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/fresh_frame_recovery_v1.py": "19dceced9aca5320540960bbf1987e8f1e57605cb1549a19e00a1e4d7985549f",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/build_overnight_blind_frame_fresh_adapter_v1.py": "4c1aaea00014fdf8f12164c2f1a9ce070edccf70ca8aea83ffd3becc534f2f76",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/analyze_overnight_semantics_fresh_adapter_v1.py": "b313a3afec4ad676007c645ac5ee0e5f62cd3b68b89d729b68e294a226dcc819",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/select_utility_policy_fresh_adapter_v1.py": "11e7aefabb5dc56b3286550ea57a276aea296a27ec4c40cf9d1bf9b169ae38ac",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/dispatch_fresh_frame_recovery_v1.py": "709e017efc77e9aa51d947079c12fe074c467a4d32eb6f21d8231659936ef0a8",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/submit_fresh_frame_recovery_v1.py": "4fa371282075bd8e36f985e190f1c9f3f93f4c82cb45f710d819771f809f5ff4",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/build_price_overnight_semantics_fresh_adapter_v1.sbatch": "f1ca3c423d550398a335735c66fe9b7f291c66e11db0e40e5b2ce2bb052028bc",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/analyze_overnight_semantics_fresh_adapter_v1.sbatch": "d5825e980298ee3d1aec1c08a367f4975fd0b03a668cf4724e5ba45a80450886",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/rate_overnight_semantics_fresh_adapter_v1.sbatch": "8132087b6104e10321455fd7ddacf516769ee225ae625211cbf8405290bb609b",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/dispatch_fresh_frame_recovery_v1.sbatch": "9d4d146613871776a613b2d3090fa9b43fac82e628f2629515dca922674fb6c8"
+ },
+ "preserved_jobs": {
+  "generation": "59351429",
+  "failed_frame_price": "59351434",
+  "cancelled_reader_dispatch": "59351437"
+ },
+ "reader_gpu_hour_ceiling": 191.06,
+ "paths": {
+  "generation": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/overnight-routing-v2-6b5aa286e46cb818",
+  "measurement": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/overnight-semantic-v2-6b5aa286e46cb818",
+  "ratings": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/overnight-readers-v2-6b5aa286e46cb818",
+  "analysis": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/OVERNIGHT_FRESH_COMPARISON_ANALYSIS_v2",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/overnight-submissions-v2-6b5aa286e46cb818",
+  "recovery_submissions": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/overnight-fresh-frame-recovery-submissions-v1"
+ },
+ "scientific_functions": {
+  "builder": "build_overnight_blind_frame_v2.py",
+  "reader": "rate_overnight_semantics_v2.py",
+  "analysis": "analyze_overnight_semantics_v2.py",
+  "utility_selector": "select_utility_policy_v2.py"
+ },
+ "normalization_rule": "Exact selection UID and canonical identity; all enrolled manifest rows equal sealed enrollment; prompt/prefix tokens and hashes, unit trace digest, selected tokenizer, trigger text/offset and problem all agree. Derived contexts carry a separate seal; the original source is never edited.",
+ "resource_shape": {
+  "frame_price_cpu": "lrd_all_viz/normal, 1 task, 2 CPUs,16G,1 hour",
+  "reader_dispatch_cpu": "lrd_all_viz/normal,1 CPU,2G,5 minutes",
+  "analysis_cpu": "lrd_all_viz/normal,2 CPUs,8G,30 minutes",
+  "readers": "unchanged complete exact v2 price,2 GPUs/16 CPUs/120G,2 hours per shard;191.06 GPU-hour envelope"
+ },
+ "guarded_consumers": [
+  "reader dispatch",
+  "reader wrapper before model load",
+  "analysis wrapper before unchanged v2 statistics",
+  "utility selector before unchanged v2 ranking"
+ ],
+ "scientific_design_changed": false,
+ "generation_repeated": false,
+ "submissions_by_preparing_agent": [],
+ "sha256": "ae2dc509e2951056e315322a6c9f887bfae07b74c82a9aac4dd7f63b40e3bada"
+}

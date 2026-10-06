@@ -1,0 +1,64 @@
+{
+ "schema": "native-finalization-live-budget-v3",
+ "snapshot_sha256": "3f4ad0d8cbd8bb2a7539c0be8d8bdca58db702b84d4558756fb80c124c59a2ab",
+ "queue": "59400764                                                                                            |PENDING|8:00:00|8:00:00|32|gres/gpu:4|1\n59400762                                                                                            |PENDING|8:00:00|8:00:00|32|gres/gpu:4|1\n59405556                                                                                            |PENDING|8:00:00|8:00:00|32|gres/gpu:4|1\n59405561                                                                                            |PENDING|5:00|5:00|1|gres/tmpfs:10g|1\n59405635                                                                                            |PENDING|1:00:00|1:00:00|2|gres/tmpfs:10g|1\n59400766                                                                                            |PENDING|1:00:00|1:00:00|2|gres/tmpfs:10g|1\n",
+ "budget": {
+  "reported_remaining_billing_core_hours": 46650.0,
+  "active_remaining_commitment_billing_core_hours": 772.0833333333334,
+  "uncommitted_reported_billing_core_hours": 45877.916666666664,
+  "commitments": [
+   {
+    "job_or_array": "59400764",
+    "state": "PENDING",
+    "tasks": 1,
+    "remaining_seconds": 28800,
+    "billing_cores_each": 32,
+    "remaining_billing_core_hours": 256.0
+   },
+   {
+    "job_or_array": "59400762",
+    "state": "PENDING",
+    "tasks": 1,
+    "remaining_seconds": 28800,
+    "billing_cores_each": 32,
+    "remaining_billing_core_hours": 256.0
+   },
+   {
+    "job_or_array": "59405556",
+    "state": "PENDING",
+    "tasks": 1,
+    "remaining_seconds": 28800,
+    "billing_cores_each": 32,
+    "remaining_billing_core_hours": 256.0
+   },
+   {
+    "job_or_array": "59405561",
+    "state": "PENDING",
+    "tasks": 1,
+    "remaining_seconds": 300,
+    "billing_cores_each": 1,
+    "remaining_billing_core_hours": 0.08333333333333333
+   },
+   {
+    "job_or_array": "59405635",
+    "state": "PENDING",
+    "tasks": 1,
+    "remaining_seconds": 3600,
+    "billing_cores_each": 2,
+    "remaining_billing_core_hours": 2.0
+   },
+   {
+    "job_or_array": "59400766",
+    "state": "PENDING",
+    "tasks": 1,
+    "remaining_seconds": 3600,
+    "billing_cores_each": 2,
+    "remaining_billing_core_hours": 2.0
+   }
+  ],
+  "limit": "Conservative active-resource estimate; saldo can lag usage and future jobs are not yet queue commitments. Preserve the separately recorded generation allowance and project headroom."
+ },
+ "required_immediate_billing_core_hours": 130.0,
+ "scope": "Immediate authorized allocations only; no new quota subdivision or future campaign forecast.",
+ "sha256": "4c6e69c8d2924a76fa4c1a415f53b4e4a7beb3e4715a4518376e2a0bee3a7d5f"
+}

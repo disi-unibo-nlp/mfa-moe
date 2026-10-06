@@ -1,0 +1,32 @@
+{
+ "schema": "resume-paper-operational-amendment-v2.1",
+ "status": "PRICING_MEASUREMENT_CAVEAT_NO_SCIENTIFIC_EFFECT",
+ "base_snapshot_v2_sha256": "fb711ca8c6dfc5b462f53e0969306cff3dbcd31f8efc5124b56deb32eff50ac1",
+ "base_claim_ledger_v2_file_sha256": "66d74adde54cea28ff9a67fdc56b43b87a57d29ce8280e51ddd5ba40248ed7d3",
+ "source_file_sha256": {
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/PAPER_SNAPSHOT_v2.json": "66570224f1b5837893e4fbb7fb503bf87233b212bca15411c599e3e2888ebefa",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/CAUSAL_ELIGIBLE_DEACTIVATION_BLIND_RATING_PRICE_v3.json": "dc0d19b7bd3ef9c5d65a68a6b33b82174a8cec822a34076732ed008003f77ba6",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/CAUSAL_READER_OUTPUT_LENGTH_AUDIT_v1.json": "e605c1895483b97b9afea67bd52ad72b8e74650a2a2ea66a62c919b160916b5c",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/rate_eligible_immediate_semantics_v1.py": "39ef97cfb4eb88c48a2fd42594730db6304d5a3af9149fb1a8147421020fd4c4"
+ },
+ "generator_model": "Qwen3.6",
+ "independent_reader_model": "Qwen3.8",
+ "prior_reader_pilot": {
+  "assigned_ratings": 104,
+  "valid_stopped_ratings": 97,
+  "valid_stopped_over_256_output_tokens": 44,
+  "length_stops_at_1024_output_tokens": 3,
+  "length_audit_sha256": "6d6bb55bfc96f6ee50525903e46dfb2158b86c4f53a0bb111c9e6d60ae287d09",
+  "population_limit": "prior micro-screen reader batches, not new eligible deactivation continuations"
+ },
+ "eligible_rating_resource_gate": {
+  "preliminary_v3_price_sha256": "049a8bc508949a7098c733db4bd487635a07beacd5acc9edfe786453ac3d745b",
+  "preliminary_v3_max_output_tokens_per_rating": 256,
+  "corrected_driver_max_output_tokens_per_rating": 1024,
+  "preliminary_v3_envelope_applicable_to_corrected_driver": false,
+  "required_before_rating_submission": "post-generation exact blind-frame price at 1024 output tokens per rating; bind driver, prompts, completed generation manifest, loads and retry overhead",
+  "rating_execution": "NO_ELIGIBLE_RATING_JOB_LAUNCHED_AT_THIS_AMENDMENT"
+ },
+ "scientific_interpretation": "Output-tail counts and a corrected resource gate are measurement/cost evidence only. They are not a causal semantic-control estimate.",
+ "sha256": "ad4e1df74930e875e552046fbbcf06cf45bfb64699f682b06c13a237cd4697e5"
+}

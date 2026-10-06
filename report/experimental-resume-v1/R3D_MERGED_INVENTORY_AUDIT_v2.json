@@ -1,0 +1,44 @@
+{
+ "schema": "r3d-merged-inventory-audit-v2",
+ "status": "PASS",
+ "job_id": "59207811",
+ "canonical_stopped_job_id": "59111360",
+ "held_continuation_job_id": "59115320",
+ "frozen_specification_sha256": "62f1038003b18b09816635ada31d68136856477df335cbd54665942d159baa92",
+ "fit_counts": {
+  "gpt": {
+   "next": 150,
+   "next-contained": 150,
+   "switch": 150,
+   "switch-contained": 150,
+   "dest": 150,
+   "dest-contained": 150
+  },
+  "qwen36": {
+   "next": 75,
+   "next-contained": 75,
+   "switch": 150,
+   "switch-contained": 150,
+   "dest": 150,
+   "dest-contained": 150
+  }
+ },
+ "fit_total": 1650,
+ "sidecar_fit_total": 1050,
+ "merge_receipts": {
+  "qwen": {
+   "source": "6750308869333875b13250b4d23abcf61283bccf7bafc89b13966d714d212226",
+   "merge": "37cf73686ec789af77874340b18faff51d2bc78b1eef3d6f8ccd3c32a099743e",
+   "copied": 750,
+   "retained": 0
+  },
+  "gpt-dest": {
+   "source": "918ae0100429020abc5564a7fbce3aadfe380912ccf35fd62d654608e00d2eba",
+   "merge": "69cfb28d813aae4a34ee18b136205a66a47228c07ccd313a81c7c75a8b251b0a",
+   "copied": 256,
+   "retained": 44
+  }
+ },
+ "fit_hash_manifest_sha256": "6611a95a4d912095109b961825ba931f33215fbe8201d9b1b8703722510115a0",
+ "sha256": "7b1aac7c3d73d7c373857413ab653eeaf3a42d228359f26c52d695c5a9c881d3"
+}

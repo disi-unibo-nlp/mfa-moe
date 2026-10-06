@@ -1,0 +1,35 @@
+[
+  {
+    "id": "native-discovery:gate-velocity-per-64-token-step",
+    "population": "48 frozen, family-disjoint Qwen3.6 native discovery traces; 12,274 full 64-reasoning-token windows",
+    "intervention": "none; observational native routing",
+    "estimate": 0.41598759015223674,
+    "uncertainty": [0.4039430215443195, 0.427287128006515],
+    "multiplicity_family": "three descriptive native-motion scalars; Bonferroni percentile family bootstrap, 5,000 replicates",
+    "status": "DESCRIPTIVE_NO_CAUSAL_CONTROL_CLAIM",
+    "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/dense-discovery/fixed-window-routes-84a85c92-363dbe1b/MOTION_UNCERTAINTY.json",
+    "interpretation": "TV change in selected-gate distribution between consecutive full windows, averaged across layers then equally across frozen families. The approximate interval describes discovery-family heterogeneity, not a representative population or semantic control."
+  },
+  {
+    "id": "native-discovery:gate-acceleration-second-difference",
+    "population": "48 frozen, family-disjoint Qwen3.6 native discovery traces; complete triples of 64-reasoning-token windows",
+    "intervention": "none; observational native routing",
+    "estimate": 0.7158813918564583,
+    "uncertainty": [0.6958780255140509, 0.735477512542418],
+    "multiplicity_family": "three descriptive native-motion scalars; Bonferroni percentile family bootstrap, 5,000 replicates",
+    "status": "DESCRIPTIVE_NO_CAUSAL_CONTROL_CLAIM",
+    "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/dense-discovery/fixed-window-routes-84a85c92-363dbe1b/MOTION_UNCERTAINTY.json",
+    "interpretation": "L1/2 magnitude of the second difference of consecutive gate-distribution windows, averaged across layers then equally across frozen families. It is not an optimal acceleration pattern."
+  },
+  {
+    "id": "native-discovery:frequent-expert-turnover",
+    "population": "48 frozen, family-disjoint Qwen3.6 native discovery traces; complete pairs of 64-reasoning-token windows",
+    "intervention": "none; observational native routing",
+    "estimate": 0.544310148458941,
+    "uncertainty": [0.5256474462936115, 0.5633436106032051],
+    "multiplicity_family": "three descriptive native-motion scalars; Bonferroni percentile family bootstrap, 5,000 replicates",
+    "status": "DESCRIPTIVE_NO_CAUSAL_CONTROL_CLAIM",
+    "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/dense-discovery/fixed-window-routes-84a85c92-363dbe1b/MOTION_UNCERTAINTY.json",
+    "interpretation": "One minus top-eight expert-set overlap divided by eight between complete windows, averaged across layers then equally across frozen families. Exposure and turnover do not establish useful reasoning control."
+  }
+]

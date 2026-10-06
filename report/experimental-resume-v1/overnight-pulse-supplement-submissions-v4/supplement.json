@@ -1,0 +1,19 @@
+{
+ "schema": "overnight-submit-receipt-v1",
+ "name": "supplement",
+ "binding": {
+  "manifest_sha256": "90bc646d66eb2dcc0af6490b60f28a14bf94186feee6f4e02414078b7d2002be",
+  "wrapper_sha256": "ac551c14aa72bd824c0a6d76fa6032206c33f8e0c513e02f3b4f31621ae329cd",
+  "shared_submit_sha256": "0c142175df5db52fdf00a85d0e8dd46099209a76c5161994b4279332d6c84a10",
+  "original_qualification_job": "59344841",
+  "preserved_adjudication_sha256": "3f91261bdd55098a69a3f743ffa8739faceed290fed30fd6c11963ff7d451b9b"
+ },
+ "arguments": [
+  "--job-name=st-operator-pulse-supplement-v4",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/overnight_routing_pulse_supplement_v4.sbatch"
+ ],
+ "job_id": "59348871",
+ "submission": "59348871",
+ "removed_parent_environment_keys": [],
+ "sha256": "b173eeabae7c920832734ed475f76bd67d6f7bfb64b5e22c4965f6c4adaebf3a"
+}

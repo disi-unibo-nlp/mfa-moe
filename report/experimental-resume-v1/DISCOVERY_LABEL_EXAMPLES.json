@@ -1,0 +1,575 @@
+{
+ "schema": "discovery-label-examples-v1",
+ "job_id": "59111670",
+ "family_freeze_sha256": "592a71b1fa2223a29168ee29afae73de406b3a4d4408d38b69080bee152143f6",
+ "discovery_questions": 48,
+ "class_counts": {
+  "Implement": 980,
+  "Verify": 428,
+  "Plan": 161,
+  "Explore": 404
+ },
+ "examples": [
+  {
+   "question": "olympiad|olympiad_1854",
+   "label": "Explore",
+   "sentence_index": 4277,
+   "sentence": "So 1 vertex $\\to$ 2 edges $\\to$ 4 squares?",
+   "previous_sentence": "Each edge covers 2 squares."
+  },
+  {
+   "question": "olympiad|olympiad_1675",
+   "label": "Explore",
+   "sentence_index": 997,
+   "sentence": "Maybe there is a direct inequality relating $S_1$ and $x_i$.",
+   "previous_sentence": "But we are constrained by the \"corner triangles\" areas."
+  },
+  {
+   "question": "olympiad|olympiad_3079",
+   "label": "Explore",
+   "sentence_index": 467,
+   "sentence": "If squares $1, 4, 9, 16, 25, \\dots$ are all present, then for any $n$, the max square $<n$ is $(\\lfloor \\sqrt{n-1} \\rfloor)^2$.",
+   "previous_sentence": "No, $a_n$ is determined by $n - \\max(\\text{squares} < n)$."
+  },
+  {
+   "question": "olympiad|olympiad_3037",
+   "label": "Explore",
+   "sentence_index": 409,
+   "sentence": "$|k-2| = n/2$?",
+   "previous_sentence": "Or distance is $n/2$?"
+  },
+  {
+   "question": "minerva|minerva_76",
+   "label": "Explore",
+   "sentence_index": 882,
+   "sentence": "Maybe it's a variable from a previous part?",
+   "previous_sentence": "But \"P3\" is very specific."
+  },
+  {
+   "question": "olympiad|olympiad_2914",
+   "label": "Explore",
+   "sentence_index": 1238,
+   "sentence": "For $x < 0.232$ (closer to Q), $y_{PQ} < y_{DR}$?",
+   "previous_sentence": "Point $(0.232, 0.598)$ is on boundary."
+  },
+  {
+   "question": "olympiad|olympiad_1675",
+   "label": "Explore",
+   "sentence_index": 2160,
+   "sentence": "But if $S_1$ is large, ratio small.",
+   "previous_sentence": "Ratio $S/S_1 \\le 0.5/0.5 = 1$?"
+  },
+  {
+   "question": "olympiad|olympiad_2839",
+   "label": "Explore",
+   "sentence_index": 630,
+   "sentence": "Is there any interpretation where \"Leo\" is determined by the *year*?",
+   "previous_sentence": "I will stick with 9/17."
+  },
+  {
+   "question": "olympiad|olympiad_1675",
+   "label": "Explore",
+   "sentence_index": 884,
+   "sentence": "Maybe $x_A, x_B$ are larger than $x_C, x_D$?",
+   "previous_sentence": "Let's consider the case where areas are not equal."
+  },
+  {
+   "question": "olympiad|olympiad_1845",
+   "label": "Explore",
+   "sentence_index": 3574,
+   "sentence": "So $a$ is likely around $0.45$.",
+   "previous_sentence": "But it seems ratio stays above $0.45$."
+  },
+  {
+   "question": "olympiad|olympiad_2914",
+   "label": "Explore",
+   "sentence_index": 373,
+   "sentence": "Is $P$ inside $T_{BCQ}$?",
+   "previous_sentence": "Let's check a vertex of $PQRS$, say $P(0.5, \\sqrt{3}/2)$."
+  },
+  {
+   "question": "olympiad|olympiad_1845",
+   "label": "Explore",
+   "sentence_index": 3050,
+   "sentence": "Maybe limit is $1/3$?",
+   "previous_sentence": "Actually, looking at $n=1 \\to 1/2$, $n=2 \\to 0.48$, $n=3 \\to 0.47$."
+  },
+  {
+   "question": "olympiad|olympiad_2914",
+   "label": "Explore",
+   "sentence_index": 2043,
+   "sentence": "Is it \"corner\" or \"middle\"?",
+   "previous_sentence": "Wait, $D, P, Q$ forms a triangle."
+  },
+  {
+   "question": "olympiad|olympiad_1845",
+   "label": "Explore",
+   "sentence_index": 808,
+   "sentence": "Maybe $a_n = \\frac{1}{2 + 1/n}$?",
+   "previous_sentence": "No, $c_1=1/2, c_2=0.48$."
+  },
+  {
+   "question": "olympiad|olympiad_1845",
+   "label": "Explore",
+   "sentence_index": 2302,
+   "sentence": "$x_k = (1.5)^k - 1$?",
+   "previous_sentence": "Try $r=1.5$."
+  },
+  {
+   "question": "aime25|aime25_7",
+   "label": "Explore",
+   "sentence_index": 1109,
+   "sentence": "$3i+k$ is on line $Re(z)=k$?",
+   "previous_sentence": "Since $k$ is real, $4+k$ is on real axis."
+  },
+  {
+   "question": "olympiad|olympiad_1854",
+   "label": "Explore",
+   "sentence_index": 556,
+   "sentence": "Mark row 3 $\\implies$ row 3 cells must match vertically?",
+   "previous_sentence": "So dominoes $D_{1,j} = \\{(1,j), (2,j)\\}$ are forced."
+  },
+  {
+   "question": "olympiad|olympiad_1854",
+   "label": "Explore",
+   "sentence_index": 1189,
+   "sentence": "Consider $M = \\{ (r, c) \\mid c \\text{ is odd} \\}$ - Full columns.",
+   "previous_sentence": "Cost $2n^2$."
+  },
+  {
+   "question": "aime24|aime24_65",
+   "label": "Explore",
+   "sentence_index": 969,
+   "sentence": "Could $m$ be 1?",
+   "previous_sentence": "\"positive integers\"."
+  },
+  {
+   "question": "olympiad|olympiad_2839",
+   "label": "Explore",
+   "sentence_index": 377,
+   "sentence": "Say $d=20$.",
+   "previous_sentence": "What if $d$ was different?"
+  },
+  {
+   "question": "olympiad|olympiad_1854",
+   "label": "Verify",
+   "sentence_index": 4429,
+   "sentence": "We doubted 4.",
+   "previous_sentence": "For $n=2$, 4."
+  },
+  {
+   "question": "olympiad|olympiad_1854",
+   "label": "Verify",
+   "sentence_index": 1938,
+   "sentence": "But we achieved $k=2$ for $n=1$ without $U$ being independent.",
+   "previous_sentence": "So $k=2n^2$."
+  },
+  {
+   "question": "olympiad|olympiad_1845",
+   "label": "Verify",
+   "sentence_index": 1484,
+   "sentence": "Yes.",
+   "previous_sentence": "Is $d_2=5, d_1=1$ allowed?"
+  },
+  {
+   "question": "amc23|amc23_32",
+   "label": "Verify",
+   "sentence_index": 3903,
+   "sentence": "*   Is 29 definitely the largest?",
+   "previous_sentence": "*   We found 29 is unrepresentable."
+  },
+  {
+   "question": "olympiad|olympiad_2203",
+   "label": "Verify",
+   "sentence_index": 700,
+   "sentence": "$ab+bc+ca = 1+0+0=1$.",
+   "previous_sentence": "$c^2a+b = 0+1=1$."
+  },
+  {
+   "question": "olympiad|olympiad_1854",
+   "label": "Verify",
+   "sentence_index": 3758,
+   "sentence": "$C_2$ as $0,1,0,1...$ has no 00.",
+   "previous_sentence": "In terms of column vector, no 00 vertically."
+  },
+  {
+   "question": "olympiad|olympiad_3079",
+   "label": "Verify",
+   "sentence_index": 587,
+   "sentence": "So yes, 9 is the correct pivot.",
+   "previous_sentence": "Even though $a_8=4 \\implies 16$ is in the set."
+  },
+  {
+   "question": "olympiad|olympiad_1675",
+   "label": "Verify",
+   "sentence_index": 2721,
+   "sentence": "So $k$ cannot be smaller than $0.5$.",
+   "previous_sentence": "Inequality $k(0.5) \\ge 0.25 \\implies k \\ge 0.5$."
+  },
+  {
+   "question": "olympiad|olympiad_2489",
+   "label": "Verify",
+   "sentence_index": 1270,
+   "sentence": "Any other even length seqs?",
+   "previous_sentence": "-> (1,2,3,4,5)."
+  },
+  {
+   "question": "amc23|amc23_32",
+   "label": "Verify",
+   "sentence_index": 3959,
+   "sentence": "13 not rep.",
+   "previous_sentence": "*   $23 = 10 + 13$."
+  },
+  {
+   "question": "amc23|amc23_32",
+   "label": "Verify",
+   "sentence_index": 3998,
+   "sentence": "*   Unrep.",
+   "previous_sentence": "*   Double check 17."
+  },
+  {
+   "question": "olympiad|olympiad_1854",
+   "label": "Verify",
+   "sentence_index": 1805,
+   "sentence": "So this tiling is valid.",
+   "previous_sentence": "But horizontal edges in row 3, 4 are allowed."
+  },
+  {
+   "question": "olympiad|olympiad_2506",
+   "label": "Verify",
+   "sentence_index": 422,
+   "sentence": "Everything aligns.",
+   "previous_sentence": "Result $7/5$."
+  },
+  {
+   "question": "minerva|minerva_76",
+   "label": "Verify",
+   "sentence_index": 693,
+   "sentence": "Assuming $P_3$ is a typo for $C_3$, I will use standard notation $C_3$.\"",
+   "previous_sentence": "\"Note: The prompt denotes constants as $C_1, C_2, P_3, C_4$."
+  },
+  {
+   "question": "olympiad|olympiad_2792",
+   "label": "Verify",
+   "sentence_index": 1292,
+   "sentence": "So $3, 2, 1$ impossible.",
+   "previous_sentence": "Contradiction $729 < n < 256$."
+  },
+  {
+   "question": "olympiad|olympiad_3079",
+   "label": "Verify",
+   "sentence_index": 1461,
+   "sentence": "$1 \\times 1 = 1$?",
+   "previous_sentence": "Let's re-verify the product sums."
+  },
+  {
+   "question": "math500|math500_test/algebra/2570.json",
+   "label": "Verify",
+   "sentence_index": 85,
+   "sentence": "Let's quickly verify using Python mental simulation or alternative sum method:",
+   "previous_sentence": "*(Self-Correction/Verification during drafting)*:"
+  },
+  {
+   "question": "olympiad|olympiad_3037",
+   "label": "Verify",
+   "sentence_index": 690,
+   "sentence": "Double check \"integer $k < n$\".",
+   "previous_sentence": "$n = 40$."
+  },
+  {
+   "question": "math500|math500_test/prealgebra/1865.json",
+   "label": "Verify",
+   "sentence_index": 207,
+   "sentence": "$11.6$ is extremely close to $11.61$.",
+   "previous_sentence": "Actually $1.35 \\times 8.6 = 11.61$."
+  },
+  {
+   "question": "math500|math500_test/prealgebra/153.json",
+   "label": "Verify",
+   "sentence_index": 47,
+   "sentence": "*   Is the fraction simplified?",
+   "previous_sentence": "*   Both methods yield $\\frac{5}{9}$."
+  },
+  {
+   "question": "olympiad|olympiad_3082",
+   "label": "Plan",
+   "sentence_index": 475,
+   "sentence": "Now find $C$.",
+   "previous_sentence": "Correct."
+  },
+  {
+   "question": "olympiad|olympiad_2799",
+   "label": "Plan",
+   "sentence_index": 215,
+   "sentence": "3. Write expression for increased count.",
+   "previous_sentence": "2. Write expression for original count."
+  },
+  {
+   "question": "olympiad|olympiad_2839",
+   "label": "Plan",
+   "sentence_index": 889,
+   "sentence": "We want probability of Slot 2 being Leo.",
+   "previous_sentence": "If Slot 2 is not Leo -> Zero Leos."
+  },
+  {
+   "question": "olympiad|olympiad_1845",
+   "label": "Plan",
+   "sentence_index": 586,
+   "sentence": "Let's calculate $A(r)$ for $n=3$.",
+   "previous_sentence": "Ratio $A(r) = \\frac{\\sum_{k=1}^n \\frac{1}{d_k}}{\\sum_{k=1}^n \\frac{k+1}{x_k}} = \\frac{\\sum r^{-(k-1)}}{\\sum \\frac{k+1}{(r^k-1)/(r-1)}} = (r-1) \\frac{\\sum r^{-(k-1)}}{\\sum \\frac{k+1}{r^k-1}}$."
+  },
+  {
+   "question": "math500|math500_test/prealgebra/1865.json",
+   "label": "Plan",
+   "sentence_index": 430,
+   "sentence": "- Translate problem to mathematical inequality/comparison.",
+   "previous_sentence": "Summary of response:"
+  },
+  {
+   "question": "olympiad|olympiad_2841",
+   "label": "Plan",
+   "sentence_index": 257,
+   "sentence": "2.  Rewrite equations in general quadratic form $Ax^2 + Bx + C = 0$.",
+   "previous_sentence": "1.  Substitute $T=20$ into the given equations."
+  },
+  {
+   "question": "olympiad|olympiad_1675",
+   "label": "Plan",
+   "sentence_index": 989,
+   "sentence": "Maximize $(y_1+y_2)/(1-P)$.",
+   "previous_sentence": "Let $P = \\sum y_i$."
+  },
+  {
+   "question": "minerva|minerva_76",
+   "label": "Plan",
+   "sentence_index": 79,
+   "sentence": "I will provide the solution with $C_1, C_2, C_3, C_4$.",
+   "previous_sentence": "Yes."
+  },
+  {
+   "question": "amc23|amc23_28",
+   "label": "Plan",
+   "sentence_index": 199,
+   "sentence": "2. Calculate $z \\otimes z$ using the definition.",
+   "previous_sentence": "1. Define $z = a+bi$ with $a,b \\in \\mathbb{R}$."
+  },
+  {
+   "question": "aime25|aime25_7",
+   "label": "Plan",
+   "sentence_index": 1066,
+   "sentence": "6. Calculate sum.",
+   "previous_sentence": "$k_1 = 23/8$, $k_2 = 123/8$."
+  },
+  {
+   "question": "olympiad|olympiad_1675",
+   "label": "Plan",
+   "sentence_index": 1400,
+   "sentence": "Substitute $z$:",
+   "previous_sentence": "From Eq 4: $2y = r_4(1-r_3) = (1-\\frac{2z}{r_1})(1-r_3) = 1 - r_3 - \\frac{2z(1-r_3)}{r_1}$."
+  },
+  {
+   "question": "olympiad|olympiad_3082",
+   "label": "Plan",
+   "sentence_index": 440,
+   "sentence": "Place $A$ at origin $(0,0)$.",
+   "previous_sentence": "Actually, simpler:"
+  },
+  {
+   "question": "olympiad|olympiad_1845",
+   "label": "Plan",
+   "sentence_index": 638,
+   "sentence": "We want to minimize $Q(r)$ over $r > 1$.",
+   "previous_sentence": "Okay, so the formula is correct."
+  },
+  {
+   "question": "olympiad|olympiad_2735",
+   "label": "Plan",
+   "sentence_index": 694,
+   "sentence": "Start with 2:",
+   "previous_sentence": "Numbers:"
+  },
+  {
+   "question": "olympiad|olympiad_2799",
+   "label": "Plan",
+   "sentence_index": 216,
+   "sentence": "4. Create equation.",
+   "previous_sentence": "3. Write expression for increased count."
+  },
+  {
+   "question": "aime24|aime24_65",
+   "label": "Plan",
+   "sentence_index": 613,
+   "sentence": "Cross product $\\vec{AB} \\times \\vec{AC}$.",
+   "previous_sentence": "Vector $AC = (-L, 0, -H)$."
+  },
+  {
+   "question": "math500|math500_test/prealgebra/1251.json",
+   "label": "Plan",
+   "sentence_index": 144,
+   "sentence": "7. Solve for $n$.",
+   "previous_sentence": "6. Substitute $A$: $0^\\circ < (n-2) \\cdot 180^\\circ - 1070^\\circ < 180^\\circ$."
+  },
+  {
+   "question": "olympiad|olympiad_3037",
+   "label": "Plan",
+   "sentence_index": 137,
+   "sentence": "Now consider $A_2 A_k$ and $A_{k+1} A_1$.",
+   "previous_sentence": "So $A_1 A_2$ is parallel to $A_k A_{k+1}$."
+  },
+  {
+   "question": "olympiad|olympiad_1845",
+   "label": "Plan",
+   "sentence_index": 788,
+   "sentence": "Try to set derivative to 0.",
+   "previous_sentence": "Maybe $x=1/4$ is not exact."
+  },
+  {
+   "question": "olympiad|olympiad_2839",
+   "label": "Plan",
+   "sentence_index": 428,
+   "sentence": "Days after 14:",
+   "previous_sentence": "July: 31 days."
+  },
+  {
+   "question": "olympiad|olympiad_2126",
+   "label": "Implement",
+   "sentence_index": 634,
+   "sentence": "30030 / 2 = 15015.",
+   "previous_sentence": "Wait."
+  },
+  {
+   "question": "olympiad|olympiad_3079",
+   "label": "Implement",
+   "sentence_index": 107,
+   "sentence": "$a_1..a_5$ give $11-a_k^2$: $10, 10, 7, 2, 10$.",
+   "previous_sentence": "$n=11$:"
+  },
+  {
+   "question": "olympiad|olympiad_2203",
+   "label": "Implement",
+   "sentence_index": 51,
+   "sentence": "$a-c = ab(a+b+c) - b$.",
+   "previous_sentence": "$a-c = b(a^2 - (1 - ab - ca)) = b(a^2 - 1 + ab + ca) = b(a^2 + ab + ac - 1)$"
+  },
+  {
+   "question": "olympiad|olympiad_2727",
+   "label": "Implement",
+   "sentence_index": 8,
+   "sentence": "*   $P_1$: $y = x^2 + 8x$",
+   "previous_sentence": "3.  **Substitute $T$:**"
+  },
+  {
+   "question": "olympiad|olympiad_3082",
+   "label": "Implement",
+   "sentence_index": 926,
+   "sentence": "$s \\cdot \\frac{1}{2}s = \\frac{1}{2}s^2$",
+   "previous_sentence": "$0 \\cdot 0 = 0$"
+  },
+  {
+   "question": "olympiad|olympiad_2777",
+   "label": "Implement",
+   "sentence_index": 12,
+   "sentence": "- $T - 3 = 43 - 3 = 40$",
+   "previous_sentence": "- $T = 43$"
+  },
+  {
+   "question": "olympiad|olympiad_1675",
+   "label": "Implement",
+   "sentence_index": 524,
+   "sentence": "So $r_1(1-r_4) = 2x$.",
+   "previous_sentence": "Recall $x = \\frac{1}{2} r_1(1-r_4)$."
+  },
+  {
+   "question": "amc23|amc23_32",
+   "label": "Implement",
+   "sentence_index": 2955,
+   "sentence": "Value 5405.",
+   "previous_sentence": "*   $a=536, b=3 \\to 2144+9 = 2153 \\equiv 5$."
+  },
+  {
+   "question": "olympiad|olympiad_3082",
+   "label": "Implement",
+   "sentence_index": 683,
+   "sentence": "Turn left by ext angle $180-150=30$.",
+   "previous_sentence": "Direction $120+180 = 300$ (or -60)."
+  },
+  {
+   "question": "olympiad|olympiad_1845",
+   "label": "Implement",
+   "sentence_index": 139,
+   "sentence": "So sum is $2+1 = 3$.",
+   "previous_sentence": "$\\sum_{k=1}^\\infty k r^k = \\frac{r}{(1-r)^2} = \\frac{1/2}{1/4} = 2$."
+  },
+  {
+   "question": "math500|math500_test/intermediate_algebra/1126.json",
+   "label": "Implement",
+   "sentence_index": 208,
+   "sentence": "$a = 12$",
+   "previous_sentence": "$k = 2$"
+  },
+  {
+   "question": "math500|math500_test/algebra/2570.json",
+   "label": "Implement",
+   "sentence_index": 71,
+   "sentence": "105 + 196 = 301.",
+   "previous_sentence": "Wait, let's double check the arithmetic:"
+  },
+  {
+   "question": "olympiad|olympiad_3082",
+   "label": "Implement",
+   "sentence_index": 1096,
+   "sentence": "Slope $m = \\frac{y_E - 0}{x_E - s} = \\frac{\\frac{1-\\sqrt{3}}{2}s}{\\frac{-1-\\sqrt{3}}{2}s} = \\frac{1-\\sqrt{3}}{-1-\\sqrt{3}} = \\frac{\\sqrt{3}-1}{\\sqrt{3}+1}$.",
+   "previous_sentence": "$B(s,0)$, $E(\\frac{1-\\sqrt{3}}{2}s, \\frac{1-\\sqrt{3}}{2}s)$."
+  },
+  {
+   "question": "olympiad|olympiad_2792",
+   "label": "Implement",
+   "sentence_index": 173,
+   "sentence": "So $x^8 \\le n < (x+1)^8$.",
+   "previous_sentence": "Then $x \\le n^{1/8} < x+1$."
+  },
+  {
+   "question": "olympiad|olympiad_2506",
+   "label": "Implement",
+   "sentence_index": 88,
+   "sentence": "So $a_1 = 7/5$.",
+   "previous_sentence": "$q_1 = 17 - 12 = 5$."
+  },
+  {
+   "question": "olympiad|olympiad_2798",
+   "label": "Implement",
+   "sentence_index": 540,
+   "sentence": "$XC = AC \\sin \\beta / \\sin(U + \\beta)$.",
+   "previous_sentence": "$AX / \\sin U = XC / \\sin \\beta = AC / \\sin(180 - U - \\beta)$."
+  },
+  {
+   "question": "olympiad|olympiad_2489",
+   "label": "Implement",
+   "sentence_index": 1383,
+   "sentence": "$c(5)$ calculated as $E_4+1 = 4+1=5$.",
+   "previous_sentence": "Correct."
+  },
+  {
+   "question": "math500|math500_test/intermediate_algebra/591.json",
+   "label": "Implement",
+   "sentence_index": 79,
+   "sentence": "$p(0) = (-1)(-2)(-3)(-5) = -30$.",
+   "previous_sentence": "$p(x) = (x-1)(x-2)(x-3)(x-5)$."
+  },
+  {
+   "question": "olympiad|olympiad_2725",
+   "label": "Implement",
+   "sentence_index": 999,
+   "sentence": "- 7 -> H (pos 1).",
+   "previous_sentence": "- If we repeat?"
+  },
+  {
+   "question": "olympiad|olympiad_2653",
+   "label": "Implement",
+   "sentence_index": 246,
+   "sentence": "$15 \\times 1.6 = 24$.",
+   "previous_sentence": "Calculation of $T$: $8/5 = 1.6$."
+  }
+ ],
+ "scope": "discovery only; historical sparse labels, no contiguous transition inference"
+}

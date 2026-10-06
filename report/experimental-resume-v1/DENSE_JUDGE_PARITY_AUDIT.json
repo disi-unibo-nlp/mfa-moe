@@ -1,0 +1,104 @@
+{
+ "schema": "dense-judge-parity-audit-v1",
+ "population": "200 class-balanced historical sparse-label fixtures from discovery families",
+ "model_intervention": "new direct Qwen3.8-27B vLLM prompt versus historical sparse class labels",
+ "source_sha256": "cfd88c8a002ac6b3ca3901b992d483f8f257681658ac558603b6ea7c8d6da707",
+ "job_id": "59112590",
+ "job_state": "COMPLETED",
+ "job_exit_code": "0:0",
+ "elapsed_seconds": 1153,
+ "actual_GPU_hours": 0.6405555555555555,
+ "families": 47,
+ "assigned_fixtures": 200,
+ "parsed_stop_coverage": 0.995,
+ "coverage_family_cluster_ci95": [
+  0.9837837837837838,
+  1.0
+ ],
+ "historical_agreement": 0.87,
+ "agreement_family_cluster_ci95": [
+  0.8258706467661692,
+  0.9162303664921466
+ ],
+ "per_class": {
+  "Analyze": {
+   "n": 29,
+   "agree": 25,
+   "agreement": 0.8620689655172413
+  },
+  "Explore": {
+   "n": 28,
+   "agree": 26,
+   "agreement": 0.9285714285714286
+  },
+  "Implement": {
+   "n": 29,
+   "agree": 29,
+   "agreement": 1.0
+  },
+  "Monitor": {
+   "n": 28,
+   "agree": 23,
+   "agreement": 0.8214285714285714
+  },
+  "Plan": {
+   "n": 29,
+   "agree": 23,
+   "agreement": 0.7931034482758621
+  },
+  "Read": {
+   "n": 29,
+   "agree": 25,
+   "agreement": 0.8620689655172413
+  },
+  "Verify": {
+   "n": 28,
+   "agree": 23,
+   "agreement": 0.8214285714285714
+  }
+ },
+ "confusion": {
+  "Implement": {
+   "Implement": 29
+  },
+  "Monitor": {
+   "Monitor": 23,
+   "Verify": 2,
+   "Plan": 2,
+   "Analyze": 1
+  },
+  "Analyze": {
+   "Analyze": 25,
+   "Monitor": 1,
+   "Implement": 2
+  },
+  "Explore": {
+   "Explore": 26,
+   "Implement": 1,
+   "Verify": 1
+  },
+  "Read": {
+   "Read": 25,
+   "Analyze": 2,
+   "Monitor": 1,
+   "Verify": 1
+  },
+  "Plan": {
+   "Plan": 23,
+   "Monitor": 2,
+   "Analyze": 3,
+   "Explore": 1
+  },
+  "Verify": {
+   "Verify": 23,
+   "Read": 2,
+   "Monitor": 2,
+   "Plan": 1
+  }
+ },
+ "multiplicity_family": "operational qualification; two descriptive intervals, no scientific rejection claim",
+ "method": "5,000 percentile bootstrap replicates of 48 discovery families, seed 20261001; item-weighted ratio",
+ "status": "QUALIFIED_FOR_EXPLORATORY_DENSE_CLASSES_ONLY",
+ "limits": "Both raters are model-derived; historical labels are not human truth. No substantive-check or online-detector validity follows.",
+ "sha256": "59da607ab88ebc2fdb82d5aa7509c631c4ca27a660517751dee644222044b24b"
+}

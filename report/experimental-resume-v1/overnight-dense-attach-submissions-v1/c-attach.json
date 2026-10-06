@@ -1,0 +1,24 @@
+{
+ "schema": "overnight-submit-receipt-v1",
+ "name": "c-attach",
+ "binding": {
+  "stage": "C",
+  "generation_dispatch_parent": "59345508",
+  "files": {
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/submit_generated_dense_chain_v1.sbatch": "c5719561e6d516de51626eab9ec62654628d8fa2656916d77575683fb5f1054a",
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/submit_generated_dense_chain_v1.py": "d5e948906783e107ddca37df1d7127818f299d39923b25b822ad601a9608f847",
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/dispatch_generated_dense_v1.py": "b4492b353f8a88b1262720f8459b9a736040e0f95260be2d088da20608a171bb",
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/dispatch_generated_dense_v1.sbatch": "c0f3c3bc67782291cc4e8126f79c2e4a56064b511257ea01e9ed3b7175d085d7"
+  }
+ },
+ "arguments": [
+  "--dependency=afterok:59345508",
+  "--job-name=st-dense-C-attach",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/submit_generated_dense_chain_v1.sbatch",
+  "--stage",
+  "C"
+ ],
+ "job_id": "59345819",
+ "submission": "59345819",
+ "sha256": "536d170b78c85c0b7e2be23dcc041282457c059f7653ee9c4c9ebc53159c9594"
+}

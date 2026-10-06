@@ -1,0 +1,272 @@
+{
+ "schema": "routing-study-recovery-ledger-v1",
+ "observed_utc": "2026-10-05T10:02:48.784529+00:00",
+ "host": "login05.leonardo.local",
+ "user": "lmolfett",
+ "status": "IN_PROGRESS_WAITING_ASSIGNED_SLURM_WORK",
+ "canonical_records": [
+  {
+   "path": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/routing-study-closeout-v2/audit-59389128/STUDY_INDEX.json",
+   "file_sha256": "9e736d20e27e4acde984666fb9a7f16a417ecaa5584801958e5f8a8a0bebbccd",
+   "sha256": "60a490bf8b7922087b517be9b20201e49468db8af4e5df5c162ab2fbcf39b761"
+  },
+  {
+   "path": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/routing-study-closeout-v2/PLAN.json",
+   "file_sha256": "fd85250617e6a0bc652b67305d964206994b31246e5f2bec4d807a66785d5397",
+   "sha256": "1df6c1de122cf9d3bd81ba8ac8a474b94445a78fe4849354bf8af126886ac200"
+  },
+  {
+   "path": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/routing-study-closeout-v2/CONTINUATION.json",
+   "file_sha256": "8e706d21072c9450b192025e37885c44998348869d034dcd115ef537640faa72",
+   "sha256": "94e1d358184dfeb3a59e89c7641ed29820cb89f28d672d99cb0c2bb743c351dc"
+  },
+  {
+   "path": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/utility-production-root-submissions-v3-a5a6d77abd5ec32e/OPERATIONS.json",
+   "file_sha256": "8e0e7c9bfff90b9d1db768e39936415cf2a6b0a877d5d72245e79adf52923df6",
+   "sha256": "8a3000cc60dfef0bb5872cc7615ceabc919a5bf67f2ffc43f02daf4c1732a946"
+  },
+  {
+   "path": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/utility-production-root-submissions-v3-a5a6d77abd5ec32e/ATTACH_CHAIN.json",
+   "file_sha256": "b1c44a9227510772ac2c157057c4fcb520dce2417fedd7a2c38d7d674134d342",
+   "sha256": "337d8667f0b4bbdb6c048de4882b01223a15f168ba67f2d5bd647fd6ce9cb62b"
+  },
+  {
+   "path": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/routing-study-closeout-v2/checkpoint-initial.json",
+   "file_sha256": "a5a873a608333b14b59748d16f77906399f3f5c4eef4b0ba4486e4d5ff1c7370",
+   "sha256": "973a435f0b81ee31012c84a03d2a4279723046fa45329efdc9d47db43de138ba"
+  },
+  {
+   "path": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/routing-study-closeout-v2/checkpoint-semantic.json",
+   "file_sha256": "fc9ed6bf4c279619280c3aa234baba04436c089d5eb104bea3b0e220cae5e004",
+   "sha256": "f20c7ac8f77a713ccf404ca3be67c6eea8918213e95fe2a98b6acf96ffa22d47"
+  },
+  {
+   "path": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/routing-study-closeout-v2/checkpoint-dense.json",
+   "file_sha256": "fc07e025ba20d4139b471a8041b77be86dcb95029c7385db66554b207131d49f",
+   "sha256": "09cc5d32389f0a582de9e5959844b3b2679027369186c4efe4fbb794ecd66480"
+  }
+ ],
+ "exact_accounting": {
+  "command": [
+   "sacct",
+   "-X",
+   "-nP",
+   "-j",
+   "59380006,59380008,59380073,59380077,59380092,59385734,59385736,59386634,59388426,59389128,59389450,59389577",
+   "--format=JobID%100,State%40,ExitCode,ElapsedRaw,AllocTRES%150"
+  ],
+  "raw": "59380006_0|COMPLETED|0:0|2314|billing=16,cpu=16,gres/gpu=2,mem=120G,node=1\n59380006_1|COMPLETED|0:0|2266|billing=16,cpu=16,gres/gpu=2,mem=120G,node=1\n59380006_2|COMPLETED|0:0|2298|billing=16,cpu=16,gres/gpu=2,mem=120G,node=1\n59380006_3|COMPLETED|0:0|2168|billing=16,cpu=16,gres/gpu=2,mem=120G,node=1\n59380006_4|COMPLETED|0:0|2350|billing=16,cpu=16,gres/gpu=2,mem=120G,node=1\n59380006_5|RUNNING|0:0|2156|billing=16,cpu=16,gres/gpu=2,mem=120G,node=1\n59380006_6|RUNNING|0:0|1523|billing=16,cpu=16,gres/gpu=2,mem=120G,node=1\n59380006_7|RUNNING|0:0|243|billing=16,cpu=16,gres/gpu=2,mem=120G,node=1\n59380006_8|RUNNING|0:0|195|billing=16,cpu=16,gres/gpu=2,mem=120G,node=1\n59380006_[9-39]|PENDING|0:0|0|\n59380008|PENDING|0:0|0|\n59380073|PENDING|0:0|0|\n59380077|PENDING|0:0|0|\n59380092|PENDING|0:0|0|\n59385734_[0-651]|PENDING|0:0|0|\n59385736|PENDING|0:0|0|\n59386634|PENDING|0:0|0|\n59388426|FAILED|1:0|27|billing=2,cpu=2,gres/tmpfs=10737418240,mem=32G,node=1\n59389128|COMPLETED|0:0|31|billing=2,cpu=2,gres/tmpfs=10737418240,mem=32G,node=1\n59389450|PENDING|0:0|0|\n59389577|PENDING|0:0|0|\n",
+  "rows": {
+   "59380006_0": {
+    "job_id": "59380006_0",
+    "state": "COMPLETED",
+    "exit_code": "0:0",
+    "elapsed_seconds": 2314,
+    "allocated_TRES": "billing=16,cpu=16,gres/gpu=2,mem=120G,node=1",
+    "allocated_GPU_hours": 1.2855555555555556,
+    "billing_unit_hours": 10.284444444444444
+   },
+   "59380006_1": {
+    "job_id": "59380006_1",
+    "state": "COMPLETED",
+    "exit_code": "0:0",
+    "elapsed_seconds": 2266,
+    "allocated_TRES": "billing=16,cpu=16,gres/gpu=2,mem=120G,node=1",
+    "allocated_GPU_hours": 1.258888888888889,
+    "billing_unit_hours": 10.071111111111112
+   },
+   "59380006_2": {
+    "job_id": "59380006_2",
+    "state": "COMPLETED",
+    "exit_code": "0:0",
+    "elapsed_seconds": 2298,
+    "allocated_TRES": "billing=16,cpu=16,gres/gpu=2,mem=120G,node=1",
+    "allocated_GPU_hours": 1.2766666666666666,
+    "billing_unit_hours": 10.213333333333333
+   },
+   "59380006_3": {
+    "job_id": "59380006_3",
+    "state": "COMPLETED",
+    "exit_code": "0:0",
+    "elapsed_seconds": 2168,
+    "allocated_TRES": "billing=16,cpu=16,gres/gpu=2,mem=120G,node=1",
+    "allocated_GPU_hours": 1.2044444444444444,
+    "billing_unit_hours": 9.635555555555555
+   },
+   "59380006_4": {
+    "job_id": "59380006_4",
+    "state": "COMPLETED",
+    "exit_code": "0:0",
+    "elapsed_seconds": 2350,
+    "allocated_TRES": "billing=16,cpu=16,gres/gpu=2,mem=120G,node=1",
+    "allocated_GPU_hours": 1.3055555555555556,
+    "billing_unit_hours": 10.444444444444445
+   },
+   "59380006_5": {
+    "job_id": "59380006_5",
+    "state": "RUNNING",
+    "exit_code": "0:0",
+    "elapsed_seconds": 2156,
+    "allocated_TRES": "billing=16,cpu=16,gres/gpu=2,mem=120G,node=1",
+    "allocated_GPU_hours": 1.1977777777777778,
+    "billing_unit_hours": 9.582222222222223
+   },
+   "59380006_6": {
+    "job_id": "59380006_6",
+    "state": "RUNNING",
+    "exit_code": "0:0",
+    "elapsed_seconds": 1523,
+    "allocated_TRES": "billing=16,cpu=16,gres/gpu=2,mem=120G,node=1",
+    "allocated_GPU_hours": 0.8461111111111111,
+    "billing_unit_hours": 6.768888888888889
+   },
+   "59380006_7": {
+    "job_id": "59380006_7",
+    "state": "RUNNING",
+    "exit_code": "0:0",
+    "elapsed_seconds": 243,
+    "allocated_TRES": "billing=16,cpu=16,gres/gpu=2,mem=120G,node=1",
+    "allocated_GPU_hours": 0.135,
+    "billing_unit_hours": 1.08
+   },
+   "59380006_8": {
+    "job_id": "59380006_8",
+    "state": "RUNNING",
+    "exit_code": "0:0",
+    "elapsed_seconds": 195,
+    "allocated_TRES": "billing=16,cpu=16,gres/gpu=2,mem=120G,node=1",
+    "allocated_GPU_hours": 0.10833333333333334,
+    "billing_unit_hours": 0.8666666666666667
+   },
+   "59380006_[9-39]": {
+    "job_id": "59380006_[9-39]",
+    "state": "PENDING",
+    "exit_code": "0:0",
+    "elapsed_seconds": 0,
+    "allocated_TRES": "",
+    "allocated_GPU_hours": 0.0,
+    "billing_unit_hours": 0.0
+   },
+   "59380008": {
+    "job_id": "59380008",
+    "state": "PENDING",
+    "exit_code": "0:0",
+    "elapsed_seconds": 0,
+    "allocated_TRES": "",
+    "allocated_GPU_hours": 0.0,
+    "billing_unit_hours": 0.0
+   },
+   "59380073": {
+    "job_id": "59380073",
+    "state": "PENDING",
+    "exit_code": "0:0",
+    "elapsed_seconds": 0,
+    "allocated_TRES": "",
+    "allocated_GPU_hours": 0.0,
+    "billing_unit_hours": 0.0
+   },
+   "59380077": {
+    "job_id": "59380077",
+    "state": "PENDING",
+    "exit_code": "0:0",
+    "elapsed_seconds": 0,
+    "allocated_TRES": "",
+    "allocated_GPU_hours": 0.0,
+    "billing_unit_hours": 0.0
+   },
+   "59380092": {
+    "job_id": "59380092",
+    "state": "PENDING",
+    "exit_code": "0:0",
+    "elapsed_seconds": 0,
+    "allocated_TRES": "",
+    "allocated_GPU_hours": 0.0,
+    "billing_unit_hours": 0.0
+   },
+   "59385734_[0-651]": {
+    "job_id": "59385734_[0-651]",
+    "state": "PENDING",
+    "exit_code": "0:0",
+    "elapsed_seconds": 0,
+    "allocated_TRES": "",
+    "allocated_GPU_hours": 0.0,
+    "billing_unit_hours": 0.0
+   },
+   "59385736": {
+    "job_id": "59385736",
+    "state": "PENDING",
+    "exit_code": "0:0",
+    "elapsed_seconds": 0,
+    "allocated_TRES": "",
+    "allocated_GPU_hours": 0.0,
+    "billing_unit_hours": 0.0
+   },
+   "59386634": {
+    "job_id": "59386634",
+    "state": "PENDING",
+    "exit_code": "0:0",
+    "elapsed_seconds": 0,
+    "allocated_TRES": "",
+    "allocated_GPU_hours": 0.0,
+    "billing_unit_hours": 0.0
+   },
+   "59388426": {
+    "job_id": "59388426",
+    "state": "FAILED",
+    "exit_code": "1:0",
+    "elapsed_seconds": 27,
+    "allocated_TRES": "billing=2,cpu=2,gres/tmpfs=10737418240,mem=32G,node=1",
+    "allocated_GPU_hours": 0.0,
+    "billing_unit_hours": 0.015
+   },
+   "59389128": {
+    "job_id": "59389128",
+    "state": "COMPLETED",
+    "exit_code": "0:0",
+    "elapsed_seconds": 31,
+    "allocated_TRES": "billing=2,cpu=2,gres/tmpfs=10737418240,mem=32G,node=1",
+    "allocated_GPU_hours": 0.0,
+    "billing_unit_hours": 0.017222222222222222
+   },
+   "59389450": {
+    "job_id": "59389450",
+    "state": "PENDING",
+    "exit_code": "0:0",
+    "elapsed_seconds": 0,
+    "allocated_TRES": "",
+    "allocated_GPU_hours": 0.0,
+    "billing_unit_hours": 0.0
+   },
+   "59389577": {
+    "job_id": "59389577",
+    "state": "PENDING",
+    "exit_code": "0:0",
+    "elapsed_seconds": 0,
+    "allocated_TRES": "",
+    "allocated_GPU_hours": 0.0,
+    "billing_unit_hours": 0.0
+   }
+  }
+ },
+ "validation": {
+  "utility_native_tests": 9,
+  "closeout_v2_tests": 8,
+  "finite_continuation_tests": 4,
+  "utility_bound_wrappers_checked": 10,
+  "closeout_v2_wrapper_checked": true,
+  "real_CPU_audit_job": "59389128",
+  "real_CPU_audit_state": "COMPLETED",
+  "real_CPU_audit_exit": "0:0"
+ },
+ "authorized_resource_limits": {
+  "fresh_semantic_GPU_hour_envelope": 191.06,
+  "fresh_dense_projected_GPU_hours": 2573.454564105656,
+  "utility_generation_recovery_billing_core_hours": 16000,
+  "utility_grading_GPU_hour_reserve": 216
+ },
+ "latest_index_status": "IN_PROGRESS",
+ "remaining": "Assigned fresh reader/dense jobs, deterministic policy selection, utility runtime pilot, production, bounded recovery if needed, strict/J1 grading and final terminal synthesis.",
+ "next_native_command": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/envs/correlation-client-3.11/bin/python -B scripts/experimental_resume/continue_routing_study_v1.py step --submit",
+ "interpretation": "Pending work is not complete. Missing execution remains unknown; failed attempts and source seals are preserved. No new sequence study, X3, speculative NLL rerun, commit or push.",
+ "sha256": "e8a9e357a0f8900b958435cbb4ac224372a8b1883c82492f4fee81bcb0da5ebe"
+}

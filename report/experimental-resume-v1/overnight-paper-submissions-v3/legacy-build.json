@@ -1,0 +1,22 @@
+{
+ "schema": "overnight-submit-receipt-v1",
+ "name": "legacy-build",
+ "binding": {
+  "stage": "LEGACY",
+  "phase": "build",
+  "parent": null,
+  "files": {
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/routing_paper_v3.sbatch": "e2ca1dd722dfc10a7af59aa00aa6b6a94c0a48319e895fdfb6d7674b11d17583",
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/routing_paper_v3.py": "57496a379a2ed9094749bc684fa8e679db306f7c7ffae8249ba75badc54840fe"
+  }
+ },
+ "arguments": [
+  "--job-name=st-paper-LEGACY-build",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/routing_paper_v3.sbatch",
+  "LEGACY",
+  "build"
+ ],
+ "job_id": "59345662",
+ "submission": "59345662",
+ "sha256": "acaec949898ebfff77ae5087c6fcbfeded5be42ae2c7622908fd3381f2314c6b"
+}

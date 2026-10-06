@@ -1,0 +1,18 @@
+{
+  "schema": "routing-batch-invariant-qualification-price-v1",
+  "manifest_sha256": "db182a1debc7465c208451881f00d62a3f83f39b827d3c3643e27c6f1014e367",
+  "source_pilot_job": "59180099",
+  "source_pilot_elapsed_seconds": 797,
+  "source_native_only_job": "59189980",
+  "source_native_only_elapsed_seconds": 766,
+  "requested_requests": 48,
+  "expected_prefill_tokens": 137676,
+  "maximum_decode_tokens": 12288,
+  "gpu_count": 2,
+  "walltime_ceiling_seconds": 3600,
+  "gpu_hour_ceiling": 2.0,
+  "deadline_shutdown_margin_seconds": 180,
+  "reason_for_ceiling": "Separate batch-invariant backend may require additional compile/load time beyond 797-second existing-engine pilot; complete engineering stage is bounded at 60 minutes including preflight, load, prefill, decoding, telemetry, and shutdown.",
+  "interpretation": "Distinct-engine feasibility and native-repeat/isolation qualification only; no cross-engine efficacy inference or claim that the established native engine was batch invariant.",
+  "sha256": "34c6b256d645a5f946281d558703456912a92e7143dddb45148ae06617c50703"
+}

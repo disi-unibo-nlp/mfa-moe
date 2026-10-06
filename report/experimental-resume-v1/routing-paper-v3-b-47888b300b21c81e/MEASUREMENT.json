@@ -1,0 +1,120 @@
+{
+ "schema": "routing-paper-measurement-v3",
+ "stage": "B",
+ "source_sha256": "47888b300b21c81ea84b26b5c57886bb73f61732502a7561e91266df1ccb5c86",
+ "arm_summary": {
+  "native": {
+   "assigned": 26,
+   "gradeable": 26,
+   "reader_pair_valid": 24,
+   "both_positive": 18,
+   "at_least_one_positive": 20,
+   "reader_disagreement": 1,
+   "reasoning_closed": 5,
+   "hit_cap": 23,
+   "emitted_tokens": 25365,
+   "statuses": {
+    "cap": 21,
+    "early_finish": 3,
+    "unscored": 2
+   }
+  },
+  "native_duplicate": {
+   "assigned": 26,
+   "gradeable": 26,
+   "reader_pair_valid": 24,
+   "both_positive": 17,
+   "at_least_one_positive": 18,
+   "reader_disagreement": 1,
+   "reasoning_closed": 9,
+   "hit_cap": 22,
+   "emitted_tokens": 25540,
+   "statuses": {
+    "cap": 21,
+    "unscored": 2,
+    "early_finish": 3
+   }
+  },
+  "once": {
+   "assigned": 26,
+   "gradeable": 26,
+   "reader_pair_valid": 23,
+   "both_positive": 16,
+   "at_least_one_positive": 18,
+   "reader_disagreement": 1,
+   "reasoning_closed": 7,
+   "hit_cap": 24,
+   "emitted_tokens": 25718,
+   "statuses": {
+    "unscored": 3,
+    "cap": 21,
+    "early_finish": 2
+   }
+  },
+  "random_once": {
+   "assigned": 26,
+   "gradeable": 26,
+   "reader_pair_valid": 24,
+   "both_positive": 16,
+   "at_least_one_positive": 17,
+   "reader_disagreement": 1,
+   "reasoning_closed": 6,
+   "hit_cap": 23,
+   "emitted_tokens": 25751,
+   "statuses": {
+    "cap": 21,
+    "early_finish": 3,
+    "unscored": 2
+   }
+  },
+  "repeat": {
+   "assigned": 26,
+   "gradeable": 26,
+   "reader_pair_valid": 23,
+   "both_positive": 15,
+   "at_least_one_positive": 19,
+   "reader_disagreement": 2,
+   "reasoning_closed": 6,
+   "hit_cap": 24,
+   "emitted_tokens": 25653,
+   "statuses": {
+    "cap": 21,
+    "early_finish": 2,
+    "unscored": 3
+   }
+  },
+  "random_repeat": {
+   "assigned": 26,
+   "gradeable": 26,
+   "reader_pair_valid": 23,
+   "both_positive": 16,
+   "at_least_one_positive": 18,
+   "reader_disagreement": 1,
+   "reasoning_closed": 9,
+   "hit_cap": 23,
+   "emitted_tokens": 25637,
+   "statuses": {
+    "cap": 20,
+    "unscored": 3,
+    "early_finish": 3
+   }
+  }
+ },
+ "available_sensitivity_fields": [
+  "either_reader_sensitivity",
+  "missing_measurement_sensitivity"
+ ],
+ "accuracy_change": {
+  "status": "NOT_MEASURED_BY_CONTINUATION_STUDY"
+ },
+ "utility_16k": {
+  "status": "SEPARATE_ORIGINAL_PROMPT_STUDY_PENDING"
+ },
+ "gate_weight_trajectory": {
+  "status": "NOT_SAVED; ROUTE_ARRAYS_CONTAIN_EXPERT_IDS"
+ },
+ "historical_confirm_exposure": "Previously exposed; retain original disclosure",
+ "population_status": "B",
+ "no_new_fits": true,
+ "sha256": "4d8880349549be7ad4505c6578ec6ccc9ae2592ab9895c2ea3affefe86441832"
+}

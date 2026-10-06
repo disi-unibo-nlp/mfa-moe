@@ -1,0 +1,425 @@
+{
+ "schema": "accuracy-length-priority-amendment-v1",
+ "user_direction": "Defer reasoning-stage classification for the moment, remove it from the queue, and focus on accuracy and reasoning/total output length.",
+ "deferred_workloads": [
+  {
+   "array_job_id": "59385734",
+   "purpose": "Seven-class labels for generated FRESH continuation sentences",
+   "status": "CANCELLED_REMAINING_TASKS",
+   "completed_tasks_preserved": 33,
+   "cancelled_tasks": 619
+  },
+  {
+   "job_id": "59385736",
+   "purpose": "Dense trajectory analysis",
+   "status": "CANCELLED"
+  },
+  {
+   "job_id": "59389577",
+   "purpose": "Closeout CPU checkpoint triggered solely by dense analysis",
+   "status": "CANCELLED"
+  }
+ ],
+ "scheduler_identity": {
+  "hostname": "login05.leonardo.local",
+  "user": "lmolfett",
+  "account": "iscrc_miosr"
+ },
+ "cancellation": {
+  "command": "scancel 59389577 59385736 59385734",
+  "exit_code": 0
+ },
+ "accounting": [
+  {
+   "job_id": "59385734_0",
+   "state": "COMPLETED",
+   "exit_code": "0:0",
+   "elapsed_seconds": 1083,
+   "allocated_TRES": "billing=16,cpu=16,gres/gpu=2,mem=120G,node=1",
+   "represented_tasks": 1
+  },
+  {
+   "job_id": "59385734_1",
+   "state": "COMPLETED",
+   "exit_code": "0:0",
+   "elapsed_seconds": 1135,
+   "allocated_TRES": "billing=16,cpu=16,gres/gpu=2,mem=120G,node=1",
+   "represented_tasks": 1
+  },
+  {
+   "job_id": "59385734_2",
+   "state": "COMPLETED",
+   "exit_code": "0:0",
+   "elapsed_seconds": 841,
+   "allocated_TRES": "billing=16,cpu=16,gres/gpu=2,mem=120G,node=1",
+   "represented_tasks": 1
+  },
+  {
+   "job_id": "59385734_3",
+   "state": "COMPLETED",
+   "exit_code": "0:0",
+   "elapsed_seconds": 1061,
+   "allocated_TRES": "billing=16,cpu=16,gres/gpu=2,mem=120G,node=1",
+   "represented_tasks": 1
+  },
+  {
+   "job_id": "59385734_4",
+   "state": "COMPLETED",
+   "exit_code": "0:0",
+   "elapsed_seconds": 1056,
+   "allocated_TRES": "billing=16,cpu=16,gres/gpu=2,mem=120G,node=1",
+   "represented_tasks": 1
+  },
+  {
+   "job_id": "59385734_5",
+   "state": "COMPLETED",
+   "exit_code": "0:0",
+   "elapsed_seconds": 1068,
+   "allocated_TRES": "billing=16,cpu=16,gres/gpu=2,mem=120G,node=1",
+   "represented_tasks": 1
+  },
+  {
+   "job_id": "59385734_6",
+   "state": "COMPLETED",
+   "exit_code": "0:0",
+   "elapsed_seconds": 1093,
+   "allocated_TRES": "billing=16,cpu=16,gres/gpu=2,mem=120G,node=1",
+   "represented_tasks": 1
+  },
+  {
+   "job_id": "59385734_7",
+   "state": "COMPLETED",
+   "exit_code": "0:0",
+   "elapsed_seconds": 1088,
+   "allocated_TRES": "billing=16,cpu=16,gres/gpu=2,mem=120G,node=1",
+   "represented_tasks": 1
+  },
+  {
+   "job_id": "59385734_8",
+   "state": "COMPLETED",
+   "exit_code": "0:0",
+   "elapsed_seconds": 782,
+   "allocated_TRES": "billing=16,cpu=16,gres/gpu=2,mem=120G,node=1",
+   "represented_tasks": 1
+  },
+  {
+   "job_id": "59385734_9",
+   "state": "COMPLETED",
+   "exit_code": "0:0",
+   "elapsed_seconds": 1092,
+   "allocated_TRES": "billing=16,cpu=16,gres/gpu=2,mem=120G,node=1",
+   "represented_tasks": 1
+  },
+  {
+   "job_id": "59385734_10",
+   "state": "COMPLETED",
+   "exit_code": "0:0",
+   "elapsed_seconds": 1119,
+   "allocated_TRES": "billing=16,cpu=16,gres/gpu=2,mem=120G,node=1",
+   "represented_tasks": 1
+  },
+  {
+   "job_id": "59385734_11",
+   "state": "COMPLETED",
+   "exit_code": "0:0",
+   "elapsed_seconds": 1036,
+   "allocated_TRES": "billing=16,cpu=16,gres/gpu=2,mem=120G,node=1",
+   "represented_tasks": 1
+  },
+  {
+   "job_id": "59385734_12",
+   "state": "COMPLETED",
+   "exit_code": "0:0",
+   "elapsed_seconds": 1031,
+   "allocated_TRES": "billing=16,cpu=16,gres/gpu=2,mem=120G,node=1",
+   "represented_tasks": 1
+  },
+  {
+   "job_id": "59385734_13",
+   "state": "COMPLETED",
+   "exit_code": "0:0",
+   "elapsed_seconds": 1111,
+   "allocated_TRES": "billing=16,cpu=16,gres/gpu=2,mem=120G,node=1",
+   "represented_tasks": 1
+  },
+  {
+   "job_id": "59385734_14",
+   "state": "COMPLETED",
+   "exit_code": "0:0",
+   "elapsed_seconds": 900,
+   "allocated_TRES": "billing=16,cpu=16,gres/gpu=2,mem=120G,node=1",
+   "represented_tasks": 1
+  },
+  {
+   "job_id": "59385734_15",
+   "state": "COMPLETED",
+   "exit_code": "0:0",
+   "elapsed_seconds": 748,
+   "allocated_TRES": "billing=16,cpu=16,gres/gpu=2,mem=120G,node=1",
+   "represented_tasks": 1
+  },
+  {
+   "job_id": "59385734_16",
+   "state": "COMPLETED",
+   "exit_code": "0:0",
+   "elapsed_seconds": 962,
+   "allocated_TRES": "billing=16,cpu=16,gres/gpu=2,mem=120G,node=1",
+   "represented_tasks": 1
+  },
+  {
+   "job_id": "59385734_17",
+   "state": "COMPLETED",
+   "exit_code": "0:0",
+   "elapsed_seconds": 1066,
+   "allocated_TRES": "billing=16,cpu=16,gres/gpu=2,mem=120G,node=1",
+   "represented_tasks": 1
+  },
+  {
+   "job_id": "59385734_18",
+   "state": "COMPLETED",
+   "exit_code": "0:0",
+   "elapsed_seconds": 985,
+   "allocated_TRES": "billing=16,cpu=16,gres/gpu=2,mem=120G,node=1",
+   "represented_tasks": 1
+  },
+  {
+   "job_id": "59385734_19",
+   "state": "COMPLETED",
+   "exit_code": "0:0",
+   "elapsed_seconds": 1018,
+   "allocated_TRES": "billing=16,cpu=16,gres/gpu=2,mem=120G,node=1",
+   "represented_tasks": 1
+  },
+  {
+   "job_id": "59385734_20",
+   "state": "COMPLETED",
+   "exit_code": "0:0",
+   "elapsed_seconds": 1118,
+   "allocated_TRES": "billing=16,cpu=16,gres/gpu=2,mem=120G,node=1",
+   "represented_tasks": 1
+  },
+  {
+   "job_id": "59385734_21",
+   "state": "COMPLETED",
+   "exit_code": "0:0",
+   "elapsed_seconds": 1073,
+   "allocated_TRES": "billing=16,cpu=16,gres/gpu=2,mem=120G,node=1",
+   "represented_tasks": 1
+  },
+  {
+   "job_id": "59385734_22",
+   "state": "COMPLETED",
+   "exit_code": "0:0",
+   "elapsed_seconds": 1012,
+   "allocated_TRES": "billing=16,cpu=16,gres/gpu=2,mem=120G,node=1",
+   "represented_tasks": 1
+  },
+  {
+   "job_id": "59385734_23",
+   "state": "COMPLETED",
+   "exit_code": "0:0",
+   "elapsed_seconds": 828,
+   "allocated_TRES": "billing=16,cpu=16,gres/gpu=2,mem=120G,node=1",
+   "represented_tasks": 1
+  },
+  {
+   "job_id": "59385734_24",
+   "state": "COMPLETED",
+   "exit_code": "0:0",
+   "elapsed_seconds": 927,
+   "allocated_TRES": "billing=16,cpu=16,gres/gpu=2,mem=120G,node=1",
+   "represented_tasks": 1
+  },
+  {
+   "job_id": "59385734_25",
+   "state": "COMPLETED",
+   "exit_code": "0:0",
+   "elapsed_seconds": 1072,
+   "allocated_TRES": "billing=16,cpu=16,gres/gpu=2,mem=120G,node=1",
+   "represented_tasks": 1
+  },
+  {
+   "job_id": "59385734_26",
+   "state": "COMPLETED",
+   "exit_code": "0:0",
+   "elapsed_seconds": 1111,
+   "allocated_TRES": "billing=16,cpu=16,gres/gpu=2,mem=120G,node=1",
+   "represented_tasks": 1
+  },
+  {
+   "job_id": "59385734_27",
+   "state": "CANCELLED by 133943",
+   "exit_code": "0:0",
+   "elapsed_seconds": 1071,
+   "allocated_TRES": "billing=16,cpu=16,gres/gpu=2,mem=120G,node=1",
+   "represented_tasks": 1
+  },
+  {
+   "job_id": "59385734_28",
+   "state": "COMPLETED",
+   "exit_code": "0:0",
+   "elapsed_seconds": 847,
+   "allocated_TRES": "billing=16,cpu=16,gres/gpu=2,mem=120G,node=1",
+   "represented_tasks": 1
+  },
+  {
+   "job_id": "59385734_29",
+   "state": "COMPLETED",
+   "exit_code": "0:0",
+   "elapsed_seconds": 830,
+   "allocated_TRES": "billing=16,cpu=16,gres/gpu=2,mem=120G,node=1",
+   "represented_tasks": 1
+  },
+  {
+   "job_id": "59385734_30",
+   "state": "CANCELLED by 133943",
+   "exit_code": "0:0",
+   "elapsed_seconds": 1071,
+   "allocated_TRES": "billing=16,cpu=16,gres/gpu=2,mem=120G,node=1",
+   "represented_tasks": 1
+  },
+  {
+   "job_id": "59385734_31",
+   "state": "COMPLETED",
+   "exit_code": "0:0",
+   "elapsed_seconds": 812,
+   "allocated_TRES": "billing=16,cpu=16,gres/gpu=2,mem=120G,node=1",
+   "represented_tasks": 1
+  },
+  {
+   "job_id": "59385734_32",
+   "state": "CANCELLED by 133943",
+   "exit_code": "0:0",
+   "elapsed_seconds": 1030,
+   "allocated_TRES": "billing=16,cpu=16,gres/gpu=2,mem=120G,node=1",
+   "represented_tasks": 1
+  },
+  {
+   "job_id": "59385734_33",
+   "state": "COMPLETED",
+   "exit_code": "0:0",
+   "elapsed_seconds": 912,
+   "allocated_TRES": "billing=16,cpu=16,gres/gpu=2,mem=120G,node=1",
+   "represented_tasks": 1
+  },
+  {
+   "job_id": "59385734_34",
+   "state": "CANCELLED by 133943",
+   "exit_code": "0:0",
+   "elapsed_seconds": 986,
+   "allocated_TRES": "billing=16,cpu=16,gres/gpu=2,mem=120G,node=1",
+   "represented_tasks": 1
+  },
+  {
+   "job_id": "59385734_35",
+   "state": "COMPLETED",
+   "exit_code": "0:0",
+   "elapsed_seconds": 885,
+   "allocated_TRES": "billing=16,cpu=16,gres/gpu=2,mem=120G,node=1",
+   "represented_tasks": 1
+  },
+  {
+   "job_id": "59385734_36",
+   "state": "COMPLETED",
+   "exit_code": "0:0",
+   "elapsed_seconds": 828,
+   "allocated_TRES": "billing=16,cpu=16,gres/gpu=2,mem=120G,node=1",
+   "represented_tasks": 1
+  },
+  {
+   "job_id": "59385734_37",
+   "state": "CANCELLED by 133943",
+   "exit_code": "0:0",
+   "elapsed_seconds": 855,
+   "allocated_TRES": "billing=16,cpu=16,gres/gpu=2,mem=120G,node=1",
+   "represented_tasks": 1
+  },
+  {
+   "job_id": "59385734_38",
+   "state": "CANCELLED by 133943",
+   "exit_code": "0:0",
+   "elapsed_seconds": 814,
+   "allocated_TRES": "billing=16,cpu=16,gres/gpu=2,mem=120G,node=1",
+   "represented_tasks": 1
+  },
+  {
+   "job_id": "59385734_39",
+   "state": "CANCELLED by 133943",
+   "exit_code": "0:0",
+   "elapsed_seconds": 774,
+   "allocated_TRES": "billing=16,cpu=16,gres/gpu=2,mem=120G,node=1",
+   "represented_tasks": 1
+  },
+  {
+   "job_id": "59385734_40",
+   "state": "CANCELLED by 133943",
+   "exit_code": "0:0",
+   "elapsed_seconds": 774,
+   "allocated_TRES": "billing=16,cpu=16,gres/gpu=2,mem=120G,node=1",
+   "represented_tasks": 1
+  },
+  {
+   "job_id": "59385734_41",
+   "state": "CANCELLED by 133943",
+   "exit_code": "0:0",
+   "elapsed_seconds": 610,
+   "allocated_TRES": "billing=16,cpu=16,gres/gpu=2,mem=120G,node=1",
+   "represented_tasks": 1
+  },
+  {
+   "job_id": "59385734_42",
+   "state": "CANCELLED by 133943",
+   "exit_code": "0:0",
+   "elapsed_seconds": 87,
+   "allocated_TRES": "billing=16,cpu=16,gres/gpu=2,mem=120G,node=1",
+   "represented_tasks": 1
+  },
+  {
+   "job_id": "59385734_[43-651]",
+   "state": "CANCELLED by 133943",
+   "exit_code": "0:0",
+   "elapsed_seconds": 0,
+   "allocated_TRES": "",
+   "represented_tasks": 609
+  },
+  {
+   "job_id": "59385736",
+   "state": "CANCELLED by 133943",
+   "exit_code": "0:0",
+   "elapsed_seconds": 0,
+   "allocated_TRES": "",
+   "represented_tasks": 1
+  },
+  {
+   "job_id": "59389577",
+   "state": "CANCELLED by 133943",
+   "exit_code": "0:0",
+   "elapsed_seconds": 0,
+   "allocated_TRES": "",
+   "represented_tasks": 1
+  }
+ ],
+ "queue_after_cancellation": "59400764                                                                                            |lmolfett|PENDING|operator-panel-pilot-1|(null)|(Priority)\n59400762                                                                                            |lmolfett|PENDING|operator-panel-pilot-0|(null)|(Priority)\n59386634                                                                                            |lmolfett|PENDING|utility-native-after-pilot-v3|afterok:59380092(unfulfilled)|(Dependency)\n59380073                                                                                            |lmolfett|PENDING|st-paper-FRESH-build|(null)|(None)\n59380092                                                                                            |lmolfett|PENDING|utility-pilot-select-v4|(null)|(None)\n59380077                                                                                            |lmolfett|PENDING|fresh-veto-outcome-sensitivity|(null)|(None)\n59400766                                                                                            |lmolfett|PENDING|operator-panel-pilot-price|afterany:59400762(unfulfilled),afterany:59400764(unfulfilled)|(Dependency)\n59389450                                                                                            |lmolfett|PENDING|routing-closeout-semantic|afterany:59380077(unfulfilled),afterany:59380073(unfulfilled),afterany:59380092(unfulfilled)|(Dependency)\n",
+ "priority_order": [
+  "Original-prompt native/bias/force/reweight accuracy and reasoning/total-token panel, seeds 0/1, cap 16384; finish pilots then generation and frozen strict/J1 grading within existing 6000 billing-core-hour ceiling.",
+  "Completed A/B/C/FRESH continuation-length summaries with their original shorter horizons.",
+  "Preserve existing selected-policy utility selector and its authorized accuracy evaluation."
+ ],
+ "retained_panel_jobs": {
+  "prepare": "59400756",
+  "legacy_lengths": "59400758",
+  "pilot_0": "59400762",
+  "pilot_1": "59400764",
+  "pilot_price": "59400766"
+ },
+ "resume_policy": "Do not resubmit, resume, requeue or replace deferred dense-classification jobs until the user asks to resume that work. Completed and partial label receipts, source seals, logs and generated traces remain preserved. Partial classification is not presented as a complete study outcome.",
+ "scope": "Operational deferral and cancellation only; no frozen scientific source, cohort, scorer or output modified.",
+ "recorded_utc": "2026-10-05T13:01:37.097391+00:00",
+ "frozen_scientific_artifact_hashes": {
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/OPERATOR_PANEL_PLAN_v1.json": "33a72b33fa85384c2c4cb3454c8528104ee1ef89c03319821907a007121340f1",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/OPERATOR_PANEL_OPERATIONS_v1.json": "4da6d0faf546f4ff4d893e034c6674a093d440e59bfa452a8530a5ac91ba63f1",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/OPERATOR_PANEL_MEASUREMENT_v1.json": "969d8e016bc30e105916ad138b0dfdf029103838060cc364ffd544cb27a93f38",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/GENERATED_DENSE_MEASUREMENT_PLAN_v1.json": "838c50198ba21ed56a6cac1f97b810e3baad14e31837856968be0741f07fa812"
+ },
+ "sha256": "4c0a9574c3a18c09baea264702d350868c31c25d4dadb06bd9c5fa1cdc3001d0"
+}

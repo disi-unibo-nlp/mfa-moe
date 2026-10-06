@@ -1,0 +1,354 @@
+{
+ "schema": "routing-discovery-action-dictionary-v1",
+ "version": 1,
+ "max_candidate_action_definitions": 6,
+ "actual_candidate_action_definitions": 4,
+ "native_top_k": 8,
+ "shared_expert_preserved": true,
+ "discovery_family_pool_size": 48,
+ "native_exposure_source_sha256": "b9182674cf6688836f7e12dc2aa8034e4c112da200b8e5460190944b8b49e9f1",
+ "driver_sha256": "e026e4d78b1e48f8e81aa01e1b837d4d79dc2e1b8c7c7d98458077ed721e0d1d",
+ "target_templates": [
+  {
+   "transition": "candidate_to_verify",
+   "experts": [
+    [
+     28,
+     [
+      9,
+      189
+     ]
+    ]
+   ],
+   "biases": [
+    0.5,
+    1.0
+   ],
+   "source_sha256": "0ced65e38082c654537f7600af3d46e5288c1c11a04adf8d2eae194021f793b4",
+   "source_population": "48 frozen discovery families, native traces, direct LLM seven-class labels",
+   "source_support": {
+    "discovery_families": 48,
+    "dense_verify_labels_total": 719,
+    "contiguous_parsed_sentence_pairs": 5507,
+    "nonverify_source_pairs": 4809,
+    "verify_entry_positive_pairs": 487,
+    "nonverify_entry_negative_pairs": 4322,
+    "within_family_same_source_class_matched_positives": 483,
+    "within_family_matched_positive_families": 48,
+    "matched_negative_families": 48,
+    "source_class_counts": {
+     "Monitor": 883,
+     "Read": 502,
+     "Plan": 356,
+     "Analyze": 1288,
+     "Implement": 1401,
+     "Explore": 379
+    },
+    "median_match_distance": 0.06451947515843948,
+    "max_match_distance": 4.153821751841544,
+    "unparsed_adjacent_pairs": 16
+   },
+   "source_fold_effects": [
+    {
+     "fold": 0,
+     "training_positive_families": 31,
+     "held_out_positive_families": 17,
+     "training_source_action_shape_valid": true,
+     "held_out_mean_selected_expert_risk_difference": 0.11391604319214821,
+     "held_out_positive_direction": true
+    },
+    {
+     "fold": 1,
+     "training_positive_families": 40,
+     "held_out_positive_families": 8,
+     "training_source_action_shape_valid": true,
+     "held_out_mean_selected_expert_risk_difference": 0.1120578907430172,
+     "held_out_positive_direction": true
+    },
+    {
+     "fold": 2,
+     "training_positive_families": 37,
+     "held_out_positive_families": 11,
+     "training_source_action_shape_valid": true,
+     "held_out_mean_selected_expert_risk_difference": 0.08745885267853737,
+     "held_out_positive_direction": true
+    },
+    {
+     "fold": 3,
+     "training_positive_families": 36,
+     "held_out_positive_families": 12,
+     "training_source_action_shape_valid": true,
+     "held_out_mean_selected_expert_risk_difference": 0.1826990246772766,
+     "held_out_positive_direction": true
+    }
+   ]
+  },
+  {
+   "transition": "approach_to_commit",
+   "experts": [
+    [
+     24,
+     [
+      159
+     ]
+    ]
+   ],
+   "biases": [
+    0.5,
+    1.0
+   ],
+   "source_sha256": "89f14b2c6eef1c28c6aca7e0a0496c30645ffa68269f07b0905ee6dd41f36d73",
+   "source_population": "48 frozen discovery families, native Qwen3.6 traces, direct LLM seven-class labels",
+   "source_support": {
+    "eligible_explore_source_rows": 379,
+    "plan_or_implement_next_rows": 43,
+    "other_next_rows": 336,
+    "next_class_counts": {
+     "Analyze": 92,
+     "Read": 26,
+     "Verify": 55,
+     "Explore": 101,
+     "Monitor": 62,
+     "Implement": 35,
+     "Plan": 8
+    },
+    "matched_positive_pairs": 38,
+    "matched_positive_families": 20,
+    "median_match_distance": 0.09919804103310986,
+    "profiled_boundary_rows": 72
+   },
+   "source_fold_effects": [
+    {
+     "fold": 0,
+     "training_positive_families": 12,
+     "held_out_positive_families": 8,
+     "held_out_selected_mean_risk_difference": 0.10188802083333334,
+     "held_out_positive_direction": true
+    },
+    {
+     "fold": 1,
+     "training_positive_families": 15,
+     "held_out_positive_families": 5,
+     "held_out_selected_mean_risk_difference": 0.03203125,
+     "held_out_positive_direction": true
+    },
+    {
+     "fold": 2,
+     "training_positive_families": 18,
+     "held_out_positive_families": 2,
+     "held_out_selected_mean_risk_difference": 0.015625,
+     "held_out_positive_direction": true
+    },
+    {
+     "fold": 3,
+     "training_positive_families": 15,
+     "held_out_positive_families": 5,
+     "held_out_selected_mean_risk_difference": 0.03828125,
+     "held_out_positive_direction": true
+    }
+   ]
+  }
+ ],
+ "matched_random_control_sets": {
+  "candidate_to_verify": [
+   {
+    "set_index": 0,
+    "experts": [
+     [
+      28,
+      [
+       120,
+       139
+      ]
+     ]
+    ],
+    "native_exposure_by_target_and_peer": [
+     {
+      "target_expert": 189,
+      "target_exposure": 0.07499278818426645,
+      "peer_expert": 139,
+      "peer_exposure": 0.07486822277242204,
+      "relative_exposure_gap": 0.0016610318786699912
+     },
+     {
+      "target_expert": 9,
+      "target_exposure": 0.09114562678498661,
+      "peer_expert": 120,
+      "peer_exposure": 0.09227739758949333,
+      "relative_exposure_gap": 0.012417170679802043
+     }
+    ]
+   },
+   {
+    "set_index": 1,
+    "experts": [
+     [
+      28,
+      [
+       133,
+       255
+      ]
+     ]
+    ],
+    "native_exposure_by_target_and_peer": [
+     {
+      "target_expert": 189,
+      "target_exposure": 0.07499278818426645,
+      "peer_expert": 255,
+      "peer_exposure": 0.07100874806672237,
+      "relative_exposure_gap": 0.053125643331926875
+     },
+     {
+      "target_expert": 9,
+      "target_exposure": 0.09114562678498661,
+      "peer_expert": 133,
+      "peer_exposure": 0.09310632297496686,
+      "relative_exposure_gap": 0.021511686946928923
+     }
+    ]
+   },
+   {
+    "set_index": 2,
+    "experts": [
+     [
+      28,
+      [
+       5,
+       43
+      ]
+     ]
+    ],
+    "native_exposure_by_target_and_peer": [
+     {
+      "target_expert": 189,
+      "target_exposure": 0.07499278818426645,
+      "peer_expert": 43,
+      "peer_exposure": 0.07970458584593561,
+      "relative_exposure_gap": 0.06283001040168944
+     },
+     {
+      "target_expert": 9,
+      "target_exposure": 0.09114562678498661,
+      "peer_expert": 5,
+      "peer_exposure": 0.09425352942302416,
+      "relative_exposure_gap": 0.03409820907117267
+     }
+    ]
+   },
+   {
+    "set_index": 3,
+    "experts": [
+     [
+      28,
+      [
+       24,
+       196
+      ]
+     ]
+    ],
+    "native_exposure_by_target_and_peer": [
+     {
+      "target_expert": 189,
+      "target_exposure": 0.07499278818426645,
+      "peer_expert": 196,
+      "peer_exposure": 0.08115833465320656,
+      "relative_exposure_gap": 0.08221519186339094
+     },
+     {
+      "target_expert": 9,
+      "target_exposure": 0.09114562678498661,
+      "peer_expert": 24,
+      "peer_exposure": 0.09504978335496034,
+      "relative_exposure_gap": 0.042834272007187674
+     }
+    ]
+   }
+  ],
+  "approach_to_commit": [
+   {
+    "set_index": 0,
+    "experts": [
+     [
+      24,
+      [
+       109
+      ]
+     ]
+    ],
+    "native_exposure_by_target_and_peer": [
+     {
+      "target_expert": 159,
+      "target_exposure": 0.09545806022139458,
+      "peer_expert": 109,
+      "peer_exposure": 0.09478322757053313,
+      "relative_exposure_gap": 0.007069415084449842
+     }
+    ]
+   },
+   {
+    "set_index": 1,
+    "experts": [
+     [
+      24,
+      [
+       63
+      ]
+     ]
+    ],
+    "native_exposure_by_target_and_peer": [
+     {
+      "target_expert": 159,
+      "target_exposure": 0.09545806022139458,
+      "peer_expert": 63,
+      "peer_exposure": 0.09444378120378995,
+      "relative_exposure_gap": 0.010625388943083795
+     }
+    ]
+   },
+   {
+    "set_index": 2,
+    "experts": [
+     [
+      24,
+      [
+       40
+      ]
+     ]
+    ],
+    "native_exposure_by_target_and_peer": [
+     {
+      "target_expert": 159,
+      "target_exposure": 0.09545806022139458,
+      "peer_expert": 40,
+      "peer_exposure": 0.09337753621570033,
+      "relative_exposure_gap": 0.021795163246235257
+     }
+    ]
+   },
+   {
+    "set_index": 3,
+    "experts": [
+     [
+      24,
+      [
+       26
+      ]
+     ]
+    ],
+    "native_exposure_by_target_and_peer": [
+     {
+      "target_expert": 159,
+      "target_exposure": 0.09545806022139458,
+      "peer_expert": 26,
+      "peer_exposure": 0.0923238288573483,
+      "relative_exposure_gap": 0.03283359578831898
+     }
+    ]
+   }
+  ]
+ },
+ "eligibility_gate": "independent full-prefix pretreatment start audit and globally family-disjoint enrollment; no intervention outcomes used for selecting these expert IDs",
+ "approach_weakness": "Explore\u2192Plan/Implement class proxy, not identified approach\u2192semantic commitment; a single supported expert replaces the infeasible two-expert pair; held-out fold signs are reported, not a confirmatory efficacy claim",
+ "interpretation": "observational routing contrasts select sparse proposals, not causal expert importance or optimal trajectories; evaluate biases +0.5 and +1.0 against native duplicates and frozen random sets",
+ "sha256": "144458193e294152f92703c854a11055fa49929cee0e85289d0cb4eb2ab0aef0"
+}

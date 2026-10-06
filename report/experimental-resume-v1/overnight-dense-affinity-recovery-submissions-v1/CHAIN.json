@@ -1,0 +1,16 @@
+{
+ "schema": "dense-parent-affinity-recovery-v1",
+ "records": [
+  {
+   "stage": "A",
+   "preparation_job": "59350372",
+   "dispatch_job": "59350375"
+  },
+  {
+   "stage": "B",
+   "preparation_job": "59345850",
+   "dispatch_job": "59350378"
+  }
+ ],
+ "sha256": "633ea4b03432a1646a21c99bfe3f375c874a7750ac9b0eb43d338c591797530d"
+}

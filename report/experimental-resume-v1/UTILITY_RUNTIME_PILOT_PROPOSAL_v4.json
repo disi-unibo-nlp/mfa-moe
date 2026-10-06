@@ -1,0 +1,70 @@
+{
+ "schema": "utility-runtime-pilot-proposal-v4",
+ "status": "READY_BOUNDED_RUNTIME_PILOT_ATTACHMENTS",
+ "supersedes_proposal_path": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/UTILITY_RUNTIME_PILOT_PROPOSAL_v3.json",
+ "supersedes_proposal_sha256": "4be49c5059bc317390b20597538cba8419968068069f856f3970c23aeb336024",
+ "amendment": "Scheduling-only correction: preserve active afterok dependencies, but retire completed or purged prerequisites only after sacct COMPLETED 0:0 plus matching sealed artifact validation. Preserve the sealed v3 proposal, corrected placement environment, all 208 engineering sources, enrollment, controller, model profile and statistical policy.",
+ "corrected_dispatcher_sha256": "0c142175df5db52fdf00a85d0e8dd46099209a76c5161994b4279332d6c84a10",
+ "utility_plan_path": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/UTILITY_SCOUT_PLAN_v1.json",
+ "utility_plan_sha256": "ee58a07e92fca4f5841e747c5a7620bd312445dffbe0782304f167e91211345e",
+ "pilot_families": 2,
+ "family_order": [
+  "c138ab74b7d78da1f1c24a83b62085fa2072e66d7f66be1ecd24af317ed173ce",
+  "12247c7cf3d87a6b258e67a4338ba3095842c61fa00abdcb516e327d79c4f83f"
+ ],
+ "assigned_cells": 8,
+ "canonical_assignment_uids": [
+  "utility-v1|39aaac3d3f9581be294e0b77d6b8f9fb",
+  "utility-v1|1bd4ec5a81b28abfa5a44104de9e0037",
+  "utility-v1|30afee13e0a75ab6df148611860247d1",
+  "utility-v1|89363b98a0a2fa1d6cb83341bdd9aad4",
+  "utility-v1|0910de8d4f10f5eb53766010869e0d78",
+  "utility-v1|9713d806f0cc02229872b6aca55718ce",
+  "utility-v1|86a417f022ae8bcc86b6c0b24dbf27b0",
+  "utility-v1|fc2a3eaad2ab83fff79a21279e9a128b"
+ ],
+ "assignment_selection": "First two families in frozen utility order; all native/frozen-policy \u00d7 two-seed cells.",
+ "qualification_submission_path": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/utility-engineering-submissions-v2/CHAIN.json",
+ "qualification_submission_sha256": "76b181561aeb421a46f2f8e696491ca341d31c3d3f48a6840891f89923079845",
+ "qualification_job": "59346566",
+ "qualification_result": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/utility-pair-qualification-v2-4fcfe479aecf4afc/QUALIFICATION.json",
+ "engineering_plan_sha256": "4fcfe479aecf4afcf2f858f3445cd2d46a2b4fdb308d0488fbc3c5dc9961a443",
+ "fresh_dispatch_dependency": "Root supplies UTILITY_FRESH_DISPATCH_JOB and matching afterok dependency when submitting the first attachment. The exact value is recorded in attachment/submission receipts, not fixed in this proposal.",
+ "fresh_design_sha256": "c9a8633048dfab3971a35d8c0b58c583ff7d18779a4dbde47c70a1f14f435386",
+ "gpus": 4,
+ "wall_seconds": 28800,
+ "allocation_gpu_hour_ceiling": 32,
+ "shutdown_deadline_margin_seconds": 600,
+ "maximum_output_tokens_per_assignment": 16384,
+ "maximum_generator_output_tokens": 131072,
+ "maximum_injected_tokens": 0,
+ "policy_assignments": 4,
+ "native_assignments": 4,
+ "side_query_count_cap": null,
+ "side_reader_output_cap_each": 1024,
+ "completion_guarantee": false,
+ "allocation_rule": "Single bounded four-GPU allocation up to eight hours. Charge all allocated wall time including both loads, waits, semantic queries, failures and shutdown; no automatic retry. Stop with incomplete artifacts if eight assignments cannot finish.",
+ "cpu_attachment_allocations": "Three one-core 5-minute jobs plus one two-core 30-minute selector/preparation job; 1.25 CPUh total requested ceiling.",
+ "dependency_rule": "After fresh generation dispatcher, attach after its reader dispatcher; then attach selector after complete semantic analysis and successful engineering job. Validate sealed qualification PASS independently before GPU submission and again before load.",
+ "engineering_exposure": {
+  "fixture_family": "74254b23b19519bf3cdeef518ee196f773cfe00e19b2ac5d58fb5f4511cee707",
+  "pool_membership": {
+   "discovery": true,
+   "mechanism": false,
+   "utility": false
+  },
+  "utility_96_overlap": false,
+  "family_freeze_sha256": "592a71b1fa2223a29168ee29afae73de406b3a4d4408d38b69080bee152143f6",
+  "action": "Original frozen split preserved; no utility-family replacement or fixture-exclusion sensitivity needed."
+ },
+ "reuse_rule": "Preserve canonical full-study UIDs. Clean pilot receipts can be reused only with identical policy, sampler, controller/code, original prompts and qualified execution profile; retain pilot provenance and all errors/nonfires/caps in ITT.",
+ "production_status": "FULL_96_FAMILY_PRODUCTION_REQUIRES_MEASURED_COMPLETE_STAGE_PROPOSAL",
+ "attachment_files": {
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/prepare_utility_pilot_attachment_v4.py": "4ae5374dfbf18c6f352202c4287cb08b09e1a13f8aee9730a9b20ecf42b461a0",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/attach_utility_price_pilot_v4.py": "8edf02a398c63b4472e46fbd6b0a5a0c3db612f444dea01a05e4ec8d343c37af",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/attach_utility_price_pilot_v4.sbatch": "6b3f11fdfcbed514b0c4e44d79bd2b9b90103ff66e20619c0f62125f2d4eac0d",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/run_utility_price_pilot_v4.sbatch": "403afa19b912bf52316a86dc78e410c84aebf8c229951e236060462c08e80100",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/dispatch_overnight_readers_v1.py": "0c142175df5db52fdf00a85d0e8dd46099209a76c5161994b4279332d6c84a10"
+ },
+ "sha256": "ce86e4bcaa9c5c4a12f9c9456f118662dccdb57ed355f952cabc9617a83152fa"
+}

@@ -1,0 +1,6 @@
+{
+ "schema": "native-finalization-correction-tests-v4",
+ "stdout": "..............                                                           [100%]\n14 passed in 0.41s\n",
+ "test_source_sha256": "877c0323ce6e7c11e1ac95aa4b6ce70d3bddd3a3ddc860f11af2ace00207db0e",
+ "sha256": "e133a86e380f09e6f48677de8df128a306fd6f50e7adec52cc1a6c52ce6f01e9"
+}

@@ -1,0 +1,33 @@
+{
+ "schema": "transition-v21-start-rating-price-v1",
+ "job_id": "59174827",
+ "status": "PASS_COMPLETE_STAGE",
+ "frame_sha256": "2b16c415953eac9f164efae8528b5dc7cec89a22a36da620b9eb14224e430399",
+ "rating_driver_sha256": "6c907af57459328703188ea2795da5b09ee00608c0e3efac905c177caea92fc5",
+ "rubric_sha256": "84bf517481c4f7d3ddb94e05e2a940e89ca4fffce8336c1e3f6300a1bf374225",
+ "parity_sha256": "cfd88c8a002ac6b3ca3901b992d483f8f257681658ac558603b6ea7c8d6da707",
+ "rows": 372,
+ "ratings": 744,
+ "prompt_tokens_exact_twice": 229086,
+ "prompt_tokens_min": 209,
+ "prompt_tokens_max": 471,
+ "max_decode_tokens": 761856,
+ "observed_parity_decode_tokens_per_s": 134.49267971894108,
+ "pessimistic_decode_tokens_per_s": 87.4202418173117,
+ "pessimistic_prefill_tokens_per_s": 9828.032010549021,
+ "repeat_work_factor": 1.25,
+ "components_seconds": {
+  "decode": 10893.586887921574,
+  "prefill": 29.136809861082583,
+  "two_cold_loads": 1806.3911320251646,
+  "two_shutdowns": 392
+ },
+ "complete_stage_projected_GPU_h": 7.289508238782123,
+ "allocation_plan": {
+  "first_slice_GPU_h_max": 8.0,
+  "one_recovery_GPU_h_max": 2.0,
+  "combined_GPU_h_ceiling": 10.0
+ },
+ "interpretation": "Pessimistic all-capped 1024-token pricing; two same-model prefix-only start readers; disjoint sampled windows but same discovery families; target-window ratings are a separate stage",
+ "sha256": "e5e7c8be81692bafbcd87e62761639f09ce14109418067b3609ba5f97f56a192"
+}

@@ -1,0 +1,24 @@
+{
+ "schema": "overnight-submit-receipt-v1",
+ "name": "a-prepare",
+ "binding": {
+  "old_chain_sha256": "76ab2fd287cacf0c646280b20aafc12a935482fed7a733f4662117241fdde736",
+  "completed_prerequisite_job": "59347821",
+  "prerequisite_sacct": "59347821|COMPLETED|0:0\n",
+  "shared_submit_sha256": "0c142175df5db52fdf00a85d0e8dd46099209a76c5161994b4279332d6c84a10",
+  "recovery_source_sha256": "29d10bf364b8311019980b360bb8143b9ee91e5109f758ad98fcc1a3168ca18c",
+  "scope": "Only queued scheduler environment changes. Prepared B frame/price reused; A preparation did not execute. Scientific sources and outputs unchanged."
+ },
+ "arguments": [
+  "--job-name=dense-A-prepare-affinity-r1",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/prepare_generated_dense_v1.sbatch",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/OVERNIGHT_DISCOVERY_A_MANIFEST_v1.json",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/OVERNIGHT_DISCOVERY_A_PRICE_v1.json",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/overnight-routing-v1-9b714fe1091f1d16",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/generated-dense"
+ ],
+ "job_id": "59350372",
+ "submission": "59350372",
+ "removed_parent_environment_keys": [],
+ "sha256": "b684099149d5e1f39656de2f856933cda9eb4cf6086bff90d7d41db1b44527ae"
+}

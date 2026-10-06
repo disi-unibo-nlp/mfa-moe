@@ -1,0 +1,46 @@
+{
+ "schema": "overnight-direct-recovery-job-receipts-v1",
+ "recorded_UTC": "2026-10-05T08:37:20.090332+00:00",
+ "host": "login05.leonardo.local",
+ "user": "lmolfett",
+ "records": [
+  {
+   "job_id": "59378652",
+   "wrapper": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/analyze_routing_first_stage_v2.sbatch",
+   "wrapper_sha256": "d7d54cca2dc221c8f25f82b621f14879880dc154aa0e3faaba7b032a402e64b8",
+   "accounting": "59378652|COMPLETED|0:0|91|lmolfett\n"
+  },
+  {
+   "job_id": "59378922",
+   "wrapper": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/routing_paper_entry_v4.sbatch",
+   "wrapper_sha256": "1bf7b4bd2fc5a98de5bc888b01029b6c3a2f362d6613c5dc4f54b632cc5c256c",
+   "accounting": "59378922|COMPLETED|0:0|7|lmolfett\n"
+  },
+  {
+   "job_id": "59379758",
+   "wrapper": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/submit_fresh_veto_sensitivity_v2.sbatch",
+   "wrapper_sha256": "757f70895fffb9bd9a4984f1e911492dc20eebfb12749e7277efce424e87a3e5",
+   "accounting": "59379758|COMPLETED|0:0|7|lmolfett\n"
+  },
+  {
+   "job_id": "59379763",
+   "wrapper": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/routing_paper_entry_v4.sbatch",
+   "wrapper_sha256": "1bf7b4bd2fc5a98de5bc888b01029b6c3a2f362d6613c5dc4f54b632cc5c256c",
+   "accounting": "59379763|COMPLETED|0:0|6|lmolfett\n"
+  },
+  {
+   "job_id": "59380018",
+   "wrapper": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/prepare_generated_dense_fresh_metadata_recovery_v1.sbatch",
+   "wrapper_sha256": "d62ad18caaa3b0ff10f3bc98f91ada18fd84d59b9bc7c8ebce8ebfed3e15b1e7",
+   "accounting": "59380018|RUNNING|0:0|331|lmolfett\n"
+  },
+  {
+   "job_id": "59380029",
+   "wrapper": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/dispatch_generated_dense_fresh_metadata_recovery_v1.sbatch",
+   "wrapper_sha256": "1b66384c180bf379696eaefb163dd8e3e8c25761426b1c889b034fc19036a3c9",
+   "accounting": "59380029|PENDING|0:0|0|lmolfett\n"
+  }
+ ],
+ "scope": "Exact-accounting receipts for direct root submissions; canonical scientific measurement and utility chains retain their separate immutable receipts.",
+ "sha256": "7305b0e9c796c94edc795d71234740b10f69269ff6d028dd27f30744c920f6ec"
+}

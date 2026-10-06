@@ -1,0 +1,10 @@
+{
+ "schema": "native-finalization-transport-correction-v2",
+ "failed_job_id": "59416713",
+ "observed_failure": "environment: line 19: _module_raw: command not found; exit 127 in 2 seconds",
+ "correction": "Preserve BASH_FUNC__module_raw%% alongside the existing credential-free environment allowlist.",
+ "affected_scientific_results": [],
+ "scientific_manifest_existed_at_failure": false,
+ "adapter_file_sha256": "2e8b50fc2da1d284f7f976a739bcfc17fde88581782ca1d7f6c580c249f19807",
+ "sha256": "8e8a4b2071cccdffd4e558ce6afa47c55b0bf42414b9afd93b71f0d2b2e0ce12"
+}

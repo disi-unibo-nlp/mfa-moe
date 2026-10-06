@@ -1,0 +1,212 @@
+{
+ "schema": "fixed-sidequery-cap-sensitivity-v0",
+ "sensitivity_sha256": "1507899309aedf2ecb5ef5dedbc337a8f445b20140543764fc939068fcd54c27",
+ "frame_sha256": "6c10499bf71c7223b5c90fa6c2a1b13e13e9fb5c9c2af584d3ba67b4272290b2",
+ "agreement_sha256": "f15c5b8e283daf24b77ec72a910f013c0c47deb355628b42275891e56cefb43e",
+ "driver_sha256": "ef4a14e552bc387ab50170bce90e1d548b6a74bafd7d2f1a37209f3cc7541297",
+ "utility_output_horizon_native_tokens": 16384,
+ "candidate_attempts": 48,
+ "candidate_allfire_calls": 1505,
+ "other_transition_allfire_calls": 44,
+ "caps": [
+  {
+   "max_candidate_sidequeries_per_attempt": 1,
+   "candidate_calls": 48,
+   "all_three_transition_calls_if_other_uncapped": 92,
+   "qwen_approved_candidate_starts_kept_in_stratified_sample": 0,
+   "qwen_approved_candidate_starts_sample_total": 25
+  },
+  {
+   "max_candidate_sidequeries_per_attempt": 2,
+   "candidate_calls": 96,
+   "all_three_transition_calls_if_other_uncapped": 140,
+   "qwen_approved_candidate_starts_kept_in_stratified_sample": 1,
+   "qwen_approved_candidate_starts_sample_total": 25
+  },
+  {
+   "max_candidate_sidequeries_per_attempt": 4,
+   "candidate_calls": 192,
+   "all_three_transition_calls_if_other_uncapped": 236,
+   "qwen_approved_candidate_starts_kept_in_stratified_sample": 2,
+   "qwen_approved_candidate_starts_sample_total": 25
+  },
+  {
+   "max_candidate_sidequeries_per_attempt": 8,
+   "candidate_calls": 382,
+   "all_three_transition_calls_if_other_uncapped": 426,
+   "qwen_approved_candidate_starts_kept_in_stratified_sample": 7,
+   "qwen_approved_candidate_starts_sample_total": 25
+  },
+  {
+   "max_candidate_sidequeries_per_attempt": 12,
+   "candidate_calls": 563,
+   "all_three_transition_calls_if_other_uncapped": 607,
+   "qwen_approved_candidate_starts_kept_in_stratified_sample": 11,
+   "qwen_approved_candidate_starts_sample_total": 25
+  },
+  {
+   "max_candidate_sidequeries_per_attempt": 16,
+   "candidate_calls": 734,
+   "all_three_transition_calls_if_other_uncapped": 778,
+   "qwen_approved_candidate_starts_kept_in_stratified_sample": 13,
+   "qwen_approved_candidate_starts_sample_total": 25
+  },
+  {
+   "max_candidate_sidequeries_per_attempt": 24,
+   "candidate_calls": 1003,
+   "all_three_transition_calls_if_other_uncapped": 1047,
+   "qwen_approved_candidate_starts_kept_in_stratified_sample": 18,
+   "qwen_approved_candidate_starts_sample_total": 25
+  },
+  {
+   "max_candidate_sidequeries_per_attempt": 32,
+   "candidate_calls": 1209,
+   "all_three_transition_calls_if_other_uncapped": 1253,
+   "qwen_approved_candidate_starts_kept_in_stratified_sample": 23,
+   "qwen_approved_candidate_starts_sample_total": 25
+  },
+  {
+   "max_candidate_sidequeries_per_attempt": 48,
+   "candidate_calls": 1443,
+   "all_three_transition_calls_if_other_uncapped": 1487,
+   "qwen_approved_candidate_starts_kept_in_stratified_sample": 24,
+   "qwen_approved_candidate_starts_sample_total": 25
+  },
+  {
+   "max_candidate_sidequeries_per_attempt": 64,
+   "candidate_calls": 1505,
+   "all_three_transition_calls_if_other_uncapped": 1549,
+   "qwen_approved_candidate_starts_kept_in_stratified_sample": 25,
+   "qwen_approved_candidate_starts_sample_total": 25
+  }
+ ],
+ "qwen_approved_sample_event_ranks": [
+  {
+   "uid": "0f8104bd7eda768c2be7783b199cd01b5da7da4136eb0622483b32f0e0916f35",
+   "family": "707ab7621174d1305ed9fb7370a65a7984a70d929ccb758a88557e35c8364c4f",
+   "event_rank": 13
+  },
+  {
+   "uid": "195a73780e875af9f082c282ff68e6a7ec55577f3899dbbe7c634a6e0eb28c2a",
+   "family": "fff0f7ae0efb38815249ca8438b8d015ad1348e758b06f5a91ccf288fb481337",
+   "event_rank": 14
+  },
+  {
+   "uid": "1c7020e28ecb3f33264255b59c57a4307fd1596f3d309bb57a4f588bd9cbe8a0",
+   "family": "b2b7f6c88970465e284c37b9fdec74e0588f38a406110c4f7f36a615ebfaf5da",
+   "event_rank": 8
+  },
+  {
+   "uid": "241ef799f70721de8b4454fed4939188b770e186c5396695c7fd73534e307d47",
+   "family": "52543cd453052b5d707943b34a1ec31df532d3be7c1a15dbcb51f49e99028f61",
+   "event_rank": 32
+  },
+  {
+   "uid": "28acdecc63ec7448a4a7e967d9964ac8e97f2ee8acf26f45a9338335c73c59d1",
+   "family": "74254b23b19519bf3cdeef518ee196f773cfe00e19b2ac5d58fb5f4511cee707",
+   "event_rank": 17
+  },
+  {
+   "uid": "3143bcc1e556f3b1e4f4cae0a323253dc45bc75812973d6b76be094d79c80f32",
+   "family": "707ab7621174d1305ed9fb7370a65a7984a70d929ccb758a88557e35c8364c4f",
+   "event_rank": 11
+  },
+  {
+   "uid": "374167cf6d3e6b7a61e539a892c0ea6cd3f9908422276fdf583cc53970245c4f",
+   "family": "98d7c0cffaf8664a6014dd716307b620be6f01d17a3c98014465cc1df0250e35",
+   "event_rank": 33
+  },
+  {
+   "uid": "4921785e83e97db16d89f221e27c0d3adc9843a1afea8a85d4a462990907161c",
+   "family": "6332f3952a4d310f59b492e2d5cfbe5d42d4d7b9eea81a06bdeec6ad10bcd2db",
+   "event_rank": 28
+  },
+  {
+   "uid": "4fa56be8c827baa56a45c4ead3f701b06dbba86ce4f8a8265b5c9ff1df3253b9",
+   "family": "730298a853730be798458e327441b4ee24174b92cb5dba0f74230a87955bee4c",
+   "event_rank": 17
+  },
+  {
+   "uid": "510442a7894dd0f0d7fb044e464d5b90366a21bb8e2908f56fcc2687dc77a57b",
+   "family": "1b8c3e7cc03eb4055ad504c782b763336ba17da040b85c2a115dc7eb1d23f714",
+   "event_rank": 2
+  },
+  {
+   "uid": "655e2f5270eb8103ef41211d43436349ccaed7ef3c67b553e81e98aa876eeac6",
+   "family": "550fd432263445b7a658cbf3f7b32ad019cc13b611f7f4df5094527f0a938047",
+   "event_rank": 4
+  },
+  {
+   "uid": "6a3b538e7f9d1ce76da4bcc67c475d363e6f284e206db1e99248db4ead6593fb",
+   "family": "96e6320e8bd05cc4d7234ffd23d2a4fd8f73c35fb306da771c9867fefda0559b",
+   "event_rank": 22
+  },
+  {
+   "uid": "7363f6f6a93de4f3b4a38a13d53406c40434d96ed9fb607cc15f359685908016",
+   "family": "ec47e896ec807987bdd073e3f44aca15adb1f4e475208ba011b62aa0b06c2c6c",
+   "event_rank": 54
+  },
+  {
+   "uid": "8c38fed8be8b6e78a784dbb144f2f1c67583dcf9ec68dcc3a2002b35cbf0d8b9",
+   "family": "6825f10257492d7a05d15e1947436b04b8e0801eb0dc71a1d69baa492d8bd982",
+   "event_rank": 9
+  },
+  {
+   "uid": "9186e9071c2b613c754b37a6ae0274d6880c3c19064fcc2d45c873baabc5055e",
+   "family": "550fd432263445b7a658cbf3f7b32ad019cc13b611f7f4df5094527f0a938047",
+   "event_rank": 12
+  },
+  {
+   "uid": "a3d07bcd66f33b92c63a25522eb30fffc7018d591e4b3e0a8bd2fd18ab476ca4",
+   "family": "45cb78a1df75e9c0052ca94e400d2007351ead1d91a9f1e3042e806639cb8670",
+   "event_rank": 6
+  },
+  {
+   "uid": "ab6c786fb8d1d2ef6f305c28bb7755137077f6af515ca0651591c526835660cb",
+   "family": "550fd432263445b7a658cbf3f7b32ad019cc13b611f7f4df5094527f0a938047",
+   "event_rank": 10
+  },
+  {
+   "uid": "ac36c2d77776f6f54b24e589acf41e02b079346ad49b503ccb0bdae7f4dd71bf",
+   "family": "9f6de64123e79af466d77c24675abb4fa45f391964e54f226f7508115cd1b66d",
+   "event_rank": 21
+  },
+  {
+   "uid": "b43b3b3c1b0133f9612e3631abf6beb79d3f545279ec7abd5c1cfccd95f097a7",
+   "family": "fe413656eb88bcd59b91fafc8491dfc9b6106bd5eeeead02398d8ee95f45c3f8",
+   "event_rank": 30
+  },
+  {
+   "uid": "c2a31cc37e321a006f603174353c4a00392e5a20cdc363a9535d35a1a5c8e751",
+   "family": "730298a853730be798458e327441b4ee24174b92cb5dba0f74230a87955bee4c",
+   "event_rank": 28
+  },
+  {
+   "uid": "c5eafa30a009f74bc9108ff672b40150434514ccad3bc9e28138f0e663ace8db",
+   "family": "fe413656eb88bcd59b91fafc8491dfc9b6106bd5eeeead02398d8ee95f45c3f8",
+   "event_rank": 31
+  },
+  {
+   "uid": "e518cfc48f2dc95bdafe537d0327275ae941b76520f56c1ad6a6f3608cfba532",
+   "family": "00bfb4aac61f3d15220bc24ec149bff7d52daae64328216584692a8974416e86",
+   "event_rank": 6
+  },
+  {
+   "uid": "e669c7e4cf3a3b1815337c6732bbbe4c2ed64cb75a1d0421b9255757bacbb6d9",
+   "family": "eee15807710ee7873a219abd0c07a9f2075da668d35575207b6b945f13305137",
+   "event_rank": 6
+  },
+  {
+   "uid": "ed151bc46b3fc9945b4af057c2e87040221e07bbdd06d7675246875d42c5b98f",
+   "family": "3367fc3d3cb10721c5ca4d2dab40e29e369042f3e801709985eb83b35caffac1",
+   "event_rank": 22
+  },
+  {
+   "uid": "f4c1ca457cdc44ea043124089bdac8849fe3e564bef18aa2630c0f2e5c222920",
+   "family": "b2fbed68b5770889117d45148541a367c98d2a8c1b6c5f73fe5f7e3eda952ac2",
+   "event_rank": 5
+  }
+ ],
+ "interpretation": "Counts describe discovery native attempts and a stratified Qwen-rated subsample; positives are LLM audit starts, not human truth. First-K cap is a past-only cost option, not a validated online controller. No utility outcomes or future text enter the policy.",
+ "sha256": "9ebb6d2844f27da61600389e26b622cab872e6a1a741404874076a44935d20a2"
+}

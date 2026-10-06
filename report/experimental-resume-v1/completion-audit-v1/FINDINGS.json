@@ -1,0 +1,505 @@
+{
+ "schema": "saved-completion-manual-readout-v1",
+ "recorded_utc": "2026-10-05T13:37:56.336849+00:00",
+ "sample_path": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/completion-audit-v1/SAMPLE.json",
+ "sample_sha256": "69955bce5985852efc198e15d8fa8e544a5c81ec5a4bff33ac66bcdbf0052628",
+ "script_sha256": "ccfa85dbb5fa1fafc54d8ae939b0b6b6e846b29c1b7ff2963e1278f289bcc28a",
+ "selection_rule": "Hash-ranked distinct native prefixes: two per unclosed/capped transition stratum, one per other observed stratum; no selection by intervention contents.",
+ "cases_reviewed": 7,
+ "completions_reviewed": 42,
+ "finish_counts_in_selected_sample": {
+  "natural_stop": 10,
+  "unclosed_capped": 29,
+  "closed_but_capped": 3
+ },
+ "reference_checks": {
+  "checked": [
+   1,
+   2,
+   4,
+   5,
+   6,
+   7
+  ],
+  "case_3": "No final reference answer asserted; local vector errors checked algebraically.",
+  "status": "PASS_SHORT_INDEPENDENT_REFERENCE_CALCULATIONS"
+ },
+ "findings": [
+  {
+   "case": 1,
+   "title": "Exponential equation",
+   "question": "math500|math500_test/algebra/1004.json",
+   "reference_answer": "x = 4",
+   "manual_observation": "The saved prefix already solves and verifies x=4. All six continuations finish with the correct boxed answer. Additional reasoning mostly checks wording, formatting and the same calculation.",
+   "patterns_observed_in_case": [
+    "repeated_verification",
+    "response_redrafting",
+    "correct_finished_answer"
+   ],
+   "evidence": [
+    {
+     "arm": "force",
+     "uid": "overnight-v2|8f23d9ca7697ce5bc885884e",
+     "verbatim": "Output Generation"
+    }
+   ],
+   "continuation_lengths": {
+    "native": {
+     "reasoning_tokens": 180,
+     "answer_tokens": 187,
+     "generated_tokens": 368,
+     "finish": "stop",
+     "reasoning_closed": true
+    },
+    "native_duplicate": {
+     "reasoning_tokens": 356,
+     "answer_tokens": 208,
+     "generated_tokens": 565,
+     "finish": "stop",
+     "reasoning_closed": true
+    },
+    "bias": {
+     "reasoning_tokens": 445,
+     "answer_tokens": 171,
+     "generated_tokens": 617,
+     "finish": "stop",
+     "reasoning_closed": true
+    },
+    "force": {
+     "reasoning_tokens": 472,
+     "answer_tokens": 228,
+     "generated_tokens": 701,
+     "finish": "stop",
+     "reasoning_closed": true
+    },
+    "reweight": {
+     "reasoning_tokens": 390,
+     "answer_tokens": 242,
+     "generated_tokens": 633,
+     "finish": "stop",
+     "reasoning_closed": true
+    },
+    "random_bias": {
+     "reasoning_tokens": 324,
+     "answer_tokens": 141,
+     "generated_tokens": 466,
+     "finish": "stop",
+     "reasoning_closed": true
+    }
+   }
+  },
+  {
+   "case": 2,
+   "title": "Balloon and rope geometry",
+   "question": "math500|math500_test/geometry/702.json",
+   "reference_answer": "maximum saving = 160",
+   "manual_observation": "All six continuations are capped. They restate coordinate conventions and constraints, but also make valid progress towards the height. Some interventions progress farther than native. Capping here does not demonstrate mathematical divergence.",
+   "patterns_observed_in_case": [
+    "repeated_setup",
+    "useful_unfinished_work"
+   ],
+   "evidence": [],
+   "continuation_lengths": {
+    "native": {
+     "reasoning_tokens": 1024,
+     "answer_tokens": 0,
+     "generated_tokens": 1024,
+     "finish": "length",
+     "reasoning_closed": false
+    },
+    "native_duplicate": {
+     "reasoning_tokens": 1024,
+     "answer_tokens": 0,
+     "generated_tokens": 1024,
+     "finish": "length",
+     "reasoning_closed": false
+    },
+    "bias": {
+     "reasoning_tokens": 1024,
+     "answer_tokens": 0,
+     "generated_tokens": 1024,
+     "finish": "length",
+     "reasoning_closed": false
+    },
+    "force": {
+     "reasoning_tokens": 1024,
+     "answer_tokens": 0,
+     "generated_tokens": 1024,
+     "finish": "length",
+     "reasoning_closed": false
+    },
+    "reweight": {
+     "reasoning_tokens": 1024,
+     "answer_tokens": 0,
+     "generated_tokens": 1024,
+     "finish": "length",
+     "reasoning_closed": false
+    },
+    "random_force": {
+     "reasoning_tokens": 1024,
+     "answer_tokens": 0,
+     "generated_tokens": 1024,
+     "finish": "length",
+     "reasoning_closed": false
+    }
+   }
+  },
+  {
+   "case": 3,
+   "title": "Equilateral hexagon",
+   "question": "aime24|aime24_85",
+   "reference_answer": null,
+   "manual_observation": "All six continuations are capped while revisiting directions, opposite sides and vector representations. Much of the available budget is spent on setup rather than using the given triangle side lengths. The native duplicate drops a minus sign; the random reweight control rejects a valid telescoping vector identity.",
+   "patterns_observed_in_case": [
+    "repeated_setup",
+    "local_math_error",
+    "unresolved_doubt"
+   ],
+   "evidence": [
+    {
+     "arm": "native_duplicate",
+     "uid": "overnight-v2|0574277171b81641b9d7cf24",
+     "verbatim": "\\vec{E} - \\vec{D} = \\vec{B} - \\vec{A}"
+    },
+    {
+     "arm": "random_reweight",
+     "uid": "overnight-v2|22087cceb4cb82094a3155f3",
+     "verbatim": "\\vec{AB} + \\vec{BC} + \\vec{CD} = \\vec{AD}$? No."
+    }
+   ],
+   "continuation_lengths": {
+    "native": {
+     "reasoning_tokens": 1024,
+     "answer_tokens": 0,
+     "generated_tokens": 1024,
+     "finish": "length",
+     "reasoning_closed": false
+    },
+    "native_duplicate": {
+     "reasoning_tokens": 1024,
+     "answer_tokens": 0,
+     "generated_tokens": 1024,
+     "finish": "length",
+     "reasoning_closed": false
+    },
+    "bias": {
+     "reasoning_tokens": 1024,
+     "answer_tokens": 0,
+     "generated_tokens": 1024,
+     "finish": "length",
+     "reasoning_closed": false
+    },
+    "force": {
+     "reasoning_tokens": 1024,
+     "answer_tokens": 0,
+     "generated_tokens": 1024,
+     "finish": "length",
+     "reasoning_closed": false
+    },
+    "reweight": {
+     "reasoning_tokens": 1024,
+     "answer_tokens": 0,
+     "generated_tokens": 1024,
+     "finish": "length",
+     "reasoning_closed": false
+    },
+    "random_reweight": {
+     "reasoning_tokens": 1024,
+     "answer_tokens": 0,
+     "generated_tokens": 1024,
+     "finish": "length",
+     "reasoning_closed": false
+    }
+   }
+  },
+  {
+   "case": 4,
+   "title": "Radical equation",
+   "question": "olympiad|olympiad_2392",
+   "reference_answer": "x = 6",
+   "manual_observation": "The 1,826-token saved prefix already solves the equation, rejects x=3 and verifies x=6. The continuations repeat those checks and consider unsupported alternate interpretations. Native and reweight close reasoning but their answers are cut off; the other four remain in reasoning at the cap.",
+   "patterns_observed_in_case": [
+    "repeated_verification",
+    "response_redrafting",
+    "unsupported_alternative",
+    "correct_candidate_without_finished_answer"
+   ],
+   "evidence": [
+    {
+     "arm": "native",
+     "uid": "overnight-v2|8b4051b45e5d11f5410b3a80",
+     "verbatim": "Wait, what if complex numbers were allowed?"
+    }
+   ],
+   "continuation_lengths": {
+    "native": {
+     "reasoning_tokens": 868,
+     "answer_tokens": 155,
+     "generated_tokens": 1024,
+     "finish": "length",
+     "reasoning_closed": true
+    },
+    "native_duplicate": {
+     "reasoning_tokens": 1024,
+     "answer_tokens": 0,
+     "generated_tokens": 1024,
+     "finish": "length",
+     "reasoning_closed": false
+    },
+    "bias": {
+     "reasoning_tokens": 1024,
+     "answer_tokens": 0,
+     "generated_tokens": 1024,
+     "finish": "length",
+     "reasoning_closed": false
+    },
+    "force": {
+     "reasoning_tokens": 1024,
+     "answer_tokens": 0,
+     "generated_tokens": 1024,
+     "finish": "length",
+     "reasoning_closed": false
+    },
+    "reweight": {
+     "reasoning_tokens": 944,
+     "answer_tokens": 79,
+     "generated_tokens": 1024,
+     "finish": "length",
+     "reasoning_closed": true
+    },
+    "random_bias": {
+     "reasoning_tokens": 1024,
+     "answer_tokens": 0,
+     "generated_tokens": 1024,
+     "finish": "length",
+     "reasoning_closed": false
+    }
+   }
+  },
+  {
+   "case": 5,
+   "title": "Arithmetic sequence",
+   "question": "math500|math500_test/algebra/668.json",
+   "reference_answer": "x = 45",
+   "manual_observation": "All six reach the correct candidate. Native, native duplicate, force and random force finish correctly. Bias closes reasoning but its final answer is cut off; reweight never closes reasoning. Hypotheses about geometric sequences, indices and numeral bases are raised and rejected rather than established as facts.",
+   "patterns_observed_in_case": [
+    "repeated_verification",
+    "response_redrafting",
+    "unsupported_alternative",
+    "mixed_operator_effect"
+   ],
+   "evidence": [
+    {
+     "arm": "bias",
+     "uid": "overnight-v2|b9f58effb811d567daec2346",
+     "verbatim": "What if the user meant $3^2, x, 3^4$ as indices?"
+    },
+    {
+     "arm": "bias",
+     "uid": "overnight-v2|b9f58effb811d567daec2346",
+     "verbatim": "What if $3^2$ is not base 10?"
+    }
+   ],
+   "continuation_lengths": {
+    "native": {
+     "reasoning_tokens": 657,
+     "answer_tokens": 354,
+     "generated_tokens": 1012,
+     "finish": "stop",
+     "reasoning_closed": true
+    },
+    "native_duplicate": {
+     "reasoning_tokens": 657,
+     "answer_tokens": 354,
+     "generated_tokens": 1012,
+     "finish": "stop",
+     "reasoning_closed": true
+    },
+    "bias": {
+     "reasoning_tokens": 954,
+     "answer_tokens": 69,
+     "generated_tokens": 1024,
+     "finish": "length",
+     "reasoning_closed": true
+    },
+    "force": {
+     "reasoning_tokens": 513,
+     "answer_tokens": 319,
+     "generated_tokens": 833,
+     "finish": "stop",
+     "reasoning_closed": true
+    },
+    "reweight": {
+     "reasoning_tokens": 1024,
+     "answer_tokens": 0,
+     "generated_tokens": 1024,
+     "finish": "length",
+     "reasoning_closed": false
+    },
+    "random_force": {
+     "reasoning_tokens": 655,
+     "answer_tokens": 367,
+     "generated_tokens": 1023,
+     "finish": "stop",
+     "reasoning_closed": true
+    }
+   }
+  },
+  {
+   "case": 6,
+   "title": "Complex rotation",
+   "question": "math500|math500_test/precalculus/990.json",
+   "reference_answer": "w = 6 - 5i",
+   "manual_observation": "Every continuation reaches the correct final value near its start, repeats the calculation, and then checks coordinates, angles, magnitude or the diagram code. All six spend 1,024 new tokens without closing reasoning. This is concrete evidence of delayed finalization despite a correct candidate.",
+   "patterns_observed_in_case": [
+    "repeated_verification",
+    "correct_candidate_without_finished_answer"
+   ],
+   "evidence": [
+    {
+     "arm": "native",
+     "uid": "overnight-v2|f54f6ab13a1f472883043773",
+     "verbatim": "$w = 6 - 5i$."
+    },
+    {
+     "arm": "native",
+     "uid": "overnight-v2|f54f6ab13a1f472883043773",
+     "verbatim": "The solution appears robust. No obvious pitfalls found."
+    }
+   ],
+   "continuation_lengths": {
+    "native": {
+     "reasoning_tokens": 1024,
+     "answer_tokens": 0,
+     "generated_tokens": 1024,
+     "finish": "length",
+     "reasoning_closed": false
+    },
+    "native_duplicate": {
+     "reasoning_tokens": 1024,
+     "answer_tokens": 0,
+     "generated_tokens": 1024,
+     "finish": "length",
+     "reasoning_closed": false
+    },
+    "bias": {
+     "reasoning_tokens": 1024,
+     "answer_tokens": 0,
+     "generated_tokens": 1024,
+     "finish": "length",
+     "reasoning_closed": false
+    },
+    "force": {
+     "reasoning_tokens": 1024,
+     "answer_tokens": 0,
+     "generated_tokens": 1024,
+     "finish": "length",
+     "reasoning_closed": false
+    },
+    "reweight": {
+     "reasoning_tokens": 1024,
+     "answer_tokens": 0,
+     "generated_tokens": 1024,
+     "finish": "length",
+     "reasoning_closed": false
+    },
+    "random_reweight": {
+     "reasoning_tokens": 1024,
+     "answer_tokens": 0,
+     "generated_tokens": 1024,
+     "finish": "length",
+     "reasoning_closed": false
+    }
+   }
+  },
+  {
+   "case": 7,
+   "title": "Common tangents",
+   "question": "math500|math500_test/intermediate_algebra/1779.json",
+   "reference_answer": "area = 15",
+   "manual_observation": "All six continuations correctly obtain the two tangent slopes but do not reach the area within the budget. Native and reweight make false statements about vertical tangency; native first recognizes x=0 as the vertex tangent and later calls it a normal. Force writes and immediately rejects an incorrect contact-point formula. The trigger labelled candidate_to_verify is only the circle radius, before an answer candidate exists.",
+   "patterns_observed_in_case": [
+    "useful_unfinished_work",
+    "local_math_error",
+    "unresolved_doubt",
+    "questionable_transition_trigger"
+   ],
+   "evidence": [
+    {
+     "arm": "native",
+     "uid": "overnight-v2|a31dd15d490a413ac45170ff",
+     "verbatim": "vertical line cuts at one point but is normal."
+    },
+    {
+     "arm": "reweight",
+     "uid": "overnight-v2|b8ad4ea33312219e16a043f0",
+     "verbatim": "vertical tangents don't exist (parabola opens sideways)."
+    }
+   ],
+   "continuation_lengths": {
+    "native": {
+     "reasoning_tokens": 1024,
+     "answer_tokens": 0,
+     "generated_tokens": 1024,
+     "finish": "length",
+     "reasoning_closed": false
+    },
+    "native_duplicate": {
+     "reasoning_tokens": 1024,
+     "answer_tokens": 0,
+     "generated_tokens": 1024,
+     "finish": "length",
+     "reasoning_closed": false
+    },
+    "bias": {
+     "reasoning_tokens": 1024,
+     "answer_tokens": 0,
+     "generated_tokens": 1024,
+     "finish": "length",
+     "reasoning_closed": false
+    },
+    "force": {
+     "reasoning_tokens": 1024,
+     "answer_tokens": 0,
+     "generated_tokens": 1024,
+     "finish": "length",
+     "reasoning_closed": false
+    },
+    "reweight": {
+     "reasoning_tokens": 1024,
+     "answer_tokens": 0,
+     "generated_tokens": 1024,
+     "finish": "length",
+     "reasoning_closed": false
+    },
+    "random_bias": {
+     "reasoning_tokens": 1024,
+     "answer_tokens": 0,
+     "generated_tokens": 1024,
+     "finish": "length",
+     "reasoning_closed": false
+    }
+   }
+  }
+ ],
+ "interpretation": "Repeated checking and delayed finalization occur in native controls and intervention arms. Genuine local mathematical errors coexist with correct candidates and useful unfinished work. The sample does not establish a general hallucination rate or an operator ranking.",
+ "limitations": [
+  "Selection deliberately covers native finish/boundary strata; sample counts are not population rates.",
+  "These are 1,024-token continuations after saved prefixes, not full original-prompt 16,384-token runs.",
+  "Reasoning containing a correct candidate is not a completed answer and does not override frozen grading.",
+  "No causal diagnosis of a sampler, template or EOS implementation defect is established."
+ ],
+ "source_inspection": {
+  "branch_builder": "scripts/experimental_resume/overnight_routing_runner_v2.py:285",
+  "observed": "Exact prompt-plus-prefix IDs, common seeds across arms, restore_presence=True and presence=0.0 for the branch request. A zero request penalty alone does not establish disabled presence penalties.",
+  "engine_source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/code/s1-9a61e32f48c04c24/moe_steer/engine.py:140"
+ },
+ "next_steps": [
+  "Prioritize the already authorized full original-prompt accuracy/length panel and its frozen strict/J1 grading; retain cohort selection from measured costs before examining its accuracy outcomes.",
+  "Keep correct reasoning candidates, finished answers, reasoning closure and capped outputs separate in the diagnostic readout; retain operationally-wrong cap/error scoring.",
+  "Use a small manual sample of long native and intervention traces to assess repeated checking and delayed finalization; reuse existing classifications rather than restarting dense relabelling.",
+  "Check existing replay/termination qualification and manually validate a few trigger contexts. If full native runs still loop, propose a separate controlled sampler/prompt/termination experiment without changing frozen operator comparisons."
+ ],
+ "operations": "No new Slurm jobs or inference. Deferred dense classification remains deferred; no frozen source, scoring rule, policy or result edited.",
+ "sha256": "cfefd40c5a3d80efa2d9002bcccf25ac8f9897c042e8cbdebc3a420f5536da81"
+}

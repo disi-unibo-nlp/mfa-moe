@@ -1,0 +1,3378 @@
+{
+ "schema": "native-finalization-saved-audit-v1",
+ "sample_sha256": "69955bce5985852efc198e15d8fa8e544a5c81ec5a4bff33ac66bcdbf0052628",
+ "review_sha256": "cfefd40c5a3d80efa2d9002bcccf25ac8f9897c042e8cbdebc3a420f5536da81",
+ "rows": [
+  {
+   "case": 1,
+   "uid": "overnight-v2|39d98e18490f560cfb3e6a3e",
+   "arm": "native",
+   "trigger_text": "To solve for $x$ in the equation $2^8 = 4^x$, we can express both sides with the same base.",
+   "trigger_meaning": "setup_or_redraft",
+   "preceding_prefix_state": "already_checked_answer",
+   "case_level_patterns": [
+    "repeated_verification",
+    "response_redrafting",
+    "correct_finished_answer"
+   ],
+   "case_level_observation": "The saved prefix already solves and verifies x=4. All six continuations finish with the correct boxed answer. Additional reasoning mostly checks wording, formatting and the same calculation.",
+   "first_complete_correct_candidate": {
+    "status": "FIRST_REVIEWED_CORRECT_COMPLETE_EXPRESSION",
+    "region": "prefix",
+    "character_offset": 693,
+    "character_end": 698,
+    "expression": "x = 4",
+    "subsequent_reasoning_characters": 952,
+    "precision": "Character offset in saved decoded text; no invented token alignment.",
+    "is_final_answer_grade": false
+   },
+   "reasoning_tokens": 180,
+   "generated_tokens": 368,
+   "scope": "Case-level reviewed categories are not newly assigned per-completion labels."
+  },
+  {
+   "case": 1,
+   "uid": "overnight-v2|eaf202210ec4de676907742b",
+   "arm": "native_duplicate",
+   "trigger_text": "To solve for $x$ in the equation $2^8 = 4^x$, we can express both sides with the same base.",
+   "trigger_meaning": "setup_or_redraft",
+   "preceding_prefix_state": "already_checked_answer",
+   "case_level_patterns": [
+    "repeated_verification",
+    "response_redrafting",
+    "correct_finished_answer"
+   ],
+   "case_level_observation": "The saved prefix already solves and verifies x=4. All six continuations finish with the correct boxed answer. Additional reasoning mostly checks wording, formatting and the same calculation.",
+   "first_complete_correct_candidate": {
+    "status": "FIRST_REVIEWED_CORRECT_COMPLETE_EXPRESSION",
+    "region": "prefix",
+    "character_offset": 693,
+    "character_end": 698,
+    "expression": "x = 4",
+    "subsequent_reasoning_characters": 1576,
+    "precision": "Character offset in saved decoded text; no invented token alignment.",
+    "is_final_answer_grade": false
+   },
+   "reasoning_tokens": 356,
+   "generated_tokens": 565,
+   "scope": "Case-level reviewed categories are not newly assigned per-completion labels."
+  },
+  {
+   "case": 1,
+   "uid": "overnight-v2|86b88d47cdd16d899e09e7c0",
+   "arm": "bias",
+   "trigger_text": "To solve for $x$ in the equation $2^8 = 4^x$, we can express both sides with the same base.",
+   "trigger_meaning": "setup_or_redraft",
+   "preceding_prefix_state": "already_checked_answer",
+   "case_level_patterns": [
+    "repeated_verification",
+    "response_redrafting",
+    "correct_finished_answer"
+   ],
+   "case_level_observation": "The saved prefix already solves and verifies x=4. All six continuations finish with the correct boxed answer. Additional reasoning mostly checks wording, formatting and the same calculation.",
+   "first_complete_correct_candidate": {
+    "status": "FIRST_REVIEWED_CORRECT_COMPLETE_EXPRESSION",
+    "region": "prefix",
+    "character_offset": 693,
+    "character_end": 698,
+    "expression": "x = 4",
+    "subsequent_reasoning_characters": 1857,
+    "precision": "Character offset in saved decoded text; no invented token alignment.",
+    "is_final_answer_grade": false
+   },
+   "reasoning_tokens": 445,
+   "generated_tokens": 617,
+   "scope": "Case-level reviewed categories are not newly assigned per-completion labels."
+  },
+  {
+   "case": 1,
+   "uid": "overnight-v2|8f23d9ca7697ce5bc885884e",
+   "arm": "force",
+   "trigger_text": "To solve for $x$ in the equation $2^8 = 4^x$, we can express both sides with the same base.",
+   "trigger_meaning": "setup_or_redraft",
+   "preceding_prefix_state": "already_checked_answer",
+   "case_level_patterns": [
+    "repeated_verification",
+    "response_redrafting",
+    "correct_finished_answer"
+   ],
+   "case_level_observation": "The saved prefix already solves and verifies x=4. All six continuations finish with the correct boxed answer. Additional reasoning mostly checks wording, formatting and the same calculation.",
+   "first_complete_correct_candidate": {
+    "status": "FIRST_REVIEWED_CORRECT_COMPLETE_EXPRESSION",
+    "region": "prefix",
+    "character_offset": 693,
+    "character_end": 698,
+    "expression": "x = 4",
+    "subsequent_reasoning_characters": 1918,
+    "precision": "Character offset in saved decoded text; no invented token alignment.",
+    "is_final_answer_grade": false
+   },
+   "reasoning_tokens": 472,
+   "generated_tokens": 701,
+   "scope": "Case-level reviewed categories are not newly assigned per-completion labels."
+  },
+  {
+   "case": 1,
+   "uid": "overnight-v2|b93ce1c18ea92e61a031a409",
+   "arm": "reweight",
+   "trigger_text": "To solve for $x$ in the equation $2^8 = 4^x$, we can express both sides with the same base.",
+   "trigger_meaning": "setup_or_redraft",
+   "preceding_prefix_state": "already_checked_answer",
+   "case_level_patterns": [
+    "repeated_verification",
+    "response_redrafting",
+    "correct_finished_answer"
+   ],
+   "case_level_observation": "The saved prefix already solves and verifies x=4. All six continuations finish with the correct boxed answer. Additional reasoning mostly checks wording, formatting and the same calculation.",
+   "first_complete_correct_candidate": {
+    "status": "FIRST_REVIEWED_CORRECT_COMPLETE_EXPRESSION",
+    "region": "prefix",
+    "character_offset": 693,
+    "character_end": 698,
+    "expression": "x = 4",
+    "subsequent_reasoning_characters": 1701,
+    "precision": "Character offset in saved decoded text; no invented token alignment.",
+    "is_final_answer_grade": false
+   },
+   "reasoning_tokens": 390,
+   "generated_tokens": 633,
+   "scope": "Case-level reviewed categories are not newly assigned per-completion labels."
+  },
+  {
+   "case": 1,
+   "uid": "overnight-v2|ebc237b448a8e507598e73ba",
+   "arm": "random_bias",
+   "trigger_text": "To solve for $x$ in the equation $2^8 = 4^x$, we can express both sides with the same base.",
+   "trigger_meaning": "setup_or_redraft",
+   "preceding_prefix_state": "already_checked_answer",
+   "case_level_patterns": [
+    "repeated_verification",
+    "response_redrafting",
+    "correct_finished_answer"
+   ],
+   "case_level_observation": "The saved prefix already solves and verifies x=4. All six continuations finish with the correct boxed answer. Additional reasoning mostly checks wording, formatting and the same calculation.",
+   "first_complete_correct_candidate": {
+    "status": "FIRST_REVIEWED_CORRECT_COMPLETE_EXPRESSION",
+    "region": "prefix",
+    "character_offset": 693,
+    "character_end": 698,
+    "expression": "x = 4",
+    "subsequent_reasoning_characters": 1506,
+    "precision": "Character offset in saved decoded text; no invented token alignment.",
+    "is_final_answer_grade": false
+   },
+   "reasoning_tokens": 324,
+   "generated_tokens": 466,
+   "scope": "Case-level reviewed categories are not newly assigned per-completion labels."
+  },
+  {
+   "case": 2,
+   "uid": "overnight-v2|dbbdf683c2a942654723f247",
+   "arm": "native",
+   "trigger_text": "Let's set up a coordinate system.",
+   "trigger_meaning": "setup",
+   "preceding_prefix_state": "no_candidate",
+   "case_level_patterns": [
+    "repeated_setup",
+    "useful_unfinished_work"
+   ],
+   "case_level_observation": "All six continuations are capped. They restate coordinate conventions and constraints, but also make valid progress towards the height. Some interventions progress farther than native. Capping here does not demonstrate mathematical divergence.",
+   "first_complete_correct_candidate": {
+    "status": "NOT_ESTABLISHED",
+    "region": null,
+    "character_offset": null
+   },
+   "reasoning_tokens": 1024,
+   "generated_tokens": 1024,
+   "scope": "Case-level reviewed categories are not newly assigned per-completion labels."
+  },
+  {
+   "case": 2,
+   "uid": "overnight-v2|41673ad534e7f9d7ee28e563",
+   "arm": "native_duplicate",
+   "trigger_text": "Let's set up a coordinate system.",
+   "trigger_meaning": "setup",
+   "preceding_prefix_state": "no_candidate",
+   "case_level_patterns": [
+    "repeated_setup",
+    "useful_unfinished_work"
+   ],
+   "case_level_observation": "All six continuations are capped. They restate coordinate conventions and constraints, but also make valid progress towards the height. Some interventions progress farther than native. Capping here does not demonstrate mathematical divergence.",
+   "first_complete_correct_candidate": {
+    "status": "NOT_ESTABLISHED",
+    "region": null,
+    "character_offset": null
+   },
+   "reasoning_tokens": 1024,
+   "generated_tokens": 1024,
+   "scope": "Case-level reviewed categories are not newly assigned per-completion labels."
+  },
+  {
+   "case": 2,
+   "uid": "overnight-v2|931568e2e4dfca7eb5eec952",
+   "arm": "bias",
+   "trigger_text": "Let's set up a coordinate system.",
+   "trigger_meaning": "setup",
+   "preceding_prefix_state": "no_candidate",
+   "case_level_patterns": [
+    "repeated_setup",
+    "useful_unfinished_work"
+   ],
+   "case_level_observation": "All six continuations are capped. They restate coordinate conventions and constraints, but also make valid progress towards the height. Some interventions progress farther than native. Capping here does not demonstrate mathematical divergence.",
+   "first_complete_correct_candidate": {
+    "status": "NOT_ESTABLISHED",
+    "region": null,
+    "character_offset": null
+   },
+   "reasoning_tokens": 1024,
+   "generated_tokens": 1024,
+   "scope": "Case-level reviewed categories are not newly assigned per-completion labels."
+  },
+  {
+   "case": 2,
+   "uid": "overnight-v2|bb7c95d32d604fab8111c623",
+   "arm": "force",
+   "trigger_text": "Let's set up a coordinate system.",
+   "trigger_meaning": "setup",
+   "preceding_prefix_state": "no_candidate",
+   "case_level_patterns": [
+    "repeated_setup",
+    "useful_unfinished_work"
+   ],
+   "case_level_observation": "All six continuations are capped. They restate coordinate conventions and constraints, but also make valid progress towards the height. Some interventions progress farther than native. Capping here does not demonstrate mathematical divergence.",
+   "first_complete_correct_candidate": {
+    "status": "NOT_ESTABLISHED",
+    "region": null,
+    "character_offset": null
+   },
+   "reasoning_tokens": 1024,
+   "generated_tokens": 1024,
+   "scope": "Case-level reviewed categories are not newly assigned per-completion labels."
+  },
+  {
+   "case": 2,
+   "uid": "overnight-v2|bf4f6baedc9446349d8fb32e",
+   "arm": "reweight",
+   "trigger_text": "Let's set up a coordinate system.",
+   "trigger_meaning": "setup",
+   "preceding_prefix_state": "no_candidate",
+   "case_level_patterns": [
+    "repeated_setup",
+    "useful_unfinished_work"
+   ],
+   "case_level_observation": "All six continuations are capped. They restate coordinate conventions and constraints, but also make valid progress towards the height. Some interventions progress farther than native. Capping here does not demonstrate mathematical divergence.",
+   "first_complete_correct_candidate": {
+    "status": "NOT_ESTABLISHED",
+    "region": null,
+    "character_offset": null
+   },
+   "reasoning_tokens": 1024,
+   "generated_tokens": 1024,
+   "scope": "Case-level reviewed categories are not newly assigned per-completion labels."
+  },
+  {
+   "case": 2,
+   "uid": "overnight-v2|7ae433e4c7aa171ad4979c8b",
+   "arm": "random_force",
+   "trigger_text": "Let's set up a coordinate system.",
+   "trigger_meaning": "setup",
+   "preceding_prefix_state": "no_candidate",
+   "case_level_patterns": [
+    "repeated_setup",
+    "useful_unfinished_work"
+   ],
+   "case_level_observation": "All six continuations are capped. They restate coordinate conventions and constraints, but also make valid progress towards the height. Some interventions progress farther than native. Capping here does not demonstrate mathematical divergence.",
+   "first_complete_correct_candidate": {
+    "status": "NOT_ESTABLISHED",
+    "region": null,
+    "character_offset": null
+   },
+   "reasoning_tokens": 1024,
+   "generated_tokens": 1024,
+   "scope": "Case-level reviewed categories are not newly assigned per-completion labels."
+  },
+  {
+   "case": 3,
+   "uid": "overnight-v2|904f099cbbce2f953e2416d4",
+   "arm": "native",
+   "trigger_text": "However, consider the vectors representing the sides.",
+   "trigger_meaning": "setup",
+   "preceding_prefix_state": "no_candidate",
+   "case_level_patterns": [
+    "repeated_setup",
+    "local_math_error",
+    "unresolved_doubt"
+   ],
+   "case_level_observation": "All six continuations are capped while revisiting directions, opposite sides and vector representations. Much of the available budget is spent on setup rather than using the given triangle side lengths. The native duplicate drops a minus sign; the random reweight control rejects a valid telescoping vector identity.",
+   "first_complete_correct_candidate": {
+    "status": "NOT_ESTABLISHED",
+    "region": null,
+    "character_offset": null
+   },
+   "reasoning_tokens": 1024,
+   "generated_tokens": 1024,
+   "scope": "Case-level reviewed categories are not newly assigned per-completion labels."
+  },
+  {
+   "case": 3,
+   "uid": "overnight-v2|0574277171b81641b9d7cf24",
+   "arm": "native_duplicate",
+   "trigger_text": "However, consider the vectors representing the sides.",
+   "trigger_meaning": "setup",
+   "preceding_prefix_state": "no_candidate",
+   "case_level_patterns": [
+    "repeated_setup",
+    "local_math_error",
+    "unresolved_doubt"
+   ],
+   "case_level_observation": "All six continuations are capped while revisiting directions, opposite sides and vector representations. Much of the available budget is spent on setup rather than using the given triangle side lengths. The native duplicate drops a minus sign; the random reweight control rejects a valid telescoping vector identity.",
+   "first_complete_correct_candidate": {
+    "status": "NOT_ESTABLISHED",
+    "region": null,
+    "character_offset": null
+   },
+   "reasoning_tokens": 1024,
+   "generated_tokens": 1024,
+   "scope": "Case-level reviewed categories are not newly assigned per-completion labels."
+  },
+  {
+   "case": 3,
+   "uid": "overnight-v2|8929a3c9ab8ee55e997f048b",
+   "arm": "bias",
+   "trigger_text": "However, consider the vectors representing the sides.",
+   "trigger_meaning": "setup",
+   "preceding_prefix_state": "no_candidate",
+   "case_level_patterns": [
+    "repeated_setup",
+    "local_math_error",
+    "unresolved_doubt"
+   ],
+   "case_level_observation": "All six continuations are capped while revisiting directions, opposite sides and vector representations. Much of the available budget is spent on setup rather than using the given triangle side lengths. The native duplicate drops a minus sign; the random reweight control rejects a valid telescoping vector identity.",
+   "first_complete_correct_candidate": {
+    "status": "NOT_ESTABLISHED",
+    "region": null,
+    "character_offset": null
+   },
+   "reasoning_tokens": 1024,
+   "generated_tokens": 1024,
+   "scope": "Case-level reviewed categories are not newly assigned per-completion labels."
+  },
+  {
+   "case": 3,
+   "uid": "overnight-v2|4b19a5306fce22d6c4db5704",
+   "arm": "force",
+   "trigger_text": "However, consider the vectors representing the sides.",
+   "trigger_meaning": "setup",
+   "preceding_prefix_state": "no_candidate",
+   "case_level_patterns": [
+    "repeated_setup",
+    "local_math_error",
+    "unresolved_doubt"
+   ],
+   "case_level_observation": "All six continuations are capped while revisiting directions, opposite sides and vector representations. Much of the available budget is spent on setup rather than using the given triangle side lengths. The native duplicate drops a minus sign; the random reweight control rejects a valid telescoping vector identity.",
+   "first_complete_correct_candidate": {
+    "status": "NOT_ESTABLISHED",
+    "region": null,
+    "character_offset": null
+   },
+   "reasoning_tokens": 1024,
+   "generated_tokens": 1024,
+   "scope": "Case-level reviewed categories are not newly assigned per-completion labels."
+  },
+  {
+   "case": 3,
+   "uid": "overnight-v2|d18d08caa76de6d532d1836c",
+   "arm": "reweight",
+   "trigger_text": "However, consider the vectors representing the sides.",
+   "trigger_meaning": "setup",
+   "preceding_prefix_state": "no_candidate",
+   "case_level_patterns": [
+    "repeated_setup",
+    "local_math_error",
+    "unresolved_doubt"
+   ],
+   "case_level_observation": "All six continuations are capped while revisiting directions, opposite sides and vector representations. Much of the available budget is spent on setup rather than using the given triangle side lengths. The native duplicate drops a minus sign; the random reweight control rejects a valid telescoping vector identity.",
+   "first_complete_correct_candidate": {
+    "status": "NOT_ESTABLISHED",
+    "region": null,
+    "character_offset": null
+   },
+   "reasoning_tokens": 1024,
+   "generated_tokens": 1024,
+   "scope": "Case-level reviewed categories are not newly assigned per-completion labels."
+  },
+  {
+   "case": 3,
+   "uid": "overnight-v2|22087cceb4cb82094a3155f3",
+   "arm": "random_reweight",
+   "trigger_text": "However, consider the vectors representing the sides.",
+   "trigger_meaning": "setup",
+   "preceding_prefix_state": "no_candidate",
+   "case_level_patterns": [
+    "repeated_setup",
+    "local_math_error",
+    "unresolved_doubt"
+   ],
+   "case_level_observation": "All six continuations are capped while revisiting directions, opposite sides and vector representations. Much of the available budget is spent on setup rather than using the given triangle side lengths. The native duplicate drops a minus sign; the random reweight control rejects a valid telescoping vector identity.",
+   "first_complete_correct_candidate": {
+    "status": "NOT_ESTABLISHED",
+    "region": null,
+    "character_offset": null
+   },
+   "reasoning_tokens": 1024,
+   "generated_tokens": 1024,
+   "scope": "Case-level reviewed categories are not newly assigned per-completion labels."
+  },
+  {
+   "case": 4,
+   "uid": "overnight-v2|8b4051b45e5d11f5410b3a80",
+   "arm": "native",
+   "trigger_text": "9. Candidates: $x=6, x=3$.",
+   "trigger_meaning": "candidate_set_in_redraft",
+   "preceding_prefix_state": "already_checked_answer",
+   "case_level_patterns": [
+    "repeated_verification",
+    "response_redrafting",
+    "unsupported_alternative",
+    "correct_candidate_without_finished_answer"
+   ],
+   "case_level_observation": "The 1,826-token saved prefix already solves the equation, rejects x=3 and verifies x=6. The continuations repeat those checks and consider unsupported alternate interpretations. Native and reweight close reasoning but their answers are cut off; the other four remain in reasoning at the cap.",
+   "first_complete_correct_candidate": {
+    "status": "FIRST_REVIEWED_CORRECT_COMPLETE_EXPRESSION",
+    "region": "prefix",
+    "character_offset": 2103,
+    "character_end": 2108,
+    "expression": "x = 6",
+    "subsequent_reasoning_characters": 4841,
+    "precision": "Character offset in saved decoded text; no invented token alignment.",
+    "is_final_answer_grade": false
+   },
+   "reasoning_tokens": 868,
+   "generated_tokens": 1024,
+   "scope": "Case-level reviewed categories are not newly assigned per-completion labels."
+  },
+  {
+   "case": 4,
+   "uid": "overnight-v2|f45cf6504def4b51c4028b61",
+   "arm": "native_duplicate",
+   "trigger_text": "9. Candidates: $x=6, x=3$.",
+   "trigger_meaning": "candidate_set_in_redraft",
+   "preceding_prefix_state": "already_checked_answer",
+   "case_level_patterns": [
+    "repeated_verification",
+    "response_redrafting",
+    "unsupported_alternative",
+    "correct_candidate_without_finished_answer"
+   ],
+   "case_level_observation": "The 1,826-token saved prefix already solves the equation, rejects x=3 and verifies x=6. The continuations repeat those checks and consider unsupported alternate interpretations. Native and reweight close reasoning but their answers are cut off; the other four remain in reasoning at the cap.",
+   "first_complete_correct_candidate": {
+    "status": "FIRST_REVIEWED_CORRECT_COMPLETE_EXPRESSION",
+    "region": "prefix",
+    "character_offset": 2103,
+    "character_end": 2108,
+    "expression": "x = 6",
+    "subsequent_reasoning_characters": 5541,
+    "precision": "Character offset in saved decoded text; no invented token alignment.",
+    "is_final_answer_grade": false
+   },
+   "reasoning_tokens": 1024,
+   "generated_tokens": 1024,
+   "scope": "Case-level reviewed categories are not newly assigned per-completion labels."
+  },
+  {
+   "case": 4,
+   "uid": "overnight-v2|0f6d1d01d91984fb6c44c3bf",
+   "arm": "bias",
+   "trigger_text": "9. Candidates: $x=6, x=3$.",
+   "trigger_meaning": "candidate_set_in_redraft",
+   "preceding_prefix_state": "already_checked_answer",
+   "case_level_patterns": [
+    "repeated_verification",
+    "response_redrafting",
+    "unsupported_alternative",
+    "correct_candidate_without_finished_answer"
+   ],
+   "case_level_observation": "The 1,826-token saved prefix already solves the equation, rejects x=3 and verifies x=6. The continuations repeat those checks and consider unsupported alternate interpretations. Native and reweight close reasoning but their answers are cut off; the other four remain in reasoning at the cap.",
+   "first_complete_correct_candidate": {
+    "status": "FIRST_REVIEWED_CORRECT_COMPLETE_EXPRESSION",
+    "region": "prefix",
+    "character_offset": 2103,
+    "character_end": 2108,
+    "expression": "x = 6",
+    "subsequent_reasoning_characters": 5246,
+    "precision": "Character offset in saved decoded text; no invented token alignment.",
+    "is_final_answer_grade": false
+   },
+   "reasoning_tokens": 1024,
+   "generated_tokens": 1024,
+   "scope": "Case-level reviewed categories are not newly assigned per-completion labels."
+  },
+  {
+   "case": 4,
+   "uid": "overnight-v2|2c9975afa30e0fe9b4096da4",
+   "arm": "force",
+   "trigger_text": "9. Candidates: $x=6, x=3$.",
+   "trigger_meaning": "candidate_set_in_redraft",
+   "preceding_prefix_state": "already_checked_answer",
+   "case_level_patterns": [
+    "repeated_verification",
+    "response_redrafting",
+    "unsupported_alternative",
+    "correct_candidate_without_finished_answer"
+   ],
+   "case_level_observation": "The 1,826-token saved prefix already solves the equation, rejects x=3 and verifies x=6. The continuations repeat those checks and consider unsupported alternate interpretations. Native and reweight close reasoning but their answers are cut off; the other four remain in reasoning at the cap.",
+   "first_complete_correct_candidate": {
+    "status": "FIRST_REVIEWED_CORRECT_COMPLETE_EXPRESSION",
+    "region": "prefix",
+    "character_offset": 2103,
+    "character_end": 2108,
+    "expression": "x = 6",
+    "subsequent_reasoning_characters": 5242,
+    "precision": "Character offset in saved decoded text; no invented token alignment.",
+    "is_final_answer_grade": false
+   },
+   "reasoning_tokens": 1024,
+   "generated_tokens": 1024,
+   "scope": "Case-level reviewed categories are not newly assigned per-completion labels."
+  },
+  {
+   "case": 4,
+   "uid": "overnight-v2|24bcad842ddac05b00b8e82d",
+   "arm": "reweight",
+   "trigger_text": "9. Candidates: $x=6, x=3$.",
+   "trigger_meaning": "candidate_set_in_redraft",
+   "preceding_prefix_state": "already_checked_answer",
+   "case_level_patterns": [
+    "repeated_verification",
+    "response_redrafting",
+    "unsupported_alternative",
+    "correct_candidate_without_finished_answer"
+   ],
+   "case_level_observation": "The 1,826-token saved prefix already solves the equation, rejects x=3 and verifies x=6. The continuations repeat those checks and consider unsupported alternate interpretations. Native and reweight close reasoning but their answers are cut off; the other four remain in reasoning at the cap.",
+   "first_complete_correct_candidate": {
+    "status": "FIRST_REVIEWED_CORRECT_COMPLETE_EXPRESSION",
+    "region": "prefix",
+    "character_offset": 2103,
+    "character_end": 2108,
+    "expression": "x = 6",
+    "subsequent_reasoning_characters": 5179,
+    "precision": "Character offset in saved decoded text; no invented token alignment.",
+    "is_final_answer_grade": false
+   },
+   "reasoning_tokens": 944,
+   "generated_tokens": 1024,
+   "scope": "Case-level reviewed categories are not newly assigned per-completion labels."
+  },
+  {
+   "case": 4,
+   "uid": "overnight-v2|dd43eb36580853eba1a4fef9",
+   "arm": "random_bias",
+   "trigger_text": "9. Candidates: $x=6, x=3$.",
+   "trigger_meaning": "candidate_set_in_redraft",
+   "preceding_prefix_state": "already_checked_answer",
+   "case_level_patterns": [
+    "repeated_verification",
+    "response_redrafting",
+    "unsupported_alternative",
+    "correct_candidate_without_finished_answer"
+   ],
+   "case_level_observation": "The 1,826-token saved prefix already solves the equation, rejects x=3 and verifies x=6. The continuations repeat those checks and consider unsupported alternate interpretations. Native and reweight close reasoning but their answers are cut off; the other four remain in reasoning at the cap.",
+   "first_complete_correct_candidate": {
+    "status": "FIRST_REVIEWED_CORRECT_COMPLETE_EXPRESSION",
+    "region": "prefix",
+    "character_offset": 2103,
+    "character_end": 2108,
+    "expression": "x = 6",
+    "subsequent_reasoning_characters": 5321,
+    "precision": "Character offset in saved decoded text; no invented token alignment.",
+    "is_final_answer_grade": false
+   },
+   "reasoning_tokens": 1024,
+   "generated_tokens": 1024,
+   "scope": "Case-level reviewed categories are not newly assigned per-completion labels."
+  },
+  {
+   "case": 5,
+   "uid": "overnight-v2|5ef152dedee9e4bb2367c2d7",
+   "arm": "native",
+   "trigger_text": "So, $x = \\frac{3^2 + 3^4}{2}$.",
+   "trigger_meaning": "complete_candidate_expression",
+   "preceding_prefix_state": "complete_candidate_unchecked",
+   "case_level_patterns": [
+    "repeated_verification",
+    "response_redrafting",
+    "unsupported_alternative",
+    "mixed_operator_effect"
+   ],
+   "case_level_observation": "All six reach the correct candidate. Native, native duplicate, force and random force finish correctly. Bias closes reasoning but its final answer is cut off; reweight never closes reasoning. Hypotheses about geometric sequences, indices and numeral bases are raised and rejected rather than established as facts.",
+   "first_complete_correct_candidate": {
+    "status": "FIRST_REVIEWED_CORRECT_COMPLETE_EXPRESSION",
+    "region": "prefix",
+    "character_offset": 888,
+    "character_end": 911,
+    "expression": "x = \\frac{3^2 + 3^4}{2}",
+    "subsequent_reasoning_characters": 1847,
+    "precision": "Character offset in saved decoded text; no invented token alignment.",
+    "is_final_answer_grade": false
+   },
+   "reasoning_tokens": 657,
+   "generated_tokens": 1012,
+   "scope": "Case-level reviewed categories are not newly assigned per-completion labels."
+  },
+  {
+   "case": 5,
+   "uid": "overnight-v2|4ba80d2d1cc3522a57252d3d",
+   "arm": "native_duplicate",
+   "trigger_text": "So, $x = \\frac{3^2 + 3^4}{2}$.",
+   "trigger_meaning": "complete_candidate_expression",
+   "preceding_prefix_state": "complete_candidate_unchecked",
+   "case_level_patterns": [
+    "repeated_verification",
+    "response_redrafting",
+    "unsupported_alternative",
+    "mixed_operator_effect"
+   ],
+   "case_level_observation": "All six reach the correct candidate. Native, native duplicate, force and random force finish correctly. Bias closes reasoning but its final answer is cut off; reweight never closes reasoning. Hypotheses about geometric sequences, indices and numeral bases are raised and rejected rather than established as facts.",
+   "first_complete_correct_candidate": {
+    "status": "FIRST_REVIEWED_CORRECT_COMPLETE_EXPRESSION",
+    "region": "prefix",
+    "character_offset": 888,
+    "character_end": 911,
+    "expression": "x = \\frac{3^2 + 3^4}{2}",
+    "subsequent_reasoning_characters": 1847,
+    "precision": "Character offset in saved decoded text; no invented token alignment.",
+    "is_final_answer_grade": false
+   },
+   "reasoning_tokens": 657,
+   "generated_tokens": 1012,
+   "scope": "Case-level reviewed categories are not newly assigned per-completion labels."
+  },
+  {
+   "case": 5,
+   "uid": "overnight-v2|b9f58effb811d567daec2346",
+   "arm": "bias",
+   "trigger_text": "So, $x = \\frac{3^2 + 3^4}{2}$.",
+   "trigger_meaning": "complete_candidate_expression",
+   "preceding_prefix_state": "complete_candidate_unchecked",
+   "case_level_patterns": [
+    "repeated_verification",
+    "response_redrafting",
+    "unsupported_alternative",
+    "mixed_operator_effect"
+   ],
+   "case_level_observation": "All six reach the correct candidate. Native, native duplicate, force and random force finish correctly. Bias closes reasoning but its final answer is cut off; reweight never closes reasoning. Hypotheses about geometric sequences, indices and numeral bases are raised and rejected rather than established as facts.",
+   "first_complete_correct_candidate": {
+    "status": "FIRST_REVIEWED_CORRECT_COMPLETE_EXPRESSION",
+    "region": "prefix",
+    "character_offset": 888,
+    "character_end": 911,
+    "expression": "x = \\frac{3^2 + 3^4}{2}",
+    "subsequent_reasoning_characters": 2767,
+    "precision": "Character offset in saved decoded text; no invented token alignment.",
+    "is_final_answer_grade": false
+   },
+   "reasoning_tokens": 954,
+   "generated_tokens": 1024,
+   "scope": "Case-level reviewed categories are not newly assigned per-completion labels."
+  },
+  {
+   "case": 5,
+   "uid": "overnight-v2|462effdbef4c3e81acc48b8b",
+   "arm": "force",
+   "trigger_text": "So, $x = \\frac{3^2 + 3^4}{2}$.",
+   "trigger_meaning": "complete_candidate_expression",
+   "preceding_prefix_state": "complete_candidate_unchecked",
+   "case_level_patterns": [
+    "repeated_verification",
+    "response_redrafting",
+    "unsupported_alternative",
+    "mixed_operator_effect"
+   ],
+   "case_level_observation": "All six reach the correct candidate. Native, native duplicate, force and random force finish correctly. Bias closes reasoning but its final answer is cut off; reweight never closes reasoning. Hypotheses about geometric sequences, indices and numeral bases are raised and rejected rather than established as facts.",
+   "first_complete_correct_candidate": {
+    "status": "FIRST_REVIEWED_CORRECT_COMPLETE_EXPRESSION",
+    "region": "prefix",
+    "character_offset": 888,
+    "character_end": 911,
+    "expression": "x = \\frac{3^2 + 3^4}{2}",
+    "subsequent_reasoning_characters": 1501,
+    "precision": "Character offset in saved decoded text; no invented token alignment.",
+    "is_final_answer_grade": false
+   },
+   "reasoning_tokens": 513,
+   "generated_tokens": 833,
+   "scope": "Case-level reviewed categories are not newly assigned per-completion labels."
+  },
+  {
+   "case": 5,
+   "uid": "overnight-v2|0882c371390ab511ad178b6d",
+   "arm": "reweight",
+   "trigger_text": "So, $x = \\frac{3^2 + 3^4}{2}$.",
+   "trigger_meaning": "complete_candidate_expression",
+   "preceding_prefix_state": "complete_candidate_unchecked",
+   "case_level_patterns": [
+    "repeated_verification",
+    "response_redrafting",
+    "unsupported_alternative",
+    "mixed_operator_effect"
+   ],
+   "case_level_observation": "All six reach the correct candidate. Native, native duplicate, force and random force finish correctly. Bias closes reasoning but its final answer is cut off; reweight never closes reasoning. Hypotheses about geometric sequences, indices and numeral bases are raised and rejected rather than established as facts.",
+   "first_complete_correct_candidate": {
+    "status": "FIRST_REVIEWED_CORRECT_COMPLETE_EXPRESSION",
+    "region": "prefix",
+    "character_offset": 888,
+    "character_end": 911,
+    "expression": "x = \\frac{3^2 + 3^4}{2}",
+    "subsequent_reasoning_characters": 2994,
+    "precision": "Character offset in saved decoded text; no invented token alignment.",
+    "is_final_answer_grade": false
+   },
+   "reasoning_tokens": 1024,
+   "generated_tokens": 1024,
+   "scope": "Case-level reviewed categories are not newly assigned per-completion labels."
+  },
+  {
+   "case": 5,
+   "uid": "overnight-v2|bc3cfeedb272bcffb2ecba0c",
+   "arm": "random_force",
+   "trigger_text": "So, $x = \\frac{3^2 + 3^4}{2}$.",
+   "trigger_meaning": "complete_candidate_expression",
+   "preceding_prefix_state": "complete_candidate_unchecked",
+   "case_level_patterns": [
+    "repeated_verification",
+    "response_redrafting",
+    "unsupported_alternative",
+    "mixed_operator_effect"
+   ],
+   "case_level_observation": "All six reach the correct candidate. Native, native duplicate, force and random force finish correctly. Bias closes reasoning but its final answer is cut off; reweight never closes reasoning. Hypotheses about geometric sequences, indices and numeral bases are raised and rejected rather than established as facts.",
+   "first_complete_correct_candidate": {
+    "status": "FIRST_REVIEWED_CORRECT_COMPLETE_EXPRESSION",
+    "region": "prefix",
+    "character_offset": 888,
+    "character_end": 911,
+    "expression": "x = \\frac{3^2 + 3^4}{2}",
+    "subsequent_reasoning_characters": 1742,
+    "precision": "Character offset in saved decoded text; no invented token alignment.",
+    "is_final_answer_grade": false
+   },
+   "reasoning_tokens": 655,
+   "generated_tokens": 1023,
+   "scope": "Case-level reviewed categories are not newly assigned per-completion labels."
+  },
+  {
+   "case": 6,
+   "uid": "overnight-v2|f54f6ab13a1f472883043773",
+   "arm": "native",
+   "trigger_text": "$= 4 - 2i$.",
+   "trigger_meaning": "intermediate_result",
+   "preceding_prefix_state": "intermediate_result",
+   "case_level_patterns": [
+    "repeated_verification",
+    "correct_candidate_without_finished_answer"
+   ],
+   "case_level_observation": "Every continuation reaches the correct final value near its start, repeats the calculation, and then checks coordinates, angles, magnitude or the diagram code. All six spend 1,024 new tokens without closing reasoning. This is concrete evidence of delayed finalization despite a correct candidate.",
+   "first_complete_correct_candidate": {
+    "status": "FIRST_REVIEWED_CORRECT_COMPLETE_EXPRESSION",
+    "region": "continuation",
+    "character_offset": 157,
+    "character_end": 167,
+    "expression": "w = 6 - 5i",
+    "subsequent_reasoning_characters": 1861,
+    "precision": "Character offset in saved decoded text; no invented token alignment.",
+    "is_final_answer_grade": false
+   },
+   "reasoning_tokens": 1024,
+   "generated_tokens": 1024,
+   "scope": "Case-level reviewed categories are not newly assigned per-completion labels."
+  },
+  {
+   "case": 6,
+   "uid": "overnight-v2|b82377a8a8c7156a6612ff7a",
+   "arm": "native_duplicate",
+   "trigger_text": "$= 4 - 2i$.",
+   "trigger_meaning": "intermediate_result",
+   "preceding_prefix_state": "intermediate_result",
+   "case_level_patterns": [
+    "repeated_verification",
+    "correct_candidate_without_finished_answer"
+   ],
+   "case_level_observation": "Every continuation reaches the correct final value near its start, repeats the calculation, and then checks coordinates, angles, magnitude or the diagram code. All six spend 1,024 new tokens without closing reasoning. This is concrete evidence of delayed finalization despite a correct candidate.",
+   "first_complete_correct_candidate": {
+    "status": "FIRST_REVIEWED_CORRECT_COMPLETE_EXPRESSION",
+    "region": "continuation",
+    "character_offset": 157,
+    "character_end": 167,
+    "expression": "w = 6 - 5i",
+    "subsequent_reasoning_characters": 2086,
+    "precision": "Character offset in saved decoded text; no invented token alignment.",
+    "is_final_answer_grade": false
+   },
+   "reasoning_tokens": 1024,
+   "generated_tokens": 1024,
+   "scope": "Case-level reviewed categories are not newly assigned per-completion labels."
+  },
+  {
+   "case": 6,
+   "uid": "overnight-v2|27f67b0d653bb9f84a433fef",
+   "arm": "bias",
+   "trigger_text": "$= 4 - 2i$.",
+   "trigger_meaning": "intermediate_result",
+   "preceding_prefix_state": "intermediate_result",
+   "case_level_patterns": [
+    "repeated_verification",
+    "correct_candidate_without_finished_answer"
+   ],
+   "case_level_observation": "Every continuation reaches the correct final value near its start, repeats the calculation, and then checks coordinates, angles, magnitude or the diagram code. All six spend 1,024 new tokens without closing reasoning. This is concrete evidence of delayed finalization despite a correct candidate.",
+   "first_complete_correct_candidate": {
+    "status": "FIRST_REVIEWED_CORRECT_COMPLETE_EXPRESSION",
+    "region": "continuation",
+    "character_offset": 153,
+    "character_end": 163,
+    "expression": "w = 6 - 5i",
+    "subsequent_reasoning_characters": 2026,
+    "precision": "Character offset in saved decoded text; no invented token alignment.",
+    "is_final_answer_grade": false
+   },
+   "reasoning_tokens": 1024,
+   "generated_tokens": 1024,
+   "scope": "Case-level reviewed categories are not newly assigned per-completion labels."
+  },
+  {
+   "case": 6,
+   "uid": "overnight-v2|ae7e9770bb960345921ded07",
+   "arm": "force",
+   "trigger_text": "$= 4 - 2i$.",
+   "trigger_meaning": "intermediate_result",
+   "preceding_prefix_state": "intermediate_result",
+   "case_level_patterns": [
+    "repeated_verification",
+    "correct_candidate_without_finished_answer"
+   ],
+   "case_level_observation": "Every continuation reaches the correct final value near its start, repeats the calculation, and then checks coordinates, angles, magnitude or the diagram code. All six spend 1,024 new tokens without closing reasoning. This is concrete evidence of delayed finalization despite a correct candidate.",
+   "first_complete_correct_candidate": {
+    "status": "FIRST_REVIEWED_CORRECT_COMPLETE_EXPRESSION",
+    "region": "continuation",
+    "character_offset": 152,
+    "character_end": 162,
+    "expression": "w = 6 - 5i",
+    "subsequent_reasoning_characters": 2097,
+    "precision": "Character offset in saved decoded text; no invented token alignment.",
+    "is_final_answer_grade": false
+   },
+   "reasoning_tokens": 1024,
+   "generated_tokens": 1024,
+   "scope": "Case-level reviewed categories are not newly assigned per-completion labels."
+  },
+  {
+   "case": 6,
+   "uid": "overnight-v2|25bd06cf2418b473e967dbf8",
+   "arm": "reweight",
+   "trigger_text": "$= 4 - 2i$.",
+   "trigger_meaning": "intermediate_result",
+   "preceding_prefix_state": "intermediate_result",
+   "case_level_patterns": [
+    "repeated_verification",
+    "correct_candidate_without_finished_answer"
+   ],
+   "case_level_observation": "Every continuation reaches the correct final value near its start, repeats the calculation, and then checks coordinates, angles, magnitude or the diagram code. All six spend 1,024 new tokens without closing reasoning. This is concrete evidence of delayed finalization despite a correct candidate.",
+   "first_complete_correct_candidate": {
+    "status": "FIRST_REVIEWED_CORRECT_COMPLETE_EXPRESSION",
+    "region": "continuation",
+    "character_offset": 152,
+    "character_end": 162,
+    "expression": "w = 6 - 5i",
+    "subsequent_reasoning_characters": 2010,
+    "precision": "Character offset in saved decoded text; no invented token alignment.",
+    "is_final_answer_grade": false
+   },
+   "reasoning_tokens": 1024,
+   "generated_tokens": 1024,
+   "scope": "Case-level reviewed categories are not newly assigned per-completion labels."
+  },
+  {
+   "case": 6,
+   "uid": "overnight-v2|4afc8067e4bfa5c29f9eb642",
+   "arm": "random_reweight",
+   "trigger_text": "$= 4 - 2i$.",
+   "trigger_meaning": "intermediate_result",
+   "preceding_prefix_state": "intermediate_result",
+   "case_level_patterns": [
+    "repeated_verification",
+    "correct_candidate_without_finished_answer"
+   ],
+   "case_level_observation": "Every continuation reaches the correct final value near its start, repeats the calculation, and then checks coordinates, angles, magnitude or the diagram code. All six spend 1,024 new tokens without closing reasoning. This is concrete evidence of delayed finalization despite a correct candidate.",
+   "first_complete_correct_candidate": {
+    "status": "FIRST_REVIEWED_CORRECT_COMPLETE_EXPRESSION",
+    "region": "continuation",
+    "character_offset": 152,
+    "character_end": 162,
+    "expression": "w = 6 - 5i",
+    "subsequent_reasoning_characters": 1959,
+    "precision": "Character offset in saved decoded text; no invented token alignment.",
+    "is_final_answer_grade": false
+   },
+   "reasoning_tokens": 1024,
+   "generated_tokens": 1024,
+   "scope": "Case-level reviewed categories are not newly assigned per-completion labels."
+  },
+  {
+   "case": 7,
+   "uid": "overnight-v2|a31dd15d490a413ac45170ff",
+   "arm": "native",
+   "trigger_text": "Center is $(0,0)$, radius $r = \\sqrt{2}$.",
+   "trigger_meaning": "intermediate_result",
+   "preceding_prefix_state": "intermediate_result",
+   "case_level_patterns": [
+    "useful_unfinished_work",
+    "local_math_error",
+    "unresolved_doubt",
+    "questionable_transition_trigger"
+   ],
+   "case_level_observation": "All six continuations correctly obtain the two tangent slopes but do not reach the area within the budget. Native and reweight make false statements about vertical tangency; native first recognizes x=0 as the vertex tangent and later calls it a normal. Force writes and immediately rejects an incorrect contact-point formula. The trigger labelled candidate_to_verify is only the circle radius, before an answer candidate exists.",
+   "first_complete_correct_candidate": {
+    "status": "NOT_ESTABLISHED",
+    "region": null,
+    "character_offset": null
+   },
+   "reasoning_tokens": 1024,
+   "generated_tokens": 1024,
+   "scope": "Case-level reviewed categories are not newly assigned per-completion labels."
+  },
+  {
+   "case": 7,
+   "uid": "overnight-v2|e9e5fcd11a4236f531d2a3ed",
+   "arm": "native_duplicate",
+   "trigger_text": "Center is $(0,0)$, radius $r = \\sqrt{2}$.",
+   "trigger_meaning": "intermediate_result",
+   "preceding_prefix_state": "intermediate_result",
+   "case_level_patterns": [
+    "useful_unfinished_work",
+    "local_math_error",
+    "unresolved_doubt",
+    "questionable_transition_trigger"
+   ],
+   "case_level_observation": "All six continuations correctly obtain the two tangent slopes but do not reach the area within the budget. Native and reweight make false statements about vertical tangency; native first recognizes x=0 as the vertex tangent and later calls it a normal. Force writes and immediately rejects an incorrect contact-point formula. The trigger labelled candidate_to_verify is only the circle radius, before an answer candidate exists.",
+   "first_complete_correct_candidate": {
+    "status": "NOT_ESTABLISHED",
+    "region": null,
+    "character_offset": null
+   },
+   "reasoning_tokens": 1024,
+   "generated_tokens": 1024,
+   "scope": "Case-level reviewed categories are not newly assigned per-completion labels."
+  },
+  {
+   "case": 7,
+   "uid": "overnight-v2|e65096d40090332e695ec8df",
+   "arm": "bias",
+   "trigger_text": "Center is $(0,0)$, radius $r = \\sqrt{2}$.",
+   "trigger_meaning": "intermediate_result",
+   "preceding_prefix_state": "intermediate_result",
+   "case_level_patterns": [
+    "useful_unfinished_work",
+    "local_math_error",
+    "unresolved_doubt",
+    "questionable_transition_trigger"
+   ],
+   "case_level_observation": "All six continuations correctly obtain the two tangent slopes but do not reach the area within the budget. Native and reweight make false statements about vertical tangency; native first recognizes x=0 as the vertex tangent and later calls it a normal. Force writes and immediately rejects an incorrect contact-point formula. The trigger labelled candidate_to_verify is only the circle radius, before an answer candidate exists.",
+   "first_complete_correct_candidate": {
+    "status": "NOT_ESTABLISHED",
+    "region": null,
+    "character_offset": null
+   },
+   "reasoning_tokens": 1024,
+   "generated_tokens": 1024,
+   "scope": "Case-level reviewed categories are not newly assigned per-completion labels."
+  },
+  {
+   "case": 7,
+   "uid": "overnight-v2|8a6c5a90404720680f3d5ccf",
+   "arm": "force",
+   "trigger_text": "Center is $(0,0)$, radius $r = \\sqrt{2}$.",
+   "trigger_meaning": "intermediate_result",
+   "preceding_prefix_state": "intermediate_result",
+   "case_level_patterns": [
+    "useful_unfinished_work",
+    "local_math_error",
+    "unresolved_doubt",
+    "questionable_transition_trigger"
+   ],
+   "case_level_observation": "All six continuations correctly obtain the two tangent slopes but do not reach the area within the budget. Native and reweight make false statements about vertical tangency; native first recognizes x=0 as the vertex tangent and later calls it a normal. Force writes and immediately rejects an incorrect contact-point formula. The trigger labelled candidate_to_verify is only the circle radius, before an answer candidate exists.",
+   "first_complete_correct_candidate": {
+    "status": "NOT_ESTABLISHED",
+    "region": null,
+    "character_offset": null
+   },
+   "reasoning_tokens": 1024,
+   "generated_tokens": 1024,
+   "scope": "Case-level reviewed categories are not newly assigned per-completion labels."
+  },
+  {
+   "case": 7,
+   "uid": "overnight-v2|b8ad4ea33312219e16a043f0",
+   "arm": "reweight",
+   "trigger_text": "Center is $(0,0)$, radius $r = \\sqrt{2}$.",
+   "trigger_meaning": "intermediate_result",
+   "preceding_prefix_state": "intermediate_result",
+   "case_level_patterns": [
+    "useful_unfinished_work",
+    "local_math_error",
+    "unresolved_doubt",
+    "questionable_transition_trigger"
+   ],
+   "case_level_observation": "All six continuations correctly obtain the two tangent slopes but do not reach the area within the budget. Native and reweight make false statements about vertical tangency; native first recognizes x=0 as the vertex tangent and later calls it a normal. Force writes and immediately rejects an incorrect contact-point formula. The trigger labelled candidate_to_verify is only the circle radius, before an answer candidate exists.",
+   "first_complete_correct_candidate": {
+    "status": "NOT_ESTABLISHED",
+    "region": null,
+    "character_offset": null
+   },
+   "reasoning_tokens": 1024,
+   "generated_tokens": 1024,
+   "scope": "Case-level reviewed categories are not newly assigned per-completion labels."
+  },
+  {
+   "case": 7,
+   "uid": "overnight-v2|6ed032c8c9aa34dd638ab876",
+   "arm": "random_bias",
+   "trigger_text": "Center is $(0,0)$, radius $r = \\sqrt{2}$.",
+   "trigger_meaning": "intermediate_result",
+   "preceding_prefix_state": "intermediate_result",
+   "case_level_patterns": [
+    "useful_unfinished_work",
+    "local_math_error",
+    "unresolved_doubt",
+    "questionable_transition_trigger"
+   ],
+   "case_level_observation": "All six continuations correctly obtain the two tangent slopes but do not reach the area within the budget. Native and reweight make false statements about vertical tangency; native first recognizes x=0 as the vertex tangent and later calls it a normal. Force writes and immediately rejects an incorrect contact-point formula. The trigger labelled candidate_to_verify is only the circle radius, before an answer candidate exists.",
+   "first_complete_correct_candidate": {
+    "status": "NOT_ESTABLISHED",
+    "region": null,
+    "character_offset": null
+   },
+   "reasoning_tokens": 1024,
+   "generated_tokens": 1024,
+   "scope": "Case-level reviewed categories are not newly assigned per-completion labels."
+  }
+ ],
+ "reference_checks": {
+  "checked": [
+   1,
+   2,
+   4,
+   5,
+   6,
+   7
+  ],
+  "case_3": "No final reference answer asserted; local vector errors checked algebraically.",
+  "status": "PASS_SHORT_INDEPENDENT_REFERENCE_CALCULATIONS"
+ },
+ "models": {
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/cache/hf/hub/models--unsloth--Qwen3.6-35B-A3B/snapshots/2ab40a9acc6d567889ca4d4e59feb2da56121454/config.json": {
+   "file_sha256": "1d50f10edf903fb2db53d5cdde71454c178bb6aff601c8cd31cec1ffc0372c14",
+   "routed_experts_per_token": 8,
+   "total_routed_experts": 256,
+   "configured_count_status": "KNOWN",
+   "shared_expert_config": {
+    "shared_expert_intermediate_size": 512
+   },
+   "shared_expert_handling": "Separate branch, excluded from routed k."
+  },
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/cache/hf/hub/models--Qwen--Qwen3.6-35B-A3B-FP8/snapshots/95a723d08a9490559dae23d0cff1d9466213d989/config.json": {
+   "file_sha256": "570ef7ea45a7e1d3de2b1d3c70c4ac3562d0e768acdc195778cb4f4d95025845",
+   "routed_experts_per_token": 8,
+   "total_routed_experts": 256,
+   "configured_count_status": "KNOWN",
+   "shared_expert_config": {
+    "shared_expert_intermediate_size": 512
+   },
+   "shared_expert_handling": "Separate branch, excluded from routed k."
+  },
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/cache/hf/hub/models--zai-org--GLM-4.7-Flash/snapshots/7dd20894a642a0aa287e9827cb1a1f7f91386b67/config.json": {
+   "file_sha256": "dc9b97c7c9bed726a2e6939da4234d5c43abb3edec8812068c9a1af1dbc13acb",
+   "routed_experts_per_token": 4,
+   "total_routed_experts": 64,
+   "configured_count_status": "KNOWN",
+   "shared_expert_config": {
+    "n_shared_experts": 1
+   },
+   "shared_expert_handling": "Separate branch, excluded from routed k."
+  },
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/cache/hf/hub/models--openai--gpt-oss-20b/snapshots/6cee5e81ee83917806bbde320786a8fb61efebee/config.json": {
+   "file_sha256": "3a2a26ded679375b7928ddeca59764df7cea83220c1961035f6d6e232659e9ce",
+   "routed_experts_per_token": 4,
+   "total_routed_experts": 32,
+   "configured_count_status": "KNOWN",
+   "shared_expert_config": {},
+   "shared_expert_handling": "Separate branch, excluded from routed k."
+  },
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/cache/hf/hub/models--nvidia--NVIDIA-Nemotron-3.5-Lightning-30B-A3B-BF16/snapshots/a9904d24bcc1d289a1950fa9d2b978c47cf903b9/config.json": {
+   "file_sha256": "a3827a0f5e311547b40943dc081e3ff2f8a277466e8c1a3df2291e8db8a7617c",
+   "routed_experts_per_token": 6,
+   "total_routed_experts": 128,
+   "configured_count_status": "KNOWN",
+   "shared_expert_config": {
+    "n_shared_experts": 1,
+    "moe_shared_expert_intermediate_size": 3712
+   },
+   "shared_expert_handling": "Separate branch, excluded from routed k."
+  },
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/cache/hf/hub/models--Qwen--Qwen3-30B-A3B/snapshots/ad44e777bcd18fa416d9da3bd8f70d33ebb85d39/config.json": {
+   "file_sha256": "2850ddb3bf7aecad20b611e2d44f3077fc8193f4827c93beddd4c02ad63c2297",
+   "routed_experts_per_token": 8,
+   "total_routed_experts": 128,
+   "configured_count_status": "KNOWN",
+   "shared_expert_config": {},
+   "shared_expert_handling": "Separate branch, excluded from routed k."
+  },
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/cache/hf/hub/models--nvidia--NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4/snapshots/bee7596271d1495f6992ae224aefde4410e816b8/config.json": {
+   "file_sha256": "f1d98b530846087dc08b574a219713a94f945bf6583dc7230a19ebf1e8c50933",
+   "routed_experts_per_token": 6,
+   "total_routed_experts": 128,
+   "configured_count_status": "KNOWN",
+   "shared_expert_config": {
+    "n_shared_experts": 1,
+    "moe_shared_expert_intermediate_size": 3712
+   },
+   "shared_expert_handling": "Separate branch, excluded from routed k."
+  }
+ },
+ "saved_dose": [
+  {
+   "uid": "overnight-v2|39d98e18490f560cfb3e6a3e",
+   "arm": "native",
+   "ranks": {},
+   "rank_agreement": "UNKNOWN",
+   "statistical_observations": 1,
+   "weight_trajectory_status": "UNAVAILABLE; saved aggregate target mass and L1 displacement only"
+  },
+  {
+   "uid": "overnight-v2|eaf202210ec4de676907742b",
+   "arm": "native_duplicate",
+   "ranks": {},
+   "rank_agreement": "UNKNOWN",
+   "statistical_observations": 1,
+   "weight_trajectory_status": "UNAVAILABLE; saved aggregate target mass and L1 displacement only"
+  },
+  {
+   "uid": "overnight-v2|86b88d47cdd16d899e09e7c0",
+   "arm": "bias",
+   "ranks": {
+    "0": {
+     "rows": {
+      "approach_to_commit_bias": 256
+     },
+     "segments": {
+      "approach_to_commit_bias": [
+       [
+        0,
+        256
+       ]
+      ]
+     },
+     "dose": {
+      "approach_to_commit_bias": {
+       "24": {
+        "active_rows": 256.0,
+        "actual_target_hits": 12.0,
+        "membership_changes": 12.0,
+        "native_target_hits": 0.0,
+        "target_mass": 1.133589506149292,
+        "weight_l1": 2.2671916484832764
+       },
+       "28": {
+        "active_rows": 256.0,
+        "actual_target_hits": 0.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 0.0,
+        "target_mass": 0.0,
+        "weight_l1": 0.0
+       }
+      }
+     }
+    },
+    "1": {
+     "rows": {
+      "approach_to_commit_bias": 256
+     },
+     "segments": {
+      "approach_to_commit_bias": [
+       [
+        0,
+        256
+       ]
+      ]
+     },
+     "dose": {
+      "approach_to_commit_bias": {
+       "24": {
+        "active_rows": 256.0,
+        "actual_target_hits": 12.0,
+        "membership_changes": 12.0,
+        "native_target_hits": 0.0,
+        "target_mass": 1.133589506149292,
+        "weight_l1": 2.2671916484832764
+       },
+       "28": {
+        "active_rows": 256.0,
+        "actual_target_hits": 0.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 0.0,
+        "target_mass": 0.0,
+        "weight_l1": 0.0
+       }
+      }
+     }
+    }
+   },
+   "rank_agreement": "AGREE",
+   "statistical_observations": 1,
+   "weight_trajectory_status": "UNAVAILABLE; saved aggregate target mass and L1 displacement only"
+  },
+  {
+   "uid": "overnight-v2|8f23d9ca7697ce5bc885884e",
+   "arm": "force",
+   "ranks": {
+    "0": {
+     "rows": {
+      "approach_to_commit_force": 256
+     },
+     "segments": {
+      "approach_to_commit_force": [
+       [
+        0,
+        256
+       ]
+      ]
+     },
+     "dose": {
+      "approach_to_commit_force": {
+       "24": {
+        "active_rows": 256.0,
+        "actual_target_hits": 256.0,
+        "membership_changes": 256.0,
+        "native_target_hits": 0.0,
+        "target_mass": 52.67333984375,
+        "weight_l1": 105.34667205810547
+       },
+       "28": {
+        "active_rows": 256.0,
+        "actual_target_hits": 0.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 0.0,
+        "target_mass": 0.0,
+        "weight_l1": 0.0
+       }
+      }
+     }
+    },
+    "1": {
+     "rows": {
+      "approach_to_commit_force": 256
+     },
+     "segments": {
+      "approach_to_commit_force": [
+       [
+        0,
+        256
+       ]
+      ]
+     },
+     "dose": {
+      "approach_to_commit_force": {
+       "24": {
+        "active_rows": 256.0,
+        "actual_target_hits": 256.0,
+        "membership_changes": 256.0,
+        "native_target_hits": 0.0,
+        "target_mass": 52.67333984375,
+        "weight_l1": 105.34667205810547
+       },
+       "28": {
+        "active_rows": 256.0,
+        "actual_target_hits": 0.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 0.0,
+        "target_mass": 0.0,
+        "weight_l1": 0.0
+       }
+      }
+     }
+    }
+   },
+   "rank_agreement": "AGREE",
+   "statistical_observations": 1,
+   "weight_trajectory_status": "UNAVAILABLE; saved aggregate target mass and L1 displacement only"
+  },
+  {
+   "uid": "overnight-v2|b93ce1c18ea92e61a031a409",
+   "arm": "reweight",
+   "ranks": {
+    "0": {
+     "rows": {
+      "approach_to_commit_reweight": 256
+     },
+     "segments": {
+      "approach_to_commit_reweight": [
+       [
+        0,
+        256
+       ]
+      ]
+     },
+     "dose": {
+      "approach_to_commit_reweight": {
+       "24": {
+        "active_rows": 256.0,
+        "actual_target_hits": 0.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 0.0,
+        "target_mass": 0.0,
+        "weight_l1": 0.0
+       },
+       "28": {
+        "active_rows": 256.0,
+        "actual_target_hits": 0.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 0.0,
+        "target_mass": 0.0,
+        "weight_l1": 0.0
+       }
+      }
+     }
+    },
+    "1": {
+     "rows": {
+      "approach_to_commit_reweight": 256
+     },
+     "segments": {
+      "approach_to_commit_reweight": [
+       [
+        0,
+        256
+       ]
+      ]
+     },
+     "dose": {
+      "approach_to_commit_reweight": {
+       "24": {
+        "active_rows": 256.0,
+        "actual_target_hits": 0.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 0.0,
+        "target_mass": 0.0,
+        "weight_l1": 0.0
+       },
+       "28": {
+        "active_rows": 256.0,
+        "actual_target_hits": 0.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 0.0,
+        "target_mass": 0.0,
+        "weight_l1": 0.0
+       }
+      }
+     }
+    }
+   },
+   "rank_agreement": "AGREE",
+   "statistical_observations": 1,
+   "weight_trajectory_status": "UNAVAILABLE; saved aggregate target mass and L1 displacement only"
+  },
+  {
+   "uid": "overnight-v2|ebc237b448a8e507598e73ba",
+   "arm": "random_bias",
+   "ranks": {
+    "0": {
+     "rows": {
+      "approach_to_commit_bias_random3": 256
+     },
+     "segments": {
+      "approach_to_commit_bias_random3": [
+       [
+        0,
+        256
+       ]
+      ]
+     },
+     "dose": {
+      "approach_to_commit_bias_random3": {
+       "24": {
+        "active_rows": 256.0,
+        "actual_target_hits": 33.0,
+        "membership_changes": 20.0,
+        "native_target_hits": 13.0,
+        "target_mass": 6.363438129425049,
+        "weight_l1": 9.491090774536133
+       },
+       "28": {
+        "active_rows": 256.0,
+        "actual_target_hits": 0.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 0.0,
+        "target_mass": 0.0,
+        "weight_l1": 0.0
+       }
+      }
+     }
+    },
+    "1": {
+     "rows": {
+      "approach_to_commit_bias_random3": 256
+     },
+     "segments": {
+      "approach_to_commit_bias_random3": [
+       [
+        0,
+        256
+       ]
+      ]
+     },
+     "dose": {
+      "approach_to_commit_bias_random3": {
+       "24": {
+        "active_rows": 256.0,
+        "actual_target_hits": 33.0,
+        "membership_changes": 20.0,
+        "native_target_hits": 13.0,
+        "target_mass": 6.363438129425049,
+        "weight_l1": 9.491090774536133
+       },
+       "28": {
+        "active_rows": 256.0,
+        "actual_target_hits": 0.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 0.0,
+        "target_mass": 0.0,
+        "weight_l1": 0.0
+       }
+      }
+     }
+    }
+   },
+   "rank_agreement": "AGREE",
+   "statistical_observations": 1,
+   "weight_trajectory_status": "UNAVAILABLE; saved aggregate target mass and L1 displacement only"
+  },
+  {
+   "uid": "overnight-v2|dbbdf683c2a942654723f247",
+   "arm": "native",
+   "ranks": {},
+   "rank_agreement": "UNKNOWN",
+   "statistical_observations": 1,
+   "weight_trajectory_status": "UNAVAILABLE; saved aggregate target mass and L1 displacement only"
+  },
+  {
+   "uid": "overnight-v2|41673ad534e7f9d7ee28e563",
+   "arm": "native_duplicate",
+   "ranks": {},
+   "rank_agreement": "UNKNOWN",
+   "statistical_observations": 1,
+   "weight_trajectory_status": "UNAVAILABLE; saved aggregate target mass and L1 displacement only"
+  },
+  {
+   "uid": "overnight-v2|931568e2e4dfca7eb5eec952",
+   "arm": "bias",
+   "ranks": {
+    "0": {
+     "rows": {
+      "approach_to_commit_bias": 256
+     },
+     "segments": {
+      "approach_to_commit_bias": [
+       [
+        0,
+        256
+       ]
+      ]
+     },
+     "dose": {
+      "approach_to_commit_bias": {
+       "24": {
+        "active_rows": 256.0,
+        "actual_target_hits": 252.0,
+        "membership_changes": 27.0,
+        "native_target_hits": 225.0,
+        "target_mass": 92.79937744140625,
+        "weight_l1": 95.2803955078125
+       },
+       "28": {
+        "active_rows": 256.0,
+        "actual_target_hits": 0.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 0.0,
+        "target_mass": 0.0,
+        "weight_l1": 0.0
+       }
+      }
+     }
+    },
+    "1": {
+     "rows": {
+      "approach_to_commit_bias": 256
+     },
+     "segments": {
+      "approach_to_commit_bias": [
+       [
+        0,
+        256
+       ]
+      ]
+     },
+     "dose": {
+      "approach_to_commit_bias": {
+       "24": {
+        "active_rows": 256.0,
+        "actual_target_hits": 252.0,
+        "membership_changes": 27.0,
+        "native_target_hits": 225.0,
+        "target_mass": 92.79937744140625,
+        "weight_l1": 95.2803955078125
+       },
+       "28": {
+        "active_rows": 256.0,
+        "actual_target_hits": 0.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 0.0,
+        "target_mass": 0.0,
+        "weight_l1": 0.0
+       }
+      }
+     }
+    }
+   },
+   "rank_agreement": "AGREE",
+   "statistical_observations": 1,
+   "weight_trajectory_status": "UNAVAILABLE; saved aggregate target mass and L1 displacement only"
+  },
+  {
+   "uid": "overnight-v2|bb7c95d32d604fab8111c623",
+   "arm": "force",
+   "ranks": {
+    "0": {
+     "rows": {
+      "approach_to_commit_force": 256
+     },
+     "segments": {
+      "approach_to_commit_force": [
+       [
+        0,
+        256
+       ]
+      ]
+     },
+     "dose": {
+      "approach_to_commit_force": {
+       "24": {
+        "active_rows": 256.0,
+        "actual_target_hits": 256.0,
+        "membership_changes": 34.0,
+        "native_target_hits": 222.0,
+        "target_mass": 59.24093246459961,
+        "weight_l1": 29.02914810180664
+       },
+       "28": {
+        "active_rows": 256.0,
+        "actual_target_hits": 0.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 0.0,
+        "target_mass": 0.0,
+        "weight_l1": 0.0
+       }
+      }
+     }
+    },
+    "1": {
+     "rows": {
+      "approach_to_commit_force": 256
+     },
+     "segments": {
+      "approach_to_commit_force": [
+       [
+        0,
+        256
+       ]
+      ]
+     },
+     "dose": {
+      "approach_to_commit_force": {
+       "24": {
+        "active_rows": 256.0,
+        "actual_target_hits": 256.0,
+        "membership_changes": 34.0,
+        "native_target_hits": 222.0,
+        "target_mass": 59.24093246459961,
+        "weight_l1": 29.02914810180664
+       },
+       "28": {
+        "active_rows": 256.0,
+        "actual_target_hits": 0.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 0.0,
+        "target_mass": 0.0,
+        "weight_l1": 0.0
+       }
+      }
+     }
+    }
+   },
+   "rank_agreement": "AGREE",
+   "statistical_observations": 1,
+   "weight_trajectory_status": "UNAVAILABLE; saved aggregate target mass and L1 displacement only"
+  },
+  {
+   "uid": "overnight-v2|bf4f6baedc9446349d8fb32e",
+   "arm": "reweight",
+   "ranks": {
+    "0": {
+     "rows": {
+      "approach_to_commit_reweight": 256
+     },
+     "segments": {
+      "approach_to_commit_reweight": [
+       [
+        0,
+        256
+       ]
+      ]
+     },
+     "dose": {
+      "approach_to_commit_reweight": {
+       "24": {
+        "active_rows": 256.0,
+        "actual_target_hits": 226.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 226.0,
+        "target_mass": 95.13240051269531,
+        "weight_l1": 91.3681869506836
+       },
+       "28": {
+        "active_rows": 256.0,
+        "actual_target_hits": 0.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 0.0,
+        "target_mass": 0.0,
+        "weight_l1": 0.0
+       }
+      }
+     }
+    },
+    "1": {
+     "rows": {
+      "approach_to_commit_reweight": 256
+     },
+     "segments": {
+      "approach_to_commit_reweight": [
+       [
+        0,
+        256
+       ]
+      ]
+     },
+     "dose": {
+      "approach_to_commit_reweight": {
+       "24": {
+        "active_rows": 256.0,
+        "actual_target_hits": 226.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 226.0,
+        "target_mass": 95.13240051269531,
+        "weight_l1": 91.3681869506836
+       },
+       "28": {
+        "active_rows": 256.0,
+        "actual_target_hits": 0.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 0.0,
+        "target_mass": 0.0,
+        "weight_l1": 0.0
+       }
+      }
+     }
+    }
+   },
+   "rank_agreement": "AGREE",
+   "statistical_observations": 1,
+   "weight_trajectory_status": "UNAVAILABLE; saved aggregate target mass and L1 displacement only"
+  },
+  {
+   "uid": "overnight-v2|7ae433e4c7aa171ad4979c8b",
+   "arm": "random_force",
+   "ranks": {
+    "0": {
+     "rows": {
+      "approach_to_commit_force_random2": 256
+     },
+     "segments": {
+      "approach_to_commit_force_random2": [
+       [
+        0,
+        256
+       ]
+      ]
+     },
+     "dose": {
+      "approach_to_commit_force_random2": {
+       "24": {
+        "active_rows": 256.0,
+        "actual_target_hits": 256.0,
+        "membership_changes": 256.0,
+        "native_target_hits": 0.0,
+        "target_mass": 53.023990631103516,
+        "weight_l1": 106.04796600341797
+       },
+       "28": {
+        "active_rows": 256.0,
+        "actual_target_hits": 0.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 0.0,
+        "target_mass": 0.0,
+        "weight_l1": 0.0
+       }
+      }
+     }
+    },
+    "1": {
+     "rows": {
+      "approach_to_commit_force_random2": 256
+     },
+     "segments": {
+      "approach_to_commit_force_random2": [
+       [
+        0,
+        256
+       ]
+      ]
+     },
+     "dose": {
+      "approach_to_commit_force_random2": {
+       "24": {
+        "active_rows": 256.0,
+        "actual_target_hits": 256.0,
+        "membership_changes": 256.0,
+        "native_target_hits": 0.0,
+        "target_mass": 53.023990631103516,
+        "weight_l1": 106.04796600341797
+       },
+       "28": {
+        "active_rows": 256.0,
+        "actual_target_hits": 0.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 0.0,
+        "target_mass": 0.0,
+        "weight_l1": 0.0
+       }
+      }
+     }
+    }
+   },
+   "rank_agreement": "AGREE",
+   "statistical_observations": 1,
+   "weight_trajectory_status": "UNAVAILABLE; saved aggregate target mass and L1 displacement only"
+  },
+  {
+   "uid": "overnight-v2|904f099cbbce2f953e2416d4",
+   "arm": "native",
+   "ranks": {},
+   "rank_agreement": "UNKNOWN",
+   "statistical_observations": 1,
+   "weight_trajectory_status": "UNAVAILABLE; saved aggregate target mass and L1 displacement only"
+  },
+  {
+   "uid": "overnight-v2|0574277171b81641b9d7cf24",
+   "arm": "native_duplicate",
+   "ranks": {},
+   "rank_agreement": "UNKNOWN",
+   "statistical_observations": 1,
+   "weight_trajectory_status": "UNAVAILABLE; saved aggregate target mass and L1 displacement only"
+  },
+  {
+   "uid": "overnight-v2|8929a3c9ab8ee55e997f048b",
+   "arm": "bias",
+   "ranks": {
+    "0": {
+     "rows": {
+      "approach_to_commit_bias": 256
+     },
+     "segments": {
+      "approach_to_commit_bias": [
+       [
+        0,
+        256
+       ]
+      ]
+     },
+     "dose": {
+      "approach_to_commit_bias": {
+       "24": {
+        "active_rows": 256.0,
+        "actual_target_hits": 252.0,
+        "membership_changes": 94.0,
+        "native_target_hits": 158.0,
+        "target_mass": 58.6833381652832,
+        "weight_l1": 76.68986511230469
+       },
+       "28": {
+        "active_rows": 256.0,
+        "actual_target_hits": 0.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 0.0,
+        "target_mass": 0.0,
+        "weight_l1": 0.0
+       }
+      }
+     }
+    },
+    "1": {
+     "rows": {
+      "approach_to_commit_bias": 256
+     },
+     "segments": {
+      "approach_to_commit_bias": [
+       [
+        0,
+        256
+       ]
+      ]
+     },
+     "dose": {
+      "approach_to_commit_bias": {
+       "24": {
+        "active_rows": 256.0,
+        "actual_target_hits": 252.0,
+        "membership_changes": 94.0,
+        "native_target_hits": 158.0,
+        "target_mass": 58.6833381652832,
+        "weight_l1": 76.68986511230469
+       },
+       "28": {
+        "active_rows": 256.0,
+        "actual_target_hits": 0.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 0.0,
+        "target_mass": 0.0,
+        "weight_l1": 0.0
+       }
+      }
+     }
+    }
+   },
+   "rank_agreement": "AGREE",
+   "statistical_observations": 1,
+   "weight_trajectory_status": "UNAVAILABLE; saved aggregate target mass and L1 displacement only"
+  },
+  {
+   "uid": "overnight-v2|4b19a5306fce22d6c4db5704",
+   "arm": "force",
+   "ranks": {
+    "0": {
+     "rows": {
+      "approach_to_commit_force": 256
+     },
+     "segments": {
+      "approach_to_commit_force": [
+       [
+        0,
+        256
+       ]
+      ]
+     },
+     "dose": {
+      "approach_to_commit_force": {
+       "24": {
+        "active_rows": 256.0,
+        "actual_target_hits": 256.0,
+        "membership_changes": 91.0,
+        "native_target_hits": 165.0,
+        "target_mass": 46.90692901611328,
+        "weight_l1": 52.62368392944336
+       },
+       "28": {
+        "active_rows": 256.0,
+        "actual_target_hits": 0.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 0.0,
+        "target_mass": 0.0,
+        "weight_l1": 0.0
+       }
+      }
+     }
+    },
+    "1": {
+     "rows": {
+      "approach_to_commit_force": 256
+     },
+     "segments": {
+      "approach_to_commit_force": [
+       [
+        0,
+        256
+       ]
+      ]
+     },
+     "dose": {
+      "approach_to_commit_force": {
+       "24": {
+        "active_rows": 256.0,
+        "actual_target_hits": 256.0,
+        "membership_changes": 91.0,
+        "native_target_hits": 165.0,
+        "target_mass": 46.90692901611328,
+        "weight_l1": 52.62368392944336
+       },
+       "28": {
+        "active_rows": 256.0,
+        "actual_target_hits": 0.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 0.0,
+        "target_mass": 0.0,
+        "weight_l1": 0.0
+       }
+      }
+     }
+    }
+   },
+   "rank_agreement": "AGREE",
+   "statistical_observations": 1,
+   "weight_trajectory_status": "UNAVAILABLE; saved aggregate target mass and L1 displacement only"
+  },
+  {
+   "uid": "overnight-v2|d18d08caa76de6d532d1836c",
+   "arm": "reweight",
+   "ranks": {
+    "0": {
+     "rows": {
+      "approach_to_commit_reweight": 256
+     },
+     "segments": {
+      "approach_to_commit_reweight": [
+       [
+        0,
+        256
+       ]
+      ]
+     },
+     "dose": {
+      "approach_to_commit_reweight": {
+       "24": {
+        "active_rows": 256.0,
+        "actual_target_hits": 142.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 142.0,
+        "target_mass": 39.32342529296875,
+        "weight_l1": 42.97893142700195
+       },
+       "28": {
+        "active_rows": 256.0,
+        "actual_target_hits": 0.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 0.0,
+        "target_mass": 0.0,
+        "weight_l1": 0.0
+       }
+      }
+     }
+    },
+    "1": {
+     "rows": {
+      "approach_to_commit_reweight": 256
+     },
+     "segments": {
+      "approach_to_commit_reweight": [
+       [
+        0,
+        256
+       ]
+      ]
+     },
+     "dose": {
+      "approach_to_commit_reweight": {
+       "24": {
+        "active_rows": 256.0,
+        "actual_target_hits": 142.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 142.0,
+        "target_mass": 39.32342529296875,
+        "weight_l1": 42.97893142700195
+       },
+       "28": {
+        "active_rows": 256.0,
+        "actual_target_hits": 0.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 0.0,
+        "target_mass": 0.0,
+        "weight_l1": 0.0
+       }
+      }
+     }
+    }
+   },
+   "rank_agreement": "AGREE",
+   "statistical_observations": 1,
+   "weight_trajectory_status": "UNAVAILABLE; saved aggregate target mass and L1 displacement only"
+  },
+  {
+   "uid": "overnight-v2|22087cceb4cb82094a3155f3",
+   "arm": "random_reweight",
+   "ranks": {
+    "0": {
+     "rows": {
+      "approach_to_commit_reweight_random1": 256
+     },
+     "segments": {
+      "approach_to_commit_reweight_random1": [
+       [
+        0,
+        256
+       ]
+      ]
+     },
+     "dose": {
+      "approach_to_commit_reweight_random1": {
+       "24": {
+        "active_rows": 256.0,
+        "actual_target_hits": 28.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 28.0,
+        "target_mass": 8.823786735534668,
+        "weight_l1": 9.466984748840332
+       },
+       "28": {
+        "active_rows": 256.0,
+        "actual_target_hits": 0.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 0.0,
+        "target_mass": 0.0,
+        "weight_l1": 0.0
+       }
+      }
+     }
+    },
+    "1": {
+     "rows": {
+      "approach_to_commit_reweight_random1": 256
+     },
+     "segments": {
+      "approach_to_commit_reweight_random1": [
+       [
+        0,
+        256
+       ]
+      ]
+     },
+     "dose": {
+      "approach_to_commit_reweight_random1": {
+       "24": {
+        "active_rows": 256.0,
+        "actual_target_hits": 28.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 28.0,
+        "target_mass": 8.823786735534668,
+        "weight_l1": 9.466984748840332
+       },
+       "28": {
+        "active_rows": 256.0,
+        "actual_target_hits": 0.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 0.0,
+        "target_mass": 0.0,
+        "weight_l1": 0.0
+       }
+      }
+     }
+    }
+   },
+   "rank_agreement": "AGREE",
+   "statistical_observations": 1,
+   "weight_trajectory_status": "UNAVAILABLE; saved aggregate target mass and L1 displacement only"
+  },
+  {
+   "uid": "overnight-v2|8b4051b45e5d11f5410b3a80",
+   "arm": "native",
+   "ranks": {},
+   "rank_agreement": "UNKNOWN",
+   "statistical_observations": 1,
+   "weight_trajectory_status": "UNAVAILABLE; saved aggregate target mass and L1 displacement only"
+  },
+  {
+   "uid": "overnight-v2|f45cf6504def4b51c4028b61",
+   "arm": "native_duplicate",
+   "ranks": {},
+   "rank_agreement": "UNKNOWN",
+   "statistical_observations": 1,
+   "weight_trajectory_status": "UNAVAILABLE; saved aggregate target mass and L1 displacement only"
+  },
+  {
+   "uid": "overnight-v2|0f6d1d01d91984fb6c44c3bf",
+   "arm": "bias",
+   "ranks": {
+    "0": {
+     "rows": {
+      "candidate_to_verify_bias": 256
+     },
+     "segments": {
+      "candidate_to_verify_bias": [
+       [
+        0,
+        256
+       ]
+      ]
+     },
+     "dose": {
+      "candidate_to_verify_bias": {
+       "24": {
+        "active_rows": 256.0,
+        "actual_target_hits": 0.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 0.0,
+        "target_mass": 0.0,
+        "weight_l1": 0.0
+       },
+       "28": {
+        "active_rows": 256.0,
+        "actual_target_hits": 186.0,
+        "membership_changes": 100.0,
+        "native_target_hits": 86.0,
+        "target_mass": 35.60550308227539,
+        "weight_l1": 48.65973663330078
+       }
+      }
+     }
+    },
+    "1": {
+     "rows": {
+      "candidate_to_verify_bias": 256
+     },
+     "segments": {
+      "candidate_to_verify_bias": [
+       [
+        0,
+        256
+       ]
+      ]
+     },
+     "dose": {
+      "candidate_to_verify_bias": {
+       "24": {
+        "active_rows": 256.0,
+        "actual_target_hits": 0.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 0.0,
+        "target_mass": 0.0,
+        "weight_l1": 0.0
+       },
+       "28": {
+        "active_rows": 256.0,
+        "actual_target_hits": 186.0,
+        "membership_changes": 100.0,
+        "native_target_hits": 86.0,
+        "target_mass": 35.60550308227539,
+        "weight_l1": 48.65973663330078
+       }
+      }
+     }
+    }
+   },
+   "rank_agreement": "AGREE",
+   "statistical_observations": 1,
+   "weight_trajectory_status": "UNAVAILABLE; saved aggregate target mass and L1 displacement only"
+  },
+  {
+   "uid": "overnight-v2|2c9975afa30e0fe9b4096da4",
+   "arm": "force",
+   "ranks": {
+    "0": {
+     "rows": {
+      "candidate_to_verify_force": 256
+     },
+     "segments": {
+      "candidate_to_verify_force": [
+       [
+        0,
+        256
+       ]
+      ]
+     },
+     "dose": {
+      "candidate_to_verify_force": {
+       "24": {
+        "active_rows": 256.0,
+        "actual_target_hits": 0.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 0.0,
+        "target_mass": 0.0,
+        "weight_l1": 0.0
+       },
+       "28": {
+        "active_rows": 256.0,
+        "actual_target_hits": 512.0,
+        "membership_changes": 429.0,
+        "native_target_hits": 83.0,
+        "target_mass": 87.84557342529297,
+        "weight_l1": 154.81838989257812
+       }
+      }
+     }
+    },
+    "1": {
+     "rows": {
+      "candidate_to_verify_force": 256
+     },
+     "segments": {
+      "candidate_to_verify_force": [
+       [
+        0,
+        256
+       ]
+      ]
+     },
+     "dose": {
+      "candidate_to_verify_force": {
+       "24": {
+        "active_rows": 256.0,
+        "actual_target_hits": 0.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 0.0,
+        "target_mass": 0.0,
+        "weight_l1": 0.0
+       },
+       "28": {
+        "active_rows": 256.0,
+        "actual_target_hits": 512.0,
+        "membership_changes": 429.0,
+        "native_target_hits": 83.0,
+        "target_mass": 87.84557342529297,
+        "weight_l1": 154.81838989257812
+       }
+      }
+     }
+    }
+   },
+   "rank_agreement": "AGREE",
+   "statistical_observations": 1,
+   "weight_trajectory_status": "UNAVAILABLE; saved aggregate target mass and L1 displacement only"
+  },
+  {
+   "uid": "overnight-v2|24bcad842ddac05b00b8e82d",
+   "arm": "reweight",
+   "ranks": {
+    "0": {
+     "rows": {
+      "candidate_to_verify_reweight": 256
+     },
+     "segments": {
+      "candidate_to_verify_reweight": [
+       [
+        0,
+        256
+       ]
+      ]
+     },
+     "dose": {
+      "candidate_to_verify_reweight": {
+       "24": {
+        "active_rows": 256.0,
+        "actual_target_hits": 0.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 0.0,
+        "target_mass": 0.0,
+        "weight_l1": 0.0
+       },
+       "28": {
+        "active_rows": 256.0,
+        "actual_target_hits": 80.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 80.0,
+        "target_mass": 21.46530532836914,
+        "weight_l1": 22.010311126708984
+       }
+      }
+     }
+    },
+    "1": {
+     "rows": {
+      "candidate_to_verify_reweight": 256
+     },
+     "segments": {
+      "candidate_to_verify_reweight": [
+       [
+        0,
+        256
+       ]
+      ]
+     },
+     "dose": {
+      "candidate_to_verify_reweight": {
+       "24": {
+        "active_rows": 256.0,
+        "actual_target_hits": 0.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 0.0,
+        "target_mass": 0.0,
+        "weight_l1": 0.0
+       },
+       "28": {
+        "active_rows": 256.0,
+        "actual_target_hits": 80.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 80.0,
+        "target_mass": 21.46530532836914,
+        "weight_l1": 22.010311126708984
+       }
+      }
+     }
+    }
+   },
+   "rank_agreement": "AGREE",
+   "statistical_observations": 1,
+   "weight_trajectory_status": "UNAVAILABLE; saved aggregate target mass and L1 displacement only"
+  },
+  {
+   "uid": "overnight-v2|dd43eb36580853eba1a4fef9",
+   "arm": "random_bias",
+   "ranks": {
+    "0": {
+     "rows": {
+      "candidate_to_verify_bias_random0": 256
+     },
+     "segments": {
+      "candidate_to_verify_bias_random0": [
+       [
+        0,
+        256
+       ]
+      ]
+     },
+     "dose": {
+      "candidate_to_verify_bias_random0": {
+       "24": {
+        "active_rows": 256.0,
+        "actual_target_hits": 0.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 0.0,
+        "target_mass": 0.0,
+        "weight_l1": 0.0
+       },
+       "28": {
+        "active_rows": 256.0,
+        "actual_target_hits": 108.0,
+        "membership_changes": 67.0,
+        "native_target_hits": 41.0,
+        "target_mass": 22.077932357788086,
+        "weight_l1": 30.944717407226562
+       }
+      }
+     }
+    },
+    "1": {
+     "rows": {
+      "candidate_to_verify_bias_random0": 256
+     },
+     "segments": {
+      "candidate_to_verify_bias_random0": [
+       [
+        0,
+        256
+       ]
+      ]
+     },
+     "dose": {
+      "candidate_to_verify_bias_random0": {
+       "24": {
+        "active_rows": 256.0,
+        "actual_target_hits": 0.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 0.0,
+        "target_mass": 0.0,
+        "weight_l1": 0.0
+       },
+       "28": {
+        "active_rows": 256.0,
+        "actual_target_hits": 108.0,
+        "membership_changes": 67.0,
+        "native_target_hits": 41.0,
+        "target_mass": 22.077932357788086,
+        "weight_l1": 30.944717407226562
+       }
+      }
+     }
+    }
+   },
+   "rank_agreement": "AGREE",
+   "statistical_observations": 1,
+   "weight_trajectory_status": "UNAVAILABLE; saved aggregate target mass and L1 displacement only"
+  },
+  {
+   "uid": "overnight-v2|5ef152dedee9e4bb2367c2d7",
+   "arm": "native",
+   "ranks": {},
+   "rank_agreement": "UNKNOWN",
+   "statistical_observations": 1,
+   "weight_trajectory_status": "UNAVAILABLE; saved aggregate target mass and L1 displacement only"
+  },
+  {
+   "uid": "overnight-v2|4ba80d2d1cc3522a57252d3d",
+   "arm": "native_duplicate",
+   "ranks": {},
+   "rank_agreement": "UNKNOWN",
+   "statistical_observations": 1,
+   "weight_trajectory_status": "UNAVAILABLE; saved aggregate target mass and L1 displacement only"
+  },
+  {
+   "uid": "overnight-v2|b9f58effb811d567daec2346",
+   "arm": "bias",
+   "ranks": {
+    "0": {
+     "rows": {
+      "candidate_to_verify_bias": 256
+     },
+     "segments": {
+      "candidate_to_verify_bias": [
+       [
+        0,
+        256
+       ]
+      ]
+     },
+     "dose": {
+      "candidate_to_verify_bias": {
+       "24": {
+        "active_rows": 256.0,
+        "actual_target_hits": 0.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 0.0,
+        "target_mass": 0.0,
+        "weight_l1": 0.0
+       },
+       "28": {
+        "active_rows": 256.0,
+        "actual_target_hits": 119.0,
+        "membership_changes": 88.0,
+        "native_target_hits": 31.0,
+        "target_mass": 17.975187301635742,
+        "weight_l1": 29.531553268432617
+       }
+      }
+     }
+    },
+    "1": {
+     "rows": {
+      "candidate_to_verify_bias": 256
+     },
+     "segments": {
+      "candidate_to_verify_bias": [
+       [
+        0,
+        256
+       ]
+      ]
+     },
+     "dose": {
+      "candidate_to_verify_bias": {
+       "24": {
+        "active_rows": 256.0,
+        "actual_target_hits": 0.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 0.0,
+        "target_mass": 0.0,
+        "weight_l1": 0.0
+       },
+       "28": {
+        "active_rows": 256.0,
+        "actual_target_hits": 119.0,
+        "membership_changes": 88.0,
+        "native_target_hits": 31.0,
+        "target_mass": 17.975187301635742,
+        "weight_l1": 29.531553268432617
+       }
+      }
+     }
+    }
+   },
+   "rank_agreement": "AGREE",
+   "statistical_observations": 1,
+   "weight_trajectory_status": "UNAVAILABLE; saved aggregate target mass and L1 displacement only"
+  },
+  {
+   "uid": "overnight-v2|462effdbef4c3e81acc48b8b",
+   "arm": "force",
+   "ranks": {
+    "0": {
+     "rows": {
+      "candidate_to_verify_force": 256
+     },
+     "segments": {
+      "candidate_to_verify_force": [
+       [
+        0,
+        256
+       ]
+      ]
+     },
+     "dose": {
+      "candidate_to_verify_force": {
+       "24": {
+        "active_rows": 256.0,
+        "actual_target_hits": 0.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 0.0,
+        "target_mass": 0.0,
+        "weight_l1": 0.0
+       },
+       "28": {
+        "active_rows": 256.0,
+        "actual_target_hits": 512.0,
+        "membership_changes": 481.0,
+        "native_target_hits": 31.0,
+        "target_mass": 87.68687438964844,
+        "weight_l1": 169.00962829589844
+       }
+      }
+     }
+    },
+    "1": {
+     "rows": {
+      "candidate_to_verify_force": 256
+     },
+     "segments": {
+      "candidate_to_verify_force": [
+       [
+        0,
+        256
+       ]
+      ]
+     },
+     "dose": {
+      "candidate_to_verify_force": {
+       "24": {
+        "active_rows": 256.0,
+        "actual_target_hits": 0.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 0.0,
+        "target_mass": 0.0,
+        "weight_l1": 0.0
+       },
+       "28": {
+        "active_rows": 256.0,
+        "actual_target_hits": 512.0,
+        "membership_changes": 481.0,
+        "native_target_hits": 31.0,
+        "target_mass": 87.68687438964844,
+        "weight_l1": 169.00962829589844
+       }
+      }
+     }
+    }
+   },
+   "rank_agreement": "AGREE",
+   "statistical_observations": 1,
+   "weight_trajectory_status": "UNAVAILABLE; saved aggregate target mass and L1 displacement only"
+  },
+  {
+   "uid": "overnight-v2|0882c371390ab511ad178b6d",
+   "arm": "reweight",
+   "ranks": {
+    "0": {
+     "rows": {
+      "candidate_to_verify_reweight": 256
+     },
+     "segments": {
+      "candidate_to_verify_reweight": [
+       [
+        0,
+        256
+       ]
+      ]
+     },
+     "dose": {
+      "candidate_to_verify_reweight": {
+       "24": {
+        "active_rows": 256.0,
+        "actual_target_hits": 0.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 0.0,
+        "target_mass": 0.0,
+        "weight_l1": 0.0
+       },
+       "28": {
+        "active_rows": 256.0,
+        "actual_target_hits": 31.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 31.0,
+        "target_mass": 7.244823455810547,
+        "weight_l1": 8.087464332580566
+       }
+      }
+     }
+    },
+    "1": {
+     "rows": {
+      "candidate_to_verify_reweight": 256
+     },
+     "segments": {
+      "candidate_to_verify_reweight": [
+       [
+        0,
+        256
+       ]
+      ]
+     },
+     "dose": {
+      "candidate_to_verify_reweight": {
+       "24": {
+        "active_rows": 256.0,
+        "actual_target_hits": 0.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 0.0,
+        "target_mass": 0.0,
+        "weight_l1": 0.0
+       },
+       "28": {
+        "active_rows": 256.0,
+        "actual_target_hits": 31.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 31.0,
+        "target_mass": 7.244823455810547,
+        "weight_l1": 8.087464332580566
+       }
+      }
+     }
+    }
+   },
+   "rank_agreement": "AGREE",
+   "statistical_observations": 1,
+   "weight_trajectory_status": "UNAVAILABLE; saved aggregate target mass and L1 displacement only"
+  },
+  {
+   "uid": "overnight-v2|bc3cfeedb272bcffb2ecba0c",
+   "arm": "random_force",
+   "ranks": {
+    "0": {
+     "rows": {
+      "candidate_to_verify_force_random1": 256
+     },
+     "segments": {
+      "candidate_to_verify_force_random1": [
+       [
+        0,
+        256
+       ]
+      ]
+     },
+     "dose": {
+      "candidate_to_verify_force_random1": {
+       "24": {
+        "active_rows": 256.0,
+        "actual_target_hits": 0.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 0.0,
+        "target_mass": 0.0,
+        "weight_l1": 0.0
+       },
+       "28": {
+        "active_rows": 256.0,
+        "actual_target_hits": 512.0,
+        "membership_changes": 474.0,
+        "native_target_hits": 38.0,
+        "target_mass": 88.13948059082031,
+        "weight_l1": 165.1126708984375
+       }
+      }
+     }
+    },
+    "1": {
+     "rows": {
+      "candidate_to_verify_force_random1": 256
+     },
+     "segments": {
+      "candidate_to_verify_force_random1": [
+       [
+        0,
+        256
+       ]
+      ]
+     },
+     "dose": {
+      "candidate_to_verify_force_random1": {
+       "24": {
+        "active_rows": 256.0,
+        "actual_target_hits": 0.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 0.0,
+        "target_mass": 0.0,
+        "weight_l1": 0.0
+       },
+       "28": {
+        "active_rows": 256.0,
+        "actual_target_hits": 512.0,
+        "membership_changes": 474.0,
+        "native_target_hits": 38.0,
+        "target_mass": 88.13948059082031,
+        "weight_l1": 165.1126708984375
+       }
+      }
+     }
+    }
+   },
+   "rank_agreement": "AGREE",
+   "statistical_observations": 1,
+   "weight_trajectory_status": "UNAVAILABLE; saved aggregate target mass and L1 displacement only"
+  },
+  {
+   "uid": "overnight-v2|f54f6ab13a1f472883043773",
+   "arm": "native",
+   "ranks": {},
+   "rank_agreement": "UNKNOWN",
+   "statistical_observations": 1,
+   "weight_trajectory_status": "UNAVAILABLE; saved aggregate target mass and L1 displacement only"
+  },
+  {
+   "uid": "overnight-v2|b82377a8a8c7156a6612ff7a",
+   "arm": "native_duplicate",
+   "ranks": {},
+   "rank_agreement": "UNKNOWN",
+   "statistical_observations": 1,
+   "weight_trajectory_status": "UNAVAILABLE; saved aggregate target mass and L1 displacement only"
+  },
+  {
+   "uid": "overnight-v2|27f67b0d653bb9f84a433fef",
+   "arm": "bias",
+   "ranks": {
+    "0": {
+     "rows": {
+      "candidate_to_verify_bias": 256
+     },
+     "segments": {
+      "candidate_to_verify_bias": [
+       [
+        0,
+        256
+       ]
+      ]
+     },
+     "dose": {
+      "candidate_to_verify_bias": {
+       "24": {
+        "active_rows": 256.0,
+        "actual_target_hits": 0.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 0.0,
+        "target_mass": 0.0,
+        "weight_l1": 0.0
+       },
+       "28": {
+        "active_rows": 256.0,
+        "actual_target_hits": 104.0,
+        "membership_changes": 62.0,
+        "native_target_hits": 42.0,
+        "target_mass": 18.273235321044922,
+        "weight_l1": 26.54092025756836
+       }
+      }
+     }
+    },
+    "1": {
+     "rows": {
+      "candidate_to_verify_bias": 256
+     },
+     "segments": {
+      "candidate_to_verify_bias": [
+       [
+        0,
+        256
+       ]
+      ]
+     },
+     "dose": {
+      "candidate_to_verify_bias": {
+       "24": {
+        "active_rows": 256.0,
+        "actual_target_hits": 0.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 0.0,
+        "target_mass": 0.0,
+        "weight_l1": 0.0
+       },
+       "28": {
+        "active_rows": 256.0,
+        "actual_target_hits": 104.0,
+        "membership_changes": 62.0,
+        "native_target_hits": 42.0,
+        "target_mass": 18.273235321044922,
+        "weight_l1": 26.54092025756836
+       }
+      }
+     }
+    }
+   },
+   "rank_agreement": "AGREE",
+   "statistical_observations": 1,
+   "weight_trajectory_status": "UNAVAILABLE; saved aggregate target mass and L1 displacement only"
+  },
+  {
+   "uid": "overnight-v2|ae7e9770bb960345921ded07",
+   "arm": "force",
+   "ranks": {
+    "0": {
+     "rows": {
+      "candidate_to_verify_force": 256
+     },
+     "segments": {
+      "candidate_to_verify_force": [
+       [
+        0,
+        256
+       ]
+      ]
+     },
+     "dose": {
+      "candidate_to_verify_force": {
+       "24": {
+        "active_rows": 256.0,
+        "actual_target_hits": 0.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 0.0,
+        "target_mass": 0.0,
+        "weight_l1": 0.0
+       },
+       "28": {
+        "active_rows": 256.0,
+        "actual_target_hits": 512.0,
+        "membership_changes": 465.0,
+        "native_target_hits": 47.0,
+        "target_mass": 89.66773223876953,
+        "weight_l1": 167.755859375
+       }
+      }
+     }
+    },
+    "1": {
+     "rows": {
+      "candidate_to_verify_force": 256
+     },
+     "segments": {
+      "candidate_to_verify_force": [
+       [
+        0,
+        256
+       ]
+      ]
+     },
+     "dose": {
+      "candidate_to_verify_force": {
+       "24": {
+        "active_rows": 256.0,
+        "actual_target_hits": 0.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 0.0,
+        "target_mass": 0.0,
+        "weight_l1": 0.0
+       },
+       "28": {
+        "active_rows": 256.0,
+        "actual_target_hits": 512.0,
+        "membership_changes": 465.0,
+        "native_target_hits": 47.0,
+        "target_mass": 89.66773223876953,
+        "weight_l1": 167.755859375
+       }
+      }
+     }
+    }
+   },
+   "rank_agreement": "AGREE",
+   "statistical_observations": 1,
+   "weight_trajectory_status": "UNAVAILABLE; saved aggregate target mass and L1 displacement only"
+  },
+  {
+   "uid": "overnight-v2|25bd06cf2418b473e967dbf8",
+   "arm": "reweight",
+   "ranks": {
+    "0": {
+     "rows": {
+      "candidate_to_verify_reweight": 256
+     },
+     "segments": {
+      "candidate_to_verify_reweight": [
+       [
+        0,
+        256
+       ]
+      ]
+     },
+     "dose": {
+      "candidate_to_verify_reweight": {
+       "24": {
+        "active_rows": 256.0,
+        "actual_target_hits": 0.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 0.0,
+        "target_mass": 0.0,
+        "weight_l1": 0.0
+       },
+       "28": {
+        "active_rows": 256.0,
+        "actual_target_hits": 41.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 41.0,
+        "target_mass": 10.050688743591309,
+        "weight_l1": 10.393451690673828
+       }
+      }
+     }
+    },
+    "1": {
+     "rows": {
+      "candidate_to_verify_reweight": 256
+     },
+     "segments": {
+      "candidate_to_verify_reweight": [
+       [
+        0,
+        256
+       ]
+      ]
+     },
+     "dose": {
+      "candidate_to_verify_reweight": {
+       "24": {
+        "active_rows": 256.0,
+        "actual_target_hits": 0.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 0.0,
+        "target_mass": 0.0,
+        "weight_l1": 0.0
+       },
+       "28": {
+        "active_rows": 256.0,
+        "actual_target_hits": 41.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 41.0,
+        "target_mass": 10.050688743591309,
+        "weight_l1": 10.393451690673828
+       }
+      }
+     }
+    }
+   },
+   "rank_agreement": "AGREE",
+   "statistical_observations": 1,
+   "weight_trajectory_status": "UNAVAILABLE; saved aggregate target mass and L1 displacement only"
+  },
+  {
+   "uid": "overnight-v2|4afc8067e4bfa5c29f9eb642",
+   "arm": "random_reweight",
+   "ranks": {
+    "0": {
+     "rows": {
+      "candidate_to_verify_reweight_random1": 256
+     },
+     "segments": {
+      "candidate_to_verify_reweight_random1": [
+       [
+        0,
+        256
+       ]
+      ]
+     },
+     "dose": {
+      "candidate_to_verify_reweight_random1": {
+       "24": {
+        "active_rows": 256.0,
+        "actual_target_hits": 0.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 0.0,
+        "target_mass": 0.0,
+        "weight_l1": 0.0
+       },
+       "28": {
+        "active_rows": 256.0,
+        "actual_target_hits": 24.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 24.0,
+        "target_mass": 6.608514785766602,
+        "weight_l1": 7.187141418457031
+       }
+      }
+     }
+    },
+    "1": {
+     "rows": {
+      "candidate_to_verify_reweight_random1": 256
+     },
+     "segments": {
+      "candidate_to_verify_reweight_random1": [
+       [
+        0,
+        256
+       ]
+      ]
+     },
+     "dose": {
+      "candidate_to_verify_reweight_random1": {
+       "24": {
+        "active_rows": 256.0,
+        "actual_target_hits": 0.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 0.0,
+        "target_mass": 0.0,
+        "weight_l1": 0.0
+       },
+       "28": {
+        "active_rows": 256.0,
+        "actual_target_hits": 24.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 24.0,
+        "target_mass": 6.608514785766602,
+        "weight_l1": 7.187141418457031
+       }
+      }
+     }
+    }
+   },
+   "rank_agreement": "AGREE",
+   "statistical_observations": 1,
+   "weight_trajectory_status": "UNAVAILABLE; saved aggregate target mass and L1 displacement only"
+  },
+  {
+   "uid": "overnight-v2|a31dd15d490a413ac45170ff",
+   "arm": "native",
+   "ranks": {},
+   "rank_agreement": "UNKNOWN",
+   "statistical_observations": 1,
+   "weight_trajectory_status": "UNAVAILABLE; saved aggregate target mass and L1 displacement only"
+  },
+  {
+   "uid": "overnight-v2|e9e5fcd11a4236f531d2a3ed",
+   "arm": "native_duplicate",
+   "ranks": {},
+   "rank_agreement": "UNKNOWN",
+   "statistical_observations": 1,
+   "weight_trajectory_status": "UNAVAILABLE; saved aggregate target mass and L1 displacement only"
+  },
+  {
+   "uid": "overnight-v2|e65096d40090332e695ec8df",
+   "arm": "bias",
+   "ranks": {
+    "0": {
+     "rows": {
+      "candidate_to_verify_bias": 256
+     },
+     "segments": {
+      "candidate_to_verify_bias": [
+       [
+        0,
+        256
+       ]
+      ]
+     },
+     "dose": {
+      "candidate_to_verify_bias": {
+       "24": {
+        "active_rows": 256.0,
+        "actual_target_hits": 0.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 0.0,
+        "target_mass": 0.0,
+        "weight_l1": 0.0
+       },
+       "28": {
+        "active_rows": 256.0,
+        "actual_target_hits": 39.0,
+        "membership_changes": 31.0,
+        "native_target_hits": 8.0,
+        "target_mass": 5.07125186920166,
+        "weight_l1": 8.94803237915039
+       }
+      }
+     }
+    },
+    "1": {
+     "rows": {
+      "candidate_to_verify_bias": 256
+     },
+     "segments": {
+      "candidate_to_verify_bias": [
+       [
+        0,
+        256
+       ]
+      ]
+     },
+     "dose": {
+      "candidate_to_verify_bias": {
+       "24": {
+        "active_rows": 256.0,
+        "actual_target_hits": 0.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 0.0,
+        "target_mass": 0.0,
+        "weight_l1": 0.0
+       },
+       "28": {
+        "active_rows": 256.0,
+        "actual_target_hits": 39.0,
+        "membership_changes": 31.0,
+        "native_target_hits": 8.0,
+        "target_mass": 5.07125186920166,
+        "weight_l1": 8.94803237915039
+       }
+      }
+     }
+    }
+   },
+   "rank_agreement": "AGREE",
+   "statistical_observations": 1,
+   "weight_trajectory_status": "UNAVAILABLE; saved aggregate target mass and L1 displacement only"
+  },
+  {
+   "uid": "overnight-v2|8a6c5a90404720680f3d5ccf",
+   "arm": "force",
+   "ranks": {
+    "0": {
+     "rows": {
+      "candidate_to_verify_force": 256
+     },
+     "segments": {
+      "candidate_to_verify_force": [
+       [
+        0,
+        256
+       ]
+      ]
+     },
+     "dose": {
+      "candidate_to_verify_force": {
+       "24": {
+        "active_rows": 256.0,
+        "actual_target_hits": 0.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 0.0,
+        "target_mass": 0.0,
+        "weight_l1": 0.0
+       },
+       "28": {
+        "active_rows": 256.0,
+        "actual_target_hits": 512.0,
+        "membership_changes": 505.0,
+        "native_target_hits": 7.0,
+        "target_mass": 86.28153991699219,
+        "weight_l1": 171.38543701171875
+       }
+      }
+     }
+    },
+    "1": {
+     "rows": {
+      "candidate_to_verify_force": 256
+     },
+     "segments": {
+      "candidate_to_verify_force": [
+       [
+        0,
+        256
+       ]
+      ]
+     },
+     "dose": {
+      "candidate_to_verify_force": {
+       "24": {
+        "active_rows": 256.0,
+        "actual_target_hits": 0.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 0.0,
+        "target_mass": 0.0,
+        "weight_l1": 0.0
+       },
+       "28": {
+        "active_rows": 256.0,
+        "actual_target_hits": 512.0,
+        "membership_changes": 505.0,
+        "native_target_hits": 7.0,
+        "target_mass": 86.28153991699219,
+        "weight_l1": 171.38543701171875
+       }
+      }
+     }
+    }
+   },
+   "rank_agreement": "AGREE",
+   "statistical_observations": 1,
+   "weight_trajectory_status": "UNAVAILABLE; saved aggregate target mass and L1 displacement only"
+  },
+  {
+   "uid": "overnight-v2|b8ad4ea33312219e16a043f0",
+   "arm": "reweight",
+   "ranks": {
+    "0": {
+     "rows": {
+      "candidate_to_verify_reweight": 256
+     },
+     "segments": {
+      "candidate_to_verify_reweight": [
+       [
+        0,
+        256
+       ]
+      ]
+     },
+     "dose": {
+      "candidate_to_verify_reweight": {
+       "24": {
+        "active_rows": 256.0,
+        "actual_target_hits": 0.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 0.0,
+        "target_mass": 0.0,
+        "weight_l1": 0.0
+       },
+       "28": {
+        "active_rows": 256.0,
+        "actual_target_hits": 9.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 9.0,
+        "target_mass": 2.0371150970458984,
+        "weight_l1": 2.311227560043335
+       }
+      }
+     }
+    },
+    "1": {
+     "rows": {
+      "candidate_to_verify_reweight": 256
+     },
+     "segments": {
+      "candidate_to_verify_reweight": [
+       [
+        0,
+        256
+       ]
+      ]
+     },
+     "dose": {
+      "candidate_to_verify_reweight": {
+       "24": {
+        "active_rows": 256.0,
+        "actual_target_hits": 0.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 0.0,
+        "target_mass": 0.0,
+        "weight_l1": 0.0
+       },
+       "28": {
+        "active_rows": 256.0,
+        "actual_target_hits": 9.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 9.0,
+        "target_mass": 2.0371150970458984,
+        "weight_l1": 2.311227560043335
+       }
+      }
+     }
+    }
+   },
+   "rank_agreement": "AGREE",
+   "statistical_observations": 1,
+   "weight_trajectory_status": "UNAVAILABLE; saved aggregate target mass and L1 displacement only"
+  },
+  {
+   "uid": "overnight-v2|6ed032c8c9aa34dd638ab876",
+   "arm": "random_bias",
+   "ranks": {
+    "0": {
+     "rows": {
+      "candidate_to_verify_bias_random3": 256
+     },
+     "segments": {
+      "candidate_to_verify_bias_random3": [
+       [
+        0,
+        256
+       ]
+      ]
+     },
+     "dose": {
+      "candidate_to_verify_bias_random3": {
+       "24": {
+        "active_rows": 256.0,
+        "actual_target_hits": 0.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 0.0,
+        "target_mass": 0.0,
+        "weight_l1": 0.0
+       },
+       "28": {
+        "active_rows": 256.0,
+        "actual_target_hits": 125.0,
+        "membership_changes": 73.0,
+        "native_target_hits": 52.0,
+        "target_mass": 21.255393981933594,
+        "weight_l1": 31.20288848876953
+       }
+      }
+     }
+    },
+    "1": {
+     "rows": {
+      "candidate_to_verify_bias_random3": 256
+     },
+     "segments": {
+      "candidate_to_verify_bias_random3": [
+       [
+        0,
+        256
+       ]
+      ]
+     },
+     "dose": {
+      "candidate_to_verify_bias_random3": {
+       "24": {
+        "active_rows": 256.0,
+        "actual_target_hits": 0.0,
+        "membership_changes": 0.0,
+        "native_target_hits": 0.0,
+        "target_mass": 0.0,
+        "weight_l1": 0.0
+       },
+       "28": {
+        "active_rows": 256.0,
+        "actual_target_hits": 125.0,
+        "membership_changes": 73.0,
+        "native_target_hits": 52.0,
+        "target_mass": 21.255393981933594,
+        "weight_l1": 31.20288848876953
+       }
+      }
+     }
+    }
+   },
+   "rank_agreement": "AGREE",
+   "statistical_observations": 1,
+   "weight_trajectory_status": "UNAVAILABLE; saved aggregate target mass and L1 displacement only"
+  }
+ ],
+ "source_files": {
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/native_finalization_audit_v1.py": "a83a746e36513ee3d8653ecca454a99d0fd42b0cff65197496d5e165667872df",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/code/s1-9a61e32f48c04c24/moe_steer/logits.py": "32533cd722564ca18259d15acea1cfc0c2c326b3ee02eea4d665d01653d90bee",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/code/s1-9a61e32f48c04c24/moe_steer/engine.py": "0214fa6a97927180964c0114a71b4c758bcc407fe30275df2c0a3a40748780d2",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/utility_routing_worker_v2.py": "5143f2b241e1b78b5b7137d861155528b8ee72a437b2d1da3cb7cafea1dd15cc",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/overnight_routing_dose_audit_v3.py": "25954a18784403d7600c4a16f78366871759675f5043bf8d71b1baae2da3bf87",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/overnight_routing_runner_v2.py": "22817ec3f3dd5b834b8bea98d73557477b4b5b2ba3ac9be5fe827cc569ad102c"
+ },
+ "measurement_audit": {
+  "prediction_row": "input_position - original_prompt_tokens + 1; last prompt row predicts output zero",
+  "prefill": "Earlier input rows excluded from output-token routing; last prefill row included.",
+  "pulse": "256 prediction rows; closure-producing row included, all following answer rows inactive.",
+  "presence": "Original prompt uses built-in 1.5. Continuation uses built-in 0 plus PrefixPresencePenalty over prefix/generated union.",
+  "trigger": "Frozen rubric permits intermediate values; case 6 is rotated vector before adding center, case 7 is radius before area.",
+  "gap_semantics": "Top1/top2 preference and affinity-k gaps are not native selection-cutoff gaps without native IDs and exact selection scores."
+ },
+ "demonstrated_execution_defects": [],
+ "affected_results_requiring_correction": [],
+ "limitations": [
+  "No demonstrated execution defect in this bounded audit; this is not exhaustive proof.",
+  "No unavailable trajectories reconstructed; TP ranks retained separately.",
+  "42 reviewed 1024-token continuations cannot estimate population incidence or full 16384-token lengths.",
+  "Correct candidate annotations never replace final-answer grading."
+ ],
+ "sha256": "724fb15e25173b35d3caea253b902919f8661e2ed2c7e1c4263b75f782db442a"
+}

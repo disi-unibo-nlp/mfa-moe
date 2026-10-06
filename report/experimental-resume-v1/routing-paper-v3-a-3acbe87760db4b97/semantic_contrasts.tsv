@@ -1,0 +1,17 @@
+endpoint	scope	arm	reference	estimate	lower	upper	families
+both_positive	all	pair	native	0.0625	-0.25	0.5	8
+both_positive	all	pair	random_pair	-0.0625	-0.375	0.25	8
+both_positive	all	expert189	native	0.0	-0.25	0.25	8
+both_positive	all	expert189	random_expert189	0.0625	0.0	0.25	8
+both_positive	all	expert9	native	0.0625	-0.25	0.375	8
+both_positive	all	expert9	random_expert9	0.0	-0.25	0.25	8
+both_positive	all	pair	expert189	0.0625	-0.25	0.5	8
+both_positive	all	pair	expert9	0.0	-0.25	0.25	8
+emitted_tokens	all	pair	native	8.0625	-50.75	62.25	8
+emitted_tokens	all	pair	random_pair	11.5625	0.0	45.75	8
+emitted_tokens	all	expert189	native	-8.9375	-51.75	12.0	8
+emitted_tokens	all	expert189	random_expert189	7.8125	-28.1875	68.25	8
+emitted_tokens	all	expert9	native	0.75	-47.5	37.875	8
+emitted_tokens	all	expert9	random_expert9	-7.125	-31.75	3.25	8
+emitted_tokens	all	pair	expert189	17.0	0.0	52.4375	8
+emitted_tokens	all	pair	expert9	7.3125	-3.25	32.5	8

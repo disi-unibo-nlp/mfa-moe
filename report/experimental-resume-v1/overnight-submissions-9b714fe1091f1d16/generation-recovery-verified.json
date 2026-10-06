@@ -1,0 +1,15 @@
+{
+ "schema": "overnight-generation-recovery-v1",
+ "job_id": "59344807",
+ "previous_job_id": "59344221",
+ "manifest_sha256": "9b714fe1091f1d16e565bc4edd3321c4aa1559b7bcdadbb56755f8835f190723",
+ "scontrol": "JobId=59344807 ArrayJobId=59344807 ArrayTaskId=0-3 JobName=st-overnight-A-recovery\n   UserId=lmolfett(133943) GroupId=interactive(25200) MCS_label=N/A\n   Priority=136917 Nice=0 Account=iscrc_miosr QOS=normal\n   JobState=PENDING Reason=None Dependency=(null)\n   Requeue=0 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0\n   RunTime=00:00:00 TimeLimit=02:15:00 TimeMin=N/A\n   SubmitTime=2026-10-04T22:38:31 EligibleTime=2026-10-04T22:38:32\n   AccrueTime=2026-10-04T22:38:32\n   StartTime=2026-10-04T22:39:39 EndTime=2026-10-05T00:54:39 Deadline=N/A\n   SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-10-04T22:39:22 Scheduler=Main\n   Partition=boost_usr_prod AllocNode:Sid=login01-interconnect-1:3408119\n   ReqNodeList=(null) ExcNodeList=(null)\n   NodeList=\n   NumNodes=1-1 NumCPUs=16 NumTasks=1 CPUs/Task=16 ReqB:S:C:T=0:0:*:*\n   ReqTRES=cpu=16,mem=120G,node=1,billing=16,gres/gpu=2\n   AllocTRES=(null)\n   Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=*\n   MinCPUsNode=16 MinMemoryNode=120G MinTmpDiskNode=0\n   Features=(null) DelayBoot=00:00:00\n   OverSubscribe=OK Contiguous=0 Licenses=(null) LicensesAlloc=(null) Network=(null)\n   Command=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/overnight_routing_run_recovery_v1.sbatch\n   WorkDir=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo\n   StdErr=/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/logs/st-overnight-A-recovery-59344807_4294967294.err\n   StdIn=/dev/null\n   StdOut=/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/logs/st-overnight-A-recovery-59344807_4294967294.out\n   TresPerNode=gres/gpu:2\n   TresPerTask=cpu=16\n   \n\n",
+ "recovery_code": {
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/overnight_routing_entry_v1.py": "c7397112f398040b4a92d825d80f6e2414172f8fb40ac48c26c0e87f27bfaf0a",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/overnight_routing_run_recovery_v1.sbatch": "81bd4212eb95d4ef0a3370cf8dbee0fa0b18816c26de089a62b930735d7cb399",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/diagnose_mechanism_validation_v3.py": "c90534682b4a9ac7a1ef5608785c4e8f2962ed8ccbe450a842ab4524dd398c5b"
+ },
+ "startup_proof": "Exact CPU startup ordering passed before relaunch; qualified package pinned before any validation imports.",
+ "preservation": "No completed generation batches existed at recovery decision; previous empty bindings and all Slurm failures preserved. Sampler, policies, prefixes, UIDs and manifest unchanged.",
+ "sha256": "9e81663ec303710e7a38dd5ff89ae75e31d0cb22eb89b64e54da6eea0f60bc85"
+}

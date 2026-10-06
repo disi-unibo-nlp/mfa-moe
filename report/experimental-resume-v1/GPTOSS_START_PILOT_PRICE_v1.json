@@ -1,0 +1,39 @@
+{
+ "schema": "gptoss-start-pilot-price-v1",
+ "job_id": "59199761",
+ "status": "PASS_BOUNDED_PARITY_PILOT",
+ "frame_sha256": "18a7f804a90dd6c96e1976928312d1f834cf95a9c9cba4b2253bf02b834a5cc3",
+ "driver_sha256": "eda3cc4515b22f8c9105cac3f5604498795c7891fcac4652ddac50e38a16d411",
+ "qwen_prompt_driver_sha256": "06f8fabda8aa5e2fcf43eec4b6c6286c28e6856fc048731f8b966e0e7410cfe7",
+ "model_cache": {
+  "snapshot": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/cache/hf/hub/models--openai--gpt-oss-20b/snapshots/6cee5e81ee83917806bbde320786a8fb61efebee",
+  "config_sha256": "3a2a26ded679375b7928ddeca59764df7cea83220c1961035f6d6e232659e9ce",
+  "index_sha256": "0e085b977c4c9942f85938828e8c989ed7d5cdabf852e4da6a67c116cd502cd1",
+  "tokenizer_sha256": "0614fe83cadab421296e664e1f48f4261fa8fef6e03e63bb75c20f38e37d07d3",
+  "template_sha256": "a4c9919cbbd4acdd51ccffe22da049264b1b73e59055fa58811a99efbd7c8146",
+  "weight_shard_bytes": {
+   "model-00000-of-00002.safetensors": 4792272488,
+   "model-00001-of-00002.safetensors": 4798702184,
+   "model-00002-of-00002.safetensors": 4170342232
+  }
+ },
+ "rows": 4,
+ "prompt_tokens_exact": 12371,
+ "prompt_tokens_per_row": [
+  6642,
+  453,
+  3531,
+  1745
+ ],
+ "max_decode_tokens": 2048,
+ "allocation": {
+  "gpus": 1,
+  "gpu_type": "A100",
+  "wall_seconds": 3600,
+  "gpu_hour_ceiling": 1.0,
+  "qos": "normal"
+ },
+ "price_logic": "single cold load + four prompts, exact tokenizer prefill and all-capped 512-token decode; GPT-OSS runtime unknown, so this is a bounded qualification allocation, not a throughput projection. At walltime the job stops and cannot be extended automatically.",
+ "interpretation": "Different-model-family start rubric and parse parity on two Qwen reader disagreements and two controls; not an accuracy estimate or human adjudication",
+ "sha256": "68efe583138a89146b33ea5177fa07a285d25e7a52c244568bd94b509d0314a0"
+}

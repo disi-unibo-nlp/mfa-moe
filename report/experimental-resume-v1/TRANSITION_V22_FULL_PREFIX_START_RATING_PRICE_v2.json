@@ -1,0 +1,46 @@
+{
+ "schema": "transition-v22-fullprefix-start-rating-price-v2",
+ "job_id": "59183247",
+ "status": "PASS_COMPLETE_16_GPUH",
+ "frame_sha256": "6c10499bf71c7223b5c90fa6c2a1b13e13e9fb5c9c2af584d3ba67b4272290b2",
+ "rating_driver_sha256": "1ef8863fcdbca2a0b2cdecbcba7569745546a9beed435c0a232ea4bf27994036",
+ "rubric_sha256": "84bf517481c4f7d3ddb94e05e2a940e89ca4fffce8336c1e3f6300a1bf374225",
+ "scout_frame_sha256": "d8f50b7e4c309716d054fafa52cc22e2b77c3c9bb4b9bbdef829fe303271863a",
+ "scout_binding_sha256": "4cc204daf2be568649693d6658cf2ec7f8a7e95159d3ae3f427e71a2381c61c0",
+ "scout_summary_sha256": "962dc15fe82e82a549a6d17122a7fe3606c8235b8a37094644a3e5d048545357",
+ "scout_batch_sha256": "3f08923ff08e8cf28a2d9f0c76a2e1e4b9ee0471e5898fc48f7dc83dae87ce1d",
+ "parity_sha256": "cfd88c8a002ac6b3ca3901b992d483f8f257681658ac558603b6ea7c8d6da707",
+ "rows": 372,
+ "ratings": 744,
+ "prompt_tokens_exact_twice": 1518938,
+ "prompt_tokens_min": 245,
+ "prompt_tokens_max": 8358,
+ "max_decode_tokens": 761856,
+ "scout_observed_generated_tokens": 4244,
+ "scout_observed_generation_seconds": 70.94388874992728,
+ "scout_observed_tokens_per_s_including_prefill": 59.82192511267364,
+ "bounded_decode_tokens_per_s": 43.71012090865585,
+ "bounded_prefill_tokens_per_s": 4914.0160052745105,
+ "scout_parse_gate": {
+  "parsed_stop": 23,
+  "required": 22,
+  "long_parsed_stop": 8,
+  "long_total": 8,
+  "long_required": 7,
+  "pass": true
+ },
+ "components_seconds": {
+  "two_cold_loads": 1198.4929958172143,
+  "decode": 21787.173775843148,
+  "prefill": 386.3789816642925,
+  "two_shutdowns": 392.0
+ },
+ "complete_stage_projected_GPU_h": 13.20224764073592,
+ "allocation_plan": {
+  "first_slice_GPU_h_max": 12.0,
+  "one_recovery_GPU_h_max": 4.0,
+  "combined_GPU_h_ceiling": 16.0
+ },
+ "interpretation": "All 744 assignments at 1024-token cap, exact full-prefix prompts, two cold loads, all prefill/recovery/shutdown. Decode rate is the lower of prior stressed parity and 0.8x context-matched scout effective token rate; this deliberately double-counts some prefill. Parsed coverage gate is qualification only, not semantic detector validation.",
+ "sha256": "fe02c3502a5d689a83713eca6efb37b76ffeeeab639949179090dcc0a6cf740e"
+}

@@ -398,4 +398,5 @@ report/experimental-resume-v1/unit-tests.xml
 report/experimental-resume-v1/DEEPSEEK_*.txt
 report/experimental-resume-v1/INDEPENDENT_REVIEW_*_PACK_*.txt
 report/experimental-resume-v1/JOB_AUDIT_RUN_*.txt
+report/experimental-resume-v1/OPUS_SECOND_OPINION_RAW_v0.1.json
 scripts/experimental_resume/*.superseded-v3-copy

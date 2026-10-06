@@ -1,0 +1,29 @@
+{
+ "schema": "legacy-X3-native-label-density-price-v1",
+ "status": "READY_CPU_COUNT_ONLY",
+ "source_sha256": "71147eb9cbc15750324f24d81ca782d67be0c87cad2c27348c72970f3d8b9b26",
+ "sampler_tree_sha256": "9a61e32f48c04c242acccc89c529bd750776c553cdfc776347151d359bc53430",
+ "eligibility_sha256": "bf1425d987cbea417115574928ee5a2ece46c3c194f1e0d6280cf6ae53381508",
+ "selection_sha256": "0ecb13095d5ef60fd83270d2017150c6cdcd7a5c2cc3b79b1dd126ebf7cfd122",
+ "tokenizer_sha256": "5f9e4d4901a92b997e463c1f46055088b6cca5ca61a6522d1b9f64c4bb81cb42",
+ "input_sha256": {
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/X3_ELIGIBILITY_v1.json": "c306faec0726656583084f235496ba0e92aa899dfcdb4769fda5e9f07e14ba1a",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/X3_G3_SELECTION_v2.json": "f8b6f2b46cc6a5e028f2e5d130b9e0eb59834b63ddf5b8e66f4501995bda76a8",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/code/s1-9a61e32f48c04c24/moe_steer/label_units.py": "e5d03df2bf30017127074da3addb0bab8867e9949df496a8840a03b15b732eaa",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/code/s1-9a61e32f48c04c24/moe_exp_src/moe_exp/correlation_pipeline/spans.py": "99bdd0b5cfb6bdc9c75bd1be9deac3dd3f8a434b0a7ffec87fb4d79e0b439cba",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/cache/hf/hub/models--Qwen--Qwen3.6-35B-A3B-FP8/snapshots/95a723d08a9490559dae23d0cff1d9466213d989/tokenizer.json": "5f9e4d4901a92b997e463c1f46055088b6cca5ca61a6522d1b9f64c4bb81cb42"
+ },
+ "scope": "77 registered X3 firing native sample_00 traces; original-prefix cumulative segmentation; count only sentences starting in 512-token reasoning window; no judge/inference/intervention reads",
+ "resources": {
+  "account": "iscrc_miosr",
+  "partition": "boost_usr_prod",
+  "qos": "normal",
+  "cpus": 1,
+  "memory": "16G",
+  "wall_seconds": 3600,
+  "max_core_hours": 1.0,
+  "gpus": 0
+ },
+ "interpretation": "10x scaling for two seeds and five arms is a density proxy; reprice from actual X3 branch units after generation.",
+ "sha256": "a0d1306698d74e2bb2c4b252ad04ca306cec03fdb3af6fd021ff439758b38eef"
+}

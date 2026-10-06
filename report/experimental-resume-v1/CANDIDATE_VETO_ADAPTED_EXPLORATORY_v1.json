@@ -1,0 +1,125 @@
+{
+ "schema": "candidate-veto-family-cv-v1",
+ "job_id": "59187229",
+ "version": "candidate-prefix-veto-charlogit-v1-discovery",
+ "source": "old",
+ "source_frame_sha256": "41fdd999e59db84fdc1d0675ac8c2c1af0bab23dfa2b02ba90a5b48f2cb45d79",
+ "rating_binding_sha256": "cfd28f10dfafe5b41aedc8ab828e3f05009eb7ef1b328f4b683bcdf44a7b73f5",
+ "rating_summary_sha256": "84951b879e5fef23419f117774b8306a06d8146f1c956cd85b9a8ca11bc8a6e0",
+ "rating_batch_sha256s": [
+  "9a87513afce48e549c73d5e14c664971d9245ce1f10e8066e35b4dd6faf69edf",
+  "cf1ccb5f92e75c32c6c5c075344534a70c461ba042c1ff09815f4cee055ea298",
+  "4d08f03959323d9a7e31c94542e0b9acbe47eb4c10b2c72f44957a51fa2628e3",
+  "21b349205647c762ec8de6c2a4bf398efe67c95d2185fc1efc0393b64b49ea88",
+  "41112f9e9f759f2a1550d88bc17155acc7f2a70ceb35db2716f6e234a54437b3",
+  "740e4b765b554c2d2eb342d81b7c76342934dba477144b7a472de4f073f64db5",
+  "7d9d8175c395deb402fee77d7725ebf088122a10dc36fed43264293d862f2c91",
+  "7d8002249a8dce205e8e4761b6f01e3bc0cf4dd2162fcdd56504f8003571ff26",
+  "62dc1df7084e74b218b3ce69679e1a8763de8d44adf98d87c8f32abcf501eee8",
+  "b48012a5f3eae2a0fe82647d356468445212011ffe1a84548aa8ecffaed9ddde",
+  "7995da9701d23dfb5e282ab7c7bfe24214309eb97f094740e440c4883f7dc998",
+  "2cdd9a76c7e4b822bca96460a1adc091a37809cdc9ca7643b135643e720f2110",
+  "a2542e3ef26cd3a72a5292e43f25565138529ce00d8185e9633b5b33674636a0",
+  "df975118ae9715183b92b25df667a90e4627fc6531deb00d3a7f791ea4e330f3",
+  "3da6513d2c0cd5d60d43e49d8527ced8b0da9ad35375d372539255b921031294",
+  "bf52c733ac44634ec33ee05bf82b8e6b475d3aafbf354dcd4a0d3af40079783c",
+  "b2245abfd298193593355c21c5c55973310d87d0cd68ae4d84e1681668972b4b",
+  "0b909f372acb65d188a005f7393dc0e7041ace330c743de9c271cc4b514186c4",
+  "6a9d4ebf0886c253f9c190af14280ba52b333076fcddc01a340ceecf859a5639",
+  "0bf4285a448dfdf617e1a19405ad8051204d3a2c6a53559bdb7894fb1634fe76"
+ ],
+ "units_sha256": "84a85c92b595a7829446b6a53b376e1126df3b6c36eabaddb3b4e884eb52fa72",
+ "v22_sensitivity_sha256": "1507899309aedf2ecb5ef5dedbc337a8f445b20140543764fc939068fcd54c27",
+ "driver_sha256": "d906acc7aae0a0135b133597ea55024b1af404b6384aa7a8e4aeeb225fad0319",
+ "features_allowlist": [
+  "problem_statement",
+  "previous_sentence",
+  "sentence"
+ ],
+ "model": "char 3-5 TF-IDF (20k max, min_df=2) + balanced logistic C=0.5",
+ "threshold_policy": "inner family CV: maximal recall at >=0.70 apparent precision and >=4 selected; otherwise abstain",
+ "outer_family_cv": [
+  {
+   "fold": 0,
+   "train_families": 29,
+   "heldout_families": 7,
+   "heldout_rows": 14,
+   "threshold": 1.01,
+   "inner": {
+    "reason": "no_inner_threshold_at_70pct_precision_and_four_fires"
+   },
+   "heldout_selected": 0,
+   "heldout_true_selected": 0
+  },
+  {
+   "fold": 1,
+   "train_families": 29,
+   "heldout_families": 7,
+   "heldout_rows": 14,
+   "threshold": 1.01,
+   "inner": {
+    "reason": "no_inner_threshold_at_70pct_precision_and_four_fires"
+   },
+   "heldout_selected": 0,
+   "heldout_true_selected": 0
+  },
+  {
+   "fold": 2,
+   "train_families": 29,
+   "heldout_families": 7,
+   "heldout_rows": 14,
+   "threshold": 1.01,
+   "inner": {
+    "reason": "no_inner_threshold_at_70pct_precision_and_four_fires"
+   },
+   "heldout_selected": 0,
+   "heldout_true_selected": 0
+  },
+  {
+   "fold": 3,
+   "train_families": 29,
+   "heldout_families": 7,
+   "heldout_rows": 14,
+   "threshold": 1.01,
+   "inner": {
+    "reason": "no_inner_threshold_at_70pct_precision_and_four_fires"
+   },
+   "heldout_selected": 0,
+   "heldout_true_selected": 0
+  },
+  {
+   "fold": 4,
+   "train_families": 28,
+   "heldout_families": 8,
+   "heldout_rows": 14,
+   "threshold": 1.01,
+   "inner": {
+    "reason": "no_inner_threshold_at_70pct_precision_and_four_fires"
+   },
+   "heldout_selected": 0,
+   "heldout_true_selected": 0
+  }
+ ],
+ "outer_oof": {
+  "resolved_rated_fires": 70,
+  "positive_both_readers": 44,
+  "unresolved": {
+   "reader_disagreement": 7
+  },
+  "selected": 0,
+  "selected_true": 0,
+  "sample_precision": null,
+  "sample_recall": 0.0,
+  "selected_families": 0
+ },
+ "full_native_fire_burden_exploratory": {
+  "all_v22_fires": 1816,
+  "all_v22_families": 48,
+  "exploratory_model_threshold": 1.01,
+  "inner": {
+   "reason": "no_inner_threshold_at_70pct_precision_and_four_fires"
+  }
+ },
+ "interpretation": "Old start ratings were adapted and readers saw later text; all estimates exploratory. Nested family CV is within discovery families; the final native-fire burden is fitted on discovery and cannot be treated as validation.",
+ "sha256": "161dd7ada8677783f9f3679f2c09ff6bba654b9f7e3a8302725a285f62883eb3"
+}

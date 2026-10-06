@@ -1,0 +1,341 @@
+{
+ "schema": "overnight-routing-design-v1",
+ "lane": "A",
+ "mode": "ordered_positive",
+ "horizon": 1024,
+ "transitions": [
+  "candidate_to_verify"
+ ],
+ "actions": [
+  {
+   "name": "candidate_to_verify_pair",
+   "transition": "candidate_to_verify",
+   "experts": [
+    [
+     28,
+     [
+      9,
+      189
+     ]
+    ]
+   ],
+   "bias": 1.0
+  },
+  {
+   "name": "candidate_to_verify_pair_random0",
+   "transition": "candidate_to_verify",
+   "experts": [
+    [
+     28,
+     [
+      120,
+      139
+     ]
+    ]
+   ],
+   "bias": 1.0
+  },
+  {
+   "name": "candidate_to_verify_pair_random1",
+   "transition": "candidate_to_verify",
+   "experts": [
+    [
+     28,
+     [
+      133,
+      255
+     ]
+    ]
+   ],
+   "bias": 1.0
+  },
+  {
+   "name": "candidate_to_verify_pair_random2",
+   "transition": "candidate_to_verify",
+   "experts": [
+    [
+     28,
+     [
+      5,
+      43
+     ]
+    ]
+   ],
+   "bias": 1.0
+  },
+  {
+   "name": "candidate_to_verify_pair_random3",
+   "transition": "candidate_to_verify",
+   "experts": [
+    [
+     28,
+     [
+      24,
+      196
+     ]
+    ]
+   ],
+   "bias": 1.0
+  },
+  {
+   "name": "candidate_to_verify_expert189",
+   "transition": "candidate_to_verify",
+   "experts": [
+    [
+     28,
+     [
+      189
+     ]
+    ]
+   ],
+   "bias": 1.0
+  },
+  {
+   "name": "candidate_to_verify_expert189_random0",
+   "transition": "candidate_to_verify",
+   "experts": [
+    [
+     28,
+     [
+      139
+     ]
+    ]
+   ],
+   "bias": 1.0
+  },
+  {
+   "name": "candidate_to_verify_expert189_random1",
+   "transition": "candidate_to_verify",
+   "experts": [
+    [
+     28,
+     [
+      255
+     ]
+    ]
+   ],
+   "bias": 1.0
+  },
+  {
+   "name": "candidate_to_verify_expert189_random2",
+   "transition": "candidate_to_verify",
+   "experts": [
+    [
+     28,
+     [
+      43
+     ]
+    ]
+   ],
+   "bias": 1.0
+  },
+  {
+   "name": "candidate_to_verify_expert189_random3",
+   "transition": "candidate_to_verify",
+   "experts": [
+    [
+     28,
+     [
+      196
+     ]
+    ]
+   ],
+   "bias": 1.0
+  },
+  {
+   "name": "candidate_to_verify_expert9",
+   "transition": "candidate_to_verify",
+   "experts": [
+    [
+     28,
+     [
+      9
+     ]
+    ]
+   ],
+   "bias": 1.0
+  },
+  {
+   "name": "candidate_to_verify_expert9_random0",
+   "transition": "candidate_to_verify",
+   "experts": [
+    [
+     28,
+     [
+      120
+     ]
+    ]
+   ],
+   "bias": 1.0
+  },
+  {
+   "name": "candidate_to_verify_expert9_random1",
+   "transition": "candidate_to_verify",
+   "experts": [
+    [
+     28,
+     [
+      133
+     ]
+    ]
+   ],
+   "bias": 1.0
+  },
+  {
+   "name": "candidate_to_verify_expert9_random2",
+   "transition": "candidate_to_verify",
+   "experts": [
+    [
+     28,
+     [
+      5
+     ]
+    ]
+   ],
+   "bias": 1.0
+  },
+  {
+   "name": "candidate_to_verify_expert9_random3",
+   "transition": "candidate_to_verify",
+   "experts": [
+    [
+     28,
+     [
+      24
+     ]
+    ]
+   ],
+   "bias": 1.0
+  }
+ ],
+ "arms": [
+  {
+   "name": "native",
+   "role": "native",
+   "policies": {},
+   "slots": []
+  },
+  {
+   "name": "native_duplicate",
+   "role": "native",
+   "policies": {},
+   "slots": []
+  },
+  {
+   "name": "pair",
+   "role": "target",
+   "policies": {
+    "candidate_to_verify": [
+     "candidate_to_verify_pair"
+    ]
+   },
+   "slots": [
+    0
+   ]
+  },
+  {
+   "name": "random_pair",
+   "role": "random",
+   "policies": {
+    "candidate_to_verify": [
+     "candidate_to_verify_pair_random{random_set}"
+    ]
+   },
+   "slots": [
+    0
+   ]
+  },
+  {
+   "name": "expert189",
+   "role": "target",
+   "policies": {
+    "candidate_to_verify": [
+     "candidate_to_verify_expert189"
+    ]
+   },
+   "slots": [
+    0
+   ]
+  },
+  {
+   "name": "random_expert189",
+   "role": "random",
+   "policies": {
+    "candidate_to_verify": [
+     "candidate_to_verify_expert189_random{random_set}"
+    ]
+   },
+   "slots": [
+    0
+   ]
+  },
+  {
+   "name": "expert9",
+   "role": "target",
+   "policies": {
+    "candidate_to_verify": [
+     "candidate_to_verify_expert9"
+    ]
+   },
+   "slots": [
+    0
+   ]
+  },
+  {
+   "name": "random_expert9",
+   "role": "random",
+   "policies": {
+    "candidate_to_verify": [
+     "candidate_to_verify_expert9_random{random_set}"
+    ]
+   },
+   "slots": [
+    0
+   ]
+  }
+ ],
+ "planned_contrasts": [
+  [
+   "pair",
+   "native"
+  ],
+  [
+   "pair",
+   "random_pair"
+  ],
+  [
+   "expert189",
+   "native"
+  ],
+  [
+   "expert189",
+   "random_expert189"
+  ],
+  [
+   "expert9",
+   "native"
+  ],
+  [
+   "expert9",
+   "random_expert9"
+  ],
+  [
+   "pair",
+   "expert189"
+  ],
+  [
+   "pair",
+   "expert9"
+  ]
+ ],
+ "analysis_scopes": [
+  "all",
+  "candidate_to_verify"
+ ],
+ "analysis_seed": 20261004,
+ "dictionary_sha256": "144458193e294152f92703c854a11055fa49929cee0e85289d0cb4eb2ab0aef0",
+ "bootstrap_replicates": 50000,
+ "claim_limit": "Exploratory discovery prefixes previously examined; no independent confirmation or utility claim.",
+ "selection_information": "Frozen native discovery correlations and existing discovery audits only; no newly completing mechanism outcomes.",
+ "sha256": "4770072b0956c0e5598c2f41085e774979a5e7f5ca26586e874bccbfa828b41e"
+}

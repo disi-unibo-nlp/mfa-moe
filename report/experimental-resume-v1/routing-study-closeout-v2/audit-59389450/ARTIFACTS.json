@@ -1,0 +1,9 @@
+{
+ "schema": "routing-study-closeout-artifacts-v1",
+ "index_sha256": "ce328f0516b454a2eff23941583833a0c9d39468091a97c0e130f79152e59710",
+ "artifacts": {
+  "semantic_contrasts.tsv": "22676b74f2e233ffd9365176feb6d516878f668a7453f2c3d9d0baa23bfe46ac",
+  "SYNTHESIS.md": "4d821f7074dca805800ec61c378493340e739bbc5c91287e542c601ce48d053c"
+ },
+ "sha256": "ae1f75dae319c300a9fdfde0eac4b3311a5b0edb6fa78f8e4170e77bc5d335f5"
+}

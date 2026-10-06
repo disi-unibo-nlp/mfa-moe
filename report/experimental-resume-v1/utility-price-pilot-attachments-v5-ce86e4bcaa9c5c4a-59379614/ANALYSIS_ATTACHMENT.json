@@ -1,0 +1,10 @@
+{
+ "schema": "utility-analysis-attachment-v4",
+ "proposal_sha256": "ce86e4bcaa9c5c4a12f9c9456f118662dccdb57ed355f952cabc9617a83152fa",
+ "manifest_sha256": "6b5aa286e46cb818969c939346f448a6577b307779041ec2d35d7fce0562f074",
+ "fresh_generation_dispatch_job": "59349585",
+ "analysis_job": "59380008",
+ "qualification_job": "59346566",
+ "selector_job": "59380092",
+ "sha256": "a81a4977f8dd6d56f9fab31c5fa2379f0d31219e083ada209310a23ed37068b3"
+}

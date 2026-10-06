@@ -1,0 +1,12 @@
+{
+  "schema": "experimental-resume-expanded-authorization-v1",
+  "user_message": "use all the needed GPU hours. Sbatch everything you need to do all the naalisis and runs to finish the paper succesfully",
+  "interpretation": "Authorize the named experimental resume workloads and their necessary GPU hours, with complete per-stage pricing, live account checks, qualification gates, and verified Slurm accounting before each submission.",
+  "qualification_recovery_v2": {
+    "additional_qualification_GPU_hours": 0.2,
+    "one_attempt": true,
+    "proposed_stage_ceiling_GPU_hours": 1.1,
+    "proposal": "report/experimental-resume-v1/QUALIFICATION_RECOVERY_PROPOSAL_v2.json"
+  },
+  "other_stages": "Resource ceilings may be revised to measured complete-stage prices under this user authorization; enrollment, causal validation, scientific quality gates and available CINECA account balance remain binding."
+}

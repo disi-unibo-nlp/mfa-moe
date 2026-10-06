@@ -1,0 +1,26 @@
+{
+ "schema": "routing-paper-snapshot-v3",
+ "stage": "C",
+ "source": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/OVERNIGHT_DISCOVERY_C_ANALYSIS_v2/ANALYSIS.json",
+ "source_sha256": "9037a894f431788f8e4a9f63bbd3c3d2b09dcd9c7bfbd2b82b4afff354207304",
+ "driver_sha256": "57496a379a2ed9094749bc684fa8e679db306f7c7ffae8249ba75badc54840fe",
+ "analysis_slurm": {
+  "job_id": "59356205",
+  "state": "COMPLETED",
+  "exit_code": "0:0",
+  "elapsed": "00:00:09",
+  "end": "2026-10-05T02:49:57"
+ },
+ "report_slurm_job": "59378922",
+ "artifacts": {
+  "CLAIM_LEDGER.json": "c87cc1e759af62c1a7294699b74d9ca49891c3ac65c679a9cf8cc6943e90075c",
+  "MEASUREMENT.json": "4f84242948d07e4bbdc011dae45f44c33b9e24bec4326c5722bd065bd12f3f6d",
+  "reader_coverage.pdf": "7a5f1ba945471f296e99e7ba1b88e1005283c514d5780273a3cbbaefce2b037a",
+  "semantic_contrasts.tsv": "8357f447c83a8b462642f0f7171802c94fdc29e585633e1b05b3b2e85e34b653",
+  "semantic_effects.pdf": "08ff253576a8d1108dfa20a57235a6a644ceec3ff9e746acdf9394ad91864f29",
+  "semantic_effects.svg": "8eb6522c6f64be0f1a73a50c5f02266bfaa6dd640081a5a78fe064f1f337e8ae"
+ },
+ "new_claims": 48,
+ "status": "COMPLETE_SAVED_RESULT_ADDENDUM",
+ "sha256": "ae4f974d99e7ed1d7d41caff33bf69907d46a8d3d3d75ddc3699cf4c64738ebd"
+}

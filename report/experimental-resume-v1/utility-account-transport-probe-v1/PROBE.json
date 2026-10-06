@@ -1,0 +1,38 @@
+{
+ "schema": "utility-account-transport-probe-v1",
+ "probe_job_id": "59381728",
+ "partition": "lrd_all_viz",
+ "compute_hostname": "viz16.leonardo.local",
+ "user": "lmolfett",
+ "ssh_target": "login05.leonardo.local",
+ "ssh_options": [
+  "-T",
+  "-o",
+  "BatchMode=yes",
+  "-o",
+  "StrictHostKeyChecking=yes",
+  "-o",
+  "ConnectTimeout=10",
+  "-o",
+  "ServerAliveInterval=5",
+  "-o",
+  "ServerAliveCountMax=2",
+  "-o",
+  "ControlMaster=no",
+  "-o",
+  "ControlPath=none",
+  "-o",
+  "ForwardAgent=no",
+  "-o",
+  "UpdateHostKeys=no"
+ ],
+ "source_files": {
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/utility_account_transport_v1.py": "ca72c410b74f5258cba01a270070ed53755c6d5f4c0bddea78c4db8a1717a25f",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/probe_utility_account_transport_v1.sbatch": "75227627eb50583c89c694712faf4948a059219ec57f1c49e7f2f6ffdc7bde3c"
+ },
+ "observed_utc": "2026-10-05T08:41:09.069833+00:00",
+ "scope": "Read-only on-demand verified SSH; no persistent connection, agent forwarding, trust-file changes or cached production balance.",
+ "status": "FAIL_NATIVE_ACCOUNT_TRANSPORT",
+ "error": "verified accounting SSH failed at /bin/hostname: lmolfett@login05.leonardo.local: Permission denied (publickey,gssapi-keyex,gssapi-with-mic).",
+ "sha256": "7f24b349122ccac7e1d05d56537fbd8168cd076b73781f269a5a9d59e36f61b3"
+}

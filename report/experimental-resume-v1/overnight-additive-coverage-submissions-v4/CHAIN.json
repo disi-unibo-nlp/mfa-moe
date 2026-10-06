@@ -1,0 +1,40 @@
+{
+ "schema": "overnight-additive-qualified-chain-v4",
+ "binding": {
+  "amendment_sha256": "1d6f34dde5f7a7406d3aede0b35e5a7d5285dad93688821586724fa006dee32d",
+  "enrollment_sha256": "7190b1dc34f8cc6e9aeac337dc66f993cd91ce139972112333f076887d4cb5ee",
+  "enrollment_job": "59344223",
+  "enrollment_sacct": "59344223|COMPLETED|0:0\n",
+  "submit_code_sha256": "c25f0f1774de9b45e04b595558e0c6b11a42a06e6644b0a32fd70e7853410b4f",
+  "shared_submit_sha256": "0c142175df5db52fdf00a85d0e8dd46099209a76c5161994b4279332d6c84a10"
+ },
+ "supplement_job": "59348871",
+ "combined_qualification_job": "59349546",
+ "records": [
+  {
+   "stage": "C",
+   "combined_qualification_job": "59349546",
+   "preparation_job": "59349549",
+   "generation_dispatch_job": "59349552",
+   "attachments": {
+    "dense": "59349556",
+    "paper": "59349561",
+    "engagement": "59349570"
+   }
+  },
+  {
+   "stage": "FRESH",
+   "combined_qualification_job": "59349546",
+   "preparation_job": "59349583",
+   "generation_dispatch_job": "59349585",
+   "attachments": {
+    "dense": "59349587",
+    "paper": "59349594",
+    "engagement": "59349596",
+    "utility_price_pilot": "59349601"
+   }
+  }
+ ],
+ "preservation": "Original failed qualifications and cancelled zero-runtime descendants are retained; no original outcomes or enrollment replaced.",
+ "sha256": "be0f1272840e21b8e448bd2f5376684cc15283f35de291db7d72383b5385a9be"
+}

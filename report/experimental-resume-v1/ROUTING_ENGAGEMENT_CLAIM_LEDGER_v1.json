@@ -1,0 +1,862 @@
+{
+ "schema": "routing-engagement-claim-ledger-v1",
+ "source_results": {
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/routing-first-stage/routing-first-stage-v2-9b714fe1091f1d16-ebe96bfe774d/RESULT.json": "7170885fb22042cc7903ddcecd69bb26359e11d50e28940e69e6048071b83dd0",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/routing-first-stage/routing-first-stage-v2-9c3dc95fda9cf5e9-ebe96bfe774d/RESULT.json": "c6a418442efb56b90b831e052f2af0c9068da8efd13da6c14cb9caa9494a0bce"
+ },
+ "claims": [
+  {
+   "claim_id": "routing-A-all-pair-native",
+   "population": {
+    "stage": "A",
+    "scope": "all",
+    "families": 8,
+    "assigned_starts": 8,
+    "paired_seed_cells": 16
+   },
+   "intervention": {
+    "left_arm": "pair",
+    "right_arm": "native",
+    "manifest_sha256": "9b714fe1091f1d16e565bc4edd3321c4aa1559b7bcdadbb56755f8835f190723",
+    "horizon": 1024
+   },
+   "endpoint": "selected_expert_inclusion_per_intended_opportunity",
+   "estimate": 0.1375732421875,
+   "simultaneous_ci95": [
+    0.07632408142089844,
+    0.188232421875
+   ],
+   "identification_bounds": [
+    0.1375732421875,
+    0.1375732421875
+   ],
+   "simultaneous_uncertainty_envelope95": null,
+   "uncertainty_method": "Paired family-cluster Bonferroni percentile bootstrap approximation; bounds envelope when missing.",
+   "weighting": "Seeds averaged within prefix; prefixes within family; equal family weight.",
+   "multiplicity_family": "routing-engagement-A",
+   "multiplicity_size": 8,
+   "replicates": 50000,
+   "status": "ROUTING_ENGAGEMENT_ONLY_SEMANTIC_EFFECT_PENDING",
+   "precision_status": "FAMILY_BOOTSTRAP_APPROXIMATION",
+   "source_result": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/routing-first-stage/routing-first-stage-v2-9b714fe1091f1d16-ebe96bfe774d/RESULT.json",
+   "source_result_sha256": "7170885fb22042cc7903ddcecd69bb26359e11d50e28940e69e6048071b83dd0",
+   "claim_limit": "Target engagement and saved same-state routing dose only; no semantic-control, accuracy, or latent-reasoning claim."
+  },
+  {
+   "claim_id": "routing-A-all-pair-random_pair",
+   "population": {
+    "stage": "A",
+    "scope": "all",
+    "families": 8,
+    "assigned_starts": 8,
+    "paired_seed_cells": 16
+   },
+   "intervention": {
+    "left_arm": "pair",
+    "right_arm": "random_pair",
+    "manifest_sha256": "9b714fe1091f1d16e565bc4edd3321c4aa1559b7bcdadbb56755f8835f190723",
+    "horizon": 1024
+   },
+   "endpoint": "selected_expert_inclusion_per_intended_opportunity",
+   "estimate": 0.140869140625,
+   "simultaneous_ci95": [
+    0.076904296875,
+    0.1953125
+   ],
+   "identification_bounds": [
+    0.140869140625,
+    0.140869140625
+   ],
+   "simultaneous_uncertainty_envelope95": null,
+   "uncertainty_method": "Paired family-cluster Bonferroni percentile bootstrap approximation; bounds envelope when missing.",
+   "weighting": "Seeds averaged within prefix; prefixes within family; equal family weight.",
+   "multiplicity_family": "routing-engagement-A",
+   "multiplicity_size": 8,
+   "replicates": 50000,
+   "status": "ROUTING_ENGAGEMENT_ONLY_SEMANTIC_EFFECT_PENDING",
+   "precision_status": "FAMILY_BOOTSTRAP_APPROXIMATION",
+   "source_result": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/routing-first-stage/routing-first-stage-v2-9b714fe1091f1d16-ebe96bfe774d/RESULT.json",
+   "source_result_sha256": "7170885fb22042cc7903ddcecd69bb26359e11d50e28940e69e6048071b83dd0",
+   "claim_limit": "Target engagement and saved same-state routing dose only; no semantic-control, accuracy, or latent-reasoning claim."
+  },
+  {
+   "claim_id": "routing-A-all-expert189-native",
+   "population": {
+    "stage": "A",
+    "scope": "all",
+    "families": 8,
+    "assigned_starts": 8,
+    "paired_seed_cells": 16
+   },
+   "intervention": {
+    "left_arm": "expert189",
+    "right_arm": "native",
+    "manifest_sha256": "9b714fe1091f1d16e565bc4edd3321c4aa1559b7bcdadbb56755f8835f190723",
+    "horizon": 1024
+   },
+   "endpoint": "selected_expert_inclusion_per_intended_opportunity",
+   "estimate": 0.095947265625,
+   "simultaneous_ci95": [
+    0.045166015625,
+    0.1474609375
+   ],
+   "identification_bounds": [
+    0.095947265625,
+    0.095947265625
+   ],
+   "simultaneous_uncertainty_envelope95": null,
+   "uncertainty_method": "Paired family-cluster Bonferroni percentile bootstrap approximation; bounds envelope when missing.",
+   "weighting": "Seeds averaged within prefix; prefixes within family; equal family weight.",
+   "multiplicity_family": "routing-engagement-A",
+   "multiplicity_size": 8,
+   "replicates": 50000,
+   "status": "ROUTING_ENGAGEMENT_ONLY_SEMANTIC_EFFECT_PENDING",
+   "precision_status": "FAMILY_BOOTSTRAP_APPROXIMATION",
+   "source_result": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/routing-first-stage/routing-first-stage-v2-9b714fe1091f1d16-ebe96bfe774d/RESULT.json",
+   "source_result_sha256": "7170885fb22042cc7903ddcecd69bb26359e11d50e28940e69e6048071b83dd0",
+   "claim_limit": "Target engagement and saved same-state routing dose only; no semantic-control, accuracy, or latent-reasoning claim."
+  },
+  {
+   "claim_id": "routing-A-all-expert189-random_expert189",
+   "population": {
+    "stage": "A",
+    "scope": "all",
+    "families": 8,
+    "assigned_starts": 8,
+    "paired_seed_cells": 16
+   },
+   "intervention": {
+    "left_arm": "expert189",
+    "right_arm": "random_expert189",
+    "manifest_sha256": "9b714fe1091f1d16e565bc4edd3321c4aa1559b7bcdadbb56755f8835f190723",
+    "horizon": 1024
+   },
+   "endpoint": "selected_expert_inclusion_per_intended_opportunity",
+   "estimate": 0.09326171875,
+   "simultaneous_ci95": [
+    0.03033370971679688,
+    0.157470703125
+   ],
+   "identification_bounds": [
+    0.09326171875,
+    0.09326171875
+   ],
+   "simultaneous_uncertainty_envelope95": null,
+   "uncertainty_method": "Paired family-cluster Bonferroni percentile bootstrap approximation; bounds envelope when missing.",
+   "weighting": "Seeds averaged within prefix; prefixes within family; equal family weight.",
+   "multiplicity_family": "routing-engagement-A",
+   "multiplicity_size": 8,
+   "replicates": 50000,
+   "status": "ROUTING_ENGAGEMENT_ONLY_SEMANTIC_EFFECT_PENDING",
+   "precision_status": "FAMILY_BOOTSTRAP_APPROXIMATION",
+   "source_result": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/routing-first-stage/routing-first-stage-v2-9b714fe1091f1d16-ebe96bfe774d/RESULT.json",
+   "source_result_sha256": "7170885fb22042cc7903ddcecd69bb26359e11d50e28940e69e6048071b83dd0",
+   "claim_limit": "Target engagement and saved same-state routing dose only; no semantic-control, accuracy, or latent-reasoning claim."
+  },
+  {
+   "claim_id": "routing-A-all-expert9-native",
+   "population": {
+    "stage": "A",
+    "scope": "all",
+    "families": 8,
+    "assigned_starts": 8,
+    "paired_seed_cells": 16
+   },
+   "intervention": {
+    "left_arm": "expert9",
+    "right_arm": "native",
+    "manifest_sha256": "9b714fe1091f1d16e565bc4edd3321c4aa1559b7bcdadbb56755f8835f190723",
+    "horizon": 1024
+   },
+   "endpoint": "selected_expert_inclusion_per_intended_opportunity",
+   "estimate": 0.130126953125,
+   "simultaneous_ci95": [
+    0.075439453125,
+    0.18212890625
+   ],
+   "identification_bounds": [
+    0.130126953125,
+    0.130126953125
+   ],
+   "simultaneous_uncertainty_envelope95": null,
+   "uncertainty_method": "Paired family-cluster Bonferroni percentile bootstrap approximation; bounds envelope when missing.",
+   "weighting": "Seeds averaged within prefix; prefixes within family; equal family weight.",
+   "multiplicity_family": "routing-engagement-A",
+   "multiplicity_size": 8,
+   "replicates": 50000,
+   "status": "ROUTING_ENGAGEMENT_ONLY_SEMANTIC_EFFECT_PENDING",
+   "precision_status": "FAMILY_BOOTSTRAP_APPROXIMATION",
+   "source_result": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/routing-first-stage/routing-first-stage-v2-9b714fe1091f1d16-ebe96bfe774d/RESULT.json",
+   "source_result_sha256": "7170885fb22042cc7903ddcecd69bb26359e11d50e28940e69e6048071b83dd0",
+   "claim_limit": "Target engagement and saved same-state routing dose only; no semantic-control, accuracy, or latent-reasoning claim."
+  },
+  {
+   "claim_id": "routing-A-all-expert9-random_expert9",
+   "population": {
+    "stage": "A",
+    "scope": "all",
+    "families": 8,
+    "assigned_starts": 8,
+    "paired_seed_cells": 16
+   },
+   "intervention": {
+    "left_arm": "expert9",
+    "right_arm": "random_expert9",
+    "manifest_sha256": "9b714fe1091f1d16e565bc4edd3321c4aa1559b7bcdadbb56755f8835f190723",
+    "horizon": 1024
+   },
+   "endpoint": "selected_expert_inclusion_per_intended_opportunity",
+   "estimate": 0.124755859375,
+   "simultaneous_ci95": [
+    0.06744308471679689,
+    0.181396484375
+   ],
+   "identification_bounds": [
+    0.124755859375,
+    0.124755859375
+   ],
+   "simultaneous_uncertainty_envelope95": null,
+   "uncertainty_method": "Paired family-cluster Bonferroni percentile bootstrap approximation; bounds envelope when missing.",
+   "weighting": "Seeds averaged within prefix; prefixes within family; equal family weight.",
+   "multiplicity_family": "routing-engagement-A",
+   "multiplicity_size": 8,
+   "replicates": 50000,
+   "status": "ROUTING_ENGAGEMENT_ONLY_SEMANTIC_EFFECT_PENDING",
+   "precision_status": "FAMILY_BOOTSTRAP_APPROXIMATION",
+   "source_result": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/routing-first-stage/routing-first-stage-v2-9b714fe1091f1d16-ebe96bfe774d/RESULT.json",
+   "source_result_sha256": "7170885fb22042cc7903ddcecd69bb26359e11d50e28940e69e6048071b83dd0",
+   "claim_limit": "Target engagement and saved same-state routing dose only; no semantic-control, accuracy, or latent-reasoning claim."
+  },
+  {
+   "claim_id": "routing-A-all-pair-expert189",
+   "population": {
+    "stage": "A",
+    "scope": "all",
+    "families": 8,
+    "assigned_starts": 8,
+    "paired_seed_cells": 16
+   },
+   "intervention": {
+    "left_arm": "pair",
+    "right_arm": "expert189",
+    "manifest_sha256": "9b714fe1091f1d16e565bc4edd3321c4aa1559b7bcdadbb56755f8835f190723",
+    "horizon": 1024
+   },
+   "endpoint": "selected_expert_inclusion_per_intended_opportunity",
+   "estimate": 0.096435546875,
+   "simultaneous_ci95": [
+    0.04714927673339844,
+    0.14584388732910103
+   ],
+   "identification_bounds": [
+    0.096435546875,
+    0.096435546875
+   ],
+   "simultaneous_uncertainty_envelope95": null,
+   "uncertainty_method": "Paired family-cluster Bonferroni percentile bootstrap approximation; bounds envelope when missing.",
+   "weighting": "Seeds averaged within prefix; prefixes within family; equal family weight.",
+   "multiplicity_family": "routing-engagement-A",
+   "multiplicity_size": 8,
+   "replicates": 50000,
+   "status": "ROUTING_ENGAGEMENT_ONLY_SEMANTIC_EFFECT_PENDING",
+   "precision_status": "FAMILY_BOOTSTRAP_APPROXIMATION",
+   "source_result": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/routing-first-stage/routing-first-stage-v2-9b714fe1091f1d16-ebe96bfe774d/RESULT.json",
+   "source_result_sha256": "7170885fb22042cc7903ddcecd69bb26359e11d50e28940e69e6048071b83dd0",
+   "claim_limit": "Target engagement and saved same-state routing dose only; no semantic-control, accuracy, or latent-reasoning claim."
+  },
+  {
+   "claim_id": "routing-A-all-pair-expert9",
+   "population": {
+    "stage": "A",
+    "scope": "all",
+    "families": 8,
+    "assigned_starts": 8,
+    "paired_seed_cells": 16
+   },
+   "intervention": {
+    "left_arm": "pair",
+    "right_arm": "expert9",
+    "manifest_sha256": "9b714fe1091f1d16e565bc4edd3321c4aa1559b7bcdadbb56755f8835f190723",
+    "horizon": 1024
+   },
+   "endpoint": "selected_expert_inclusion_per_intended_opportunity",
+   "estimate": 0.0772705078125,
+   "simultaneous_ci95": [
+    0.0267333984375,
+    0.130859375
+   ],
+   "identification_bounds": [
+    0.0772705078125,
+    0.0772705078125
+   ],
+   "simultaneous_uncertainty_envelope95": null,
+   "uncertainty_method": "Paired family-cluster Bonferroni percentile bootstrap approximation; bounds envelope when missing.",
+   "weighting": "Seeds averaged within prefix; prefixes within family; equal family weight.",
+   "multiplicity_family": "routing-engagement-A",
+   "multiplicity_size": 8,
+   "replicates": 50000,
+   "status": "ROUTING_ENGAGEMENT_ONLY_SEMANTIC_EFFECT_PENDING",
+   "precision_status": "FAMILY_BOOTSTRAP_APPROXIMATION",
+   "source_result": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/routing-first-stage/routing-first-stage-v2-9b714fe1091f1d16-ebe96bfe774d/RESULT.json",
+   "source_result_sha256": "7170885fb22042cc7903ddcecd69bb26359e11d50e28940e69e6048071b83dd0",
+   "claim_limit": "Target engagement and saved same-state routing dose only; no semantic-control, accuracy, or latent-reasoning claim."
+  },
+  {
+   "claim_id": "routing-B-all-once-native",
+   "population": {
+    "stage": "B",
+    "scope": "all",
+    "families": 13,
+    "assigned_starts": 13,
+    "paired_seed_cells": 26
+   },
+   "intervention": {
+    "left_arm": "once",
+    "right_arm": "native",
+    "manifest_sha256": "9c3dc95fda9cf5e9ed03285529f0279d8da7796b3b9f42a4ac9a38b41ad746ab",
+    "horizon": 1024
+   },
+   "endpoint": "selected_expert_inclusion_per_intended_opportunity",
+   "estimate": 0.2940204326923077,
+   "simultaneous_ci95": [
+    0.12770357572115384,
+    0.47611177884615385
+   ],
+   "identification_bounds": [
+    0.2940204326923077,
+    0.2940204326923077
+   ],
+   "simultaneous_uncertainty_envelope95": null,
+   "uncertainty_method": "Paired family-cluster Bonferroni percentile bootstrap approximation; bounds envelope when missing.",
+   "weighting": "Seeds averaged within prefix; prefixes within family; equal family weight.",
+   "multiplicity_family": "routing-engagement-B",
+   "multiplicity_size": 15,
+   "replicates": 50000,
+   "status": "ROUTING_ENGAGEMENT_ONLY_SEMANTIC_EFFECT_PENDING",
+   "precision_status": "FAMILY_BOOTSTRAP_APPROXIMATION",
+   "source_result": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/routing-first-stage/routing-first-stage-v2-9c3dc95fda9cf5e9-ebe96bfe774d/RESULT.json",
+   "source_result_sha256": "c6a418442efb56b90b831e052f2af0c9068da8efd13da6c14cb9caa9494a0bce",
+   "claim_limit": "Target engagement and saved same-state routing dose only; no semantic-control, accuracy, or latent-reasoning claim."
+  },
+  {
+   "claim_id": "routing-B-all-once-random_once",
+   "population": {
+    "stage": "B",
+    "scope": "all",
+    "families": 13,
+    "assigned_starts": 13,
+    "paired_seed_cells": 26
+   },
+   "intervention": {
+    "left_arm": "once",
+    "right_arm": "random_once",
+    "manifest_sha256": "9c3dc95fda9cf5e9ed03285529f0279d8da7796b3b9f42a4ac9a38b41ad746ab",
+    "horizon": 1024
+   },
+   "endpoint": "selected_expert_inclusion_per_intended_opportunity",
+   "estimate": 0.30799278846153844,
+   "simultaneous_ci95": [
+    0.13937249599358975,
+    0.49854855268429565
+   ],
+   "identification_bounds": [
+    0.30799278846153844,
+    0.30799278846153844
+   ],
+   "simultaneous_uncertainty_envelope95": null,
+   "uncertainty_method": "Paired family-cluster Bonferroni percentile bootstrap approximation; bounds envelope when missing.",
+   "weighting": "Seeds averaged within prefix; prefixes within family; equal family weight.",
+   "multiplicity_family": "routing-engagement-B",
+   "multiplicity_size": 15,
+   "replicates": 50000,
+   "status": "ROUTING_ENGAGEMENT_ONLY_SEMANTIC_EFFECT_PENDING",
+   "precision_status": "FAMILY_BOOTSTRAP_APPROXIMATION",
+   "source_result": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/routing-first-stage/routing-first-stage-v2-9c3dc95fda9cf5e9-ebe96bfe774d/RESULT.json",
+   "source_result_sha256": "c6a418442efb56b90b831e052f2af0c9068da8efd13da6c14cb9caa9494a0bce",
+   "claim_limit": "Target engagement and saved same-state routing dose only; no semantic-control, accuracy, or latent-reasoning claim."
+  },
+  {
+   "claim_id": "routing-B-all-repeat-native",
+   "population": {
+    "stage": "B",
+    "scope": "all",
+    "families": 13,
+    "assigned_starts": 13,
+    "paired_seed_cells": 26
+   },
+   "intervention": {
+    "left_arm": "repeat",
+    "right_arm": "native",
+    "manifest_sha256": "9c3dc95fda9cf5e9ed03285529f0279d8da7796b3b9f42a4ac9a38b41ad746ab",
+    "horizon": 1024
+   },
+   "endpoint": "selected_expert_inclusion_per_intended_opportunity",
+   "estimate": 0.27355018028846156,
+   "simultaneous_ci95": [
+    0.11385710887419873,
+    0.4545530348557699
+   ],
+   "identification_bounds": [
+    0.27355018028846156,
+    0.27355018028846156
+   ],
+   "simultaneous_uncertainty_envelope95": null,
+   "uncertainty_method": "Paired family-cluster Bonferroni percentile bootstrap approximation; bounds envelope when missing.",
+   "weighting": "Seeds averaged within prefix; prefixes within family; equal family weight.",
+   "multiplicity_family": "routing-engagement-B",
+   "multiplicity_size": 15,
+   "replicates": 50000,
+   "status": "ROUTING_ENGAGEMENT_ONLY_SEMANTIC_EFFECT_PENDING",
+   "precision_status": "FAMILY_BOOTSTRAP_APPROXIMATION",
+   "source_result": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/routing-first-stage/routing-first-stage-v2-9c3dc95fda9cf5e9-ebe96bfe774d/RESULT.json",
+   "source_result_sha256": "c6a418442efb56b90b831e052f2af0c9068da8efd13da6c14cb9caa9494a0bce",
+   "claim_limit": "Target engagement and saved same-state routing dose only; no semantic-control, accuracy, or latent-reasoning claim."
+  },
+  {
+   "claim_id": "routing-B-all-repeat-random_repeat",
+   "population": {
+    "stage": "B",
+    "scope": "all",
+    "families": 13,
+    "assigned_starts": 13,
+    "paired_seed_cells": 26
+   },
+   "intervention": {
+    "left_arm": "repeat",
+    "right_arm": "random_repeat",
+    "manifest_sha256": "9c3dc95fda9cf5e9ed03285529f0279d8da7796b3b9f42a4ac9a38b41ad746ab",
+    "horizon": 1024
+   },
+   "endpoint": "selected_expert_inclusion_per_intended_opportunity",
+   "estimate": 0.2805363581730769,
+   "simultaneous_ci95": [
+    0.12506247495993592,
+    0.4569436723758013
+   ],
+   "identification_bounds": [
+    0.2805363581730769,
+    0.2805363581730769
+   ],
+   "simultaneous_uncertainty_envelope95": null,
+   "uncertainty_method": "Paired family-cluster Bonferroni percentile bootstrap approximation; bounds envelope when missing.",
+   "weighting": "Seeds averaged within prefix; prefixes within family; equal family weight.",
+   "multiplicity_family": "routing-engagement-B",
+   "multiplicity_size": 15,
+   "replicates": 50000,
+   "status": "ROUTING_ENGAGEMENT_ONLY_SEMANTIC_EFFECT_PENDING",
+   "precision_status": "FAMILY_BOOTSTRAP_APPROXIMATION",
+   "source_result": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/routing-first-stage/routing-first-stage-v2-9c3dc95fda9cf5e9-ebe96bfe774d/RESULT.json",
+   "source_result_sha256": "c6a418442efb56b90b831e052f2af0c9068da8efd13da6c14cb9caa9494a0bce",
+   "claim_limit": "Target engagement and saved same-state routing dose only; no semantic-control, accuracy, or latent-reasoning claim."
+  },
+  {
+   "claim_id": "routing-B-all-repeat-once",
+   "population": {
+    "stage": "B",
+    "scope": "all",
+    "families": 13,
+    "assigned_starts": 13,
+    "paired_seed_cells": 26
+   },
+   "intervention": {
+    "left_arm": "repeat",
+    "right_arm": "once",
+    "manifest_sha256": "9c3dc95fda9cf5e9ed03285529f0279d8da7796b3b9f42a4ac9a38b41ad746ab",
+    "horizon": 1024
+   },
+   "endpoint": "selected_expert_inclusion_per_intended_opportunity",
+   "estimate": 0.12511268028846154,
+   "simultaneous_ci95": [
+    0.048978365384615384,
+    0.21449343950320535
+   ],
+   "identification_bounds": [
+    0.12511268028846154,
+    0.12511268028846154
+   ],
+   "simultaneous_uncertainty_envelope95": null,
+   "uncertainty_method": "Paired family-cluster Bonferroni percentile bootstrap approximation; bounds envelope when missing.",
+   "weighting": "Seeds averaged within prefix; prefixes within family; equal family weight.",
+   "multiplicity_family": "routing-engagement-B",
+   "multiplicity_size": 15,
+   "replicates": 50000,
+   "status": "ROUTING_ENGAGEMENT_ONLY_SEMANTIC_EFFECT_PENDING",
+   "precision_status": "FAMILY_BOOTSTRAP_APPROXIMATION",
+   "source_result": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/routing-first-stage/routing-first-stage-v2-9c3dc95fda9cf5e9-ebe96bfe774d/RESULT.json",
+   "source_result_sha256": "c6a418442efb56b90b831e052f2af0c9068da8efd13da6c14cb9caa9494a0bce",
+   "claim_limit": "Target engagement and saved same-state routing dose only; no semantic-control, accuracy, or latent-reasoning claim."
+  },
+  {
+   "claim_id": "routing-B-candidate_to_verify-once-native",
+   "population": {
+    "stage": "B",
+    "scope": "candidate_to_verify",
+    "families": 8,
+    "assigned_starts": 8,
+    "paired_seed_cells": 16
+   },
+   "intervention": {
+    "left_arm": "once",
+    "right_arm": "native",
+    "manifest_sha256": "9c3dc95fda9cf5e9ed03285529f0279d8da7796b3b9f42a4ac9a38b41ad746ab",
+    "horizon": 1024
+   },
+   "endpoint": "selected_expert_inclusion_per_intended_opportunity",
+   "estimate": 0.121337890625,
+   "simultaneous_ci95": [
+    0.0653076171875,
+    0.16743998209635436
+   ],
+   "identification_bounds": [
+    0.121337890625,
+    0.121337890625
+   ],
+   "simultaneous_uncertainty_envelope95": null,
+   "uncertainty_method": "Paired family-cluster Bonferroni percentile bootstrap approximation; bounds envelope when missing.",
+   "weighting": "Seeds averaged within prefix; prefixes within family; equal family weight.",
+   "multiplicity_family": "routing-engagement-B",
+   "multiplicity_size": 15,
+   "replicates": 50000,
+   "status": "ROUTING_ENGAGEMENT_ONLY_SEMANTIC_EFFECT_PENDING",
+   "precision_status": "FAMILY_BOOTSTRAP_APPROXIMATION",
+   "source_result": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/routing-first-stage/routing-first-stage-v2-9c3dc95fda9cf5e9-ebe96bfe774d/RESULT.json",
+   "source_result_sha256": "c6a418442efb56b90b831e052f2af0c9068da8efd13da6c14cb9caa9494a0bce",
+   "claim_limit": "Target engagement and saved same-state routing dose only; no semantic-control, accuracy, or latent-reasoning claim."
+  },
+  {
+   "claim_id": "routing-B-candidate_to_verify-once-random_once",
+   "population": {
+    "stage": "B",
+    "scope": "candidate_to_verify",
+    "families": 8,
+    "assigned_starts": 8,
+    "paired_seed_cells": 16
+   },
+   "intervention": {
+    "left_arm": "once",
+    "right_arm": "random_once",
+    "manifest_sha256": "9c3dc95fda9cf5e9ed03285529f0279d8da7796b3b9f42a4ac9a38b41ad746ab",
+    "horizon": 1024
+   },
+   "endpoint": "selected_expert_inclusion_per_intended_opportunity",
+   "estimate": 0.13720703125,
+   "simultaneous_ci95": [
+    0.0692138671875,
+    0.2081709798177087
+   ],
+   "identification_bounds": [
+    0.13720703125,
+    0.13720703125
+   ],
+   "simultaneous_uncertainty_envelope95": null,
+   "uncertainty_method": "Paired family-cluster Bonferroni percentile bootstrap approximation; bounds envelope when missing.",
+   "weighting": "Seeds averaged within prefix; prefixes within family; equal family weight.",
+   "multiplicity_family": "routing-engagement-B",
+   "multiplicity_size": 15,
+   "replicates": 50000,
+   "status": "ROUTING_ENGAGEMENT_ONLY_SEMANTIC_EFFECT_PENDING",
+   "precision_status": "FAMILY_BOOTSTRAP_APPROXIMATION",
+   "source_result": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/routing-first-stage/routing-first-stage-v2-9c3dc95fda9cf5e9-ebe96bfe774d/RESULT.json",
+   "source_result_sha256": "c6a418442efb56b90b831e052f2af0c9068da8efd13da6c14cb9caa9494a0bce",
+   "claim_limit": "Target engagement and saved same-state routing dose only; no semantic-control, accuracy, or latent-reasoning claim."
+  },
+  {
+   "claim_id": "routing-B-candidate_to_verify-repeat-native",
+   "population": {
+    "stage": "B",
+    "scope": "candidate_to_verify",
+    "families": 8,
+    "assigned_starts": 8,
+    "paired_seed_cells": 16
+   },
+   "intervention": {
+    "left_arm": "repeat",
+    "right_arm": "native",
+    "manifest_sha256": "9c3dc95fda9cf5e9ed03285529f0279d8da7796b3b9f42a4ac9a38b41ad746ab",
+    "horizon": 1024
+   },
+   "endpoint": "selected_expert_inclusion_per_intended_opportunity",
+   "estimate": 0.10650634765625,
+   "simultaneous_ci95": [
+    0.0526123046875,
+    0.150146484375
+   ],
+   "identification_bounds": [
+    0.10650634765625,
+    0.10650634765625
+   ],
+   "simultaneous_uncertainty_envelope95": null,
+   "uncertainty_method": "Paired family-cluster Bonferroni percentile bootstrap approximation; bounds envelope when missing.",
+   "weighting": "Seeds averaged within prefix; prefixes within family; equal family weight.",
+   "multiplicity_family": "routing-engagement-B",
+   "multiplicity_size": 15,
+   "replicates": 50000,
+   "status": "ROUTING_ENGAGEMENT_ONLY_SEMANTIC_EFFECT_PENDING",
+   "precision_status": "FAMILY_BOOTSTRAP_APPROXIMATION",
+   "source_result": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/routing-first-stage/routing-first-stage-v2-9c3dc95fda9cf5e9-ebe96bfe774d/RESULT.json",
+   "source_result_sha256": "c6a418442efb56b90b831e052f2af0c9068da8efd13da6c14cb9caa9494a0bce",
+   "claim_limit": "Target engagement and saved same-state routing dose only; no semantic-control, accuracy, or latent-reasoning claim."
+  },
+  {
+   "claim_id": "routing-B-candidate_to_verify-repeat-random_repeat",
+   "population": {
+    "stage": "B",
+    "scope": "candidate_to_verify",
+    "families": 8,
+    "assigned_starts": 8,
+    "paired_seed_cells": 16
+   },
+   "intervention": {
+    "left_arm": "repeat",
+    "right_arm": "random_repeat",
+    "manifest_sha256": "9c3dc95fda9cf5e9ed03285529f0279d8da7796b3b9f42a4ac9a38b41ad746ab",
+    "horizon": 1024
+   },
+   "endpoint": "selected_expert_inclusion_per_intended_opportunity",
+   "estimate": 0.11517333984375,
+   "simultaneous_ci95": [
+    0.0623779296875,
+    0.15362548828125
+   ],
+   "identification_bounds": [
+    0.11517333984375,
+    0.11517333984375
+   ],
+   "simultaneous_uncertainty_envelope95": null,
+   "uncertainty_method": "Paired family-cluster Bonferroni percentile bootstrap approximation; bounds envelope when missing.",
+   "weighting": "Seeds averaged within prefix; prefixes within family; equal family weight.",
+   "multiplicity_family": "routing-engagement-B",
+   "multiplicity_size": 15,
+   "replicates": 50000,
+   "status": "ROUTING_ENGAGEMENT_ONLY_SEMANTIC_EFFECT_PENDING",
+   "precision_status": "FAMILY_BOOTSTRAP_APPROXIMATION",
+   "source_result": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/routing-first-stage/routing-first-stage-v2-9c3dc95fda9cf5e9-ebe96bfe774d/RESULT.json",
+   "source_result_sha256": "c6a418442efb56b90b831e052f2af0c9068da8efd13da6c14cb9caa9494a0bce",
+   "claim_limit": "Target engagement and saved same-state routing dose only; no semantic-control, accuracy, or latent-reasoning claim."
+  },
+  {
+   "claim_id": "routing-B-candidate_to_verify-repeat-once",
+   "population": {
+    "stage": "B",
+    "scope": "candidate_to_verify",
+    "families": 8,
+    "assigned_starts": 8,
+    "paired_seed_cells": 16
+   },
+   "intervention": {
+    "left_arm": "repeat",
+    "right_arm": "once",
+    "manifest_sha256": "9c3dc95fda9cf5e9ed03285529f0279d8da7796b3b9f42a4ac9a38b41ad746ab",
+    "horizon": 1024
+   },
+   "endpoint": "selected_expert_inclusion_per_intended_opportunity",
+   "estimate": 0.04852294921875,
+   "simultaneous_ci95": [
+    0.01495361328125,
+    0.08089213053385436
+   ],
+   "identification_bounds": [
+    0.04852294921875,
+    0.04852294921875
+   ],
+   "simultaneous_uncertainty_envelope95": null,
+   "uncertainty_method": "Paired family-cluster Bonferroni percentile bootstrap approximation; bounds envelope when missing.",
+   "weighting": "Seeds averaged within prefix; prefixes within family; equal family weight.",
+   "multiplicity_family": "routing-engagement-B",
+   "multiplicity_size": 15,
+   "replicates": 50000,
+   "status": "ROUTING_ENGAGEMENT_ONLY_SEMANTIC_EFFECT_PENDING",
+   "precision_status": "FAMILY_BOOTSTRAP_APPROXIMATION",
+   "source_result": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/routing-first-stage/routing-first-stage-v2-9c3dc95fda9cf5e9-ebe96bfe774d/RESULT.json",
+   "source_result_sha256": "c6a418442efb56b90b831e052f2af0c9068da8efd13da6c14cb9caa9494a0bce",
+   "claim_limit": "Target engagement and saved same-state routing dose only; no semantic-control, accuracy, or latent-reasoning claim."
+  },
+  {
+   "claim_id": "routing-B-approach_to_commit-once-native",
+   "population": {
+    "stage": "B",
+    "scope": "approach_to_commit",
+    "families": 5,
+    "assigned_starts": 5,
+    "paired_seed_cells": 10
+   },
+   "intervention": {
+    "left_arm": "once",
+    "right_arm": "native",
+    "manifest_sha256": "9c3dc95fda9cf5e9ed03285529f0279d8da7796b3b9f42a4ac9a38b41ad746ab",
+    "horizon": 1024
+   },
+   "endpoint": "selected_expert_inclusion_per_intended_opportunity",
+   "estimate": 0.5703125,
+   "simultaneous_ci95": [
+    0.50546875,
+    0.642578125
+   ],
+   "identification_bounds": [
+    0.5703125,
+    0.5703125
+   ],
+   "simultaneous_uncertainty_envelope95": null,
+   "uncertainty_method": "Paired family-cluster Bonferroni percentile bootstrap approximation; bounds envelope when missing.",
+   "weighting": "Seeds averaged within prefix; prefixes within family; equal family weight.",
+   "multiplicity_family": "routing-engagement-B",
+   "multiplicity_size": 15,
+   "replicates": 50000,
+   "status": "ROUTING_ENGAGEMENT_ONLY_SEMANTIC_EFFECT_PENDING",
+   "precision_status": "FAMILY_BOOTSTRAP_APPROXIMATION",
+   "source_result": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/routing-first-stage/routing-first-stage-v2-9c3dc95fda9cf5e9-ebe96bfe774d/RESULT.json",
+   "source_result_sha256": "c6a418442efb56b90b831e052f2af0c9068da8efd13da6c14cb9caa9494a0bce",
+   "claim_limit": "Target engagement and saved same-state routing dose only; no semantic-control, accuracy, or latent-reasoning claim."
+  },
+  {
+   "claim_id": "routing-B-approach_to_commit-once-random_once",
+   "population": {
+    "stage": "B",
+    "scope": "approach_to_commit",
+    "families": 5,
+    "assigned_starts": 5,
+    "paired_seed_cells": 10
+   },
+   "intervention": {
+    "left_arm": "once",
+    "right_arm": "random_once",
+    "manifest_sha256": "9c3dc95fda9cf5e9ed03285529f0279d8da7796b3b9f42a4ac9a38b41ad746ab",
+    "horizon": 1024
+   },
+   "endpoint": "selected_expert_inclusion_per_intended_opportunity",
+   "estimate": 0.58125,
+   "simultaneous_ci95": [
+    0.50703125,
+    0.6703125
+   ],
+   "identification_bounds": [
+    0.58125,
+    0.58125
+   ],
+   "simultaneous_uncertainty_envelope95": null,
+   "uncertainty_method": "Paired family-cluster Bonferroni percentile bootstrap approximation; bounds envelope when missing.",
+   "weighting": "Seeds averaged within prefix; prefixes within family; equal family weight.",
+   "multiplicity_family": "routing-engagement-B",
+   "multiplicity_size": 15,
+   "replicates": 50000,
+   "status": "ROUTING_ENGAGEMENT_ONLY_SEMANTIC_EFFECT_PENDING",
+   "precision_status": "FAMILY_BOOTSTRAP_APPROXIMATION",
+   "source_result": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/routing-first-stage/routing-first-stage-v2-9c3dc95fda9cf5e9-ebe96bfe774d/RESULT.json",
+   "source_result_sha256": "c6a418442efb56b90b831e052f2af0c9068da8efd13da6c14cb9caa9494a0bce",
+   "claim_limit": "Target engagement and saved same-state routing dose only; no semantic-control, accuracy, or latent-reasoning claim."
+  },
+  {
+   "claim_id": "routing-B-approach_to_commit-repeat-native",
+   "population": {
+    "stage": "B",
+    "scope": "approach_to_commit",
+    "families": 5,
+    "assigned_starts": 5,
+    "paired_seed_cells": 10
+   },
+   "intervention": {
+    "left_arm": "repeat",
+    "right_arm": "native",
+    "manifest_sha256": "9c3dc95fda9cf5e9ed03285529f0279d8da7796b3b9f42a4ac9a38b41ad746ab",
+    "horizon": 1024
+   },
+   "endpoint": "selected_expert_inclusion_per_intended_opportunity",
+   "estimate": 0.5408203125,
+   "simultaneous_ci95": [
+    0.4818359375,
+    0.6083984375
+   ],
+   "identification_bounds": [
+    0.5408203125,
+    0.5408203125
+   ],
+   "simultaneous_uncertainty_envelope95": null,
+   "uncertainty_method": "Paired family-cluster Bonferroni percentile bootstrap approximation; bounds envelope when missing.",
+   "weighting": "Seeds averaged within prefix; prefixes within family; equal family weight.",
+   "multiplicity_family": "routing-engagement-B",
+   "multiplicity_size": 15,
+   "replicates": 50000,
+   "status": "ROUTING_ENGAGEMENT_ONLY_SEMANTIC_EFFECT_PENDING",
+   "precision_status": "FAMILY_BOOTSTRAP_APPROXIMATION",
+   "source_result": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/routing-first-stage/routing-first-stage-v2-9c3dc95fda9cf5e9-ebe96bfe774d/RESULT.json",
+   "source_result_sha256": "c6a418442efb56b90b831e052f2af0c9068da8efd13da6c14cb9caa9494a0bce",
+   "claim_limit": "Target engagement and saved same-state routing dose only; no semantic-control, accuracy, or latent-reasoning claim."
+  },
+  {
+   "claim_id": "routing-B-approach_to_commit-repeat-random_repeat",
+   "population": {
+    "stage": "B",
+    "scope": "approach_to_commit",
+    "families": 5,
+    "assigned_starts": 5,
+    "paired_seed_cells": 10
+   },
+   "intervention": {
+    "left_arm": "repeat",
+    "right_arm": "random_repeat",
+    "manifest_sha256": "9c3dc95fda9cf5e9ed03285529f0279d8da7796b3b9f42a4ac9a38b41ad746ab",
+    "horizon": 1024
+   },
+   "endpoint": "selected_expert_inclusion_per_intended_opportunity",
+   "estimate": 0.5451171875,
+   "simultaneous_ci95": [
+    0.483984375,
+    0.6267578125
+   ],
+   "identification_bounds": [
+    0.5451171875,
+    0.5451171875
+   ],
+   "simultaneous_uncertainty_envelope95": null,
+   "uncertainty_method": "Paired family-cluster Bonferroni percentile bootstrap approximation; bounds envelope when missing.",
+   "weighting": "Seeds averaged within prefix; prefixes within family; equal family weight.",
+   "multiplicity_family": "routing-engagement-B",
+   "multiplicity_size": 15,
+   "replicates": 50000,
+   "status": "ROUTING_ENGAGEMENT_ONLY_SEMANTIC_EFFECT_PENDING",
+   "precision_status": "FAMILY_BOOTSTRAP_APPROXIMATION",
+   "source_result": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/routing-first-stage/routing-first-stage-v2-9c3dc95fda9cf5e9-ebe96bfe774d/RESULT.json",
+   "source_result_sha256": "c6a418442efb56b90b831e052f2af0c9068da8efd13da6c14cb9caa9494a0bce",
+   "claim_limit": "Target engagement and saved same-state routing dose only; no semantic-control, accuracy, or latent-reasoning claim."
+  },
+  {
+   "claim_id": "routing-B-approach_to_commit-repeat-once",
+   "population": {
+    "stage": "B",
+    "scope": "approach_to_commit",
+    "families": 5,
+    "assigned_starts": 5,
+    "paired_seed_cells": 10
+   },
+   "intervention": {
+    "left_arm": "repeat",
+    "right_arm": "once",
+    "manifest_sha256": "9c3dc95fda9cf5e9ed03285529f0279d8da7796b3b9f42a4ac9a38b41ad746ab",
+    "horizon": 1024
+   },
+   "endpoint": "selected_expert_inclusion_per_intended_opportunity",
+   "estimate": 0.24765625,
+   "simultaneous_ci95": [
+    0.2046875,
+    0.3181640625
+   ],
+   "identification_bounds": [
+    0.24765625,
+    0.24765625
+   ],
+   "simultaneous_uncertainty_envelope95": null,
+   "uncertainty_method": "Paired family-cluster Bonferroni percentile bootstrap approximation; bounds envelope when missing.",
+   "weighting": "Seeds averaged within prefix; prefixes within family; equal family weight.",
+   "multiplicity_family": "routing-engagement-B",
+   "multiplicity_size": 15,
+   "replicates": 50000,
+   "status": "ROUTING_ENGAGEMENT_ONLY_SEMANTIC_EFFECT_PENDING",
+   "precision_status": "FAMILY_BOOTSTRAP_APPROXIMATION",
+   "source_result": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/routing-first-stage/routing-first-stage-v2-9c3dc95fda9cf5e9-ebe96bfe774d/RESULT.json",
+   "source_result_sha256": "c6a418442efb56b90b831e052f2af0c9068da8efd13da6c14cb9caa9494a0bce",
+   "claim_limit": "Target engagement and saved same-state routing dose only; no semantic-control, accuracy, or latent-reasoning claim."
+  }
+ ],
+ "interpretation": "All saved A/B routing contrasts; no ranking or cross-stage pooled inference. Positive expert engagement alone does not establish semantic control, correctness or token benefit.",
+ "sha256": "45432c81ba887d780fd908b65a60a28a10fda2a8c8f232bfba567bcc628968ea"
+}

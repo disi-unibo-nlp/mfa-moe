@@ -1,0 +1,26 @@
+{
+ "schema": "overnight-submit-attempt-v1",
+ "name": "fresh-paper-attach",
+ "binding": {
+  "amendment_sha256": "1d6f34dde5f7a7406d3aede0b35e5a7d5285dad93688821586724fa006dee32d",
+  "enrollment_sha256": "7190b1dc34f8cc6e9aeac337dc66f993cd91ce139972112333f076887d4cb5ee",
+  "enrollment_job": "59344223",
+  "enrollment_sacct": "59344223|COMPLETED|0:0\n",
+  "submit_code_sha256": "c25f0f1774de9b45e04b595558e0c6b11a42a06e6644b0a32fd70e7853410b4f",
+  "shared_submit_sha256": "0c142175df5db52fdf00a85d0e8dd46099209a76c5161994b4279332d6c84a10",
+  "stage": "FRESH",
+  "generation_dispatch_job": "59349585",
+  "wrapper_sha256": "e2ca1dd722dfc10a7af59aa00aa6b6a94c0a48319e895fdfb6d7674b11d17583"
+ },
+ "arguments": [
+  "--dependency=afterok:59349585",
+  "--job-name=st-paper-FRESH-attach-v4",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/routing_paper_v3.sbatch",
+  "attach",
+  "FRESH"
+ ],
+ "time_ns": 1791151149088061341,
+ "dispatcher_job_id": null,
+ "removed_parent_environment_keys": [],
+ "sha256": "576b6867de7abd43bedf9391d4b71859c4a4b401b6410fd0d82839e9e8f030f8"
+}

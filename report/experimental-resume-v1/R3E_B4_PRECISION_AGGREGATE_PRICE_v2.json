@@ -1,0 +1,20 @@
+{
+ "schema": "r3e-b4-precision-aggregation-price-v2",
+ "status": "READY",
+ "parent_price_sha256": "744fa73493a370d57b65d82dc402d2622f4a1daad86f5022097065411e59e1f0",
+ "driver_sha256": "56407e1195e316db722f522e025c5a8b393dc70415d167cd53f5a6e45bc45fbc",
+ "inputs": "21 sealed result receipts with exactly one copy of replicate IDs 0..999",
+ "output": "steering-v1/runs/resume-v1/r3e-b4-precision-v3/summary.json",
+ "cpus": 2,
+ "memory": "16G",
+ "wall_seconds": 1200,
+ "max_core_hours": 0.6666666666666666,
+ "gpus": 0,
+ "dependency": "afterok entire 20-task array, smoke PASS",
+ "slurm": {
+  "account": "iscrc_miosr",
+  "partition": "boost_usr_prod",
+  "qos": "normal"
+ },
+ "sha256": "b9866694e4284beefb4eca7c2d96e171e399ffb4dcca3408874ce706d33d93c7"
+}

@@ -1,0 +1,22 @@
+{
+ "schema": "routing-boundary-neighbor-qualification-price-v1",
+ "manifest_sha256": "e0c498b65dce4dc71be1a72fba95318e2be88e01a2d383c8cdf833c4e0ed386f",
+ "gates_sha256": "551af3232942d13afcc4c63fef58def8ab2f880c20dfcae43248fe9269536fb0",
+ "source_serial_qualification_job": "59200002",
+ "source_batched_pilot_job": "59180099",
+ "expected_requests": 80,
+ "checkpoint_batches": 10,
+ "expected_prefill_tokens": 229460,
+ "maximum_decode_tokens": 20480,
+ "stress_aggregate_decode_tokens_per_second": 50.0,
+ "stress_prefill_tokens_per_second": 1000.0,
+ "repeat_factor": 1.25,
+ "cold_load_seconds": 685.0234088897705,
+ "shutdown_seconds": 196.0,
+ "estimated_complete_wall_seconds": 1679.8484088897706,
+ "requested_wall_seconds": 3600,
+ "gpus": 2,
+ "gpu_hour_ceiling": 2.0,
+ "pricing_status": "Prospective conservative engineering price; no causal enrollment or semantic evaluation",
+ "sha256": "f9dbef8c1dae3d515f56ef1c0e44c64126d4c47eef20019cfd8ec992416aaaea"
+}

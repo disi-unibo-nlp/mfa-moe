@@ -1,0 +1,447 @@
+{
+ "schema": "native-veto-all-fire-burden-v0",
+ "job_id": "59199073",
+ "sensitivity_sha256": "1507899309aedf2ecb5ef5dedbc337a8f445b20140543764fc939068fcd54c27",
+ "units_sha256": "84a85c92b595a7829446b6a53b376e1126df3b6c36eabaddb3b4e884eb52fa72",
+ "driver_sha256": "77e2ab6a637e3c5bfc9f8b77efe314427cfb23d6cc2ff192e02c887051f5a2c0",
+ "prompt_driver_sha256": "8d2b37d2e2474e7347762e8f8466c0aebd9ac588da8c03f14d380a0f8b8aa90e",
+ "model_cache": {
+  "snapshot": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/cache/hf/hub/models--Qwen--Qwen3.6-35B-A3B-FP8/snapshots/95a723d08a9490559dae23d0cff1d9466213d989",
+  "config_sha256": "570ef7ea45a7e1d3de2b1d3c70c4ac3562d0e768acdc195778cb4f4d95025845",
+  "index_sha256": "6f176f344e41d35b17af12904e33401da5ebff3b49fccb8bfa0185bc2d50f9d6",
+  "tokenizer_sha256": "5f9e4d4901a92b997e463c1f46055088b6cca5ca61a6522d1b9f64c4bb81cb42",
+  "template_sha256": "e84f32a23fdda27689f868aa4a1a5621f41133e51a48d7f3efcbea2839574259",
+  "weight_shard_count": 42,
+  "weight_bytes_total": 37463662160
+ },
+ "native_vocab_fingerprint": "d495c247492ea2f0f08e0a0235415d98e1b2a4f26b98af08326d2026cbc3333b",
+ "native_prefix_cap": 16384,
+ "proposed_side_model_context": 32768,
+ "response_cap": 64,
+ "all_fire_count": 1865,
+ "counts": {
+  "candidate_to_verify|all_fires": 1816,
+  "candidate_to_verify|at_most_8192": 1221,
+  "candidate_to_verify|context_checked": 1505,
+  "candidate_to_verify|online_context_eligible": 1505,
+  "candidate_to_verify|utility_late_8193_to_16384": 284,
+  "candidate_to_verify|beyond_utility_16384": 311,
+  "approach_to_commit|all_fires": 42,
+  "approach_to_commit|at_most_8192": 36,
+  "approach_to_commit|context_checked": 39,
+  "approach_to_commit|online_context_eligible": 39,
+  "approach_to_commit|beyond_utility_16384": 3,
+  "approach_to_commit|utility_late_8193_to_16384": 3,
+  "failed_check_to_revise|all_fires": 7,
+  "failed_check_to_revise|at_most_8192": 3,
+  "failed_check_to_revise|context_checked": 5,
+  "failed_check_to_revise|online_context_eligible": 5,
+  "failed_check_to_revise|beyond_utility_16384": 2,
+  "failed_check_to_revise|utility_late_8193_to_16384": 2
+ },
+ "tokens": {
+  "candidate_to_verify|prompt_tokens_once": 6443641,
+  "candidate_to_verify|response_cap_tokens_once": 96320,
+  "candidate_to_verify|at_most_8192|prompt_tokens_once": 2955678,
+  "candidate_to_verify|at_most_8192|response_cap_tokens_once": 78144,
+  "candidate_to_verify|utility_late_8193_to_16384|prompt_tokens_once": 3487963,
+  "candidate_to_verify|utility_late_8193_to_16384|response_cap_tokens_once": 18176,
+  "approach_to_commit|prompt_tokens_once": 82487,
+  "approach_to_commit|response_cap_tokens_once": 2496,
+  "approach_to_commit|at_most_8192|prompt_tokens_once": 48382,
+  "approach_to_commit|at_most_8192|response_cap_tokens_once": 2304,
+  "approach_to_commit|utility_late_8193_to_16384|prompt_tokens_once": 34105,
+  "approach_to_commit|utility_late_8193_to_16384|response_cap_tokens_once": 192,
+  "failed_check_to_revise|prompt_tokens_once": 46183,
+  "failed_check_to_revise|response_cap_tokens_once": 320,
+  "failed_check_to_revise|at_most_8192|prompt_tokens_once": 17922,
+  "failed_check_to_revise|at_most_8192|response_cap_tokens_once": 192,
+  "failed_check_to_revise|utility_late_8193_to_16384|prompt_tokens_once": 28261,
+  "failed_check_to_revise|utility_late_8193_to_16384|response_cap_tokens_once": 128
+ },
+ "prompt_length_summary": {
+  "candidate_to_verify": {
+   "tested_prompt_count": 1505,
+   "prompt_tokens_min": 278,
+   "prompt_tokens_median": 1807,
+   "prompt_tokens_p90": 12443,
+   "prompt_tokens_max": 16690
+  },
+  "approach_to_commit": {
+   "tested_prompt_count": 39,
+   "prompt_tokens_min": 310,
+   "prompt_tokens_median": 592,
+   "prompt_tokens_p90": 5370,
+   "prompt_tokens_max": 14178
+  },
+  "failed_check_to_revise": {
+   "tested_prompt_count": 5,
+   "prompt_tokens_min": 5200,
+   "prompt_tokens_median": 7510,
+   "prompt_tokens_p90": 14078,
+   "prompt_tokens_max": 14183
+  }
+ },
+ "by_family": {
+  "00bfb4aac61f3d15220bc24ec149bff7d52daae64328216584692a8974416e86": {
+   "candidate_to_verify|all_fires": 36,
+   "candidate_to_verify|at_most_8192": 36,
+   "candidate_to_verify|online_context_eligible": 36
+  },
+  "1b8c3e7cc03eb4055ad504c782b763336ba17da040b85c2a115dc7eb1d23f714": {
+   "candidate_to_verify|all_fires": 20,
+   "candidate_to_verify|at_most_8192": 6,
+   "candidate_to_verify|online_context_eligible": 6,
+   "candidate_to_verify|beyond_utility_16384": 14
+  },
+  "27d2363267233b2ce6ff74234da783dc554b6edc7cf44024de5238dc9f067586": {
+   "candidate_to_verify|all_fires": 18,
+   "candidate_to_verify|at_most_8192": 11,
+   "candidate_to_verify|online_context_eligible": 18,
+   "candidate_to_verify|utility_late_8193_to_16384": 7
+  },
+  "29cc45551546f60dfdd6c11bb74844950c5c81bb611825509d86bd244697ef37": {
+   "candidate_to_verify|all_fires": 56,
+   "candidate_to_verify|at_most_8192": 40,
+   "candidate_to_verify|online_context_eligible": 56,
+   "candidate_to_verify|utility_late_8193_to_16384": 16,
+   "approach_to_commit|all_fires": 2,
+   "approach_to_commit|at_most_8192": 2,
+   "approach_to_commit|online_context_eligible": 2,
+   "failed_check_to_revise|all_fires": 2,
+   "failed_check_to_revise|at_most_8192": 1,
+   "failed_check_to_revise|online_context_eligible": 2,
+   "failed_check_to_revise|utility_late_8193_to_16384": 1
+  },
+  "3367fc3d3cb10721c5ca4d2dab40e29e369042f3e801709985eb83b35caffac1": {
+   "candidate_to_verify|all_fires": 36,
+   "candidate_to_verify|at_most_8192": 36,
+   "candidate_to_verify|online_context_eligible": 36
+  },
+  "348d9687a043c916ed7d09f2b566c0d74893f0743b9fa825bf161208be593804": {
+   "candidate_to_verify|all_fires": 22,
+   "candidate_to_verify|at_most_8192": 11,
+   "candidate_to_verify|online_context_eligible": 15,
+   "candidate_to_verify|utility_late_8193_to_16384": 4,
+   "candidate_to_verify|beyond_utility_16384": 7
+  },
+  "421df3311b63519148633d7f05bf01edde6ac27c0dd0af1360ea511ec72f8fc1": {
+   "candidate_to_verify|all_fires": 22,
+   "candidate_to_verify|at_most_8192": 22,
+   "candidate_to_verify|online_context_eligible": 22
+  },
+  "45cb78a1df75e9c0052ca94e400d2007351ead1d91a9f1e3042e806639cb8670": {
+   "candidate_to_verify|all_fires": 18,
+   "candidate_to_verify|at_most_8192": 9,
+   "candidate_to_verify|online_context_eligible": 18,
+   "candidate_to_verify|utility_late_8193_to_16384": 9,
+   "approach_to_commit|all_fires": 2,
+   "approach_to_commit|at_most_8192": 2,
+   "approach_to_commit|online_context_eligible": 2
+  },
+  "49ec3c017e319d5cd2434f5e06b4ac2f238fc41bb7c50ed90a99481328187dc6": {
+   "candidate_to_verify|all_fires": 53,
+   "candidate_to_verify|at_most_8192": 53,
+   "candidate_to_verify|online_context_eligible": 53
+  },
+  "4f5f62a271804f66bfa38042e820f38f7a0b5f2b9b7a87ff62cdb58b07ead678": {
+   "candidate_to_verify|all_fires": 42,
+   "candidate_to_verify|at_most_8192": 42,
+   "candidate_to_verify|online_context_eligible": 42
+  },
+  "52543cd453052b5d707943b34a1ec31df532d3be7c1a15dbcb51f49e99028f61": {
+   "candidate_to_verify|all_fires": 35,
+   "candidate_to_verify|at_most_8192": 35,
+   "candidate_to_verify|online_context_eligible": 35
+  },
+  "5454cf7129ec92c7698315f2e0146ed667e3895beec0d805905cfe3caf8e153c": {
+   "candidate_to_verify|all_fires": 42,
+   "candidate_to_verify|at_most_8192": 22,
+   "candidate_to_verify|online_context_eligible": 42,
+   "candidate_to_verify|utility_late_8193_to_16384": 20,
+   "approach_to_commit|all_fires": 1,
+   "approach_to_commit|at_most_8192": 1,
+   "approach_to_commit|online_context_eligible": 1,
+   "failed_check_to_revise|all_fires": 1,
+   "failed_check_to_revise|utility_late_8193_to_16384": 1,
+   "failed_check_to_revise|online_context_eligible": 1
+  },
+  "550fd432263445b7a658cbf3f7b32ad019cc13b611f7f4df5094527f0a938047": {
+   "candidate_to_verify|all_fires": 17,
+   "candidate_to_verify|at_most_8192": 17,
+   "candidate_to_verify|online_context_eligible": 17
+  },
+  "59493910d6f987ddb5f17d95ecc9e7e0d23bd36f856c8200153b8e53128d4490": {
+   "candidate_to_verify|all_fires": 27,
+   "candidate_to_verify|at_most_8192": 19,
+   "candidate_to_verify|online_context_eligible": 27,
+   "candidate_to_verify|utility_late_8193_to_16384": 8,
+   "approach_to_commit|all_fires": 1,
+   "approach_to_commit|at_most_8192": 1,
+   "approach_to_commit|online_context_eligible": 1,
+   "failed_check_to_revise|all_fires": 2,
+   "failed_check_to_revise|at_most_8192": 2,
+   "failed_check_to_revise|online_context_eligible": 2
+  },
+  "6332f3952a4d310f59b492e2d5cfbe5d42d4d7b9eea81a06bdeec6ad10bcd2db": {
+   "candidate_to_verify|all_fires": 31,
+   "candidate_to_verify|at_most_8192": 31,
+   "candidate_to_verify|online_context_eligible": 31
+  },
+  "6494e4f831e13dddbce16e0998f963598de7e9e907149cc29baadf62d22c5834": {
+   "candidate_to_verify|all_fires": 27,
+   "candidate_to_verify|at_most_8192": 27,
+   "candidate_to_verify|online_context_eligible": 27,
+   "approach_to_commit|all_fires": 1,
+   "approach_to_commit|at_most_8192": 1,
+   "approach_to_commit|online_context_eligible": 1
+  },
+  "67928e1673c5c7b82613df7d95a765e72dd694296f41d4eb5bd77fa6a549196b": {
+   "candidate_to_verify|all_fires": 52,
+   "candidate_to_verify|at_most_8192": 30,
+   "candidate_to_verify|online_context_eligible": 52,
+   "candidate_to_verify|utility_late_8193_to_16384": 22
+  },
+  "681f70af1260cf260825f9322b492adad415ab0a4cdff83393ec14a6dfd165dd": {
+   "candidate_to_verify|all_fires": 58,
+   "candidate_to_verify|at_most_8192": 14,
+   "candidate_to_verify|online_context_eligible": 14,
+   "candidate_to_verify|beyond_utility_16384": 44,
+   "approach_to_commit|all_fires": 3,
+   "approach_to_commit|at_most_8192": 2,
+   "approach_to_commit|online_context_eligible": 2,
+   "approach_to_commit|beyond_utility_16384": 1
+  },
+  "6825f10257492d7a05d15e1947436b04b8e0801eb0dc71a1d69baa492d8bd982": {
+   "candidate_to_verify|all_fires": 24,
+   "candidate_to_verify|at_most_8192": 13,
+   "candidate_to_verify|online_context_eligible": 24,
+   "candidate_to_verify|utility_late_8193_to_16384": 11,
+   "approach_to_commit|all_fires": 1,
+   "approach_to_commit|at_most_8192": 1,
+   "approach_to_commit|online_context_eligible": 1
+  },
+  "707ab7621174d1305ed9fb7370a65a7984a70d929ccb758a88557e35c8364c4f": {
+   "candidate_to_verify|all_fires": 16,
+   "candidate_to_verify|at_most_8192": 16,
+   "candidate_to_verify|online_context_eligible": 16
+  },
+  "72e0c2d09051061648ed7d5706bca4e2ce52798d1530a39e2befa0c6076eeb7b": {
+   "candidate_to_verify|all_fires": 29,
+   "candidate_to_verify|at_most_8192": 21,
+   "candidate_to_verify|online_context_eligible": 29,
+   "candidate_to_verify|utility_late_8193_to_16384": 8
+  },
+  "730298a853730be798458e327441b4ee24174b92cb5dba0f74230a87955bee4c": {
+   "candidate_to_verify|all_fires": 34,
+   "candidate_to_verify|at_most_8192": 34,
+   "candidate_to_verify|online_context_eligible": 34
+  },
+  "7369e53b0447dbc9969dba9a7bbcc91d3597bb083f6862bbe7480086ef0e6603": {
+   "candidate_to_verify|all_fires": 38,
+   "candidate_to_verify|at_most_8192": 9,
+   "candidate_to_verify|online_context_eligible": 9,
+   "candidate_to_verify|beyond_utility_16384": 29
+  },
+  "74254b23b19519bf3cdeef518ee196f773cfe00e19b2ac5d58fb5f4511cee707": {
+   "candidate_to_verify|all_fires": 54,
+   "candidate_to_verify|at_most_8192": 18,
+   "candidate_to_verify|online_context_eligible": 18,
+   "candidate_to_verify|beyond_utility_16384": 36
+  },
+  "7c51cc705eaaa49e75c76878c8a6b8d02d4518391cb71779a4fe5fba7852d941": {
+   "candidate_to_verify|all_fires": 27,
+   "candidate_to_verify|at_most_8192": 1,
+   "candidate_to_verify|online_context_eligible": 20,
+   "candidate_to_verify|utility_late_8193_to_16384": 19,
+   "candidate_to_verify|beyond_utility_16384": 7,
+   "approach_to_commit|all_fires": 1,
+   "approach_to_commit|utility_late_8193_to_16384": 1,
+   "approach_to_commit|online_context_eligible": 1
+  },
+  "7e97810d4ff8730d30541a719c4ccc4b5f7dc9862da5c3c812d6705efc43110d": {
+   "candidate_to_verify|all_fires": 56,
+   "candidate_to_verify|at_most_8192": 56,
+   "candidate_to_verify|online_context_eligible": 56,
+   "approach_to_commit|all_fires": 2,
+   "approach_to_commit|at_most_8192": 2,
+   "approach_to_commit|online_context_eligible": 2
+  },
+  "800c81574401f7a6b104c7902f4030f5ab324217b6520736cfc73d7c09a06f8a": {
+   "candidate_to_verify|all_fires": 34,
+   "candidate_to_verify|at_most_8192": 9,
+   "candidate_to_verify|online_context_eligible": 9,
+   "candidate_to_verify|beyond_utility_16384": 25,
+   "approach_to_commit|all_fires": 1,
+   "approach_to_commit|at_most_8192": 1,
+   "approach_to_commit|online_context_eligible": 1
+  },
+  "9494cd0594ccab56a7cae7dd6cdd09e81704a31333e2be8bb7958a4f1c31c6c8": {
+   "candidate_to_verify|all_fires": 29,
+   "candidate_to_verify|at_most_8192": 7,
+   "candidate_to_verify|online_context_eligible": 16,
+   "candidate_to_verify|utility_late_8193_to_16384": 9,
+   "candidate_to_verify|beyond_utility_16384": 13
+  },
+  "96e6320e8bd05cc4d7234ffd23d2a4fd8f73c35fb306da771c9867fefda0559b": {
+   "candidate_to_verify|all_fires": 26,
+   "candidate_to_verify|at_most_8192": 26,
+   "candidate_to_verify|online_context_eligible": 26
+  },
+  "98d7c0cffaf8664a6014dd716307b620be6f01d17a3c98014465cc1df0250e35": {
+   "candidate_to_verify|all_fires": 48,
+   "candidate_to_verify|at_most_8192": 48,
+   "candidate_to_verify|online_context_eligible": 48,
+   "approach_to_commit|all_fires": 1,
+   "approach_to_commit|at_most_8192": 1,
+   "approach_to_commit|online_context_eligible": 1
+  },
+  "993ff5562af5067431c46cead82efa65621fb037fe68a0426235776c12fe5add": {
+   "candidate_to_verify|all_fires": 15,
+   "candidate_to_verify|at_most_8192": 4,
+   "candidate_to_verify|online_context_eligible": 11,
+   "candidate_to_verify|utility_late_8193_to_16384": 7,
+   "candidate_to_verify|beyond_utility_16384": 4,
+   "approach_to_commit|all_fires": 2,
+   "approach_to_commit|at_most_8192": 1,
+   "approach_to_commit|online_context_eligible": 2,
+   "approach_to_commit|utility_late_8193_to_16384": 1
+  },
+  "9d9ec1487c5d634f86ae97fca43b0f72a814c369baa2f2384aa88dec35978f5c": {
+   "candidate_to_verify|all_fires": 58,
+   "candidate_to_verify|at_most_8192": 23,
+   "candidate_to_verify|online_context_eligible": 39,
+   "candidate_to_verify|utility_late_8193_to_16384": 16,
+   "candidate_to_verify|beyond_utility_16384": 19,
+   "failed_check_to_revise|all_fires": 1,
+   "failed_check_to_revise|beyond_utility_16384": 1
+  },
+  "9f6de64123e79af466d77c24675abb4fa45f391964e54f226f7508115cd1b66d": {
+   "candidate_to_verify|all_fires": 74,
+   "candidate_to_verify|at_most_8192": 24,
+   "candidate_to_verify|online_context_eligible": 24,
+   "candidate_to_verify|beyond_utility_16384": 50,
+   "approach_to_commit|all_fires": 2,
+   "approach_to_commit|beyond_utility_16384": 2
+  },
+  "a7b8df19041f966b35b0f2daad20092af03a86a7423d19c37b9bc61adc476fd6": {
+   "candidate_to_verify|all_fires": 53,
+   "candidate_to_verify|at_most_8192": 19,
+   "candidate_to_verify|online_context_eligible": 19,
+   "candidate_to_verify|beyond_utility_16384": 34,
+   "approach_to_commit|all_fires": 1,
+   "approach_to_commit|at_most_8192": 1,
+   "approach_to_commit|online_context_eligible": 1
+  },
+  "ab015c38c561307237f1d9f12b40aac5bc6b79d7838cc302e16a59c01effc212": {
+   "candidate_to_verify|all_fires": 30,
+   "candidate_to_verify|at_most_8192": 30,
+   "candidate_to_verify|online_context_eligible": 30
+  },
+  "ae67a99c9c6ecc2d48874f9e193fe42078abe04a9eb42201d47df1b95312881c": {
+   "candidate_to_verify|all_fires": 72,
+   "candidate_to_verify|at_most_8192": 29,
+   "candidate_to_verify|online_context_eligible": 59,
+   "candidate_to_verify|utility_late_8193_to_16384": 30,
+   "candidate_to_verify|beyond_utility_16384": 13,
+   "failed_check_to_revise|all_fires": 1,
+   "failed_check_to_revise|beyond_utility_16384": 1
+  },
+  "b2b7f6c88970465e284c37b9fdec74e0588f38a406110c4f7f36a615ebfaf5da": {
+   "candidate_to_verify|all_fires": 37,
+   "candidate_to_verify|at_most_8192": 37,
+   "candidate_to_verify|online_context_eligible": 37,
+   "approach_to_commit|all_fires": 1,
+   "approach_to_commit|at_most_8192": 1,
+   "approach_to_commit|online_context_eligible": 1
+  },
+  "b2fbed68b5770889117d45148541a367c98d2a8c1b6c5f73fe5f7e3eda952ac2": {
+   "candidate_to_verify|all_fires": 28,
+   "candidate_to_verify|at_most_8192": 28,
+   "candidate_to_verify|online_context_eligible": 28
+  },
+  "cb29cac11a2366d8754b75ac881c7b2786645be6cf34d6d23d5b5f43bd8e8d04": {
+   "candidate_to_verify|all_fires": 34,
+   "candidate_to_verify|at_most_8192": 13,
+   "candidate_to_verify|online_context_eligible": 34,
+   "candidate_to_verify|utility_late_8193_to_16384": 21,
+   "approach_to_commit|all_fires": 1,
+   "approach_to_commit|at_most_8192": 1,
+   "approach_to_commit|online_context_eligible": 1
+  },
+  "d6ae4ef46b2c4f3b62f45bc6e349fd688412934445ba76de81f0f3bf15ada027": {
+   "candidate_to_verify|all_fires": 52,
+   "candidate_to_verify|at_most_8192": 32,
+   "candidate_to_verify|online_context_eligible": 52,
+   "candidate_to_verify|utility_late_8193_to_16384": 20,
+   "approach_to_commit|all_fires": 1,
+   "approach_to_commit|at_most_8192": 1,
+   "approach_to_commit|online_context_eligible": 1
+  },
+  "e0d8227ee3fb089454d992e1065a282f9fd8a39a32e7fd0bec4827eae8ca1446": {
+   "candidate_to_verify|all_fires": 42,
+   "candidate_to_verify|at_most_8192": 37,
+   "candidate_to_verify|online_context_eligible": 42,
+   "candidate_to_verify|utility_late_8193_to_16384": 5,
+   "approach_to_commit|all_fires": 2,
+   "approach_to_commit|at_most_8192": 2,
+   "approach_to_commit|online_context_eligible": 2
+  },
+  "ec47e896ec807987bdd073e3f44aca15adb1f4e475208ba011b62aa0b06c2c6c": {
+   "candidate_to_verify|all_fires": 59,
+   "candidate_to_verify|at_most_8192": 59,
+   "candidate_to_verify|online_context_eligible": 59
+  },
+  "eee15807710ee7873a219abd0c07a9f2075da668d35575207b6b945f13305137": {
+   "candidate_to_verify|all_fires": 19,
+   "candidate_to_verify|at_most_8192": 12,
+   "candidate_to_verify|online_context_eligible": 14,
+   "candidate_to_verify|utility_late_8193_to_16384": 2,
+   "candidate_to_verify|beyond_utility_16384": 5
+  },
+  "f29be5e1006c6e1dd939dee3b790fdde598a51f41761a18a4ff5edfd80f3df07": {
+   "candidate_to_verify|all_fires": 44,
+   "candidate_to_verify|at_most_8192": 13,
+   "candidate_to_verify|online_context_eligible": 33,
+   "candidate_to_verify|utility_late_8193_to_16384": 20,
+   "candidate_to_verify|beyond_utility_16384": 11,
+   "approach_to_commit|all_fires": 3,
+   "approach_to_commit|at_most_8192": 3,
+   "approach_to_commit|online_context_eligible": 3
+  },
+  "f5f2880171dac17ac29f10527d0398d26e859c729d70eaa39445d71e5299825e": {
+   "candidate_to_verify|all_fires": 57,
+   "candidate_to_verify|at_most_8192": 42,
+   "candidate_to_verify|online_context_eligible": 57,
+   "candidate_to_verify|utility_late_8193_to_16384": 15,
+   "approach_to_commit|all_fires": 6,
+   "approach_to_commit|at_most_8192": 5,
+   "approach_to_commit|online_context_eligible": 6,
+   "approach_to_commit|utility_late_8193_to_16384": 1
+  },
+  "f94a4ce465e54b537ef463ea6e3b8fe0148b5cbdb437b3ca294c9cdc099e341a": {
+   "candidate_to_verify|all_fires": 17,
+   "candidate_to_verify|at_most_8192": 17,
+   "candidate_to_verify|online_context_eligible": 17
+  },
+  "fe413656eb88bcd59b91fafc8491dfc9b6106bd5eeeead02398d8ee95f45c3f8": {
+   "candidate_to_verify|all_fires": 48,
+   "candidate_to_verify|at_most_8192": 33,
+   "candidate_to_verify|online_context_eligible": 48,
+   "candidate_to_verify|utility_late_8193_to_16384": 15,
+   "approach_to_commit|all_fires": 4,
+   "approach_to_commit|at_most_8192": 4,
+   "approach_to_commit|online_context_eligible": 4
+  },
+  "fff0f7ae0efb38815249ca8438b8d015ad1348e758b06f5a91ccf288fb481337": {
+   "candidate_to_verify|all_fires": 50,
+   "candidate_to_verify|at_most_8192": 50,
+   "candidate_to_verify|online_context_eligible": 50,
+   "approach_to_commit|all_fires": 3,
+   "approach_to_commit|at_most_8192": 3,
+   "approach_to_commit|online_context_eligible": 3
+  }
+ },
+ "interpretation": "Exact single-call side-judge token counts for v2.2 discovery fires through the 16,384-token utility-scout output horizon. The 32,768-token side-judge engine is proposed, not GPU-qualified; late starts beyond the frozen 8,192-prefix rating frame still need a separately priced semantic audit. Events beyond utility horizon are reported but excluded from that scout. No inference or semantic precision estimate.",
+ "sha256": "fb1348945323a404a0d82d70da10daf0c3ab306b8c61b2a93214c74e7385e16a"
+}

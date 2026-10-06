@@ -1,0 +1,88 @@
+{
+ "schema": "routing-study-operator-panel-index-v1",
+ "status": "WAIT_SEALED_READINESS",
+ "existing_study_indexes": {
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/routing-study-closeout-v2/audit-59389128/STUDY_INDEX.json": "9e736d20e27e4acde984666fb9a7f16a417ecaa5584801958e5f8a8a0bebbccd"
+ },
+ "artifacts": {
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/OPERATOR_PANEL_PLAN_v1.json": "33a72b33fa85384c2c4cb3454c8528104ee1ef89c03319821907a007121340f1",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/OPERATOR_PANEL_OPERATIONS_v1.json": "4da6d0faf546f4ff4d893e034c6674a093d440e59bfa452a8530a5ac91ba63f1",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/OPERATOR_PANEL_MEASUREMENT_v1.json": "969d8e016bc30e105916ad138b0dfdf029103838060cc364ffd544cb27a93f38"
+ },
+ "effect": null,
+ "accounting": {
+  "rows": {
+   "59400756": {
+    "job_id": "59400756",
+    "job_id_raw": "59400756",
+    "state": "RUNNING",
+    "exit_code": "0:0",
+    "elapsed_seconds": 35,
+    "allocated_TRES": "billing=2,cpu=2,gres/tmpfs=10737418240,mem=32G,node=1",
+    "billing_cores": 2.0,
+    "gpus": 0,
+    "billing_core_hours": 0.019444444444444445,
+    "gpu_hours": 0.0,
+    "reserved_billing_core_hours": 2.0
+   },
+   "59400758": {
+    "job_id": "59400758",
+    "job_id_raw": "59400758",
+    "state": "RUNNING",
+    "exit_code": "0:0",
+    "elapsed_seconds": 35,
+    "allocated_TRES": "billing=2,cpu=2,gres/tmpfs=10737418240,mem=32G,node=1",
+    "billing_cores": 2.0,
+    "gpus": 0,
+    "billing_core_hours": 0.019444444444444445,
+    "gpu_hours": 0.0,
+    "reserved_billing_core_hours": 2.0
+   },
+   "59400762": {
+    "job_id": "59400762",
+    "job_id_raw": "59400762",
+    "state": "PENDING",
+    "exit_code": "0:0",
+    "elapsed_seconds": 0,
+    "allocated_TRES": "",
+    "billing_cores": 0.0,
+    "gpus": 0,
+    "billing_core_hours": 0.0,
+    "gpu_hours": 0.0,
+    "reserved_billing_core_hours": 0.0
+   },
+   "59400764": {
+    "job_id": "59400764",
+    "job_id_raw": "59400764",
+    "state": "PENDING",
+    "exit_code": "0:0",
+    "elapsed_seconds": 0,
+    "allocated_TRES": "",
+    "billing_cores": 0.0,
+    "gpus": 0,
+    "billing_core_hours": 0.0,
+    "gpu_hours": 0.0,
+    "reserved_billing_core_hours": 0.0
+   },
+   "59400766": {
+    "job_id": "59400766",
+    "job_id_raw": "59400766",
+    "state": "PENDING",
+    "exit_code": "0:0",
+    "elapsed_seconds": 0,
+    "allocated_TRES": "",
+    "billing_cores": 0.0,
+    "gpus": 0,
+    "billing_core_hours": 0.0,
+    "gpu_hours": 0.0,
+    "reserved_billing_core_hours": 0.0
+   }
+  },
+  "raw": "59400756|RUNNING|0:0|35|60|billing=2,cpu=2,gres/tmpfs=10737418240,mem=32G,node=1|59400756\n59400758|RUNNING|0:0|35|60|billing=2,cpu=2,gres/tmpfs=10737418240,mem=32G,node=1|59400758\n59400762|PENDING|0:0|0|480||59400762\n59400764|PENDING|0:0|0|480||59400764\n59400766|PENDING|0:0|0|60||59400766\n",
+  "actual_billing_core_hours": 0.03888888888888889,
+  "reserved_billing_core_hours": 4.0
+ },
+ "additional_ceiling_billing_core_hours": 6000.0,
+ "uncertainty": "Panel results require terminal generation, blind grades and all nine paired endpoints. Short-horizon continuation summaries are separate. No accuracy-retention/equivalence claim.",
+ "sha256": "a26da15b92ea31dc60daf8fb368499d6ee1487e1034da7d0622ea0ca01129475"
+}

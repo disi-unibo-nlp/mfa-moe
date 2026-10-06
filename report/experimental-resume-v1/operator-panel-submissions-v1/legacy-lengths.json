@@ -1,0 +1,17 @@
+{
+ "schema": "overnight-submit-receipt-v1",
+ "name": "legacy-lengths",
+ "binding": {
+  "operations_sha256": "b61bc98be974f5848da96c8c0bdcfd6faa0466dd696ba14f82a006438599f71e",
+  "phase": "legacy",
+  "extra": {}
+ },
+ "arguments": [
+  "--job-name=operator-panel-legacy-lengths",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/operator_panel_cpu_v1.sbatch"
+ ],
+ "job_id": "59400758",
+ "submission": "59400758",
+ "removed_parent_environment_keys": [],
+ "sha256": "f64a42189cf235abdc441c8df49deb98113905f2e4f6a1da116ba261f1f6e693"
+}

@@ -1,0 +1,17 @@
+{
+ "schema": "overnight-generation-chain-v2",
+ "binding": {
+  "manifest_sha256": "6b5aa286e46cb818969c939346f448a6577b307779041ec2d35d7fce0562f074",
+  "generation_price_sha256": "3fd70bb258ef2563f655d41336814dd0cde1baec4e97ad66e5da90797eb7986a",
+  "envelope_sha256": "79fb5210b6065bce2e865183d44e173dc787b15862cd7276fddd1481185e2889",
+  "wrapper_hashes": {
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/overnight_routing_run_v4.sbatch": "fa05cc64c60c5fa2dbae2d58f1cad20df6752aba7f43c4b31eb5779ded0c971c",
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/build_price_overnight_semantics_v4.sbatch": "554681f0d89cf7753f5025a554150d8b42030a471b405649220eadebc7e4e39d",
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/dispatch_overnight_stage_v4.sbatch": "80728bd412902c2852c5d15fd6d3b9f0737ad80efc97779c7eb309ee84f88ebd"
+  }
+ },
+ "generation_job": "59351429",
+ "frame_price_job": "59351434",
+ "reader_dispatch_job": "59351437",
+ "sha256": "10e6a1579a359b7acac1298354e7d20ecc39137c2cdd3845002332b8f4a37f97"
+}

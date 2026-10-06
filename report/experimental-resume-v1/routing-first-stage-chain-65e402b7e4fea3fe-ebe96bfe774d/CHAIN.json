@@ -1,0 +1,30 @@
+{
+ "schema": "routing-first-stage-chain-v2",
+ "binding": {
+  "schema": "routing-first-stage-chain-binding-v2",
+  "stage": "C",
+  "manifest_sha256": "65e402b7e4fea3febb7e63a8acce9aa022cc22381315c56b46390c4ed3445ffd",
+  "generation_price_sha256": "50479ab0fdf55cfbbb1bc864e89cbacf974662d190dd9828ea5a0b50c8ce813c",
+  "plan_sha256": "ebe96bfe774d526ef4683170a93f3de8215466a429b9feb900b1db6fd870113d",
+  "frame_price_dependency": {
+   "path": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/overnight-submissions-v2-65e402b7e4fea3fe/GENERATION_CHAIN.json",
+   "sha256": "8b1abb2d3d2997354bb1d824543b907313df27695ae0a61036f8711610e5586e",
+   "job_id": "59351433"
+  },
+  "analysis_directory": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/routing-first-stage/routing-first-stage-v2-65e402b7e4fea3fe-ebe96bfe774d",
+  "wrapper_sha256": "d7d54cca2dc221c8f25f82b621f14879880dc154aa0e3faaba7b032a402e64b8",
+  "resources": {
+   "partition": "lrd_all_viz",
+   "cpus": 2,
+   "memory_GiB": 16,
+   "wall_seconds": 7200,
+   "maximum_CPU_core_hours": 4.0,
+   "GPU_hours": 0.0
+  }
+ },
+ "frame_price_job": "59351433",
+ "analysis_job": "59351472",
+ "analysis_directory": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/routing-first-stage/routing-first-stage-v2-65e402b7e4fea3fe-ebe96bfe774d",
+ "scope": "Already saved routes and telemetry; CPU only.",
+ "sha256": "e08dfdeea51802351cba8c5d8682892ed57c0e6b74bc67358060819c92a9719f"
+}

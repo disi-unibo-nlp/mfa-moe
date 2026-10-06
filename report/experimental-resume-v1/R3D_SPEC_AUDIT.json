@@ -1,0 +1,28 @@
+{
+ "schema": "r3d-spec-audit-v1",
+ "job_id": "59110653",
+ "frozen_sha256": "a2520bd038bb511732bb6adb9423f620ca5e5a1db17034f69bbd3dbb864ca1cc",
+ "current_sha256": "a2520bd038bb511732bb6adb9423f620ca5e5a1db17034f69bbd3dbb864ca1cc",
+ "differences": {
+  "models": {
+   "expected": [
+    "gpt",
+    "qwen36",
+    "gemma",
+    "glm",
+    "nemotron",
+    "qwen330b",
+    "qwen35"
+   ],
+   "actual": [
+    "gpt",
+    "qwen36",
+    "gemma",
+    "glm",
+    "nemotron",
+    "qwen330b",
+    "qwen35"
+   ]
+  }
+ }
+}

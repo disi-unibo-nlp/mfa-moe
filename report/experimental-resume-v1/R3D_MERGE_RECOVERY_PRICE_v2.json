@@ -1,0 +1,45 @@
+{
+ "schema": "r3d-merge-recovery-price-v2",
+ "status": "READY_TWO_SEQUENTIAL_CPU_MERGES",
+ "reason": "v1 Qwen merge 59188564 failed before copying because Slurm cleared fulfilled afterany to Dependency=(null); dependent GPT merge 59201091 canceled",
+ "failed_prior_jobs": [
+  "59188564",
+  "59201091"
+ ],
+ "canonical_stopped_job": "59111360",
+ "held_continuation_job": "59115320",
+ "source_sha256": "6a79b54cb81d95f8f4c91f90fa2264e161c4e190288ff20b610b05f1650e3fb8",
+ "launcher_sha256": "48c514ec4e042cc8718eddad9f74d9198a7ba56c28f77d31f79f9d86c4c01d37",
+ "qwen_verifier_sha256": "6750308869333875b13250b4d23abcf61283bccf7bafc89b13966d714d212226",
+ "gpt_verifier_sha256": "918ae0100429020abc5564a7fbce3aadfe380912ccf35fd62d654608e00d2eba",
+ "stages": [
+  {
+   "kind": "qwen",
+   "fit_files": 750,
+   "cpus": 2,
+   "memory": "16G",
+   "wall_seconds": 1800,
+   "max_core_hours": 1,
+   "receipt": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/R3D_SIDECAR_MERGE_QWEN_v2.json"
+  },
+  {
+   "kind": "gpt-dest",
+   "fit_files": 300,
+   "cpus": 2,
+   "memory": "16G",
+   "wall_seconds": 1800,
+   "max_core_hours": 1,
+   "dependency": "afterok Qwen v2 merge",
+   "receipt": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/R3D_SIDECAR_MERGE_GPT_DEST_v2.json"
+  }
+ ],
+ "total_max_core_hours": 2,
+ "gpus": 0,
+ "slurm": {
+  "account": "iscrc_miosr",
+  "partition": "boost_usr_prod",
+  "qos": "normal"
+ },
+ "release_gate": "Both v2 merge Slurm states COMPLETED0 and sealed receipts valid; exact 59115320 still user-held; then release it only",
+ "sha256": "edb4b7edad908059810be8a939c895626d8aae45a4459ad2694dd2c52244e0f4"
+}

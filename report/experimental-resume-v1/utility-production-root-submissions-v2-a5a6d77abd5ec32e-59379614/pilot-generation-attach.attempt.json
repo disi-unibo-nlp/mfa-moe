@@ -1,0 +1,19 @@
+{
+ "schema": "overnight-submit-attempt-v1",
+ "name": "pilot-generation-attach",
+ "binding": {
+  "operational_recovery_sha256": "83f59261f8fdbd244225b989d442f11106a646c0a02de4ca6a314fd5e9242bf0",
+  "config_sha256": "a5a6d77abd5ec32e2ee7cd01462da1dfc75919478dd91c7956e8207a3fbcd4b6",
+  "pilot_operational_recovery_sha256": "383f1a2d5c7d18e09be5a364a5fb285f9a19ab242ad508ae91d48a487b0154b6",
+  "pilot_proposal_sha256": "ce86e4bcaa9c5c4a12f9c9456f118662dccdb57ed355f952cabc9617a83152fa"
+ },
+ "arguments": [
+  "--dependency=afterok:59379614",
+  "--job-name=utility-pilot-recovery-v5",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/attach_utility_price_pilot_v5.sbatch"
+ ],
+ "time_ns": 1791188805921667008,
+ "dispatcher_job_id": null,
+ "removed_parent_environment_keys": [],
+ "sha256": "7a8245a19b438f8fa01b7f32fd229cadf249466fa34b46fe5b657aec2da9a4b3"
+}

@@ -1,0 +1,21 @@
+{
+ "schema": "overnight-submit-receipt-v1",
+ "name": "frame-price-recovery-v1",
+ "binding": {
+  "manifest_sha256": "9c3dc95fda9cf5e9ed03285529f0279d8da7796b3b9f42a4ac9a38b41ad746ab",
+  "generation_job": "59344808",
+  "envelope_sha256": "6fc2efdd2f2984ee21c4b66c4d3e6b41e0323a68eccf4901ff653cda12788d7d",
+  "wrapper_hashes": {
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/build_price_overnight_semantics_v1.sbatch": "cb33d257475525290a5803981dd514b48467cd448b73d333834fb680b26f45cd",
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/dispatch_overnight_readers_v1.sbatch": "37b13b9d2b768ff49e21f8b5374fcb54f0d0d02d3efff9c98b251b84716bb85d"
+  }
+ },
+ "arguments": [
+  "--dependency=afterok:59344808",
+  "--job-name=st-overnight-B-price-r1",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/build_price_overnight_semantics_v1.sbatch"
+ ],
+ "job_id": "59344826",
+ "submission": "59344826",
+ "sha256": "84416aa235e38ed8176e7175875f21fd3df893bbd0d1f5310caff99889f4655c"
+}

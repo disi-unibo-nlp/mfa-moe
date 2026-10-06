@@ -1,0 +1,26 @@
+{
+ "schema": "routing-paper-snapshot-v3",
+ "stage": "FRESH",
+ "source": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/OVERNIGHT_FRESH_COMPARISON_ANALYSIS_v2/ANALYSIS.json",
+ "source_sha256": "0d77a5e9a2ad81c52bc591ee10389e7d21e70d3c3a8b4e2c7dac21d55632eda3",
+ "driver_sha256": "57496a379a2ed9094749bc684fa8e679db306f7c7ffae8249ba75badc54840fe",
+ "analysis_slurm": {
+  "job_id": "59380008",
+  "state": "COMPLETED",
+  "exit_code": "0:0",
+  "elapsed": "00:02:02",
+  "end": "2026-10-05T14:59:11"
+ },
+ "report_slurm_job": "59380073",
+ "artifacts": {
+  "CLAIM_LEDGER.json": "81f297087ec8551568a02c050f3fa04ef40b6404f1e4e4d16ab61ba9d088b24a",
+  "MEASUREMENT.json": "ea208311e85419c83000910b4320be76bb7b25f5839cae470ad1f49093b49848",
+  "reader_coverage.pdf": "da591d313f0c26c56e604d85ba821cab5c8b11ed8c9570d8a1acb86cb52b1313",
+  "semantic_contrasts.tsv": "b543f16046352ac32fe561bf84963a93b43424a8c292bc8e690d7a365b14f918",
+  "semantic_effects.pdf": "60954063957ac36073b644ceb6f23862a4239836d12b3905ce1539e83d79037f",
+  "semantic_effects.svg": "51d34d73b2b69ae0478710947c2525ae0f67ecc57da48eea79c0a9431bf20e14"
+ },
+ "new_claims": 56,
+ "status": "COMPLETE_SAVED_RESULT_ADDENDUM",
+ "sha256": "07e05d80fd0fb9b181663490362be056365f574dfeb798fc46ef4dc222e2cbb3"
+}

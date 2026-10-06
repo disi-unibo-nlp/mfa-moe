@@ -1,0 +1,17 @@
+{
+ "schema": "fresh-veto-sensitivity-chain-binding-v1",
+ "manifest_sha256": "6b5aa286e46cb818969c939346f448a6577b307779041ec2d35d7fce0562f074",
+ "plan_sha256": "18134429066bc9f83ab86a184a84166caca940d552c0be31dfffd6e76d7216b7",
+ "format_result_sha256": "29b86bbe7ccbfc07131e6caa0d4a9df91a4a70bc5a7111d828634b718a1af3a0",
+ "phase": "generation",
+ "reader_dispatch_job": "59351437",
+ "next_attachment_job": "59351479",
+ "dependency_proof": {
+  "job_id": "59351437",
+  "scontrol_returncode": 0,
+  "scontrol_stdout": "JobId=59351437 JobName=st-overnight-FRESH-dispatch-v2\n   UserId=lmolfett(133943) GroupId=interactive(25200) MCS_label=N/A\n   Priority=136445 Nice=0 Account=iscrc_miosr QOS=normal\n   JobState=PENDING Reason=Dependency Dependency=afterok:59351434(unfulfilled)\n   Requeue=0 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0\n   RunTime=00:00:00 TimeLimit=00:05:00 TimeMin=N/A\n   SubmitTime=2026-10-05T00:17:41 EligibleTime=Unknown\n   AccrueTime=Unknown\n   StartTime=Unknown EndTime=Unknown Deadline=N/A\n   SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-10-05T00:17:41 Scheduler=Main\n   Partition=lrd_all_viz AllocNode:Sid=viz16:3586698\n   ReqNodeList=(null) ExcNodeList=(null)\n   NodeList=\n   NumNodes=1-1 NumCPUs=1 NumTasks=1 CPUs/Task=1 ReqB:S:C:T=0:0:*:*\n   ReqTRES=cpu=1,mem=2G,node=1,billing=1,gres/tmpfs=10737418240\n   AllocTRES=(null)\n   Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=*\n   MinCPUsNode=1 MinMemoryNode=2G MinTmpDiskNode=0\n   Features=(null) DelayBoot=00:00:00\n   OverSubscribe=OK Contiguous=0 Licenses=(null) LicensesAlloc=(null) Network=(null)\n   Command=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/dispatch_overnight_stage_v4.sbatch\n   WorkDir=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo\n   StdErr=/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/logs/st-overnight-FRESH-dispatch-v2-59351437.err\n   StdIn=/dev/null\n   StdOut=/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/logs/st-overnight-FRESH-dispatch-v2-59351437.out\n   TresPerNode=gres/tmpfs:10g\n   TresPerTask=cpu=1\n   \n\n",
+  "scontrol_stderr": "",
+  "mode": "LIVE_AFTEROK"
+ },
+ "sha256": "752def139f24109298b6a357ce4d0f6c453ee431cda66fae002a94c5e2385546"
+}

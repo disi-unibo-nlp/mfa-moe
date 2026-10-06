@@ -1,0 +1,38 @@
+{
+ "schema": "utility-native-orchestration-plan-v3",
+ "config_path": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/UTILITY_PRODUCTION_CONFIG_v1.json",
+ "config_sha256": "a5a6d77abd5ec32e2ee7cd01462da1dfc75919478dd91c7956e8207a3fbcd4b6",
+ "prior_recovery_path": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/utility-production-root-submissions-v2-a5a6d77abd5ec32e-59379614/RECOVERY.json",
+ "prior_recovery_sha256": "83f59261f8fdbd244225b989d442f11106a646c0a02de4ca6a314fd5e9242bf0",
+ "prior_root_chain_sha256": "7456b736ce3c99f28b52c2866e653463a9d38b9dcc9b522178b6f0100dc44fd8",
+ "preserved_failures": {
+  "production": {
+   "job_id": "59379679",
+   "accounting": "59379679|FAILED|2:0|2\n",
+   "elapsed_seconds": 2
+  },
+  "grading": {
+   "job_id": "59379681",
+   "accounting": "59379681|CANCELLED|0:0|0\n",
+   "elapsed_seconds": 0
+  },
+  "transport": {
+   "job_id": "59381728",
+   "accounting": "59381728|FAILED|1:0|4\n",
+   "elapsed_seconds": 4
+  }
+ },
+ "pilot_attachment_dir": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/utility-price-pilot-attachments-v5-ce86e4bcaa9c5c4a-59379614",
+ "pilot_recovery_plan_sha256": "383f1a2d5c7d18e09be5a364a5fb285f9a19ab242ad508ae91d48a487b0154b6",
+ "production_chain_dir": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/utility-production-submissions-v1-a5a6d77abd5ec32e",
+ "native_root": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/utility-production-root-submissions-v3-a5a6d77abd5ec32e",
+ "failed_transport_probe_path": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/utility-account-transport-probe-v1/PROBE.json",
+ "failed_transport_probe_sha256": "7f24b349122ccac7e1d05d56537fbd8168cd076b73781f269a5a9d59e36f61b3",
+ "grading_plan_sha256": "de108d8736ea5969d2e03260c2e4bb1a18064d59dfc0ee4cb0588d8e3d6e0313",
+ "operational_code_files": {
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/utility_native_orchestration_v3.py": "a6b3346eafe96b4998b84f6c94257f8cbbbdc08ac7d04a273409933058b0e10d",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/utility_native_cpu_v3.sbatch": "5b5133e7a1b736fd1915c9bcb9ff7acffca349334f8611f562d0178502d8dd36"
+ },
+ "scope": "Finite actual CPU preparation/accounting -> sealed readiness -> actual native login balance/queue/dispatch. No daemon, polling loop, credential changes, cached production budget or fabricated Slurm environment. Frozen v1 generation/pricing/reconciliation and v2 J1 scientific adapters remain unchanged.",
+ "sha256": "8a3000cc60dfef0bb5872cc7615ceabc919a5bf67f2ffc43f02daf4c1732a946"
+}

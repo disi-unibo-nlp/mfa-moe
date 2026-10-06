@@ -1,0 +1,17 @@
+{
+ "schema": "overnight-submit-attempt-v1",
+ "name": "checkpoint-semantic",
+ "binding": {
+  "plan_sha256": "1df6c1de122cf9d3bd81ba8ac8a474b94445a78fe4849354bf8af126886ac200",
+  "label": "semantic"
+ },
+ "arguments": [
+  "--dependency=afterany:59380008:59380077:59380073:59380092",
+  "--job-name=routing-closeout-semantic",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/routing_study_closeout_v2.sbatch"
+ ],
+ "time_ns": 1791194255246686855,
+ "dispatcher_job_id": null,
+ "removed_parent_environment_keys": [],
+ "sha256": "3d37af43db255bc7f75775f28431c5c0a3a1320d8bffdf188e9a3d3296c6c148"
+}

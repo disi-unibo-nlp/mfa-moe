@@ -1,0 +1,395 @@
+{
+ "schema": "overnight-routing-design-v1",
+ "lane": "B",
+ "mode": "ordered_positive",
+ "horizon": 1024,
+ "transitions": [
+  "candidate_to_verify",
+  "approach_to_commit"
+ ],
+ "actions": [
+  {
+   "name": "candidate_to_verify_once",
+   "transition": "candidate_to_verify",
+   "experts": [
+    [
+     28,
+     [
+      9,
+      189
+     ]
+    ]
+   ],
+   "bias": 1.0
+  },
+  {
+   "name": "candidate_to_verify_once_random0",
+   "transition": "candidate_to_verify",
+   "experts": [
+    [
+     28,
+     [
+      120,
+      139
+     ]
+    ]
+   ],
+   "bias": 1.0
+  },
+  {
+   "name": "candidate_to_verify_once_random1",
+   "transition": "candidate_to_verify",
+   "experts": [
+    [
+     28,
+     [
+      133,
+      255
+     ]
+    ]
+   ],
+   "bias": 1.0
+  },
+  {
+   "name": "candidate_to_verify_once_random2",
+   "transition": "candidate_to_verify",
+   "experts": [
+    [
+     28,
+     [
+      5,
+      43
+     ]
+    ]
+   ],
+   "bias": 1.0
+  },
+  {
+   "name": "candidate_to_verify_once_random3",
+   "transition": "candidate_to_verify",
+   "experts": [
+    [
+     28,
+     [
+      24,
+      196
+     ]
+    ]
+   ],
+   "bias": 1.0
+  },
+  {
+   "name": "approach_to_commit_once",
+   "transition": "approach_to_commit",
+   "experts": [
+    [
+     24,
+     [
+      159
+     ]
+    ]
+   ],
+   "bias": 1.0
+  },
+  {
+   "name": "approach_to_commit_once_random0",
+   "transition": "approach_to_commit",
+   "experts": [
+    [
+     24,
+     [
+      109
+     ]
+    ]
+   ],
+   "bias": 1.0
+  },
+  {
+   "name": "approach_to_commit_once_random1",
+   "transition": "approach_to_commit",
+   "experts": [
+    [
+     24,
+     [
+      63
+     ]
+    ]
+   ],
+   "bias": 1.0
+  },
+  {
+   "name": "approach_to_commit_once_random2",
+   "transition": "approach_to_commit",
+   "experts": [
+    [
+     24,
+     [
+      40
+     ]
+    ]
+   ],
+   "bias": 1.0
+  },
+  {
+   "name": "approach_to_commit_once_random3",
+   "transition": "approach_to_commit",
+   "experts": [
+    [
+     24,
+     [
+      26
+     ]
+    ]
+   ],
+   "bias": 1.0
+  },
+  {
+   "name": "candidate_to_verify_repeat",
+   "transition": "candidate_to_verify",
+   "experts": [
+    [
+     28,
+     [
+      9,
+      189
+     ]
+    ]
+   ],
+   "bias": 1.0
+  },
+  {
+   "name": "candidate_to_verify_repeat_random0",
+   "transition": "candidate_to_verify",
+   "experts": [
+    [
+     28,
+     [
+      120,
+      139
+     ]
+    ]
+   ],
+   "bias": 1.0
+  },
+  {
+   "name": "candidate_to_verify_repeat_random1",
+   "transition": "candidate_to_verify",
+   "experts": [
+    [
+     28,
+     [
+      133,
+      255
+     ]
+    ]
+   ],
+   "bias": 1.0
+  },
+  {
+   "name": "candidate_to_verify_repeat_random2",
+   "transition": "candidate_to_verify",
+   "experts": [
+    [
+     28,
+     [
+      5,
+      43
+     ]
+    ]
+   ],
+   "bias": 1.0
+  },
+  {
+   "name": "candidate_to_verify_repeat_random3",
+   "transition": "candidate_to_verify",
+   "experts": [
+    [
+     28,
+     [
+      24,
+      196
+     ]
+    ]
+   ],
+   "bias": 1.0
+  },
+  {
+   "name": "approach_to_commit_repeat",
+   "transition": "approach_to_commit",
+   "experts": [
+    [
+     24,
+     [
+      159
+     ]
+    ]
+   ],
+   "bias": 1.0
+  },
+  {
+   "name": "approach_to_commit_repeat_random0",
+   "transition": "approach_to_commit",
+   "experts": [
+    [
+     24,
+     [
+      109
+     ]
+    ]
+   ],
+   "bias": 1.0
+  },
+  {
+   "name": "approach_to_commit_repeat_random1",
+   "transition": "approach_to_commit",
+   "experts": [
+    [
+     24,
+     [
+      63
+     ]
+    ]
+   ],
+   "bias": 1.0
+  },
+  {
+   "name": "approach_to_commit_repeat_random2",
+   "transition": "approach_to_commit",
+   "experts": [
+    [
+     24,
+     [
+      40
+     ]
+    ]
+   ],
+   "bias": 1.0
+  },
+  {
+   "name": "approach_to_commit_repeat_random3",
+   "transition": "approach_to_commit",
+   "experts": [
+    [
+     24,
+     [
+      26
+     ]
+    ]
+   ],
+   "bias": 1.0
+  }
+ ],
+ "arms": [
+  {
+   "name": "native",
+   "role": "native",
+   "policies": {},
+   "slots": []
+  },
+  {
+   "name": "native_duplicate",
+   "role": "native",
+   "policies": {},
+   "slots": []
+  },
+  {
+   "name": "once",
+   "role": "target",
+   "policies": {
+    "candidate_to_verify": [
+     "candidate_to_verify_once"
+    ],
+    "approach_to_commit": [
+     "approach_to_commit_once"
+    ]
+   },
+   "slots": [
+    0
+   ]
+  },
+  {
+   "name": "random_once",
+   "role": "random",
+   "policies": {
+    "candidate_to_verify": [
+     "candidate_to_verify_once_random{random_set}"
+    ],
+    "approach_to_commit": [
+     "approach_to_commit_once_random{random_set}"
+    ]
+   },
+   "slots": [
+    0
+   ]
+  },
+  {
+   "name": "repeat",
+   "role": "target",
+   "policies": {
+    "candidate_to_verify": [
+     "candidate_to_verify_repeat",
+     "candidate_to_verify_repeat"
+    ],
+    "approach_to_commit": [
+     "approach_to_commit_repeat",
+     "approach_to_commit_repeat"
+    ]
+   },
+   "slots": [
+    0,
+    512
+   ]
+  },
+  {
+   "name": "random_repeat",
+   "role": "random",
+   "policies": {
+    "candidate_to_verify": [
+     "candidate_to_verify_repeat_random{random_set}",
+     "candidate_to_verify_repeat_random{random_set}"
+    ],
+    "approach_to_commit": [
+     "approach_to_commit_repeat_random{random_set}",
+     "approach_to_commit_repeat_random{random_set}"
+    ]
+   },
+   "slots": [
+    0,
+    512
+   ]
+  }
+ ],
+ "planned_contrasts": [
+  [
+   "once",
+   "native"
+  ],
+  [
+   "once",
+   "random_once"
+  ],
+  [
+   "repeat",
+   "native"
+  ],
+  [
+   "repeat",
+   "random_repeat"
+  ],
+  [
+   "repeat",
+   "once"
+  ]
+ ],
+ "analysis_scopes": [
+  "all",
+  "candidate_to_verify",
+  "approach_to_commit"
+ ],
+ "analysis_seed": 20261004,
+ "dictionary_sha256": "144458193e294152f92703c854a11055fa49929cee0e85289d0cb4eb2ab0aef0",
+ "bootstrap_replicates": 50000,
+ "claim_limit": "Exploratory discovery prefixes previously examined; no independent confirmation or utility claim.",
+ "selection_information": "Frozen native discovery correlations and existing discovery audits only; no newly completing mechanism outcomes.",
+ "sha256": "3f68468cccb5bcd279f51f6129cde0db4842bb2a5365ea120e182b8886bb27cf"
+}

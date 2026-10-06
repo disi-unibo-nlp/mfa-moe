@@ -1,0 +1,24 @@
+{
+ "schema": "overnight-submit-attempt-v1",
+ "name": "utility-pilot-attach",
+ "binding": {
+  "amendment_sha256": "1d6f34dde5f7a7406d3aede0b35e5a7d5285dad93688821586724fa006dee32d",
+  "enrollment_sha256": "7190b1dc34f8cc6e9aeac337dc66f993cd91ce139972112333f076887d4cb5ee",
+  "enrollment_job": "59344223",
+  "enrollment_sacct": "59344223|COMPLETED|0:0\n",
+  "submit_code_sha256": "c25f0f1774de9b45e04b595558e0c6b11a42a06e6644b0a32fd70e7853410b4f",
+  "shared_submit_sha256": "0c142175df5db52fdf00a85d0e8dd46099209a76c5161994b4279332d6c84a10",
+  "proposal_sha256": "ce86e4bcaa9c5c4a12f9c9456f118662dccdb57ed355f952cabc9617a83152fa",
+  "fresh_generation_dispatch_job": "59349585",
+  "wrapper_sha256": "6b3f11fdfcbed514b0c4e44d79bd2b9b90103ff66e20619c0f62125f2d4eac0d"
+ },
+ "arguments": [
+  "--dependency=afterok:59349585",
+  "--job-name=utility-pilot-attach-generation-v4",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/attach_utility_price_pilot_v4.sbatch"
+ ],
+ "time_ns": 1791151150840543199,
+ "dispatcher_job_id": null,
+ "removed_parent_environment_keys": [],
+ "sha256": "ca5d05aba2c0e3a1d57da2b2e88049f540a9ddb082685894b6b25c22c49cee96"
+}

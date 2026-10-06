@@ -1,0 +1,36 @@
+{
+ "schema": "overnight-paper-chains-v3",
+ "records": [
+  {
+   "stage": "LEGACY",
+   "phase": "build",
+   "job": "59345662",
+   "parent": null
+  },
+  {
+   "stage": "A",
+   "phase": "dispatch",
+   "job": "59345664",
+   "parent": "59344824"
+  },
+  {
+   "stage": "B",
+   "phase": "dispatch",
+   "job": "59345666",
+   "parent": "59344828"
+  },
+  {
+   "stage": "C",
+   "phase": "attach",
+   "job": "59345668",
+   "parent": "59345508"
+  },
+  {
+   "stage": "FRESH",
+   "phase": "attach",
+   "job": "59345670",
+   "parent": "59345513"
+  }
+ ],
+ "sha256": "4f3d94206f6130546485d8c69c928495f84a2de8a6bf0d57e34a0ea72fd724b7"
+}

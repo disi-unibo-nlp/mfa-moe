@@ -1,0 +1,399 @@
+{
+ "schema": "resume-paper-evidence-addendum-v2",
+ "status": "SAVED_RESULT_SNAPSHOT_NO_NEW_CAUSAL_CLAIM",
+ "prior_immutable_figure_snapshot": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/paper/resume-v1/20261001T143703Z",
+ "prior_snapshot_pointer_sha256": "e80bc5be99078f3616d7bfef8f387702847e92bb7acca68db74617a8928b427a",
+ "source_file_sha256": {
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/CLAIM_LEDGER.json": "ce8c844eaff3e3ed6a8cf457a372537dd0cd6a7f37d6f6d1bcdcad6e528c437c",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/PAPER_SNAPSHOT.json": "e80bc5be99078f3616d7bfef8f387702847e92bb7acca68db74617a8928b427a",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/paper/resume-v1/20261001T143703Z/FROZEN.json": "0d08aa5393bd309e81ce40d0177eb2229f5684efeee05f398ccd654c7cfc407f",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/forum/tests/r3_context/readout-results.v3.json": "3f0999ac12c6ffaccb611edd9e5af195238dad94f9418a508bf3b1c3001be3d3",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/forum/tests/r3_context/anticipation-results.json": "da24f7f7f7b1910bfafd13830562783095f7ec4a8179b86dda8a57b6784f5d89",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/resume-v1/r3e-b1-clean-v2/result.json": "0126315c4d02da5f72a068195c6b190523307a60e75212834aaede02cb8a8882",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/R3D_MERGED_INVENTORY_AUDIT_v2.json": "427ccb9c4e1918d9c49937a7ef56a845b6f750754fca73e64e23c0717a804015",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/R3D_FINALIZATION_AFTER_MERGE_v1.json": "e862716c442b054451cd1eacd42c09eb100b8ee4537f499d89cdcf1bc9bc45ca",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/R3D_GUARD_CHAIN_RETIREMENT_v1.json": "184abeab5a2016d7d19d35818b07e2f66ee2bdd0f86ae3808d953c02d8e9d1e7"
+ },
+ "claim_ledger_v2": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/CLAIM_LEDGER_v2.json",
+ "claim_ledger_v2_file_sha256": "66d74adde54cea28ff9a67fdc56b43b87a57d29ce8280e51ddd5ba40248ed7d3",
+ "claim_count_prior": 209,
+ "claim_count_added": 32,
+ "claim_count_total": 241,
+ "r3d": {
+  "seven_model_readout": {
+   "gpt": {
+    "token_identity": {
+     "questions": 522,
+     "families": 509,
+     "routing_P": -0.14330126017916212,
+     "routing_simultaneous_CI7": [
+      -0.156667454613604,
+      -0.13140847662662458
+     ],
+     "lexical_excess_P": -0.09616716350799273,
+     "lexical_excess_simultaneous_CI7": [
+      -0.10618558326274856,
+      -0.08611684595408549
+     ]
+    },
+    "judge_context": {
+     "questions": 522,
+     "families": 509,
+     "routing_P": -0.07858361463272384,
+     "routing_simultaneous_CI7": [
+      -0.09566878042562169,
+      -0.06178950982489568
+     ],
+     "lexical_excess_P": -0.08091924425865914,
+     "lexical_excess_simultaneous_CI7": [
+      -0.08999212725001861,
+      -0.07150491103689935
+     ]
+    }
+   },
+   "qwen36": {
+    "token_identity": {
+     "questions": 522,
+     "families": 509,
+     "routing_P": -0.21929285769013757,
+     "routing_simultaneous_CI7": [
+      -0.23235814023660958,
+      -0.20551565145942075
+     ],
+     "lexical_excess_P": -0.1849674610006591,
+     "lexical_excess_simultaneous_CI7": [
+      -0.19518465903224064,
+      -0.1745353083649618
+     ]
+    },
+    "judge_context": {
+     "questions": 522,
+     "families": 509,
+     "routing_P": -0.13898656770369988,
+     "routing_simultaneous_CI7": [
+      -0.15276229393558602,
+      -0.12601263668030233
+     ],
+     "lexical_excess_P": -0.15056636231214543,
+     "lexical_excess_simultaneous_CI7": [
+      -0.15974220512257667,
+      -0.14145638731936208
+     ]
+    }
+   },
+   "gemma": {
+    "token_identity": {
+     "questions": 522,
+     "families": 509,
+     "routing_P": -0.1922950609705562,
+     "routing_simultaneous_CI7": [
+      -0.206625299183211,
+      -0.17950079833591714
+     ],
+     "lexical_excess_P": -0.1620829454585302,
+     "lexical_excess_simultaneous_CI7": [
+      -0.17464349567224913,
+      -0.15023877937010358
+     ]
+    },
+    "judge_context": {
+     "questions": 522,
+     "families": 509,
+     "routing_P": -0.14866122598237297,
+     "routing_simultaneous_CI7": [
+      -0.16135619156515577,
+      -0.13692044882182558
+     ],
+     "lexical_excess_P": -0.1326170313940491,
+     "lexical_excess_simultaneous_CI7": [
+      -0.14437462477659926,
+      -0.12183487843709617
+     ]
+    }
+   },
+   "glm": {
+    "token_identity": {
+     "questions": 522,
+     "families": 509,
+     "routing_P": -0.18217345228065962,
+     "routing_simultaneous_CI7": [
+      -0.1958569537019384,
+      -0.16840479167729994
+     ],
+     "lexical_excess_P": -0.13636033988605592,
+     "lexical_excess_simultaneous_CI7": [
+      -0.14823083028180417,
+      -0.12494484424862097
+     ]
+    },
+    "judge_context": {
+     "questions": 522,
+     "families": 509,
+     "routing_P": -0.13679456652459812,
+     "routing_simultaneous_CI7": [
+      -0.15302262924201498,
+      -0.12035417130925732
+     ],
+     "lexical_excess_P": -0.11638544025461896,
+     "lexical_excess_simultaneous_CI7": [
+      -0.12693492922934235,
+      -0.10628394360328772
+     ]
+    }
+   },
+   "nemotron": {
+    "token_identity": {
+     "questions": 522,
+     "families": 509,
+     "routing_P": -0.19827900078981672,
+     "routing_simultaneous_CI7": [
+      -0.21270168536067083,
+      -0.18495084228084488
+     ],
+     "lexical_excess_P": -0.16196246746788406,
+     "lexical_excess_simultaneous_CI7": [
+      -0.17562989664699588,
+      -0.1487170487431366
+     ]
+    },
+    "judge_context": {
+     "questions": 522,
+     "families": 509,
+     "routing_P": -0.13721437464548697,
+     "routing_simultaneous_CI7": [
+      -0.15628287233129554,
+      -0.11819183955329762
+     ],
+     "lexical_excess_P": -0.13970910985054583,
+     "lexical_excess_simultaneous_CI7": [
+      -0.15246414469305822,
+      -0.12732561944747608
+     ]
+    }
+   },
+   "qwen330b": {
+    "token_identity": {
+     "questions": 522,
+     "families": 509,
+     "routing_P": -0.12620545486816365,
+     "routing_simultaneous_CI7": [
+      -0.14308860921844174,
+      -0.11186227985644064
+     ],
+     "lexical_excess_P": -0.1329017712386309,
+     "lexical_excess_simultaneous_CI7": [
+      -0.14170905255860222,
+      -0.12448437624661103
+     ]
+    },
+    "judge_context": {
+     "questions": 522,
+     "families": 509,
+     "routing_P": -0.09426616249992864,
+     "routing_simultaneous_CI7": [
+      -0.10928574961030324,
+      -0.08100145668798638
+     ],
+     "lexical_excess_P": -0.10739134279742761,
+     "lexical_excess_simultaneous_CI7": [
+      -0.11519074666478465,
+      -0.0996925188601655
+     ]
+    }
+   },
+   "qwen35": {
+    "token_identity": {
+     "questions": 522,
+     "families": 509,
+     "routing_P": -0.23176597296869797,
+     "routing_simultaneous_CI7": [
+      -0.24385510189681675,
+      -0.21955056011908214
+     ],
+     "lexical_excess_P": -0.18997740991586554,
+     "lexical_excess_simultaneous_CI7": [
+      -0.19974307487100426,
+      -0.18045116285641552
+     ]
+    },
+    "judge_context": {
+     "questions": 522,
+     "families": 509,
+     "routing_P": -0.1408987450738076,
+     "routing_simultaneous_CI7": [
+      -0.15358938028668598,
+      -0.12780910071283405
+     ],
+     "lexical_excess_P": -0.15373816245136668,
+     "lexical_excess_simultaneous_CI7": [
+      -0.162551488187738,
+      -0.1452898302484944
+     ]
+    }
+   }
+  },
+  "six_GPT_primary_anticipation": {
+   "next": {
+    "response": "A1 next class",
+    "measure": "composition16",
+    "questions": 509,
+    "pairs": 10209,
+    "P": -0.020727580413222313,
+    "simultaneous_CI6": [
+     -0.025479533993344634,
+     -0.016012209011163018
+    ],
+    "bootstrap_p": 0.0003999200159968006,
+    "Holm_p_six_primary": 0.0023995200959808036,
+    "positive_gain_repeats": 5
+   },
+   "next-contained": {
+    "response": "A1 next class",
+    "measure": "composition16",
+    "questions": 308,
+    "pairs": 797,
+    "P": -0.015701325610280037,
+    "simultaneous_CI6": [
+     -0.0257488582874319,
+     -0.006470268084022262
+    ],
+    "bootstrap_p": 0.0003999200159968006,
+    "Holm_p_six_primary": 0.0023995200959808036,
+    "positive_gain_repeats": 5
+   },
+   "switch": {
+    "response": "K2 switch",
+    "measure": "k16",
+    "questions": 509,
+    "pairs": 10209,
+    "P": -0.0026408268604427576,
+    "simultaneous_CI6": [
+     -0.004921902042324751,
+     -0.0003566922637330432
+    ],
+    "bootstrap_p": 0.0023995200959808036,
+    "Holm_p_six_primary": 0.007198560287942411,
+    "positive_gain_repeats": 5
+   },
+   "switch-contained": {
+    "response": "K2 switch",
+    "measure": "k16",
+    "questions": 308,
+    "pairs": 797,
+    "P": 0.000668597174808383,
+    "simultaneous_CI6": [
+     -0.0024750484636027574,
+     0.0035786693710172708
+    ],
+    "bootstrap_p": 0.5674865026994601,
+    "Holm_p_six_primary": 0.5674865026994601,
+    "positive_gain_repeats": 1
+   },
+   "dest": {
+    "response": "K2 destination",
+    "measure": "k16",
+    "questions": 509,
+    "pairs": 6264,
+    "P": -0.011031167581677437,
+    "simultaneous_CI6": [
+     -0.018401562610907935,
+     -0.004054327849784646
+    ],
+    "bootstrap_p": 0.0003999200159968006,
+    "Holm_p_six_primary": 0.0023995200959808036,
+    "positive_gain_repeats": 5
+   },
+   "dest-contained": {
+    "response": "K2 destination",
+    "measure": "k16",
+    "questions": 223,
+    "pairs": 428,
+    "P": -0.005892764311283827,
+    "simultaneous_CI6": [
+     -0.018303874064854713,
+     0.006497291716059867
+    ],
+    "bootstrap_p": 0.22035592881423716,
+    "Holm_p_six_primary": 0.4407118576284743,
+    "positive_gain_repeats": 5
+   }
+  },
+  "Qwen_same_direction_sensitivities": {
+   "next": {
+    "measure": "composition16",
+    "questions": 494,
+    "pairs": 2492,
+    "P": -0.05570080503821373,
+    "simultaneous_CI6": [
+     -0.06944131650807087,
+     -0.041535172023166665
+    ]
+   },
+   "next-contained": {
+    "measure": "composition16",
+    "questions": 160,
+    "pairs": 213,
+    "P": -0.034382160753011703,
+    "simultaneous_CI6": [
+     -0.04927373591063105,
+     -0.020113633062654068
+    ]
+   },
+   "dest": {
+    "measure": "k16",
+    "questions": 453,
+    "pairs": 1531,
+    "P": -0.007869111374020576,
+    "simultaneous_CI6": [
+     -0.01829906621363168,
+     0.0029649077130698433
+    ]
+   }
+  },
+  "merged_fit_count": 1650,
+  "frozen_result_sha256": "08f15228ae221bf69a4f7dd976909df5531db0e00ff8d6acdb97e8423140372e",
+  "finalization_receipt_sha256": "dacd348e1f73f0a17b709faf6eb906dbf77c2e6035210c8f35ff891370c1a094",
+  "obsolete_guard_chain_retirement_sha256": "e30033252128381998896acd48726f1351fa5b290fe9a5991c557dfacf5aa32b",
+  "scope": "observational held-out prediction; no causal routing intervention"
+ },
+ "clean_B1": {
+  "estimate_nats_per_token_pair": 0.008385083803142606,
+  "family_cluster_ci95": [
+   0.008044066258242057,
+   0.008737086187417087
+  ],
+  "positive_repeats": 5,
+  "questions": 509,
+  "families": 496,
+  "labelled_tokens": 527099,
+  "frequent_ID_tokens_dropped": 364978,
+  "frequent_ID_fraction_dropped": 0.6924277981935082,
+  "source_result_sha256": "192d74aba5a06f3b623b044f4dc1df013b74f85385ad2e81a5c7554128b3fa92",
+  "scope": "observational class-associated routing; no correctness effect"
+ },
+ "still_missing": [
+  "causal trajectory-control and accuracy-token endpoint estimates",
+  "legacy X3 semantic and endpoint results",
+  "independent source-grounded semantic validation beyond available LLM audits"
+ ],
+ "figure_status": "prior immutable figures retained; no R3-D/B1 figure regenerated in this addendum",
+ "operational_job_state_at_snapshot": {
+  "invalid_deactivation_cancelled_zero_work": {
+   "job_id": "59205653",
+   "state": "CANCELLED by 133943",
+   "exit_code": "0:0",
+   "elapsed": "00:00:00",
+   "end": "2026-10-02T15:09:07"
+  },
+  "positive_micro_screen_held_pending_review": {
+   "job_id": "59204242",
+   "state": "PENDING",
+   "exit_code": "0:0",
+   "elapsed": "00:00:00",
+   "end": "Unknown"
+  },
+  "generator_model": "Qwen3.6",
+  "independent_semantic_reader_model": "Qwen3.8"
+ },
+ "sha256": "fb711ca8c6dfc5b462f53e0969306cff3dbcd31f8efc5124b56deb32eff50ac1"
+}

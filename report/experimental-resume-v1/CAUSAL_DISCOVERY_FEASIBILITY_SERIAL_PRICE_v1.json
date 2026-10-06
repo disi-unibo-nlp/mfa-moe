@@ -1,0 +1,25 @@
+{
+ "schema": "routing-discovery-feasibility-serial-price-v1",
+ "amendment_sha256": "ca38fdebf2c8c8384440e8195b5f82ce5226c8c28ff222afe72a04a45943069d",
+ "source_serial_qualification_job": "59200002",
+ "source_serial_qualification_elapsed_seconds": 1993,
+ "source_serial_batch_decode_tokens": 1536,
+ "source_serial_batch_seconds_range": [
+  132.20585751533508,
+  136.98548364639282
+ ],
+ "serial_fallback_max_num_seqs": 1,
+ "expected_prefill_tokens": 356328,
+ "maximum_decode_tokens": 64512,
+ "stress_decode_tokens_per_second": 8,
+ "stress_prefill_tokens_per_second": 1000,
+ "repeat_factor": 1.25,
+ "cold_load_seconds": 685.0234088897705,
+ "shutdown_seconds": 196.0,
+ "estimated_complete_stage_wall_seconds": 11406.43340888977,
+ "estimated_complete_stage_gpu_hours": 6.336907449383205,
+ "provisional_stage_wall_ceiling_seconds": 18000,
+ "provisional_stage_gpu_hour_ceiling": 10,
+ "status": "Price-only fallback. Exact execution and complete-stage ceiling require final generic driver, context stress validation, and qualified neighbor profile. No GPU submission authorized by this artifact alone.",
+ "sha256": "24303947099a13f03a7be1c6a22a4f86090eb648e53178fae709a41626a22f8a"
+}

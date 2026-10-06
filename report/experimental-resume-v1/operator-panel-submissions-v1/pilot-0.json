@@ -1,0 +1,17 @@
+{
+ "schema": "overnight-submit-receipt-v1",
+ "name": "pilot-0",
+ "binding": {
+  "operations_sha256": "b61bc98be974f5848da96c8c0bdcfd6faa0466dd696ba14f82a006438599f71e",
+  "pilot_index": 0
+ },
+ "arguments": [
+  "--dependency=afterok:59400756",
+  "--job-name=operator-panel-pilot-0",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/run_operator_panel_v1.sbatch"
+ ],
+ "job_id": "59400762",
+ "submission": "59400762",
+ "removed_parent_environment_keys": [],
+ "sha256": "ed60056cc3bf36cb8b11c9fbd292de51bd3564f2dd3dd5f794bcee100573cbea"
+}

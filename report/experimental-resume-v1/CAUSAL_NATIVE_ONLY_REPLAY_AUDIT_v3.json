@@ -1,0 +1,456 @@
+{
+ "schema": "routing-native-only-replay-comparison-v3",
+ "replay_manifest_sha256": "4b4eda23ab7747ecbc6d40fa1e972441d08b15806df1d14c291fad8a8bd589fe",
+ "replay_summary_sha256": "02a7b77ec53f101dbe1ce0d2bbb4050a017d7cd8095388949e4306331db2e7ba",
+ "replay_array_sha256": "f7df83c90e9057d2f02ba78d7520004c087d4330d0531d3f64443292fa7828af",
+ "mixed_pilot_manifest_sha256": "ac4c9651e71fe067726b467c40d7dd5a2bf8c22538c85fc88381f8615b13fcaf",
+ "mixed_pilot_summary_sha256": "717034979adfb9a07a16976ac06b0d9e1ef6f91d4e3e26774c0951898899eada",
+ "mixed_pilot_array_sha256": "3e45c2b2a457036cb575918a7fc4039f6894457799ea702f5983b1ce0d67d27c",
+ "driver_sha256": "1bb860d80eba4ce1b7d1a7e3835ca44b5b1dc3d14229dc9c60bfca295cc439c1",
+ "native_only_pairs": [
+  {
+   "prefix_uid": "1cec33ea5a84a39769c021444958c5091e4c5ede3ab96ee0254c78f86a944121",
+   "seed": 0,
+   "tokens_equal": true,
+   "first_token_difference_index": null,
+   "first_unordered_topk_set_difference_index": 0,
+   "first_token_unordered_topk_equal": false,
+   "first_token_target_mask_equal": true,
+   "unordered_topk_equal_before_token_difference": false,
+   "target_mask_equal_before_token_difference": false,
+   "first_token_target_selected": [
+    false,
+    false
+   ],
+   "first_emitted_tokens": [
+    348,
+    348
+   ],
+   "target_occupancy_fraction": [
+    0.20703125,
+    0.2109375
+   ],
+   "finish_equal": true
+  },
+  {
+   "prefix_uid": "1cec33ea5a84a39769c021444958c5091e4c5ede3ab96ee0254c78f86a944121",
+   "seed": 1,
+   "tokens_equal": false,
+   "first_token_difference_index": 255,
+   "first_unordered_topk_set_difference_index": 0,
+   "first_token_unordered_topk_equal": false,
+   "first_token_target_mask_equal": true,
+   "unordered_topk_equal_before_token_difference": false,
+   "target_mask_equal_before_token_difference": false,
+   "first_token_target_selected": [
+    false,
+    false
+   ],
+   "first_emitted_tokens": [
+    348,
+    348
+   ],
+   "target_occupancy_fraction": [
+    0.2421875,
+    0.23828125
+   ],
+   "finish_equal": true
+  },
+  {
+   "prefix_uid": "493a45f5f89a7a370e6611d6265fe435d0736b475fa40f3cf7bee1e7e1baa8fc",
+   "seed": 0,
+   "tokens_equal": true,
+   "first_token_difference_index": null,
+   "first_unordered_topk_set_difference_index": 0,
+   "first_token_unordered_topk_equal": false,
+   "first_token_target_mask_equal": true,
+   "unordered_topk_equal_before_token_difference": false,
+   "target_mask_equal_before_token_difference": true,
+   "first_token_target_selected": [
+    true,
+    true
+   ],
+   "first_emitted_tokens": [
+    3,
+    3
+   ],
+   "target_occupancy_fraction": [
+    0.25390625,
+    0.25390625
+   ],
+   "finish_equal": true
+  },
+  {
+   "prefix_uid": "493a45f5f89a7a370e6611d6265fe435d0736b475fa40f3cf7bee1e7e1baa8fc",
+   "seed": 1,
+   "tokens_equal": true,
+   "first_token_difference_index": null,
+   "first_unordered_topk_set_difference_index": 0,
+   "first_token_unordered_topk_equal": false,
+   "first_token_target_mask_equal": true,
+   "unordered_topk_equal_before_token_difference": false,
+   "target_mask_equal_before_token_difference": true,
+   "first_token_target_selected": [
+    true,
+    true
+   ],
+   "first_emitted_tokens": [
+    3,
+    3
+   ],
+   "target_occupancy_fraction": [
+    0.22265625,
+    0.22265625
+   ],
+   "finish_equal": true
+  },
+  {
+   "prefix_uid": "9b329e99adfeb9de9a0d7b835442af27d0f55270856fc0b3abbaf5b2df7035d6",
+   "seed": 0,
+   "tokens_equal": false,
+   "first_token_difference_index": 221,
+   "first_unordered_topk_set_difference_index": 0,
+   "first_token_unordered_topk_equal": false,
+   "first_token_target_mask_equal": true,
+   "unordered_topk_equal_before_token_difference": false,
+   "target_mask_equal_before_token_difference": false,
+   "first_token_target_selected": [
+    false,
+    false
+   ],
+   "first_emitted_tokens": [
+    21,
+    21
+   ],
+   "target_occupancy_fraction": [
+    0.0859375,
+    0.08984375
+   ],
+   "finish_equal": true
+  },
+  {
+   "prefix_uid": "9b329e99adfeb9de9a0d7b835442af27d0f55270856fc0b3abbaf5b2df7035d6",
+   "seed": 1,
+   "tokens_equal": false,
+   "first_token_difference_index": 161,
+   "first_unordered_topk_set_difference_index": 0,
+   "first_token_unordered_topk_equal": false,
+   "first_token_target_mask_equal": true,
+   "unordered_topk_equal_before_token_difference": false,
+   "target_mask_equal_before_token_difference": false,
+   "first_token_target_selected": [
+    false,
+    false
+   ],
+   "first_emitted_tokens": [
+    21,
+    21
+   ],
+   "target_occupancy_fraction": [
+    0.09375,
+    0.08984375
+   ],
+   "finish_equal": true
+  },
+  {
+   "prefix_uid": "e249c2d8f392ee93d0d51692bca58d670e4b4e291e9ec19bc7d48cdcb5f53326",
+   "seed": 0,
+   "tokens_equal": false,
+   "first_token_difference_index": 24,
+   "first_unordered_topk_set_difference_index": 0,
+   "first_token_unordered_topk_equal": false,
+   "first_token_target_mask_equal": true,
+   "unordered_topk_equal_before_token_difference": false,
+   "target_mask_equal_before_token_difference": true,
+   "first_token_target_selected": [
+    true,
+    true
+   ],
+   "first_emitted_tokens": [
+    39424,
+    39424
+   ],
+   "target_occupancy_fraction": [
+    0.13671875,
+    0.14453125
+   ],
+   "finish_equal": true
+  },
+  {
+   "prefix_uid": "e249c2d8f392ee93d0d51692bca58d670e4b4e291e9ec19bc7d48cdcb5f53326",
+   "seed": 1,
+   "tokens_equal": true,
+   "first_token_difference_index": null,
+   "first_unordered_topk_set_difference_index": 0,
+   "first_token_unordered_topk_equal": false,
+   "first_token_target_mask_equal": true,
+   "unordered_topk_equal_before_token_difference": false,
+   "target_mask_equal_before_token_difference": false,
+   "first_token_target_selected": [
+    true,
+    true
+   ],
+   "first_emitted_tokens": [
+    39424,
+    39424
+   ],
+   "target_occupancy_fraction": [
+    0.05859375,
+    0.0546875
+   ],
+   "finish_equal": true
+  }
+ ],
+ "mixed_pilot_pairs": [
+  {
+   "prefix_uid": "1cec33ea5a84a39769c021444958c5091e4c5ede3ab96ee0254c78f86a944121",
+   "seed": 0,
+   "tokens_equal": false,
+   "first_token_difference_index": 80,
+   "first_unordered_topk_set_difference_index": 0,
+   "first_token_unordered_topk_equal": false,
+   "first_token_target_mask_equal": true,
+   "unordered_topk_equal_before_token_difference": false,
+   "target_mask_equal_before_token_difference": true,
+   "first_token_target_selected": [
+    false,
+    false
+   ],
+   "first_emitted_tokens": [
+    348,
+    348
+   ],
+   "target_occupancy_fraction": [
+    0.23828125,
+    0.20703125
+   ],
+   "finish_equal": true
+  },
+  {
+   "prefix_uid": "1cec33ea5a84a39769c021444958c5091e4c5ede3ab96ee0254c78f86a944121",
+   "seed": 1,
+   "tokens_equal": false,
+   "first_token_difference_index": 255,
+   "first_unordered_topk_set_difference_index": 0,
+   "first_token_unordered_topk_equal": false,
+   "first_token_target_mask_equal": true,
+   "unordered_topk_equal_before_token_difference": false,
+   "target_mask_equal_before_token_difference": false,
+   "first_token_target_selected": [
+    false,
+    false
+   ],
+   "first_emitted_tokens": [
+    348,
+    348
+   ],
+   "target_occupancy_fraction": [
+    0.2421875,
+    0.23828125
+   ],
+   "finish_equal": true
+  },
+  {
+   "prefix_uid": "493a45f5f89a7a370e6611d6265fe435d0736b475fa40f3cf7bee1e7e1baa8fc",
+   "seed": 0,
+   "tokens_equal": false,
+   "first_token_difference_index": 106,
+   "first_unordered_topk_set_difference_index": 0,
+   "first_token_unordered_topk_equal": false,
+   "first_token_target_mask_equal": true,
+   "unordered_topk_equal_before_token_difference": false,
+   "target_mask_equal_before_token_difference": true,
+   "first_token_target_selected": [
+    true,
+    true
+   ],
+   "first_emitted_tokens": [
+    3,
+    3
+   ],
+   "target_occupancy_fraction": [
+    0.23828125,
+    0.265625
+   ],
+   "finish_equal": true
+  },
+  {
+   "prefix_uid": "493a45f5f89a7a370e6611d6265fe435d0736b475fa40f3cf7bee1e7e1baa8fc",
+   "seed": 1,
+   "tokens_equal": false,
+   "first_token_difference_index": 68,
+   "first_unordered_topk_set_difference_index": 0,
+   "first_token_unordered_topk_equal": false,
+   "first_token_target_mask_equal": true,
+   "unordered_topk_equal_before_token_difference": false,
+   "target_mask_equal_before_token_difference": true,
+   "first_token_target_selected": [
+    true,
+    true
+   ],
+   "first_emitted_tokens": [
+    3,
+    3
+   ],
+   "target_occupancy_fraction": [
+    0.22265625,
+    0.25390625
+   ],
+   "finish_equal": true
+  },
+  {
+   "prefix_uid": "9b329e99adfeb9de9a0d7b835442af27d0f55270856fc0b3abbaf5b2df7035d6",
+   "seed": 0,
+   "tokens_equal": true,
+   "first_token_difference_index": null,
+   "first_unordered_topk_set_difference_index": 0,
+   "first_token_unordered_topk_equal": false,
+   "first_token_target_mask_equal": true,
+   "unordered_topk_equal_before_token_difference": false,
+   "target_mask_equal_before_token_difference": true,
+   "first_token_target_selected": [
+    false,
+    false
+   ],
+   "first_emitted_tokens": [
+    21,
+    21
+   ],
+   "target_occupancy_fraction": [
+    0.0859375,
+    0.0859375
+   ],
+   "finish_equal": true
+  },
+  {
+   "prefix_uid": "9b329e99adfeb9de9a0d7b835442af27d0f55270856fc0b3abbaf5b2df7035d6",
+   "seed": 1,
+   "tokens_equal": false,
+   "first_token_difference_index": 161,
+   "first_unordered_topk_set_difference_index": 0,
+   "first_token_unordered_topk_equal": false,
+   "first_token_target_mask_equal": true,
+   "unordered_topk_equal_before_token_difference": false,
+   "target_mask_equal_before_token_difference": false,
+   "first_token_target_selected": [
+    false,
+    false
+   ],
+   "first_emitted_tokens": [
+    21,
+    21
+   ],
+   "target_occupancy_fraction": [
+    0.10546875,
+    0.08984375
+   ],
+   "finish_equal": true
+  },
+  {
+   "prefix_uid": "e249c2d8f392ee93d0d51692bca58d670e4b4e291e9ec19bc7d48cdcb5f53326",
+   "seed": 0,
+   "tokens_equal": true,
+   "first_token_difference_index": null,
+   "first_unordered_topk_set_difference_index": 0,
+   "first_token_unordered_topk_equal": false,
+   "first_token_target_mask_equal": true,
+   "unordered_topk_equal_before_token_difference": false,
+   "target_mask_equal_before_token_difference": false,
+   "first_token_target_selected": [
+    true,
+    true
+   ],
+   "first_emitted_tokens": [
+    39424,
+    39424
+   ],
+   "target_occupancy_fraction": [
+    0.140625,
+    0.14453125
+   ],
+   "finish_equal": true
+  },
+  {
+   "prefix_uid": "e249c2d8f392ee93d0d51692bca58d670e4b4e291e9ec19bc7d48cdcb5f53326",
+   "seed": 1,
+   "tokens_equal": true,
+   "first_token_difference_index": null,
+   "first_unordered_topk_set_difference_index": 1,
+   "first_token_unordered_topk_equal": true,
+   "first_token_target_mask_equal": true,
+   "unordered_topk_equal_before_token_difference": false,
+   "target_mask_equal_before_token_difference": false,
+   "first_token_target_selected": [
+    true,
+    true
+   ],
+   "first_emitted_tokens": [
+    39424,
+    39424
+   ],
+   "target_occupancy_fraction": [
+    0.05078125,
+    0.05859375
+   ],
+   "finish_equal": true
+  }
+ ],
+ "native_only_summary": {
+  "pairs": 8,
+  "tokens_equal": 4,
+  "first_token_unordered_topk_equal": 0,
+  "first_token_target_mask_equal": 8,
+  "unordered_topk_equal_before_token_difference": 0,
+  "target_mask_equal_before_token_difference": 3,
+  "first_token_difference_indices": [
+   null,
+   255,
+   null,
+   null,
+   221,
+   161,
+   24,
+   null
+  ],
+  "first_unordered_topk_set_difference_indices": [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0
+  ]
+ },
+ "mixed_pilot_summary": {
+  "pairs": 8,
+  "tokens_equal": 3,
+  "first_token_unordered_topk_equal": 1,
+  "first_token_target_mask_equal": 8,
+  "unordered_topk_equal_before_token_difference": 0,
+  "target_mask_equal_before_token_difference": 4,
+  "first_token_difference_indices": [
+   80,
+   255,
+   106,
+   68,
+   null,
+   161,
+   null,
+   null
+  ],
+  "first_unordered_topk_set_difference_indices": [
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   0,
+   1
+  ]
+ },
+ "interpretation": "small diagnostic comparison of same-prefix duplicates; does not by itself identify source of numerical variability",
+ "sha256": "52921d769820c703341c3d3823c62a22698264468006d89fc9166826e8560f19"
+}

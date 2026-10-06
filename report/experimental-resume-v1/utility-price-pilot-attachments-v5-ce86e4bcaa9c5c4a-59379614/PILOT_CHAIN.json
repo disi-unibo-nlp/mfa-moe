@@ -1,0 +1,12 @@
+{
+ "schema": "utility-runtime-pilot-chain-v4",
+ "proposal_sha256": "ce86e4bcaa9c5c4a12f9c9456f118662dccdb57ed355f952cabc9617a83152fa",
+ "manifest_sha256": "6b5aa286e46cb818969c939346f448a6577b307779041ec2d35d7fce0562f074",
+ "fresh_generation_dispatch_job": "59349585",
+ "pilot_manifest_sha256": "2bcf743e972b72d8cb0157ae9a3a37ffb73bf60062b9c4e938dd18a362a4cede",
+ "pilot_job": "59405556",
+ "accounting_job": "59405561",
+ "output": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/utility-price-pilot-v2-2bcf743e972b72d8",
+ "production_launched": false,
+ "sha256": "dbf99dbced2b7ad0314c0607dae7be7bd0558177ae2ccef68006192c1da81655"
+}

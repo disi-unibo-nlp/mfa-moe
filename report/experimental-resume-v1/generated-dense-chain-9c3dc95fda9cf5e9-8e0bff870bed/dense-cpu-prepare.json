@@ -1,0 +1,36 @@
+{
+ "schema": "overnight-submit-receipt-v1",
+ "name": "dense-cpu-prepare",
+ "binding": {
+  "schema": "generated-dense-chain-binding-v1",
+  "stage": "B",
+  "manifest_sha256": "9c3dc95fda9cf5e9ed03285529f0279d8da7796b3b9f42a4ac9a38b41ad746ab",
+  "generation_price_sha256": "a371d7d97671a49fc9df397595e6778fc4f44486897270c031a741660b23dfc3",
+  "measurement_plan_sha256": "bed369437075a26afd658db3b9c285ff3b2270b962beaabeb0f2513d53867a72",
+  "frame_price_dependency": {
+   "path": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/OVERNIGHT_AB_RECOVERY_CHAIN_v1.json",
+   "sha256": "31aeaccadd4a711fbc0de56a2c479aa025bf3f152e9576a797c237c4b29eb7df",
+   "job_id": "59344826"
+  },
+  "dense_directory": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/generated-dense/dense-generated-v1-9c3dc95fda9c-8e0bff870bed",
+  "chain_driver_sha256": "d5e948906783e107ddca37df1d7127818f299d39923b25b822ad601a9608f847",
+  "dispatcher_sha256": "b4492b353f8a88b1262720f8459b9a736040e0f95260be2d088da20608a171bb",
+  "shared_submit_sha256": "338a3efe19b13c39b08ba98f934e1cd38fbef3a6b834b30649b830b75c1ed672",
+  "wrappers": {
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/prepare_generated_dense_v1.sbatch": "eb09bb620d98abec7add955a0ae0340f55277e50c224deae5767d1299afb7013",
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/dispatch_generated_dense_v1.sbatch": "c0f3c3bc67782291cc4e8126f79c2e4a56064b511257ea01e9ed3b7175d085d7"
+  }
+ },
+ "arguments": [
+  "--dependency=afterok:59344826",
+  "--job-name=dense-B-prepare",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/prepare_generated_dense_v1.sbatch",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/OVERNIGHT_DISCOVERY_B_MANIFEST_v1.json",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/OVERNIGHT_DISCOVERY_B_PRICE_v1.json",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/overnight-routing-v1-9c3dc95fda9cf5e9",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/generated-dense"
+ ],
+ "job_id": "59345850",
+ "submission": "59345850",
+ "sha256": "069a8a29a56538082f8f31bfeb6fa8f9113e00b6855868a5ff5293bfd97ea656"
+}

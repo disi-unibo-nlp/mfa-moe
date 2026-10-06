@@ -1,0 +1,54 @@
+{
+ "schema": "r3d-obsolete-guard-chain-retirement-v1",
+ "status": "RETIRED_ZERO_CPU",
+ "reason": "sealed 1650-fit frozen result completed directly from verified merged checkpoints; queued continuation would be redundant",
+ "original_guard_submission_file_sha256": "e248b8c72ef9f4c0c3abfa855e45c6560b921ed2a3483a4383b9f857029e6b8e",
+ "merged_inventory_receipt_sha256": "7b1aac7c3d73d7c373857413ab653eeaf3a42d228359f26c52d695c5a9c881d3",
+ "finalization_receipt_sha256": "dacd348e1f73f0a17b709faf6eb906dbf77c2e6035210c8f35ff891370c1a094",
+ "frozen_result_sha256": "08f15228ae221bf69a4f7dd976909df5531db0e00ff8d6acdb97e8423140372e",
+ "cancelled_jobs": [
+  {
+   "job_id": "59115320",
+   "state": "CANCELLED by 133943",
+   "exit_code": "0:0",
+   "elapsed": "00:00:00",
+   "end": "2026-10-02T15:10:50"
+  },
+  {
+   "job_id": "59115408",
+   "state": "CANCELLED by 133943",
+   "exit_code": "0:0",
+   "elapsed": "00:00:00",
+   "end": "2026-10-02T15:10:50"
+  },
+  {
+   "job_id": "59115420",
+   "state": "CANCELLED by 133943",
+   "exit_code": "0:0",
+   "elapsed": "00:00:00",
+   "end": "2026-10-02T15:10:50"
+  },
+  {
+   "job_id": "59115433",
+   "state": "CANCELLED by 133943",
+   "exit_code": "0:0",
+   "elapsed": "00:00:00",
+   "end": "2026-10-02T15:10:50"
+  },
+  {
+   "job_id": "59115442",
+   "state": "CANCELLED by 133943",
+   "exit_code": "0:0",
+   "elapsed": "00:00:00",
+   "end": "2026-10-02T15:10:50"
+  },
+  {
+   "job_id": "59115443",
+   "state": "CANCELLED by 133943",
+   "exit_code": "0:0",
+   "elapsed": "00:00:00",
+   "end": "2026-10-02T15:10:50"
+  }
+ ],
+ "sha256": "e30033252128381998896acd48726f1351fa5b290fe9a5991c557dfacf5aa32b"
+}

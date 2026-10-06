@@ -1,0 +1,10 @@
+{
+ "schema": "native-finalization-readiness-v3",
+ "manifest_sha256": "d043f3f887beb7e18457ea8ae9130481f029b823873581c6f1a56128ee27be73",
+ "grade_preparation_sha256": "af051f9cee9a19cf99e015b1d351b640771819a78e7353830cb020158a40a041",
+ "price_sha256": "ac1b597fcd7e7f2150b8f53298ab40edf141e51b347bde39202d40497fadda1d",
+ "producer_job_id": "59418250",
+ "phase": "j1",
+ "status": "READY_FOR_NATIVE_LOGIN_DISPATCH",
+ "sha256": "64078a21a23e7a87ae40eac17d3ab0d1cf5a2248d63759f57ab5c516fda9abee"
+}

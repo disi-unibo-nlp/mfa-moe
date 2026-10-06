@@ -1,0 +1,18 @@
+{
+  "schema": "mechanism-extension-cpu-launch-amendment-v3",
+  "source_qualification_manifest_sha256": "7282cfffb75ebb53d7b4c58435b529036b2a140c490f79ab1486f8640fdbc13a",
+  "partition": "lrd_all_viz",
+  "gate_driver_sha256": "f13018fe52b83dd6c64ab595ec50551ade109c2939a01cdf36a278c1122f7890",
+  "launchers": {
+    "preflight": {
+      "path": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/preflight_mechanism_extension_reader_v3.sbatch",
+      "sha256": "fb16c2806bef1df1cb1302c6e25094145bf3988fd0fbf3b45befdd77dcc73051"
+    },
+    "seal": {
+      "path": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/seal_mechanism_extension_readers_v3.sbatch",
+      "sha256": "840fa4dac3d4d319fc383fccde0aa3af5b8de4d1fc5f3b1314e54b8a399a76ac"
+    }
+  },
+  "scope": "Partition-only launch amendment for authorized viz CPU queue. All v1/v2 scientific sources, wrapper bytes, manifests, output bindings and workload sizes remain sealed unchanged.",
+  "sha256": "a2cc5a73b8586bb33b5148b0917e4d50261f570a467821c4ea855f61aa8f1ff3"
+}

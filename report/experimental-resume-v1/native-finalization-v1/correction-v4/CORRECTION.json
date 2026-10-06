@@ -1,0 +1,24 @@
+{
+ "schema": "native-finalization-execution-correction-v4",
+ "parent_manifest_sha256": "02400561137e8ae86087c54f5ee685eb4cb71a40a953efb6c1827be7d93ef925",
+ "parent_index_sha256": "6f529da9c2dd5d55ceea95a6bcfe46c6711a6985466091ad090a5fa6447f401d",
+ "failed_generation_job": "59428024",
+ "parent_measurement_job": "59428026",
+ "failure": "Cross-execution route-equality criterion rejected identical token replay even between two uninstrumented native runs.",
+ "evidence": "Sealed ENGINEERING_REPLAY: all three 64-token outputs identical; native route slots differed by 2829 and instrumented by 3455. Both direct TP captures exactly match same-execution returned routes, with zero ID or weight disagreement between ranks.",
+ "correction": "Keep exact token replay, complete aligned same-execution native ID capture, normalized executed weights and TP rank agreement. Remove cross-run route equality, which native controls demonstrably fail. Preserve every replay array and report route variation.",
+ "affected_scientific_results": [],
+ "missing_original_assignments": 32,
+ "parent_accounting": {
+  "path": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/native-finalization-v1/correction-v3/CHECKPOINT-20261005T174726Z.json",
+  "sha256": "a46c99b65507736ce975ec856b0be15731433ea7642c8744efd558d423dc4c0d",
+  "billing_core_hours": 9.217222222222222,
+  "GPU_hours": 1.1144444444444446
+ },
+ "design": "Same first eight frozen families, seeds 0/1, two prompts, sampler, native routing and cap; corrected execution bindings are separate.",
+ "preserved_parent_directory": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/native-finalization-v1/correction-v3",
+ "automatic_downstream_experiments": false,
+ "parent_engineering_replay": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/native-finalization-v1/correction-v3/allocations/59428024/ENGINEERING_REPLAY.json",
+ "parent_engineering_replay_sha256": "3fc21b7968a7c4857a39049fea83176747291012ae9a037d3c59e5a254236193",
+ "sha256": "3086bc224b5dc0d9ce48a64e19498acd58e06b773d065a9f936b4ecf3f6443f8"
+}

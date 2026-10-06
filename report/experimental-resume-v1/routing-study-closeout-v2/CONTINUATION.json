@@ -1,0 +1,10 @@
+{
+ "schema": "routing-study-finite-continuation-v1",
+ "code_files": {
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/continue_routing_study_v1.py": "d7b6dc0d1b3fd7c2e615e54f243565971565869d5f2ae02234c7e504724cc27e"
+ },
+ "closeout_plan_sha256": "1df6c1de122cf9d3bd81ba8ac8a474b94445a78fe4849354bf8af126886ac200",
+ "native_operations_sha256": "8a3000cc60dfef0bb5872cc7615ceabc919a5bf67f2ffc43f02daf4c1732a946",
+ "scope": "One qualified native readiness dispatch per invocation, then at most one final two-CPU closeout checkpoint. Existing receipts are reused; no persistent process or expanded GPU workload.",
+ "sha256": "94e1d358184dfeb3a59e89c7641ed29820cb89f28d672d99cb0c2bb743c351dc"
+}

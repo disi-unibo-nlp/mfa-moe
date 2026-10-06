@@ -1,0 +1,216 @@
+{
+ "schema": "overnight-fresh-comparison-protocol-v1",
+ "dictionary_sha256": "144458193e294152f92703c854a11055fa49929cee0e85289d0cb4eb2ab0aef0",
+ "source": "MECHANISM_EXTENSION_220_FAMILY_FREEZE_v1.json",
+ "enrollment": "First primary two-reader accepted start per family and transition in frozen candidate order; no outcome-dependent replacement.",
+ "strict_veto": "Sensitivity on enrolled starts only; never changes primary enrollment.",
+ "arms_by_transition": {
+  "candidate_to_verify": [
+   "native",
+   "native_duplicate",
+   "bias",
+   "random_bias",
+   "repeat",
+   "random_repeat",
+   "force",
+   "random_force",
+   "reweight",
+   "random_reweight",
+   "expert189",
+   "random_expert189",
+   "expert9",
+   "random_expert9"
+  ],
+  "approach_to_commit": [
+   "native",
+   "native_duplicate",
+   "bias",
+   "random_bias",
+   "repeat",
+   "random_repeat",
+   "force",
+   "random_force",
+   "reweight",
+   "random_reweight"
+  ]
+ },
+ "primary_contrasts": [
+  {
+   "transition": "candidate_to_verify",
+   "a": "bias",
+   "b": "native"
+  },
+  {
+   "transition": "candidate_to_verify",
+   "a": "bias",
+   "b": "random_bias"
+  },
+  {
+   "transition": "candidate_to_verify",
+   "a": "force",
+   "b": "native"
+  },
+  {
+   "transition": "candidate_to_verify",
+   "a": "force",
+   "b": "random_force"
+  },
+  {
+   "transition": "candidate_to_verify",
+   "a": "reweight",
+   "b": "native"
+  },
+  {
+   "transition": "candidate_to_verify",
+   "a": "reweight",
+   "b": "random_reweight"
+  },
+  {
+   "transition": "candidate_to_verify",
+   "a": "force",
+   "b": "bias"
+  },
+  {
+   "transition": "candidate_to_verify",
+   "a": "reweight",
+   "b": "bias"
+  },
+  {
+   "transition": "candidate_to_verify",
+   "a": "repeat",
+   "b": "native"
+  },
+  {
+   "transition": "candidate_to_verify",
+   "a": "repeat",
+   "b": "random_repeat"
+  },
+  {
+   "transition": "candidate_to_verify",
+   "a": "repeat",
+   "b": "bias"
+  },
+  {
+   "transition": "candidate_to_verify",
+   "a": "expert189",
+   "b": "native"
+  },
+  {
+   "transition": "candidate_to_verify",
+   "a": "expert189",
+   "b": "random_expert189"
+  },
+  {
+   "transition": "candidate_to_verify",
+   "a": "expert9",
+   "b": "native"
+  },
+  {
+   "transition": "candidate_to_verify",
+   "a": "expert9",
+   "b": "random_expert9"
+  },
+  {
+   "transition": "candidate_to_verify",
+   "a": "bias",
+   "b": "expert189"
+  },
+  {
+   "transition": "candidate_to_verify",
+   "a": "bias",
+   "b": "expert9"
+  },
+  {
+   "transition": "approach_to_commit",
+   "a": "bias",
+   "b": "native"
+  },
+  {
+   "transition": "approach_to_commit",
+   "a": "bias",
+   "b": "random_bias"
+  },
+  {
+   "transition": "approach_to_commit",
+   "a": "force",
+   "b": "native"
+  },
+  {
+   "transition": "approach_to_commit",
+   "a": "force",
+   "b": "random_force"
+  },
+  {
+   "transition": "approach_to_commit",
+   "a": "reweight",
+   "b": "native"
+  },
+  {
+   "transition": "approach_to_commit",
+   "a": "reweight",
+   "b": "random_reweight"
+  },
+  {
+   "transition": "approach_to_commit",
+   "a": "force",
+   "b": "bias"
+  },
+  {
+   "transition": "approach_to_commit",
+   "a": "reweight",
+   "b": "bias"
+  },
+  {
+   "transition": "approach_to_commit",
+   "a": "repeat",
+   "b": "native"
+  },
+  {
+   "transition": "approach_to_commit",
+   "a": "repeat",
+   "b": "random_repeat"
+  },
+  {
+   "transition": "approach_to_commit",
+   "a": "repeat",
+   "b": "bias"
+  }
+ ],
+ "horizon": 1024,
+ "seeds": [
+  0,
+  1
+ ],
+ "pulse_width": 256,
+ "pulse_slots": {
+  "default": [
+   0
+  ],
+  "repeat": [
+   0,
+   512
+  ]
+ },
+ "operators": {
+  "bias": {
+   "sign": 1,
+   "magnitude": 1.0
+  },
+  "force": {
+   "sign": 1,
+   "magnitude": 0.0
+  },
+  "reweight": {
+   "sign": 1,
+   "magnitude": 1.0
+  }
+ },
+ "bootstrap_replicates": 50000,
+ "analysis_seed": 20261004,
+ "primary": "Both arm-blind semantic readers accept substantive target transition after trigger within1024tokens.",
+ "weighting": "Equal families within transition, averaging two assigned seeds.",
+ "simultaneous_family": "All28 primary contrasts,95percent Bonferroni family-clustered percentile intervals.",
+ "missing": "All assigned cells retained; two-reader-valid success primary; either-reader and missing bounds reported.",
+ "scope": "All three approaches compared prospectively; no winner selection from13-family screens. No accuracy or token-utility claim.",
+ "sha256": "2864678d94e44bb7d9d105ea8af780db36a4e9bdf6c60d458180f4f550f3c80f"
+}

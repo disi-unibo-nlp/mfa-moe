@@ -1,0 +1,42 @@
+{
+ "schema": "utility-completion-operational-recovery-v2",
+ "config_path": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/UTILITY_PRODUCTION_CONFIG_v1.json",
+ "config_sha256": "a5a6d77abd5ec32e2ee7cd01462da1dfc75919478dd91c7956e8207a3fbcd4b6",
+ "prior_root_sha256": "224bd47db4de8e8af60ce4ec6fa404bad47fe04f41629f6a458b9866ffced273",
+ "preserved_failures": {
+  "production-follow": {
+   "receipt_sha256": "76cea20b0293ef69cb5e55744d5d9773f342d63371bf53f017dce7e2921f78a3",
+   "verification_sha256": "7a597e06ca50761bcc59931c712a56c8f7ea1036ebeef931e0f467f10c8f0d94",
+   "job_id": "59351999",
+   "accounting": "59351999|FAILED|1:0|5\n"
+  },
+  "grading-follow": {
+   "receipt_sha256": "367cf173c8449c7bf854f4ef64650d4686f5d42d3993fc801f76db4606ea7d91",
+   "verification_sha256": "fc963f155de679a88d0308c3247063d6fdc0de9ebced60061f2edefa7ec7c247",
+   "job_id": "59352001",
+   "accounting": "59352001|CANCELLED|0:0|0\n"
+  },
+  "pilot-attach-analysis": {
+   "job_id": "59351478",
+   "accounting": "59351478|CANCELLED|0:0|0\n"
+  }
+ },
+ "pilot_attachment_dir": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/utility-price-pilot-attachments-v5-ce86e4bcaa9c5c4a-59379614",
+ "pilot_recovery_plan_path": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/utility-production-root-submissions-v2-a5a6d77abd5ec32e-59379614/PILOT_RECOVERY_PLAN.json",
+ "pilot_recovery_plan_sha256": "383f1a2d5c7d18e09be5a364a5fb285f9a19ab242ad508ae91d48a487b0154b6",
+ "production_chain_dir": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/utility-production-submissions-v1-a5a6d77abd5ec32e",
+ "native_saldo_path": "/cineca/bin/saldo",
+ "operational_code_files": {
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/submit_utility_completion_chain_v2.py": "d9bb9cf6189d753aa52f018b0dd419f39c049b5ea2e0c3bea7549f39043fcb1d",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/dispatch_utility_production_v2.py": "e595072c60cb0afe79f43b3159947e520b1d28dd0d1be3a2b3e664120461e069",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/dispatch_utility_production_v2.sbatch": "714fc13e4348b84ec8cc762e567f4e5408768469ae326677655b33a4887325c0",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/attach_utility_price_pilot_v5.py": "501701f4d1573bfc2c84d32baf7bd98812212e27fef30ebcdf8c1cfbeefb46d9",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/attach_utility_price_pilot_v5.sbatch": "ad8750b6373e0c6adecc27ba9cb67b72fc27b813a7fb275d1afb32b55619fbcd",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/run_utility_price_pilot_v5.sbatch": "223e1b8ed3c4ae3df23ebc4b532c01212a23de9b3388bd0b3e97afa2a021b8d4",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/fresh_frame_recovery_v1.py": "19dceced9aca5320540960bbf1987e8f1e57605cb1549a19e00a1e4d7985549f",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/select_utility_policy_fresh_adapter_v1.py": "11e7aefabb5dc56b3286550ea57a276aea296a27ec4c40cf9d1bf9b169ae38ac"
+ },
+ "grading_plan_sha256": "de108d8736ea5969d2e03260c2e4bb1a18064d59dfc0ee4cb0588d8e3d6e0313",
+ "scope": "Finite operational recovery, native PATH repair and restored exact predecessors. Every production phase retains live saldo, project queued commitments, frozen full pricing and bounded recovery checks. No cached account balance substitutes for a live check.",
+ "sha256": "83f59261f8fdbd244225b989d442f11106a646c0a02de4ca6a314fd5e9242bf0"
+}
