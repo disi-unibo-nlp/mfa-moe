@@ -1,0 +1,60 @@
+{
+  "arguments": [
+    "--model",
+    "gemma",
+    "--qualification",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/gemma/qualification/QUALIFICATION.json",
+    "--manifest",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/verification-study-v3/gemma/DISCOVERY_ASSIGNMENTS.json",
+    "--output",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/gemma/discovery",
+    "--root",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4",
+    "--begin",
+    "47",
+    "--count",
+    "1",
+    "--prices",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/gemma/prices-by-event/5ea3907bc87b26af33dbf34ed58e5d6be819e4625b6944fe4acfd22b40cb6285.json"
+  ],
+  "artifact": "gemma: complete original48-family native discovery receipts and all-layer capture for audit and nomination",
+  "claim": "C2: qualify substantive-verification support and nominate a frozen singleton for this required model",
+  "decision_if_failure": "retain all committed assignments; reconcile exact failed identity and bounded attempts; report unsupported or imprecise cells, never a causal null",
+  "finite_assignments": 1,
+  "measurement_pilot": false,
+  "missing_cell": "gemma remaining discovery family support; no audit freeze or target qualification from the single pilot",
+  "model": "gemma",
+  "orchestration_file_sha256": "cd78185a2dec3e8bdba8b0346acbed0fd47a68dd508a5b45216bf203ee7dc237",
+  "population": "discovery",
+  "prerequisites": [
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/gemma/qualification/QUALIFICATION.json",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/health/events/5ea3907bc87b26af33dbf34ed58e5d6be819e4625b6944fe4acfd22b40cb6285.json"
+  ],
+  "price_event_sha256": "d805d67541a44dff3a9727ef6d94b10f02995ab7f7a75e3ccbb4d31571d5ad7f",
+  "price_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/gemma/prices-by-event/5ea3907bc87b26af33dbf34ed58e5d6be819e4625b6944fe4acfd22b40cb6285.json",
+  "priced_work": {
+    "capture": 13.060183339976087,
+    "closeout": 13.060183339976087,
+    "generation": 32768,
+    "generator_load": 2,
+    "prefill": 2
+  },
+  "resources": {
+    "billing_core_hours_max": 40.53333333333333,
+    "cpus": 16,
+    "gpus": 2,
+    "memory_gb": 120,
+    "partition": "boost_usr_prod",
+    "price_basis": "actual source-compatible role maxima; every assignment cap16384, one full capped retry and second load, cap-scaled capture/closeout,1.25 factor plus600seconds",
+    "qos": "normal",
+    "walltime_seconds": 9120
+  },
+  "reuse": "retained first discovery assignment, frozen original48 manifest and source-qualified native executor",
+  "schema": "verification-task-request-v3",
+  "selected_uids": [
+    "dd1f4a1d2097f9f0f0ab7d277b3a519477063bf3ee2512e3811fd3678d4c1700"
+  ],
+  "sha256": "808ed35588f140a09c1f1d3b382ce01a9da4111d07f0860bfdfa36d6a7f8e298",
+  "stage": "run",
+  "storage_bound_bytes": 161513472
+}

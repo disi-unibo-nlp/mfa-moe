@@ -1,0 +1,11 @@
+{
+  "campaign_sha256": "4360749a06639b8cf13581a7f4b252e7d6f3a1525ea649815ecf441d79ae0539",
+  "canonical_build": "FAILED_MISSING_INSTALLED_DEPENDENCY",
+  "canonical_manuscript": "paper/6a510c6db0d9b08aa438c142/main.tex",
+  "content_preview": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/verification-paper-build-20261007/verification_preview.pdf",
+  "content_preview_sha256": "4715acf264549ea0df56d9c7eeb90409011af05537e8ae67d83757e8db65a5a4",
+  "missing_dependency": "xstring.sty",
+  "new_section_content_build": "PASS",
+  "schema": "verification-paper-build-v3",
+  "sha256": "924eff91e67b610a33853c781d888b935e9ed53ed9c860c042636effaf51f395"
+}

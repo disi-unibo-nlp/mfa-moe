@@ -1,0 +1,47 @@
+{
+  "attention": "TRITON_ATTN",
+  "checkpoint": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4",
+  "config_files": {
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/cache/hf/hub/models--nvidia--NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4/snapshots/bee7596271d1495f6992ae224aefde4410e816b8/config.json": "f1d98b530846087dc08b574a219713a94f945bf6583dc7230a19ebf1e8c50933",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/cache/hf/hub/models--nvidia--NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4/snapshots/bee7596271d1495f6992ae224aefde4410e816b8/model.safetensors.index.json": "3c3bc7efa8d658c2e909a0b9020eb0f72064e6647de348856af4dee9895bead9",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/cache/hf/hub/models--nvidia--NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4/snapshots/bee7596271d1495f6992ae224aefde4410e816b8/tokenizer.json": "623c34567aebb18582765289fbe23d901c62704d6518d71866e0e58db892b5b7",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/cache/hf/hub/models--nvidia--NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4/snapshots/bee7596271d1495f6992ae224aefde4410e816b8/tokenizer_config.json": "10f93eabcb9b1602fbb991d6308e787ce1df28ee9cd7a1c6d1e8c3f338b957bc"
+  },
+  "engine_changes": [
+    "single request",
+    "eager",
+    "no prefix cache",
+    "no speculation"
+  ],
+  "expected_routed_layers": 23,
+  "experts": 128,
+  "extra_args": [
+    "--linear-backend",
+    "marlin",
+    "--mamba-backend",
+    "triton",
+    "--mamba-cache-mode",
+    "align"
+  ],
+  "family": "nemotron_h",
+  "key": "nemotron",
+  "language_model_only": false,
+  "local_path": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/cache/hf/hub/models--nvidia--NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4/snapshots/bee7596271d1495f6992ae224aefde4410e816b8",
+  "native_context_limit": 133120,
+  "native_k": 6,
+  "reasoning_effort": null,
+  "reasoning_parser": "nemotron_v3",
+  "revision": "bee7596271d1495f6992ae224aefde4410e816b8",
+  "routed_layer_map": "BOUND_BY_WORKER_QUALIFICATION",
+  "sampler": {
+    "temperature": 1.0,
+    "top_k": 0,
+    "top_p": 0.95
+  },
+  "schema": "verification-model-v3",
+  "sha256": "89cb599f2b0fef3798fded3910073b9df186971574e61179c509fe2660d0b3ba",
+  "shared_paths": "NATIVE_UNCHANGED",
+  "speculation": "DISABLED_FOR_TIMING_QUALIFICATION",
+  "template_kwargs": {},
+  "weight_semantics": "native dispatched weights; do not assume unit mass"
+}

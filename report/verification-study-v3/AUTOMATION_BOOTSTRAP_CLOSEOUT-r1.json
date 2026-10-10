@@ -1,0 +1,38 @@
+{
+  "accounting": "59649876|COMPLETED|0:0|24|billing=4,cpu=4,gres/tmpfs=10737418240,mem=24G,node=1\n59649876.batch|COMPLETED|0:0|24|cpu=4,gres/tmpfs=10737418240,mem=24G,node=1\n59649876.extern|COMPLETED|0:0|24|billing=4,cpu=4,gres/tmpfs=10737418240,mem=24G,node=1\n59649876.0|COMPLETED|0:0|22|cpu=4,gres/tmpfs=10737418240,mem=24G,node=1\n59649882|CANCELLED|0:0|0|\n59649891|PENDING|0:0|0|\n",
+  "all_seven_states": {
+    "gemma": "WAITING",
+    "glm": "WAITING",
+    "gpt": "WAITING",
+    "nemotron": "WAITING",
+    "qwen330b": "WAITING",
+    "qwen35": "WAITING",
+    "qwen36": "WAITING"
+  },
+  "campaign_sha256": "57df4a026a7be4c909ece85ac1ebe3dc47c3f27bb53ffcab88e3aa9d82bfbb3b",
+  "cancelled_unused_rescue_job_id": "59649882",
+  "controller_job_id": "59649876",
+  "discovery_saved_assignments": {
+    "gemma": 2,
+    "glm": 1,
+    "gpt": 10,
+    "nemotron": 1,
+    "qwen330b": 3,
+    "qwen35": 1,
+    "qwen36": 1
+  },
+  "errors": [],
+  "handoff_sha256": "f7d3df4a3764c82cebd5141487e9147699c6641a4becb39212bd9ea8d8f64c83",
+  "observed_epoch": 1791406755.9662411,
+  "paper_provenance_sha256": "25297110f6cd36aee8749af83b3579469e15719aafa9e332eee76731c8722425",
+  "readiness_sha256": "910ab57c385fe1f9213dc79fe3afec4fb58bd3e2bcaeb74dd600945ac1958796",
+  "rescue_sha256": "47789a47a89d8e36e7d1b4bffea160756e9b14d50e504a1596f4a5a8d6242ddd",
+  "result_sha256": "21a1108fa2fa923becc8903c3b3a816b4cfbc8a91ce6eaa8d621c5d8ff1b46f3",
+  "schema": "verification-automation-bootstrap-closeout-v3",
+  "science_pending": 30,
+  "science_running": 0,
+  "scientific_effects": "NOT_INFERRED_FROM_CONTROLLER_COMPLETION",
+  "sha256": "f98ebb00c5ae00b8387f7e6192879988ebcd2856f08a4b2d47ba0581f08a047a",
+  "successor_job_id": "59649891",
+  "successor_read_back": "JobId=59649891 JobName=cv3-auto-successor\n   UserId=lmolfett(133943) GroupId=interactive(25200) MCS_label=N/A\n   Priority=133571 Nice=0 Account=iscrc_miosr QOS=normal\n   JobState=PENDING Reason=Dependency Dependency=afterany:59645451(unfulfilled)?afterany:59645471(unfulfilled)?afterany:59645487(unfulfilled)?afterany:59645497(unfulfilled)?afterany:59645552(unfulfilled)?afterany:59645569(unfulfilled)?afterany:59645573(unfulfilled)?afterany:59645578(unfulfilled)?afterany:59645583(unfulfilled)?afterany:59645611(unfulfilled)?afterany:59645749(unfulfilled)?afterany:59645754(unfulfilled)?afterany:59645758(unfulfilled)?afterany:59645762(unfulfilled)?afterany:59645776(unfulfilled)?afterany:59645796(unfulfilled)?afterany:59645801(unfulfilled)?afterany:59645811(unfulfilled)?afterany:59645829(unfulfilled)?afterany:59645831(unfulfilled)?afterany:59645840(unfulfilled)?afterany:59645852(unfulfilled)?afterany:59645874(unfulfilled)?afterany:59645879(unfulfilled)?afterany:59645889(unfulfilled)?afterany:59645901(unfulfilled)?afterany:59645905(unfulfilled)?afterany:59645907(unfulfilled)?afterany:59645910(unfulfilled)?afterany:59645920(unfulfilled)\n   Requeue=0 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0\n   RunTime=00:00:00 TimeLimit=04:00:00 TimeMin=N/A\n   SubmitTime=2026-10-07T22:54:55 EligibleTime=Unknown\n   AccrueTime=Unknown\n   StartTime=Unknown EndTime=Unknown Deadline=N/A\n   SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-10-07T22:54:55 Scheduler=Main\n   Partition=lrd_all_serial AllocNode:Sid=login08-net99-3:1005569\n   ReqNodeList=(null) ExcNodeList=(null)\n   NodeList=\n   NumNodes=1-1 NumCPUs=4 NumTasks=1 CPUs/Task=4 ReqB:S:C:T=0:0:*:*\n   ReqTRES=cpu=4,mem=24G,node=1,billing=4,gres/tmpfs=10737418240\n   AllocTRES=(null)\n   Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=*\n   MinCPUsNode=4 MinMemoryNode=24G MinTmpDiskNode=0\n   Features=(null) DelayBoot=00:00:00\n   OverSubscribe=OK Contiguous=0 Licenses=(null) LicensesAlloc=(null) Network=(null)\n   Command=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/verification_study_v3_autodriver_r1.sbatch\n   WorkDir=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo\n   Comment=cv3auto:558fc1e22a2c910098ddd67c795a10e5ca22699d89b802224c2a88179c0f8a57 \n   StdErr=/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/automation/logs/cv3-auto-successor-59649891.err\n   StdIn=/dev/null\n   StdOut=/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/automation/logs/cv3-auto-successor-59649891.out\n   TresPerNode=gres/tmpfs:10g\n   TresPerTask=cpu=4\n   \n\n"
+}

@@ -1,0 +1,116 @@
+{
+  "actual_allocated_billing_core_hours": 16.07111111111111,
+  "new_result_root": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4",
+  "observed_epoch": 1791381252.0392745,
+  "partial_engineering_receipts": {
+    "gemma": [],
+    "glm": [],
+    "gpt": [
+      {
+        "assignment_uid": "51131ba5c96fe486e83b867d09f089f1c42b3ab31fb22535920c1b84282b8ed2",
+        "path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007/gpt/qualification/fixtures/51131ba5c96fe486e83b867d09f089f1c42b3ab31fb22535920c1b84282b8ed2.json",
+        "sha256": "17355083c06f9ebdf9b940710dbf9884ba27e93ea72b3f5124db795ba2208d11"
+      },
+      {
+        "assignment_uid": "572a8bad4b32eb8a8a0d6ea6692806d8dfd7cdd9c6f1222822b4136812687751",
+        "path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007/gpt/qualification/fixtures/572a8bad4b32eb8a8a0d6ea6692806d8dfd7cdd9c6f1222822b4136812687751.json",
+        "sha256": "edd4d71a853e483fec86d5d612ffe57b0bad826eb8bfff3a6c92f5e64a96c333"
+      },
+      {
+        "assignment_uid": "6a8ba30fb36531da4e5869630a6f82eac474a76dc7427a0b75a4125ad90e47d7",
+        "path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007/gpt/qualification/fixtures/6a8ba30fb36531da4e5869630a6f82eac474a76dc7427a0b75a4125ad90e47d7.json",
+        "sha256": "a04edcbd7c079b700af0d6a2906df3c78696b71cb059bf348db6141abb5e5759"
+      },
+      {
+        "assignment_uid": "7788b9a6ca4426cb45e2136df277c4de521bb78bed18fdc036665c0ebed9fdd5",
+        "path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007/gpt/qualification/fixtures/7788b9a6ca4426cb45e2136df277c4de521bb78bed18fdc036665c0ebed9fdd5.json",
+        "sha256": "62ed889eb8ed8827dcaaaa4c7ab59c678c1b38b8307a5016093ad45471874bb6"
+      },
+      {
+        "assignment_uid": "83d85736d7d2f91470c4f7c69c6ce9160259ecbe983884005ff1148d2bbad6d6",
+        "path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007/gpt/qualification/fixtures/83d85736d7d2f91470c4f7c69c6ce9160259ecbe983884005ff1148d2bbad6d6.json",
+        "sha256": "3b0734928b0f365ac1a99d81e3d194bd5d3c8a0943b6ca10265ca86f23ba1f1b"
+      },
+      {
+        "assignment_uid": "b2edba805159bcfec1b26736530f78ed4c0fd1b98bee1997740dba638b3fd004",
+        "path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007/gpt/qualification/fixtures/b2edba805159bcfec1b26736530f78ed4c0fd1b98bee1997740dba638b3fd004.json",
+        "sha256": "ef21f4308edbc332e9a906e87533988bff6ebdd30abe2b94deb6922e1dd6cc0e"
+      }
+    ],
+    "nemotron": [
+      {
+        "assignment_uid": "15dbd8797a7d8accafd966dfecb438499c7034cb669313ae04ed9b1813a000bc",
+        "path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007/nemotron/qualification/fixtures/15dbd8797a7d8accafd966dfecb438499c7034cb669313ae04ed9b1813a000bc.json",
+        "sha256": "4fd3799cbde799abde579b02103959a993eb44d620c03a4cf81b4ff627ae9b44"
+      },
+      {
+        "assignment_uid": "4e772c0497584b77b1158395027f7c24871cea946bae36f7fee88138563e3c44",
+        "path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007/nemotron/qualification/fixtures/4e772c0497584b77b1158395027f7c24871cea946bae36f7fee88138563e3c44.json",
+        "sha256": "f6aa65b21ccde4189a8c3aeae4fe835d931467dafcccf6d57363e5b05e18e134"
+      },
+      {
+        "assignment_uid": "75b358969fe29bc258331aeb7cda7c50083d9c0723fef2d22525b340db04f8e4",
+        "path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007/nemotron/qualification/fixtures/75b358969fe29bc258331aeb7cda7c50083d9c0723fef2d22525b340db04f8e4.json",
+        "sha256": "641c4d9a828388a204743f3400f3121c7f2dc38ec64d02a98a7413881a6cd1e2"
+      },
+      {
+        "assignment_uid": "7e1b941d18d48403c8c634ba876d36a166dcc01e2f2d5c5227e652078a6ae6db",
+        "path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007/nemotron/qualification/fixtures/7e1b941d18d48403c8c634ba876d36a166dcc01e2f2d5c5227e652078a6ae6db.json",
+        "sha256": "09793a20963f8b0ae798a9a6d83a4cacf69a6e6a3fffe7f01638ac900b415266"
+      },
+      {
+        "assignment_uid": "8b0d832e4595e17b24a806375d9c3d572996aaaec9b4a27e71413716f347ff4d",
+        "path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007/nemotron/qualification/fixtures/8b0d832e4595e17b24a806375d9c3d572996aaaec9b4a27e71413716f347ff4d.json",
+        "sha256": "8f8ed4109a4d4a1b9a399cdbc6cfd6a9a884d36722d8fbc9f448b40cc2ba80f5"
+      },
+      {
+        "assignment_uid": "c9f447af58e9d975314b15b0bda303e90fd81857d704e01b1df4af17cec2aba1",
+        "path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007/nemotron/qualification/fixtures/c9f447af58e9d975314b15b0bda303e90fd81857d704e01b1df4af17cec2aba1.json",
+        "sha256": "dddcb0961dc06ac17706ddbe805937b569f03c4f14111295a9d7fb4ec6b3cb49"
+      }
+    ],
+    "qwen330b": [],
+    "qwen35": [
+      {
+        "assignment_uid": "0e16bafa9993e87b0d9717d5e6fa1faea48064f2ed69e36515f5812b6e81cc99",
+        "path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007/qwen35/qualification/fixtures/0e16bafa9993e87b0d9717d5e6fa1faea48064f2ed69e36515f5812b6e81cc99.json",
+        "sha256": "c7f345db1e8f1dd2f93ee18c0124917d8b21227fe9bb0499410573281c1d082f"
+      },
+      {
+        "assignment_uid": "923c3af28fa29b6d607ce3d9c59e686caa7b1417cc2d245f47024ef9ce6ffc9f",
+        "path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007/qwen35/qualification/fixtures/923c3af28fa29b6d607ce3d9c59e686caa7b1417cc2d245f47024ef9ce6ffc9f.json",
+        "sha256": "10ea1ed93f219b99847ea7b1bffba7f842819b635971e6dca67279278f7387cb"
+      },
+      {
+        "assignment_uid": "95efe8b781b1f5cbc3421a49f70b6a1296dcd13f27dc38cc792367824171d91d",
+        "path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007/qwen35/qualification/fixtures/95efe8b781b1f5cbc3421a49f70b6a1296dcd13f27dc38cc792367824171d91d.json",
+        "sha256": "e8d005948c8ac471f64bda3b40cb39b8cf003836f12744330aba00d4be895104"
+      },
+      {
+        "assignment_uid": "c73e18782c424594b7018e723107ca1f3414900f2c4e6a9130bb93e98483146f",
+        "path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007/qwen35/qualification/fixtures/c73e18782c424594b7018e723107ca1f3414900f2c4e6a9130bb93e98483146f.json",
+        "sha256": "97ed3eb46690de21b6f6e641f6ac0f2ae56ac5ee2a8aad01960019a6e0daebd7"
+      },
+      {
+        "assignment_uid": "f0d6d6ff8f976b2f4d65494f8c202d2b294425e17d47d1f33db8e46f7c148074",
+        "path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007/qwen35/qualification/fixtures/f0d6d6ff8f976b2f4d65494f8c202d2b294425e17d47d1f33db8e46f7c148074.json",
+        "sha256": "d8b4a94fea431ae59e74b303aea2d51619d799c82bd688ae3839c1cd91b1bdac"
+      },
+      {
+        "assignment_uid": "f23f6f3903b6308dd663411c6df7c62df60c91f35482c6a4dcdf98598d76f914",
+        "path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007/qwen35/qualification/fixtures/f23f6f3903b6308dd663411c6df7c62df60c91f35482c6a4dcdf98598d76f914.json",
+        "sha256": "d7593675e47845aac1eed71f8efdb3414ac59b5ebac89d221d64841cc5b2c5b3"
+      }
+    ],
+    "qwen36": []
+  },
+  "preserved_result_root": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007",
+  "previous_campaign_sha256": "5012688f04d24db00879118588236c6f1b94d8c636e05a773b7d223697b6bf83",
+  "queue": "",
+  "repair": "Reject invalid raw singleton action locally before sampler/RPC; bind generation receipts and joins to executor source",
+  "schema": "verification-source-repair-reconciliation-v3",
+  "scientific_results": "NONE",
+  "scope_change": "none; seven models, nomination, controls, semantic and utility definitions unchanged",
+  "sha256": "2ea14fcec11b65899f3781219c561dc712266708d430d06f4c7cf0c5ccfb51d1",
+  "terminal_accounting": "59617866|CANCELLED by 133943|1289|16|billing=16,cpu=16,gres/gpu=2,mem=120G,node=1\n59617866.batch|CANCELLED|1291|16|cpu=16,gres/gpu=2,mem=120G,node=1\n59617866.extern|COMPLETED|1292|16|billing=16,cpu=16,gres/gpu=2,mem=120G,node=1\n59617866.0|CANCELLED|1285|16|cpu=16,gres/gpu=2,mem=120G,node=1\n59617867|CANCELLED by 133943|1189|16|billing=16,cpu=16,gres/gpu=2,mem=120G,node=1\n59617867.batch|CANCELLED|1191|16|cpu=16,gres/gpu=2,mem=120G,node=1\n59617867.extern|COMPLETED|1192|16|billing=16,cpu=16,gres/gpu=2,mem=120G,node=1\n59617867.0|CANCELLED|1187|16|cpu=16,gres/gpu=2,mem=120G,node=1\n59617868|CANCELLED by 133943|1138|16|billing=16,cpu=16,gres/gpu=2,mem=120G,node=1\n59617868.batch|CANCELLED|1140|16|cpu=16,gres/gpu=2,mem=120G,node=1\n59617868.extern|COMPLETED|1141|16|billing=16,cpu=16,gres/gpu=2,mem=120G,node=1\n59617868.0|CANCELLED|1135|16|cpu=16,gres/gpu=2,mem=120G,node=1\n59617869|CANCELLED by 133943|0|0|\n59617871|CANCELLED by 133943|0|0|\n59617872|CANCELLED by 133943|0|0|\n59617875|CANCELLED by 133943|0|0|\n59617879|CANCELLED by 133943|0|0|"
+}

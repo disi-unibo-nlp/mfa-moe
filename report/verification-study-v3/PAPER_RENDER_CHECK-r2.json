@@ -1,0 +1,13 @@
+{
+  "new_scientific_effect": "NOT_MEASURED",
+  "paper_build_receipt_sha256": "11fded0b7b013144c7be4a207d5c16a32440974e3579cf1c047e36aa5df58200",
+  "pdf_sha256": "08ed95c7651fb4e548952539a65094fc035d80b84a261d3ac367212e6a88b164",
+  "rendered_pages": {
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/verification-paper-full-build-20261008-r8/verification-page-35.png": "6cbb33f990119b187ea820b5863b4374cbb45b4d50601915efe0b141710ea262",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/verification-paper-full-build-20261008-r8/verification-page-36.png": "8d3d55167b702b4e7b9555624d40093a7142841e2f090bfb6fce5f5bb4d855db",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/verification-paper-full-build-20261008-r8/verification-page-37.png": "a468b2b25128d01f0afaf21c2b5a457896fc53bfe2bda82132a44f4e31c0fbb3"
+  },
+  "schema": "verification-paper-render-check-v3",
+  "sha256": "89277de5869154d99f49d4c468432e4e62cd8086670e857124840098cbac2b8d",
+  "visual_inspection": "PASS: amendment method and both seven-model tables fit without clipped content on pages35–37"
+}

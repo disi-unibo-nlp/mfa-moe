@@ -1,0 +1,156 @@
+{
+  "accounting": {
+    "59645829": {
+      "account": "iscrc_miosr",
+      "allocated_cpus": 16,
+      "elapsed_seconds": 23574,
+      "exit_code": "0:0",
+      "partition": "boost_usr_prod",
+      "state": "COMPLETED"
+    },
+    "59681915": {
+      "account": "iscrc_miosr",
+      "allocated_cpus": 4,
+      "elapsed_seconds": 80,
+      "exit_code": "0:0",
+      "partition": "lrd_all_serial",
+      "state": "COMPLETED"
+    },
+    "59681933": {
+      "account": "iscrc_miosr",
+      "allocated_cpus": 0,
+      "elapsed_seconds": 0,
+      "exit_code": "0:0",
+      "partition": "lrd_all_serial",
+      "state": "CANCELLED"
+    },
+    "59682005": {
+      "account": "iscrc_miosr",
+      "allocated_cpus": 0,
+      "elapsed_seconds": 0,
+      "exit_code": "0:0",
+      "partition": "lrd_all_serial",
+      "state": "CANCELLED"
+    }
+  },
+  "actual_allocated_core_hours": 104.77333333333333,
+  "archive_bindings": {
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/qwen35/discovery/064919fe15c0eb042797d7982cee7ede6c2be5ead75beacd7bf2c98344f9a81b.npz": "a70a35e9bdc27ac5c76c18ba8663d834f3ab9f167184f80139cb19d964418550",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/qwen35/discovery/1afc9e9bb1eb34686404ae10d86c76296a0687aacafd852b06db9020a4c51324.npz": "5b832997bd7425027165a22bea3636dd90ffcccd999280b5ff0495a1291ba346",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/qwen35/discovery/1dbc64ba2cd33986c629883cf914d974e099b4220e7f79cd0b6aacbf79e3f001.npz": "554982e792364c0ea72d38de5abb780c15c03c5ae8900871dbbb4187bc9eb682",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/qwen35/discovery/4df9c02bfbfd83b050ad0f1e6e339c1c3753ae1fcb5b1e9046507009770c8cd8.npz": "753015b19682420802b03590a2224ea2a3c691656a034a347e5d398ac19a51f9",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/qwen35/discovery/5c9c732c36a8cb639785bd8ecbdc6687a0e90d5f88fe75f252a5a04ffee586bc.npz": "23b0c7abc2981e71a70eff9ec2d339a0aaa527654bc904261695418e0e082ab8",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/qwen35/discovery/7dadcff5f898d9e19bc4042395f0ac52bca41702d4857879f56a99e41ec22ff2.npz": "26555cd1dca8b49313d0a19bba625efaaf1f56d46f138a2bb293136606f7b49e",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/qwen35/discovery/812a790e8ef36f2c2780072510bee772409677a7a9b4cb7c3aacba53128c4aa3.npz": "d082042abf4709e18d14989e00395afd832ab965f01a6fcaf2935685e9c9a945",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/qwen35/discovery/8a78f0b0ebf39a25f2911d0795bf2eb4b546ad445930dff0d0cd5cf65e3c4f2c.npz": "fbcfd6c0b8419471a4c662ec6b455cf9ab74ef615d62f36a9891523f641cfe15",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/qwen35/discovery/94eae7b851bcbcab33642535867b664b327b05522254a83cf7720732f5e1caa7.npz": "90751be86b29f889d5b5eda93ab185e3085c3aa84b0085d701e253567ca4af1b",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/qwen35/discovery/a32d8a05c2691807b0672fb735b5577f1478d75ee3bb97e57f9db631b42224c4.npz": "6015b42f80d10514639f5f3efdb27fd558dab8bb98f6529acef687688dbc0d7c",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/qwen35/discovery/a9097453213719005eb50c0823e32cdfb99609c6a8c61defc490585e10a83a67.npz": "fdf0c94346b00cb792c6a43d5b5a35cba4da39f40cec066f4beac8635a924048",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/qwen35/discovery/b0ea4c8c2a0100bd222c7b90f5668989b9f487e85469d32671d61288e41c7c1a.npz": "fe194f11e3c885a8a17112535d33891d6c9d13749a626fb03bd690d2d6294f4e",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/qwen35/discovery/b5eef81ff50ed5789a82cf59582c89f50d9fb9471276b824c740deb4bceab7ba.npz": "38f477ef8aea06906c69758f66018d9d4872a2d4ac803b548f94cecdf55a53fe",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/qwen35/discovery/ba3a497179dffd5580e6faea931c8423855da089c8f0c686495d068f43debb53.npz": "10d2a1fd346e02ae9ea824a065abcfee0ce498e6f9477920f8a7064761f4ce68",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/qwen35/discovery/c473380c01afc4b43718f3886e80d6c66ed19416d398a7fd585ad246248adbfe.npz": "23277ebb1e3ee9d12e38ebaf266ebd53a056c576b5cd21e4934480ec1ff30c74",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/qwen35/discovery/c79df3dfbb5db21eb881bb038193dcb7441a12cd1bc4b3129f0ce8fd3bed1df9.npz": "ec735f477000f2ecb62a629da2bdecd71673204cd0c77d15007a145dc4ef4b71",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/qwen35/discovery/c9a2fcd7140787d24551e4769049047572462fe5bee544c0e2d0f6727d13be50.npz": "fe9afb695668ea4dccdec4a83fed8c3cae18c5f93e76c66245d0354ae382f5b5",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/qwen35/discovery/cdaf85937c3b764517d527fdb4f30c36862b461286c9623a0470968a0e9e4c8f.npz": "b112ad76c6fc6b977671e63fe1c8c7754cde81266dbf6c60693cb43ac662af73",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/qwen35/discovery/d3d4fdc347f732ba500200095d305456d7b2aa3f0d36af27dea4152b2e62589e.npz": "0ee4d7a4081e4ac00210ec8dcc5a69265fafef7841b2f96d0fbd7359851c59a1",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/qwen35/discovery/dcf0bee054dbb6534e2b6526c777c486be62ddf746126b09c81da82929ed006c.npz": "65dc1ac2ed49e08b784a53b2bec8063bcde07a6ac4e79c62cb93edffa69cec34",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/qwen35/discovery/fd303266721cba8cdeb998ca86b0290acb1ce25ccff3a23460bcfef383345744.npz": "cffa581a5baac244ced09c3db72472d095e60dff53e19f7729f82e10712f461f",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/qwen35/discovery/ff63d700a16216c4b3c177a974030bcac1c5c0e5dc2edc8831507d8ce9e937e3.npz": "551ce510344285f8719eea00b76c0762d7da26fbe148b43fefa46f091c78de58"
+  },
+  "archive_bytes": 672227630,
+  "archive_integrity_recheck_seconds": 3.489379738923162,
+  "campaign_sha256": "57df4a026a7be4c909ece85ac1ebe3dc47c3f27bb53ffcab88e3aa9d82bfbb3b",
+  "causal_effect": "NOT_MEASURED",
+  "controller_handoff_sha256": "10dee3324d57628b0d35cf845578c6ddc8b71d25b81e8ecf24f71c87ab66f812",
+  "controller_result_sha256": "2e8b598603bb7045f5ac0c78951b3e5580e4309084c4385234d6d708af69a623",
+  "finish_reasons": {
+    "length": 10,
+    "stop": 12
+  },
+  "generated_tokens": 245066,
+  "job_card_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/submissions/a81f34d656995ad4029165475ddcb04af5eda1e016fc9cba58af52ea34646d39/JOB_CARD.json",
+  "job_card_sha256": "a81f34d656995ad4029165475ddcb04af5eda1e016fc9cba58af52ea34646d39",
+  "job_id": "59645829",
+  "manual_scientific_submissions": 0,
+  "model": "qwen35",
+  "new_inference_draws": 0,
+  "operational_readiness_files_verified": 29,
+  "original_begin": 26,
+  "original_count": 22,
+  "original_manifest_sha256": "ec424ee604f2130a86d8557b94fa4611b76b89596e775492fbc017c23efed7d2",
+  "protected_successor": {
+    "59683287": {
+      "dependency": "afterany:59645811?afterany:59645840?afterany:59645901",
+      "prearm_sha256": "e208135456da777b0e418cb824fc2598c1edcbd5f05c16a71ffc33078d2ecc51",
+      "queue": {
+        "account": "iscrc_miosr",
+        "comment": "cv3auto:d001b5c6bd81cb1612a843ef28a6d66a27c07eb8e8e502ee8e6ee9077eb3e04a",
+        "name": "cv3-auto-r4-successor",
+        "partition": "lrd_all_serial",
+        "reason": "(Dependency)",
+        "state": "PENDING"
+      },
+      "release_sha256": "cc958b986d19bab504fe7e9ec1df4cc09574f35422b107df984d65092568daa6"
+    },
+    "59683289": {
+      "dependency": "afternotok:59683287",
+      "prearm_sha256": "57b410cd3b1dfff5161ad0beea1887cbacd6849f2abc4315e676fd00399a2b3e",
+      "queue": {
+        "account": "iscrc_miosr",
+        "comment": "cv3auto:2708774df621e7b62a09ae9878a21a3362cc7720b3f45b0ed60e4e7a14a3ca30",
+        "name": "cv3-auto-r4-rescue",
+        "partition": "lrd_all_serial",
+        "reason": "(Dependency)",
+        "state": "PENDING"
+      },
+      "release_sha256": "3920e5b67a8fb16cbbed1bb7a53e026817f58b255376e1971cf843d085701468"
+    },
+    "59683292": {
+      "dependency": "afternotok:59683289:59683287",
+      "prearm_sha256": "ce5ba8c3876018ce73024a1d8fb5b1aea243e1b8a00ac563f0a8d9f093474913",
+      "queue": {
+        "account": "iscrc_miosr",
+        "comment": "cv3auto:db2a9dcc8735e2054a886c1b47278d631b9199934214dc4a78a56c5fcb4e209d",
+        "name": "cv3-auto-r4-rescue",
+        "partition": "lrd_all_serial",
+        "reason": "(Dependency)",
+        "state": "PENDING"
+      },
+      "release_sha256": "d23741d851877abc7bc5bef8f35d8635ad70b8e0d450be3580ec463e30bea443"
+    }
+  },
+  "receipt_bindings": {
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/qwen35/discovery/064919fe15c0eb042797d7982cee7ede6c2be5ead75beacd7bf2c98344f9a81b.json": "5c85aa14270cc0ccab2213915c60c9d21da75cd90b8882fb308a2f1d37c35faf",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/qwen35/discovery/1afc9e9bb1eb34686404ae10d86c76296a0687aacafd852b06db9020a4c51324.json": "04ed98af5d2d74a7792b45e058ce923c43469d27d74c74ed8d8a1f0411d0464f",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/qwen35/discovery/1dbc64ba2cd33986c629883cf914d974e099b4220e7f79cd0b6aacbf79e3f001.json": "94195664fe41376b99f1a16330aa8618547fffa8587d366aca967e489fb80071",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/qwen35/discovery/4df9c02bfbfd83b050ad0f1e6e339c1c3753ae1fcb5b1e9046507009770c8cd8.json": "c5e89db63859ec9035e425500f71eb7cf3084274ac465cafaba7028114969209",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/qwen35/discovery/5c9c732c36a8cb639785bd8ecbdc6687a0e90d5f88fe75f252a5a04ffee586bc.json": "b57205ed85902595d1fc1ed1fa3ccac1ec5d44ae217ea9acb3d3a8b988da8088",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/qwen35/discovery/7dadcff5f898d9e19bc4042395f0ac52bca41702d4857879f56a99e41ec22ff2.json": "e1a6a7f045723697a9c88d4de8a96abd1c4929ff1c82679ae24f3f6f0856cdb0",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/qwen35/discovery/812a790e8ef36f2c2780072510bee772409677a7a9b4cb7c3aacba53128c4aa3.json": "5f174e20caa159f0134aabfa2c537d2949cab7ca4fdf236859912fe2c405646c",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/qwen35/discovery/8a78f0b0ebf39a25f2911d0795bf2eb4b546ad445930dff0d0cd5cf65e3c4f2c.json": "301caa6b4c5f08968d756870bac46e8d0a26e3d9faf75dc1e473c60d359919e7",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/qwen35/discovery/94eae7b851bcbcab33642535867b664b327b05522254a83cf7720732f5e1caa7.json": "02616eafaa19fffd4de409c19c98ec941b7555e9bc9a131ca935143c22ef6b8a",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/qwen35/discovery/a32d8a05c2691807b0672fb735b5577f1478d75ee3bb97e57f9db631b42224c4.json": "a2147728fa06800a3b791c0abfec361fd1b2f9bab39145598cbef82b6c483706",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/qwen35/discovery/a9097453213719005eb50c0823e32cdfb99609c6a8c61defc490585e10a83a67.json": "868190142ebf7cb9ab380257d000663814ccb94d59253778da1ef4d160d3c40d",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/qwen35/discovery/b0ea4c8c2a0100bd222c7b90f5668989b9f487e85469d32671d61288e41c7c1a.json": "382bc0c82a569b6dec92cef0c9e81b03d7a6769a66570b8ec96990cfcc1e7c00",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/qwen35/discovery/b5eef81ff50ed5789a82cf59582c89f50d9fb9471276b824c740deb4bceab7ba.json": "3ce473281fe9d6bb0012728c34cd9dac11c5da02afc78b36493072313ac21444",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/qwen35/discovery/ba3a497179dffd5580e6faea931c8423855da089c8f0c686495d068f43debb53.json": "8142358e47932914e370cca8e150afbcc762b643eae0bd79c16a9f58cbfdb773",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/qwen35/discovery/c473380c01afc4b43718f3886e80d6c66ed19416d398a7fd585ad246248adbfe.json": "01af12ff93c5916f3d813ad794660e147208263f289035874f1fa63c6b16fe4f",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/qwen35/discovery/c79df3dfbb5db21eb881bb038193dcb7441a12cd1bc4b3129f0ce8fd3bed1df9.json": "bc9ab6915890e998ee46e373676e24f1ad10af4497e87e00942c2064ffce7a41",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/qwen35/discovery/c9a2fcd7140787d24551e4769049047572462fe5bee544c0e2d0f6727d13be50.json": "c016e24b75ebd48a16c0c167b6be0a2e4c1c20271e98080612317c7b60f6ad79",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/qwen35/discovery/cdaf85937c3b764517d527fdb4f30c36862b461286c9623a0470968a0e9e4c8f.json": "0427d846f87a2e5e806df8863da37ad9d05daf4ff82fbdd78b32be3e5da263aa",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/qwen35/discovery/d3d4fdc347f732ba500200095d305456d7b2aa3f0d36af27dea4152b2e62589e.json": "308d8767eeb355a7f94a2b03804dc02affd83b45b8cd8cb318981cd69860299f",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/qwen35/discovery/dcf0bee054dbb6534e2b6526c777c486be62ddf746126b09c81da82929ed006c.json": "3e6717b58a61c98800d9a5a6675af2daa2ca1bb3172f02afe4acf2477f6fde96",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/qwen35/discovery/fd303266721cba8cdeb998ca86b0290acb1ce25ccff3a23460bcfef383345744.json": "1d0af88f68d7c673577c5414fd1e415bb06c204dddc15aae6660ab49e0f0507f",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/qwen35/discovery/ff63d700a16216c4b3c177a974030bcac1c5c0e5dc2edc8831507d8ce9e937e3.json": "fb1e08ee18adf60a1093f78fb692ce77eae0174039098776c0527b07914eee18"
+  },
+  "recognition": "NOT_MEASURED",
+  "schema": "verification-discovery-slice-closeout-v3",
+  "scientific_files_verified": 35,
+  "scientific_status": "PARTIAL_MODEL_DISCOVERY; full48-source audit remains gated",
+  "sha256": "83e24b05243584d249ee7256399cd57e5c6ed1f9752096ae1f77c8659905006d",
+  "submission_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/submissions/a81f34d656995ad4029165475ddcb04af5eda1e016fc9cba58af52ea34646d39/SUBMISSION.json",
+  "submission_sha256": "7fef47a4e0e7e587b8c40899096789c976cc8afdccded64ec892fbf400372166",
+  "successor_job_id": "59683287",
+  "utility": "NOT_MEASURED"
+}

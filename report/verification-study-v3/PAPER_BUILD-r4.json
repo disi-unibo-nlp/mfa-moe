@@ -1,0 +1,17 @@
+{
+  "campaign_sha256": "57df4a026a7be4c909ece85ac1ebe3dc47c3f27bb53ffcab88e3aa9d82bfbb3b",
+  "content_preview": "PASS; 2 pages; observed all-seven backend PASS table; not journal-formatted",
+  "full_journal_build": "previous observed missing xstring.sty; class preserved; no new full-class build claim",
+  "new_scientific_effect": "NOT_MEASURED",
+  "preview_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/verification-paper-build-20261007/verification_preview.pdf",
+  "preview_sha256": "abaf84236281cc79f4e684aa7c0c7d0576f6377929dc2d18767af86b0e994f41",
+  "schema": "verification-paper-build-v3",
+  "sha256": "7dd4ce20c8c18060d2e65304c88d093ec5cce61456772f2c1afbceab163b9cd2",
+  "source_files": {
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/paper/6a510c6db0d9b08aa438c142/generated/seven_model_evidence.tex": "e50f5f174d3818d9369cc3e81b78bbcfeba8c245e91821c6391ab6cb0684ece4",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/paper/6a510c6db0d9b08aa438c142/generated/verification_results.tex": "7a3a7cc2774bad4732235bd94099ac7bb80526f578e2105d1a667b968acf86f8",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/paper/6a510c6db0d9b08aa438c142/generated/verification_status.tex": "8497ee7088780e4b856891a2c09a7c8a066138d5add0f4110ca7fe133d47ec6d",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/paper/6a510c6db0d9b08aa438c142/main.tex": "1749644b37a7daed48b4e02407b16c9b6e6d1deb42e352f61bee0fcdf62adaf4",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/paper/6a510c6db0d9b08aa438c142/verification_study.tex": "c61b28882671ef7d6fccc07cd870970d0ebf69d2eaed97e740cc363fa9a0a8dc"
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "after_accounting": "59400762|CANCELLED by 133943|0:0\n59400764|CANCELLED by 133943|0:0\n59400766|CANCELLED by 133943|0:0\n59405556|CANCELLED by 133943|0:0\n59405561|CANCELLED by 133943|0:0\n59405635|CANCELLED by 133943|0:0",
+  "after_queue": "",
+  "artifact_deletion": false,
+  "job_ids": [
+    "59400762",
+    "59400764",
+    "59405556",
+    "59400766",
+    "59405561",
+    "59405635"
+  ],
+  "schema": "verification-queue-reconciliation-receipt-v3",
+  "scientific_results_superseded": false,
+  "sha256": "472da53d34c97e9adbc09bff5f066f3b883e5c7602b256b5c03070a0e978ddb6"
+}

@@ -1,0 +1,106 @@
+{
+  "campaign_sha256": "57df4a026a7be4c909ece85ac1ebe3dc47c3f27bb53ffcab88e3aa9d82bfbb3b",
+  "jobs": [
+    {
+      "current_queue": "59626370|PENDING|cv3-qualify-gpt|(Priority)",
+      "gpus": 2,
+      "job_card_sha256": "d07f62780558ac2baf41560180f457c3e1756c0fc803fb7b2be01f41383c4d22",
+      "job_id": "59626370",
+      "model": "gpt",
+      "observed_job": "JobId=59626370 JobName=cv3-qualify-gpt\n   UserId=lmolfett(133943) GroupId=interactive(25200) MCS_label=N/A\n   Priority=133385 Nice=0 Account=iscrc_miosr QOS=normal\n   JobState=PENDING Reason=Priority Dependency=(null)\n   Requeue=0 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0\n   RunTime=00:00:00 TimeLimit=02:00:00 TimeMin=N/A\n   SubmitTime=2026-10-07T15:56:00 EligibleTime=2026-10-07T15:56:00\n   AccrueTime=Unknown\n   StartTime=Unknown EndTime=Unknown Deadline=N/A\n   SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-10-07T15:56:00 Scheduler=Main\n   Partition=boost_usr_prod AllocNode:Sid=login05-interconnect-1:1285409\n   ReqNodeList=(null) ExcNodeList=(null)\n   NodeList=\n   NumNodes=1-1 NumCPUs=16 NumTasks=1 CPUs/Task=16 ReqB:S:C:T=0:0:*:*\n   ReqTRES=cpu=16,mem=120G,node=1,billing=16,gres/gpu=2\n   AllocTRES=(null)\n   Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=*\n   MinCPUsNode=16 MinMemoryNode=120G MinTmpDiskNode=0\n   Features=(null) DelayBoot=00:00:00\n   OverSubscribe=OK Contiguous=0 Licenses=(null) LicensesAlloc=(null) Network=(null)\n   Command=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/verification_study_v3_gpu.sbatch\n   WorkDir=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo\n   Comment=cv3:d07f62780558ac2baf41560180f457c3e1756c0fc803fb7b2be01f41383c4d22 \n   StdErr=/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/logs/cv3-qualify-gpt-59626370.err\n   StdIn=/dev/null\n   StdOut=/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/logs/cv3-qualify-gpt-59626370.out\n   TresPerNode=gres/gpu:2\n   TresPerTask=cpu=16",
+      "receipt_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/submissions/d07f62780558ac2baf41560180f457c3e1756c0fc803fb7b2be01f41383c4d22/SUBMISSION.json",
+      "stage": "qualify",
+      "submission_sha256": "32ab91f7eb0c7ba23eae2bad4b8cf57a5767cb40c1e713cfdcfc4c06c66b493e",
+      "walltime_seconds": 7200
+    },
+    {
+      "current_queue": "59626374|PENDING|cv3-qualify-nemotron|(Priority)",
+      "gpus": 2,
+      "job_card_sha256": "6b846e73469304bff888a83e0cb1e8419a95b0a16b7ae5757c6f0486ef1ddd8e",
+      "job_id": "59626374",
+      "model": "nemotron",
+      "observed_job": "JobId=59626374 JobName=cv3-qualify-nemotron\n   UserId=lmolfett(133943) GroupId=interactive(25200) MCS_label=N/A\n   Priority=133385 Nice=0 Account=iscrc_miosr QOS=normal\n   JobState=PENDING Reason=Priority Dependency=(null)\n   Requeue=0 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0\n   RunTime=00:00:00 TimeLimit=02:00:00 TimeMin=N/A\n   SubmitTime=2026-10-07T15:56:04 EligibleTime=2026-10-07T15:56:04\n   AccrueTime=Unknown\n   StartTime=Unknown EndTime=Unknown Deadline=N/A\n   SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-10-07T15:56:04 Scheduler=Main\n   Partition=boost_usr_prod AllocNode:Sid=login05-interconnect-1:1285409\n   ReqNodeList=(null) ExcNodeList=(null)\n   NodeList=\n   NumNodes=1-1 NumCPUs=16 NumTasks=1 CPUs/Task=16 ReqB:S:C:T=0:0:*:*\n   ReqTRES=cpu=16,mem=120G,node=1,billing=16,gres/gpu=2\n   AllocTRES=(null)\n   Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=*\n   MinCPUsNode=16 MinMemoryNode=120G MinTmpDiskNode=0\n   Features=(null) DelayBoot=00:00:00\n   OverSubscribe=OK Contiguous=0 Licenses=(null) LicensesAlloc=(null) Network=(null)\n   Command=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/verification_study_v3_gpu.sbatch\n   WorkDir=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo\n   Comment=cv3:6b846e73469304bff888a83e0cb1e8419a95b0a16b7ae5757c6f0486ef1ddd8e \n   StdErr=/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/logs/cv3-qualify-nemotron-59626374.err\n   StdIn=/dev/null\n   StdOut=/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/logs/cv3-qualify-nemotron-59626374.out\n   TresPerNode=gres/gpu:2\n   TresPerTask=cpu=16",
+      "receipt_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/submissions/6b846e73469304bff888a83e0cb1e8419a95b0a16b7ae5757c6f0486ef1ddd8e/SUBMISSION.json",
+      "stage": "qualify",
+      "submission_sha256": "3588d939a1b3cf522179e004c4ddb7cabacc338debb166ed27bd58dd1fac995c",
+      "walltime_seconds": 7200
+    },
+    {
+      "current_queue": "59626375|PENDING|cv3-qualify-qwen35|(Priority)",
+      "gpus": 2,
+      "job_card_sha256": "98d86a2cd35fa9523bb2c78fc1db0efa9985f7c0e10d31fae1b478826a959e21",
+      "job_id": "59626375",
+      "model": "qwen35",
+      "observed_job": "JobId=59626375 JobName=cv3-qualify-qwen35\n   UserId=lmolfett(133943) GroupId=interactive(25200) MCS_label=N/A\n   Priority=133385 Nice=0 Account=iscrc_miosr QOS=normal\n   JobState=PENDING Reason=Priority Dependency=(null)\n   Requeue=0 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0\n   RunTime=00:00:00 TimeLimit=02:00:00 TimeMin=N/A\n   SubmitTime=2026-10-07T15:56:07 EligibleTime=2026-10-07T15:56:07\n   AccrueTime=Unknown\n   StartTime=Unknown EndTime=Unknown Deadline=N/A\n   SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-10-07T15:56:07 Scheduler=Main\n   Partition=boost_usr_prod AllocNode:Sid=login05-interconnect-1:1285409\n   ReqNodeList=(null) ExcNodeList=(null)\n   NodeList=\n   NumNodes=1-1 NumCPUs=16 NumTasks=1 CPUs/Task=16 ReqB:S:C:T=0:0:*:*\n   ReqTRES=cpu=16,mem=120G,node=1,billing=16,gres/gpu=2\n   AllocTRES=(null)\n   Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=*\n   MinCPUsNode=16 MinMemoryNode=120G MinTmpDiskNode=0\n   Features=(null) DelayBoot=00:00:00\n   OverSubscribe=OK Contiguous=0 Licenses=(null) LicensesAlloc=(null) Network=(null)\n   Command=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/verification_study_v3_gpu.sbatch\n   WorkDir=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo\n   Comment=cv3:98d86a2cd35fa9523bb2c78fc1db0efa9985f7c0e10d31fae1b478826a959e21 \n   StdErr=/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/logs/cv3-qualify-qwen35-59626375.err\n   StdIn=/dev/null\n   StdOut=/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/logs/cv3-qualify-qwen35-59626375.out\n   TresPerNode=gres/gpu:2\n   TresPerTask=cpu=16",
+      "receipt_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/submissions/98d86a2cd35fa9523bb2c78fc1db0efa9985f7c0e10d31fae1b478826a959e21/SUBMISSION.json",
+      "stage": "qualify",
+      "submission_sha256": "8912695c2510ca70063b91e1bde991ee5aedf76efef6bc152cfb38588d84d168",
+      "walltime_seconds": 7200
+    },
+    {
+      "current_queue": "59626376|PENDING|cv3-qualify-qwen36|(Priority)",
+      "gpus": 2,
+      "job_card_sha256": "42a6344de7a42bbdad8c2288f81f44eb4762fa59c6b6b4ff186a7ac4cf8a628f",
+      "job_id": "59626376",
+      "model": "qwen36",
+      "observed_job": "JobId=59626376 JobName=cv3-qualify-qwen36\n   UserId=lmolfett(133943) GroupId=interactive(25200) MCS_label=N/A\n   Priority=133385 Nice=0 Account=iscrc_miosr QOS=normal\n   JobState=PENDING Reason=Priority Dependency=(null)\n   Requeue=0 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0\n   RunTime=00:00:00 TimeLimit=02:00:00 TimeMin=N/A\n   SubmitTime=2026-10-07T15:56:10 EligibleTime=2026-10-07T15:56:10\n   AccrueTime=Unknown\n   StartTime=Unknown EndTime=Unknown Deadline=N/A\n   SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-10-07T15:56:10 Scheduler=Main\n   Partition=boost_usr_prod AllocNode:Sid=login05-interconnect-1:1285409\n   ReqNodeList=(null) ExcNodeList=(null)\n   NodeList=\n   NumNodes=1-1 NumCPUs=16 NumTasks=1 CPUs/Task=16 ReqB:S:C:T=0:0:*:*\n   ReqTRES=cpu=16,mem=120G,node=1,billing=16,gres/gpu=2\n   AllocTRES=(null)\n   Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=*\n   MinCPUsNode=16 MinMemoryNode=120G MinTmpDiskNode=0\n   Features=(null) DelayBoot=00:00:00\n   OverSubscribe=OK Contiguous=0 Licenses=(null) LicensesAlloc=(null) Network=(null)\n   Command=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/verification_study_v3_gpu.sbatch\n   WorkDir=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo\n   Comment=cv3:42a6344de7a42bbdad8c2288f81f44eb4762fa59c6b6b4ff186a7ac4cf8a628f \n   StdErr=/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/logs/cv3-qualify-qwen36-59626376.err\n   StdIn=/dev/null\n   StdOut=/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/logs/cv3-qualify-qwen36-59626376.out\n   TresPerNode=gres/gpu:2\n   TresPerTask=cpu=16",
+      "receipt_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/submissions/42a6344de7a42bbdad8c2288f81f44eb4762fa59c6b6b4ff186a7ac4cf8a628f/SUBMISSION.json",
+      "stage": "qualify",
+      "submission_sha256": "52d7072445eb7919d5694de33d7fe130125fb6a398715d7df5daa7b1600903f6",
+      "walltime_seconds": 7200
+    },
+    {
+      "current_queue": "59626378|PENDING|cv3-qualify-gemma|(Priority)",
+      "gpus": 2,
+      "job_card_sha256": "28edbf4544da501c8f97308ab0e8323cd8cb7aa2e401cf3da024eda3ed1e4ac5",
+      "job_id": "59626378",
+      "model": "gemma",
+      "observed_job": "JobId=59626378 JobName=cv3-qualify-gemma\n   UserId=lmolfett(133943) GroupId=interactive(25200) MCS_label=N/A\n   Priority=133385 Nice=0 Account=iscrc_miosr QOS=normal\n   JobState=PENDING Reason=Priority Dependency=(null)\n   Requeue=0 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0\n   RunTime=00:00:00 TimeLimit=02:00:00 TimeMin=N/A\n   SubmitTime=2026-10-07T15:56:14 EligibleTime=2026-10-07T15:56:14\n   AccrueTime=Unknown\n   StartTime=Unknown EndTime=Unknown Deadline=N/A\n   SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-10-07T15:56:14 Scheduler=Main\n   Partition=boost_usr_prod AllocNode:Sid=login05-interconnect-1:1285409\n   ReqNodeList=(null) ExcNodeList=(null)\n   NodeList=\n   NumNodes=1-1 NumCPUs=16 NumTasks=1 CPUs/Task=16 ReqB:S:C:T=0:0:*:*\n   ReqTRES=cpu=16,mem=120G,node=1,billing=16,gres/gpu=2\n   AllocTRES=(null)\n   Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=*\n   MinCPUsNode=16 MinMemoryNode=120G MinTmpDiskNode=0\n   Features=(null) DelayBoot=00:00:00\n   OverSubscribe=OK Contiguous=0 Licenses=(null) LicensesAlloc=(null) Network=(null)\n   Command=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/verification_study_v3_gpu.sbatch\n   WorkDir=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo\n   Comment=cv3:28edbf4544da501c8f97308ab0e8323cd8cb7aa2e401cf3da024eda3ed1e4ac5 \n   StdErr=/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/logs/cv3-qualify-gemma-59626378.err\n   StdIn=/dev/null\n   StdOut=/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/logs/cv3-qualify-gemma-59626378.out\n   TresPerNode=gres/gpu:2\n   TresPerTask=cpu=16",
+      "receipt_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/submissions/28edbf4544da501c8f97308ab0e8323cd8cb7aa2e401cf3da024eda3ed1e4ac5/SUBMISSION.json",
+      "stage": "qualify",
+      "submission_sha256": "7f92b8954b15b3cd8a0e14c6964d3c80fde84f4c7d473c92ed2a1e00d04393c3",
+      "walltime_seconds": 7200
+    },
+    {
+      "current_queue": "59626381|PENDING|cv3-qualify-glm|(Priority)",
+      "gpus": 2,
+      "job_card_sha256": "7ed5864c2a82934296d021c04b65a6beb10cc08282b7430c8772c2ec733cad10",
+      "job_id": "59626381",
+      "model": "glm",
+      "observed_job": "JobId=59626381 JobName=cv3-qualify-glm\n   UserId=lmolfett(133943) GroupId=interactive(25200) MCS_label=N/A\n   Priority=133385 Nice=0 Account=iscrc_miosr QOS=normal\n   JobState=PENDING Reason=Priority Dependency=(null)\n   Requeue=0 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0\n   RunTime=00:00:00 TimeLimit=02:00:00 TimeMin=N/A\n   SubmitTime=2026-10-07T15:56:19 EligibleTime=2026-10-07T15:56:19\n   AccrueTime=Unknown\n   StartTime=Unknown EndTime=Unknown Deadline=N/A\n   SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-10-07T15:56:19 Scheduler=Main\n   Partition=boost_usr_prod AllocNode:Sid=login05-interconnect-1:1285409\n   ReqNodeList=(null) ExcNodeList=(null)\n   NodeList=\n   NumNodes=1-1 NumCPUs=16 NumTasks=1 CPUs/Task=16 ReqB:S:C:T=0:0:*:*\n   ReqTRES=cpu=16,mem=120G,node=1,billing=16,gres/gpu=2\n   AllocTRES=(null)\n   Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=*\n   MinCPUsNode=16 MinMemoryNode=120G MinTmpDiskNode=0\n   Features=(null) DelayBoot=00:00:00\n   OverSubscribe=OK Contiguous=0 Licenses=(null) LicensesAlloc=(null) Network=(null)\n   Command=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/verification_study_v3_gpu.sbatch\n   WorkDir=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo\n   Comment=cv3:7ed5864c2a82934296d021c04b65a6beb10cc08282b7430c8772c2ec733cad10 \n   StdErr=/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/logs/cv3-qualify-glm-59626381.err\n   StdIn=/dev/null\n   StdOut=/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/logs/cv3-qualify-glm-59626381.out\n   TresPerNode=gres/gpu:2\n   TresPerTask=cpu=16",
+      "receipt_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/submissions/7ed5864c2a82934296d021c04b65a6beb10cc08282b7430c8772c2ec733cad10/SUBMISSION.json",
+      "stage": "qualify",
+      "submission_sha256": "0622981c4ffb204219835dbe1019e22e5e84bf03e63f0d0a1b35729f05704126",
+      "walltime_seconds": 7200
+    },
+    {
+      "current_queue": "59626414|PENDING|cv3-qualify-qwen330b|(Priority)",
+      "gpus": 2,
+      "job_card_sha256": "2918d2ca8f0e2f66d29c1ec5cfd8add4760190c8ae4a73fb14556ab41cf10b9b",
+      "job_id": "59626414",
+      "model": "qwen330b",
+      "observed_job": "JobId=59626414 JobName=cv3-qualify-qwen330b\n   UserId=lmolfett(133943) GroupId=interactive(25200) MCS_label=N/A\n   Priority=133385 Nice=0 Account=iscrc_miosr QOS=normal\n   JobState=PENDING Reason=Priority Dependency=(null)\n   Requeue=0 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0\n   RunTime=00:00:00 TimeLimit=02:00:00 TimeMin=N/A\n   SubmitTime=2026-10-07T15:56:34 EligibleTime=2026-10-07T15:56:34\n   AccrueTime=2026-10-07T15:56:34\n   StartTime=Unknown EndTime=Unknown Deadline=N/A\n   SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-10-07T15:56:34 Scheduler=Main\n   Partition=boost_usr_prod AllocNode:Sid=login05-interconnect-1:1285409\n   ReqNodeList=(null) ExcNodeList=(null)\n   NodeList=\n   NumNodes=1-1 NumCPUs=16 NumTasks=1 CPUs/Task=16 ReqB:S:C:T=0:0:*:*\n   ReqTRES=cpu=16,mem=120G,node=1,billing=16,gres/gpu=2\n   AllocTRES=(null)\n   Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=*\n   MinCPUsNode=16 MinMemoryNode=120G MinTmpDiskNode=0\n   Features=(null) DelayBoot=00:00:00\n   OverSubscribe=OK Contiguous=0 Licenses=(null) LicensesAlloc=(null) Network=(null)\n   Command=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/verification_study_v3_gpu.sbatch\n   WorkDir=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo\n   Comment=cv3:2918d2ca8f0e2f66d29c1ec5cfd8add4760190c8ae4a73fb14556ab41cf10b9b \n   StdErr=/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/logs/cv3-qualify-qwen330b-59626414.err\n   StdIn=/dev/null\n   StdOut=/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/logs/cv3-qualify-qwen330b-59626414.out\n   TresPerNode=gres/gpu:2\n   TresPerTask=cpu=16",
+      "receipt_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/submissions/2918d2ca8f0e2f66d29c1ec5cfd8add4760190c8ae4a73fb14556ab41cf10b9b/SUBMISSION.json",
+      "stage": "qualify",
+      "submission_sha256": "b4d19ff2005371435bb7cc6a65fa85d32289c36b8678e071907d5acf56205676",
+      "walltime_seconds": 7200
+    },
+    {
+      "current_queue": "59626428|PENDING|cv3-evidence-all-seven|(Dependency)",
+      "gpus": 0,
+      "job_card_sha256": "351a50c0fc7b073ebf34049a49e0f2edf6b6f752c8044a4b7c8dcbb58d59ae54",
+      "job_id": "59626428",
+      "model": "all-seven",
+      "observed_job": "JobId=59626428 JobName=cv3-evidence-all-seven\n   UserId=lmolfett(133943) GroupId=interactive(25200) MCS_label=N/A\n   Priority=133434 Nice=0 Account=iscrc_miosr QOS=normal\n   JobState=PENDING Reason=Dependency Dependency=afterany:59626370(unfulfilled),afterany:59626374(unfulfilled),afterany:59626375(unfulfilled),afterany:59626376(unfulfilled),afterany:59626378(unfulfilled),afterany:59626381(unfulfilled),afterany:59626414(unfulfilled)\n   Requeue=0 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0\n   RunTime=00:00:00 TimeLimit=00:30:00 TimeMin=N/A\n   SubmitTime=2026-10-07T15:56:40 EligibleTime=Unknown\n   AccrueTime=Unknown\n   StartTime=Unknown EndTime=Unknown Deadline=N/A\n   SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-10-07T15:56:40 Scheduler=Main\n   Partition=lrd_all_serial AllocNode:Sid=login05-interconnect-1:1285409\n   ReqNodeList=(null) ExcNodeList=(null)\n   NodeList=\n   NumNodes=1-1 NumCPUs=4 NumTasks=1 CPUs/Task=4 ReqB:S:C:T=0:0:*:*\n   ReqTRES=cpu=4,mem=24G,node=1,billing=4,gres/tmpfs=10737418240\n   AllocTRES=(null)\n   Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=*\n   MinCPUsNode=4 MinMemoryNode=24G MinTmpDiskNode=0\n   Features=(null) DelayBoot=00:00:00\n   OverSubscribe=OK Contiguous=0 Licenses=(null) LicensesAlloc=(null) Network=(null)\n   Command=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/verification_study_v3_cpu.sbatch\n   WorkDir=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo\n   Comment=cv3:351a50c0fc7b073ebf34049a49e0f2edf6b6f752c8044a4b7c8dcbb58d59ae54 \n   StdErr=/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/logs/cv3-evidence-all-seven-59626428.err\n   StdIn=/dev/null\n   StdOut=/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/logs/cv3-evidence-all-seven-59626428.out\n   TresPerNode=gres/tmpfs:10g\n   TresPerTask=cpu=4",
+      "receipt_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/submissions/351a50c0fc7b073ebf34049a49e0f2edf6b6f752c8044a4b7c8dcbb58d59ae54/SUBMISSION.json",
+      "stage": "evidence",
+      "submission_sha256": "f78f9ce8cee272c06f7c6722e0b2c1da8f3c7e20b242ff7ec4a27a6edd5c0dd3",
+      "walltime_seconds": 1800
+    }
+  ],
+  "qualification_billing_core_hours_max": 224,
+  "result_root": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4",
+  "schema": "verification-submitted-jobs-v3",
+  "scientific_results": "NOT_MEASURED",
+  "sha256": "b72c50eb36f7bf9c1f257eda0044428558cd75aa94c3c116cd376f71b68c84f6"
+}

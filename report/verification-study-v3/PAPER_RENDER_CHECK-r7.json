@@ -1,0 +1,16 @@
+{
+  "checked_pages": [
+    37
+  ],
+  "installed_runtime_modified": false,
+  "pages": 121,
+  "pdf_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/verification-paper-full-build-20261008-r13/output/main.pdf",
+  "pdf_sha256": "235bd72c23db145bca540607f74b42b0b7dddf15df870fb0b5238b341afa34e2",
+  "rendered_files": {
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/verification-paper-full-build-20261008-r13/verification-page-37.png": "6cb19dab8b80ced3af883b945064e304105bc642ce8fc4373fe33e3eb4e6788d"
+  },
+  "schema": "verification-paper-render-check-v3",
+  "scientific_submissions": 0,
+  "sha256": "b5eeff1a84dfed115e0fcc6b26fa28ef60586240e8f615d6a3e25d1c4ea8363e",
+  "visual_result": "PASS: third completed discovery roster, all-seven status table and preserved GPT/J1 limits fit without clipping or overlap."
+}
