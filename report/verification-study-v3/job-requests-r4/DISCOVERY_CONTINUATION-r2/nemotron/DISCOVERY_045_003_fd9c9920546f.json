@@ -1,0 +1,62 @@
+{
+  "arguments": [
+    "--model",
+    "nemotron",
+    "--qualification",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/nemotron/qualification/QUALIFICATION.json",
+    "--manifest",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/verification-study-v3/nemotron/DISCOVERY_ASSIGNMENTS.json",
+    "--output",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/nemotron/discovery",
+    "--root",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4",
+    "--begin",
+    "45",
+    "--count",
+    "3",
+    "--prices",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/nemotron/prices-by-event/a4a99b9490950733a4f6c32c3803da7ab4c707564c0fa7257817de0dd45a7956.json"
+  ],
+  "artifact": "nemotron: complete original48-family native discovery receipts and all-layer capture for audit and nomination",
+  "claim": "C2: qualify substantive-verification support and nominate a frozen singleton for this required model",
+  "decision_if_failure": "retain all committed assignments; reconcile exact failed identity and bounded attempts; report unsupported or imprecise cells, never a causal null",
+  "finite_assignments": 3,
+  "measurement_pilot": false,
+  "missing_cell": "nemotron remaining discovery family support; no audit freeze or target qualification from the single pilot",
+  "model": "nemotron",
+  "orchestration_file_sha256": "cd78185a2dec3e8bdba8b0346acbed0fd47a68dd508a5b45216bf203ee7dc237",
+  "population": "discovery",
+  "prerequisites": [
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/nemotron/qualification/QUALIFICATION.json",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/health/events/a4a99b9490950733a4f6c32c3803da7ab4c707564c0fa7257817de0dd45a7956.json"
+  ],
+  "price_event_sha256": "c151c993e236423f5d0a0163b358931daf68e0ec06bf5e05cd11744bd9bd34ca",
+  "price_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/nemotron/prices-by-event/a4a99b9490950733a4f6c32c3803da7ab4c707564c0fa7257817de0dd45a7956.json",
+  "priced_work": {
+    "capture": 20.938019169329074,
+    "closeout": 20.938019169329074,
+    "generation": 65536,
+    "generator_load": 2,
+    "prefill": 4
+  },
+  "resources": {
+    "billing_core_hours_max": 291.73333333333335,
+    "cpus": 16,
+    "gpus": 2,
+    "memory_gb": 120,
+    "partition": "boost_usr_prod",
+    "price_basis": "actual source-compatible role maxima; every assignment cap16384, one full capped retry and second load, cap-scaled capture/closeout,1.25 factor plus600seconds",
+    "qos": "normal",
+    "walltime_seconds": 65640
+  },
+  "reuse": "retained first discovery assignment, frozen original48 manifest and source-qualified native executor",
+  "schema": "verification-task-request-v3",
+  "selected_uids": [
+    "639fc9cd10a2db03d448726a8750fbbefb74662411fca06a50662a0838ce5a47",
+    "006f3cfd02b14f9d80b9a83e2c485e865889405ff7e26c41ef9f6d08d9f1b67c",
+    "d3ee2051fca7041e20e2ffd0aad040002223b5ddf2293630974a0ae085ca5f8f"
+  ],
+  "sha256": "35b8130a7a098124c20c4bcf7081d1da917189fc2d9bb5f27be02fed892cc506",
+  "stage": "run",
+  "storage_bound_bytes": 166051840
+}

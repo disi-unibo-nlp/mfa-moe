@@ -1,0 +1,30 @@
+{
+  "audit_path": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/model-analysis-review-20261009/DECISION_AUDIT-r1.json",
+  "audit_sha256": "0b2dbc58079e34bb5cb89c5060fe3b2dfe5df12001e3cde9aea85e5445adf095",
+  "document_files": {
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/AGENTS.md": "fc28f49b8ebe8c8bdab5c8e156a06754da4291b22dec853dce020f57c34800c4",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/paper/wiki/DECISIONS.md": "42071b0e2bc6ecae44a08ec4721c365b7e29c5dba4a21b0bbccef88e1dc0949c",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/paper/wiki/EXPERIMENT_INVENTORY.md": "1a0f08e706d29fb8c27d0db3455a871369fcaf1b1b1148e7b8369a95cc5ba7cd",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/paper/wiki/FINDINGS.md": "c2379b85f9bbd2f9997f348d24ccd054a726de61eae996326fa6e349417e001c",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/paper/wiki/MODEL_COVERAGE.md": "b0e587b906dfcb43d906e0e6a152747df888168bfdefae0afa3b29effcc5945d",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/paper/wiki/NEXT_EXPERIMENTS.md": "114d727f53806804b7eb61973be133126426795e2810379d4d7f8fc329053780",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/paper/wiki/README.md": "5f3a3fee07faf071b0a820f088d711ceb2dd15656d4cea1c7b84aefe4a6f09ac"
+  },
+  "new_local_links_exist": true,
+  "scientific_jobs_submitted": [],
+  "scientific_sources_changed": false,
+  "source_checks": {
+    "historical_operational": {
+      "files": 29,
+      "unchanged": true
+    },
+    "historical_scientific": {
+      "files": 35,
+      "unchanged": true
+    },
+    "readiness": {
+      "files": 156,
+      "unchanged": true
+    }
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "arguments": [
+    "--model",
+    "qwen330b",
+    "--qualification",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/qwen330b/qualification/QUALIFICATION.json",
+    "--manifest",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/verification-study-v3/qwen330b/DISCOVERY_ASSIGNMENTS.json",
+    "--output",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/qwen330b/discovery",
+    "--root",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4",
+    "--begin",
+    "46",
+    "--count",
+    "2",
+    "--prices",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/qwen330b/prices-by-event/c6249e0b23a4478d686cfafa1e93e7138c02b94701b954efc3567cd78a23b851.json"
+  ],
+  "artifact": "qwen330b: complete original48-family native discovery receipts and all-layer capture for audit and nomination",
+  "claim": "C2: qualify substantive-verification support and nominate a frozen singleton for this required model",
+  "decision_if_failure": "retain all committed assignments; reconcile exact failed identity and bounded attempts; report unsupported or imprecise cells, never a causal null",
+  "finite_assignments": 2,
+  "measurement_pilot": false,
+  "missing_cell": "qwen330b remaining discovery family support; no audit freeze or target qualification from the single pilot",
+  "model": "qwen330b",
+  "orchestration_file_sha256": "cd78185a2dec3e8bdba8b0346acbed0fd47a68dd508a5b45216bf203ee7dc237",
+  "population": "discovery",
+  "prerequisites": [
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/qwen330b/qualification/QUALIFICATION.json",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/health/events/c6249e0b23a4478d686cfafa1e93e7138c02b94701b954efc3567cd78a23b851.json"
+  ],
+  "price_event_sha256": "bcc99a4fee031de66873173fe9a16367a59acf121da0254bbaccff1c9b0f5c90",
+  "price_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/qwen330b/prices-by-event/c6249e0b23a4478d686cfafa1e93e7138c02b94701b954efc3567cd78a23b851.json",
+  "priced_work": {
+    "capture": 8.530371398819854,
+    "closeout": 8.530371398819854,
+    "generation": 49152,
+    "generator_load": 2,
+    "prefill": 3
+  },
+  "resources": {
+    "billing_core_hours_max": 77.33333333333333,
+    "cpus": 16,
+    "gpus": 2,
+    "memory_gb": 120,
+    "partition": "boost_usr_prod",
+    "price_basis": "actual source-compatible role maxima; every assignment cap16384, one full capped retry and second load, cap-scaled capture/closeout,1.25 factor plus600seconds",
+    "qos": "normal",
+    "walltime_seconds": 17400
+  },
+  "reuse": "retained first discovery assignment, frozen original48 manifest and source-qualified native executor",
+  "schema": "verification-task-request-v3",
+  "selected_uids": [
+    "4c606b7787b197e861f8e8f33247b00843896e02e687fd185af44b5749276e9f",
+    "7a58dfcd8411fa72d4f216eef0759bff7d28d89c7956b07aa07530f782b0a6af"
+  ],
+  "sha256": "d52ff3719d8113d76150f822dc71ef3eafa49cc176f134b57d6effcb8a157ee7",
+  "stage": "run",
+  "storage_bound_bytes": 334495744
+}

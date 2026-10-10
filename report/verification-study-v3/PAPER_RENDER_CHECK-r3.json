@@ -1,0 +1,10 @@
+{
+  "paper_build_receipt_sha256": "43f75516559e66cbd527ae3d992d2a0a2fca8a5f7fc0909a7b6b8d2a538a3d6a",
+  "pdf_sha256": "7a0c7ed51c0d62d88a36eb1b5ea3c3d782848ec42dd312244bc1e37d0d7a5c62",
+  "render_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/verification-paper-full-build-20261008-r9/verification-page-37.png",
+  "render_sha256": "9c5f056ab101eab79c09ad159c61546960026838571146d9c0439467aace0853",
+  "schema": "verification-paper-render-check-v3",
+  "scientific_effect": "NOT_MEASURED",
+  "sha256": "e1e0c22a45c82ef31e9b478903b926635925275fa390e89462f3a9b47b02d0a2",
+  "visual_inspection": "PASS: updated discovery paragraph and seven-model status table fit; paragraph continues across the existing page/float boundary"
+}

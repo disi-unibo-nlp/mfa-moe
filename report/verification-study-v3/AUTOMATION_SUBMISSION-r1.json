@@ -1,0 +1,15 @@
+{
+  "campaign_sha256": "57df4a026a7be4c909ece85ac1ebe3dc47c3f27bb53ffcab88e3aa9d82bfbb3b",
+  "cancelled_unstarted_observer_accounting": "59645458|CANCELLED by 133943|0:0|0\n59645480|CANCELLED by 133943|0:0|0\n59645489|CANCELLED by 133943|0:0|0\n59645499|CANCELLED by 133943|0:0|0\n",
+  "controller_card_sha256": "40cbe3514c2a203466b4d423775201306ad3ac66920984eab0fb2920a477f24d",
+  "controller_job_id": "59649876",
+  "controller_submission_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/automation/submissions/40cbe3514c2a203466b4d423775201306ad3ac66920984eab0fb2920a477f24d/SUBMISSION.json",
+  "controller_submission_sha256": "528d26c451a3cd4e3718c11b1d8b28569ec376d892e8591bccedb9c7b37f2bff",
+  "observed_epoch": 1791406491.0138266,
+  "observer_reconciliation_sha256": "106789cf8c6a6037b55f964bd447d9610b3f2177da93c1e54f8cf837bafa6027",
+  "readiness_sha256": "910ab57c385fe1f9213dc79fe3afec4fb58bd3e2bcaeb74dd600945ac1958796",
+  "schema": "verification-automation-submission-v3",
+  "scientific_cancellations": 0,
+  "sha256": "7f5c5683c252d4f3f1d415a754db4420eb0c9d3a78e1e5949598b3c902ed5714",
+  "status": "ACTUAL_CONTROLLER_SUBMITTED; successor/rescue and stage results still require observed readback"
+}

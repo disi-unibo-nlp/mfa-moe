@@ -1,0 +1,95 @@
+{
+  "all_seven_passed": true,
+  "campaign_sha256": "57df4a026a7be4c909ece85ac1ebe3dc47c3f27bb53ffcab88e3aa9d82bfbb3b",
+  "models": [
+    {
+      "cases": 14,
+      "elapsed_seconds": 1305.0731288269162,
+      "failures": [],
+      "job_id": "59626378",
+      "load_seconds": 166.64268166199327,
+      "model": "gemma",
+      "passed": 14,
+      "qualification_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/gemma/qualification/QUALIFICATION.json",
+      "qualification_sha256": "d125d59591ffcf76104ad3595a81ee19b3e81521a56192179ea61f76b42150e1",
+      "status": "PASS"
+    },
+    {
+      "cases": 14,
+      "elapsed_seconds": 2060.9498225096613,
+      "failures": [],
+      "job_id": "59626381",
+      "load_seconds": 327.42541292868555,
+      "model": "glm",
+      "passed": 14,
+      "qualification_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/glm/qualification/QUALIFICATION.json",
+      "qualification_sha256": "1f8bec7b4e151822d20daf8a3239e48fc56e41f71b1aaf180c89e0c32fd0ab30",
+      "status": "PASS"
+    },
+    {
+      "cases": 14,
+      "elapsed_seconds": 920.8800033507869,
+      "failures": [],
+      "job_id": "59626370",
+      "load_seconds": 170.61832985421643,
+      "model": "gpt",
+      "passed": 14,
+      "qualification_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/gpt/qualification/QUALIFICATION.json",
+      "qualification_sha256": "85038e2c92cac182ac843c003a891cb77c2030651f82e0bb6059d607e80c0b7d",
+      "status": "PASS"
+    },
+    {
+      "cases": 14,
+      "elapsed_seconds": 1523.2986676758155,
+      "failures": [],
+      "job_id": "59626374",
+      "load_seconds": 419.6625736746937,
+      "model": "nemotron",
+      "passed": 14,
+      "qualification_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/nemotron/qualification/QUALIFICATION.json",
+      "qualification_sha256": "c3627b6efdf47edc34bf45f0fddcb116ce8d0f77e52669dcdabaff67257c3544",
+      "status": "PASS"
+    },
+    {
+      "cases": 14,
+      "elapsed_seconds": 1667.2762386258692,
+      "failures": [],
+      "job_id": "59626414",
+      "load_seconds": 498.2030204720795,
+      "model": "qwen330b",
+      "passed": 14,
+      "qualification_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/qwen330b/qualification/QUALIFICATION.json",
+      "qualification_sha256": "ed4edaa6aa2bad8fd845f4e6f98c9198d1136074d47a7d3aa393bdf736f90d0d",
+      "status": "PASS"
+    },
+    {
+      "cases": 14,
+      "elapsed_seconds": 2049.018608890008,
+      "failures": [],
+      "job_id": "59626375",
+      "load_seconds": 529.6386109469458,
+      "model": "qwen35",
+      "passed": 14,
+      "qualification_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/qwen35/qualification/QUALIFICATION.json",
+      "qualification_sha256": "65f5f556b739459d2f1b1c41bff4556aa426a8d828948bbe703559aa13c00c8a",
+      "status": "PASS"
+    },
+    {
+      "cases": 14,
+      "elapsed_seconds": 2043.8865214269608,
+      "failures": [],
+      "job_id": "59626376",
+      "load_seconds": 387.533562913537,
+      "model": "qwen36",
+      "passed": 14,
+      "qualification_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/qwen36/qualification/QUALIFICATION.json",
+      "qualification_sha256": "088fd9cfc7c26f4bd8b5464184ba261b86e9fd12e3c9d876b2fa49f4a19aaec9",
+      "status": "PASS"
+    }
+  ],
+  "observed_epoch": 1791386836.387253,
+  "schema": "verification-qualification-closeout-v3",
+  "semantic_effect": "NOT_MEASURED",
+  "sha256": "6c380c17665769d61fe1146e6b465dbc8d676fc640bf5dbeecdefd05bbcd4682",
+  "utility": "NOT_MEASURED"
+}

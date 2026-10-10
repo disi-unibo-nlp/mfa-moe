@@ -1,0 +1,16 @@
+{
+  "output": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/expert-memory-study-v1/CPU_PRICE.json",
+  "largest_archive_model": "qwen35",
+  "fold": 0,
+  "outputs": [
+    "archive load walltime",
+    "one training fold scores, matched controls and held-out coverage",
+    "all-reasoning sensitivity for that fold",
+    "one-model transition-processing walltime",
+    "process peak RSS",
+    "remaining CPU work estimate with 25% margin"
+  ],
+  "does_not_freeze_masks": true,
+  "does_not_generate": true,
+  "maximum_output_storage_bytes": 104857600
+}

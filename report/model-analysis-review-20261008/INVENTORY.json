@@ -1,0 +1,43 @@
+{
+  "schema": "model-analysis-review-v1",
+  "generated_utc_date": "2026-10-08",
+  "source_sidecar_sha256": "99bf8d59506e2893218fd070d264d1fca4a1e4330052c11c347b727b3802e9ee",
+  "source_rows": 68129,
+  "corpus_rows": {
+    "historical": 32529,
+    "card-v3": 32529,
+    "continuation": 3071
+  },
+  "shared_benchmark_questions_all_models_and_both_corpora": 1547,
+  "cohorts": {
+    "A": {
+      "union_questions": 1547,
+      "common_questions": 1547
+    },
+    "B": {
+      "union_questions": 51,
+      "common_questions": 1
+    }
+  },
+  "validation": "84 saved accuracy means, strict means, denominators, caps and medians matched the outcome sidecar exactly; no model fitting or CI recomputation.",
+  "benchmark_ci": "Original 1000-replicate question bootstrap, seed0; attempt-weighted mean among observed adjudicated outcomes. Intervals are per cell, not simultaneous.",
+  "caveats": [
+    "Adjudicated and strict score means drop their own missing values; scored denominators differ. Explicit unknown counts and all-assignment bounds are exported.",
+    "Historical accepted J1 audit (98/100) is a separate frozen scorer deployment from current minimal-verification shared J1 FAIL (97/100).",
+    "Native decoding profiles differ in temperature, top-k, output caps, context and checkpoint precision; pooled attempt means are descriptive and over-weight repeated benchmarks.",
+    "Cohort A selects one attempt per problem without correctness selection; cohort B is an outcome-conditioned case-control sample, not a benchmark accuracy estimate.",
+    "Class experts are selected outcome-blind using the same cohort; saved significance is not held-out rank stability or evidence of dispensability.",
+    "Present-class readout and next-class anticipation are observational, automatically labelled visible-episode tasks; neither proves memory savings or useful intervention.",
+    "Existing GPT B4 correctness-prediction and calibrated precision study are preserved and must not be proposed as missing all-model evidence."
+  ],
+  "outputs": [
+    "benchmark_cells.csv",
+    "benchmark_models.csv",
+    "routing_readout.csv",
+    "anticipation.csv",
+    "cohort_populations.csv",
+    "expert_profile_inventory.csv",
+    "expert_usage_correctness_saved.csv"
+  ],
+  "latex": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/paper/6a510c6db0d9b08aa438c142/generated/model_analysis_review/benchmark_readout_tables.tex"
+}

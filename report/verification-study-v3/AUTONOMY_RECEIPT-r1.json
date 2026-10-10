@@ -1,0 +1,43 @@
+{
+  "active_discovery_callbacks": 7,
+  "actual_smoke_event_sha256": "71effa40f83190cfa64216f6ef2c3aac3904dfbf7eb78516770b0c2cc8188e4d",
+  "actual_smoke_job_id": "59633848",
+  "authorization": "user: do not wait for wake-up prompts; health signals on completion/failure; continue approved all-seven campaign",
+  "callback_registry_sha256": "70efe9e6b1f652baa64491fd82f7bca8aeeac1d6ae4138f0563f966cc698d36e",
+  "campaign_sha256": "57df4a026a7be4c909ece85ac1ebe3dc47c3f27bb53ffcab88e3aa9d82bfbb3b",
+  "continuation": "native persistent Goal active; agent state stays private; no daemon or receiver",
+  "health_status_path": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/verification-study-v3/HEALTH_STATUS.json",
+  "missing_callback_policy": "inspect terminal accounting/logs; explicit CALLBACK_FAILED_NO_EVENT, never success",
+  "next_dispatch": "consume every immutable event; advance compatible finite measured cards, all seven models",
+  "observed_epoch": 1791389660.1753163,
+  "observer_files": {
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/verification_study_v3_health_r1.py": "317798e9cb507963819bff33f24c92417032bc4c933ec2197c57b106bf44de4b",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/verification_study_v3_health_r1.sbatch": "3e05320e42665eb2699d0c935ac8d22a9e4f48936ac67f46ee1c3e00b0a7b0a1",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/verification_study_v3_health_r2.py": "79a4ec36d0f1c3db82160cb4ec1243ef803929e3ca59c8e6ae2c8f1241f0dac7",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/verification_study_v3_health_r2.sbatch": "605f315609201d8254b1c57eca9ecc46c6a5c6bdf25b3f752c79f73932d6639d",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/verification_study_v3_health_r3.py": "5bc5f0792ce76cfa744ae4fb86bd604b15c1ccd940abc53db5699a0082c16977",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/verification_study_v3_health_r3.sbatch": "ca92745444bcd86f6f603480cdddfb733e9067117591e654dad9b6d7b2598bf6",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/verification_study_v3_health_status.py": "494341b61fed6f66afebf3e3806f8580028d5ce6cea84dcd4c3c2f81018c0786"
+  },
+  "observer_resources_each": {
+    "cpus": 1,
+    "gpus": 0,
+    "memory_gb": 4,
+    "walltime_seconds": 600
+  },
+  "schema": "verification-autonomy-activation-v3",
+  "scientific_jobs_cancelled_for_health_repair": 0,
+  "scientific_source_files_changed": 0,
+  "sha256": "1b23a3ae683daa632ee12788b8c3c6ac03a9aa9bb41913e533028cebd39714a8",
+  "tests": {
+    "health_and_reader_callback_integration": {
+      "passed": 16,
+      "wall_seconds": 1.075
+    },
+    "native_campaign_suite": "previous40PASS; unchanged frozen source; not redundantly rerun",
+    "reader_resume_and_prices": {
+      "passed": 11,
+      "wall_seconds": 1.261
+    }
+  }
+}

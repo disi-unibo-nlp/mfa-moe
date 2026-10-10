@@ -1,0 +1,473 @@
+{
+  "schema": "expert-association-method-review-v1",
+  "review_date": "2026-10-08",
+  "new_fits": 0,
+  "new_inference": 0,
+  "source_code": [
+    {
+      "path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/v3_analysis/v3an/analyses.py",
+      "sha256": "532d6fdf7d84512897de8df4926ef4203fcdb7944a731df8ce33cc3b4b71e5e7",
+      "bytes": 15475
+    },
+    {
+      "path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/v3_analysis/v3an/pipeline.py",
+      "sha256": "700c0e9f6415820cbd81ec859d10c0e7dee3dd296a2508c52b9e8e5dd1717f17",
+      "bytes": 14079
+    },
+    {
+      "path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/v3_analysis/v3an/stats.py",
+      "sha256": "0235c70138224fe5e7d68291faaed3b548015d271ea2467e8c23aa5e363cfd31",
+      "bytes": 19762
+    },
+    {
+      "path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/v3_analysis/v3an/data.py",
+      "sha256": "c9400df1bff5604b439791e070568eb871085620204f051d5b3fc2a35c5bb45f",
+      "bytes": 15908
+    },
+    {
+      "path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/v3_analysis/v3an/extract.py",
+      "sha256": "f281471e5c27899974ed9a257d592edc86bc29e219c104653c90d70ab8b6de74",
+      "bytes": 9275
+    }
+  ],
+  "model_provenance": [
+    {
+      "model": "gpt",
+      "path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/v3_analysis/results-r2/gpt/A/provenance.json",
+      "sha256": "b606f86aa0b8cc535bb4c249d29586e8050e94faf7b352dcbd3eb34414740b35",
+      "bytes": 5470
+    },
+    {
+      "model": "nemotron",
+      "path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/v3_analysis/results-r2/nemotron/A/provenance.json",
+      "sha256": "a3e70c0b1817ca94beee22c68b4eab203e9bec2fa88e3de2df1c6f6701665065",
+      "bytes": 5361
+    },
+    {
+      "model": "qwen35",
+      "path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/v3_analysis/results-r2/qwen35/A/provenance.json",
+      "sha256": "604b772a4588c7ef4a3dfb097e93095d52528fda9c2febe75a0a5b30a765b6b5",
+      "bytes": 5404
+    },
+    {
+      "model": "qwen36",
+      "path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/v3_analysis/results-r2/qwen36/A/provenance.json",
+      "sha256": "bda9813d53435d2fe37252eafebd44f100d122b96285a060b91e6a9569a574d3",
+      "bytes": 5392
+    },
+    {
+      "model": "gemma",
+      "path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/v3_analysis/results-r2/gemma/A/provenance.json",
+      "sha256": "da9c4c814b79f172fa06c778f2d529a523ca9e7531d11615d8e46f3953d104f0",
+      "bytes": 5315
+    },
+    {
+      "model": "glm",
+      "path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/v3_analysis/results-r2/glm/A/provenance.json",
+      "sha256": "2f0c5a72364c6ad14395c418bbaed004d902d2648a6690a31f81c5945a67038a",
+      "bytes": 5382
+    },
+    {
+      "model": "qwen330b",
+      "path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/v3_analysis/results-r2/qwen330b/A/provenance.json",
+      "sha256": "c03b06fb4d9b1e98334d896fe96f8a139ad92fef59d3a80bdc11c2ef57387e5a",
+      "bytes": 5466
+    }
+  ],
+  "code_provenance_checks": [
+    {
+      "model": "gpt",
+      "source_file": "analyses.py",
+      "expected_sha256": "532d6fdf7d84512897de8df4926ef4203fcdb7944a731df8ce33cc3b4b71e5e7",
+      "observed_sha256": "532d6fdf7d84512897de8df4926ef4203fcdb7944a731df8ce33cc3b4b71e5e7",
+      "match": true
+    },
+    {
+      "model": "gpt",
+      "source_file": "pipeline.py",
+      "expected_sha256": "700c0e9f6415820cbd81ec859d10c0e7dee3dd296a2508c52b9e8e5dd1717f17",
+      "observed_sha256": "700c0e9f6415820cbd81ec859d10c0e7dee3dd296a2508c52b9e8e5dd1717f17",
+      "match": true
+    },
+    {
+      "model": "gpt",
+      "source_file": "stats.py",
+      "expected_sha256": "0235c70138224fe5e7d68291faaed3b548015d271ea2467e8c23aa5e363cfd31",
+      "observed_sha256": "0235c70138224fe5e7d68291faaed3b548015d271ea2467e8c23aa5e363cfd31",
+      "match": true
+    },
+    {
+      "model": "gpt",
+      "source_file": "data.py",
+      "expected_sha256": "c9400df1bff5604b439791e070568eb871085620204f051d5b3fc2a35c5bb45f",
+      "observed_sha256": "c9400df1bff5604b439791e070568eb871085620204f051d5b3fc2a35c5bb45f",
+      "match": true
+    },
+    {
+      "model": "gpt",
+      "source_file": "extract.py",
+      "expected_sha256": "f281471e5c27899974ed9a257d592edc86bc29e219c104653c90d70ab8b6de74",
+      "observed_sha256": "f281471e5c27899974ed9a257d592edc86bc29e219c104653c90d70ab8b6de74",
+      "match": true
+    },
+    {
+      "model": "nemotron",
+      "source_file": "analyses.py",
+      "expected_sha256": "532d6fdf7d84512897de8df4926ef4203fcdb7944a731df8ce33cc3b4b71e5e7",
+      "observed_sha256": "532d6fdf7d84512897de8df4926ef4203fcdb7944a731df8ce33cc3b4b71e5e7",
+      "match": true
+    },
+    {
+      "model": "nemotron",
+      "source_file": "pipeline.py",
+      "expected_sha256": "700c0e9f6415820cbd81ec859d10c0e7dee3dd296a2508c52b9e8e5dd1717f17",
+      "observed_sha256": "700c0e9f6415820cbd81ec859d10c0e7dee3dd296a2508c52b9e8e5dd1717f17",
+      "match": true
+    },
+    {
+      "model": "nemotron",
+      "source_file": "stats.py",
+      "expected_sha256": "0235c70138224fe5e7d68291faaed3b548015d271ea2467e8c23aa5e363cfd31",
+      "observed_sha256": "0235c70138224fe5e7d68291faaed3b548015d271ea2467e8c23aa5e363cfd31",
+      "match": true
+    },
+    {
+      "model": "nemotron",
+      "source_file": "data.py",
+      "expected_sha256": "c9400df1bff5604b439791e070568eb871085620204f051d5b3fc2a35c5bb45f",
+      "observed_sha256": "c9400df1bff5604b439791e070568eb871085620204f051d5b3fc2a35c5bb45f",
+      "match": true
+    },
+    {
+      "model": "nemotron",
+      "source_file": "extract.py",
+      "expected_sha256": "f281471e5c27899974ed9a257d592edc86bc29e219c104653c90d70ab8b6de74",
+      "observed_sha256": "f281471e5c27899974ed9a257d592edc86bc29e219c104653c90d70ab8b6de74",
+      "match": true
+    },
+    {
+      "model": "qwen35",
+      "source_file": "analyses.py",
+      "expected_sha256": "532d6fdf7d84512897de8df4926ef4203fcdb7944a731df8ce33cc3b4b71e5e7",
+      "observed_sha256": "532d6fdf7d84512897de8df4926ef4203fcdb7944a731df8ce33cc3b4b71e5e7",
+      "match": true
+    },
+    {
+      "model": "qwen35",
+      "source_file": "pipeline.py",
+      "expected_sha256": "700c0e9f6415820cbd81ec859d10c0e7dee3dd296a2508c52b9e8e5dd1717f17",
+      "observed_sha256": "700c0e9f6415820cbd81ec859d10c0e7dee3dd296a2508c52b9e8e5dd1717f17",
+      "match": true
+    },
+    {
+      "model": "qwen35",
+      "source_file": "stats.py",
+      "expected_sha256": "0235c70138224fe5e7d68291faaed3b548015d271ea2467e8c23aa5e363cfd31",
+      "observed_sha256": "0235c70138224fe5e7d68291faaed3b548015d271ea2467e8c23aa5e363cfd31",
+      "match": true
+    },
+    {
+      "model": "qwen35",
+      "source_file": "data.py",
+      "expected_sha256": "c9400df1bff5604b439791e070568eb871085620204f051d5b3fc2a35c5bb45f",
+      "observed_sha256": "c9400df1bff5604b439791e070568eb871085620204f051d5b3fc2a35c5bb45f",
+      "match": true
+    },
+    {
+      "model": "qwen35",
+      "source_file": "extract.py",
+      "expected_sha256": "f281471e5c27899974ed9a257d592edc86bc29e219c104653c90d70ab8b6de74",
+      "observed_sha256": "f281471e5c27899974ed9a257d592edc86bc29e219c104653c90d70ab8b6de74",
+      "match": true
+    },
+    {
+      "model": "qwen36",
+      "source_file": "analyses.py",
+      "expected_sha256": "532d6fdf7d84512897de8df4926ef4203fcdb7944a731df8ce33cc3b4b71e5e7",
+      "observed_sha256": "532d6fdf7d84512897de8df4926ef4203fcdb7944a731df8ce33cc3b4b71e5e7",
+      "match": true
+    },
+    {
+      "model": "qwen36",
+      "source_file": "pipeline.py",
+      "expected_sha256": "700c0e9f6415820cbd81ec859d10c0e7dee3dd296a2508c52b9e8e5dd1717f17",
+      "observed_sha256": "700c0e9f6415820cbd81ec859d10c0e7dee3dd296a2508c52b9e8e5dd1717f17",
+      "match": true
+    },
+    {
+      "model": "qwen36",
+      "source_file": "stats.py",
+      "expected_sha256": "0235c70138224fe5e7d68291faaed3b548015d271ea2467e8c23aa5e363cfd31",
+      "observed_sha256": "0235c70138224fe5e7d68291faaed3b548015d271ea2467e8c23aa5e363cfd31",
+      "match": true
+    },
+    {
+      "model": "qwen36",
+      "source_file": "data.py",
+      "expected_sha256": "c9400df1bff5604b439791e070568eb871085620204f051d5b3fc2a35c5bb45f",
+      "observed_sha256": "c9400df1bff5604b439791e070568eb871085620204f051d5b3fc2a35c5bb45f",
+      "match": true
+    },
+    {
+      "model": "qwen36",
+      "source_file": "extract.py",
+      "expected_sha256": "f281471e5c27899974ed9a257d592edc86bc29e219c104653c90d70ab8b6de74",
+      "observed_sha256": "f281471e5c27899974ed9a257d592edc86bc29e219c104653c90d70ab8b6de74",
+      "match": true
+    },
+    {
+      "model": "gemma",
+      "source_file": "analyses.py",
+      "expected_sha256": "532d6fdf7d84512897de8df4926ef4203fcdb7944a731df8ce33cc3b4b71e5e7",
+      "observed_sha256": "532d6fdf7d84512897de8df4926ef4203fcdb7944a731df8ce33cc3b4b71e5e7",
+      "match": true
+    },
+    {
+      "model": "gemma",
+      "source_file": "pipeline.py",
+      "expected_sha256": "700c0e9f6415820cbd81ec859d10c0e7dee3dd296a2508c52b9e8e5dd1717f17",
+      "observed_sha256": "700c0e9f6415820cbd81ec859d10c0e7dee3dd296a2508c52b9e8e5dd1717f17",
+      "match": true
+    },
+    {
+      "model": "gemma",
+      "source_file": "stats.py",
+      "expected_sha256": "0235c70138224fe5e7d68291faaed3b548015d271ea2467e8c23aa5e363cfd31",
+      "observed_sha256": "0235c70138224fe5e7d68291faaed3b548015d271ea2467e8c23aa5e363cfd31",
+      "match": true
+    },
+    {
+      "model": "gemma",
+      "source_file": "data.py",
+      "expected_sha256": "c9400df1bff5604b439791e070568eb871085620204f051d5b3fc2a35c5bb45f",
+      "observed_sha256": "c9400df1bff5604b439791e070568eb871085620204f051d5b3fc2a35c5bb45f",
+      "match": true
+    },
+    {
+      "model": "gemma",
+      "source_file": "extract.py",
+      "expected_sha256": "f281471e5c27899974ed9a257d592edc86bc29e219c104653c90d70ab8b6de74",
+      "observed_sha256": "f281471e5c27899974ed9a257d592edc86bc29e219c104653c90d70ab8b6de74",
+      "match": true
+    },
+    {
+      "model": "glm",
+      "source_file": "analyses.py",
+      "expected_sha256": "532d6fdf7d84512897de8df4926ef4203fcdb7944a731df8ce33cc3b4b71e5e7",
+      "observed_sha256": "532d6fdf7d84512897de8df4926ef4203fcdb7944a731df8ce33cc3b4b71e5e7",
+      "match": true
+    },
+    {
+      "model": "glm",
+      "source_file": "pipeline.py",
+      "expected_sha256": "700c0e9f6415820cbd81ec859d10c0e7dee3dd296a2508c52b9e8e5dd1717f17",
+      "observed_sha256": "700c0e9f6415820cbd81ec859d10c0e7dee3dd296a2508c52b9e8e5dd1717f17",
+      "match": true
+    },
+    {
+      "model": "glm",
+      "source_file": "stats.py",
+      "expected_sha256": "0235c70138224fe5e7d68291faaed3b548015d271ea2467e8c23aa5e363cfd31",
+      "observed_sha256": "0235c70138224fe5e7d68291faaed3b548015d271ea2467e8c23aa5e363cfd31",
+      "match": true
+    },
+    {
+      "model": "glm",
+      "source_file": "data.py",
+      "expected_sha256": "c9400df1bff5604b439791e070568eb871085620204f051d5b3fc2a35c5bb45f",
+      "observed_sha256": "c9400df1bff5604b439791e070568eb871085620204f051d5b3fc2a35c5bb45f",
+      "match": true
+    },
+    {
+      "model": "glm",
+      "source_file": "extract.py",
+      "expected_sha256": "f281471e5c27899974ed9a257d592edc86bc29e219c104653c90d70ab8b6de74",
+      "observed_sha256": "f281471e5c27899974ed9a257d592edc86bc29e219c104653c90d70ab8b6de74",
+      "match": true
+    },
+    {
+      "model": "qwen330b",
+      "source_file": "analyses.py",
+      "expected_sha256": "532d6fdf7d84512897de8df4926ef4203fcdb7944a731df8ce33cc3b4b71e5e7",
+      "observed_sha256": "532d6fdf7d84512897de8df4926ef4203fcdb7944a731df8ce33cc3b4b71e5e7",
+      "match": true
+    },
+    {
+      "model": "qwen330b",
+      "source_file": "pipeline.py",
+      "expected_sha256": "700c0e9f6415820cbd81ec859d10c0e7dee3dd296a2508c52b9e8e5dd1717f17",
+      "observed_sha256": "700c0e9f6415820cbd81ec859d10c0e7dee3dd296a2508c52b9e8e5dd1717f17",
+      "match": true
+    },
+    {
+      "model": "qwen330b",
+      "source_file": "stats.py",
+      "expected_sha256": "0235c70138224fe5e7d68291faaed3b548015d271ea2467e8c23aa5e363cfd31",
+      "observed_sha256": "0235c70138224fe5e7d68291faaed3b548015d271ea2467e8c23aa5e363cfd31",
+      "match": true
+    },
+    {
+      "model": "qwen330b",
+      "source_file": "data.py",
+      "expected_sha256": "c9400df1bff5604b439791e070568eb871085620204f051d5b3fc2a35c5bb45f",
+      "observed_sha256": "c9400df1bff5604b439791e070568eb871085620204f051d5b3fc2a35c5bb45f",
+      "match": true
+    },
+    {
+      "model": "qwen330b",
+      "source_file": "extract.py",
+      "expected_sha256": "f281471e5c27899974ed9a257d592edc86bc29e219c104653c90d70ab8b6de74",
+      "observed_sha256": "f281471e5c27899974ed9a257d592edc86bc29e219c104653c90d70ab8b6de74",
+      "match": true
+    }
+  ],
+  "code_provenance_summary": {
+    "checks": 35,
+    "matched": 35,
+    "failed": 0
+  },
+  "original_association_sources": [
+    {
+      "model": "gpt",
+      "path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/v3_analysis/results-r2/gpt/A/E_expert_usage_associations.csv",
+      "sha256": "74aaabdcbdb3d6e53d5c3637a356ae976171eae71f5f3482dab9a54b161464c1",
+      "bytes": 3030219
+    },
+    {
+      "model": "nemotron",
+      "path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/v3_analysis/results-r2/nemotron/A/E_expert_usage_associations.csv",
+      "sha256": "d0e3a44af28fbece68f579f36573e08ed8e19cd015376e7a050451cf30815f45",
+      "bytes": 1890850
+    },
+    {
+      "model": "qwen35",
+      "path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/v3_analysis/results-r2/qwen35/A/E_expert_usage_associations.csv",
+      "sha256": "e8904ed67b717710c254dfe3e252e9bd265345d338fc039c2bef7cce0fa602d8",
+      "bytes": 3390547
+    },
+    {
+      "model": "qwen36",
+      "path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/v3_analysis/results-r2/qwen36/A/E_expert_usage_associations.csv",
+      "sha256": "a097afd3a0136de7a982c330e106ba3339d6479410a00cda95c58a90818caf72",
+      "bytes": 3448567
+    },
+    {
+      "model": "gemma",
+      "path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/v3_analysis/results-r2/gemma/A/E_expert_usage_associations.csv",
+      "sha256": "e289c097463a583524d5cdf40f9709da3a5558d552c6fec1dfc96da205a1578a",
+      "bytes": 3196139
+    },
+    {
+      "model": "glm",
+      "path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/v3_analysis/results-r2/glm/A/E_expert_usage_associations.csv",
+      "sha256": "acb7a9c93d60b92f8c24cdd5260f1797ad610591feac727a2a241f51679a62d8",
+      "bytes": 4641046
+    },
+    {
+      "model": "qwen330b",
+      "path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/v3_analysis/results-r2/qwen330b/A/E_expert_usage_associations.csv",
+      "sha256": "d1c88ee997001d4bd5f1863fa874c2e0f236461f275f7935cac1a5ffa147ad11",
+      "bytes": 5896818
+    }
+  ],
+  "method": {
+    "estimand": "Partial Pearson correlation between adjudicated binary correctness and class-enriched expert mean usage_all.",
+    "expert_selection": "Within class, enrichment BH q<0.05 across layer/expert cells, positive log odds and normalized selection-slot-share difference>=0.01; top three by that difference per layer. Selection uses the full cohort, outcome-blind.",
+    "usage_all": "For each layer having at least one selected class-profile expert, selected slots assigned to that set across all reasoning tokens divided by native_k times reasoning token count; equal mean over those selected layers.",
+    "controls": [
+      "intercept",
+      "dataset fixed effects (pooled scope)",
+      "log completion tokens",
+      "retrospective question difficulty",
+      "class token fraction among labelled tokens",
+      "capped-output indicator if any capped outputs in the model/scope"
+    ],
+    "difficulty": "Repeated AIME24/AIME25/AMC23: same-model other-attempt adjudicated pass rate (own outcome excluded). Single-attempt MATH500/Olympiad/Minerva: other-model adjudicated pass rate (own model excluded). Missing scores excluded.",
+    "cap_scope": "A-cohort cap indicator is included for Nemotron, Qwen3.5, Gemma, GLM and Qwen3-30B; GPT and Qwen3.6 have no caps and therefore no cap column. This is not a finished-only sample.",
+    "bootstrap": "Original 1000 question-ID cluster resamples, percentile 95% intervals, nuisance coefficients refit in each replicate. Not duplicate-family resampling. Fixed expert sets, fixed difficulty features, no selection refit.",
+    "p_values": "Analytic partial-correlation t-test using residual design rank; q values do not derive from bootstrap p-values.",
+    "q_family": "Original Benjamini-Hochberg correction separately per model and (scope,family,tier,adjustment). The displayed pooled/cls_expert/summary/lendiff_frac family contains 21 tests: 7 classes x usage_all/usage_in/usage_out. No correction across the 49 displayed cells or all seven models.",
+    "interpretation": "Saved same-cohort conditional associations. Not cross-fitted expert usefulness, causal specialization, benefit from suppression/removal, or independent cross-architecture replication.",
+    "source_lines": {
+      "analyses.py": [
+        "87-155",
+        "292-333"
+      ],
+      "pipeline.py": [
+        "220-264"
+      ],
+      "stats.py": [
+        "99-149"
+      ],
+      "data.py": [
+        "140-166"
+      ],
+      "extract.py": [
+        "84-115"
+      ]
+    }
+  },
+  "figure_review": {
+    "receipt": {
+      "path": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/model-analysis-review-20261008/EXPERT_ASSOCIATION_FIGURE-r1.json",
+      "sha256": "c0aac2dffe2975bbfbcee367bec1bfe30eed32d3a796a889686b59e89d5728fe",
+      "bytes": 8997
+    },
+    "source_csv": {
+      "path": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/model-analysis-review-20261008/expert_usage_correctness_saved.csv",
+      "sha256": "2e5f4ac0baba51ebe960c9f213d0d24b8fae205b99dd12fdb8ed19e699d2fbe4",
+      "bytes": 42635
+    },
+    "selected_csv": {
+      "path": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/model-analysis-review-20261008/expert_usage_correctness_mean_all.csv",
+      "sha256": "69c3e839755fe56ffc0033bb651a0cdca044babc99310aef0d57987b4a76cc5b",
+      "bytes": 14435
+    },
+    "source_rows": 147,
+    "selected_rows": 49,
+    "complete_cartesian_frame": true,
+    "duplicates": 0,
+    "sign_or_significance_filter": false,
+    "selected_csv_exactly_matches_147_row_export": true,
+    "selected_numeric_fields_match_original_E_csv_to_atol": 1e-14,
+    "maximum_original_numeric_difference": 1.1102230246251565e-16,
+    "receipt_values_match_selected_csv": true,
+    "receipt_source_script_output_hashes_match": true,
+    "starred_cells": [
+      {
+        "model": "nemotron",
+        "class": "Monitor"
+      },
+      {
+        "model": "qwen35",
+        "class": "Analyze"
+      },
+      {
+        "model": "qwen35",
+        "class": "Verify"
+      },
+      {
+        "model": "qwen35",
+        "class": "Monitor"
+      },
+      {
+        "model": "qwen36",
+        "class": "Analyze"
+      },
+      {
+        "model": "qwen36",
+        "class": "Verify"
+      },
+      {
+        "model": "qwen36",
+        "class": "Monitor"
+      }
+    ],
+    "visual_review": "PNG inspected: all model/class labels and 49 signed rounded values are legible; seven stars agree with original q values. Associated PDF hash verified against receipt; no separate PDF rasterization in this review.",
+    "caption_requirements": [
+      "State partial Pearson r and original within-model 21-test BH family.",
+      "State retrospective full-cohort selection and absence of held-out or causal utility inference.",
+      "Describe nuisance and question-bootstrap scope in methods; do not call it duplicate-family bootstrap."
+    ]
+  }
+}

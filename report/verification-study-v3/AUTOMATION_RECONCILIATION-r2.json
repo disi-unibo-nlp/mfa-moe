@@ -1,0 +1,111 @@
+{
+  "campaign_sha256": "57df4a026a7be4c909ece85ac1ebe3dc47c3f27bb53ffcab88e3aa9d82bfbb3b",
+  "j1_transport_reconciliation_sha256": "c7a91ce006ffd3f0872081269a2b0973ed2a88d80cab40af43bde6b0b5a29557",
+  "new_design": "separatelysealed cleanchildsubmissionenvironment, heldprimary, exact prearmed failurechain and releaseproof; additional audit transport recovery separately scoped",
+  "observed_epoch": 1791408396.2997484,
+  "old_controller_accounting": {
+    "59649876": {
+      "elapsed_seconds": 24,
+      "exit_code": "0:0",
+      "state": "COMPLETED"
+    },
+    "59649882": {
+      "elapsed_seconds": 0,
+      "exit_code": "0:0",
+      "state": "CANCELLED"
+    },
+    "59649891": {
+      "elapsed_seconds": 2,
+      "exit_code": "64:0",
+      "state": "FAILED"
+    }
+  },
+  "old_controller_chain_is_terminal": true,
+  "old_controller_submissions": [
+    {
+      "card_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/automation/submissions/52c939155a121bc3b62ed3c1d7d0a8449cc8c1f30adc9d768bf8c0cb71ae137f/CARD.json",
+      "card_sha256": "52c939155a121bc3b62ed3c1d7d0a8449cc8c1f30adc9d768bf8c0cb71ae137f",
+      "job_id": "59649882",
+      "path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/automation/submissions/52c939155a121bc3b62ed3c1d7d0a8449cc8c1f30adc9d768bf8c0cb71ae137f/SUBMISSION.json",
+      "sha256": "2c8abd3c4580809198c1c21f4abf793f7d1d66aed226a9c42a1e21a2737ccbf1"
+    },
+    {
+      "card_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/automation/submissions/558fc1e22a2c910098ddd67c795a10e5ca22699d89b802224c2a88179c0f8a57/CARD.json",
+      "card_sha256": "558fc1e22a2c910098ddd67c795a10e5ca22699d89b802224c2a88179c0f8a57",
+      "job_id": "59649891",
+      "path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/automation/submissions/558fc1e22a2c910098ddd67c795a10e5ca22699d89b802224c2a88179c0f8a57/SUBMISSION.json",
+      "sha256": "977e1d0182af051e1eecd61cf3de700424c904c2eff9be9e1e71f2fcf91ede85"
+    },
+    {
+      "card_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/automation/submissions/40cbe3514c2a203466b4d423775201306ad3ac66920984eab0fb2920a477f24d/CARD.json",
+      "card_sha256": "40cbe3514c2a203466b4d423775201306ad3ac66920984eab0fb2920a477f24d",
+      "job_id": "59649876",
+      "path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/automation/submissions/40cbe3514c2a203466b4d423775201306ad3ac66920984eab0fb2920a477f24d/SUBMISSION.json",
+      "sha256": "528d26c451a3cd4e3718c11b1d8b28569ec376d892e8591bccedb9c7b37f2bff"
+    }
+  ],
+  "old_scientific_sources_unchanged": true,
+  "previous_program_files": {
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/verification_study_v3_autodriver_r1.py": "748162b7191a3a0c281c82412dafcd985186189b5965a2db42398868538c822f",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/verification_study_v3_autodriver_r1.sbatch": "71976479019ab70c7d286ef43cee2ba31bdc0b92da53ea7d4335a398dd147068",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/verification_study_v3_autostages_r1.py": "97496fc5960ba2fff5d4844064fad584e9d590204576e89b1ae71cf015669714",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/verification_study_v3_codex_review_r1.py": "e1e17d2aea846981370e50cc73e3a2707d42f6351c4aee5df851808d2a17c9b2",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/verification_study_v3_discovery_continue_r2.py": "cd78185a2dec3e8bdba8b0346acbed0fd47a68dd508a5b45216bf203ee7dc237",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/verification_study_v3_discovery_dispatch_r1.py": "fff78a83c0ba07d2e6c8caea020706caa937892145053310f00f5544d1f5bb63",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/verification_study_v3_extension_r1.py": "430394d5e3e5134874bc1ad43421c1d45e0fd37a212b4ea100b7c8bee2b977c1",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/verification_study_v3_extension_r1_cpu.sbatch": "83cce0d85bb8774a6086a9b9fcc15c08c50db8da9aac44123bf0d75fc78e708b",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/verification_study_v3_extension_r1_gpu.sbatch": "50f304b01148e6c06f60978419bfbeb45cde87ee2a7c88ee258acaee1d46004e",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/verification_study_v3_health_r2.py": "79a4ec36d0f1c3db82160cb4ec1243ef803929e3ca59c8e6ae2c8f1241f0dac7",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/verification_study_v3_health_r4.py": "4095b1a933e40777bfa3e945f046e2895473f399212fda453f81d601c2320162",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/verification_study_v3_health_r4.sbatch": "b5968354ee338bd5530a6548a2b95024e43fbd1f0531925326d5588445ad88e9",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/verification_study_v3_j1_r1.py": "ba56b006b49c027790c85aaf537dbcb1b75d5b54e040a04e84d4c94c1cdf6834",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/verification_study_v3_reader_r1.py": "5843c4adab8c3f61c42db1149861ee4d2ae39432833b17a71f7066f67b707277",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/verification_study_v3_reader_r1.sbatch": "2088e68b1533b5efc62d4dab5f6c1344e4ff9dc69d8090072193b51b36c7262a"
+  },
+  "previous_readiness_sha256": "910ab57c385fe1f9213dc79fe3afec4fb58bd3e2bcaeb74dd600945ac1958796",
+  "schema": "verification-autodriver-reconciliation-v3",
+  "scientific_code_files": {
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/campaign_v3/j1_gate.py": "158738b8f0cb8d16fc7e72dd4c1dc890c01cf2773d85104e91f464c72e607e07",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/routing_local_logits_v2.py": "3c076c1d04ea132ab7b4a6d1f15fee2b059f4f3178acfb88cdd35d3af88f9769",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/verification_study_v3.py": "b4ac32b6a9941368f76ee534cbc47ee3b3e5b54b9b76cfa52a01e7cacdb778a0",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/verification_study_v3_cpu.sbatch": "2ba4a816a1415bee4c97811e2da5dedc5571d1459b402f788e978fa27d309644",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/verification_study_v3_gpu.sbatch": "d9ce95da6cee3ead2ae315ef858ac6df5347c373e7efaf61f33b571356609b8b",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/verification_study_v3_task.py": "14a9ba0ee5f5b2446453bdaef411218a1d340bc6861452307f04380f4d4c6e42",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/src/moe_exp/correlation_pipeline/answer_equivalence.py": "5ed66ae640513141df97bfe6d8d21af9afe254230c1011db35c1237be4a5633a",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/src/moe_exp/correlation_pipeline/continuation.py": "8130e9d6367498dd2bb42775f303979960bcc7bf87a4a271d7e27e233ac0c8d9",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/src/moe_exp/correlation_pipeline/model_profiles.py": "56646e711aa238ef38554f9a3d0930dbca5edfe10b445761ab14a7847812c4ed",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/src/moe_exp/correlation_pipeline/outcomes.py": "e0335357188c10f69cdeefc6f974d3c4bcdac46c97c22ae734ef241179f21a83",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/src/moe_exp/correlation_pipeline/scoring.py": "2b76e1c34ffc4176388590e04be4232bdb63c4b0904646db83ad7eabd0504f2d",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/src/moe_exp/routing_control/transitions_v24.py": "4869aa4270398dc86b8f2ce94866fb1260543164b3746bcb739ba77cfb9b6e27",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/src/moe_exp/utils.py": "0f5342cfdf5a778acc9e7d6f2b9ca442dd345e7c3d33157cd93da8788bf29e8a",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/src/moe_exp/verification_study/__init__.py": "35a0642016690e5bece89435b090b50614304dd57c97c94ad73842e426133092",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/src/moe_exp/verification_study/accounting.py": "6ad23fc01cec7ac0ccb41e7dde9302de95cbae2d69f747c8e809d13f0d5fbcff",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/src/moe_exp/verification_study/adapters.py": "ae141fc747473f2f094513bc455d9e0f7933175a32fbdf3ed84375f27479e5b1",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/src/moe_exp/verification_study/analysis.py": "779f76b5073c84b0d8a13cc295e78e8728db7863ff75091a76ca2f45cdf72c25",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/src/moe_exp/verification_study/backend.py": "f09a776717eabb7b4a7dfb1a0b8faefa67357662521fbcc671d0899e80a62d65",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/src/moe_exp/verification_study/campaign.py": "3c83e22da047bcf8a0740a5cba0e36fc648614e821c99401aa6d56132cb2cec1",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/src/moe_exp/verification_study/closeout.py": "8f586778e3d160cb730cb0833f35d00236a1a194b578f120e8cbff74b3c6a0cd",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/src/moe_exp/verification_study/contracts.py": "b253cb160a1d74093e2fcb30ae5a7f7135ba265eb20270f55cddf5f25b20ee7d",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/src/moe_exp/verification_study/execution.py": "0ee7bb76eef368c0101d66b7638dc7daf0507e168da9d15f562d31a354038629",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/src/moe_exp/verification_study/nomination.py": "d7e4ba8d2280f93d5760a3dc3fb1280ee02c56655c260632b31e10ebc1ea6173",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/src/moe_exp/verification_study/paper.py": "f44096ca0d4b9e2e5a8d5b3078b79d4747582db4867d16dfbdd2657a65c9fa02",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/src/moe_exp/verification_study/policy.py": "74cc4034fcab37c67df0b374fba21d4c8d9e92b7b354e92554342e36fe71a5be",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/src/moe_exp/verification_study/prepare.py": "1acbf63dc42bfaf085619b6a20e959e38cf492be9b814b44c2aa3e323691764a",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/src/moe_exp/verification_study/pricing.py": "e3a34ee2ea9dca57f56fcd0bc5cbe1e0e969a193f77a540ceedf03f45f89255a",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/src/moe_exp/verification_study/protocol.py": "855a66aeda72e9c9d52b06e3daa1a5a4f88f0d5f73a2ea9690fcd988a03ea090",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/src/moe_exp/verification_study/qualification.py": "aadcd2c8f721cfd0a020b3fe1850b87fe137761dc24fff163b4a3513cab871ba",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/src/moe_exp/verification_study/readers.py": "cc4dacb0596d12ddee7196a903dfbfc1ebc0cb98f9fda16630cc60c5eec3f14f",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/src/moe_exp/verification_study/registry.py": "a8f5bae1188319c32bcbbf57a967e2a91ae665fda118d16e3d7f1b4d6229df53",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/src/moe_exp/verification_study/semantics.py": "eb5b87b752958dc3be18566e7c943431db919f6ed53878dc8bcfce8f8bc063ce",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/src/moe_exp/verification_study/stages.py": "7b9c3f027120ebc9590750ce956bae281e5d27ce3923627ff525b59a505f7148",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/src/moe_exp/verification_study/storage.py": "32980b465066de0340c2d6f1d17eaa21fa9e71175eadba876fbbbd15774ace8e",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/src/moe_exp/verification_study/views.py": "19591f533dda12d01893e2b17c52f6a565c054a3bd64eacdeebcf2f7f659957b"
+  },
+  "scientific_jobs_cancelled": [],
+  "sha256": "65c0c710ed0b44e0d770984383ca697601cdab78920c90d49aa4fa881c4f60f0",
+  "startup_failure": "inherited CPUbinding mask outside successor serialallocation; srun failed before Python and before rescue registration",
+  "startup_failure_logs": {
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/automation/logs/cv3-auto-successor-59649891.err": "298b6c03d82d9cd6dc66121d50e7e52f02263e0c7b9c8f0a9d455885b5f09087",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/automation/logs/cv3-auto-successor-59649891.out": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

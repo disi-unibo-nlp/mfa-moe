@@ -1,0 +1,72 @@
+{
+  "actual_submissions": 0,
+  "campaign_sha256": "57df4a026a7be4c909ece85ac1ebe3dc47c3f27bb53ffcab88e3aa9d82bfbb3b",
+  "results": [
+    {
+      "health_card": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/health/submissions/b8bdc9f400b1b04f9347d42e040e24c538e50ac0fbd7a830325db95d9c567d38/HEALTH_CARD.json",
+      "model": "gpt",
+      "predecessor_stage": "qualify",
+      "predecessor_submission_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/submissions/d07f62780558ac2baf41560180f457c3e1756c0fc803fb7b2be01f41383c4d22/SUBMISSION.json",
+      "scheduler_output": "sbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\nsbatch: Job 59633548 to start at 2026-10-10T03:12:47 a using 2 processors on nodes login13 in partition lrd_all_serial\n",
+      "test_only": true
+    },
+    {
+      "health_card": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/health/submissions/c91ca19499d74f8a12132b5367a2077d809320089ad3caf50795dc0947c647ca/HEALTH_CARD.json",
+      "model": "gpt",
+      "predecessor_stage": "run",
+      "predecessor_submission_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/submissions/dbfd8ea93e887b031e2795f30b0b0e16f2f3534aa363c2cebb235f48de750fe1/SUBMISSION.json",
+      "scheduler_output": "sbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\nsbatch: Job 59633550 to start at 2026-10-10T03:12:49 a using 2 processors on nodes login13 in partition lrd_all_serial\n",
+      "test_only": true
+    },
+    {
+      "health_card": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/health/submissions/a4a99b9490950733a4f6c32c3803da7ab4c707564c0fa7257817de0dd45a7956/HEALTH_CARD.json",
+      "model": "nemotron",
+      "predecessor_stage": "run",
+      "predecessor_submission_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/submissions/bb8d79771cd3814b6749d82321b7e866a0fb66bb5b24daccdd39ea95f49adc2a/SUBMISSION.json",
+      "scheduler_output": "sbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\nsbatch: Job 59633551 to start at 2026-10-10T03:12:50 a using 2 processors on nodes login13 in partition lrd_all_serial\n",
+      "test_only": true
+    },
+    {
+      "health_card": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/health/submissions/f691cef4076039dff6f12d02e5923fb3161d0664ea8886359d3395ed479be148/HEALTH_CARD.json",
+      "model": "qwen35",
+      "predecessor_stage": "run",
+      "predecessor_submission_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/submissions/2e5f4f3d4538cbca252adf1813772490f68c541cfe483478e3b0ee9faa22b967/SUBMISSION.json",
+      "scheduler_output": "sbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\nsbatch: Job 59633552 to start at 2026-10-10T03:12:50 a using 2 processors on nodes login13 in partition lrd_all_serial\n",
+      "test_only": true
+    },
+    {
+      "health_card": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/health/submissions/a05aa446d0460dda3733eb4fc3b37714455e0e6543da54cf35d6f082ff8207be/HEALTH_CARD.json",
+      "model": "qwen36",
+      "predecessor_stage": "run",
+      "predecessor_submission_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/submissions/5951369b7bb0046db6338605569bca162175fa2399a9ff008d24c1fcea6977a9/SUBMISSION.json",
+      "scheduler_output": "sbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\nsbatch: Job 59633553 to start at 2026-10-10T03:12:51 a using 2 processors on nodes login13 in partition lrd_all_serial\n",
+      "test_only": true
+    },
+    {
+      "health_card": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/health/submissions/5ea3907bc87b26af33dbf34ed58e5d6be819e4625b6944fe4acfd22b40cb6285/HEALTH_CARD.json",
+      "model": "gemma",
+      "predecessor_stage": "run",
+      "predecessor_submission_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/submissions/a1f263fd079dbf2e84e61ab06feaac1d5423331ced3158f6c0540ea267828245/SUBMISSION.json",
+      "scheduler_output": "sbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\nsbatch: Job 59633555 to start at 2026-10-10T03:12:52 a using 2 processors on nodes login13 in partition lrd_all_serial\n",
+      "test_only": true
+    },
+    {
+      "health_card": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/health/submissions/315ae3d60fddf2cdc9b843386e6fddec203f275552a1e27acebe8709ae2d396c/HEALTH_CARD.json",
+      "model": "glm",
+      "predecessor_stage": "run",
+      "predecessor_submission_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/submissions/b591545fc0060b4d9680df8e61ced038e9e15a898c8561bf7f84ca12fa38f666/SUBMISSION.json",
+      "scheduler_output": "sbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\nsbatch: Job 59633556 to start at 2026-10-10T03:12:52 a using 2 processors on nodes login13 in partition lrd_all_serial\n",
+      "test_only": true
+    },
+    {
+      "health_card": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/health/submissions/c6249e0b23a4478d686cfafa1e93e7138c02b94701b954efc3567cd78a23b851/HEALTH_CARD.json",
+      "model": "qwen330b",
+      "predecessor_stage": "run",
+      "predecessor_submission_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/submissions/1c714d9862ef222e836a2be8bd14dec8cd956955d7e55c5ee5b623e9a414e125/SUBMISSION.json",
+      "scheduler_output": "sbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\nsbatch: Job 59633557 to start at 2026-10-10T03:12:53 a using 2 processors on nodes login13 in partition lrd_all_serial\n",
+      "test_only": true
+    }
+  ],
+  "schema": "verification-health-slurm-test-only-v3",
+  "sha256": "0118267ae37ccbc1a6cea80225377c7cca9dfb0b2d6c78a1c3d8cddb85e8f6f0"
+}

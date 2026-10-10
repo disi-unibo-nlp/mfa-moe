@@ -1,0 +1,40 @@
+{
+  "attention": "TRITON_ATTN",
+  "checkpoint": "openai/gpt-oss-20b",
+  "config_files": {
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/cache/hf/hub/models--openai--gpt-oss-20b/snapshots/6cee5e81ee83917806bbde320786a8fb61efebee/config.json": "3a2a26ded679375b7928ddeca59764df7cea83220c1961035f6d6e232659e9ce",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/cache/hf/hub/models--openai--gpt-oss-20b/snapshots/6cee5e81ee83917806bbde320786a8fb61efebee/model.safetensors.index.json": "0e085b977c4c9942f85938828e8c989ed7d5cdabf852e4da6a67c116cd502cd1",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/cache/hf/hub/models--openai--gpt-oss-20b/snapshots/6cee5e81ee83917806bbde320786a8fb61efebee/tokenizer.json": "0614fe83cadab421296e664e1f48f4261fa8fef6e03e63bb75c20f38e37d07d3",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/cache/hf/hub/models--openai--gpt-oss-20b/snapshots/6cee5e81ee83917806bbde320786a8fb61efebee/tokenizer_config.json": "9279e942392b742d633c7adbb89ebe002c98399db8926a7af5125c726f404070"
+  },
+  "engine_changes": [
+    "single request",
+    "eager",
+    "no prefix cache",
+    "no speculation"
+  ],
+  "expected_routed_layers": 24,
+  "experts": 32,
+  "extra_args": [],
+  "family": "gpt_oss",
+  "key": "gpt",
+  "language_model_only": false,
+  "local_path": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/cache/hf/hub/models--openai--gpt-oss-20b/snapshots/6cee5e81ee83917806bbde320786a8fb61efebee",
+  "native_context_limit": 131072,
+  "native_k": 4,
+  "reasoning_effort": "medium",
+  "reasoning_parser": "openai_gptoss",
+  "revision": "6cee5e81ee83917806bbde320786a8fb61efebee",
+  "routed_layer_map": "BOUND_BY_WORKER_QUALIFICATION",
+  "sampler": {
+    "temperature": 1.0,
+    "top_k": 0,
+    "top_p": 1.0
+  },
+  "schema": "verification-model-v3",
+  "sha256": "2b1896345961243c82f280a77b1083e4d47b3fbbdbb8df1dc05167becd10b53f",
+  "shared_paths": "NATIVE_UNCHANGED",
+  "speculation": "DISABLED_FOR_TIMING_QUALIFICATION",
+  "template_kwargs": {},
+  "weight_semantics": "native dispatched weights; do not assume unit mass"
+}
