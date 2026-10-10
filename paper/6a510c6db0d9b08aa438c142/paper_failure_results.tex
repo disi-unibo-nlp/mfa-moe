@@ -1,0 +1,81 @@
+\subsection{Qualitative inspection of paper-style failures}
+\label{sec:paper-failure-inspection}
+
+A reproducible, assistant-assisted excerpt inspection examines 22 saved
+historically baseline-correct/guided-incorrect pairs from strength-$+1$ paper-style
+promotion. For each complete GPT-OSS polarity, four cases are sampled
+without replacement from outputs ending at the token limit and four from
+outputs ending normally. Six additional capped cases are sampled from the
+interrupted Qwen positive run. Sampling uses sorted attempt IDs and seed
+20260924, with separate streams per condition and termination stratum.
+The OSS samples cover eight and seven distinct problems; the Qwen sample
+covers four. Selection conditions on recorded correctness loss and
+termination, and repeated attempts can share a problem. The resulting
+counts describe this sample, not the prevalence of failure modes.
+
+The review examines fixed beginning, middle, and ending excerpts, together
+with the most frequent exact 16-word span, against the corresponding
+baseline answer. Repetition is described from the text, not inferred from
+output length alone. The whole-text diagnostic counts case-sensitive,
+whitespace-delimited spans, allowing overlap; it does not capture every
+form of repetition, particularly unspaced symbol chains. This is neither
+independent human annotation nor exhaustive verification of the derivations.
+
+\begin{table}[htbp]
+\centering\small
+\caption{Descriptions of 22 cases sampled as correctness losses under the original scorer. Capped/stopped gives the sampled termination strata. Repetition can coexist with mathematical errors; the arithmetic-error column describes the remaining case without an observed long cycle. Formatting disagreement denotes an equivalent final answer rejected by the saved scorer. Counts are conditional on the sampling design.}
+\label{tab:paper-failure-review}
+\resizebox{\linewidth}{!}{%
+\begin{tabular}{lrrrrr}
+\toprule
+Condition & Capped/stopped & Repetition & Arithmetic error & Formatting & No box \\
+\midrule
+GPT-OSS positive & 4/4 & 6 & 0 & 2 & 4 \\
+GPT-OSS negative & 4/4 & 7 & 1 & 0 & 4 \\
+Qwen positive (partial) & 6/0 & 6 & 0 & 0 & 6 \\
+\bottomrule
+\end{tabular}}
+\end{table}
+
+\paragraph{Repetition and termination.}
+All 14 sampled capped outputs contain repeated arithmetic or verbal
+cycles and lack a boxed-answer marker. Five of the eight normally ended
+OSS outputs also contain cycles before returning an incorrect boxed
+answer. Across these 19 repetitive outputs, the most frequent exact
+16-word span occurs 62--9,906 times; the matched baseline maxima range
+from one to four. For example, positive OSS case P03 repeats
+\texttt{390?} while its baseline returns 49. Qwen case Q06 repeatedly
+emits ``Wait, wait.'' while its baseline returns 82. Negative OSS case
+N06 repeats an unresolved sum and eventually returns 112 instead of 144.
+Thus repetition can accompany both failure to finish and a normally
+terminated wrong answer. The separate non-cyclic arithmetic example N05
+correctly enumerates three, two, and two choices but evaluates
+$3\times2\times2=6$, returning 6 instead of 12.
+
+\paragraph{Scoring disagreement.}
+Two normally ended positive OSS cases expose formatting sensitivity in
+the saved fallback scorer. Case P05 returns \texttt{14/15}, equivalent
+to the gold $\frac{14}{15}$; case P08 returns \texttt{East}, equivalent
+to the gold \verb|\text{east}|. Both are stored as incorrect, whereas
+their baselines use the gold LaTeX representation and are stored as correct.
+The recorded method is \texttt{normalized\_exact\_numeric\_fallback};
+its normalized-string or floating-point comparison rejects these pairs.
+The classification concerns final-answer equivalence, not the validity
+of every intermediate step. The subsequent offline audit in
+Section~\ref{sec:guiding-rescoring} corrects both examples and applies the
+same rule to all saved baseline and guided evaluations. Current accuracy
+and bootstrap tables use those revised decisions. This qualitative sample
+retains its original IDs and selection based on historical judgments;
+P05 and P08 are consequently no longer correctness losses under the
+revised rule. Resampling after correction would answer a different
+qualitative question.
+
+\paragraph{Scope of interpretation.}
+The review supplies direct text examples of repetition, incorrect arithmetic,
+and scoring artefacts. It does not isolate why the routing intervention
+causes a particular trajectory, quantify population-level looping, or
+extend the interrupted Qwen result to its missing attempts. Full-population
+termination counts remain those in the generation-diagnostic tables.
+The sampled IDs, source hashes, excerpts, text diagnostics, and case-level
+notes are stored in \path{report/paper_failure_inspection.json} and
+\path{report/paper_failure_review.json}.

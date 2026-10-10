@@ -1,0 +1,109 @@
+{
+  "reason": "OSS identity policies targeted 8 experts per layer while native top_k is 4. Removed on user request; native unsteered baselines and split inputs retained.",
+  "runs": [
+    {
+      "directory": "results/moe_identity_guiding/oss_global/variants/negative_fixed/strength_1/sampling/full/guided",
+      "manifest_sha256": "c25f28b3c014d5d81527567bc9c4e12c245ffe489a641be0699b909c44c41aaa",
+      "method": "fixed",
+      "polarity": "negative",
+      "strength": 1.0,
+      "concurrency": 16,
+      "template_date": "2026-09-22",
+      "baseline_preserved": "results/moe_identity_guiding/oss_global/variants/negative_fixed/strength_1/sampling/full/baseline"
+    },
+    {
+      "directory": "results/moe_identity_guiding/oss_global/variants/negative_paper_eps_0.01/strength_1/sampling/full/guided",
+      "manifest_sha256": "911a1ad00d755b2986348b044603e97b2eb4c8ef2a44dd64fba86000dad27a4a",
+      "method": "paper",
+      "polarity": "negative",
+      "strength": 1.0,
+      "concurrency": 25,
+      "template_date": "2026-09-22",
+      "baseline_preserved": "results/moe_identity_guiding/oss_global/variants/negative_paper_eps_0.01/strength_1/sampling/full/baseline"
+    },
+    {
+      "directory": "results/moe_identity_guiding/oss_global/variants/positive_paper_eps_0.01/strength_-1/sampling/full/guided",
+      "manifest_sha256": "c93a8fb7b4043f524eac36ad84db7f6564d92565ce080eea62f1674238c36e43",
+      "method": "paper",
+      "polarity": "positive",
+      "strength": -1.0,
+      "concurrency": 25,
+      "template_date": "2026-09-22",
+      "baseline_preserved": "results/moe_identity_guiding/oss_global/variants/positive_paper_eps_0.01/strength_-1/sampling/full/baseline"
+    },
+    {
+      "directory": "results/moe_identity_guiding/oss_global/variants/positive_paper_eps_0.01/strength_1/sampling/full/guided",
+      "manifest_sha256": "4866fcfb54944c0fb0918fb9eeb4450ee24de67f646caf9c32fde72ed6008b0c",
+      "method": "paper",
+      "polarity": "positive",
+      "strength": 1.0,
+      "concurrency": 25,
+      "template_date": "2026-09-22",
+      "baseline_preserved": "results/moe_identity_guiding/oss_global/variants/positive_paper_eps_0.01/strength_1/sampling/full/baseline"
+    },
+    {
+      "directory": "results/moe_identity_guiding/oss_strength_-1/sampling/full/guided",
+      "manifest_sha256": "87823a05b1cb0292c04fa25dd8c9bcb9f50e7fcae4047ca85e93707fa695f2f3",
+      "method": "fixed",
+      "polarity": "positive",
+      "strength": -1.0,
+      "concurrency": 25,
+      "template_date": null,
+      "baseline_preserved": "results/moe_identity_guiding/oss_strength_-1/sampling/full/baseline"
+    },
+    {
+      "directory": "results/moe_identity_guiding/oss_strength_1/sampling/full/guided",
+      "manifest_sha256": "35f9b1eb561789c7b4af4c4c4ece36055450c545021539b090e31a9dbb596746",
+      "method": "fixed",
+      "polarity": "positive",
+      "strength": 1.0,
+      "concurrency": 25,
+      "template_date": null,
+      "baseline_preserved": "results/moe_identity_guiding/oss_strength_1/sampling/full/baseline"
+    },
+    {
+      "directory": "results/moe_identity_guiding/oss_strength_2/sampling/full/guided",
+      "manifest_sha256": "275afbc1ced7d3395bfd8f25a5394e2a88dc024a1cd26b8f9784c7ec6d7c61f8",
+      "method": "fixed",
+      "polarity": "positive",
+      "strength": 2.0,
+      "concurrency": 25,
+      "template_date": null,
+      "baseline_preserved": "results/moe_identity_guiding/oss_strength_2/sampling/full/baseline"
+    }
+  ],
+  "deleted_policies": [
+    {
+      "path": "results/moe_identity_guiding/oss_global/policy.json",
+      "sha256": "8b13fdb5975dc8903d6619dd133a03c183fece7090f5e4fdf5d7ee74a217a7c1"
+    },
+    {
+      "path": "results/moe_identity_guiding/oss_global/variants/negative_fixed/strength_1/policy.json",
+      "sha256": "67f388ac0283b582ab55f34edc4a4b46aba336432da2509260e2cbac1bcc84ca"
+    },
+    {
+      "path": "results/moe_identity_guiding/oss_global/variants/negative_paper_eps_0.01/strength_1/policy.json",
+      "sha256": "190dab9bf3bb06676773afedf75b7891cc67bb81ed80a7dc013153a6b9ed6e2f"
+    },
+    {
+      "path": "results/moe_identity_guiding/oss_global/variants/positive_paper_eps_0.01/strength_-1/policy.json",
+      "sha256": "8b990eef1128f80bcf16da9e4e31c54dd481678a88e279b5578937e956d1bb21"
+    },
+    {
+      "path": "results/moe_identity_guiding/oss_global/variants/positive_paper_eps_0.01/strength_1/policy.json",
+      "sha256": "3889ab14dcf8719eab39833f529194a73adc0006f58d97a1ccb840b7fe9f145d"
+    },
+    {
+      "path": "results/moe_identity_guiding/oss_strength_-1/policy.json",
+      "sha256": "8b13fdb5975dc8903d6619dd133a03c183fece7090f5e4fdf5d7ee74a217a7c1"
+    },
+    {
+      "path": "results/moe_identity_guiding/oss_strength_1/policy.json",
+      "sha256": "8b13fdb5975dc8903d6619dd133a03c183fece7090f5e4fdf5d7ee74a217a7c1"
+    },
+    {
+      "path": "results/moe_identity_guiding/oss_strength_2/policy.json",
+      "sha256": "8b13fdb5975dc8903d6619dd133a03c183fece7090f5e4fdf5d7ee74a217a7c1"
+    }
+  ]
+}
