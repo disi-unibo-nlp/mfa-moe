@@ -1,0 +1,19 @@
+\begin{table*}[ht]
+\centering\small
+\caption{Accuracy-selected boundary probes: Qwen3.5 GPTQ, GPT-OSS-20B, and Gemma-4 NF4. Each model reports hidden-state index, F1, and AUROC; selection and evaluation share the sentence-level test split.}
+\label{tab:probe-models}
+\begin{tabular}{lrrrrrrrrr}
+\toprule
+ & \multicolumn{3}{c}{Qwen} & \multicolumn{3}{c}{GPT-OSS} & \multicolumn{3}{c}{Gemma} \\
+Target & Index & F1 & AUROC & Index & F1 & AUROC & Index & F1 & AUROC \\
+\midrule
+Read & 34 & 0.704 & 0.934 & 19 & 0.686 & 0.906 & 21 & 0.675 & 0.898 \\
+Analyze & 36 & 0.647 & 0.835 & 21 & 0.540 & 0.767 & 27 & 0.611 & 0.816 \\
+Plan & 39 & 0.485 & 0.855 & 15 & 0.434 & 0.852 & 25 & 0.500 & 0.907 \\
+Implement & 38 & 0.771 & 0.930 & 21 & 0.745 & 0.905 & 29 & 0.735 & 0.922 \\
+Explore & 40 & 0.489 & 0.888 & 23 & 0.405 & 0.842 & 16 & 0.447 & 0.835 \\
+Verify & 27 & 0.726 & 0.912 & 21 & 0.667 & 0.880 & 19 & 0.603 & 0.872 \\
+Monitor & 35 & 0.482 & 0.903 & 15 & 0.344 & 0.774 & 22 & 0.382 & 0.831 \\
+\bottomrule
+\end{tabular}
+\end{table*}

@@ -1,0 +1,25 @@
+\begin{table*}[ht]
+\centering\small
+\caption{Generated-token means and token-limit hits for all 13 complete stochastic comparisons. Each row has 1,395 matched attempts; B/G denotes baseline/guided. Token statistics are descriptive.}
+\label{tab:guiding-tokens}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lrrrr}
+\toprule
+Condition & Mean tokens B & Mean tokens G & Limit hits B & Limit hits G \\
+\midrule
+Qwen fixed positive +1 & 13863 & 13706 & 140 & 146 \\
+Qwen fixed positive +2 & 13830 & 14092 & 154 & 169 \\
+Qwen fixed positive -1 & 13830 & 13919 & 154 & 138 \\
+GPT-OSS fixed positive +1 & 6497 & 6580 & 74 & 72 \\
+GPT-OSS fixed positive +2 & 6497 & 8629 & 74 & 164 \\
+GPT-OSS fixed positive -1 & 6497 & 6371 & 74 & 60 \\
+GPT-OSS fixed negative +1 & 6497 & 6900 & 74 & 87 \\
+GPT-OSS paper positive +1 & 6497 & 22489 & 74 & 670 \\
+GPT-OSS paper positive -1 & 6497 & 6698 & 74 & 106 \\
+GPT-OSS paper negative +1 & 6497 & 23639 & 74 & 815 \\
+Qwen margin (c=16) & 13848 & 13840 & 144 & 143 \\
+Qwen margin (c=25) & 13830 & 13810 & 154 & 146 \\
+GPT-OSS margin (c=25) & 6497 & 6409 & 74 & 83 \\
+\bottomrule
+\end{tabular}}
+\end{table*}

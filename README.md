@@ -1,5 +1,10 @@
 # MoE Routing Dynamics During Chain-of-Thought Reasoning
 
+The current paper direction, seven-model evidence, decisions and experiment
+requirements are consolidated in the [research wiki](paper/wiki/README.md).
+Start there before planning new analyses or jobs; the workflow descriptions
+below and `NEXT_STEPS.md` retain their historical context.
+
 This repository currently contains four active workflows:
 
 1. `gepaLLMAsJudge`: GEPA prompt optimization for the seven Schoenfeld
@@ -11,7 +16,7 @@ This repository currently contains four active workflows:
 4. `moe_guiding`: exploratory margin-triggered expert replacement during live
    top-2 Mixtral inference with vLLM.
 
-The prioritized work agreed in the latest tutor meeting is tracked in
+The earlier prioritized work from the tutor meeting is tracked in
 [`NEXT_STEPS.md`](NEXT_STEPS.md).
 
 The earlier numbered experiments are archived under `src/moe_exp/old`. Their
@@ -129,7 +134,8 @@ worker plugin setup, layer selection, generation commands, and validation limits
 
 ## Reports and Archive
 
-- Current report entry point: [`report/main.tex`](report/main.tex)
+- Active manuscript: [`paper/6a510c6db0d9b08aa438c142/main.tex`](paper/6a510c6db0d9b08aa438c142/main.tex); historical report: [`report/main.tex`](report/main.tex)
+- All-seven verification implementation and job contracts: [`paper/wiki/NEXT_EXPERIMENTS.md`](paper/wiki/NEXT_EXPERIMENTS.md)
 - Current experimental setup: [`report/experimental_setup.tex`](report/experimental_setup.tex)
 - Current GEPA section: [`report/gepaLLMAsJudge.tex`](report/gepaLLMAsJudge.tex)
 - Current boundary-probe section: [`report/probeTest.tex`](report/probeTest.tex)

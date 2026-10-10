@@ -1,0 +1,14 @@
+{
+  "routing_readout.csv": {
+    "source": "report/model-analysis-review-20261008/routing_readout.csv",
+    "sha256": "5ae4a2796fec817512c480b079bc867f709e45eb57cd2d70ed4e8eab01b9d0f2"
+  },
+  "anticipation.csv": {
+    "source": "report/model-analysis-review-20261008/anticipation.csv",
+    "sha256": "81bd7739b2812042aaae315e7a22354507264fe5ced5fbe3b8d763fd076a05ec"
+  },
+  "selection_coverage.csv": {
+    "source": "report/expert-memory-study-v1/exhibits-r2/selection_coverage.csv",
+    "sha256": "b55280c238bea0a4ec3f989780c70a6c935f1c6c3af9f2ee8e477454f8e2a97a"
+  }
+}
