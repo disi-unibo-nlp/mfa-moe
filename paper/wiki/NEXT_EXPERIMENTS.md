@@ -1,5 +1,23 @@
 # Active analysis and preserved experiment contracts
 
+## Active v3 continuation — 2026-10-11
+
+Use the separately sealed [r3 continuation](../../scripts/research_campaign_v3_r3/README.md),
+root `report/research-campaign-v3-20261011-r3/`.
+[ADR20](DECISIONS.md#adr-20261011-20-storage-recovery-and-separately-bound-v3-continuation)
+records verified storage recovery, completed-analysis reuse and measured storage
+admission. All 77 regression tests passed. Accepted initial owners are import
+59975081, snapshot 59975083, controller 59975084 and guards 59975086/59975088;
+all are released with exact resource/dependency readbacks. The prior r2 owners
+retired with zero runtime after protected transfer. Follow this campaign's newest
+handoff and immutable journals; the r2 launch below is historical.
+
+GPT's completed 81 pairs remain evidence; six repaired native analyses and
+retained prices are still required before subsequent GPU qualification. There
+are no new natural draws, altered nominations or additional model-selection
+decisions. Q31–Q38, the original total budget and October 15 reporting persist.
+Acceptance is orchestration ownership, not scientific completion.
+
 ## Campaign v3 authorized repair — 2026-10-10
 
 The user has authorized implementation and protected launch of the separately

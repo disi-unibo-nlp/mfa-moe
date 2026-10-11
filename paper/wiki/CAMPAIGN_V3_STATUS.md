@@ -1,38 +1,37 @@
 # Campaign v3 observed evidence
 
-Observed protected launch — 2026-10-10: **research-campaign-v3-20261009-r2**.
-[Launch and resources](../../report/research-campaign-v3-20261009-r2/LAUNCH.json),
-[ownership transfer](../../report/research-campaign-v3-20261009-r2/OWNERSHIP_TRANSFER.json),
-and [69 passing contracts](../../report/research-campaign-v3-20261009-r2/READINESS.json)
-are durable. Source resolution was observed RUNNING; GPU qualification and
-scientific effects are pending, with ordinary continuation owned by Slurm.
+Active protected continuation: **research-campaign-v3-20261011-r3**.
+[Launch](../../report/research-campaign-v3-20261011-r3/LAUNCH.json),
+[verified resources and ownership](../../report/research-campaign-v3-20261011-r3/LAUNCH_VERIFIED.json),
+[transfer](../../report/research-campaign-v3-20261011-r3/OWNERSHIP_TRANSFER.json)
+and [77 passing contracts](../../report/research-campaign-v3-20261011-r3/READINESS.json)
+establish the accepted binding. Import 59975081 was observed RUNNING; controller
+59975084 and guards 59975086/59975088 own subsequent automatic progression.
+Snapshot 59975083 owns October 15 reporting. Current successor IDs belong to
+the newest immutable handoff. No new scientific completion is claimed.
 
-| Owner | Job | Verified request | Dependency |
-|---|---|---|---|
-| Transitive source import | 59900682 | 4 CPUs, 24 GiB, 180 min | None |
-| October 15 snapshot | 59900687 | 4 CPUs, 24 GiB, 180 min | BeginTime October 15 21:59:59 UTC |
-| Controller | 59900703 | 2 CPUs, 4 GiB, 60 min | afterany:59900682 |
-| First failure owner | 59900706 | 2 CPUs, 4 GiB, 60 min | afternotok:59900703 |
-| Terminal failure owner | 59900709 | 4 CPUs, 24 GiB, 180 min | afternotok:59900706 and 59900703 |
+[Storage recovery](../../report/storage-recovery-20261011-r1/RESULT.json)
+retired about 39 GiB of verified disposable storage. Original data, captures,
+scientific outputs, required checkpoints and active benchmark jobs remain intact.
+Initial admission passed live quota and the original budget with the required
+margin and reserve; complete production admission remains a later measured gate.
 
-Both failure owners were accepted and verified before release. V2 owners
-59783334/59794746/59794749/59794753 were retired only after pending,
-never-started ownership checks; fresh accounting proves CANCELLED, zero
-elapsed time and zero allocated CPUs for all four. No scientific job was cancelled.
-Later IDs belong to immutable protected handoffs, not another dispatcher.
+Import completed and verified reference reuse of GPT's repaired native analysis,
+all 81 coordination pairs and the six existing measurement pilot banks. Nemotron
+CPU pricing job 59976436 then started automatically, protected by successor
+59976437 and guards 59976438/59976439. Its three-hour allocation bounds execution,
+not a promised completion time. Six saved-data analyses and their measured prices remain
+required before the missing GPU qualification and residual science. All seven
+models, original enrollment, unavailable prefixes and failed cells remain in scope.
 
-The requested r1 root preserves an aborted prelaunch attempt: held source job
-59900049 was rejected by an integer-only parser of Slurm's `NumNodes=1-1`.
-It was cancelled with zero time/CPUs before ownership transfer. Its source/runtime
-closure (794 bindings), intent, exception and accounting are preserved in
-[prelaunch provenance](../../report/research-campaign-v3-20261009-r1/PRELAUNCH_ABORT.json).
-The corrected verifier accepts only exact one-node geometry, and r2 supplies
-the fresh seal required after repair. The public entry point remains
-`scripts/research_campaign_v3/run.py`; use `--campaign report/research-campaign-v3-20261009-r2`.
+Historical r2 terminal export: `REPORT_COMPLETE=true`, `SCIENCE_COMPLETE=false`.
+Its [source-bound report](../../report/research-campaign-v3-20261009-r2/output/REPORT.json)
+and [decision package](../../report/research-campaign-v3-20261009-r2/PRE_PRODUCTION_DECISION.json)
+retain paired contrasts, uncertainty, unknown bounds and unavailable outcomes.
+An empty memory panel establishes no measured saving. Historical valid findings
+and all failure receipts remain preserved.
 
-All seven models, fixed enrollment, the original 42,050 local-hour ceiling,
-October 15 snapshot and terminal export remain required. The pre-production
-decision and final scientific decision are separate. Historical findings,
-source seals and failed receipts remain preserved.
-Final scientific outputs will be under `report/research-campaign-v3-20261009-r2/output/`;
-the milestone package under `snapshots/2026-10-15/`.
+The updated manuscript compiles offline with generated PDF exhibits included;
+[build evidence](../../report/research-campaign-v3-20261011-r3/PAPER_FULL_BUILD-r3.json)
+binds the source snapshot. Compilation establishes document validity, not a
+scientific outcome.

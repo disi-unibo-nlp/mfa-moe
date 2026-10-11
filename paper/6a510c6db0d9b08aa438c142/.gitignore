@@ -8,3 +8,14 @@
 *.out
 *.run.xml
 *.synctex.gz
+
+# Keep manuscript source, source-bound plots and compact report provenance.
+# Full execution-cell and resampling exports remain in private campaign storage.
+generated/research_campaign_v3/output/*
+!generated/research_campaign_v3/output/REPORT.json
+!generated/research_campaign_v3/output/FINAL_SCIENTIFIC_DECISION.json
+!generated/research_campaign_v3/output/EXHIBITS_BINDING.json
+!generated/research_campaign_v3/output/FIGURES.json
+!generated/research_campaign_v3/output/PLOTTING_TABLES.json
+!generated/research_campaign_v3/output/figures/
+!generated/research_campaign_v3/output/figures/**

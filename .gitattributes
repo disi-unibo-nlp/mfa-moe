@@ -2,3 +2,4 @@
 
 # Preserve byte-bound manuscript sources and figures from Overleaf.
 paper/6a510c6db0d9b08aa438c142/** -text
+paper/6a510c6db0d9b08aa438c142/generated/research_campaign_v3/output/figures/*.svg -whitespace

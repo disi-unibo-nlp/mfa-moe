@@ -1,0 +1,1 @@
+{"accounting": {"elapsed_seconds": 1492, "start": "2026-09-25T10:25:40", "state": "CANCELLED"}, "estimated_allocated_bytes": 79626240, "job_id": "58611845", "path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/campaign-v3/runtime/j1-58611845/triton", "sha256": "dfca3af2197a953e0950a17a4b5c6ff56bde716a9bd4ed7e9372f35eb5ac4899"}

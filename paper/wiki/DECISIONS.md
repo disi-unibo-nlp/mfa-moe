@@ -1,5 +1,89 @@
 # Research decisions and open questions
 
+## ADR 20261011 20: storage recovery and separately bound v3 continuation
+
+The user authorized implementation, relaunch and routine GitHub/Overleaf
+publication, then explicitly directed: **“I always authorize that. Do not ask
+again. Then check what is old and can be deleted from memory before relaunching
+adn completing the tasks.”** Standing publication authorization is recorded in
+`AGENTS.md`. Credentials, installed environments and bulk scientific artifacts
+remain outside version control.
+
+The observed r2 closeout is `REPORT_COMPLETE=true`, `SCIENCE_COMPLETE=false`.
+GPT completed its repaired derivation, supplementary extraction and all 81
+coordination pairs; the other six models lack repaired derivations. The storage
+gate stopped progression before GPU qualification. Its complete terminal export
+preserves missing cells and supplies no new causal or resident-memory result.
+
+Continuation implementation is separately versioned at
+`scripts/research_campaign_v3_r3/run.py`, with root
+`report/research-campaign-v3-20261011-r3/`. Compatible completed analyses are
+reused only after scientific source, runtime, population, nomination, artifact,
+pair and resampling checks. Stage A initially reserves bounded retained pricing
+shards for unmeasured models; bulk dispatch reserves the complete remaining bank
+using observed output prices with 25% margin. The 10 GiB reserve, temporary cache
+peak and separate complete-production admission remain enforced. Capacity waits
+use owned events and the partition actually preventing dispatch.
+
+The [cleanup plan](../../report/storage-recovery-20261011-r1/PLAN.json) limits
+compiler-cache retirement to terminal allocations, excluding live arrays,
+source-bound files and symlinks and rechecking directory identity. It separately
+retires five unused public Qwen2.5-VL weight blobs, preserving their exact
+revision, configuration, tokenizer and download metadata. Neither live benchmark
+uses that checkpoint; required seven-model checkpoints and all scientific outputs
+remain. GPT's temporary compact cache can retire only after verifying its durable
+dependent outputs. Cleanup creates no scientific measurement.
+
+Observed operational submissions are cleanup 59974460 (2 CPUs/2 GiB/30 minutes)
+and complete regression qualification 59974537 (4 CPUs/24 GiB/30 minutes), upper
+reservations 1 and 2 local hours, respectively, before margin. They fit the joint
+serial CPU, memory, running and submission limits. Initial login qualification
+was interrupted during a full Parquet fixture load; the fixture now takes a
+bounded real batch and the full suite runs in its allocated step. This is not a
+scientific failure. [Ancestry verification](../../report/research-campaign-v3-20261011-r3/HISTORICAL_SEALS_CHECK.json)
+checks all 883 files in the resumed r2/v2/v1 source/runtime closure.
+
+Q31–Q38, the seven models, frozen folds/cohorts/prefixes/nominations, original
+42,050 local-hour ceiling and October 15 milestone persist. No started generation
+or annotation is redrawn. The replacement must accept and verify its held
+controller, two guards and milestone before retiring only verified pending
+operational predecessor owners. `LAUNCH.json`, `OWNERSHIP_TRANSFER.json` and the
+cleanup `RESULT.json` will record observed acceptance and completion; this entry
+does not substitute for those receipts or claim scientific completion.
+
+Cleanup is now observed `COMPLETED 0:0`: 1,379 compiler cache directories
+(24,899,731,456 allocated bytes), five unused public weight blobs
+(16,584,414,560 bytes), and GPT's verified temporary compact cache were retired.
+Its [result](../../report/storage-recovery-20261011-r1/RESULT.json) records every
+scope and preservation check. The complete suite passed **77 tests** in
+306.688 seconds in job 59974537, also `COMPLETED 0:0`, with unchanged tested
+sources. [READINESS](../../report/research-campaign-v3-20261011-r3/READINESS.json)
+binds the passing suite; original data, captures, historical outputs, required
+checkpoints and installed environments remain preserved.
+
+Observed protected relaunch is now accepted and released:
+[LAUNCH](../../report/research-campaign-v3-20261011-r3/LAUNCH.json) and
+[readback](../../report/research-campaign-v3-20261011-r3/LAUNCH_VERIFIED.json)
+verify import 59975081 (4 CPUs/24 GiB/180 minutes), snapshot 59975083
+(same resources, October 15 at 23:59:59 CEST), controller 59975084
+(2 CPUs/4 GiB/30 minutes), first guard 59975086 (same controller resources)
+and final guard 59975088 (4 CPUs/24 GiB/180 minutes). Import was observed RUNNING.
+The controller depends on import; guards retain their exact failure dependencies.
+[Transfer](../../report/research-campaign-v3-20261011-r3/OWNERSHIP_TRANSFER.json)
+proves zero-runtime retirement of only 59900687/59954191/59954192/59954193,
+after new protection was durable. The independent benchmark allocations were
+preserved. Live balance was 40,286 local hours; initial measured-stage admission
+passed with 25% cost margin and 10 GiB storage reserve. Production remains
+subject to its separate complete measured gate.
+
+Import subsequently completed and verified GPT's 81-pair analysis without
+repeating extraction or inference, six measurement pilot banks and all 22
+inherited failure receipts. The accepted controller automatically launched
+Nemotron retained CPU pricing 59976436 with protected successor 59976437 and
+guards 59976438/59976439. This stage supplies repaired observational summaries,
+compact extraction and measured CPU/storage prices; it cannot establish a
+causal intervention effect or resident-memory saving.
+
 ## ADR 20261010 19: separately sealed campaign v3 repair and authorized launch
 
 The user supplied the Campaign v3 implementation, verification and protected

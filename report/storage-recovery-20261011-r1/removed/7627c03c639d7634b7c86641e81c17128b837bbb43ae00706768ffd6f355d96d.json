@@ -1,0 +1,1 @@
+{"accounting": {"elapsed_seconds": 123, "start": "2026-09-27T07:51:10", "state": "FAILED"}, "estimated_allocated_bytes": 4096, "job_id": "58624415_9", "path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/campaign-v3/runtime/gen-glm-58624415_9/torch", "sha256": "03254f5a3e3b0f6e6a25385839023a553025a55bae9f2fb4c3064a2dd5543a05"}

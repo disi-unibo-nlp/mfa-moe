@@ -484,6 +484,7 @@ report/storage-recovery-20261011-r1/*
 # Its nested Git metadata and compiled main PDF remain local.
 !paper/*.md
 !paper/6a510c6db0d9b08aa438c142/.gitignore
+!paper/6a510c6db0d9b08aa438c142/.gitattributes
 !paper/6a510c6db0d9b08aa438c142/*.bst
 !paper/6a510c6db0d9b08aa438c142/*.bbx
 !paper/6a510c6db0d9b08aa438c142/*.cbx
@@ -546,6 +547,11 @@ report/research-campaign-v[123]-*/*/*
 !report/research-campaign-v[123]-*/*/ANALYSIS_PRICE.json
 !report/research-campaign-v[123]-*/*/ANALYSIS_ADMISSION.json
 !report/research-campaign-v[123]-*/*/COORDINATION_SHARDS.json
+!report/research-campaign-v[123]-*/*/ANALYSIS_REUSE.json
+!report/research-campaign-v[123]-*/*/ANALYSIS_STORAGE_PRICE.json
+!report/research-campaign-v[123]-*/*/CACHE_RETIRED.json
+!report/research-campaign-v[123]-*/*/CACHE_RETIREMENT_READY.json
+!report/research-campaign-v3-20261011-r3/qualification.sbatch
 
 # Raw captures, generated banks, temporary caches, locks and console logs.
 report/**/__pycache__/
