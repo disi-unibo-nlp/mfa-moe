@@ -13,6 +13,24 @@ Preserve original captures, immutable scientific evidence, source seals and
 files used by active jobs. The original scientific design and 42,050-hour
 ceiling remain binding; this does not authorize unrelated workload changes.
 
+**Active protected v3 continuation — 2026-10-11:** ADR20261011 20 records
+`scripts/research_campaign_v3_r3/run.py`, sealed root
+`report/research-campaign-v3-20261011-r3/`. All 77 regression contracts passed;
+the resumed r2/v2/v1 closure verifies 883 unchanged source/runtime files.
+`LAUNCH.json` and `LAUNCH_VERIFIED.json` verify released import 59975081,
+October 15 snapshot 59975083, controller 59975084 and guards 59975086/59975088.
+Import was observed RUNNING. `OWNERSHIP_TRANSFER.json` proves only pending
+old operational owners 59900687/59954191/59954192/59954193 retired with zero
+runtime after all new owners were accepted. Resume its current journals and
+handoffs; do not edit this sealed source closure or create another dispatcher.
+GPT's complete 81-pair analysis is eligible for verified reference reuse;
+the other six retained CPU pricing shards precede GPU qualification. Bulk
+analysis uses observed output prices, with the mandatory reserve and complete
+production gate preserved. Cleanup 59974460 completed successfully, retiring
+only terminal compiler caches, unused public Qwen2.5-VL weights and GPT's
+durably verified temporary cache. Original captures, scientific outputs,
+required checkpoints and the separate live MedExplain jobs remain intact.
+
 **Observed campaign v2 terminal audit — 2026-10-09:** ADR20261009 18 and
 `report/model-analysis-review-20261009/DECISION_AUDIT-r1.json` supersede earlier
 running/automatic-progression descriptions for the observed v2 state.

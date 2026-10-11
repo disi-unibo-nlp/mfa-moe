@@ -1,0 +1,1 @@
+{"detail":{"pair_indices":[50,51,52,53,54,55,56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73],"restartable":true,"status":"complete"},"failure_scope":null,"job_id":"59918434","model":"gpt","seconds":7532.688836903311,"sha256":"24fe79cec3b8417880be58d2ef5c99402bcc8ed711a68ed8ef38b04f7290be56","shard_index":4,"stage":"coordination","status":"complete","threshold_index":0}

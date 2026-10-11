@@ -1,0 +1,1 @@
+{"billing_hours":0.195,"comment":"mfa-v3-storage-recovery-20261011-r1","cpus":"2","elapsed_seconds":351,"exit_code":"0:0","job_id":"59974460","sha256":"3046aa7f3e90b90b1366cd9eb0773da9404e2d2faadabe44c23b821cf37f2d1d","start":"2026-10-11T11:56:26","state":"COMPLETED","terminal":true,"tres":"billing=2,cpu=2,gres/tmpfs=10737418240,mem=2G,node=1"}
