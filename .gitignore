@@ -466,6 +466,19 @@ report/expert-memory-study-v1/exhibits-r1/*
 !tests/old/*.py
 !tests/research_campaign_v[123]/
 !tests/research_campaign_v[123]/*.py
+!tests/research_campaign_v3_r3/
+!tests/research_campaign_v3_r3/*.py
+
+# Bounded cache-retirement plans, accepted allocation and per-path receipts.
+!report/storage-recovery-20261011-r1/
+report/storage-recovery-20261011-r1/*
+!report/storage-recovery-20261011-r1/*.json
+!report/storage-recovery-20261011-r1/*.py
+!report/storage-recovery-20261011-r1/*.sbatch
+!report/storage-recovery-20261011-r1/removed/
+!report/storage-recovery-20261011-r1/removed/*.json
+!report/storage-recovery-20261011-r1/download_removed/
+!report/storage-recovery-20261011-r1/download_removed/*.json
 
 # Mirror manuscript sources and source-bound figures from the Overleaf checkout.
 # Its nested Git metadata and compiled main PDF remain local.
@@ -483,6 +496,17 @@ report/expert-memory-study-v1/exhibits-r1/*
 !paper/6a510c6db0d9b08aa438c142/generated/**
 paper/6a510c6db0d9b08aa438c142/.git/
 paper/6a510c6db0d9b08aa438c142/main.pdf
+
+# Final campaign exports include bulk copies for local analysis. Publish bounded
+# summaries, bindings, plotting tables and figure assets, not the full cell bank.
+paper/6a510c6db0d9b08aa438c142/generated/research_campaign_v3/output/*
+!paper/6a510c6db0d9b08aa438c142/generated/research_campaign_v3/output/REPORT.json
+!paper/6a510c6db0d9b08aa438c142/generated/research_campaign_v3/output/FINAL_SCIENTIFIC_DECISION.json
+!paper/6a510c6db0d9b08aa438c142/generated/research_campaign_v3/output/EXHIBITS_BINDING.json
+!paper/6a510c6db0d9b08aa438c142/generated/research_campaign_v3/output/FIGURES.json
+!paper/6a510c6db0d9b08aa438c142/generated/research_campaign_v3/output/PLOTTING_TABLES.json
+!paper/6a510c6db0d9b08aa438c142/generated/research_campaign_v3/output/figures/
+!paper/6a510c6db0d9b08aa438c142/generated/research_campaign_v3/output/figures/**
 
 # Bounded audit, stop, preflight, seal and verification receipts.
 !report/experiment-stop-*/
