@@ -1,5 +1,18 @@
 # Research continuity
 
+**Standing user authorization — 2026-10-11:** the user explicitly authorizes
+routine commits and pushes of this project's research code, reports, wiki and
+manuscript to the existing public GitHub repository
+`https://github.com/disi-unibo-nlp/mfa-moe.git` (branch
+`analysis/routing-dynamics`) and the existing Overleaf project
+`https://git.overleaf.com/6a510c6db0d9b08aa438c142`. Do not ask again for those
+destinations. Keep credentials, installed environments and bulk scientific data
+out of Git. The user also authorizes inspecting and deleting verified disposable
+old storage before a protected, separately bound continuation of Campaign v3.
+Preserve original captures, immutable scientific evidence, source seals and
+files used by active jobs. The original scientific design and 42,050-hour
+ceiling remain binding; this does not authorize unrelated workload changes.
+
 **Observed campaign v2 terminal audit — 2026-10-09:** ADR20261009 18 and
 `report/model-analysis-review-20261009/DECISION_AUDIT-r1.json` supersede earlier
 running/automatic-progression descriptions for the observed v2 state.
