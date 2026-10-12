@@ -1,6 +1,288 @@
 # Active analysis and preserved experiment contracts
 
-## Active v3 continuation — 2026-10-11
+## Results-first recovery review — 2026-10-12
+
+**Implementation and protected launch authorized (ADR22):** the user instructed
+implementation of the supplied results-first continuation and required launch
+at the end. Q1–Q7 and the execution plan below are approved. The fresh r4
+binding resumes r3 transitively; all seven models and the original scientific
+and budget gates remain binding. Current observed jobs and validation receipts
+are recorded in [CAMPAIGN_V3_STATUS.md](CAMPAIGN_V3_STATUS.md).
+
+**Q5 endpoint agreement:** the first complete sentence and post-pulse
+target-class occupancy anchor the immediate and subsequent steering findings.
+Dwell, transitions, re-entry and recovery remain pre-specified supporting tests,
+with explicit controls, missingness and uncertainty, even if the primary
+effect is weak. This is a reporting hierarchy, not removal of those analyses.
+**Q6 now accepts study-wide simultaneous uncertainty for the 1,176 central
+primary steering contrasts**, including both identification-bound components
+in that family. Supporting dynamics have separately pre-specified tests.
+**Q7 accepts the fixed 129-family causal cohort and claims at the resolution
+its observed uncertainty supports.** Small or imprecise effects remain unresolved.
+ADR21 records the available-pool audit and illustrative precision arithmetic;
+neither constitutes observed treatment variability or a precision guarantee.
+No population expansion is approved. The 400-family memory cohort is unchanged.
+
+**Accepted priorities:** the user wants a conference-submission-ready paper and
+results as soon as possible, with **accuracy–resident-memory curves first**.
+All seven models, the separate causal experiment, the complete frozen curves,
+controls and Q31–Q38 remain in scope. The user explicitly directed this review
+to focus on results and runs, not conference deadlines. [ADR21](DECISIONS.md#adr-20261012-21-results-first-recovery-review)
+records these choices. ADR22 records the subsequent explicit implementation and launch authorization.
+
+### What actually stopped the runs
+
+| Run | Observed failure or limit | Reusable work / implication |
+|---|---|---|
+| Campaign v1 | Seven measurement pilots failed on native-router instrumentation; cleanup obscured initial errors. Qwen3.6 supplementary extraction had an ownership/population mismatch. | Preserve original derivations, native outputs, seven first-pair extractions and six supplementary outputs. The instrumentation repair is recorded in [ADR16](DECISIONS.md#adr-20261009-16-authorized-campaign-v2-instrumentation-repair-and-handoff). |
+| Campaign v2 | All seven derivations failed on the inherited Parquet/NaN/strict-JSON path. Shared-failure propagation incorrectly allowed six GPU pilots while classifying Qwen3-30B unavailable. | Seven ownership caches and exact-attempt accuracy summaries, six instrumentation/router banks. Only Qwen3.5/Qwen3.6 have retained REAP reconstruction qualification. See the [existing defect audit](#defects-and-limitations-to-resolve-before-relaunch). |
+| Campaign v3 r2 | Storage stopped saved-data progression; terminal export completed with science incomplete. | Repaired GPT derivation/supplementary analysis and all 81 coordination pairs. |
+| Campaign v3 r3 | Storage stopped Stage A; terminal paper export then collided with the previous campaign's immutable exhibit binding. Failed closeout led to repeated controller handoffs, reaching generation 198. | GPT's 81 pairs were reused; Nemotron has repaired derivation/supplementary/price and 55 of 77 pairs. The other five repaired derivations are absent. This is not a measured null for pruning or intervention. |
+
+The exact current evidence is
+[TERMINAL](../../report/research-campaign-v3-20261011-r3/TERMINAL.json),
+[shared export failure](../../report/research-campaign-v3-20261011-r3/SHARED_IMPLEMENTATION_FAILURE.json),
+[pre-production decision](../../report/research-campaign-v3-20261011-r3/PRE_PRODUCTION_DECISION.json),
+[report](../../report/research-campaign-v3-20261011-r3/output/REPORT.json), and
+[last handoff](../../report/research-campaign-v3-20261011-r3/handoffs/0198.json).
+The last receipt's ownership is historical: fresh accounting shows primary
+60016683 and guards 60016687/60016690 all `FAILED 1:0`. Closeout 60008370 failed
+`1:0` after 1,452 seconds. At the October 12 inspection, the only queued job was
+snapshot 59975083, pending for October 15. No scientific job or controller was
+running or queued.
+
+The r3 output report declares `REPORT_COMPLETE=true`, `SCIENCE_COMPLETE=false`,
+but the campaign-root completion receipt is absent: paper publication failed
+before that receipt was written. The manuscript's generated campaign paragraph
+and older wiki launch narrative therefore lag the actual terminal state. A
+written report artifact does not establish a successfully delivered closeout.
+
+### What remains scientifically missing
+
+The report's **243,747 configured rows are not completed experiments**. They
+comprise 91,140 memory rows and 152,607 causal rows, with 2,940 reused native
+memory controls and 240,807 upstream-unavailable rows. Task identities alias
+identical executions; the independent populations remain 400 pruning families
+and 129 causal families. Nemotron/Qwen3-30B each retain one unavailable prefix.
+Per-benchmark and sensitivity support is smaller. Preserve paired family
+uncertainty, equal benchmark/family weights and unknown-outcome bounds.
+
+| Paper result / catalogue | Exact existing sources to reuse | Missing information |
+|---|---|---|
+| Seven-model reasoning/routing evidence, D04/D05/X05/X11 | [Bound existing main figures](../6a510c6db0d9b08aa438c142/generated/best_results_20261009/SOURCES.json), [selection closeout](../../report/expert-memory-study-v1/SAVED_DATA_CLOSEOUT-r1.json) | These already support readable class information and mixed held-out coverage. They cannot measure accuracy after physical expert removal. |
+| Main accuracy–resident-memory figure, D01–D05/X11/X12 | Original card-v3 attempts/labels, r3 model `NATIVE_ACCURACY.json`, `SCORES.npz`, six retained v2 banks and the original family folds | Physically qualified compact models, missing discovery measurements, target-role prices, and paired accuracy/memory at 0/12.5/25/50% removal; five pruning methods and both equal/unequal allocation remain required. |
+| Causal response and subsequent dynamics, D04/D05/X06/X08–X10 | Each r3 model's frozen `NOMINATIONS.json` and `PREFIXES.json`, original reader contract and compatible native banks | Qualified doses and new assigned continuations, annotations, sign/depth-specific target-minus-native/random effects, accuracy and token cost. Historical engagement or failed recognition gates cannot supply these counterfactuals. |
+| Full selected-set coordination, D05/X13 | [GPT pair roster](../../report/research-campaign-v3-20261011-r3/gpt/COORDINATION_SHARDS.json), [Nemotron pair roster](../../report/research-campaign-v3-20261011-r3/nemotron/COORDINATION_SHARDS.json), retained captures and pair results | Finish the original 899-pair bank and remaining repaired summaries, preserving all nominated/unestimable cells. Existing complete and partial results require verified component-level reuse, not regeneration. |
+
+### Recovery plan for approval
+
+The user approved implementation, validation and separately sealed protected
+continuation of this finite study, subject to the gates below. Historical r3
+sources and scientific receipts remain preserved; only its verified pending
+snapshot may retire after the new owners are accepted and read back. A failed
+admission cannot silently reduce models, methods, decoding or families.
+
+#### Paper outputs and interpretation fixed before runs
+
+| Output | Population, controls and missing measurement | Interpretable outcome |
+|---|---|---|
+| **First main figure: accuracy–resident-memory curves** (D02–D05/X11/X12) | All seven models; 420 questions/400 families; native plus empirical selection, REAP, all-reasoning frequency, matched-label frequency and matched random; equal/unequal allocation at 0/12.5/25/50% removal. Reuse original native attempts, folds, scores and qualified measurement banks; new physical removal and paired accuracy are absent. | Actual bytes and strict accuracy with paired uncertainty, unknown bounds and same-budget method differences. A trade-off or lack of improvement is a valid result; checkpoint-size estimates cannot substitute for resident memory. |
+| **Co-primary steering figure: immediate response and post-pulse occupancy** (D04/D05/X06/X08–X10) | Fixed 131 questions/129 families; all seven targets/models, three nominated depths, both signs, native and matched-random controls. Central configuration only. Frozen prefixes/nominations exist; assigned continuations and their labels do not. | Target-minus-control effects on the first complete sentence and target-class token occupancy after the pulse through the longest registered window. Report effects, identification bounds and simultaneous uncertainty; a wide interval is unresolved, not equivalence. |
+| **Supporting dynamics and joint utility** (D02–D05/X06) | The same continuations supply earlier windows, dwell, transitions, re-entry, return to source class, strict answer accuracy and tokens. No additional generations solely for a supporting endpoint. | Test all pre-specified dynamics, even if the primary is weak. Distinguish routing engagement, visible semantic response and answer utility. Conditional transition matrices describe arm-specific populations; assignment-level contrasts support causal interpretation. |
+| **Selection/coordination explanation** (D05/X11/X13) | Reuse held-out selection, all 735 frozen nominations, GPT's 81 pairs and verified Nemotron pairs; finish the original coordination bank from captures. | Explain which class-associated expert sets/depths were nominated, their stability and co-selection. These associations inform interpretation, not post-outcome retuning or a substitute causal claim. |
+
+All paths in the preceding source table and the linked D/X catalogue remain
+required inputs to the job cards. In particular, the original annotations bind
+the reader; the older failed J1 and recognition studies neither authorize a
+replacement grader nor establish a result for this revised intervention.
+
+#### Execution sequence and completion gates
+
+1. **Repair and validate the orchestration before new science.** Review the
+   stopped r4 drafts against this plan. Preserve every historical seal; give the
+   final implementation a new binding. In
+   [publication](../../src/moe_exp/research_campaign_v3_r3/decisions.py), isolate
+   each campaign/report snapshot, verify it before changing the current-paper
+   pointer, and separate durable report completion, paper delivery and scientific
+   completion. In the [controller](../../src/moe_exp/research_campaign_v3_r3/controller.py),
+   terminate a failed closeout explicitly, permitting at most one bounded
+   export-only recovery before a durable operational-failure receipt. A shared
+   scientific implementation failure stops its dependents; an isolated model
+   limitation does not masquerade as a shared failure or a scientific null.
+
+2. **Reuse evidence and unblock the independent work.** Verify source/runtime,
+   population, nomination, sufficient-statistic and resampling compatibility
+   for completed components. Import GPT's 81 pairs and Nemotron's 55 of 77 by
+   reference; complete the missing 22 without repeating those extractions.
+   Validate other inherited pairs individually. Produce the five absent repaired
+   summaries before GPU preparation, fixing the NaN publication path uniformly.
+   Split cheap summary production from retained CPU pricing and bulk coordination.
+   [Masks and doses](../../src/moe_exp/research_campaign_v3_r3/tasks.py) do not
+   consume the complete coordination bank: finish that bank concurrently within
+   CPU/storage limits. Do not alter discovery, folds or nominations to accelerate it.
+
+3. **Measure missing inputs and expose cost problems early.** Start the missing
+   Qwen3-30B saved-sequence pilot first. Reuse compatible Qwen3.5/Qwen3.6 REAP
+   qualification; repair and qualify the four other REAP paths before using them.
+   Retain valid router inputs independently of a failed output-norm measurement.
+   Collect only absent discovery inputs from the original sequences. Freeze
+   masks/doses and inventory actual distinct physical shapes and execution aliases.
+   Qualify native and the first compact shape in a deterministic, outcome-free
+   order; immediately retain the longest-input original task for its role as a
+   price measurement. Price the original missing annotation batch as soon as
+   compatible native contexts exist, or from the first retained causal assignment.
+   Do not wait for every model/shape price before exposing annotation cost.
+
+   Each measurement wave has an itemized finite card list, wall-time ceilings,
+   current reservations and a reconciled cumulative charge. Initially allow at
+   most one unpriced target role per model and one shared reader batch outstanding;
+   expose each completed price before admitting further shapes. Preserve the
+   original full generation/reader allowances. A 24-hour maximum allocation is
+   an upper reservation, not a measured task price. Tighten subsequent job bounds
+   only from compatible observed load/context/role costs. No shorter scientific
+   cap, replacement draw or toy scientific cohort is introduced to obtain a price.
+
+4. **Admit the complete remaining study from measured prices.** Before production,
+   every required physical shape must pass native/full-context operation, physical
+   storage release, fixed KV capacity and within-execution masked equivalence;
+   every executable role and the original annotator must have retained prices.
+   Recompute feasibility after each measurement wave, including missing saved-native
+   passes, qualification, generation, annotation, scoring, coordination, storage
+   and protected owners. Reconcile inherited actual spending and pending reservations,
+   preserve the 25% margin and original 42,050-hour ceiling, and check each filesystem
+   separately. Report both observed costs and the conservative full-allowance bound.
+   A failed conservative bound is an admission limit, not proof of expected cost.
+   If it fails, export the exact limiting terms for a decision; do not launch a
+   silently reduced study or spend the rest of the budget on repeated pricing.
+
+5. **Deliver memory curves first, with their own scoring/export path.** After
+   complete admission, prioritize all seven frozen memory rosters. Score and
+   export those rows as they complete, without waiting for causal generation
+   or annotations. Task sorting alone is insufficient: the controller currently
+   waits for all execution shards before scoring. The new dependency graph must
+   allow the first complete all-seven memory figure independently. Preserve
+   all methods/removal points and report qualified/unavailable cells explicitly.
+
+6. **Complete steering and paper delivery.** Run central steering before the
+   balanced sensitivity diagnostics, annotating completed central assignments
+   as capacity permits. Produce all primary contrasts, supporting dynamics,
+   utility and the completed coordination analysis. Freeze partial exports as
+   partial; do not use them to choose a new primary, dose, sample or favorable
+   model. Update the existing canonical manuscript with compact main figures,
+   methods and limitations, moving the full audit to supporting material.
+   Build and inspect the source-bound PDF, reconcile the final execution/accounting
+   ledgers, and read back the existing authorized GitHub/Overleaf destinations.
+   No deadline search is part of this plan.
+
+#### Measurement and inference corrections required before outcomes
+
+- **Balanced diagnostics:** replace the resetting sensitivity-index assignment
+  with a separately bound, deterministic family overlay: the eight secondary
+  settings receive 16/17 families overall, with within-benchmark counts differing
+  by at most one. Preserve all 129 central assignments and original prefix/token
+  hashes. Sensitivity remains diagnostic; small per-benchmark cells cannot become
+  precise steering curves. Unsupported cells retain the declared six-benchmark
+  universe and remain unavailable, rather than silently dropping benchmarks.
+- **A common pulse/window:** use the same registered pulse boundary and observation
+  windows for target, random and saved native branches. Native's current zero-pulse
+  calculation is not a valid post-pulse control. Existing native captures cover
+  these windows; fixing the analysis does not require a new native draw.
+- **Explicit missingness and stopping:** clip sentences at window boundaries,
+  break trajectories at label gaps/segment changes and retain censoring. Occupancy
+  bounds use all emitted post-pulse tokens, including unlabelled tokens. A verified
+  natural stop with no post-pulse tokens contributes zero under the unconditional
+  endpoint and is reported separately; missing execution or unobserved labels
+  remain unknown. Truncation is distinguished from natural stopping. The first
+  complete-sentence endpoint keeps the same natural-stop/unknown distinction.
+- **Truthful supporting metrics:** report observed restricted dwell, adjacent
+  transition/event counts, re-entry and the first post-pulse sentence's return to
+  the pre-treatment source class. A last observed target label is not proof of
+  persistence to the window end; an exit is not evidence of compensatory reasoning.
+  Register metric identities, windows and one supporting correction family per
+  named endpoint over its full comparison roster before outcomes; report all of
+  them. Detailed time trajectories and off-diagonal responses remain supporting.
+- **One central primary family:** use 10,000 paired whole-family resamples with
+  shared family identities across arms/models, equal family weights within each
+  of the six equally weighted benchmarks, and the existing maximum-standardized-
+  deviation simultaneous procedure over all 1,176 contrasts/2,352 bound components.
+  Missing cells stay in the declared roster; undefined/degenerate estimates do not
+  acquire finite intervals by discarding draws. Utility is a separate pre-specified
+  family, reported jointly. One replicate does not estimate run-to-run variability.
+  Q7 permits only claims supported by the resulting intervals and identification
+  bounds, with no post hoc expansion to pursue significance.
+
+#### Storage, validation and workload bounds
+
+Use private WORK for code, seals, journals and compact retained paper evidence;
+use the permitted private FAST root
+`/leonardo_scratch/fast/IscrC_MIOSR/lmolfett/mfa-moe/` for new campaign bulk
+outputs and temporary caches. Reference existing captures in place. Verify
+destination ownership, resolved paths and separate quota IDs before launch;
+use destination-local atomic writes and verified copies for compact cross-filesystem
+exports. Preserve scientific outputs; retire only verified disposable caches
+after durable dependents validate. Include peak concurrent caches, retained data,
+export copies and the 10 GiB reserve on each used filesystem in admission. FAST
+does not supply an archival guarantee; retain a manifest and explicit retention
+destination for evidence that must outlive its allocation.
+
+The October 12 inspection found WORK project ID 20149688 and FAST ID 22149688;
+FAST had approximately 773.8 GiB free, while WORK remained tight. These are
+timestamped observations, not pooled quota or a current capacity guarantee.
+The completed 0.90 GiB disposable cleanup is recorded in ADR21; this plan does
+not depend on deleting original data or moving the existing capture bank.
+
+Minimum regression acceptance covers: successive and interrupted campaign
+exports; bounded failed-closeout termination; 55/77 partial reuse; scientific
+compatibility rejection on a real source change; exact original identities;
+balanced assignment on the actual 129-family roster; common native pulse;
+window clipping, gap censoring and unknown bounds; the full primary comparison
+roster; shared versus isolated failures; memory export before causal completion;
+separate quota/peak accounting and restart-safe ownership. Use bounded CPU
+fixtures and existing artifacts. A prospective Slurm validation card of four
+CPUs/24 GiB/30 minutes reserves 2 local hours, 2.5 with margin. GPU engineering
+fixtures verify implementation only; they are not used as scientific effect
+estimates, and sampled cross-run replay/repeat-only jobs remain excluded.
+
+The first missing GPU pilot is two GPUs/16 CPUs/120 minutes. At the previously
+observed 16 billing units this reserves 32 local hours, 40 with margin. Five
+missing/repaired pilots reserve at most 160/200 hours if the two existing qualified
+banks remain compatible; do not repeat those two solely for new provenance.
+Each distinct-shape qualification has the same 32/40-hour upper reservation.
+A still-unpriced 24-hour role or reader allocation reserves at most 384/480 hours;
+actual spending and billing must be read back. These are component ceilings,
+not a measured whole-study cost. The wave limit above prevents reserving an
+entire model's unknown role bank at once. All waves, including unsuccessful
+qualification and operational work, count against the original remaining bank.
+
+Before protected launch, publish the concrete first-wave job cards and admission
+receipt, verify hostname/user/account/partition/QoS and live spending/storage,
+seal the tested closure and accept both failure owners before releasing work.
+Only then may the separately bound ownership transfer retire a proven pending,
+never-started predecessor snapshot. No such operation has happened during this
+planning stage. Later production requires the complete measured gate above;
+its price, storage and completion time remain unmeasured today.
+
+### Resource evidence and limits of the forecast
+
+R3's failed Stage A gate forecast **19.46 GiB** against **17.69 GiB** available
+after reserve: a **1.77 GiB shortfall**. Its 99.01-hour forecast and 39,749.47
+available hours describe that bounded saved-data admission, not all remaining
+science. The complete production decision still has null admission, price and
+output totals. An empty `required_missing_prices` field there does not override
+those missing totals or establish measured feasibility.
+
+Native read-only inspection on `lmolfett@login07.leonardo.local`, October 12
+2026 (observation recorded at 14:10 UTC), returned 68,000 allocated and 27,793
+consumed project local hours, or 40,207 remaining before campaign reconciliation
+and reservations. `lfs quota -p 20149688 /leonardo_work` returned 1,046,539,272
+KiB used against 1,073,741,824 KiB: **25.94 GiB free / 15.94 GiB after reserve**.
+These are observations, not a new workload budget or current admission proof.
+Recompute the remaining bank and lifecycle peak before resumption. Queue time,
+unqualified shapes and unmeasured target-role costs prevent a credible complete
+results ETA. The next useful milestone is a qualified, priced all-seven memory
+execution plan, followed by measured curves; controller acceptance is not it.
+
+## Preserved v3 continuation — 2026-10-11
 
 Use the separately sealed [r3 continuation](../../scripts/research_campaign_v3_r3/README.md),
 root `report/research-campaign-v3-20261011-r3/`.

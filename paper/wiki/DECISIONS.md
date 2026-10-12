@@ -1,5 +1,154 @@
 # Research decisions and open questions
 
+## ADR 20261012 22: authorized results-first r4 implementation and protected launch
+
+The user supplied the results-first continuation plan, instructed “Implement the
+plan and make sure to launch everything at the end,” and then said “go on.”
+This supersedes ADR21's implementation hold for that unchanged finite plan.
+No additional approval is required for its gated continuation or the existing
+GitHub branch and Overleaf project. All seven models, original draws, folds,
+controls, decoding allowances, cohorts and the original 42,050-hour ceiling
+remain binding; production requires complete measured admission and 25% margin.
+
+Implementation: `src/moe_exp/research_campaign_v3_r4/`; launcher:
+`scripts/research_campaign_v3_r4/run.py`; intended fresh root:
+`report/research-campaign-v3-20261012-r4/`, resuming r3 transitively.
+The first deliverable is the fixed 420-question/400-family accuracy–resident-memory
+study, followed by central steering on the fixed 129 families and balanced
+sensitivity diagnostics. Central primary uncertainty covers all 1,176 contrasts
+and 2,352 bound components with 10,000 paired family resamples. Supporting
+dynamics and joint utility retain separate declared families.
+
+Historical seals and scientific outputs remain preserved. Verified component
+reuse includes GPT's 81 pairs and Nemotron's 55 completed pairs; the missing 22
+remain required. Private FAST is authorized for new bulk outputs and temporary
+caches. WORK holds code, receipts and compact paper evidence; each filesystem
+retains its own 10 GiB reserve. New phase, export, storage and ownership receipts
+must establish observed execution; this authorization is not scientific success.
+
+The authorized regression envelope is four CPUs, 24 GiB, 30 minutes, at most
+2 local hours before margin. Each of the five initially missing/repaired saved-sequence
+pilots is bounded at two GPUs/16 CPUs/120 minutes: 32 local hours before margin,
+40 with margin, at most 200 including margin if both retained qualifications
+remain compatible. Later waves retain one unpriced target role per model and
+one shared reader batch, reconcile prior spending/reservations and stop with an
+itemized feasibility report if the complete residual study cannot be admitted.
+
+Observed launch: all 94 tests passed in Slurm 60224931 (`COMPLETED 0:0`);
+1.819 total regression local hours, 2.274 with margin. The new seal matches the
+tested sources. Import 60226462 was observed RUNNING; snapshot 60226466,
+controller 60226470 and guards 60226474/60226482 are released with verified
+dependencies. Only pending predecessor snapshot 59975083 retired with zero
+runtime after both new failure owners were accepted. The existing
+[status page](CAMPAIGN_V3_STATUS.md) links immutable launch, transfer, preflight
+and validation proofs. Scientific completion and full production admission
+remain pending; resume these accepted journals rather than creating a dispatcher.
+
+
+## ADR 20261012 21: results-first recovery review
+
+**Latest workflow instruction:** “remember that we are in grilling. So first
+we need to agree then we will plan and finally impplement.” Q1–Q7 are now
+agreed; the user accepted Q7 with “Ok I agree.” The scientific interview has
+reached agreement. Present the concrete plan, then wait for explicit
+implementation approval for this replacement. Historical
+campaign authorizations do not override this instruction. No replacement
+campaign is sealed or launched. The agent began unsealed r4 drafts prematurely
+and stopped; they are unreviewed drafts, not an approved implementation.
+
+**Additional accepted answers:** Q3 requires checking disposable storage first,
+and justifying paper-usable measurements and independent support before runs;
+steering is co-primary. The user permits private FAST storage. Q4 selects
+**“Central steering primary; sensitivity diagnostic.”** This changes the role
+of sensitivity settings, without dropping any model, class, depth or direction.
+**Q5 accepted:** start with post-pulse target-class occupancy as the primary
+subsequent-dynamics endpoint, alongside the already agreed first-complete-
+sentence endpoint. The user added: “let's start from pulse, put I'd like to test
+also the others so we are sure we are not lefting anything behind.” Retain
+pre-specified supporting analyses of dwell, transitions, re-entry and recovery;
+they are not dropped if the primary effect is weak or absent. Their definitions,
+controls, missingness and uncertainty must be specified before outcomes, and
+their results reported. This does not authorize choosing a new primary endpoint
+after seeing results. This answer does not approve implementation or launch.
+
+**Q6 accepted:** one shared uncertainty correction across all central primary
+steering comparisons: seven models × seven target classes × three depths ×
+two directions × two controls × two endpoints = 1,176 contrasts. Both lower
+and upper identification-bound estimates belong to that same primary family
+(2,352 bound components), using paired whole-family resampling. The supporting
+dynamics retain separately pre-specified tests; utility remains reported jointly
+but its inferential family is separate. This replaces the old collection of
+separately corrected central panels for primary steering claims, without
+changing the scientific population, controls or existing analysis-bank evidence.
+Q7 below settles the interpretation of precision. Accepting these scientific
+choices does not approve the premature code drafts, an implementation plan or
+a launch.
+
+**Q7 accepted:** retain the fixed 129-family causal cohort and make claims at
+the resolution the resulting uncertainty supports. Small or imprecise effects
+remain unresolved; no positive effect, ±5/±10 percentage-point precision,
+population expansion or outcome-driven follow-up is promised. This preserves
+the 420-question/400-family memory cohort too. The supporting evidence is that
+the common 509-family pool contains
+12/12/15/150/70/250 families by benchmark. The selected causal population
+12/12/15/30/30/30 already exhausts the first three benchmarks. Under comparable
+family variances, complete support and equal benchmark weighting,
+`1 / sum((1/6)^2 / n_b)` is 108 for the current cohort and 139.38 for the entire
+pool: at most a 12.0% same-variance interval-width reduction from this expansion,
+before checking unused prefix compatibility. Illustrative two-sided
+Bonferroni-normal scaling across 2,352 components gives critical value 4.251;
+paired occupancy SDs 0.2/0.5 give half-widths 8.18/20.45 percentage points at
+effective N=108. These are arithmetic scenarios, not observed variances, power,
+guaranteed intervals or predictions of the paired bootstrap. Unknown-label
+bounds and unavailable prefixes create additional uncertainty. Sources:
+[common readout roster](/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/forum/tests/r3_context/FROZEN.readout.v3.json),
+[frozen family map](../../report/experimental-resume-v1/family-freeze.json),
+and the [population contract](NEXT_EXPERIMENTS.md#minimum-remaining-work-preserving-the-adopted-study).
+
+**Observed storage-only action:** cleanup job 60189548 completed `0:0` in
+18 seconds with two CPUs (0.01 local hours). Its finite allowlist removed 56
+verified disposable cache directories, 964,698,112 allocated bytes, with no
+skipped entries. [Cleanup receipt](../../report/storage-recovery-20261012-r1/COMPLETE.json).
+Original captures, retained scientific evidence and required checkpoints were
+preserved. No new research job was submitted. Live queue recheck still shows
+only the historical snapshot 59975083 pending.
+
+**Accepted user decisions:** the requested deliverable is a paper ready for
+submission to a conference, with results as soon as possible. This supersedes
+the earlier Computational Linguistics venue preference, without changing the
+accepted scientific scope. The user chose **“Accuracy–memory curves first”**
+for execution priority after qualification. All seven models and the separate
+causal experiments remain required. The user also explicitly directed:
+**“DO NOT SEARCH THE DEADLINES; FOCUS ON THE RESULTS AND RUNS.”**
+
+The [October 12 recovery review](NEXT_EXPERIMENTS.md#results-first-recovery-review--2026-10-12)
+records inspected failures, reusable outputs, missing claim/artifact cells,
+proposed repairs and live resource observations. It supersedes older running
+descriptions for r3: Stage A stopped on storage; closeout then failed on the
+cross-campaign immutable paper-export collision. The saved chain reached
+handoff 198; its primary and guards all failed. Only snapshot 59975083 remains
+queued at inspection. GPT's 81 complete and Nemotron's 55 completed coordination
+pairs remain useful; memory and causal outcomes are still unmeasured.
+
+**Recovery plan, awaiting implementation approval:** the
+[concrete plan](NEXT_EXPERIMENTS.md#recovery-plan-for-approval) maps each result
+to retained sources, missing measurements, validation and resource gates. It
+proposes a separate binding, isolated exports and bounded terminal behavior;
+verified partial reuse; separate WORK/FAST admission; repaired summaries before
+GPU preparation, with coordination proceeding independently; early retained
+generation/annotation pricing; complete measured production admission; memory
+curves first, then the central and supporting steering results. The qualification
+and pricing waves must be explicitly bounded before dispatch. No all-bank
+24-hour reservation or unmeasured annotation assumption establishes infeasibility.
+The original complete-residual gate remains mandatory.
+
+No models, methods, controls, removal points, families or decoding were changed
+by this interview. Q31–Q38 persist except for the explicit endpoint, sensitivity
+and primary-inference amendments above; the original 42,050-hour ceiling
+persists. No sealed source or scientific result was changed. Only planning
+documentation was updated after the workflow correction. Resource-dependent
+scope amendments require evidence and an explicit decision.
+
 ## ADR 20261011 20: storage recovery and separately bound v3 continuation
 
 The user authorized implementation, relaunch and routine GitHub/Overleaf

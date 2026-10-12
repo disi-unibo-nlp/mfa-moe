@@ -57,3 +57,9 @@
 | Serialized expert bytes | Tensor payload and associated quantization metadata in checkpoint headers, with scope/aliases specified | Actual GPU resident bytes or measured freed memory |
 | Resident expert removal | An implementation actually omits or releases expert storage and records surviving ID mapping | Masking selection while every expert tensor stays allocated |
 | Joint accuracy–memory point | Assigned accuracy with uncertainty/unknown bounds alongside measured storage and runtime memory | Accuracy retention inferred from a nonsignificant difference |
+| Configured result cell | One registered model/population/method/setting comparison row; several rows may alias one execution | A completed run or an independent sample |
+| Execution alias | Multiple comparison rows referencing the same compatible execution identity | Permission to combine incompatible baselines or count replicas as independent families |
+| Report artifact completeness | A saved report has enumerated results, missing cells and status at its stated cutoff | Scientific completion, successful paper publication, or a campaign-root completion receipt |
+| Publication completion | A verified immutable report snapshot and its intended current-paper selection have been committed | A partial set of copied figures or an output report's internal completion flag |
+| Operational dependency | A prerequisite imposed by the scheduler graph | Necessarily an input required to compute the downstream scientific operator |
+| Results-first scheduling | Prioritize outcome-critical qualified work while preserving frozen assignments, controls, complete admission and required analyses | Dropping expensive comparisons, choosing favorable outcomes or bypassing qualification |
