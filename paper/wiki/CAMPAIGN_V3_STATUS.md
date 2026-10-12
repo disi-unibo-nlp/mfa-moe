@@ -1,5 +1,15 @@
 # Campaign v3 observed evidence
 
+Terminal report: report complete; science incomplete.
+
+Campaign: `research-campaign-v3-20261012-r4`. [Source-bound report](../../report/research-campaign-v3-20261012-r4/output/REPORT.json). [Decision package](../../report/research-campaign-v3-20261012-r4/PRE_PRODUCTION_DECISION.json).
+
+All seven models, fixed enrollment, failed cells and unavailable outcomes are retained. See the report for observed qualification, paired effects, uncertainty, unknown bounds and accounting. Historical valid findings and failed receipts remain preserved.
+
+<!-- generated-current-campaign -->
+
+# Campaign v3 observed evidence
+
 ## Verified r4 launch — 2026-10-12
 
 [ADR22](DECISIONS.md#adr-20261012-22-authorized-results-first-r4-implementation-and-protected-launch)
