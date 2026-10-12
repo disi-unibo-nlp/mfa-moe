@@ -1,5 +1,15 @@
 # MoE routing and reasoning research wiki
 
+**Latest authorization — 2026-10-12:** the user approved the supplied
+results-first r4 continuation and instructed implementation and launch
+([ADR22](DECISIONS.md#adr-20261012-22-authorized-results-first-r4-implementation-and-protected-launch)).
+Accuracy–resident-memory curves across all seven models come first, followed
+by co-primary central steering and all agreed supporting analyses. The fixed
+cohorts, original decoding and 42,050-hour ceiling remain binding. See the
+[approved recovery contract](NEXT_EXPERIMENTS.md#recovery-plan-for-approval)
+and [observed status](CAMPAIGN_V3_STATUS.md) for validation and launch receipts.
+Earlier descriptions below retain their historical scope.
+
 **Observed protected v3 launch — 2026-10-10:** campaign
 `research-campaign-v3-20261009-r2` has 69 passing contracts and accepted import,
 snapshot, controller and both failure owners. The

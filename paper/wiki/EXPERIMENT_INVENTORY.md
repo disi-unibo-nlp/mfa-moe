@@ -1,5 +1,15 @@
 # Existing data and experiments
 
+**October 12 update:** r3 stopped on storage admission and then failed terminal
+paper export. GPT's 81 coordination pairs and Nemotron's repaired summaries plus
+55 of 77 pairs remain reusable; new physical-memory/accuracy and causal effects
+remain unmeasured. [The recovery review and plan](NEXT_EXPERIMENTS.md#results-first-recovery-review--2026-10-12)
+supersede older running descriptions below. [ADR22](DECISIONS.md#adr-20261012-22-authorized-results-first-r4-implementation-and-protected-launch)
+records explicit approval to implement and launch the separately bound r4
+continuation. Validation and protected ownership are recorded on the
+[status page](CAMPAIGN_V3_STATUS.md). Catalogue entries retain their original
+populations and evidence boundaries.
+
 **October9 update:** ADR15/16 authorized the separate revised campaign after
 the historical stop below. V2 has now exported a terminal incomplete report;
 the [ADR18 audit](NEXT_EXPERIMENTS.md#campaign-v2-audit-and-final-decision-requirements--2026-10-09)

@@ -1,5 +1,28 @@
 # Research continuity
 
+**Active results-first r4 continuation — 2026-10-12:** the user supplied the
+continuation plan and explicitly instructed implementation and launch. ADR22
+records `scripts/research_campaign_v3_r4/run.py`, separately sealed root
+`report/research-campaign-v3-20261012-r4/`, resuming r3/r2/v2/v1 transitively.
+All 94 regression contracts passed in 60224931; the 166-file current source
+seal matches tested sources. `LAUNCH.json` and `LAUNCH_VERIFIED.json` verify
+released import 60226462, October 15 snapshot 60226466, controller 60226470 and
+guards 60226474/60226482. Import was observed RUNNING. `OWNERSHIP_TRANSFER.json`
+proves only pending predecessor snapshot 59975083 retired with zero runtime
+and Start=None after both new failure owners were accepted. Resume these
+immutable journals and newest handoffs; do not edit sealed r4 or older sources,
+create another dispatcher, or repeat original draws. GPT's 81 completed pairs
+and Nemotron's 55/77 require verified component import; the missing 22 and five
+repaired summaries remain required. Memory execution/scoring/export precedes
+central steering and sensitivity. New bulk outputs and job caches use the
+authorized private FAST campaign directory; WORK holds code, operational
+receipts and compact paper copies. Each filesystem retains a separate 10 GiB
+reserve. Full production requires complete measured admission under the
+original 42,050-hour ceiling and 25% margin. Report durability, scientific
+completion and paper delivery are distinct; failed final closeout has one
+export-only recovery, then explicit termination. The older active-r3 paragraph
+below is historical; r4 owns its pending snapshot obligation.
+
 **Standing user authorization — 2026-10-11:** the user explicitly authorizes
 routine commits and pushes of this project's research code, reports, wiki and
 manuscript to the existing public GitHub repository

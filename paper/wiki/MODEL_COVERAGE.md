@@ -1,5 +1,18 @@
 # Seven model scope and evidence coverage
 
+**Latest coverage, October 12 ([ADR21](DECISIONS.md#adr-20261012-21-results-first-recovery-review)):**
+r3 retains GPT's complete 81-pair coordination analysis and Nemotron's repaired
+summaries plus 55 of 77 pairs. The other five repaired derivations are absent;
+their original evidence and the six v2 measurement banks remain preserved.
+New paired resident-memory/accuracy curves and assigned causal effects remain
+unmeasured for all seven. R3 stopped on storage, then failed paper export;
+these are operational failures, not null scientific effects. Q1–Q7 are agreed,
+including central steering as co-primary and the fixed causal cohort. The
+[recovery plan](NEXT_EXPERIMENTS.md#recovery-plan-for-approval) is authorized
+by [ADR22](DECISIONS.md#adr-20261012-22-authorized-results-first-r4-implementation-and-protected-launch).
+R4 implementation, validation and protected launch preserve those evidence
+boundaries; see [observed status](CAMPAIGN_V3_STATUS.md). Earlier campaign states below are historical.
+
 **Observed v2 coverage, October9 ([ADR18](DECISIONS.md#adr-20261009-18-campaign-audit-and-final-decision-requirements)):**
 all seven full-A ownership caches and exact-attempt accuracy summaries exist.
 GPT, Nemotron, Gemma, GLM, Qwen3.5 and Qwen3.6 passed a retained single-sequence
