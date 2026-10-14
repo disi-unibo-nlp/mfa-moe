@@ -1,3 +1,20 @@
+**Latest verified execution — 2026-10-15:** reader pricing and the controller's
+embedded failure-identity lookup are repaired. Twelve tests and actual coverage/
+stored-receipt checks pass. The 64 completed coverage observations (maximum
+9,726 tokens) price the unchanged reader and cover the unexecuted original inputs
+(maximum 9,140); their annotations remain eligible for later admitted recovery.
+No additional reader GPU job or draw was submitted; both failed jobs remain
+FAILED. CPU pilot 60565750 is RUNNING. Scientific owners 60569710/60569711/60569712
+are accepted and released, pending its completion; all replacements verified
+before their predecessors retired with zero runtime. Reporting owners remain
+unchanged. Full production is not yet submitted: complete measured budget/storage
+ADMISSION still precedes the 346 shapes, 69,459 non-REAP generations, 10,822
+forwards, 35 folds, 741 pairs and fixed central/sensitivity study. October 15
+23:59:59 Rome is a report checkpoint. See
+[ADR31](DECISIONS.md#adr-20261015-31-existing-reader-price-evidence-and-protected-continuation)
+and [the recap](../../report/research-campaign-v3-20261014-r6/RECAP.md).
+Earlier observations below preserve historical states.
+
 **Current execution — 2026-10-15:** protected science is released. Reader
 pricing 60564472 and corrected CPU pilot 60565750 are RUNNING; actual resource
 readbacks and the CPU stage START are verified. Corrected owners
