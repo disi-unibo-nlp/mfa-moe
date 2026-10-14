@@ -1,5 +1,14 @@
 # Campaign v3 observed evidence
 
+**Latest r6 observation — 2026-10-14:** 60520129 FAILED 1:0 at the isolated
+snapshot copy timeout after 20+111 tests, all 64 reader contexts and the real
+243,747-row export/replay passed. No scientific job is queued. All four protected
+report-only owners 60509618/19/20/21 remain pending. The active-source build
+correction passes in 12.937 seconds; candidate r7 and the tested CPU dispatch
+amendment remain unsubmitted. Another 30-minute completion allocation requires
+an explicit extension. See [ADR28](DECISIONS.md#adr-20261014-28-preserved-full-export-active-snapshot-and-cpu-dispatch-repair)
+and [the recap](../../report/research-campaign-v3-20261014-r6/RECAP.md).
+
 **Terminal reader boundary — 2026-10-14:** all seven full-context native memory
 fixtures qualified. Corrected Nemotron and Gemma REAP qualified; GPT's corrected
 REAP remains a method limitation. No compact-removal accuracy or steering effect

@@ -41,6 +41,46 @@ boundary below is preserved as history.
 
 These are fixed-context native baselines with the registered 8-GiB KV capacity, measured separately under each model’s profile. **No new compact accuracy–memory curve or causal steering effect has been measured.** [Fixture and coverage evidence](PARTIAL_VALIDATION_EVIDENCE.json).
 
+## Latest validation and fixes
+
+Corrected job **60520129 FAILED 1:0** after **5,919 seconds**. It passed all
+**20 operational + 111 inherited tests**, all **64 original reader contexts**,
+and the actual **243,747-row export**, fixed bootstrap summaries and checkpoint
+replay. It failed before TeX started because the isolated builder recursively
+copied ignored review histories; it also omitted the local bibliography style.
+The [terminal](OPS_R1_LOADER_VALIDATION_TERMINAL.json),
+[accounting](OPS_R1_LOADER_TERMINAL_ACCOUNTING.json) and
+[preserved successful dependencies](OPS_R1_LOADER_PARTIAL_VALIDATION.json) remain
+immutable. This attempt used **6.57667 local hours**; cumulative validation is
+**9.00222 hours**, **11.25278 with margin**. No scientific work was released.
+
+Concurrent manuscript inputs and `.paper-review` outputs changed during the
+allocation. [Integrity audit](OPS_R1_LOADER_INTEGRITY_AUDIT.json). This experiment
+continuation made no canonical manuscript edits. The versioned active-source
+builder excludes review/history outputs, includes local styles and bibliography,
+and preserves the old helper. **Three regression tests pass**; its isolated
+offline preflight compiled in **12.937 seconds**, without source changes.
+
+**Candidate r7 is prepared and unsubmitted.** It reuses the actual contract,
+reader and full-export evidence, completing only the isolated PDF, real graph
+traversal and active canonical/raw Git integrity/readiness proofs. The
+[preflight](OPS_R1_BUILD_RECOVERY_PREFLIGHT.json) and
+[pending binding](OPS_R1_BUILD_RECOVERY_BINDING.pending.json) authorize no job.
+A proposed one-time **4-CPU / 24-GiB / 30-minute** completion reserves **2 local
+hours / 2.5 including margin**, with no retry, and requires a new explicit
+extension. Active manuscript inputs and Git indexes must remain stable.
+
+The [separate CPU dispatch amendment](CPU_DISPATCH_R1_BINDING.json) also remains
+unsubmitted. [Nine tests passed](CPU_DISPATCH_R1_TESTS.json), the
+[scheduler-only shape check](CPU_DISPATCH_R1_SCHEDULER_PREFLIGHT.json) accepts
+four CPUs / 24 GiB without a GPU request, and the
+[installed transport probe](CPU_DISPATCH_R1_TRANSPORT_PREFLIGHT.json) verifies
+all four reporting owners against real readbacks. This preserves scientific
+identities and accounting bounds while moving scientific CPU workers to Booster:
+four reporting owners plus three scientific owners and three reserved successors
+otherwise leave no serial worker slot. Full matching validation still gates
+activation; all three replacements must be accepted before retiring any old owner.
+
 ## In the queue now
 
 | Job | Observed state | Intended output or purpose |
@@ -50,16 +90,34 @@ These are fixed-context native baselines with the registered 8-GiB KV capacity, 
 | 60509620 | Pending, dependency | First failure owner; compact fallback after full-export recovery is exhausted. |
 | 60509621 | Pending, dependency | Final failure owner; bounded compact fallback and explicit terminal ownership. |
 
-**No scientific generation, saved-sequence or coordination job is queued.**
+**Only these four reporting jobs are queued. No scientific generation, saved-sequence or coordination job is queued.**
 All four replacements were accepted/read back before retiring only old pending
 predecessors `60454552/60462231/60462233/60462236`, each with zero runtime
 and accounting `Start=None`. The existing 28-hour reporting reservation persists.
 
-## Current blocker and next runs
+## Remaining measurements and sequence
 
-- **Latest attempt 60510557 is FAILED 1:0**, after 29 seconds and all 20 operational tests. I reused unittest's default loader across two test directories; its cached top-level directory rejected discovery of the inherited suite. The 111 inherited contracts and actual reader/full-export checks were not reached in this attempt. No scientific work was released. The [terminal failure](OPS_R1_VALIDATION_TERMINAL.json) verifies unchanged manuscript/HEAD/index; [accounting](OPS_R1_TERMINAL_ACCOUNTING.json) records **0.03222 additional local hours**, **2.42556 validation hours in total**.
-- The separately prepared **unsubmitted candidate r6** uses independent loaders and explicit top-level directories. Two tiny regression checks pass, and the actual **20+111 test roster is discovered** without running full validation. [Correction preflight](OPS_R1_LOADER_PREFLIGHT.json), [pending binding](OPS_R1_LOADER_BINDING.pending.json). The single attempt is exhausted; another allocation needs an explicit user extension. No retry is queued.
-- Job **60488160 failed after import**, because its CPU fixture assigned the installed vLLM processor’s read-only `tokenizer` property. The versioned candidate r5 reuses the corrected renderer fixture and validates the new operational policy. Full retained-reader and 243,747-row export validation remain unverified. The original [failure receipt](VALIDATION_EXTENSION_TERMINAL.json) and preflights remain preserved.
-- The original **42,050-hour ceiling**, scientific enrollment and 25% admission margin remain binding. No source/runtime repair or allocation reset is inferred from a failed validation.
-- **After validation passes:** retained reader pricing will test the real sampling/annotation path and its cost; five CPU coordination pilots/shards will measure the remaining **741 pairs**; successive compact qualifications and retained pricing assignments will measure actual storage release, within-execution fidelity and paired strict accuracy; **10,822 saved-sequence forwards** and **35 calibration folds** will supply missing REAP/steering inputs. These are planned, **not queued**.
-- Complete measured admission with **25% margin** must precede production of the full memory curves, central steering and balanced sensitivity/supporting analyses. Full-study affordability is still unmeasured; no scope reduction or replacement draws are authorized.
+| Paper measurement | Preserved/reused | Still needed |
+|---|---|---|
+| Accuracy–resident-memory curves (D02–D05/X11/X12) | Seven native fixtures, scores/folds, six REAP qualifications; GPT limitation explicit | Qualify/price **346 non-REAP shapes**; complete **69,459 distinct non-REAP generations** plus eligible REAP. Sources: `<model>/NON_REAP_TASKS.json`, `NON_REAP_QUALIFICATION_TASKS.json`, `NATIVE_ACCURACY.json`. |
+| Central causal steering (D04/D05/X06/X08–X10) | Frozen prefixes, all 735 nominations, native contexts/controls | **10,822 saved-sequence forwards**, **35 calibration folds**, execution/annotation pricing and central `MMM` continuations. Sources: `<model>/MEASURE_TASKS.json`, `PREFIXES.json`, `NOMINATIONS.json`. |
+| Sensitivity, dynamics and utility | Same prefixes and compatible continuations | Balanced secondary configurations, occupancy/dwell/transitions/re-entry, strict accuracy and token costs; no extra generation solely for supporting endpoints. Sources: `PROTOCOL.json`, `GRAPH.json`, frozen tables. |
+| Coordination/explanatory analyses (D05/X11/X13) | GPT **81/81**, Nemotron **77/77**, seven derivations | **741 pairs**: Qwen3.5 145, Qwen3.6 145, Gemma 105, GLM 169, Qwen3-30B 177; missing supplementary analyses. Sources: `GRAPH.json`, `<model>/DERIVED.json`, imported capture references. |
+| Existing observational figures | All-seven CLEAN readouts, selection/coverage and historical interventions | Reuse; no new corpus, trained probe, failed recognizer rerun or J1 redraw. |
+
+1. Complete the remaining actual validation proofs using the preserved export.
+2. Release the protected scientific chain and separately bound CPU dispatch.
+3. Run retained reader/compact/saved-sequence prices and independent CPU analyses.
+4. Admit the **complete residual study** against measured prices, the original
+   **42,050-hour ceiling**, inherited spending/reservations and live entitlement,
+   with **25% margin** and separate **10-GiB WORK / FAST reserves**.
+5. Complete/export memory first, central steering second, sensitivity/supporting
+   analyses last. Read actual scientific receipts alongside scheduler outcomes.
+
+Full-study affordability remains unmeasured. If complete admission fails, export
+limiting costs and stop production without reducing scope or creating another
+campaign. Enrollment remains all seven models/six benchmarks; native plus
+12.5%, 25%, 50% removal; all registered methods/equal and unequal allocation;
+420 questions/400 families for memory and 131 questions/129 families for steering;
+original unavailable prefixes; one `run-000`; equal benchmark/family weights and
+10,000 paired whole-family resamples. No automatic validation retry is queued.
