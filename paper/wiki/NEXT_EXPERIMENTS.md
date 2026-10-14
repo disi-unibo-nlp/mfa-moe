@@ -1,5 +1,17 @@
 # Active analysis and preserved experiment contracts
 
+**Current execution — 2026-10-15:** protected science is released. Reader
+pricing 60564472 and corrected CPU pilot 60565750 are RUNNING; actual resource
+readbacks and the CPU stage START are verified. Corrected owners
+60565597/60565599/60565600 and all four report-only owners are pending. Actual
+allocated reader/export/graph proofs and fresh bounded integrity passed; no
+additional validation allocation was used for reconciliation. Full production
+still requires complete measured budget/storage admission. The seven-model
+scope, memory → central → sensitivity sequence and original ceiling remain.
+October 15 23:59:59 Rome is a reporting checkpoint. See
+[ADR30](DECISIONS.md#adr-20261015-30-observed-protected-scientific-launch-and-cpu-allocation-repair)
+and [the actual recap](../../report/research-campaign-v3-20261014-r6/RECAP.md).
+
 **Latest release gate — 2026-10-14:** authorized completion 60560738 failed
 after 28 seconds on a missing offline physical font. The unchanged isolated
 builder now compiles current journal inputs in 12.327 seconds. Active canonical

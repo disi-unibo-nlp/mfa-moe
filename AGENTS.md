@@ -1,5 +1,39 @@
 # Research continuity
 
+**R6 scientific chain released and running — 2026-10-15:** actual allocated
+contracts (20+111), all 64 reader contexts, 243,747-row export/replay and real
+graph proofs are complete. The 11.540-second fresh isolated PDF/integrity check
+passed and `OPS_R1_READINESS_RECONCILIATION.json` explicitly preserves both
+failed jobs and concurrent manuscript edits; it used zero additional validation
+allocations. READINESS, operations, CPU-dispatch and lookup proofs are active.
+Resume existing journals; do not create another campaign or duplicate launch.
+879 historical ownership rows were reconciled in batches. All protected owners
+were accepted before redundant source-import 60563438 retired CANCELLED with
+zero runtime and Start=None, reusing its already verified import.
+
+Reader pricing 60564472 is RUNNING on two GPUs/16 CPUs/120 GiB using the unchanged
+seven-file lookup entrypoint. CPU pilot 60564471 failed before stage/scientific
+initialization because the original CPU guard only accepted serial. The separate
+four-file `CPU_ALLOCATION_R1_BINDING.json` seal
+`82c9c85fc1e8a7ecdf97fcebd7a99909cb52e368ced1d441d0f293043a7679b8`
+has six passing native-interface/resource/array tests. It verifies real CPU-only
+Booster allocations without falsifying scheduler variables and preserves native
+GPU/serial checks. Existing single deterministic recovery 60565750 is RUNNING
+on four CPUs/24 GiB, no GPU; its real stage START confirms guard acceptance.
+Its second failure would exhaust that recovery; no stochastic redraw is allowed.
+
+Corrected scientific owners 60565597/60565599/60565600 are pending, source-bound
+through `scripts/research_campaign_v3_r6_cpu_allocation_r1/run.py`. All three
+were accepted and verified before old 60564478/60564481/60564484 retired with
+zero runtime and Start=None. Preserve running reader sources, all four report-only
+owners 60509618/19/20/21 and all original seals. Do not edit the active seven-file
+lookup or four-file allocation amendment. Full production ADMISSION remains
+uncommitted; measured admission of the complete study still precedes production
+under the original ceiling/margin/reserves. October 15 23:59:59 Rome remains a
+reporting milestone, not a final-results deadline. Canonical manuscript changes
+and remote pushes remain outside this experiment task. See LAUNCH, recovery,
+transfer, interface and observed-readback receipts and RECAP.md.
+
 **R6 allocated graph complete; bounded readiness reconciliation — 2026-10-14:**
 60561919 FAILED 1:0 after 667 seconds at the final manuscript integrity check.
 Its isolated PDF and actual graph completed; eight concurrently edited journal
