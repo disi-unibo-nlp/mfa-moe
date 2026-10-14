@@ -1,5 +1,16 @@
 # Active analysis and preserved experiment contracts
 
+**Authorized r6 operations repair — 2026-10-14:** [ADR25](DECISIONS.md#adr-20261014-25-authorized-r6-operations-amendment-and-single-validation)
+binds the renderer-backed fixture, external-ID reader cleanup and full validation
+launch gate through a new operational adapter. It preserves all existing science
+and permits one four-CPU/24-GiB/three-hour validation, with no automatic retry.
+Report-only milestone/export paths leave the canonical manuscript untouched.
+After verified validation, finish independent saved-data analyses and measured
+preparation, then admit the complete residual study before memory → central →
+sensitivity production. The current source-to-experiment mapping below remains
+binding; no model, method, sample or original draw is replaced. Exact test,
+ownership and queue observations are in the [r6 recap](../../report/research-campaign-v3-20261014-r6/RECAP.md).
+
 **Current terminal boundary — 2026-10-14:** reader token-input validation failed,
 and the one deterministic recovery retained the original started assignments
 without redraw but could not recover a price. The campaign stopped before

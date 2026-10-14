@@ -1,5 +1,47 @@
 # Research decisions and open questions
 
+## ADR 20261014 25: authorized r6 operations amendment and single validation
+
+The user explicitly instructed implementation of the audited repair-and-resume
+plan. `research_campaign_v3_r6_ops_r1` is a separately bound operational package
+over the unchanged 186-file r6 seal and existing journals. The scientific study,
+original identities, folds, decoding, seven models and failed receipts persist.
+
+The amendment corrects the renderer-backed CPU tokenizer fixture, reader cleanup
+using external request IDs, and the launch proof gate omitted for revision six.
+It requires matching actual reader, 243,747-cell export, graph and readiness
+proofs, plus its own successful validation and unchanged manuscript evidence.
+The installed inference environment remains fixed; supplemental runtime files
+governing request IDs and lifecycle are bound separately.
+
+One additional validation allocation is authorized: four CPUs, 24 GiB and three
+hours, at most 12 local hours / 15 including margin. There is no automatic retry.
+The existing 111 contracts and new operational contracts precede actual retained
+reader-input validation, export/checkpoint replay and graph traversal. No GPU
+generation occurs in this validation. A successful proof permits the protected
+launch already authorized; failure records a terminal disposition.
+
+Report-only delivery replaces manuscript/export coupling. Durable local report
+completion, scientific completion and remote delivery remain separate. The
+October 15 snapshot and failure owners are replaced only after exact successor
+acceptance/readback; pending predecessors retire only with verified zero runtime.
+Its existing 28-hour reporting reservation is retained, including an independent
+fallback from the completed r5 report and r6 partial evidence. This fallback
+cannot release scientific work. The canonical manuscript remains untouched.
+
+Remaining science is 741 original coordination pairs, 346 non-REAP compact
+shapes / 69,459 generations, 10,822 saved-sequence forwards, 35 calibration folds,
+eligible REAP, central steering and balanced sensitivity/supporting outcomes.
+Complete measured admission with 25% margin precedes production; memory reports
+come first. The original 42,050-hour ceiling, live entitlement and separate
+10-GiB WORK/FAST reserves persist. Admission failure does not authorize a reduced
+study or a successor campaign. Only code, experiment-wiki updates and compact
+receipts are committed locally; final pushes remain the user's responsibility.
+
+Observed job IDs and test outcomes are maintained in the existing
+[r6 recap](../../report/research-campaign-v3-20261014-r6/RECAP.md) and uniquely named
+`OPS_R1_*.json` records, without rewriting prior failures or source bindings.
+
 ## ADR 20261014 24: r6 reader repair and remaining-study launch
 
 **Extra-attempt observation — 2026-10-14:** 60488160 passed 111 contracts and

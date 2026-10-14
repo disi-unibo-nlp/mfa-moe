@@ -659,3 +659,20 @@ report/**/publication/**/*.git-index
 # Exact operational holds are compact provenance; keep their before/after proofs.
 !report/research-campaign-v3-20261014-r6/manual_publication_holds/
 !report/research-campaign-v3-20261014-r6/manual_publication_holds/*.json
+
+# Separately bound r6 operations tests and compact ownership receipts.
+!tests/research_campaign_v3_r6_ops_r1/
+!tests/research_campaign_v3_r6_ops_r1/*.py
+!report/research-campaign-v3-20261014-r6/ops_r1/
+report/research-campaign-v3-20261014-r6/ops_r1/*
+!report/research-campaign-v3-20261014-r6/ops_r1/*.json
+!report/research-campaign-v3-20261014-r6/ops_r1/milestone/
+report/research-campaign-v3-20261014-r6/ops_r1/milestone/*
+!report/research-campaign-v3-20261014-r6/ops_r1/milestone/*.json
+!report/research-campaign-v3-20261014-r6/ops_r1/milestone/retirements/
+!report/research-campaign-v3-20261014-r6/ops_r1/milestone/retirements/*.json
+!report/research-campaign-v3-20261014-r6/ops_r1/milestone/guard_retirements/
+!report/research-campaign-v3-20261014-r6/ops_r1/milestone/guard_retirements/*.json
+!report/research-campaign-v3-20261014-r6/ops_r1/milestone/output/
+!report/research-campaign-v3-20261014-r6/ops_r1/milestone/output/*.json
+!report/research-campaign-v3-20261014-r6/ops_r1/milestone/output/*.md
