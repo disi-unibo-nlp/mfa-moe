@@ -1,5 +1,25 @@
 # MoE experiment recap — 2026-10-14
 
+**Latest allocated result:** 60561919 completed its isolated PDF and actual
+graph, then FAILED 1:0 after 667 seconds at the final integrity guard: seven
+journal figures and the appendix changed concurrently. HEAD and both raw Git
+indexes stayed unchanged; this experiment task made no canonical edits.
+`IMPORT_GRAPH_VALIDATION.json` and `FULL_EXPORT_VALIDATION.json` preserve actual
+successful dependencies. Additional usage was 0.741111 hours; cumulative
+validation is **9.774444 hours / 12.218056 including margin**.
+
+**Source-bound reconciliation is prepared:** six lookup/lifecycle/integrity/
+dispatch contracts pass, and the repaired actual no-submission graph passed
+in **82.095 seconds**. It preserves original depth-first ordering, fresh starts
+and results, all existing science/resource fields and the four reporting owners.
+Verified read-only directory snapshots remove repeated ancestor scans; snapshots
+are checked before a forecast returns. A fresh <=45-second isolated PDF and
+active canonical/raw Git integrity development check will finish readiness from
+the preserved allocated proofs, with **zero additional Slurm allocations and
+zero scientific draws**. The failed allocation is never reclassified as passed.
+Scientific release still requires matching completed readiness and both CPU
+amendments; complete measured admission still precedes production.
+
 **Font-bound r8 is explicitly authorized:** the user selected “Approve the
 10-minute completion and launch.” Its activated font binding and authorization
 permit one 4-CPU / 24-GiB / 10-minute completion, **0.666667 hours / 0.833333

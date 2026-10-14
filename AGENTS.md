@@ -1,5 +1,27 @@
 # Research continuity
 
+**R6 allocated graph complete; bounded readiness reconciliation — 2026-10-14:**
+60561919 FAILED 1:0 after 667 seconds at the final manuscript integrity check.
+Its isolated PDF and actual graph completed; eight concurrently edited journal
+inputs changed, while HEAD and both raw Git indexes stayed unchanged. This task
+made no canonical edits. Preserve the terminal and `IMPORT_GRAPH_VALIDATION.json`
+and `FULL_EXPORT_VALIDATION.json` as successful dependencies, not a successful
+Slurm job. Cumulative validation is 9.774444 local hours. The separately bound
+seven-file `LOOKUP_R1_BINDING.json` preserves every earlier source seal and fixes
+repeated inherited-directory lookups. Six fidelity/integrity/dispatch tests pass;
+the actual no-submission graph preflight passed in 82.095 seconds. Negative
+statuses are never cached across unit lookups; read-only directory snapshots
+are verified before a forecast can return, and scientific lifecycle reads remain
+fresh. The authorized source-bound reconciliation reuses allocated scientific
+proofs and performs only a fresh <=45-second isolated PDF/integrity development
+check, with zero additional Slurm allocations or scientific draws. It explicitly
+preserves the earlier failed global manuscript-integrity result. If that fresh
+check passes, matching READINESS and operations/CPU/lookup proofs permit the
+existing protected launch via `scripts/research_campaign_v3_r6_lookup_r1/run.py`.
+Keep HEAD/index and active manuscript stable during the bounded check. Do not
+edit the seven-file amendment after scientific jobs are accepted. All reporting
+owners remain unchanged; complete measured production admission still applies.
+
 **R6 font-bound r8 explicitly authorized — 2026-10-14:** the user selected
 “Approve the 10-minute completion and launch.” This authorizes one four-CPU,
 24-GiB, ten-minute completion (0.666667 local hours / 0.833333 with margin),
