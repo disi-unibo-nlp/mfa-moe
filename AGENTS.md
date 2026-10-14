@@ -1,5 +1,14 @@
 # Research continuity
 
+**R6 implementation publication pending — 2026-10-14:** implementation commit
+`d134ae6` is local. GitHub push failed because this shell has no HTTPS credentials;
+verified SSH fallback could not proceed without an existing trusted host key.
+Strict checking and private credentials remain unchanged.
+`report/research-campaign-v3-20261014-r6/IMPLEMENTATION_PUBLICATION.json` preserves
+stderr and the remote branch readback. Do not call the code remotely delivered.
+Standing publication authorization persists; restore the existing GitHub
+authentication before retrying. No new manuscript/PDF snapshot was produced.
+
 **R6 validation recovery exhausted — 2026-10-14:** both authorized allocations
 are terminal FAILED 1:0. First validation 60481682 passed 110/111 contracts;
 recovery 60484614 passed all 111, then its standalone runner lacked package
