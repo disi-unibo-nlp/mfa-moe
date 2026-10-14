@@ -154,7 +154,11 @@ def worker(campaign, value, scheduler=None):
     path = base / 'workers' / value['sha256'] / 'RESULT.json'
     if path.exists():
         return load(path)
-    if (root / 'OPS_R1_VALIDATION_COMPLETED.json').exists():
+    # Snapshot plus primary permit one full-export recovery. Further failure
+    # owners use the already completed compact fallback rather than retrying
+    # the failed full export or creating a scientific successor.
+    full_export_allowed = value['stage'] == 'snapshot' or value['shard_index'] == 0
+    if (root / 'OPS_R1_VALIDATION_COMPLETED.json').exists() and full_export_allowed:
         from .policy import require_readiness
         from moe_exp.research_campaign_v3_r6.export import closeout
         require_readiness(campaign)
