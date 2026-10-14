@@ -1,5 +1,33 @@
 # Research decisions and open questions
 
+## ADR 20261014 29: r7 terminal and font-bound completion
+
+The user approved the proposed 30-minute completion and instructed launch ASAP.
+Job 60560738 was accepted, released and observed RUNNING, then FAILED 1:0 after
+28 seconds: the current active journal manuscript needed cmex7.pfb, absent from
+the isolated offline cache at execution. Its cache mtime is 23:10:27, after the
+job ended at 23:10:07. Active canonical inputs and raw Git indexes stayed
+unchanged. The same source-bound builder subsequently compiled the current
+inputs offline in 12.327 seconds, without canonical edits. Both failed jobs
+and all successful 20+111 contracts, 64 reader contexts and 243,747-row export
+remain preserved. Additional validation used 0.031111 local hours; cumulative
+validation is 9.033333 hours / 11.291667 including margin.
+
+Prepared candidate r8 binds physical fonts and directly launches the combined
+CPU/operations entrypoint after full readiness, preserving all four existing
+reporting owners and avoiding a transient serial worker deadlock. Missing-proof
+launch rejection passes. The proposed one-time 4-CPU/24-GiB/10-minute completion
+reserves 0.666667 hours / 0.833333 including margin, with no automatic retry.
+It remains unsubmitted pending an explicit extension of the exhausted single
+attempt. No scientific work was released; complete measured admission and the
+original seven-model scope, 42,050-hour ceiling, margin and separate reserves
+remain mandatory.
+
+[Actual terminal](../../report/research-campaign-v3-20261014-r6/OPS_R1_BUILD_RECOVERY_TERMINAL.json),
+[accounting](../../report/research-campaign-v3-20261014-r6/OPS_R1_BUILD_RECOVERY_TERMINAL_ACCOUNTING.json),
+[pending font binding](../../report/research-campaign-v3-20261014-r6/OPS_R1_FONT_RECOVERY_BINDING.pending.json),
+[actual isolated build](../../report/research-campaign-v3-20261014-r6/OPS_R1_FONT_RECOVERY_PREFLIGHT.json).
+
 ## ADR 20261014 28: preserved full export, active snapshot and CPU dispatch repair
 
 Authorized validation 60520129 ended FAILED 1:0 after 5,919 seconds. All 20

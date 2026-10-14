@@ -1,5 +1,14 @@
 # Campaign v3 observed evidence
 
+**Latest observation — 2026-10-14:** 60560738 FAILED 1:0 after 28 seconds on
+the current journal PDFs missing offline font. The same builder now passes
+in 12.327 seconds; manuscript inputs and raw Git indexes stayed stable during
+validation. Font-bound r8 is prepared, not submitted; its proposed ten-minute
+completion needs an explicit extension. No science is queued; protected
+reporting owners 60509618/19/20/21 remain pending. See
+[ADR29](DECISIONS.md#adr-20261014-29-r7-terminal-and-font-bound-completion) and
+[the recap](../../report/research-campaign-v3-20261014-r6/RECAP.md).
+
 **Latest r6 observation — 2026-10-14:** 60520129 FAILED 1:0 at the isolated
 snapshot copy timeout after 20+111 tests, all 64 reader contexts and the real
 243,747-row export/replay passed. No scientific job is queued. All four protected
