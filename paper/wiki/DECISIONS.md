@@ -1,5 +1,85 @@
 # Research decisions and open questions
 
+## ADR 20261014 23: authorized final r5 continuation and imported-state validation
+
+The user supplied the final continuation plan and twice instructed “Implement the
+plan.” This authorizes its bounded CPU validation and gated Slurm continuation,
+plus delivery to the existing GitHub branch and Overleaf project. All seven
+models, original scientific identities, cohorts, decoding, controls, thresholds,
+10,000 shared family resamples and the original 42,050-hour ceiling persist.
+The 25% margin stays inside available entitlement. If the complete measured study
+does not fit, production stops with its itemized shortfall; scope is not reduced.
+
+R4 terminated after imported Qwen3.5/Qwen3.6 pilots lacked MEASURE_TASKS.json.
+Its OPERATIONAL_FAILURE.json separately preserves the terminal publication error.
+Seven repaired derivations, GPT 81/81 and Nemotron 77/77 coordination pairs are
+reusable after component/dependency checks. The five remaining banks contain 741
+original pairs. Physical memory–accuracy and new steering effects remain unmeasured.
+
+The new implementation is `src/moe_exp/research_campaign_v3_r5/`, with the compatible
+launcher `scripts/research_campaign_v3_r5/run.py` and separately sealed root
+`report/research-campaign-v3-20261014-r5/`, resuming r4 and its full ancestry.
+The seal is `cde12455f8316873954d8a56aeee2626981249764d9a67274b55b757ec1d39f2`.
+Validation 60428583 was accepted and observed RUNNING on login08: four CPUs,
+24 GiB, 30 minutes, billing four cores and reserving two local hours before margin.
+No scientific release or ownership transfer has occurred at this observation.
+
+Updated observation: 60428583 passed 101 contracts but failed the actual GLM
+dependency check. The importer had equated different execution/qualification
+receipts because their array bytes matched. Its seal and failure are preserved.
+The separately sealed repair `src/moe_exp/research_campaign_v3_r5_r2/`, root
+`report/research-campaign-v3-20261014-r5-r2/`, resumes it and r4 transitively;
+seal `e5fdce1548eda0ace3111efc9d2c46dfd65266d811ab0ea5cc6848d27395aafc`
+preserves the original scientific source projection and both GLM identities.
+
+Repaired validation 60434236 passed all 102 contracts in 341.549 seconds. Its
+actual import committed all seven measurement/non-REAP manifests, four qualified
+REAP components, GPT 81/81 and Nemotron 77/77 coordination pairs. Six original
+native-context samples committed before the 30-minute allocation timed out;
+READINESS.json was not produced. Accounting records 2,005 elapsed seconds,
+including scheduler shutdown, billed at four cores. This is deterministic
+validation interruption, not a scientific draw or a shared implementation verdict.
+
+One separately bound deterministic recovery, 60454171, is accepted and observed
+RUNNING under the same four-CPU/24-GiB/30-minute envelope. It reuses the original
+102-test success log and committed import only after source/dependency verification,
+then checks every question/source/mask identity, strict score, original context
+sample and real forecast/graph traversal. Full native context banks remain explicit
+early CPU work. Its immutable VALIDATION_RECOVERY_BINDING.json limits recovery to
+one allocation and binds the independent wrapper. Failure leaves the launch gate
+closed with an explicit terminal disposition, without an automatic new campaign.
+All validation charges and the two-hour recovery reservation enter admission.
+
+GitHub's previously missing r4 terminal commit was pushed and independently read
+back at `9828c52c7c73d1ad786da6dedfe59011f602a800`; the historical failure receipt
+is unchanged. The current 145-page PDF still matches its manuscript source snapshot,
+and pages 1, 8 and 145 were visually checked. It explicitly retains scientific
+incompleteness; this readback is not a new primary result.
+
+The validation replays actual imported manifests, identities, masks, scoring,
+native contexts and forecasting. The predeclared non-REAP boundary is 69,459
+original generations and 346 compact count shapes plus seven native shapes.
+READINESS.json must bind successful IMPORT_GRAPH_VALIDATION.json before launch.
+The pending October 15 snapshot 60226466 remains owned until replacement snapshot
+and both new failure owners are accepted and verified.
+
+R5 keeps router arrays, norms and diagnostics in their own execution. Four qualified
+components are reused; three affected models may each receive one corrected saved
+sequence qualification with original sequence/tolerances and explicit historical
+supersession. NON_REAP_TASKS, REAP_TASKS and STEERING_TASKS are separate immutable
+interfaces. Non-REAP native/compact qualification, retained pricing, strict scoring
+and local memory evidence proceed independently of REAP and steering preparation.
+One unpriced target role per model and one shared original reader batch remain.
+
+Atomic deterministic import/scoring/context/export has one bounded recovery;
+started stochastic units cannot redraw. Genuine limitations affect dependent cells,
+and deadlines preserve interrupted originals while allowing untouched assignments.
+Local report, manuscript/PDF and independent destination receipts are distinct.
+Remote publication preserves success and retries only failed delivery once. Final
+closeout has one export-only recovery and then explicit termination. No automatic
+source repair or successor campaign follows exhaustion. WORK and authorized private
+FAST retain separate 10-GiB reserves; bulk evidence and credentials stay outside Git.
+
 ## ADR 20261012 22: authorized results-first r4 implementation and protected launch
 
 The user supplied the results-first continuation plan, instructed “Implement the

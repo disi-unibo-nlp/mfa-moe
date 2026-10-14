@@ -1,5 +1,20 @@
 # MoE routing and reasoning research wiki
 
+**R5 validation recovery — 2026-10-14:** initial validation 60428583 passed
+101 contracts but failed the real GLM import boundary. Equal bank bytes had
+collapsed different execution/qualification receipts. The original seal and
+failure receipt remain preserved. Separately sealed
+`report/research-campaign-v3-20261014-r5-r2/` resumes that verified state and r4
+transitively, keeps both receipts and reuses the corrected GLM qualification.
+Its source projection matches r5/r4. No scientific work has been released.
+The repaired validation retains the four-CPU/24-GiB/30-minute envelope and
+inherited charges. Full missing native contexts remain early CPU work; the
+validation checks their real implementation on an original identity per model.
+GitHub r4 terminal delivery is now independently verified at 9828c52; the
+historical failure receipt remains unchanged.
+
+**Latest authorization — 2026-10-14:** the user instructed implementation of the final r5 continuation. [ADR23](DECISIONS.md#adr-20261014-23-authorized-final-r5-continuation-and-imported-state-validation) records its unchanged scientific contract, separately sealed binding and actual imported-state validation. Scientific release requires successful CPU replay; full production requires complete measured admission. Earlier running descriptions retain historical scope.
+
 **Latest authorization — 2026-10-12:** the user approved the supplied
 results-first r4 continuation and instructed implementation and launch
 ([ADR22](DECISIONS.md#adr-20261012-22-authorized-results-first-r4-implementation-and-protected-launch)).
