@@ -1,5 +1,19 @@
 # Research continuity
 
+**R6 corrected validation extension authorized — 2026-10-14:** the user replied
+“I authorize it” and instructed running all required work. This explicitly
+extends the exhausted validation allowance by one four-CPU, 24-GiB, three-hour
+attempt (12 local hours / 15 with margin), with no automatic retry. Use the
+separately bound candidate r6 and its independent test loaders. The activated
+`OPS_R1_LOADER_BINDING.json` and `OPS_R1_LOADER_AUTHORIZATION.json` preserve the
+pending correction, failed 60510557 receipt and unchanged scientific/operations
+seals. Successful actual reader/export/graph validation permits the existing
+protected scientific launch; complete measured admission still precedes
+production. Preserve reporting owners 60509618/60509619/60509620/60509621.
+Keep HEAD/index and canonical manuscript stable during validation. This task
+performs no canonical manuscript edits or remote writes; unrelated work remains
+preserved. The earlier no-further-allocation statement below is historical.
+
 **R6 operations validation terminal — 2026-10-14:** single authorized attempt
 60510557 FAILED 1:0 after 29 seconds (0.03222 local hours). It passed all 20
 operational contracts, then unittest's shared default loader retained the first
