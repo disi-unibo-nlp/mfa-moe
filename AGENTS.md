@@ -1,5 +1,49 @@
 # Research continuity
 
+**R6 validation recovery exhausted — 2026-10-14:** both authorized allocations
+are terminal FAILED 1:0. First validation 60481682 passed 110/111 contracts;
+recovery 60484614 passed all 111, then its standalone runner lacked package
+context for relative imports and failed before actual evidence import/export.
+`report/research-campaign-v3-20261014-r6/VALIDATION_TERMINAL.json` preserves both
+failures and 0.96 actual local hours (1.20 with margin). The 186-file source seal
+below remains unchanged. No scientific work, replacement controller or ownership
+transfer was released. Snapshot 60454552 and owners 60462231/60462233/60462236
+remain pending and owned. The unsubmitted corrected runner
+`scripts/research_campaign_v3_r6_validation_candidate_r3.py` has an explicit
+package context; `VALIDATION_RUNNER_CORRECTION_PREFLIGHT.json` verifies its imports
+without executing the validation pipeline. Its pending binding is reviewable,
+but another allocation requires an explicit user extension of the exhausted
+one-recovery limit. Do not submit it or create an automatic successor.
+
+**R6 validation ownership — 2026-10-14:** source seal
+`cab3d55b383d5c6b00e8a1f3e745d415340499b2f6f8c5444085eebaf4c55a14`
+binds 186 unchanged implementation/test files and the separately recorded reader
+runtime. First validation 60481682 failed after 110/111 contracts passed: the
+remaining inherited assertion treated local export as verified remote delivery.
+The one separately bound recovery 60484614 uses the corrected delivery test
+contract and retains every scientific assertion. Its 11-file binding is
+VALIDATION_RECOVERY_BINDING.json; implementation sources remain unchanged.
+Scientific work and ownership transfer are gated on actual full validation.
+Predecessor snapshot 60454552 and owners 60462231/60462233/60462236 remain owned.
+No further validation allocation or automatic successor follows an exhausted
+recovery. The original accounting ceiling is not reset.
+
+**R6 repair and launch authorized — 2026-10-14:** the user explicitly approved
+implementation of the repair-and-launch plan. New implementation:
+`scripts/research_campaign_v3_r6/run.py`; fresh root
+`report/research-campaign-v3-20261014-r6/`, importing r5-r2 transitively.
+Recover only original reader assignments proven rejected before engine admission;
+ambiguous admitted executions stay unknown. Preserve seven native fixtures, six
+REAP qualifications, GPT's REAP limitation, all original identities and both
+completed coordination banks. The full CPU validation envelope is four CPUs,
+24 GiB and three hours, with one bounded recovery; scientific release remains
+gated on actual reader/export validation and readiness. Existing snapshot
+60454552 and owners 60462231/60462233/60462236 remain owned until verified
+replacement. The original 42,050-hour ceiling and 25% margin persist. Complete
+measured admission precedes production; exhaustion permits no automatic source
+repair or successor campaign. Sources are not sealed or scientific work released
+by this authorization note alone.
+
 **R5 terminal reader boundary — 2026-10-14:** all seven native memory fixtures
 qualified, and corrected Nemotron/Gemma REAP qualified; GPT's corrected REAP
 remains a method limitation with usable router bank. Original reader pricing

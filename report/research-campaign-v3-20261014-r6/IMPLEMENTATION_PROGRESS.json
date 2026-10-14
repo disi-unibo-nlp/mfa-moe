@@ -1,0 +1,31 @@
+{
+  "actual_validation_local_hours": 0.96,
+  "additional_allocation_requires_explicit_user_extension": true,
+  "candidate_preflight": "VALIDATION_RUNNER_CORRECTION_PREFLIGHT.json",
+  "candidate_runner": "scripts/research_campaign_v3_r6_validation_candidate_r3.py",
+  "failed_validation": "60481682",
+  "implementation_files": 186,
+  "next_gate": "Explicit allocation extension, actual CPU import/reader/export validation and readiness; then protected submission and verified ownership transfer",
+  "original_contract_results": {
+    "failure": "obsolete local-as-remote delivery assertion",
+    "passed": 110,
+    "total": 111
+  },
+  "predecessor_owners": [
+    "60454552",
+    "60462231",
+    "60462233",
+    "60462236"
+  ],
+  "reader_runtime_files": 78,
+  "recovery_binding": "VALIDATION_RECOVERY_BINDING.json",
+  "recovery_contract_results": {
+    "passed": 111,
+    "total": 111,
+    "runner_failure": "relative import without package context before actual evidence import"
+  },
+  "scientific_release": false,
+  "single_bound_recovery": "60484614",
+  "source_seal": "cab3d55b383d5c6b00e8a1f3e745d415340499b2f6f8c5444085eebaf4c55a14",
+  "status": "implementation_prepared_validation_recovery_exhausted"
+}
