@@ -2,6 +2,40 @@
 
 ## ADR 20261014 23: authorized final r5 continuation and imported-state validation
 
+First engineering readback: corrected Nemotron REAP is qualified. Corrected GPT
+REAP remains a method limitation under the unchanged same-execution fidelity
+tolerances; its router bank remains usable. GPT's native full-context fixture
+qualifies and measures 32.84375 GiB aggregate owned-process NVML residence.
+This does not establish compact removal accuracy or a causal effect. Detailed
+source, numerical, accounting and live bounded-wave admission readbacks are in
+FIRST_WAVE_OBSERVATION-r1.json. Subsequent ownership is controller 60454686 with
+guards 60454688/60454689, accepted before retiring unused initial guards.
+
+The 146-page working manuscript now records these dated engineering observations
+in supporting material. Its main wrapper prevents the preserved reproducibility
+file from resetting appendix identifiers and prefixes appendix figures, tables
+and equations by their unique section. All 14 retained co-primary figures match
+the underlying result manifest. The full source-bound offline build and visual
+review are recorded separately from ongoing scientific completion and delivery.
+
+Latest observation: the single recovery 60454171 completed `0:0` in 1,098
+allocated seconds. It certified all seven measurement manifests, 69,459 non-REAP
+generations and 346 compact shapes using real CPU implementations and zero
+scheduler submissions. All 102 regression contracts and the 172-file source
+closure remain bound; all six ancestor seals validate. The original failed and
+timed-out jobs remain preserved. Total validation expenditure is 4.612 local hours
+(5.765 with margin), charged within the original ceiling.
+
+Protected launch accepts import 60454550, October 15 snapshot 60454552, controller
+60454554 and guards 60454557/60454559. Import completed `0:0` in six seconds using
+the committed validated import. Both failure owners and replacement snapshot
+were accepted before predecessor snapshot 60226466 was cancelled with zero runtime
+and `Start=None`. LAUNCH.json, LAUNCH_VERIFIED.json and OWNERSHIP_TRANSFER.json
+record source, job/resource/dependency and retirement readbacks. The initial
+bounded preparation is admitted; complete measured production admission remains
+required. No new accuracy–resident-memory or steering outcome is claimed by launch.
+Later owners and scientific jobs belong to the immutable handoff/submission journals.
+
 The user supplied the final continuation plan and twice instructed “Implement the
 plan.” This authorizes its bounded CPU validation and gated Slurm continuation,
 plus delivery to the existing GitHub branch and Overleaf project. All seven

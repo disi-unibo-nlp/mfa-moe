@@ -1,6 +1,26 @@
 # Seven model scope and evidence coverage
 
-**Latest coverage, October 12 ([ADR21](DECISIONS.md#adr-20261012-21-results-first-recovery-review)):**
+**Latest coverage, October 14 ([ADR23](DECISIONS.md#adr-20261014-23-authorized-final-r5-continuation-and-imported-state-validation)):**
+the [committed r5-r2 import](../../report/research-campaign-v3-20261014-r5-r2/EVIDENCE_IMPORT.json)
+independently validates all seven repaired derivations, GPT's complete 81-pair
+and Nemotron's complete 77-pair coordination banks. The remaining five models
+require 741 original coordination pairs. All seven original saved-sequence
+measurement manifests and independent non-REAP memory tables are reconstructed.
+Qwen3.5, Qwen3.6, GLM and Qwen3-30B retain compatible REAP qualifications;
+Nemotron's corrected within-execution adjudication is now qualified. GPT's
+corrected reconstruction remains a REAP method limitation at the unchanged
+tolerances, with its own router bank usable. Gemma's corrected verdict is pending.
+Historical verdicts and original saved sequences remain preserved. Native memory
+fixtures have qualified for GPT, Nemotron, Gemma, GLM and Qwen3.6 at this observation;
+compact shapes and prospective removal accuracy remain unmeasured.
+No new physical memory–accuracy curve or steering effect has been measured.
+The 102 regression contracts and actual imported-state validation passed;
+the protected r5 preparation/qualification chain is released. Full native
+annotation contexts, measured shape/role prices and complete production admission
+remain required. All seven models and the registered scientific comparisons persist.
+[Current status and immutable ownership](CAMPAIGN_V3_STATUS.md).
+
+**Preserved r3 coverage, October 12 ([ADR21](DECISIONS.md#adr-20261012-21-results-first-recovery-review)):**
 r3 retains GPT's complete 81-pair coordination analysis and Nemotron's repaired
 summaries plus 55 of 77 pairs. The other five repaired derivations are absent;
 their original evidence and the six v2 measurement banks remain preserved.

@@ -1,5 +1,13 @@
 # MoE routing and reasoning research wiki
 
+**Current r5 ownership — 2026-10-14:** all 102 contracts and the real seven-model
+import/graph replay passed. The protected continuation is released under
+[ADR23](DECISIONS.md#adr-20261014-23-authorized-final-r5-continuation-and-imported-state-validation).
+[Current status](CAMPAIGN_V3_STATUS.md) links readiness, verified launch and the
+zero-runtime snapshot transfer. Full production remains subject to complete
+measured admission; new memory and steering results are still unmeasured.
+Earlier validation observations below are preserved history.
+
 **R5 validation recovery — 2026-10-14:** initial validation 60428583 passed
 101 contracts but failed the real GLM import boundary. Equal bank bytes had
 collapsed different execution/qualification receipts. The original seal and

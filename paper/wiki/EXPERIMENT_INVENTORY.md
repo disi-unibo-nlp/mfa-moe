@@ -1,5 +1,21 @@
 # Existing data and experiments
 
+**October 14 update:** [ADR23](DECISIONS.md#adr-20261014-23-authorized-final-r5-continuation-and-imported-state-validation)
+authorizes the final separately sealed r5 continuation. Its
+[committed seven-model import](../../report/research-campaign-v3-20261014-r5-r2/EVIDENCE_IMPORT.json)
+validates all seven repaired derivations and complete GPT 81/Nemotron 77
+coordination banks; 741 original pairs remain across five models. Every original
+saved-sequence measurement manifest and the separate non-REAP memory interface
+now exist. These deterministic reconstructions use the D01/D04/D05/X06/X11/X12
+sources below and do not supply new resident-memory or causal measurements.
+Four existing REAP qualifications are reused; corrected Nemotron is qualified,
+corrected GPT remains a method limitation and corrected Gemma is pending.
+Original sequences, tolerances and historical verdicts are preserved. Full native contexts and complete
+measured production admission remain missing. The actual validation recovery
+passed and the protected preparation/qualification chain is released. See
+[current status](CAMPAIGN_V3_STATUS.md) for source bindings and exact job ownership.
+Earlier campaign snapshots below retain their original dates and scope.
+
 **October 12 update:** r3 stopped on storage admission and then failed terminal
 paper export. GPT's 81 coordination pairs and Nemotron's repaired summaries plus
 55 of 77 pairs remain reusable; new physical-memory/accuracy and causal effects

@@ -1,5 +1,49 @@
 # Campaign v3 observed evidence
 
+**First engineering observation — 2026-10-14:** GPT's full-context native memory
+fixture is qualified, with 32.84375 GiB aggregate owned-process NVML residence.
+This is a baseline residence measurement, without an expert-removal accuracy result.
+Its corrected same-execution REAP reconstruction remains a method limitation
+at the unchanged 0.02 absolute/relative tolerances. Nemotron's corrected REAP
+qualification passes. The historical verdicts remain preserved, and neither
+adjudication requires matching routes across different executions. Native fixtures
+for GPT, Nemotron, Gemma, GLM and Qwen3.6 have qualified at this observation.
+The remaining first-wave jobs and one original reader batch continue under
+protected successor 60454686 and guards 60454688/60454689.
+[Resource and engineering readback](../../report/research-campaign-v3-20261014-r5-r2/FIRST_WAVE_OBSERVATION-r1.json).
+
+The current working manuscript compiles offline to 146 pages. Its appendix,
+figure and table identifiers now remain unique across historical supporting
+material. All 14 retained co-primary figure copies match their result manifest;
+pages 1, 34 and 146 were visually checked. New primary outcomes remain unmeasured.
+[Source-bound PDF build](../../report/research-campaign-v3-20261014-r5-r2/PAPER_FULL_BUILD-r5-launch.json),
+[visual review](../../report/research-campaign-v3-20261014-r5-r2/PAPER_VISUAL_REVIEW-r5-launch.json).
+
+**Protected r5 launch — 2026-10-14:** actual imported-state validation is complete.
+All **102 regression contracts** passed; recovery **60454171** completed `0:0`,
+certifying seven measurement manifests, **69,459 original non-REAP generations**
+and **346 compact shapes**. Source and recovery bindings stayed unchanged, and
+all six ancestor seals validate. Validation used 4.612 local hours, retained in
+the inherited accounting. No generation or reader draw was repeated.
+
+[Readiness](../../report/research-campaign-v3-20261014-r5-r2/READINESS.json),
+[actual import/graph proof](../../report/research-campaign-v3-20261014-r5-r2/IMPORT_GRAPH_VALIDATION.json),
+[accounting](../../report/research-campaign-v3-20261014-r5-r2/REGRESSION_ACCOUNTING.json),
+[launch](../../report/research-campaign-v3-20261014-r5-r2/LAUNCH.json),
+[independent readback](../../report/research-campaign-v3-20261014-r5-r2/LAUNCH_VERIFIED.json),
+[ownership transfer](../../report/research-campaign-v3-20261014-r5-r2/OWNERSHIP_TRANSFER.json).
+
+Import **60454550** completed `0:0`; snapshot **60454552** preserves October 15.
+Controller **60454554** and guards **60454557/60454559** were accepted before
+release. Only predecessor snapshot **60226466** retired, with zero runtime and
+`Start=None`. Initial preparation/qualification is released. Later owners are in
+the immutable handoffs, not a second dispatcher. Full production remains gated
+on complete measured role/shape prices and admission with 25% margin inside the
+available original ceiling. Physical memory–accuracy and steering outcomes remain
+unmeasured at this launch observation; scientific completion is not claimed.
+
+The validation history below retains its original observations.
+
 **Current validation — 2026-10-14:** repaired validation **60434236** passed
 all **102 contracts** and committed the complete seven-model import, then reached
 its allocation deadline before final graph certification. The launch gate remains
