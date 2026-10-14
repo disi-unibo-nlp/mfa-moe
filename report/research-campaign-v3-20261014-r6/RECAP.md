@@ -1,6 +1,11 @@
 # MoE experiment recap — 2026-10-14
 
-Observed 2026-10-14T11:02:01.185305+00:00. This is a status snapshot; [queue and evidence](RECAP_EVIDENCE.json) bind the observations. Scientific production is **not launched**. Paper work is deferred; publication is by your manual push.
+The latest operations amendment preserves the original scientific seal and
+reuses its evidence. [Operations preflight](OPS_R1_PREFLIGHT.json),
+[protected milestone](ops_r1/milestone/PROTECTION.json) and
+[authorization](OPS_R1_AUTHORIZATION.json) supersede the older queue snapshot
+in [RECAP_EVIDENCE.json](RECAP_EVIDENCE.json). Scientific production is **not
+launched**. Canonical manuscript work is deferred; publication is by your manual push.
 
 ## Done
 
@@ -9,6 +14,7 @@ Observed 2026-10-14T11:02:01.185305+00:00. This is a status snapshot; [queue and
 - Reused all seven repaired derivations, seven native memory fixtures and six REAP qualifications. GPT’s REAP limitation is preserved. GPT **81/81** and Nemotron **77/77** coordination pairs are complete; native context manifests are recovered for all seven models.
 - Audited the **64 original reader assignments**: all were rejected before engine admission and may recover under the same identities, prompts and seeds. **They have not been rerun.**
 - Added local-only delivery preparation and seven passing policy tests; strengthened ignore rules for bulk cell banks, runtime data and caches. No pushes are performed.
+- Added the separately bound operations adapter: real proof-gated launch, corrected external-ID reader cleanup, report-only completion and compact commits on private local refs. **20 operational tests pass**, including the actual installed abort method; tiny installed tokenizer/input/sampler checks pass. Implementation commits: `83a45da`, `67ee376`.
 
 ## Findings so far
 
@@ -32,16 +38,19 @@ These are fixed-context native baselines with the registered 8-GiB KV capacity, 
 
 | Job | Observed state | Intended output or purpose |
 |---|---|---|
-| 60454552 | Pending, October 15 at 23:59:59 Brussels time | A durable local milestone report/PDF of completed and missing evidence; it cannot establish missing scientific effects. |
-| 60462231 | Pending, user hold | Primary report/publication controller; held to honor manual publication. No scientific measurement while held. |
-| 60462233 | Pending, user hold | First failure owner; retained but held. No scientific measurement while held. |
-| 60462236 | Pending, user hold | Second failure owner; retained but held. No scientific measurement while held. |
+| 60509618 | Pending, October 15 at 23:59:59 Europe/Rome | Report-only milestone from current validated evidence, or the completed r5 report plus r6 partial evidence if validation fails. |
+| 60509619 | Pending, dependency | Primary reporting owner; one bounded full-export recovery, with manuscript and remote writes disabled. |
+| 60509620 | Pending, dependency | First failure owner; compact fallback after full-export recovery is exhausted. |
+| 60509621 | Pending, dependency | Final failure owner; bounded compact fallback and explicit terminal ownership. |
 
-**No scientific generation, saved-sequence or coordination job is queued.** No predecessor was retired and no replacement controller was released.
+**No scientific generation, saved-sequence or coordination job is queued.**
+All four replacements were accepted/read back before retiring only old pending
+predecessors `60454552/60462231/60462233/60462236`, each with zero runtime
+and accounting `Start=None`. The existing 28-hour reporting reservation persists.
 
 ## Current blocker and next runs
 
-- Job **60488160 failed after import**, because the CPU acceptance fixture assigned the installed vLLM processor’s read-only `tokenizer` property. This is a fixture implementation error, not a measured model failure. The corrected [unsubmitted runner](../../scripts/research_campaign_v3_r6_validation_candidate_r4.py) uses `renderer.tokenizer`; its small installed-interface check passes. Full retained-reader and 243,747-row export validation remain unverified. [Failure receipt](VALIDATION_EXTENSION_TERMINAL.json), [preflight](VALIDATION_CPU_FIXTURE_PREFLIGHT.json).
-- The approved extra attempt is exhausted. Another CPU allocation requires explicit authorization. Validation has used **2.39 local accounting hours in total**; the original 42,050-hour ceiling is preserved.
+- Job **60488160 failed after import**, because its CPU fixture assigned the installed vLLM processor’s read-only `tokenizer` property. The versioned candidate r5 reuses the corrected renderer fixture and validates the new operational policy. Full retained-reader and 243,747-row export validation remain unverified. The original [failure receipt](VALIDATION_EXTENSION_TERMINAL.json) and preflights remain preserved.
+- The user has now authorized **one additional four-CPU/24-GiB/three-hour attempt**, at most 12 local hours / 15 with margin, with no automatic retry. Prior validation used **2.39 local accounting hours**; the original 42,050-hour ceiling is preserved. This attempt has not yet been submitted at this recap revision.
 - **After validation passes:** retained reader pricing will test the real sampling/annotation path and its cost; five CPU coordination pilots/shards will measure the remaining **741 pairs**; successive compact qualifications and retained pricing assignments will measure actual storage release, within-execution fidelity and paired strict accuracy; **10,822 saved-sequence forwards** and **35 calibration folds** will supply missing REAP/steering inputs. These are planned, **not queued**.
 - Complete measured admission with **25% margin** must precede production of the full memory curves, central steering and balanced sensitivity/supporting analyses. Full-study affordability is still unmeasured; no scope reduction or replacement draws are authorized.

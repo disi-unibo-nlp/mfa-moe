@@ -1,5 +1,28 @@
 # Research continuity
 
+**R6 operations amendment active — 2026-10-14:** the user explicitly instructed
+implementation of the repair-and-resume plan. Use only
+`scripts/research_campaign_v3_r6_ops_r1/run.py` for this continuation. Its
+`OPS_R1_BINDING.json` seal
+`9f0cec41429a3ac81d5456161bac06c7df30118f17bcd38b6daa9b9b3a88196c`
+binds 24 operational/test files plus supplemental installed lifecycle sources;
+the original 186-file r6 scientific seal and environment are unchanged. Twenty
+operational contracts and installed tokenizer/input/sampler/abort preflights pass.
+One additional four-CPU/24-GiB/three-hour validation is authorized, 12 local hours
+/ 15 with margin, no automatic retry. Candidate r5 runs the original 111 tests,
+actual reader/export/graph validation and isolated PDF build before scientific
+release. Missing or stale full proofs prevent every scientific worker/launch.
+Report-only snapshot 60509618 and owners 60509619/60509620/60509621 are accepted
+and released with exact readbacks. Only after all four were accepted did old
+60454552/60462231/60462233/60462236 retire, each CANCELLED with zero runtime and
+Start=None. The new October 15 milestone remains 23:59:59 Europe/Rome, with the
+existing 28-hour reporting reservation. Its failure owners use compact fallback
+evidence after one full-export recovery; they cannot release scientific work.
+`LOCAL_REPORT_COMPLETE` replaces manuscript completion in the operational view.
+Do not edit the bound adapter while its jobs are pending. Canonical manuscript
+and remote writes remain deferred; commits are local. Preserve every prior seal,
+failed receipt and pre-submission review. See `OPS_R1_*.json` and `RECAP.md`.
+
 **R6 extra validation failed after successful import — 2026-10-14:** approved
 job 60488160 passed all 111 contracts and committed the real seven-model import,
 all original non-REAP identities/shapes and the 64-reader pre-admission recovery
