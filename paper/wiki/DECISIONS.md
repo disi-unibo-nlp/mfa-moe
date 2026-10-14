@@ -1,5 +1,75 @@
 # Research decisions and open questions
 
+## ADR 20261014 24: r6 reader repair and remaining-study launch
+
+**Observed validation exhaustion — 2026-10-14:** the single recovery 60484614
+passed all 111 contracts but failed before the actual import because the
+standalone runner's relative imports had no package context. Both allocations
+are FAILED 1:0, totaling 0.96 actual local hours (1.20 with margin). The sealed
+implementation and failed receipts remain unchanged. Actual import, installed
+reader validation and full export/PDF validation are still unverified; scientific
+release and ownership transfer did not occur. Existing October 15 owners remain
+pending. The separately prepared candidate runner sets the package explicitly;
+its import preflight passed without submitting or running the validation graph.
+The [terminal receipt](../../report/research-campaign-v3-20261014-r6/VALIDATION_TERMINAL.json)
+and [pending correction binding](../../report/research-campaign-v3-20261014-r6/VALIDATION_RUNNER_CORRECTION_BINDING.pending.json)
+record the exact gate. A further allocation requires an explicit extension of
+the user's approved one-recovery limit; this observation grants none.
+
+**R6 validation ownership — 2026-10-14:** source seal
+`cab3d55b383d5c6b00e8a1f3e745d415340499b2f6f8c5444085eebaf4c55a14`
+binds 186 unchanged implementation/test files and the separately recorded reader
+runtime. First validation 60481682 failed after 110/111 contracts passed: the
+remaining inherited assertion treated local export as verified remote delivery.
+The one separately bound recovery 60484614 uses the corrected delivery test
+contract and retains every scientific assertion. Its 11-file binding is
+VALIDATION_RECOVERY_BINDING.json; implementation sources remain unchanged.
+Scientific work and ownership transfer are gated on actual full validation.
+Predecessor snapshot 60454552 and owners 60462231/60462233/60462236 remain owned.
+No further validation allocation or automatic successor follows an exhausted
+recovery. The original accounting ceiling is not reset.
+
+The user approved the audited repair-and-launch plan and explicitly instructed
+implementation. This separately sealed r6 imports r5-r2 and all ancestry, keeping
+the seven-model design, original sampling/decoding, frozen cohorts, task/shard
+identities and the original accounting baseline. No successful qualification or
+completed analysis is repeated.
+
+The user selected recovery of the exact 64 original reader assignments only
+when source, distribution fingerprints, launch configuration and failure ordering
+prove rejection before engine admission. Admitted or ambiguous interrupted draws
+remain unknown. Correct token lengths govern the unchanged context/output
+allowance. A necessary maximum-input price uses untouched original observations,
+with at most one unpriced shared reader batch.
+
+The user selected full real CPU validation on four CPUs/24 GiB/180 minutes:
+12 local hours per attempt before margin, one bounded recovery. It must exercise
+all-seven imports, installed reader token/input/sampler boundaries, the full
+243,747-row report, checkpoint recovery and a source-bound manuscript build.
+Only scheduler/GPU boundaries may be simulated in isolated tests; no simulated
+scientific evidence may enter the accepted journals.
+
+Remaining scope is 741 original coordination pairs; 346 non-REAP compact shapes
+and 69,459 distinct generations; 10,822 saved-sequence forwards; 35 calibration
+folds; eligible REAP, central steering, balanced sensitivity and supporting
+analyses. GPT's measured REAP limitation remains in dependent cells. Registered
+comparisons, unknown bounds, weighting and simultaneous correction families
+remain intact. The 2,291.7-local-hour saved-sequence projection excludes natural
+generation and annotation; complete affordability remains unmeasured.
+
+Component failure dispositions preserve independent CPU/compact progression.
+Forecasting is read-only; shards commit after their inputs/prices validate.
+Reports, local PDFs and each remote delivery have separate completion receipts.
+Publication uses explicit allowed artifacts and isolated Git indexes with exact
+readbacks and one failed-destination retry.
+
+The new owners and October 15 snapshot must be accepted and verified before
+retiring only proven pending zero-runtime predecessors. Every wave reconciles
+live entitlement, all inherited charges/reservations and separate WORK/FAST
+reserves. Full production requires complete measured admission with 25% margin
+inside the original 42,050-hour ceiling. A shortfall stops production without
+reducing scientific scope. Exhaustion creates no automatic successor campaign.
+
 ## ADR 20261014 23: authorized final r5 continuation and imported-state validation
 
 Terminal observation: all seven native fixtures and corrected Nemotron/Gemma

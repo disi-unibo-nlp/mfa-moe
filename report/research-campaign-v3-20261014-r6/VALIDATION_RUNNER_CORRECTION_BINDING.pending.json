@@ -1,0 +1,28 @@
+{
+  "additional_allocation_requires_user_extension": true,
+  "cpus": 4,
+  "files": {
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/research_campaign_v3_r6_validation_candidate_r3.py": "2b19c5bdfb504e7d2ef232767ce708443f2a1f03d99f185acde2ca130407bd18",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/research_campaign_v3_r6_validation_candidate_r3.sbatch": "9aa184413566c6ffd7c8b79ff531f2e3cd7984a7152f0859884275b3344e9884",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/tests/research_campaign_v3_r6_validation_r2/test_campaign.py": "00639d2c0bdda10f4ad51f1aada562cf8dec88ac3921b8b97f1dd6025a4c7b43",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/tests/research_campaign_v3_r6_validation_r2/test_continuation.py": "ccd9a9ea855b3838ae85b33dcf528319f174c941c608543c0a42c833836636d0",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/tests/research_campaign_v3_r6_validation_r2/test_export.py": "9f03a58d9c2bd1a83e8add9fea530c4e72657233c2d71b246cb9e2393c851309",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/tests/research_campaign_v3_r6_validation_r2/test_r5_boundary.py": "a871653171c2ea981212e89d0cb2b11f2155259fed9c41f77c8173c6ee9d40cd",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/tests/research_campaign_v3_r6_validation_r2/test_r6_execution.py": "92713dac3ab2073501402050a7157bfa92f911ef8c602a570761ce20d4690c06",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/tests/research_campaign_v3_r6_validation_r2/test_repairs.py": "404c4bdae4e6d14baa5bb386416cb99797d83bbb90832249e53a24547dbea73d",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/tests/research_campaign_v3_r6_validation_r2/test_results_first.py": "2014915c6df64cfcfae71a18c28101f40cb2c26fd58110d024bfd4ee89dd700c",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/tests/research_campaign_v3_r6_validation_r2/test_storage_recovery.py": "b50044ce6c1c949809a108bec57448f4add1a264620f1729c39c75f1f5fc0a1e",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/tests/research_campaign_v3_r6_validation_r2/test_v3.py": "ef777b60f17e63e97bfd6e5e314c0c4ea02ba70e0a80a1551dec7983da88c060"
+  },
+  "implementation_source_files_unchanged": true,
+  "memory_gib": 24,
+  "minutes": 180,
+  "original_campaign_sha256": "cab3d55b383d5c6b00e8a1f3e745d415340499b2f6f8c5444085eebaf4c55a14",
+  "original_failed_jobs": [
+    "60481682",
+    "60484614"
+  ],
+  "proposed_fix": "explicit validation package context for relative imports",
+  "reservation_local_hours": 12,
+  "scientific_release": false
+}

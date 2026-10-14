@@ -1,5 +1,15 @@
 # MoE routing and reasoning research wiki
 
+**R6 repair authorized — 2026-10-14:** [ADR24](DECISIONS.md#adr-20261014-24-r6-reader-repair-and-remaining-study-launch)
+records the approved repair, proven pre-admission reader recovery and full
+three-hour CPU validation. The separately versioned r6 preserves existing
+qualifications and original work; production requires complete measured admission.
+All 111 contracts passed in the single recovery, which then failed before actual
+import/export because its standalone runner lacked package context. The limit is
+exhausted; scientific release remains closed. The unsubmitted correction passes
+an import preflight and requires an explicit allocation extension. R5's terminal
+evidence and October 15 ownership remain preserved until verified transfer.
+
 **Current terminal boundary — 2026-10-14:** all seven native fixtures qualified,
 and corrected Nemotron/Gemma REAP qualified. GPT retains its measured REAP limit.
 The original reader batch failed token-input validation; its single recovery
