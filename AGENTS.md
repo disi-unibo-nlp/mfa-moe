@@ -1,5 +1,21 @@
 # Research continuity
 
+**R6 r7 completion and protected launch authorized — 2026-10-14:** the user
+replied “yeah please let's not wast anymore time. Do evetything u can do and
+launch ASAP” to the proposed single 4-CPU/24-GiB/30-minute completion. This
+explicitly extends validation by 2 local hours / 2.5 with margin, with no
+automatic retry. Use unchanged candidate r7 and its activated
+`OPS_R1_BUILD_RECOVERY_BINDING.json`, preserving job 60520129 and its actual
+20+111 contracts, 64 reader contexts and full 243,747-row export. Submission
+uses `scripts/research_campaign_v3_r6_submit_build_recovery.py`; reconcile its
+immutable acceptance before doing anything else. On full matching readiness,
+release the existing protected chain and separately bound CPU dispatch repair.
+Complete measured admission still precedes production under the original
+42,050-hour ceiling. Preserve all four report-only owners and both existing
+source seals. Keep active manuscript inputs and raw Git indexes stable during
+validation; this task makes no canonical manuscript edits or remote writes.
+The earlier unapproved-r7 paragraph is historical.
+
 **R6 full export passed; validation build terminal — 2026-10-14:** authorized
 60520129 FAILED 1:0 after 5,919 seconds (6.57667 local hours). All 20+111
 contracts and all 64 real reader contexts passed. The actual 243,747-row export,

@@ -1,5 +1,15 @@
 # MoE experiment recap — 2026-10-14
 
+**R7 completion now authorized:** the user's latest “launch ASAP” instruction
+approves the prepared single four-CPU / 24-GiB / 30-minute completion, with
+2 local hours / 2.5 including margin and no automatic retry. The
+`OPS_R1_BUILD_RECOVERY_AUTHORIZATION.json` and activated
+`OPS_R1_BUILD_RECOVERY_BINDING.json` preserve the pending binding and successful
+60520129 evidence. After full matching validation, release the protected
+scientific chain and the source-bound CPU dispatch amendment. Complete measured
+admission still precedes production. Job acceptance and outcomes are recorded
+separately; the prepared/unapproved status below is historical.
+
 The latest operations amendment preserves the original scientific seal and
 reuses its evidence. [Operations preflight](OPS_R1_PREFLIGHT.json),
 [protected milestone](ops_r1/milestone/PROTECTION.json) and
