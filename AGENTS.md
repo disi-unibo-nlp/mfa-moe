@@ -1,5 +1,44 @@
 # Research continuity
 
+**R6 reader price and failure identifiers repaired — 2026-10-15:** jobs
+60564472 and 60566412 remain FAILED 1:0 (1,248 and 285 seconds). All 64 actual
+largest-input coverage observations completed with the unchanged reader profile.
+Their 9,726-token maximum covers the 9,140-token maximum of the 64 unexecuted
+originals. The unchanged conservative price is 260.947132 seconds/context at
+8,192 tokens, with 402.743649 seconds load. The private FAST metadata alias
+restores the original pre-admission proof. No additional reader-pricing GPU
+allocation or scientific draw is needed; original identities/unknowns remain.
+Registered annotation waves still recover eligible contexts once after their
+measured admission; pricing reuse does not mark those annotations complete.
+
+The five-file READER_PRICE_R1 binding
+`6f51d3c6359c1136e86ac371e026ff6fb83101d267b6a3bfa29faec5d5abd587`
+has eight passing tests and binds 72 evidence files. Actual post-transfer
+verification caught an embedded failure payload without sha256; the separate
+five-file READER_PRICE_FAILURE_ID_R1 binding
+`9df6c3642966b6b6e1632936c12972dd5100bec385344dd9d28cce118ae6a674`
+has four passing tests and an actual stored-receipt check. It matches the exact
+canonical failure payload while preserving unrelated failures. Use only
+`scripts/research_campaign_v3_r6_reader_price_failure_id_r1/run.py` for new
+science. Every worker verifies all original and operational source/proof joins.
+Do not edit any accepted amendment, the running CPU allocation closure or the
+original seals. Failed allocations remain failed; only their scientific pricing
+obligation is resolved from real evidence. Local commits 57bf4a9 and 10c7176
+precede their respective releases; there was no push or manuscript edit.
+
+Generation 5 owners 60569710/60569711/60569712 are accepted and released,
+pending running four-CPU/24-GiB, zero-GPU pilot 60565750. All new owners verified
+before 60569222/60569225/60569231 retired CANCELLED with zero runtime and
+Start=None. The earlier pricing transfer likewise preserved its predecessors.
+Reporting owners 60509618/60509619/60509620/60509621 remain unchanged. The unused
+original64 GPU proposal is superseded without submission. Full production
+ADMISSION remains absent; complete measured preparation/admission still precedes
+the original residual study under the 42,050-hour ceiling, 25% margin and separate
+10-GiB WORK/FAST reserves. October 15 23:59:59 Rome is a reporting checkpoint,
+not final-results delivery. See READER_PRICE_* proofs, both protected transfer
+journals, LAUNCH_OBSERVED_FAILURE_ID_R1.json and RECAP.md. Earlier observations
+below remain historical.
+
 **R6 scientific chain released and running — 2026-10-15:** actual allocated
 contracts (20+111), all 64 reader contexts, 243,747-row export/replay and real
 graph proofs are complete. The 11.540-second fresh isolated PDF/integrity check

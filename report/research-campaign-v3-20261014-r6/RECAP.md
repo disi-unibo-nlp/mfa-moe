@@ -1,5 +1,50 @@
 # MoE experiment recap — 2026-10-14
 
+**Latest verified execution — 2026-10-15:** not all remaining production jobs
+are submitted. CPU analysis pilot **60565750 is RUNNING** (four CPUs, 24 GiB,
+no GPU). Scientific primary **60569710** and failure owners **60569711 / 60569712**
+are accepted, released and pending its completion. Reporting jobs **60509618 /
+60509619 / 60509620 / 60509621** remain unchanged; the snapshot is due October 15
+at 23:59:59 Europe/Rome.
+
+Reader allocations **60564472** and **60566412** remain FAILED 1:0 after
+1,248 and 285 seconds. Their 64 outcome-blind largest-input measurements actually
+completed. Reuse now commits the unchanged conservative price: maximum measured
+input **9,726 tokens** covers the original maximum **9,140**; **260.947132
+seconds/context**, **402.743649 seconds** load, original 8,192-token cap. The
+private FAST proof alias is repaired. All 64 original assignments remain
+unexecuted; their eligible registered annotation contexts can still recover
+once in the admitted annotation wave. No further GPU allocation or draw was
+submitted solely for reader pricing.
+
+The pricing adapter passes eight tests and binds 72 real evidence files. Actual
+post-transfer verification caught the embedded failure payload's absent sha256;
+a separate five-file identifier adapter adds four tests and passes the actual
+stored-receipt check. It resolves only that exact canonical failure. Both failed
+Slurm outcomes and all unrelated failures remain preserved. Each new worker
+verifies every original/operations/CPU/lookup/allocation/pricing proof. Both
+protected transfers accepted all new owners before retiring only zero-runtime
+predecessors. Local repair commits **57bf4a9** and **10c7176** precede release;
+there was no push or canonical manuscript edit.
+[Final observed readback](LAUNCH_OBSERVED_FAILURE_ID_R1.json),
+[pricing resolution](READER_PRICE_R1_RESOLUTION.json),
+[final protected transfer](reader_price_failure_id_r1_transfer/TRANSFER.json).
+
+Remaining: qualify/price **346 compact shapes**, finish **69,459 distinct non-REAP
+generations** plus eligible REAP, **10,822 saved-sequence forwards**, **35 calibration
+folds**, central MMM and balanced sensitivity, **741 coordination pairs** and
+missing supplementary analyses. Native fixtures/scores/folds, six compatible
+REAP paths, original prefixes/nominations, completed GPT/Nemotron pair banks and
+existing seven-model CLEAN readouts remain reusable. **Complete production
+ADMISSION is still absent.** The next protected wave follows the current pilot,
+then complete measured admission checks inherited expenditure, outstanding
+reservations, live entitlement, the original ceiling/margin and separate reserves.
+Exports remain memory → central → sensitivity/supporting results. A reliable
+final-results date needs those prices and admission; tonight's reporting checkpoint
+does not imply scientific completion.
+
+Earlier observations below preserve exact historical failures and launches.
+
 **Current execution — 2026-10-15:** the protected scientific chain is released.
 Reader pricing **60564472 is RUNNING** (two GPUs, 16 CPUs, 120 GiB); it recovers
 only the 64 original assignments proven rejected before admission. CPU pilot

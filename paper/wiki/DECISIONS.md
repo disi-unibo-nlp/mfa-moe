@@ -1,5 +1,44 @@
 # Research decisions and open questions
 
+## ADR 20261015 31: existing reader price evidence and protected continuation
+
+Reader allocations 60564472 and its deterministic recovery 60566412 failed 1:0
+after 1,248 and 285 seconds at the assertion requiring original execution timings.
+Those 64 originals were never admitted by r6: physical FAST annotation directories
+lacked the logical pre-admission proof pointer. A verified metadata-only symlink
+restores the exact proof. All 64 outcome-blind largest-input coverage observations
+actually completed with the fixed reader/program/configuration. Their 9,726-token
+maximum covers the 9,140-token original maximum. Reuse the unchanged conservative
+formula: 260.947132 seconds/context at the 8,192-token cap; 402.743649 seconds load.
+Preserve unexecuted originals and recover eligible registered annotation contexts
+once after measured admission. The six-hour price-only proposal stays unsubmitted
+and is superseded. No new GPU job or draw is needed solely for the pricing assertion.
+
+The five-file READER_PRICE_R1 adapter joins all original/operations/CPU/lookup/
+allocation proofs and 72 evidence files; eight tests and actual coverage/stale-proof
+checks pass. Post-transfer verification found failure_dispositions embeds an
+unsealed payload, so testing its missing sha256 left annotations blocked. The
+separate five-file READER_PRICE_FAILURE_ID_R1 adapter matches the exact canonical
+payload digest. Four tests and the real stored-receipt check pass. Both failed
+Slurm allocations remain FAILED; only their pricing obligation is resolved from
+actual evidence. Unrelated shared/model failures still block their dependents.
+
+Local commits 57bf4a9 and 10c7176 precede their respective releases. Generation 5
+owners 60569710/60569711/60569712 all accepted/read back before generation 4
+60569222/60569225/60569231 retired with zero runtime and Start=None. The earlier
+pricing transfer is likewise preserved. CPU pilot 60565750 is RUNNING; all four
+report-only owners remain unchanged. Resume the existing protected chain through
+the final failure-identity entrypoint; do not edit any accepted source binding.
+
+Full production ADMISSION remains absent. The fixed residual 346 shapes, 69,459
+non-REAP generations plus eligible REAP, 10,822 forwards, 35 calibration folds,
+central MMM and balanced sensitivity, 741 pairs and supplementary analyses remain.
+Complete measured admission checks the original 42,050-hour ceiling, inherited
+expenditure, outstanding reservations, live entitlement, 25% margin and separate
+10-GiB reserves. The sequence remains memory → central → sensitivity exports.
+October 15 23:59:59 Rome is report-only; no final-results date is inferred from
+accepted controllers. Canonical manuscript edits and remote pushes remain deferred.
+
 ## ADR 20261015 30: observed protected scientific launch and CPU allocation repair
 
 The allocated 60561919 PDF and real graph completed, but its final global
