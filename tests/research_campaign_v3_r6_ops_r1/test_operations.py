@@ -265,6 +265,18 @@ class Operations(unittest.TestCase):
         self.assertEqual(len(result['retirements']), 4)
         self.assertTrue(all(row['after']['elapsed_seconds'] == 0 for row in result['retirements']))
 
+    def test_exhausted_milestone_export_uses_compact_fallback_without_full_export_retry(self):
+        publish(self.root / 'OPS_R1_VALIDATION_COMPLETED.json', {'status': 'complete'})
+        publish(self.root / 'ops_r1/milestone/ACCEPTED.json', {'guards': []})
+        value = {'ops_report_only': True, 'stage': 'controller', 'shard_index': 1, 'sha256': 'guard-card'}
+        with patch.object(milestone, 'allocated'), patch.object(milestone, 'check_binding'), \
+             patch.object(milestone, 'export_fallback', return_value={'sha256': 'fallback-report'}), \
+             patch('moe_exp.research_campaign_v3_r6.export.closeout', side_effect=AssertionError('Extra export retry')), \
+             patch.dict(os.environ, {'SLURM_JOB_ID': '101'}):
+            result = milestone.worker(self.campaign, value, object())
+        self.assertEqual(result['report_sha256'], 'fallback-report')
+        self.assertFalse(result['scientific_work_released'])
+
 
 if __name__ == '__main__':
     unittest.main()
