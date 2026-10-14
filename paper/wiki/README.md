@@ -1,5 +1,15 @@
 # MoE routing and reasoning research wiki
 
+**R6 import verified, release closed — 2026-10-14:** the approved extra attempt
+60488160 passed all 111 tests, imported all seven models and validated original
+identities plus pre-admission recovery for 64 reader assignments. Its CPU fixture
+then failed on a read-only tokenizer property; the reviewed renderer-based
+correction is unsubmitted. Another allocation needs explicit authorization.
+[Recap](../../report/research-campaign-v3-20261014-r6/RECAP.md) lists completed
+findings and the exact queue. Publication is manual; only downstream publishers
+are held, with the local October 15 snapshot preserved. Current work focuses on
+code and experiments, with manuscript edits deferred.
+
 **R6 repair authorized — 2026-10-14:** [ADR24](DECISIONS.md#adr-20261014-24-r6-reader-repair-and-remaining-study-launch)
 records the approved repair, proven pre-admission reader recovery and full
 three-hour CPU validation. The separately versioned r6 preserves existing
