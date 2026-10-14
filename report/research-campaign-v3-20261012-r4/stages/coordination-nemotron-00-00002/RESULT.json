@@ -1,0 +1,1 @@
+{"detail":{"pair_indices":[56,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77],"restartable":true,"status":"complete"},"failure_scope":null,"job_id":"60230242","model":"nemotron","seconds":10113.99179004319,"sha256":"9fc5af457cdfd6fa534a23a0f6b86e0eb0accec61aeab5fb16f3dcf9dd528c4a","shard_index":2,"stage":"coordination","status":"complete","threshold_index":0}

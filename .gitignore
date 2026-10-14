@@ -646,6 +646,7 @@ paper/6a510c6db0d9b08aa438c142/generated/research_campaign_v3/**/cells.csv
 paper/6a510c6db0d9b08aa438c142/generated/research_campaign_v3/**/CELL_RESULTS.json
 paper/6a510c6db0d9b08aa438c142/generated/research_campaign_v3/**/ASSIGNED_OBSERVATIONS.json
 paper/6a510c6db0d9b08aa438c142/generated/research_campaign_v3/**/ASSEMBLED.json
+paper/6a510c6db0d9b08aa438c142/generated/research_campaign_v3/**/EXPORT_STATE.json
 paper/6a510c6db0d9b08aa438c142/generated/research_campaign_v3/**/assembly/
 paper/6a510c6db0d9b08aa438c142/generated/research_campaign_v3/**/validation/
 
@@ -654,3 +655,7 @@ report/**/publication/**/index
 report/**/publication/**/index.lock
 report/**/publication/**/*.git-index
 *.partial
+
+# Exact operational holds are compact provenance; keep their before/after proofs.
+!report/research-campaign-v3-20261014-r6/manual_publication_holds/
+!report/research-campaign-v3-20261014-r6/manual_publication_holds/*.json
