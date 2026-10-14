@@ -1,5 +1,14 @@
 # Active analysis and preserved experiment contracts
 
+**Current terminal boundary — 2026-10-14:** reader token-input validation failed,
+and the one deterministic recovery retained the original started assignments
+without redraw but could not recover a price. The campaign stopped before
+production, with all seven native fixtures qualified and six compatible REAP
+qualifications. GPT's corrected REAP remains a method limitation. Bounded export
+and the snapshot retain ownership; no automatic source fix or successor campaign
+follows exhaustion. [Observed status](CAMPAIGN_V3_STATUS.md). Complete affordability
+and the required new primary effects remain unmeasured.
+
 **Current r5 execution — 2026-10-14:** all 102 contracts and the real seven-model
 import/graph replay passed. The separately sealed
 [r5-r2 continuation](../../scripts/research_campaign_v3_r5_r2/README.md) is released;
