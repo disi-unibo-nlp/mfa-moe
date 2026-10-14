@@ -1,0 +1,1 @@
+{"detail":{"failure_scope":null,"failures":[],"shard":1,"status":"complete"},"failure_scope":null,"job_id":"60454676","model":"qwen330b","seconds":2284.1787918405607,"sha256":"3b01442259bde160bf3fab012d5f24ecbf33ec6e385bb5b4bc417468df5587e1","shard_index":1,"stage":"memory_qualify","status":"complete","threshold_index":0}

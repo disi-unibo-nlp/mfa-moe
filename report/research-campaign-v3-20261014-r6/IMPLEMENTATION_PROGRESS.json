@@ -1,31 +1,44 @@
 {
-  "actual_validation_local_hours": 0.96,
+  "actual_seven_model_import_complete": true,
+  "actual_validation_local_hours": 2.3933333333333335,
   "additional_allocation_requires_explicit_user_extension": true,
-  "candidate_preflight": "VALIDATION_RUNNER_CORRECTION_PREFLIGHT.json",
-  "candidate_runner": "scripts/research_campaign_v3_r6_validation_candidate_r3.py",
+  "approved_extra_contract_results": {
+    "passed": 111,
+    "suite_seconds": 354.56,
+    "total": 111
+  },
+  "approved_extra_validation_job": "60488160",
+  "candidate_preflight": "VALIDATION_CPU_FIXTURE_PREFLIGHT.json",
+  "candidate_runner": "scripts/research_campaign_v3_r6_validation_candidate_r4.py",
   "failed_validation": "60481682",
   "implementation_files": 186,
-  "next_gate": "Explicit allocation extension, actual CPU import/reader/export validation and readiness; then protected submission and verified ownership transfer",
+  "next_gate": "Explicit further allocation extension; corrected real reader/full export validation; then protected launch",
   "original_contract_results": {
     "failure": "obsolete local-as-remote delivery assertion",
     "passed": 110,
     "total": 111
   },
+  "ownership_transferred": false,
+  "paper_work": "deferred by user",
   "predecessor_owners": [
     "60454552",
     "60462231",
     "60462233",
     "60462236"
   ],
+  "publication": "local commits only; user performs pushes",
+  "reader_pre_admission_recovery_adjudicated": 64,
   "reader_runtime_files": 78,
+  "recap": "RECAP.md",
   "recovery_binding": "VALIDATION_RECOVERY_BINDING.json",
   "recovery_contract_results": {
     "passed": 111,
-    "total": 111,
-    "runner_failure": "relative import without package context before actual evidence import"
+    "runner_failure": "relative import without package context before actual evidence import",
+    "total": 111
   },
+  "scientific_jobs_queued": 0,
   "scientific_release": false,
   "single_bound_recovery": "60484614",
   "source_seal": "cab3d55b383d5c6b00e8a1f3e745d415340499b2f6f8c5444085eebaf4c55a14",
-  "status": "implementation_prepared_validation_recovery_exhausted"
+  "status": "actual_import_complete_CPU_fixture_gate_failed"
 }

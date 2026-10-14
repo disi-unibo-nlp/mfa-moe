@@ -1,0 +1,1 @@
+{"detail":{"failure_scope":null,"failures":[],"shard":1,"status":"complete"},"failure_scope":null,"job_id":"60454673","model":"nemotron","seconds":949.6442607333884,"sha256":"af218b4ba7dd01b4422ddb303914a5ffd8c9a01ab34b9a6ccd08cef38e92a6ff","shard_index":1,"stage":"memory_qualify","status":"complete","threshold_index":0}
