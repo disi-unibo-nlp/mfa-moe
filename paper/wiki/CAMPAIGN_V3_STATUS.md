@@ -1,5 +1,31 @@
 # Campaign v3 observed evidence
 
+**Terminal reader boundary — 2026-10-14:** all seven full-context native memory
+fixtures qualified. Corrected Nemotron and Gemma REAP qualified; GPT's corrected
+REAP remains a method limitation. No compact-removal accuracy or steering effect
+has been measured. Original reader pricing **60454682** failed during vLLM input
+validation because its tokenized chat input supplied string keys as token IDs.
+Decoding parameter types were valid. Single recovery **60456042** retained the
+original started reader assignments without redraw and found no committed
+execution price. The shared failure stopped scientific progression before
+complete production admission.
+
+[Terminal disposition](../../report/research-campaign-v3-20261014-r5-r2/TERMINAL.json),
+[preserved failure and exhausted recovery](../../report/research-campaign-v3-20261014-r5-r2/stages/reader_price-all-00-00000/RESULT.json),
+[shared failure](../../report/research-campaign-v3-20261014-r5-r2/SHARED_IMPLEMENTATION_FAILURE.json).
+Bounded closeout **60456396** and protected successor **60456399** with guards
+**60456401/60456403** own report/export. Snapshot **60454552** preserves October 15.
+No automatic source repair or successor campaign follows this exhausted failure.
+Full affordability is unmeasured, rather than an observed budget shortfall.
+
+The reviewed 146-page launch/initial-engineering snapshot is delivered to both
+authorized destinations with independent source readbacks and a verified GitHub
+PDF. It remains a working manuscript with unmeasured primary outcomes.
+[PDF](../../report/research-campaign-v3-20261014-r5-r2/MANUSCRIPT-r5-launch.pdf),
+[destination readbacks](../../report/research-campaign-v3-20261014-r5-r2/PAPER_LAUNCH_DELIVERY.json).
+Terminal report durability and terminal manuscript delivery remain separate
+from that completed dated snapshot delivery.
+
 **First engineering observation — 2026-10-14:** GPT's full-context native memory
 fixture is qualified, with 32.84375 GiB aggregate owned-process NVML residence.
 This is a baseline residence measurement, without an expert-removal accuracy result.

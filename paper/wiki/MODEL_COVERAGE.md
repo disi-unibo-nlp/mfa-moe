@@ -9,13 +9,15 @@ measurement manifests and independent non-REAP memory tables are reconstructed.
 Qwen3.5, Qwen3.6, GLM and Qwen3-30B retain compatible REAP qualifications;
 Nemotron's corrected within-execution adjudication is now qualified. GPT's
 corrected reconstruction remains a REAP method limitation at the unchanged
-tolerances, with its own router bank usable. Gemma's corrected verdict is pending.
+tolerances, with its own router bank usable. Gemma's corrected verdict is qualified.
 Historical verdicts and original saved sequences remain preserved. Native memory
-fixtures have qualified for GPT, Nemotron, Gemma, GLM and Qwen3.6 at this observation;
+fixtures have qualified for all seven models;
 compact shapes and prospective removal accuracy remain unmeasured.
 No new physical memory–accuracy curve or steering effect has been measured.
 The 102 regression contracts and actual imported-state validation passed;
-the protected r5 preparation/qualification chain is released. Full native
+the protected r5 preparation/qualification chain was released. Its original
+reader pricing and single recovery subsequently failed at token-input validation;
+the campaign is terminal before complete production admission. Full native
 annotation contexts, measured shape/role prices and complete production admission
 remain required. All seven models and the registered scientific comparisons persist.
 [Current status and immutable ownership](CAMPAIGN_V3_STATUS.md).

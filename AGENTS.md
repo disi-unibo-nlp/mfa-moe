@@ -1,5 +1,20 @@
 # Research continuity
 
+**R5 terminal reader boundary — 2026-10-14:** all seven native memory fixtures
+qualified, and corrected Nemotron/Gemma REAP qualified; GPT's corrected REAP
+remains a method limitation with usable router bank. Original reader pricing
+60454682 failed in vLLM input validation: tokenized chat inputs contained string
+keys where integer token IDs were required. Its single deterministic recovery
+60456042 retained the original started assignments and failed because no committed
+execution price existed. Preserve all original outcomes/unknowns without redraws.
+SHARED_IMPLEMENTATION_FAILURE.json and TERMINAL.json record upstream_unavailable;
+complete production was not admitted. Closeout 60456396 and protected successor
+60456399 with guards 60456401/60456403 own bounded report/export progression.
+Snapshot 60454552 still owns October 15. Do not repair bound sources or create an
+automatic successor campaign after this exhausted failure. The verified 146-page
+launch snapshot was delivered to GitHub and Overleaf; primary outcomes and the
+required five coordination banks remain scientifically incomplete.
+
 **Active protected r5 continuation — 2026-10-14:** root
 `report/research-campaign-v3-20261014-r5-r2/`, launcher
 `scripts/research_campaign_v3_r5_r2/run.py`. All 102 contracts passed;

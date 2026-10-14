@@ -2,6 +2,25 @@
 
 ## ADR 20261014 23: authorized final r5 continuation and imported-state validation
 
+Terminal observation: all seven native fixtures and corrected Nemotron/Gemma
+REAP qualify; corrected GPT REAP remains limited. Original reader pricing
+60454682 failed inside vLLM's token-input validation (`min_input_id < 0`) because
+string keys were passed instead of integer token IDs. Its numeric decoding
+parameters have the expected types. The one bounded deterministic recovery
+60456042 preserved the started original reader assignments, without replacement,
+and failed when no committed execution price was available. TERMINAL.json records
+upstream_unavailable and SHARED_IMPLEMENTATION_FAILURE.json retains both errors.
+No complete production admission or new co-primary effect was obtained.
+
+Closeout 60456396 and successor 60456399 with guards 60456401/60456403 own bounded
+report/export, and snapshot 60454552 keeps October 15. The exhausted failure does
+not trigger source modification, another scientific allocation or a successor
+campaign. Full affordability is unmeasured, not an established budget shortfall.
+The dated launch/initial-engineering working manuscript and its 146-page PDF were
+delivered to GitHub and Overleaf with independent readbacks; terminal report and
+terminal manuscript delivery remain separate obligations. Scientific completion
+is explicitly false.
+
 First engineering readback: corrected Nemotron REAP is qualified. Corrected GPT
 REAP remains a method limitation under the unchanged same-execution fidelity
 tolerances; its router bank remains usable. GPT's native full-context fixture

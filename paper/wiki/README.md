@@ -1,5 +1,13 @@
 # MoE routing and reasoning research wiki
 
+**Current terminal boundary — 2026-10-14:** all seven native fixtures qualified,
+and corrected Nemotron/Gemma REAP qualified. GPT retains its measured REAP limit.
+The original reader batch failed token-input validation; its single recovery
+preserved unknowns without redraw and could not price execution. Scientific
+progression stopped before production. Bounded report/export and the October 15
+snapshot retain verified ownership. [Current status and delivery receipts](CAMPAIGN_V3_STATUS.md).
+The dated working manuscript/PDF was delivered; primary outcomes remain unmeasured.
+
 **Current r5 ownership — 2026-10-14:** all 102 contracts and the real seven-model
 import/graph replay passed. The protected continuation is released under
 [ADR23](DECISIONS.md#adr-20261014-23-authorized-final-r5-continuation-and-imported-state-validation).
