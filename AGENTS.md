@@ -1,5 +1,37 @@
 # Research continuity
 
+**R6 full export passed; validation build terminal — 2026-10-14:** authorized
+60520129 FAILED 1:0 after 5,919 seconds (6.57667 local hours). All 20+111
+contracts and all 64 real reader contexts passed. The actual 243,747-row export,
+10,000-family-bootstrap summaries and checkpoint replay completed. No science
+was released. Total validation usage is 9.00222 local hours, 11.25278 with margin.
+The isolated builder timed out before TeX: it copied ignored `.paper-review`
+histories and omitted the local bibliography style. Concurrent manuscript
+inputs/review artifacts changed during the allocation; preserve them. No files
+in the canonical manuscript were edited by this experiment continuation.
+`OPS_R1_LOADER_PARTIAL_VALIDATION.json` and terminal/accounting/integrity receipts
+preserve all successful dependencies and failure. Report-only owners
+60509618/60509619/60509620/60509621 remain pending, source-bound and unchanged.
+Do not edit their 24-file operations binding or the original 186-file seal.
+
+The separately prepared, unsubmitted candidate r7 reuses the actual 20+111
+contract evidence, reader proof and full export; it completes only the active
+source PDF build, graph and integrity/readiness proofs. Three dependency tests
+pass; its isolated offline build passed in 12.937 seconds without source changes.
+`OPS_R1_BUILD_RECOVERY_BINDING.pending.json` binds four files. A proposed single
+4-CPU/24-GiB/30-minute completion (2 local hours / 2.5 with margin) is NOT yet
+authorized. No automatic retry follows the exhausted approved attempt. Active
+manuscript inputs and raw Git indexes must stay stable during that completion.
+
+A five-file `research_campaign_v3_r6_cpu_dispatch_r1` amendment also remains
+prepared and unsubmitted. Nine tests, installed dispatch-hook probes and four
+real reporting readbacks pass. It preserves CPU shape/accounting while moving
+scientific CPU workers to Booster without a GPU request, avoiding the seven
+serial owners plus three-successor reservation deadlock. Every new worker must
+verify its amendment and all base reader/export/graph/readiness proofs. No
+controller replacement or scientific work can be released before full validation.
+Local source/receipt commits are authorized; pushes remain the user's action.
+
 **R6 corrected validation extension authorized — 2026-10-14:** the user replied
 “I authorize it” and instructed running all required work. This explicitly
 extends the exhausted validation allowance by one four-CPU, 24-GiB, three-hour

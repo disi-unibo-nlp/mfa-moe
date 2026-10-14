@@ -1,5 +1,50 @@
 # Research decisions and open questions
 
+## ADR 20261014 28: preserved full export, active snapshot and CPU dispatch repair
+
+Authorized validation 60520129 ended FAILED 1:0 after 5,919 seconds. All 20
+operational and 111 inherited tests, the installed reader interfaces for all 64
+original contexts, the 243,747-row export, fixed 10,000 paired whole-family
+bootstrap summaries and checkpoint replay completed before failure. The isolated
+snapshot builder exceeded its 60-second caller limit before starting TeX: it
+recursively copied ignored review histories and omitted the local `.bst`.
+Concurrent manuscript inputs and review outputs changed during the allocation;
+the failed integrity receipt is preserved without claiming global immutability.
+No scientific workload was released. Additional usage is 6.57667 local hours;
+cumulative validation is 9.00222 (11.25278 including margin).
+
+A new active-source builder preserves every older helper and copies the actual
+TeX/class/style/bibliography/graphics dependencies. Three regression contracts
+pass and an isolated offline build completed in 12.937 seconds with no changed
+sources. Unsubmitted candidate r7 reuses the source-bound 20+111 test result,
+reader proof and committed export; it completes the PDF, real no-submission graph
+and canonical active-source/raw Git integrity/readiness checks. The proposed
+four-CPU/24-GiB/30-minute completion costs at most 2 local hours / 2.5 with margin,
+with no retry. It requires a new explicit extension and stable manuscript inputs.
+The current failed attempt grants no additional allocation.
+
+The separately bound CPU dispatch amendment resolves a proven scheduling defect:
+four independent reporting owners plus three scientific owners and three reserved
+successor slots leave no serial CPU worker slot under the live ten-job limit.
+Scientific CPU workers retain four CPUs, 24 GiB, their original time and accounting
+bounds, and request no GPUs on the granted Booster partition. Live QoS and
+scheduler-only checks accept that shape. Nine contracts and installed transport
+probes pass; all four report-only owners have actual unchanged readbacks. Each
+worker verifies the original seal, operations seal, additional dispatch seal and
+matching complete proofs. Controller replacements are accepted and verified in
+full before only zero-runtime predecessors retire. This amendment is prepared,
+not released. The [official partition reference](https://docs.hpc.cineca.it/hpc/leonardo.html#job-managing-and-slurm-partitions)
+was refreshed; live configuration and actual resource readbacks remain authoritative.
+
+The seven-model scientific scope and original 42,050-hour ceiling persist.
+Remaining measurements are the 346 compact shapes / 69,459 distinct non-REAP
+generations plus eligible REAP, 10,822 saved-sequence forwards, 35 calibration
+folds, central MMM and balanced sensitivity, and 741 pairs across five models
+with missing supplementary analyses. Complete measured admission precedes memory,
+central and sensitivity production. Reporting owners 60509618/19/20/21 remain
+protected; canonical manuscript edits and remote writes are outside this task.
+Exact evidence and prepared bindings are under the existing r6 root and recap.
+
 ## ADR 20261014 27: explicit corrected-validation extension
 
 The user replied “I authorize it” and instructed running all required work.

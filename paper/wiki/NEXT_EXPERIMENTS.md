@@ -1,12 +1,16 @@
 # Active analysis and preserved experiment contracts
 
-**Current release gate — 2026-10-14:** validation 60510557 failed after the 20
-operational contracts, before inherited tests and actual reader/export/graph
-validation. The unsubmitted loader correction passes bounded preflight; no
-additional allocation is authorized. Scientific preparation/production remains
-closed, preserving every original task and completed result. The independently
-protected report-only milestone remains owned by 60509618/19/20/21. See
-[ADR25](DECISIONS.md#adr-20261014-25-authorized-r6-operations-amendment-and-single-validation).
+**Current release gate — 2026-10-14:** corrected validation 60520129 passed
+all 20+111 contracts, all 64 retained reader contexts and the actual 243,747-row
+export/replay, then failed before the isolated compiler started. Scientific
+submission remains closed. The active-source builder now passes its three tiny
+contracts and an isolated 12.937-second offline build. Candidate r7 is prepared
+and bound but unsubmitted; a proposed 4-CPU/24-GiB/30-minute completion needs a
+new explicit extension and stable canonical inputs/Git indexes. The separate
+nine-test CPU dispatch amendment resolves serial owner capacity while preserving
+all four reporting owners and every scientific identity/resource bound. See
+[ADR28](DECISIONS.md#adr-20261014-28-preserved-full-export-active-snapshot-and-cpu-dispatch-repair)
+and [the observed recap](../../report/research-campaign-v3-20261014-r6/RECAP.md).
 
 **Authorized r6 operations repair — 2026-10-14:** [ADR25](DECISIONS.md#adr-20261014-25-authorized-r6-operations-amendment-and-single-validation)
 binds the renderer-backed fixture, external-ID reader cleanup and full validation
