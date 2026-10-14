@@ -2,6 +2,23 @@
 
 ## ADR 20261014 25: authorized r6 operations amendment and single validation
 
+**Terminal observation:** 60510557 FAILED 1:0 after 29 seconds. All 20 operational
+contracts passed; unittest's shared default loader then rejected the second
+non-package test directory because its cached top-level directory belonged to
+the first suite. This is a validation-runner failure; the inherited 111 tests
+and real reader/export/graph checks were not reached. The manuscript, repository
+HEAD/index and installed/scientific bindings remain unchanged. No scientific
+work was released. Total validation usage is 2.42556 local hours; the one-attempt
+extension is exhausted, without automatic retry.
+
+The unsubmitted candidate r6 uses a new loader for each suite with an explicit
+top-level directory. Two tiny checks reproduce the original error and pass the
+correction; the actual 20+111 roster is discovered without executing full
+validation. The pending correction binding grants no allocation. The four
+report-only milestone owners remain pending and protected. Actual failure,
+accounting and correction proofs are in `OPS_R1_*.json` under the existing r6
+root. Another validation allocation requires an explicit user extension.
+
 The user explicitly instructed implementation of the audited repair-and-resume
 plan. `research_campaign_v3_r6_ops_r1` is a separately bound operational package
 over the unchanged 186-file r6 seal and existing journals. The scientific study,

@@ -1,5 +1,22 @@
 # Research continuity
 
+**R6 operations validation terminal — 2026-10-14:** single authorized attempt
+60510557 FAILED 1:0 after 29 seconds (0.03222 local hours). It passed all 20
+operational contracts, then unittest's shared default loader retained the first
+suite's top-level directory and rejected discovery of the second non-package
+suite. The inherited 111-contract run and actual reader/export/graph validation
+were not reached in this allocation. `OPS_R1_VALIDATION_TERMINAL.json` and
+`OPS_R1_TERMINAL_ACCOUNTING.json` preserve failure and unchanged manuscript/HEAD/
+index evidence. Total validation usage is 2.42556 local hours. No scientific
+release occurred and no further allocation is authorized. Preserve the pending
+report-only owners 60509618/60509619/60509620/60509621 and their 24-file operations
+binding. Do not edit that bound adapter. The separately prepared, unsubmitted
+candidate r6 uses independent loaders and explicit top-level directories; two
+tiny regression checks pass and all 20+111 tests are discovered without running
+full validation. `OPS_R1_LOADER_BINDING.pending.json` and
+`OPS_R1_LOADER_PREFLIGHT.json` bind this correction. Another allocation requires
+an explicit user extension. Canonical manuscript edits and pushes remain deferred.
+
 **R6 operations amendment active — 2026-10-14:** the user explicitly instructed
 implementation of the repair-and-resume plan. Use only
 `scripts/research_campaign_v3_r6_ops_r1/run.py` for this continuation. Its

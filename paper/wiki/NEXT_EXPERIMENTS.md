@@ -1,5 +1,13 @@
 # Active analysis and preserved experiment contracts
 
+**Current release gate — 2026-10-14:** validation 60510557 failed after the 20
+operational contracts, before inherited tests and actual reader/export/graph
+validation. The unsubmitted loader correction passes bounded preflight; no
+additional allocation is authorized. Scientific preparation/production remains
+closed, preserving every original task and completed result. The independently
+protected report-only milestone remains owned by 60509618/19/20/21. See
+[ADR25](DECISIONS.md#adr-20261014-25-authorized-r6-operations-amendment-and-single-validation).
+
 **Authorized r6 operations repair — 2026-10-14:** [ADR25](DECISIONS.md#adr-20261014-25-authorized-r6-operations-amendment-and-single-validation)
 binds the renderer-backed fixture, external-ID reader cleanup and full validation
 launch gate through a new operational adapter. It preserves all existing science
