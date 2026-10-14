@@ -2,6 +2,34 @@
 
 ## ADR 20261014 24: r6 reader repair and remaining-study launch
 
+**Extra-attempt observation — 2026-10-14:** 60488160 passed 111 contracts and
+the real seven-model import, preserving all original non-REAP identities and
+adjudicating the 64 original reader assignments as rejected before admission.
+It failed in a CPU fixture's assignment to vLLM's read-only tokenizer property.
+The separately prepared renderer-based fixture passes a tiny installed-interface
+check, without a draw or allocation. Reader/full-export readiness is incomplete;
+no scientific release or ownership transfer occurred. Total validation usage is
+2.3933 local hours. A further allocation requires an explicit extension.
+To honor manual publication, only downstream pending controllers are held;
+snapshot 60454552 retains the local October 15 obligation. [Recap and queue](../../report/research-campaign-v3-20261014-r6/RECAP.md).
+The user's current focus is code and experiments; manuscript edits are deferred.
+
+**Manual publication amendment — 2026-10-14:** the user instructs local commits
+with proper messages and ignore rules, and will perform the final push. Future
+remote writes from this continuation are deferred. A separately bound operational
+wrapper must prepare local delivery commits without changing the scientific
+source seal, identities, installed environment or validation gate. Local paper,
+scientific completion and verified remote delivery remain distinct.
+
+**Explicit validation extension — 2026-10-14:** the user approves one additional
+four-CPU/24-GiB/three-hour attempt using the separately bound, preflight-verified
+runner correction. Its maximum reservation is 12 local hours before margin,
+15 including margin, within the original ceiling. No further automatic retry
+is authorized. The original sealed implementation and both failed receipts remain
+unchanged; verified full validation still precedes protected launch. The user also
+requests a concise local recap of completed work, findings and actual queued jobs,
+with the specific evidence each will measure.
+
 **Observed validation exhaustion — 2026-10-14:** the single recovery 60484614
 passed all 111 contracts but failed before the actual import because the
 standalone runner's relative imports had no package context. Both allocations

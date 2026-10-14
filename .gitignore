@@ -622,3 +622,35 @@ report/research-campaign-v[123]-*/submissions/*
 !report/research-campaign-v[123]-*/submissions/*/
 report/research-campaign-v[123]-*/submissions/*/*
 !report/research-campaign-v[123]-*/submissions/*/*.json
+
+# Preserve authored continuation tests; cached and runtime test data stay ignored.
+!tests/research_campaign_v3_r4/
+!tests/research_campaign_v3_r4/*.py
+!tests/research_campaign_v3_r5/
+!tests/research_campaign_v3_r5/*.py
+!tests/research_campaign_v3_r5_r2/
+!tests/research_campaign_v3_r5_r2/*.py
+!tests/research_campaign_v3_r6/
+!tests/research_campaign_v3_r6/*.py
+!tests/research_campaign_v3_r6_validation_r2/
+!tests/research_campaign_v3_r6_validation_r2/*.py
+
+# Per-campaign manuscript mirrors also contain bulk analysis copies. Keep their
+# compact JSON provenance and figures eligible; omit full execution/cell banks.
+paper/6a510c6db0d9b08aa438c142/generated/research_campaign_v3/**/*.parquet
+paper/6a510c6db0d9b08aa438c142/generated/research_campaign_v3/**/*.npy
+paper/6a510c6db0d9b08aa438c142/generated/research_campaign_v3/**/*.npz
+paper/6a510c6db0d9b08aa438c142/generated/research_campaign_v3/**/*.sqlite
+paper/6a510c6db0d9b08aa438c142/generated/research_campaign_v3/**/*.jsonl
+paper/6a510c6db0d9b08aa438c142/generated/research_campaign_v3/**/cells.csv
+paper/6a510c6db0d9b08aa438c142/generated/research_campaign_v3/**/CELL_RESULTS.json
+paper/6a510c6db0d9b08aa438c142/generated/research_campaign_v3/**/ASSIGNED_OBSERVATIONS.json
+paper/6a510c6db0d9b08aa438c142/generated/research_campaign_v3/**/ASSEMBLED.json
+paper/6a510c6db0d9b08aa438c142/generated/research_campaign_v3/**/assembly/
+paper/6a510c6db0d9b08aa438c142/generated/research_campaign_v3/**/validation/
+
+# Private publication preparation uses an isolated index; never stage it.
+report/**/publication/**/index
+report/**/publication/**/index.lock
+report/**/publication/**/*.git-index
+*.partial

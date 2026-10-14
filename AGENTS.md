@@ -1,5 +1,42 @@
 # Research continuity
 
+**R6 extra validation failed after successful import — 2026-10-14:** approved
+job 60488160 passed all 111 contracts and committed the real seven-model import,
+all original non-REAP identities/shapes and the 64-reader pre-admission recovery
+adjudication. It then failed in the CPU fixture: installed vLLM's `tokenizer` is
+a read-only property backed by `renderer.tokenizer`. No GPU science was released.
+`VALIDATION_EXTENSION_TERMINAL.json` and `PARTIAL_VALIDATION_EVIDENCE.json` retain
+the failure and successful dependencies; 2.3933 total local validation hours.
+The separately prepared `research_campaign_v3_r6_validation_candidate_r4.py`
+uses the installed renderer interface. Its tiny CPU interface preflight passes,
+but real reader/full export readiness remains incomplete. Do not submit another
+allocation without an explicit extension. `RECAP.md` records results and queue.
+For the user's manual-push policy, only pending downstream controllers
+60462231/60462233/60462236 are held, not retired. Snapshot 60454552 remains
+scheduled for the local October 15 milestone. Seven local-publication policy
+tests pass; future accepted r6 workers must use the separately bound
+`scripts/research_campaign_v3_r6_local_commits.py` entrypoint. The user now asks
+to focus on code/experiments and commit those; leave manuscript files untouched.
+
+**Publication instruction changed — 2026-10-14:** the user now instructs local
+commits with proper messages and ignore rules; they will perform the final push.
+Do not push GitHub or Overleaf from this continuation. Prepare local source-bound
+delivery commits and retain remote delivery as pending; no verified delivery may
+be inferred. Apply this as a separately bound operational policy without changing
+sealed scientific sources or the fixed inference environment.
+
+**R6 validation extension authorized — 2026-10-14:** the user replied
+“yeah I approve it” to one additional validation allocation: four CPUs, 24 GiB,
+three hours, at most 12 local hours before margin / 15 including margin.
+Use the preflight-verified `research_campaign_v3_r6_validation_candidate_r3.py`
+and its separate binding; preserve the 186-file r6 source seal and both failed
+attempts. This extends only the exhausted validation allowance by one attempt,
+with no further automatic retry. On verified full validation, the previously
+authorized protected launch and measured preparation gates persist. On failure,
+retain an explicit terminal disposition and existing October 15 owners. The user
+also requests `report/research-campaign-v3-20261014-r6/RECAP.md`: concise completed
+work/findings plus observed queued jobs and the evidence each will measure.
+
 **R6 implementation publication pending — 2026-10-14:** implementation commit
 `d134ae6` is local. GitHub push failed because this shell has no HTTPS credentials;
 verified SSH fallback could not proceed without an existing trusted host key.
