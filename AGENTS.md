@@ -1,5 +1,23 @@
 # Research continuity
 
+**R6 r7 terminal; font-bound r8 prepared — 2026-10-14:** approved completion
+60560738 FAILED 1:0 after 28 seconds (0.031111 local hours), at the isolated
+offline PDF stage. The current journal manuscript required `cmex7.pfb`, absent
+from the cache at execution; its cache mtime is 23:10:27, twenty seconds after
+the job ended. The terminal confirms active canonical inputs and raw Git state
+stayed unchanged. All prior actual contracts, reader and export remain reusable.
+The unchanged active-source builder now passes on the current journal inputs
+in 12.327 seconds, offline, with no source changes. Font files are additionally
+bound in `OPS_R1_FONT_RECOVERY_BINDING.pending.json`; candidate r8 preserves r7
+and directly launches the combined CPU/operations entrypoint after complete
+matching proofs, avoiding a transient serial-capacity deadlock. Missing-proof
+launch rejection passes. A proposed single 4-CPU/24-GiB/10-minute completion
+(0.666667 local hours / 0.833333 with margin) is prepared, not authorized or
+submitted. The explicit extension question is pending; no automatic retry.
+All four report-only owners remain pending and unchanged; no scientific job
+has been released. Preserve both original seals, every terminal receipt and
+concurrent manuscript edits. Cumulative validation is 9.033333 local hours.
+
 **R6 r7 completion and protected launch authorized — 2026-10-14:** the user
 replied “yeah please let's not wast anymore time. Do evetything u can do and
 launch ASAP” to the proposed single 4-CPU/24-GiB/30-minute completion. This

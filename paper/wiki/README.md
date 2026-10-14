@@ -1,3 +1,11 @@
+**Latest observation — 2026-10-14:** approved 60560738 failed after 28 seconds
+on a missing offline font. The existing isolated builder now compiles current
+journal inputs in 12.327 seconds. Font-bound r8 and integrated CPU launch are
+prepared; a proposed ten-minute completion needs explicit extension under the
+no-retry condition. Only the four protected reporting jobs are queued.
+[ADR29](DECISIONS.md#adr-20261014-29-r7-terminal-and-font-bound-completion),
+[current recap](../../report/research-campaign-v3-20261014-r6/RECAP.md).
+
 **Latest r6 observation — 2026-10-14:** 60520129 FAILED 1:0 at the isolated
 snapshot copy timeout after 20+111 tests, all 64 reader contexts and the real
 243,747-row export/replay passed. No scientific job is queued. All four protected

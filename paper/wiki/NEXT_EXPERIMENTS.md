@@ -1,5 +1,16 @@
 # Active analysis and preserved experiment contracts
 
+**Latest release gate — 2026-10-14:** authorized completion 60560738 failed
+after 28 seconds on a missing offline physical font. The unchanged isolated
+builder now compiles current journal inputs in 12.327 seconds. Active canonical
+inputs/Git indexes stayed unchanged; all actual 20+111 contracts, 64 contexts
+and full export remain reusable. Font-bound r8 directly joins full readiness
+to the combined CPU dispatcher. A proposed single ten-minute 4-CPU/24-GiB
+completion remains unsubmitted pending explicit extension; no automatic retry.
+All four reporting owners remain pending; no science is released. See
+[ADR29](DECISIONS.md#adr-20261014-29-r7-terminal-and-font-bound-completion) and
+[the recap](../../report/research-campaign-v3-20261014-r6/RECAP.md).
+
 **Current release gate — 2026-10-14:** corrected validation 60520129 passed
 all 20+111 contracts, all 64 retained reader contexts and the actual 243,747-row
 export/replay, then failed before the isolated compiler started. Scientific

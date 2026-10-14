@@ -1,5 +1,25 @@
 # MoE experiment recap — 2026-10-14
 
+**Latest actual outcome:** approved completion **60560738 FAILED 1:0** after
+28 seconds, consuming **0.031111 local hours**. Its isolated offline compiler
+could not find `cmex7.pfb` required by the current journal manuscript. The cached
+font became available at 23:10:27, after the job ended at 23:10:07. The unchanged
+builder then compiled the current active inputs in **12.327 seconds**, offline,
+with no source changes. The terminal confirms active manuscript inputs and raw
+Git state remained stable; this experiment task edited no canonical manuscript.
+All successful 60520129 contracts, reader contexts and export/replay remain
+preserved. Cumulative validation is **9.033333 hours / 11.291667 with margin**.
+
+**Candidate r8 is prepared and unsubmitted:** it binds the physical fonts and
+uses the combined source-bound CPU dispatch entrypoint for the first scientific
+launch, after actual full readiness. Missing-proof launch rejection passes.
+`OPS_R1_FONT_RECOVERY_BINDING.pending.json`, `OPS_R1_FONT_RECOVERY_PREFLIGHT.json`
+and `OPS_R1_FONT_RECOVERY_GATE_PREFLIGHT.json` record the correction. A proposed
+single **4-CPU / 24-GiB / 10-minute** completion reserves **0.666667 hours /
+0.833333 with margin** and needs a new explicit extension under the original
+no-automatic-retry condition. No scientific job is queued. Reporting owners
+60509618/60509619/60509620/60509621 remain pending and unchanged.
+
 **R7 completion now authorized:** the user's latest “launch ASAP” instruction
 approves the prepared single four-CPU / 24-GiB / 30-minute completion, with
 2 local hours / 2.5 including margin and no automatic retry. The
