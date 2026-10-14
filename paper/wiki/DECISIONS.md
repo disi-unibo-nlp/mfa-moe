@@ -1,5 +1,55 @@
 # Research decisions and open questions
 
+## ADR 20261015 30: observed protected scientific launch and CPU allocation repair
+
+The allocated 60561919 PDF and real graph completed, but its final global
+manuscript guard failed after concurrent changes to seven journal figures and
+an appendix. HEAD and both raw Git indexes stayed stable; this experiment
+continuation edited no canonical manuscript. Preserve the failed allocation and
+actual successful dependencies. The source-bound operational reconciliation
+reused allocated contracts, all 64 reader interfaces, 243,747-row export/replay
+and graph, then passed a fresh 11.540-second isolated offline PDF/integrity
+check with zero additional validation allocations or scientific draws. Matching
+READINESS and operations/CPU/lookup proofs are now committed. Six lookup
+fidelity/integrity/dispatch contracts pass; its real no-submission graph passed
+in 82.095 seconds. Read-only directory snapshots verify their entries before
+a forecast returns, while scientific starts/results remain fresh.
+
+Protected launch resumed the four accepted held journals without duplicate
+submissions. Batched accounting verified 879 historical owners, all already
+terminal. Source import was already verified, so redundant 60563438 retired
+CANCELLED with zero runtime and Start=None after all owners accepted/read back.
+Controller 60563439 completed 0:0 and submitted CPU pilot 60564471 and retained
+reader pricing 60564472. The reader is RUNNING on two GPUs/16 CPUs/120 GiB.
+
+CPU pilot 60564471 failed before any stage/scientific START because the original
+allocation guard required CPU work to use serial. The separately bound four-file
+CPU allocation amendment preserves native GPU/serial checks and verifies a real
+four-CPU/24-GiB, zero-GPU Booster allocation without scheduler-variable spoofing.
+Six tests cover resource expansion, missing steps, foreign accounts, forbidden
+GPU use and physical array assignment. All three corrected owners
+60565597/60565599/60565600 were accepted and verified before old
+60564478/60564481/60564484 retired with zero runtime and Start=None. The running
+reader and all four report-only owners were unchanged. The existing single
+deterministic recovery 60565750 is RUNNING, with an actual stage START; no
+stochastic original assignment was redrawn. A second failure exhausts that
+recovery.
+
+Full production ADMISSION remains uncommitted. The 346 shapes, 69,459 non-REAP
+generations plus eligible REAP, 10,822 forwards, 35 calibration folds, central
+and balanced sensitivity, and 741 coordination pairs remain required. Measured
+complete-residual admission under the original ceiling/margin and separate
+reserves precedes production. Memory export, central, then sensitivity/support
+remain the sequence. October 15 23:59:59 Rome remains a report-only milestone,
+not final scientific completion. Local source/receipt commits are authorized;
+canonical manuscript changes and remote pushes remain outside this task.
+
+[Readiness reconciliation](../../report/research-campaign-v3-20261014-r6/OPS_R1_READINESS_RECONCILIATION.json),
+[accepted launch recovery](../../report/research-campaign-v3-20261014-r6/ACCEPTED_LAUNCH_RECOVERY_R1.json),
+[allocation interface binding](../../report/research-campaign-v3-20261014-r6/CPU_ALLOCATION_R1_BINDING.json),
+[actual corrected CPU recovery](../../report/research-campaign-v3-20261014-r6/CPU_ALLOCATION_R1_RECOVERY.json),
+[observed scientific and reporting readbacks](../../report/research-campaign-v3-20261014-r6/LAUNCH_OBSERVED_R2.json).
+
 ## ADR 20261014 29: r7 terminal and font-bound completion
 
 The user approved the proposed 30-minute completion and instructed launch ASAP.

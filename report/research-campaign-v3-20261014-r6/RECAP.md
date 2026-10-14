@@ -1,5 +1,48 @@
 # MoE experiment recap — 2026-10-14
 
+**Current execution — 2026-10-15:** the protected scientific chain is released.
+Reader pricing **60564472 is RUNNING** (two GPUs, 16 CPUs, 120 GiB); it recovers
+only the 64 original assignments proven rejected before admission. CPU pilot
+**60565750 is RUNNING** (four CPUs, 24 GiB, no GPU); its real START receipt
+confirms the corrected allocation guard. Full production admission is still
+pending measured prices; no complete-study affordability or final-results date
+is inferred from these starts.
+
+Validation now joins the actual 20+111 contracts, 64 reader contexts, full
+243,747-row export/replay and allocated graph with a fresh **11.540-second**
+isolated PDF/integrity check. That check passed without active manuscript or raw
+Git changes and required **zero additional validation allocations**. It preserves
+the failed global integrity result and concurrent manuscript edits, rather than
+reclassifying either failed job. The six-test lookup amendment's real graph
+preflight passed in 82.095 seconds.
+
+The launch was recovered from accepted held journals using batched readbacks of
+879 historical jobs, with zero duplicate submissions. Redundant import 60563438
+retired with zero runtime after all scientific owners verified: its source-bound
+import was already complete. Original CPU pilot 60564471 failed before scientific
+initialization on the old serial-only guard. The separate allocation amendment
+has six passing interface/resource/array tests and checks real CPU-only Booster
+resources. Its existing one-time deterministic recovery is 60565750; no original
+stochastic assignment was repeated and no running reader source was changed.
+
+| Job | Current observed purpose/state |
+|---|---|
+| 60564472 | Running: retained original reader acceptance and execution pricing. |
+| 60565750 | Running: corrected Qwen3.5 retained CPU analysis throughput pilot. |
+| 60565597 | Pending: corrected primary scientific continuation. |
+| 60565599 / 60565600 | Pending: both accepted scientific failure owners. |
+| 60509618 | Pending: report-only October 15, 23:59:59 Europe/Rome snapshot. |
+| 60509619 / 60509620 / 60509621 | Pending: unchanged report-only completion/failure owners. |
+
+All three corrected scientific owners were accepted/read back before only the
+zero-runtime old owners 60564478/60564481/60564484 retired. The complete residual
+study remains 346 compact shapes / 69,459 distinct non-REAP generations plus
+eligible REAP, 10,822 forwards, 35 calibration folds, central and balanced
+sensitivity, and 741 coordination pairs. Full measured admission still gates
+production; finish/export memory, central, then sensitivity/supporting results.
+The report milestone is not a promise of final scientific completion. Canonical
+manuscript edits and pushes remain deferred for this task.
+
 **Latest allocated result:** 60561919 completed its isolated PDF and actual
 graph, then FAILED 1:0 after 667 seconds at the final integrity guard: seven
 journal figures and the appendix changed concurrently. HEAD and both raw Git
