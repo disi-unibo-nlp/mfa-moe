@@ -7,6 +7,13 @@ reuses its evidence. [Operations preflight](OPS_R1_PREFLIGHT.json),
 in [RECAP_EVIDENCE.json](RECAP_EVIDENCE.json). Scientific production is **not
 launched**. Canonical manuscript work is deferred; publication is by your manual push.
 
+**New extension authorized:** the user explicitly approved one corrected
+4-CPU / 24-GiB / 3-hour validation, with no automatic retry. The independent
+loader correction is now bound by [the active amendment](OPS_R1_LOADER_BINDING.json)
+and [authorization](OPS_R1_LOADER_AUTHORIZATION.json). Acceptance and actual
+validation outcomes will be recorded separately; the earlier exhausted-attempt
+boundary below is preserved as history.
+
 ## Done
 
 - Implemented and sealed r6: token-ID handling, original-assignment recovery, component failure isolation, CPU priority, read-only forecasts, immutable task tables and indexed/checkpointed export.

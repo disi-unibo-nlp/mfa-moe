@@ -1,5 +1,25 @@
 # Research decisions and open questions
 
+## ADR 20261014 27: explicit corrected-validation extension
+
+The user replied “I authorize it” and instructed running all required work.
+This adds exactly one corrected CPU validation allocation: four CPUs, 24 GiB,
+three hours, at most 12 local hours / 15 with the existing 25% margin. No
+automatic retry is authorized. Candidate r6 uses independent unittest loaders
+and explicit top-level directories; its preserved pending binding is activated
+separately without modifying the 186-file scientific seal or pending reporting
+jobs' 24-file operational seal. Prior failures remain terminal and preserved.
+
+Actual 20+111 tests, all 64 retained reader contexts, 243,747-row export and
+checkpoint replay, isolated PDF construction and real graph validation must
+pass before the already authorized protected scientific continuation. Complete
+measured admission still precedes production of the full seven-model study.
+Reporting owners 60509618/60509619/60509620/60509621 remain protected. This
+experiment continuation performs no canonical manuscript edits or remote
+writes; concurrent manuscript work and unrelated dirty files are preserved.
+See the existing r6 recap and `OPS_R1_LOADER_*.json` receipts for acceptance and
+observed results. The earlier exhausted-attempt statement in ADR25 is historical.
+
 ## ADR 20261014 25: authorized r6 operations amendment and single validation
 
 **Terminal observation:** 60510557 FAILED 1:0 after 29 seconds. All 20 operational
