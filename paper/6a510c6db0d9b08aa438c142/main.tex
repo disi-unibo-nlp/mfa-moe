@@ -66,6 +66,9 @@ acknowledgments and material-availability statement before submission.
 \clearpage
 \appendix
 \renewcommand{\thesection}{\Alph{section}}
+\renewcommand{\thefigure}{\thesection.\arabic{figure}}
+\renewcommand{\thetable}{\thesection.\arabic{table}}
+\renewcommand{\theequation}{\thesection.\arabic{equation}}
 \let\CLsection\section
 % Preserve all historical sections without changing their source files.
 % The standard class appendix heading resets figure/table/equation counters.
@@ -87,9 +90,13 @@ acknowledgments and material-availability statement before submission.
 \input{saved_data_supplement}
 \begingroup
 \small
+% The historical file enters appendix mode again; preserve its source while
+% keeping one continuous appendix and figure/table namespace in this manuscript.
+\let\appendix\relax
 \input{reproducibility}
 \endgroup
 \input{correlation_plot_atlas}
 \input{multimodel_correlation_atlas}
 \input{generated/research_campaign_v3/status}
+\input{generated/research_campaign_v3/r5_launch_status}
 \end{document}

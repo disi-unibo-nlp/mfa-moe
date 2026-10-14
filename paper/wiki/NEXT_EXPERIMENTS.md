@@ -1,5 +1,14 @@
 # Active analysis and preserved experiment contracts
 
+**Current r5 execution — 2026-10-14:** all 102 contracts and the real seven-model
+import/graph replay passed. The separately sealed
+[r5-r2 continuation](../../scripts/research_campaign_v3_r5_r2/README.md) is released;
+verified job ownership and snapshot transfer are on the
+[status page](CAMPAIGN_V3_STATUS.md). Full production still requires all measured
+shape/role prices and admission under the unchanged ceiling/margin. The original
+memory, co-primary steering, sensitivity, utility and coordination scope persists.
+The earlier validation observations below are historical.
+
 **R5 validation recovery — 2026-10-14:** initial validation 60428583 passed
 101 contracts but failed the real GLM import boundary. Equal bank bytes had
 collapsed different execution/qualification receipts. The original seal and
@@ -18,8 +27,9 @@ historical failure receipt remains unchanged.
 [ADR23](DECISIONS.md#adr-20261014-23-authorized-final-r5-continuation-and-imported-state-validation)
 records the user's final implementation/launch instruction. The separately sealed
 [r5 launcher](../../scripts/research_campaign_v3_r5/README.md) resumes r4 transitively.
-Validation 60428583 is observed RUNNING with four CPUs, 24 GiB and a 30-minute bound;
-scientific work remains gated on actual seven-model import/graph validation.
+Initial validation 60428583 failed the real import check after its contracts
+passed; the separately sealed repair and single deterministic recovery have
+since passed actual seven-model import/graph validation.
 The original 420-question/400-family memory study, 129-family central steering,
 balanced sensitivity, utility and all remaining coordination remain required.
 R4's repaired derivations and GPT/Nemotron complete banks are reused by verified

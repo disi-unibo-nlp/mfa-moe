@@ -1,5 +1,23 @@
 # Research continuity
 
+**Active protected r5 continuation — 2026-10-14:** root
+`report/research-campaign-v3-20261014-r5-r2/`, launcher
+`scripts/research_campaign_v3_r5_r2/run.py`. All 102 contracts passed;
+the real imported-state recovery 60454171 completed 0:0 and certified all seven
+measurement manifests, 69,459 non-REAP generations and 346 compact shapes without
+submitting scientific work. READINESS.json and IMPORT_GRAPH_VALIDATION.json bind
+the unchanged 172-file closure and separately bound recovery. All six ancestor
+seals validate. Original failed 60428583 and timed-out 60434236 remain preserved;
+REGRESSION_ACCOUNTING.json records 4.612 local hours, without resetting the ceiling.
+LAUNCH.json accepts import 60454550, October 15 snapshot 60454552, controller
+60454554 and guards 60454557/60454559. Import completed 0:0. Replacement owners
+were accepted before only predecessor snapshot 60226466 retired with zero runtime
+and Start=None. Resume these immutable journals and newest handoffs; do not create
+another dispatcher or edit bound sources. Initial preparation/qualification is
+released; full production requires complete measured admission and 25% margin
+inside available entitlement. Scientific completion and paper delivery remain
+separate. Preserve all previous sources, results, original draws and failed receipts.
+
 **Current r5 validation ownership — 2026-10-14:** repaired validation 60434236
 passed 102 contracts and committed EVIDENCE_IMPORT.json, all seven measurement
 and non-REAP manifests, four reused REAP qualifications, and GPT 81/Nemotron 77
