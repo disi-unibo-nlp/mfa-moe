@@ -1,5 +1,13 @@
 # MoE routing and reasoning research wiki
 
+**Latest terminal boundary — 2026-10-14:** operations validation 60510557 passed
+20 contracts but failed inherited test discovery on unittest's cached top-level
+directory. No scientific release occurred; the single attempt is exhausted.
+The unsubmitted independent-loader correction passes two tiny checks and
+discovers all 20+111 tests. The four report-only milestone owners remain pending.
+See [ADR25](DECISIONS.md#adr-20261014-25-authorized-r6-operations-amendment-and-single-validation)
+and the [r6 recap](../../report/research-campaign-v3-20261014-r6/RECAP.md).
+
 **R6 operational repair authorized — 2026-10-14:** [ADR25](DECISIONS.md#adr-20261014-25-authorized-r6-operations-amendment-and-single-validation)
 records the user's implementation instruction, separately bound code/report-only
 adapter, corrected reader cleanup and actual launch proof gate. One additional
