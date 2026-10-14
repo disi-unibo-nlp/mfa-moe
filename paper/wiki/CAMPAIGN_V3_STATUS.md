@@ -1,5 +1,58 @@
 # Campaign v3 observed evidence
 
+**Current validation — 2026-10-14:** repaired validation **60434236** passed
+all **102 contracts** and committed the complete seven-model import, then reached
+its allocation deadline before final graph certification. The launch gate remains
+closed. Single deterministic recovery **60454171** is accepted and observed RUNNING
+with four CPUs, 24 GiB and a 30-minute limit. It checks the committed dependencies,
+all original question/source/mask joins and the real remaining CPU graph without
+repeating any generation or reader draw. No scientific workload has been released.
+
+[Committed import](../../report/research-campaign-v3-20261014-r5-r2/EVIDENCE_IMPORT.json),
+[recovery binding](../../report/research-campaign-v3-20261014-r5-r2/VALIDATION_RECOVERY_BINDING.json),
+[accepted recovery and admission](../../report/research-campaign-v3-20261014-r5-r2/VALIDATION_RECOVERY_LAUNCH.json).
+GPT's 81 and Nemotron's 77 coordination pairs are verified; 741 original pairs
+remain across five models. Four REAP qualifications are reused. Three corrected
+qualifications, physical memory–accuracy curves and steering effects remain pending.
+Full production remains gated on complete measured admission under the original
+42,050-hour ceiling and 25% margin. Snapshot 60226466 retains the October 15 obligation.
+
+**R5 validation recovery — 2026-10-14:** initial validation 60428583 passed
+101 contracts but failed the real GLM import boundary. Equal bank bytes had
+collapsed different execution/qualification receipts. The original seal and
+failure receipt remain preserved. Separately sealed
+`report/research-campaign-v3-20261014-r5-r2/` resumes that verified state and r4
+transitively, keeps both receipts and reuses the corrected GLM qualification.
+Its source projection matches r5/r4. No scientific work has been released.
+The repaired validation retains the four-CPU/24-GiB/30-minute envelope and
+inherited charges. Full missing native contexts remain early CPU work; the
+validation checks their real implementation on an original identity per model.
+GitHub r4 terminal delivery is now independently verified at 9828c52; the
+historical failure receipt remains unchanged.
+
+**R5 CPU validation — 2026-10-14:** [ADR23](DECISIONS.md#adr-20261014-23-authorized-final-r5-continuation-and-imported-state-validation)
+records the final authorized continuation. Initial validation **60428583** used
+four CPUs, 24 GiB and a 30-minute limit. All **101 regression contracts passed**
+in 342.099 seconds; actual GLM import then failed. The separate repair and bounded
+recovery observations above supersede that validation status. Scientific release
+has not occurred.
+
+[Sealed campaign](../../report/research-campaign-v3-20261014-r5/CAMPAIGN.json),
+[accepted validation and live admission](../../report/research-campaign-v3-20261014-r5/VALIDATION_LAUNCH.json),
+[implementation](../../scripts/research_campaign_v3_r5/README.md).
+READINESS.json and IMPORT_GRAPH_VALIDATION.json must pass before launch.
+The existing October 15 snapshot 60226466 remains pending and owned.
+
+R4 ended after missing imported measurement manifests and a separate publication
+failure. Its seven repaired derivations, GPT 81/81 and Nemotron 77/77 banks are
+reusable after component checks; 741 original pairs remain across five models.
+New physical memory–accuracy curves and steering effects remain unmeasured.
+The original scientific contract and 42,050-hour ceiling with 25% margin persist.
+
+<!-- preserved-r4-observation -->
+
+# Campaign v3 observed evidence
+
 Terminal report: report complete; science incomplete.
 
 Campaign: `research-campaign-v3-20261012-r4`. [Source-bound report](../../report/research-campaign-v3-20261012-r4/output/REPORT.json). [Decision package](../../report/research-campaign-v3-20261012-r4/PRE_PRODUCTION_DECISION.json).

@@ -1,5 +1,33 @@
 # Active analysis and preserved experiment contracts
 
+**R5 validation recovery — 2026-10-14:** initial validation 60428583 passed
+101 contracts but failed the real GLM import boundary. Equal bank bytes had
+collapsed different execution/qualification receipts. The original seal and
+failure receipt remain preserved. Separately sealed
+`report/research-campaign-v3-20261014-r5-r2/` resumes that verified state and r4
+transitively, keeps both receipts and reuses the corrected GLM qualification.
+Its source projection matches r5/r4. No scientific work has been released.
+The repaired validation retains the four-CPU/24-GiB/30-minute envelope and
+inherited charges. Full missing native contexts remain early CPU work; the
+validation checks their real implementation on an original identity per model.
+GitHub r4 terminal delivery is now independently verified at 9828c52; the
+historical failure receipt remains unchanged.
+
+## Final continuation implementation — 2026-10-14
+
+[ADR23](DECISIONS.md#adr-20261014-23-authorized-final-r5-continuation-and-imported-state-validation)
+records the user's final implementation/launch instruction. The separately sealed
+[r5 launcher](../../scripts/research_campaign_v3_r5/README.md) resumes r4 transitively.
+Validation 60428583 is observed RUNNING with four CPUs, 24 GiB and a 30-minute bound;
+scientific work remains gated on actual seven-model import/graph validation.
+The original 420-question/400-family memory study, 129-family central steering,
+balanced sensitivity, utility and all remaining coordination remain required.
+R4's repaired derivations and GPT/Nemotron complete banks are reused by verified
+components; 741 original pairs across five models remain. Four REAP components
+are reusable and three historical verdicts require same-execution adjudication.
+Memory and new causal effects remain unmeasured. No scientific scope or draw is
+changed. See [current observed status](CAMPAIGN_V3_STATUS.md) for later receipts.
+
 ## Results-first recovery review — 2026-10-12
 
 **Implementation and protected launch authorized (ADR22):** the user instructed

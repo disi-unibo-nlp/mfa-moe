@@ -1,5 +1,46 @@
 # Research continuity
 
+**Current r5 validation ownership — 2026-10-14:** repaired validation 60434236
+passed 102 contracts and committed EVIDENCE_IMPORT.json, all seven measurement
+and non-REAP manifests, four reused REAP qualifications, and GPT 81/Nemotron 77
+coordination pairs. It timed out before the final validation proof, so launch
+remains gated. Single deterministic recovery 60454171 is accepted and observed
+RUNNING: four CPUs, 24 GiB, 30 minutes, two local hours before margin. Its separate
+source binding is VALIDATION_RECOVERY_BINDING.json; the r5-r2 source seal is
+unchanged. The recovery verifies committed dependencies, all original identity
+joins and the remaining CPU graph. No draws are repeated. If this recovery fails,
+record explicit terminal validation failure without another allocation or automatic
+successor. Snapshot 60226466 remains owned until verified replacement.
+
+**R5 validation repair — 2026-10-14:** 60428583 passed all 101 contracts but
+failed the actual GLM pilot dependency check before scientific release. Different
+execution receipts with equal bank bytes were incorrectly collapsed. Preserve
+that failed source seal and receipt. Current repair is
+`scripts/research_campaign_v3_r5_r2/run.py`, root
+`report/research-campaign-v3-20261014-r5-r2/`, resuming failed r5 and r4 transitively.
+Seal e5fdce1548eda0ace3111efc9d2c46dfd65266d811ab0ea5cc6848d27395aafc
+retains execution/receipt identities and matches the scientific source projection.
+The original pending snapshot 60226466 remains owned until verified replacement.
+GitHub's r4 terminal commit 9828c52 is now read back; R4_PUBLICATION_RECOVERY.json
+records repair separately from the preserved failure. No new scientific draw
+or qualification allocation occurred. Resume the new validation journals.
+
+
+**Final r5 continuation authorized — 2026-10-14:** the user supplied the final
+continuation plan and explicitly said “Implement the plan.” ADR23 records
+`scripts/research_campaign_v3_r5/run.py`, separately sealed root
+`report/research-campaign-v3-20261014-r5/`, resuming r4 and all ancestors.
+Validation 60428583 was accepted with four CPUs, 24 GiB and 30 minutes,
+then failed the real import check as recorded above. Scientific release is gated on
+READINESS.json and IMPORT_GRAPH_VALIDATION.json. The current pending October 15
+snapshot 60226466 remains owned; replacement snapshot and both failure owners
+must be accepted and verified before retirement. Preserve every sealed r5/r4/
+older source and original draw. The seven-model scientific contract and original
+42,050-hour ceiling with 25% margin persist. Remote publication is independent
+of durable scientific progression; deterministic recovery and destination retry
+are each bounded to one. No automatic successor campaign follows exhaustion.
+
+
 **Active results-first r4 continuation — 2026-10-12:** the user supplied the
 continuation plan and explicitly instructed implementation and launch. ADR22
 records `scripts/research_campaign_v3_r4/run.py`, separately sealed root
