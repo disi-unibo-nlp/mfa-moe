@@ -1,5 +1,20 @@
 # Research continuity
 
+**R6 font-bound r8 explicitly authorized — 2026-10-14:** the user selected
+“Approve the 10-minute completion and launch.” This authorizes one four-CPU,
+24-GiB, ten-minute completion (0.666667 local hours / 0.833333 with margin),
+with no automatic retry. `OPS_R1_FONT_RECOVERY_AUTHORIZATION.json` and activated
+`OPS_R1_FONT_RECOVERY_BINDING.json` bind the current cached physical fonts and
+preserve every prior failure and all successful evidence. Use only its journaled
+`scripts/research_campaign_v3_r6_submit_font_recovery.py` submission. On matching
+full readiness, candidate r8 launches the existing scientific graph directly
+through `research_campaign_v3_r6_cpu_dispatch_r1`, so every new worker verifies
+both amendments. Preserve all four reporting owners, original scientific scope,
+ceiling, complete measured admission and filesystem reserves. Keep active
+canonical manuscript and raw Git indexes stable during validation; local commits
+precede release and pushes remain the user’s action. The pending-extension
+paragraph below is historical.
+
 **R6 r7 terminal; font-bound r8 prepared — 2026-10-14:** approved completion
 60560738 FAILED 1:0 after 28 seconds (0.031111 local hours), at the isolated
 offline PDF stage. The current journal manuscript required `cmex7.pfb`, absent

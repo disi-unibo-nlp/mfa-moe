@@ -1,5 +1,13 @@
 # MoE experiment recap — 2026-10-14
 
+**Font-bound r8 is explicitly authorized:** the user selected “Approve the
+10-minute completion and launch.” Its activated font binding and authorization
+permit one 4-CPU / 24-GiB / 10-minute completion, **0.666667 hours / 0.833333
+with margin**, no automatic retry. On full matching validation it directly
+launches the protected graph through the combined CPU/operations amendment.
+Submission and actual outcomes are recorded separately; the prepared/unapproved
+status below is historical. All four reporting owners remain preserved.
+
 **Latest actual outcome:** approved completion **60560738 FAILED 1:0** after
 28 seconds, consuming **0.031111 local hours**. Its isolated offline compiler
 could not find `cmex7.pfb` required by the current journal manuscript. The cached
