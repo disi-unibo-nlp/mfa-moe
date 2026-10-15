@@ -697,3 +697,10 @@ report/final-routing-20261015-r1/**
 !report/final-routing-20261015-r1/exports/*/
 !report/final-routing-20261015-r1/exports/*/paper_results_manifest.json
 !report/final-routing-20261015-r1/exports/*/MANUSCRIPT_REPLACEMENT_MAP.json
+
+# Final-routing operational repair tests and compact registry receipts.
+!tests/final_routing_ops_r1/
+!tests/final_routing_ops_r1/*.py
+!report/final-routing-20261015-r1/ops_r1/
+report/final-routing-20261015-r1/ops_r1/*
+!report/final-routing-20261015-r1/ops_r1/*.json
