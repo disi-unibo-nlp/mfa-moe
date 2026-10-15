@@ -52,6 +52,39 @@ class RecoveryTests(unittest.TestCase):
         with patch('moe_exp.study.config.active', return_value=existing), patch('moe_exp.study.config.terminal_release', side_effect=AssertionError('replacement attempted')):
             self.assertEqual(initialize(self.cfg), existing)
 
+    def test_native_balance_uses_local_utility_when_available(self):
+        from moe_exp.study.resources import balance_query
+        run = Mock(return_value='native balance')
+        with patch('moe_exp.study.resources.Path.is_file', return_value=True):
+            self.assertEqual(balance_query(run), 'native balance')
+        run.assert_called_once_with(['/cineca/bin/saldo', '-b'])
+
+    def test_compute_balance_requires_exact_ssh_authorization(self):
+        from moe_exp.study.resources import balance_query
+        run = Mock()
+        permission = {'status': 'pending', 'host': 'lmolfett@login01.leonardo.local',
+                      'command': '/cineca/bin/saldo -b'}
+        with patch('moe_exp.study.resources.Path.is_file', return_value=False), patch('moe_exp.study.resources.verified', return_value=permission):
+            with self.assertRaisesRegex(ValueError, 'not authorized'):
+                balance_query(run)
+        run.assert_not_called()
+
+    def test_compute_balance_keeps_strict_trust_and_fixed_read_only_command(self):
+        from moe_exp.study.resources import balance_query
+        run = Mock(return_value='native balance')
+        permission = {'status': 'approved', 'host': 'lmolfett@login01.leonardo.local',
+                      'command': '/cineca/bin/saldo -b'}
+        with patch('moe_exp.study.resources.Path.is_file', return_value=False), patch('moe_exp.study.resources.verified', return_value=permission):
+            self.assertEqual(balance_query(run), 'native balance')
+        args = run.call_args.args[0]
+        self.assertEqual(args[-3:], ['lmolfett@login01.leonardo.local', '/cineca/bin/saldo', '-b'])
+        for option in ('StrictHostKeyChecking=yes', 'BatchMode=yes', 'ControlMaster=no', 'ClearAllForwardings=yes', 'ForwardAgent=no'):
+            self.assertIn(option, args)
+        run.side_effect = ValueError('native balance unavailable')
+        with patch('moe_exp.study.resources.Path.is_file', return_value=False), patch('moe_exp.study.resources.verified', return_value=permission):
+            with self.assertRaisesRegex(ValueError, 'native balance unavailable'):
+                balance_query(run)
+
     def test_output_without_capture_is_unknown_and_never_redrawn(self):
         units = Units(self.root / 'units'); row = {'uid': digest('a'), 'seed': 12}
         units.intent(row, '1'); units.admitted(row, '1', 'a-random')

@@ -4,7 +4,7 @@ import re
 import socket
 import time
 from pathlib import Path
-from .common import submission_paths, reservation_paths, digest, load, publish, require, verified
+from .common import REPO, submission_paths, reservation_paths, digest, load, publish, require, verified
 from .scheduler import command, duration_minutes, job_fields
 
 
@@ -20,9 +20,23 @@ def quota_bytes(raw, mount):
     return (min(limits)-used)*1024
 
 
+def balance_query(run=command):
+    if Path('/cineca/bin/saldo').is_file():
+        return run(['/cineca/bin/saldo', '-b'])
+    # Compute nodes lack /cineca; the installed native executable hard-codes it.
+    permission = verified(REPO / 'report/final-routing-20261015-r1/STUDY_ACCOUNTING_SSH_AUTHORIZATION.json')
+    host = 'lmolfett@login01.leonardo.local'
+    require(permission['status'] == 'approved' and permission['host'] == host and
+            permission['command'] == '/cineca/bin/saldo -b', 'accounting SSH exception is not authorized')
+    return run(['ssh', '-T', '-o', 'BatchMode=yes', '-o', 'StrictHostKeyChecking=yes',
+                '-o', 'ConnectTimeout=10', '-o', 'ConnectionAttempts=1',
+                '-o', 'ControlMaster=no', '-o', 'ClearAllForwardings=yes',
+                '-o', 'ForwardAgent=no', host, '/cineca/bin/saldo', '-b'])
+
+
 def snapshot(run=command):
     require(getpass.getuser() == 'lmolfett' and 'leonardo' in socket.getfqdn(), 'wrong cluster identity')
-    balance = run(['saldo', '-b'])
+    balance = balance_query(run)
     fields = next(s.split() for s in balance.splitlines() if s.strip().startswith('IscrC_MIOSR '))
     total, consumed = float(fields[3]), float(fields[4])
     association = run(['sacctmgr', '-nP', 'show', 'assoc', 'where', 'user=lmolfett',
