@@ -1,3 +1,5 @@
+Corrected source2f71a69 is released. CPU60676733 is RUNNING; engine60676737 and missing CPU prices60676738/60676739 are accepted behind it. Controller60676740 and guards60676741/60676742 are accepted and released. All use boost_usr_prod/normal and native resource readbacks. Eight qualifications are automatic after the engineering receipt; production remains gated on full admission. Prior failures and reporting60509618–60509621 are preserved. Run `scripts/study/run.sh status` for current receipts.
+
 Corrected rollout is authorized by the latest “keep going and finish all the sbatch asap” instruction. Fifty CPU tests pass; the trace-to-export fixture passed. The remaining preparation forecast fits the unchanged limits, including all failed usage. The corrected source is awaiting its final review/commit and allocated CPU validation; no new GPU success is implied. See STUDY_CORRECTION_AUTHORIZATION.json and STUDY_CORRECTION_BUDGET_PREFLIGHT.json.
 
 # Final-routing progress recap
