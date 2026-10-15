@@ -1,5 +1,21 @@
 # Research continuity
 
+**Final-routing shared GPU qualification failure — 2026-10-15:** the later
+live audit supersedes the earlier eight-jobs-running snapshot. All eight first
+qualification allocations failed with `neighboring/unknown engine request`;
+GPT and LFM also exhausted their reserved recovery, with other recoveries
+running, pending or subsequently failing. No model has a QUALIFIED receipt and
+production admission is absent. Installed vLLM appends an eight-character random
+suffix to internal request IDs; the routing hook checks external assignment UIDs.
+The actual installed assignment function reproduces the namespace mismatch on
+CPU without loading a model or changing the runtime. Abort cleanup also needs
+the correct namespace. Preserve all failures, admitted unknowns, source seals
+and existing failure owners. Automatic controllers will reject missing evidence
+and finalize incomplete; they cannot repair code or assure full paper results.
+No further GPU allocation or retry was submitted by this audit. See
+QUALIFICATION_REQUEST_ID_FAILURE_AUDIT.json. A separately bound correction and
+successful allocated requalification are required before production can proceed.
+
 **Final-routing LFM registry repair released — 2026-10-15:** local commit
 7269293 precedes release. Separate source binding
 `412d967a992f69c424afd2068292b4e0e823d91c970486cbe43ed98413de84f6`

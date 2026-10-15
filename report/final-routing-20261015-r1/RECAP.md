@@ -1,5 +1,7 @@
 # Final-routing progress recap
 
+LATEST UPDATE — 2026-10-15T16:23:32.857118+02:00: all eight first GPU qualifications failed with the same external/internal request-ID mismatch. GPT and LFM also failed their reserved recovery. No model is qualified and no production admission exists. The earlier RUNNING table below is a historical snapshot. Automatic progression will stop at the receipt gates and finalize incomplete unless a separately bound correction and successful qualification resolve this failure. See QUALIFICATION_REQUEST_ID_FAILURE_AUDIT.json for native accounting and the installed-function reproduction. No extra workload was submitted by this audit.
+
 Observed: 2026-10-15T16:03:27.044976+02:00
 
 All eight model qualification allocations are RUNNING, including LFM 60643482. CPU preparation completed successfully, the LFM checkpoint was re-verified in allocation, and all seven inherited nomination inventories were produced. The original allocated validation passed all 31 tests and the real-tokenizer/original-renderer trace-to-export fixture.
