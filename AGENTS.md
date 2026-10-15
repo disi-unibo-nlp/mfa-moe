@@ -1,5 +1,36 @@
 # Research continuity
 
+**Eight-model final routing accepted and released — 2026-10-15:** continue
+`report/final-routing-20261015-r1/` and its existing journals. Source binding
+`9b0f3c71ae108bd6dc156ce884df31eadab964523b6e38a91cec8b9f60991a6d`
+is active; do not edit its worker sources or start another dispatcher.
+Thirty-one CPU contracts pass, with the real-tokenizer/original-renderer
+trace-to-export fixture and native CPU/GPU scheduler preflights. Local source
+commits are 728911d and 549cf26; operational handoff commits are 7ed71d9 and
+7c7dfe0. No push or canonical manuscript edit occurred in this continuation.
+
+All 31 preparation jobs were accepted and resource-verified before release.
+Allocated validation 60643311 is running; controller 60643500 and failure
+owners 60643502/60643535 protect progression. LFM qualification is
+60643482/60643485; reader pricing is 60643496/60643498. Full job mappings and
+observed states are in RECAP.md and the acceptance/release journals. The
+1,400-hour margin-inclusive preparation ceiling, complete measured production
+admission, original 42,050-hour allowance and separate storage reserves persist.
+Production is automatic only after its actual prerequisites pass; scientific
+results are not yet complete.
+
+The unchanged worker's initial handoff check rejected a native Slurm display:
+`scontrol` assigns a cancelled pending job its cancellation timestamp as
+StartTime, while `sacct` correctly retains Start=None, zero elapsed and no
+allocated TRES. The separately committed
+`scripts/final_routing_handoff_reconcile.py` verified the actual accounting and
+completed the existing handoff with zero additional allocations. All three old
+controllers 60572535/60572536/60572538 are CANCELLED without allocation runtime.
+Running coordination 60572515_6 and reporting owners 60509618–60509621 were
+preserved. See OWNERSHIP_TRANSFER_RECONCILIATION.json, OWNERSHIP_TRANSFER.json,
+LAUNCH.json and waves/00/RELEASED.json. Resume this accepted graph; missing
+evidence remains incomplete and all earlier failed receipts remain preserved.
+
 **Eight-model final routing implementation authorized — 2026-10-15:** the user
 recovered and explicitly approved the final plan from thread
 `01a13e8f-e0d7-7bd0-a6fc-4895b3f7e130`, then approved its finish-and-launch
