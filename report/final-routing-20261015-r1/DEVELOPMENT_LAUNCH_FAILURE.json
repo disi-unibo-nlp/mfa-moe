@@ -1,0 +1,9 @@
+{
+  "status": "failed_before_mutation",
+  "commit": "728911d",
+  "error": "UnboundLocalError: local identity shadows cluster identity function",
+  "binding_created": false,
+  "submission_intent_created": false,
+  "slurm_jobs_submitted": 0,
+  "correction": "Rename the owner-card loop variable and exercise launch identity validation before mutation."
+}
