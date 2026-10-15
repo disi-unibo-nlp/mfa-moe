@@ -676,3 +676,24 @@ report/research-campaign-v3-20261014-r6/ops_r1/milestone/*
 !report/research-campaign-v3-20261014-r6/ops_r1/milestone/output/
 !report/research-campaign-v3-20261014-r6/ops_r1/milestone/output/*.json
 !report/research-campaign-v3-20261014-r6/ops_r1/milestone/output/*.md
+
+# Approved eight-model final-routing sources, contracts and compact receipts.
+!tests/final_routing/
+!tests/final_routing/*.py
+!report/final-routing-20261015-r1/
+report/final-routing-20261015-r1/**
+!report/final-routing-20261015-r1/*.json
+!report/final-routing-20261015-r1/*.md
+!report/final-routing-20261015-r1/waves/
+!report/final-routing-20261015-r1/waves/*/
+!report/final-routing-20261015-r1/waves/*/*.json
+!report/final-routing-20261015-r1/submissions/
+!report/final-routing-20261015-r1/submissions/*/
+!report/final-routing-20261015-r1/submissions/*/*.json
+!report/final-routing-20261015-r1/stages/
+!report/final-routing-20261015-r1/stages/*/
+!report/final-routing-20261015-r1/stages/*/*.json
+!report/final-routing-20261015-r1/exports/
+!report/final-routing-20261015-r1/exports/*/
+!report/final-routing-20261015-r1/exports/*/paper_results_manifest.json
+!report/final-routing-20261015-r1/exports/*/MANUSCRIPT_REPLACEMENT_MAP.json
