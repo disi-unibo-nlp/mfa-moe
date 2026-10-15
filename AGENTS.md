@@ -1,18 +1,27 @@
 # Research continuity
 
-**Final-routing LFM registry repair prepared — 2026-10-15:** nine bounded
-operational tests pass, including all five actual historical lexical-null draws
-for each of the original seven models and both LFM names. The in-process
-registry appends LFM without changing original indices, methods, folds or sealed
-files. `scripts/final_routing_ops_r1.py` and its separate `OPS_R1_BINDING.json`
-continue the existing journal. The replacement has one 120-minute CPU-pricing
-attempt, no automatic retry, and verified admission/controller/failure owners.
-Before submission it reconciles actual failed usage plus full pending/running
-limits against the original eight aggregate CPU wall-hours; it does not reset
-any allowance. Preserve original worker binding, failures and reporting owners.
-Local delivery precedes release; pushes and canonical manuscript edits remain
-outside this task. This paragraph alone does not record acceptance; see
-OPS_R1_ACCEPTED.json, OPS_R1_OWNERSHIP_TRANSFER.json and OPS_R1_RELEASED.json.
+**Final-routing LFM registry repair released — 2026-10-15:** local commit
+7269293 precedes release. Separate source binding
+`412d967a992f69c424afd2068292b4e0e823d91c970486cbe43ed98413de84f6`
+has nine passing operational tests, including identical five-null draws for
+all seven historical models and actual LFM/engineering null generation. It
+extends the registry only in process and preserves every original source file.
+Use `scripts/final_routing_ops_r1.py resume` for this existing journal. Corrected
+CPU pricing 60647932, admission 60647934, controller 60647935 and guards
+60647936/60647937 are accepted, verified and released. The four old unused
+admission/controller owners retired only after replacement acceptance;
+accounting proves zero elapsed, Start=None and no allocated resources.
+
+The corrected CPU price has one 120-minute allocation and no automatic retry.
+Actual terminal usage plus full remaining CPU limits reserve 29.977778 of the
+original 40 margin-inclusive local preparation hours; no allowance is reset.
+The two original pricing failures 60643316/60643319 remain failed. All eight
+model qualification jobs, including LFM 60643482, are observed RUNNING. Reader
+selection/pricing and complete production admission remain pending. Preserve
+reporting owners 60509618–60509621, running coordination, both source bindings
+and the original scientific design. No canonical manuscript edit or remote push.
+See OPS_R1_* receipts and RECAP.md. The earlier initial-release observations
+below remain historical; they do not override this replacement ownership.
 
 **Eight-model final routing accepted and released — 2026-10-15:** continue
 `report/final-routing-20261015-r1/` and its existing journals. Source binding
