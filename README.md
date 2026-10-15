@@ -23,6 +23,21 @@ The earlier numbered experiments are archived under `src/moe_exp/old`. Their
 launchers, results, documentation, and full report are retained under `old/`
 and `results/old/`; they are not part of the current workflow.
 
+## Current eight-model study
+
+The maintained launch path is documented in [scripts/study](scripts/study/README.md).
+Python lives in [src/moe_exp/study](src/moe_exp/study/README.md).
+
+```bash
+scripts/study/run.sh plan
+scripts/study/run.sh status
+```
+
+Use `submit` or `resume` for the approved Slurm workflow. Read
+[the current receipts](report/final-routing-20261015-r1/RECAP.md) for observed
+progress. [Ordinary model serving](scripts/inference/README.md) has a separate
+short launcher. Historical launchers remain while frozen jobs depend on them.
+
 ## Setup
 
 Requires Python 3.11 or newer. Install a CUDA-compatible PyTorch build first,
