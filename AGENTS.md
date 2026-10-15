@@ -1,5 +1,24 @@
 # Research continuity
 
+**Eight-model final routing implementation authorized — 2026-10-15:** the user
+recovered and explicitly approved the final plan from thread
+`01a13e8f-e0d7-7bd0-a6fc-4895b3f7e130`, then approved its finish-and-launch
+continuation. `report/final-routing-20261015-r1/RECOVERED_AUTHORIZATION.json`
+preserves the original plan verbatim. Continue this root and
+`src/moe_exp/final_routing`; do not restart the earlier agreement round.
+The prior debate draft's pending choices are historical. Eight models include
+LFM2.5; five signed/native arms, count-based discovery nominations, three depths,
+129 central family slots, and the approved 32-family outer-sweep fallback are
+fixed. The 1,400-hour margin-inclusive preparation envelope remains within the
+original 42,050-hour ceiling and complete measured admission precedes primary
+production. LFM weights transferred; allocated checksum and GPU qualification
+are still required. Preserve running coordination, future inherited supplement
+tasks, reporting owners 60509618/19/20/21, and all original seals/failures.
+No final-routing job has been released by this continuity note. New sources
+must pass complete worker-path validation and be committed/sealed before release.
+Local commits are authorized; canonical manuscript edits and remote pushes are
+outside this task. Record actual job receipts and state changes below this note.
+
 **R6 reader price and failure identifiers repaired — 2026-10-15:** jobs
 60564472 and 60566412 remain FAILED 1:0 (1,248 and 285 seconds). All 64 actual
 largest-input coverage observations completed with the unchanged reader profile.
