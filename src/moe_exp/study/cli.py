@@ -77,10 +77,10 @@ def transfer(binding, graph, launch):
             'protected_report_jobs': binding['config']['protected_report_jobs']})
 
 
-def submit(config):
+def submit(config, replace_terminal=False):
     from .workflow import initial_graph, payload, submit_wave, release_wave
     identity()
-    binding = initialize(config)
+    binding = initialize(config, replace_terminal=replace_terminal)
     root = control_root(binding)
     path = root / 'LAUNCH.json'
     if path.exists():
@@ -188,7 +188,10 @@ def main(argv=None):
     parser.add_argument('--binding', type=Path)
     parser.add_argument('--card', type=Path)
     parser.add_argument('--json', action='store_true')
+    parser.add_argument('--replace-terminal', action='store_true',
+                        help='submit a reviewed correction after all prior release jobs are terminal')
     args = parser.parse_args(argv)
+    require(not args.replace_terminal or args.command == 'submit', '--replace-terminal is only valid with submit')
     if args.command == 'worker':
         require(args.binding and args.card, 'worker needs binding and card')
         result = worker(args.binding, args.card)
@@ -198,7 +201,7 @@ def main(argv=None):
     if args.command == 'resume':
         value = resume(config)
     elif args.command == 'submit':
-        value = submit(config)
+        value = submit(config, replace_terminal=args.replace_terminal)
     elif args.command == 'plan':
         value = plan(config)
     elif args.command == 'status':

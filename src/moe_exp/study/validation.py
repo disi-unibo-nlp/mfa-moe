@@ -63,6 +63,12 @@ def validate(binding, allocated=False):
     import importlib
     import subprocess
     from .config import study_files
+    if allocated:
+        from .resources import snapshot
+        job_id = os.environ['SLURM_JOB_ID']
+        attempt = job_id + '-' + os.environ.get('SLURM_RESTART_COUNT', '0')
+        publish(control_root(binding) / ('ALLOCATION_PREFLIGHT-' + attempt + '.json'),
+                {**snapshot(), 'job_id': job_id, 'source_commit': binding['source_commit']})
     files = study_files()
     for path in (REPO / 'src/moe_exp/study').glob('*.py'):
         if path.stem != '__main__':

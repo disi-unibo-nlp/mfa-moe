@@ -21,7 +21,7 @@ export CUDA_CACHE_PATH="$final_routing_tmp/cuda" VLLM_CACHE_ROOT="$final_routing
 export DSPY_CACHEDIR="$final_routing_tmp/dspy" MPLCONFIGDIR="$final_routing_tmp/matplotlib"
 export HF_HOME=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/cache/hf
 export PYTHONDONTWRITEBYTECODE=1
-export PATH="$1/bin:$PATH"
+export PATH="$1/bin:/cineca/bin:$PATH"
 export PYTHONPATH="$PWD/src:$PWD/scripts/experimental_resume${PYTHONPATH:+:$PYTHONPATH}"
 export OMP_NUM_THREADS="$SLURM_CPUS_PER_TASK"
 export OPENBLAS_NUM_THREADS="$SLURM_CPUS_PER_TASK"
