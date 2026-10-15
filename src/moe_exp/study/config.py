@@ -1,7 +1,8 @@
 """Frozen scientific configuration and one source manifest per released commit."""
 from pathlib import Path
+import os
 import subprocess
-from .common import REPO, MODELS, CLASSES, check_files, file_sha, load, private, publish, require, verified
+from .common import REPO, MODELS, CLASSES, check_files, digest, file_sha, load, locked, private, publish, require, verified
 
 
 def read_config(path):
@@ -36,18 +37,59 @@ def active(config):
     return verified(verified(pointer)['binding_path'])
 
 
-def initialize(config):
+def terminal_release(binding):
+    """Require closed native allocations and no unresolved submission intent."""
+    from .resources import accounting
+    from .reservations import TERMINAL
+    control = Path(binding['control_root'])
+    terminal = verified(control / 'TERMINAL.json')
+    require(terminal['collection_terminal'], 'previous release is not terminal')
+    usage = accounting(binding['root'])
+    for intent in (control / 'submissions').glob('*/INTENT.json'):
+        acceptance = intent.parent / 'ACCEPTED.json'
+        require(acceptance.exists(), 'reconcile ambiguous submission before replacement')
+        jid = verified(acceptance)['job_id']
+        require(jid in usage and usage[jid]['state'] in TERMINAL,
+                'previous release still has an outstanding allocation: ' + jid)
+    return terminal
+
+
+def initialize(config, replace_terminal=False):
+    with locked(config['root'], 'source-release'):
+        return initialize_locked(config, replace_terminal)
+
+
+def initialize_locked(config, replace_terminal):
     old = active(config)
     if old is not None:
         require(old['config_file_sha256'] == config['config_file_sha256'], 'released configuration differs; use the frozen configuration')
         check_files(old['study_files'])
-        return old
+        if not replace_terminal:
+            return old
+    require(old is not None or not replace_terminal, 'no previous release to replace')
     root = Path(config['root'])
-    for name in ('STUDY_READY.json', 'STUDY_REVIEWS.json', 'STUDY_INSTALLED_REQUEST_API.json'):
-        proof = verified(root / name)
-        require(proof['status'] == 'complete', name + ' is incomplete')
-        check_files(proof['source_files'])
     files = study_files()
+    if replace_terminal:
+        terminal = terminal_release(old)
+        proof = verified(root / 'study-reviews' / ('release-' + digest(files) + '.json'))
+        require(proof['status'] == 'complete' and proof['source_files'] == files,
+                'corrected source lacks matching readiness and reviews')
+        for name in ('readiness', 'reviews', 'authorization'):
+            receipt = verified(proof[name])
+            require(receipt['status'] == 'complete', name + ' is incomplete')
+            if name == 'authorization':
+                require(receipt['previous_binding_sha256'] == old['sha256'] and
+                        receipt['previous_terminal_sha256'] == terminal['sha256'],
+                        'authorization names a different prior release')
+            else:
+                require(receipt['source_files'] == files, name + ' names a different source')
+        proof_names = ('STUDY_INSTALLED_REQUEST_API.json',)
+    else:
+        proof_names = ('STUDY_READY.json', 'STUDY_REVIEWS.json', 'STUDY_INSTALLED_REQUEST_API.json')
+    for name in proof_names:
+        evidence = verified(root / name)
+        require(evidence['status'] == 'complete', name + ' is incomplete')
+        check_files(evidence['source_files'])
     for name in files:
         relative = str(Path(name).relative_to(REPO))
         subprocess.run(['git', 'ls-files', '--error-unmatch', relative], cwd=REPO,
@@ -56,6 +98,7 @@ def initialize(config):
                        capture_output=True, check=True)
     commit = subprocess.run(['git', 'rev-parse', 'HEAD'], cwd=REPO, text=True,
                             capture_output=True, check=True).stdout.strip()
+    require(not old or commit != old['source_commit'], 'replacement requires a new committed source')
     control = root / 'study' / commit
     base = verified(root / 'BINDING.json')
     require(base['config_file_sha256'] == config['config_file_sha256'], 'scientific configuration changed')
@@ -81,6 +124,17 @@ def initialize(config):
                    approved_gpu_repair_margin_inclusive_hours=config['budget']['gpu_repair_hours'],
                    canonical_manuscript_edits=False, remote_pushes=False)
     bound = publish(control / 'BINDING.json', binding)
-    publish(root / 'CURRENT_STUDY.json', {'binding_path': str(control / 'BINDING.json'),
-            'source_commit': commit, 'binding_sha256': bound['sha256']})
+    pointer = {'binding_path': str(control / 'BINDING.json'),
+               'source_commit': commit, 'binding_sha256': bound['sha256']}
+    if old:
+        publish(control / 'REPLACES.json', {'previous_pointer': verified(root / 'CURRENT_STUDY.json'),
+            'previous_terminal_sha256': terminal['sha256'], 'release_proof_sha256': proof['sha256'],
+            'scientific_assignments_unchanged': True, 'prior_failures_preserved': True})
+        pending = root / ('.CURRENT_STUDY-' + commit + '.pending.json')
+        publish(pending, pointer)
+        os.replace(pending, root / 'CURRENT_STUDY.json')
+        require(verified(root / 'CURRENT_STUDY.json')['binding_sha256'] == bound['sha256'],
+                'active release readback differs')
+    else:
+        publish(root / 'CURRENT_STUDY.json', pointer)
     return bound

@@ -28,6 +28,30 @@ class RecoveryTests(unittest.TestCase):
     def tearDown(self):
         self.temp.cleanup()
 
+    def test_replacement_requires_terminal_allocations_and_resolved_intents(self):
+        from moe_exp.study.config import terminal_release
+        control = Path(self.cfg['control_root'])
+        publish(control / 'TERMINAL.json', {'collection_terminal': True})
+        folder = control / 'submissions/example'
+        publish(folder / 'INTENT.json', {'card_sha256': 'example'})
+        with patch('moe_exp.study.resources.accounting', return_value={}):
+            with self.assertRaisesRegex(ValueError, 'ambiguous submission'):
+                terminal_release(self.binding)
+        publish(folder / 'ACCEPTED.json', {'job_id': '123'})
+        for state in ('RUNNING', 'PENDING', 'CONFIGURING'):
+            with patch('moe_exp.study.resources.accounting', return_value={'123': {'state': state}}):
+                with self.assertRaisesRegex(ValueError, 'outstanding allocation'):
+                    terminal_release(self.binding)
+        with patch('moe_exp.study.resources.accounting', return_value={'123': {'state': 'FAILED'}}):
+            self.assertTrue(terminal_release(self.binding)['collection_terminal'])
+
+    def test_normal_initialize_keeps_active_release_without_terminal_replacement(self):
+        from moe_exp.study.config import initialize
+        existing = {**self.binding, 'study_files': {},
+                    'config_file_sha256': self.cfg['config_file_sha256']}
+        with patch('moe_exp.study.config.active', return_value=existing), patch('moe_exp.study.config.terminal_release', side_effect=AssertionError('replacement attempted')):
+            self.assertEqual(initialize(self.cfg), existing)
+
     def test_output_without_capture_is_unknown_and_never_redrawn(self):
         units = Units(self.root / 'units'); row = {'uid': digest('a'), 'seed': 12}
         units.intent(row, '1'); units.admitted(row, '1', 'a-random')
@@ -258,10 +282,17 @@ class RecoveryTests(unittest.TestCase):
 
     def test_inherited_scientific_checks_do_not_patch_the_old_scheduler(self):
         from moe_exp.study.inherited import parent_campaign
+        from moe_exp.study.common import load
         from moe_exp.research_campaign_v3_r6 import scheduler as historical
         original = (historical.card, historical.Slurm.verify)
-        binding = {**self.binding, 'source_campaign': self.cfg['source_campaign']}
+        # A frozen checkout can contain the manifest at a different path while
+        # the manifest retains the original scientific campaign root.
+        manifest = load(Path(self.cfg['source_campaign']) / 'CAMPAIGN.json')
+        alias = self.root / 'frozen-source/report/parent'
+        publish(alias / 'CAMPAIGN.json', {k:v for k,v in manifest.items() if k != 'sha256'})
+        binding = {**self.binding, 'source_campaign': str(alias)}
         with patch('moe_exp.research_campaign_v3_r6_reader_price_failure_id_r1.check_binding', return_value={}):
             parent = parent_campaign(binding)
         self.assertEqual(original, (historical.card, historical.Slurm.verify))
-        self.assertEqual(parent['root'], self.cfg['source_campaign'])
+        self.assertEqual(parent, manifest)
+        self.assertNotEqual(parent['root'], str(alias))
