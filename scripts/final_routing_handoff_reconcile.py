@@ -57,7 +57,7 @@ def main():
             f=job_fields(command(['scontrol','show','job','-o',jid]))
             require(f['JobState']=='PENDING' and f['Reason']=='JobHeldUser' and f['StartTime']=='Unknown',
                     'predecessor hold was not verified')
-        command(['scancel',','.join(pending)])
+        command(['scancel',*pending])
     for attempt in range(10):
         after=accounting(ids)
         if all(unstarted_terminal(r) for r in after.values()):break
