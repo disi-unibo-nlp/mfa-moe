@@ -97,8 +97,8 @@ def launch(config):
         publish(root/'SCHEDULER_VALIDATION.json',{'status':'complete','checks':checks})
     accepted=submit_wave(binding,graph,release=False)
     # The durable failure owners must be live before a predecessor retires.
-    for identity in graph['guards']+[graph['controller']]:
-        jid=accepted['jobs'][identity]
+    for owner_card in graph['guards']+[graph['controller']]:
+        jid=accepted['jobs'][owner_card]
         fields=job_fields(command(['scontrol','show','job','-o',jid]))
         if fields['JobState']=='PENDING' and fields.get('Reason')=='JobHeldUser':command(['scontrol','release',jid])
         require(job_fields(command(['scontrol','show','job','-o',jid])).get('Reason')!='JobHeldUser',

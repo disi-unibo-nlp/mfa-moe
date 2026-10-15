@@ -86,6 +86,13 @@ class WorkflowTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError,'missing exact quota'):
             quota_bytes('/leonardo_work '+values,'/leonardo_scratch/fast')
 
+    def test_launch_checks_cluster_identity_before_any_mutation(self):
+        from moe_exp.final_routing.cli import launch
+        with patch('moe_exp.final_routing.cli.identity',side_effect=RuntimeError('identity probe')) as identity:
+            with self.assertRaisesRegex(RuntimeError,'identity probe'):launch(self.config)
+            identity.assert_called_once_with()
+        self.assertFalse((self.root/'BINDING.json').exists())
+
     def test_packing_retains_every_identity_and_five_hour_limit(self):
         rows=[{'uid':digest(i)} for i in range(103)]
         groups=pack(rows,lambda r:600,600,capacity=4)
