@@ -1,5 +1,19 @@
 # Final-routing progress recap
 
+LIVE RELEASE — 2026-10-15T20:13:14.129899+02:00: local source96e7475 is sealed and released. All7 acceptances/resources were verified. CPU validation60662980 precedes LFM/GPT engineering60662981; separate GLM/Qwen3-30B CPU pricing60662982/60662983 follows CPU validation. Controller60662984 and guards60662985/60662986 protect automatic progression. Eight qualifications are not submitted until engine evidence passes.
+
+| Job | Work | Shape | Observed state |
+| --- | --- | --- | --- |
+| 60662980 | validate all | 0 GPU / 4 CPU / 24 GiB / 30 min | RUNNING |
+| 60662981 | engine_check all | 2 GPU / 16 CPU / 120 GiB / 120 min | PENDING |
+| 60662982 | legacy_price glm | 0 GPU / 4 CPU / 24 GiB / 80 min | PENDING |
+| 60662983 | legacy_price qwen330b | 0 GPU / 4 CPU / 24 GiB / 80 min | PENDING |
+| 60662984 | advance all | 0 GPU / 4 CPU / 24 GiB / 5 min | PENDING |
+| 60662985 | guard all | 0 GPU / 4 CPU / 24 GiB / 10 min | PENDING |
+| 60662986 | guard all | 0 GPU / 4 CPU / 24 GiB / 10 min | PENDING |
+
+Old60647934/35/36/37 are CANCELLED with zero runtime, Start=None and no allocated resources, after verified replacement acceptance. Reporting60509618–60509621 is unchanged. Current journals are under `study/96e7475aea49f56e620c886454cf6fc098a53f58/`; `CURRENT_STUDY.json` points to the active binding. The earlier prelaunch and running tables below are historical. No push or canonical manuscript edit.
+
 LATEST IMPLEMENTATION — 2026-10-15: active Python is now `src/moe_exp/study/`, with short shell launchers in `scripts/study/` and `scripts/inference/`. Use `scripts/study/run.sh plan`, `submit`, `status`, `resume` or `export`. The original source seals remain unchanged. The shared request session records actual randomized internal IDs, binds both workers before execution and aborts through external IDs. Missing routing capture remains unknown even when raw text exists. Readout seeds are explicit; the historical scheduler and model registry are not patched.
 
 Claude `/simplify` and the first completed local `/code-review` were applied. The review exposed requeue/start and shared-recovery submission bugs; targeted regression checks pass after their repair. The full46-contract CPU suite passed;22 final recovery contracts also pass after the last fixes (48 current tests). Claude’s completed local review and follow-up plus both final DeepSeek V4.1 Flash reviews are recorded and adjudicated in STUDY_REVIEWS.json. Timed-out reviews do not count. No new study allocation has been submitted at this checkpoint. `STUDY_READY.json`, `STUDY_REVIEWS.json`, then allocated CPU and LFM/GPT engine proofs gate release. The former running-job table below is historical.
