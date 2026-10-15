@@ -1,6 +1,6 @@
 # Final-routing launch recap
 
-Observed: 2026-10-15T15:31:47.555263+02:00
+Observed: 2026-10-15T15:37:16.461187+02:00
 
 The approved eight-model plan is preserved verbatim in RECOVERED_AUTHORIZATION.json. The executable pipeline is committed, sealed and released. All 31 CPU contracts passed; the real-tokenizer/original-renderer trace-to-export fixture and both native scheduler profiles passed.
 
@@ -8,10 +8,10 @@ All 31 jobs below were accepted and resource-verified. Preparation reserves 1,40
 
 | Job | Work | Model | Attempt | Shape | Observed state |
 | --- | --- | --- | --- | --- | --- |
-| 60643311 | validate | all | 0 | 0 GPU / 4 CPU / 24 GiB / 15 min | RUNNING |
-| 60643314 | prepare | all | 0 | 0 GPU / 4 CPU / 24 GiB / 60 min | PENDING |
+| 60643311 | validate | all | 0 | 0 GPU / 4 CPU / 24 GiB / 15 min | COMPLETED |
+| 60643314 | prepare | all | 0 | 0 GPU / 4 CPU / 24 GiB / 60 min | RUNNING |
 | 60643315 | prepare | all | 1 | 0 GPU / 4 CPU / 24 GiB / 30 min | PENDING |
-| 60643316 | cpu_price | all | 0 | 0 GPU / 4 CPU / 24 GiB / 120 min | PENDING |
+| 60643316 | cpu_price | all | 0 | 0 GPU / 4 CPU / 24 GiB / 120 min | FAILED |
 | 60643319 | cpu_price | all | 1 | 0 GPU / 4 CPU / 24 GiB / 60 min | PENDING |
 | 60643321 | legacy_price | all | 0 | 0 GPU / 4 CPU / 24 GiB / 120 min | PENDING |
 | 60643322 | legacy_price | all | 1 | 0 GPU / 4 CPU / 24 GiB / 30 min | PENDING |
@@ -47,3 +47,9 @@ Existing coordination 60572515_6 and report owners 60509618–60509621 remain ow
 Collection terminal: false. Required results complete: false. Manuscript integrated: false. This is an observed launch snapshot. Later stage receipts, FINAL_EXPORT.json, TERMINAL.json and STATUS_INDEX.json contain progression and final completion evidence.
 
 Receipt index: PLAN.md; PRELAUNCH_VALIDATION_INITIAL.json; PRELAUNCH_VALIDATION.json; SCHEDULER_VALIDATION.json; BINDING.json; LOCAL_DELIVERY.json; LAUNCH_INTENT.json; LAUNCH.json; LAUNCH_OBSERVED.json; waves/00/PLAN.json; waves/00/ACCEPTED.json; waves/00/RELEASED.json; submissions/; stages/.
+
+Allocated validation 60643311 completed 0:0 in 317 allocation seconds. Its 193.202-second stage passed all 31 tests and the actual CPU fixture; all 9,675 bound source/runtime files matched. ALLOCATED_VALIDATION.json records the compact evidence. CPU preparation 60643314 subsequently completed 0:0 after 1,271 allocation seconds; recovery 60643315 completed 0:0 in 11 seconds by reusing its committed result. Pricing 60643316 and 60643319 both failed at the historical model-name lookup, after 157 and 28 allocation seconds respectively.
+
+Current update: the allocated LFM checkpoint re-verification passed. All seven inherited nomination inventories exist. GPT, Nemotron, Qwen3.5 and Qwen3.6 qualifications are RUNNING; Gemma, GLM, Qwen3-30B and LFM qualifications are pending priority. Reader selection/pricing remain dependency-gated. No production admission exists.
+
+The separately bound OPS_R1 correction passed nine tests, including actual lexical-null generation, identical original seven-model streams, exact submission journaling, missing-receipt production rejection, failure-triggered finalization and native unused-allocation accounting. It prepares one corrected 120-minute CPU-price allocation with no automatic recovery. Admission and controller replacement occur only after actual budget reconciliation and acceptance; the four original unused owners are temporarily held. See OPS_R1_* receipts for actual release state. Original failed allocations and scientific bindings are preserved.

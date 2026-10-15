@@ -1,5 +1,19 @@
 # Research continuity
 
+**Final-routing LFM registry repair prepared — 2026-10-15:** nine bounded
+operational tests pass, including all five actual historical lexical-null draws
+for each of the original seven models and both LFM names. The in-process
+registry appends LFM without changing original indices, methods, folds or sealed
+files. `scripts/final_routing_ops_r1.py` and its separate `OPS_R1_BINDING.json`
+continue the existing journal. The replacement has one 120-minute CPU-pricing
+attempt, no automatic retry, and verified admission/controller/failure owners.
+Before submission it reconciles actual failed usage plus full pending/running
+limits against the original eight aggregate CPU wall-hours; it does not reset
+any allowance. Preserve original worker binding, failures and reporting owners.
+Local delivery precedes release; pushes and canonical manuscript edits remain
+outside this task. This paragraph alone does not record acceptance; see
+OPS_R1_ACCEPTED.json, OPS_R1_OWNERSHIP_TRANSFER.json and OPS_R1_RELEASED.json.
+
 **Eight-model final routing accepted and released — 2026-10-15:** continue
 `report/final-routing-20261015-r1/` and its existing journals. Source binding
 `9b0f3c71ae108bd6dc156ce884df31eadab964523b6e38a91cec8b9f60991a6d`
@@ -10,8 +24,15 @@ commits are 728911d and 549cf26; operational handoff commits are 7ed71d9 and
 7c7dfe0. No push or canonical manuscript edit occurred in this continuation.
 
 All 31 preparation jobs were accepted and resource-verified before release.
-Allocated validation 60643311 is running; controller 60643500 and failure
-owners 60643502/60643535 protect progression. LFM qualification is
+Allocated validation 60643311 completed 0:0 after 317 seconds; all 31 contracts
+and the actual CPU fixture passed in its 193.202-second stage. Preparation
+60643314 completed 0:0 in 1,271 seconds; recovery 60643315 completed 0:0
+without repeating the stage. CPU pricing 60643316 and 60643319 failed at the
+historical seven-model registry lookup after 157 and 28 allocation seconds.
+Their original failed results remain immutable. The unused admission/controller
+jobs are held during a separately bound replacement; scientific workers remain
+released. GPT, Nemotron, Qwen3.5 and Qwen3.6 qualifications are observed RUNNING;
+the other four are pending priority. LFM qualification is
 60643482/60643485; reader pricing is 60643496/60643498. Full job mappings and
 observed states are in RECAP.md and the acceptance/release journals. The
 1,400-hour margin-inclusive preparation ceiling, complete measured production
