@@ -11,7 +11,7 @@ import json
 import time
 from pathlib import Path
 from .common import require
-from .driver import DRIVER, Store, binding, bulk, log, shard_rows
+from .driver import DRIVER, STORES, Store, binding, bulk, log, shard_rows
 
 START, END = '<START OF RESPONSE>', '<END OF RESPONSE>'
 
@@ -84,14 +84,14 @@ def record(b, model, row, raw, tokenizer, close):
             'strict_correct': strict, 'accuracy_bounds': [lo, hi]}
 
 
-def extract(model, shard):
+def extract(model, shard, design='main'):
     import pandas as pd
     from transformers import AutoTokenizer
     from .common import load
     from .runtime import closure
     b = binding()
-    rows = shard_rows(model, shard)
-    store = Store(bulk(b)/model/'units')
+    rows = shard_rows(model, shard, design)
+    store = Store(bulk(b)/model/STORES[design])
     tokenizer = AutoTokenizer.from_pretrained(b['models'][model]['local_path'], local_files_only=True)
     close = closure(tokenizer, model)
     tick = time.time()
@@ -124,11 +124,11 @@ def extract(model, shard):
                 'next_sentence': s['inputs']['next_sentence'] or END})
     folder = bulk(b)/model/'outcomes'
     folder.mkdir(parents=True, exist_ok=True)
-    tag = f'{shard[0]}-of-{shard[1]}'
+    tag = ('' if design == 'main' else design+'-')+f'{shard[0]}-of-{shard[1]}'
     pd.DataFrame(outcomes).to_parquet(folder/f'outcomes-{tag}.parquet', index=False)
     pd.DataFrame(sentences).to_parquet(folder/f'sentences-{tag}.parquet', index=False)
     (folder/f'failures-{tag}.json').write_text(json.dumps(failures))
-    value = {'model': model, 'shard': list(shard), 'rows': len(rows), 'extracted': len(outcomes),
+    value = {'model': model, 'design': design, 'shard': list(shard), 'rows': len(rows), 'extracted': len(outcomes),
              'failures': len(failures), 'sentences': len(sentences),
              'straddling': sum(o['straddles_prefix'] for o in outcomes), 'seconds': time.time()-tick}
     log({'event': 'outcomes', **value})
@@ -140,9 +140,10 @@ def main(argv=None):
     ap = argparse.ArgumentParser(prog='moe_exp.study.outcomes')
     ap.add_argument('--model', required=True)
     ap.add_argument('--shard', default='0/1', type=parse_shard)
+    ap.add_argument('--design', choices=sorted(STORES), default='main')
     args = ap.parse_args(argv)
     require(args.model in [p.name for p in DRIVER.iterdir() if p.is_dir()], 'unknown model manifest')
-    extract(args.model, args.shard)
+    extract(args.model, args.shard, args.design)
 
 
 if __name__ == '__main__':

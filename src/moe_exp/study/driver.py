@@ -112,9 +112,54 @@ def plan(models=None):
     return out
 
 
-def shard_rows(model, shard):
+MANIFESTS = {'main': 'ASSIGNMENTS.json', 'strong': 'STRONG.json'}
+STORES = {'main': 'units', 'strong': 'strong/units'}
+
+
+def plan_strong(models, seed_tag='strong-dose-v1'):
+    """Post-hoc dose escalation (decided 2026-10-17 after the null pre-registered preview; labelled exploratory).
+    For each (model, family, class): the pre-registered HIGH-count nominated expert sets of all three depth thirds
+    (COUNT_NOMINATIONS, training folds only) applied together, held for the whole 16·Q75 window; matched control =
+    the pre-registered high-count control sets of the same layers. Same prefix and seed as the family's native row
+    (common random numbers)."""
+    out = {}
+    for model in models:
+        nominations = verified(ROOT/model/'COUNT_NOMINATIONS.json')
+        by = {}
+        for n in nominations['records']:
+            if n['status'] == 'nominated' and n['expert_sets'][2] and n['control_sets'][2]:
+                by.setdefault((n['fold'], n['class']), []).append(n)
+        natives = [r for r in verified(DRIVER/model/'ASSIGNMENTS.json')['records'] if r['arm'] == 'native']
+        rows = []
+        for native in natives:
+            for c in CLASSES:
+                noms = sorted(by.get((native['fold'], c), []), key=lambda n: n['depth_third'])
+                require(noms and all(n['horizon'] == native['horizon'] for n in noms), 'fold horizon differs')
+                for arm, key in (('strong_target_activate', 'expert_sets'), ('strong_random_activate', 'control_sets')):
+                    actions = [{'direction': 'activate', 'experts': sorted(n[key][2]), 'layer': n['layer'],
+                                'pulse_tokens': native['horizon'], 'start': 0} for n in noms]
+                    row = {k: native[k] for k in ('benchmark', 'family', 'fold', 'model', 'horizon', 'seed', 'source',
+                                                  'profile_sha256', 'prefix_status')}
+                    row.update({'class': c, 'arm': arm, 'dose': 'high-all-depths-window', 'action': None,
+                                'actions': actions, 'pulse_tokens': native['horizon'], 'depth_third': None,
+                                'nomination_status': 'nominated', 'replicate': 0,
+                                'capture_layers': sorted(a['layer'] for a in actions)})
+                    row['uid'] = digest([seed_tag, row])
+                    rows.append(row)
+        rows.sort(key=lambda r: (r['family'], r['arm'], r['class'], r['uid']))
+        counts = {}
+        for r in rows:
+            counts[r['arm']] = counts.get(r['arm'], 0)+1
+        value = publish(DRIVER/model/'STRONG.json', {'model': model, 'design': seed_tag, 'post_hoc': True,
+            'decided_after': 'preview of pre-registered primary contrasts (gpt, nemotron, qwen330b): null',
+            'arms': counts, 'nominations_sha256': nominations['sha256'], 'records': rows})
+        out[model] = {'rows': len(rows), 'arms': counts, 'sha256': value['sha256']}
+    return out
+
+
+def shard_rows(model, shard, design='main'):
     index, count = shard
-    rows = verified(DRIVER/model/'ASSIGNMENTS.json')['records']
+    rows = verified(DRIVER/model/MANIFESTS[design])['records']
     families = sorted({r['family'] for r in rows})
     mine = {f for i, f in enumerate(families) if i % count == index}
     return [r for r in rows if r['family'] in mine]
@@ -293,7 +338,8 @@ class Engine:
 
 def contract_for(b, model, rows):
     p = b['models'][model]
-    hook = sorted({l for r in rows for l in r['capture_layers']})
+    hook = sorted({l for r in rows for l in r['capture_layers']} |
+                  {a['layer'] for r in rows for a in (r.get('actions') or ([r['action']] if r.get('action') else []))})
     return {'layers': p['layers'], 'native_k': p['native_k'], 'experts': p['experts'], 'hook_layers': hook}
 
 
@@ -356,7 +402,8 @@ def intervention_builder(b, model, tokenizer, closure, *, greedy=False, limit=No
             return None
         params = sampling(p, segment_seed(row['seed'], segment), prefix+history, left, greedy=greedy, logprobs=logprobs)
         request = {'uid': row['uid'], 'prompt': prompt, 'prefix': prefix, 'closure': closure,
-                   'action': row['action'], 'capture_layers': row['capture_layers'], 'window': row['horizon']}
+                   'action': row['action'], 'actions': row.get('actions'), 'capture_layers': row['capture_layers'],
+                   'window': row['horizon']}
         return {'prompt_ids': prompt+prefix+history, 'params': params, 'request': request, 'total': total}
     return build
 
@@ -402,14 +449,14 @@ def recover_outputs(store, rows):
     return recovered
 
 
-def run_model(model, shard, deadline, *, max_inflight=64):
+def run_model(model, shard, deadline, *, max_inflight=64, design='main'):
     from .runtime import closure
     b = binding()
-    rows = shard_rows(model, shard)
-    store = Store(bulk(b)/model/'units')
+    rows = shard_rows(model, shard, design)
+    store = Store(bulk(b)/model/STORES[design])
     recovered = recover_outputs(store, rows)
     pending = [r for r in rows if (store.state(r['uid']) or {'status': 'partial'})['status'] == 'partial']
-    log({'event': 'start', 'model': model, 'shard': shard, 'rows': len(rows), 'pending': len(pending),
+    log({'event': 'start', 'model': model, 'design': design, 'shard': shard, 'rows': len(rows), 'pending': len(pending),
          'recovered_outputs': recovered})
     if not pending:
         return {'status': 'complete', 'rows': len(rows)}
@@ -431,7 +478,7 @@ def run_model(model, shard, deadline, *, max_inflight=64):
     receipt = {'model': model, 'shard': list(shard), 'job': os.environ.get('SLURM_JOB_ID'), 'load_seconds': load_seconds,
                'engine': {k: v for k, v in kwargs.items() if k != 'logits_processors'}, 'metrics': metrics,
                'native_validation': validation[0], 'code': code_hashes()}
-    publish(bulk(b)/model/'jobs'/(os.environ.get('SLURM_JOB_ID', 'local')+'.json'), receipt)
+    publish(bulk(b)/model/'jobs'/(design+'-'+os.environ.get('SLURM_JOB_ID', 'local')+'.json'), receipt)
     log({'event': 'end', **receipt})
     return receipt
 
@@ -548,7 +595,13 @@ def lfm_annotate(shard, deadline):
 
     def build(row, history, segment):
         prompt = token_ids(parser.tokenizer, renderer.request('render', inputs=row['inputs'])['conversation'], a['config'])
-        require(len(prompt)+16384 <= a['native_context'], 'reader input cannot retain the 16384-token allowance')
+        if len(prompt)+16384 > a['native_context']:
+            # As the original reader inventory: an input that cannot keep the fixed allowance is an unjudged
+            # unknown (e.g. a repetition loop rendered as one giant sentence), never truncated or redrawn.
+            if units.state(row['uid']) is None and units.intent(row, os.environ['SLURM_JOB_ID']):
+                units.commit(row, {'status': 'unknown', 'label': None, 'reason': 'input_exceeds_reader_context',
+                                   'input_tokens': len(prompt), 'stochastic_redraw': False})
+            return None
         left = 16384-len(history)
         if left <= 0:
             return None
@@ -559,6 +612,8 @@ def lfm_annotate(shard, deadline):
 
     def finish(row, progress, reason, stop, capture):
         if progress is None:
+            if units.state(row['uid']) is not None:  # recorded as unjudged unknown in build
+                return
             progress, reason = load(store.folder(row['uid'])/'PARTIAL.json'), 'length'
         require(units.intent(row, os.environ['SLURM_JOB_ID']), 'reader unit claimed twice')
         raw = units.output(row, {'token_ids': progress['tokens'], 'finish_reason': reason,
@@ -648,13 +703,17 @@ def parse_shard(text):
 def main(argv=None):
     ap = argparse.ArgumentParser(prog='moe_exp.study.driver')
     ap.add_argument('command', choices=['plan', 'run', 'native', 'annotate', 'lfm-materialize', 'lfm-replay',
-                                        'lfm-derive', 'smoke', 'status'])
+                                        'lfm-derive', 'smoke', 'status', 'plan-strong'])
     ap.add_argument('--model')
     ap.add_argument('--shard', default='0/1', type=parse_shard)
     ap.add_argument('--max-inflight', type=int, default=64)
+    ap.add_argument('--design', choices=sorted(MANIFESTS), default='main')
     args = ap.parse_args(argv)
     if args.command == 'plan':
         log({'event': 'plan', 'models': plan([args.model] if args.model else None)})
+        return
+    if args.command == 'plan-strong':
+        log({'event': 'plan-strong', 'models': plan_strong(args.model.split(','))})
         return
     if args.command == 'status':
         print(json.dumps(status(), indent=1))
@@ -675,7 +734,7 @@ def main(argv=None):
     require(os.environ.get('SLURM_JOB_ID') and os.environ.get('SLURM_JOB_GPUS'), 'GPU commands require a Slurm GPU allocation')
     deadline = deadline_from_slurm()
     if args.command == 'run':
-        run_model(args.model, args.shard, deadline, max_inflight=args.max_inflight)
+        run_model(args.model, args.shard, deadline, max_inflight=args.max_inflight, design=args.design)
     elif args.command == 'native':
         lfm_native(args.shard, deadline)
     elif args.command == 'annotate':
