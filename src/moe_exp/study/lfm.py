@@ -257,6 +257,7 @@ def derive(binding):
     for r in sampled:
         by_attempt[r['attempt_id']].append(r)
     labels = Units(bulk/'reader/annotations')
+    label_counts = {'complete': 0, 'unknown': 0}
     counts = np.zeros((len(sources), 9, 38, 64), np.uint64)
     tokens = np.zeros((len(sources), 9), np.uint64)
     sentences = []
@@ -292,11 +293,16 @@ def derive(binding):
             else:native_row['topk_turnover:'+str(layer)]=None
         routing_rows.append(native_row)
         for r in by_attempt[source['attempt_id']]:
-            label = (labels.state(r['annotation_uid']) or {}).get('label')
-            owned = [p for p in r['token_indices'] if p < ids.shape[1]]  # capped trace: final token unavailable
-            if label not in CLASSES or not owned:
+            state = labels.state(r['annotation_uid'])
+            require(state is not None and state['status'] in ('complete', 'unknown'),
+                    'LFM discovery label missing: derive requires every sampled sentence to be terminal')
+            label_counts[state['status']] += 1
+            label = state.get('label')
+            keep = [i for i, p in enumerate(r['token_indices']) if p < ids.shape[1]]
+            require(len(r['token_indices'])-len(keep) <= missing, 'only the capped terminal token may be unavailable')
+            if label not in CLASSES or not keep:
                 continue
-            r = {**r, 'token_indices': owned}
+            r = {**r, 'token_indices': [r['token_indices'][i] for i in keep], 'token_ranks': [r['token_ranks'][i] for i in keep]}
             c = CLASSES.index(label)
             ownership[c].extend(r['token_indices'])
             ownership[8].extend(r['token_indices'])
@@ -334,6 +340,8 @@ def derive(binding):
     publish(root/'lfm25/NATIVE_PROFILE.json', {'layers': list(range(2,40)), 'experts': 64, 'native_k':4,
         'reasoning_tokens': tokens[:,7].sum(), 'labelled_tokens':tokens[:,8].sum(),
         'class_tokens':tokens[:,:7].sum(0), 'source_receipts':len(sources)})
+    require(sum(label_counts.values()) == len(sampled), 'sampled sentences without a terminal label')
     return publish(root/'lfm25/DISCOVERY_INPUTS.json', {'status': 'complete', 'sources': sources,
+        'label_states': label_counts, 'judge_inputs': verified(root/'lfm25/ANNOTATION_TASKS.json').get('judge_inputs'),
         'counts': str(count_path), 'counts_sha256': file_sha(count_path),
         'sentences': str(sentence_path), 'sentences_sha256':file_sha(sentence_path)})
