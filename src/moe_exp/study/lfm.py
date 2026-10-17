@@ -50,10 +50,13 @@ def trace_record(binding, row, raw, tokenizer):
     metadata = {'token_replay': replay, 'reasoning_content': reasoning, 'assistant_content': answer,
         'finish_reason': raw['finish_reason'], 'generation_messages': example.get('generation_messages'),
         'generation_config': {**p['card'], 'seed': row['seed']}, 'final_routing_uid': row['uid'],
-        'raw_sha256': raw['sha256'], 'score_detail': score}
+        'raw_sha256': raw['sha256'], 'score_detail': score, 'answer_present': answer is not None}
     value = {k: v for k, v in example.items() if k not in ('generation_messages', 'metadata')}
     value.update(model_id=p['checkpoint'], cot_text=text, model_answer=score.get('model_answer') or '',
-                 is_correct=score.get('is_correct') if answer is not None else None, metadata=metadata)
+                 # Sampling parity with the seven source models: a trace without a submitted answer (cap or
+                 # unclosed reasoning) is strictly incorrect and eligible, as in their original sampling.
+                 # Native estimands below keep it as an unknown bound.
+                 is_correct=score.get('is_correct') if answer is not None else False, metadata=metadata)
     return TraceRecord(**value).model_dump()
 
 
@@ -108,7 +111,8 @@ def materialize(binding):
     from moe_exp.research_campaign_v3_r6.scoring import unknown_bounds
     from moe_exp.research_campaign_v3_r6.statistics import bootstrap_panel
     for row in tasks:
-        value=by_uid.get(row['uid']);correct=value.get('is_correct') if value else None
+        value=by_uid.get(row['uid'])
+        correct=value.get('is_correct') if value and value['metadata'].get('answer_present') else None
         finish=value['metadata']['finish_reason'] if value else 'unknown'
         answer=bool(value and value['model_answer'])
         lo,hi=unknown_bounds(correct,finish,answer)

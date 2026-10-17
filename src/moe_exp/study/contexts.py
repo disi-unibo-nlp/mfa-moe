@@ -8,6 +8,14 @@ def parts(tokenizer, profile, text):
     if profile['key'] == 'lfm25':
         reasoning, marker, final = text.partition('</think>')
         return reasoning.removeprefix('<think>'), final if marker else None
+    if profile['key'] == 'gpt':
+        # vLLM 0.29's GptOssReasoningParser no longer extracts text; split Harmony channels directly
+        # (analysis bodies joined as vLLM did, final channel up to <|return|>/<|end|>).
+        import re
+        from moe_exp.correlation_pipeline.continuation import final_answer
+        bodies = re.findall(r'<\|channel\|>analysis<\|message\|>(.*?)(?=<\|end\|>|<\|return\|>|<\|call\|>|\Z)',
+                            text, flags=re.DOTALL)
+        return ('\n'.join(bodies).strip() or None), final_answer(text, 'openai_gptoss')
     from moe_exp.research_campaign_v3_r6.annotation import parser_parts
     return parser_parts(tokenizer, profile, text)
 
