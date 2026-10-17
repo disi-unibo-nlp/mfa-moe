@@ -52,14 +52,23 @@ def endpoints(outcome, sentences):
             'first_soft': (np.array([first['p_'+c] for c in CLASSES]) if first else np.full(7, np.nan))}
 
 
-def continuation_table(models):
+def continuation_table(models, design='main'):
+    """design 'strong': post-hoc strong-dose arms (renamed to target/random_activate) plus the main-design native rows."""
     import pandas as pd
     from .lexical import LEXICAL, predict
     frames = []
     for model in models:
         folder = bulk()/model/'outcomes'
-        outcomes = pd.concat([pd.read_parquet(p) for p in sorted(folder.glob('outcomes-*.parquet'))], ignore_index=True)
-        sentences = pd.concat([pd.read_parquet(p) for p in sorted(folder.glob('sentences-*.parquet'))], ignore_index=True)
+        def read(kind):
+            main = [pd.read_parquet(p) for p in sorted(folder.glob(kind+'-[0-9]*.parquet'))]
+            if design == 'main':
+                return pd.concat(main, ignore_index=True)
+            strong = pd.concat([pd.read_parquet(p) for p in sorted(folder.glob(kind+'-strong-*.parquet'))], ignore_index=True)
+            native = pd.concat(main, ignore_index=True)
+            native = native[native.arm == 'native']
+            strong['arm'] = strong.arm.str.replace('strong_', '', regex=False)
+            return pd.concat([native, strong], ignore_index=True)
+        outcomes, sentences = read('outcomes'), read('sentences')
         sentences = predict(sentences, LEXICAL/'readout-v1')
         groups = {u: g.to_dict('records') for u, g in sentences.groupby('uid')}
         rows = []
@@ -156,14 +165,14 @@ def summarize(boot, frame, columns, family_name):
     return out
 
 
-def analyze(models, out):
+def analyze(models, out, design='main'):
     import pandas as pd
     allocation = load(ROOT/'ALLOCATION.json')['records']
     benchmarks = {r['family']: r['benchmark'] for r in allocation}
-    table = continuation_table(models)
+    table = continuation_table(models, design)
     pairs = paired(table)
     boot = Bootstrap(sorted(benchmarks), benchmarks)
-    result = {'models': models, 'continuations': int(len(table)), 'pairs': int(len(pairs)),
+    result = {'models': models, 'design': design, 'continuations': int(len(table)), 'pairs': int(len(pairs)),
               'readout': 'lexical-readout-v1 (cross-fitted; no judge on intervention text)'}
     result['primary_pooled'] = summarize(boot, pairs, list(PRIMARY), 'primary-4')
     result['primary_by_model'] = {m: summarize(boot, pairs[pairs.model == m], list(PRIMARY), f'primary-4:{m}')
@@ -242,10 +251,11 @@ def main(argv=None):
     ap = argparse.ArgumentParser(prog='moe_exp.study.effects')
     ap.add_argument('--models', default=','.join(MODELS))
     ap.add_argument('--out', default=str(DRIVER/'analysis'))
+    ap.add_argument('--design', choices=['main', 'strong'], default='main')
     args = ap.parse_args(argv)
     models = [m for m in args.models.split(',') if (bulk()/m/'outcomes').exists()]
     require(models, 'no extracted outcomes')
-    value = analyze(models, Path(args.out))
+    value = analyze(models, Path(args.out), args.design)
     log({'event': 'effects', 'primary': value['primary_pooled']})
 
 

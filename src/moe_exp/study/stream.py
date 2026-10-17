@@ -140,10 +140,10 @@ class StreamCapture:
             weights, ids = nw, ni
             for uid, rows in work:
                 r = self.requests[uid]
-                action, origin = r.get('action'), len(r['prefix'])
+                action, origin = r['actions'].get(layer), len(r['prefix'])
                 index = [j for j, _ in rows]
                 ix = torch.tensor(index, device=logits.device)
-                active = [bool(action and action['layer'] == layer and c['reasoning'] and
+                active = [bool(action and c['reasoning'] and
                                c['output_position'] < origin+action['pulse_tokens']) for _, c in rows]
                 stats = self.counts[uid]
                 if any(active):
@@ -205,11 +205,13 @@ class StreamCapture:
         for r in requests:
             uid = r['uid']
             require(uid not in self.requests, 'request already attached')
-            action = r.get('action')
-            layers = set(r['capture_layers']) | ({action['layer']} if action else set())
+            # One action (pre-registered design) or one action per layer (post-hoc strong-dose arm).
+            actions = list(r.get('actions') or ([r['action']] if r.get('action') else []))
+            require(len({a['layer'] for a in actions}) == len(actions), 'at most one action per layer')
+            layers = set(r['capture_layers']) | {a['layer'] for a in actions}
             require(layers <= set(self.contract['hook_layers']), 'request layer is not hooked')
-            end = len(r['prefix'])+max(r['window'], action['pulse_tokens'] if action else 0)
-            self.requests[uid] = {**r, 'layers': sorted(layers), 'end': end}
+            end = len(r['prefix'])+max([r['window']]+[a['pulse_tokens'] for a in actions])
+            self.requests[uid] = {**r, 'actions': {a['layer']: a for a in actions}, 'layers': sorted(layers), 'end': end}
             self.clocks[uid] = Clock(r['prompt'], r['prefix'], r['closure'])
             self.records[uid] = {}
             self.counts[uid] = {'active_positions': set(), 'changed_positions': set(),
