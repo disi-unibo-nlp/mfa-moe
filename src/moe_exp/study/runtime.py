@@ -106,14 +106,15 @@ class Backend:
         prompt, tokens = replay['prompt_token_ids'], replay['completion_token_ids']
         require(len(prompt)+len(tokens) <= self.profile['card']['max_model_len'], 'replay exceeds native input length')
         original_tokens=list(tokens)
+        terminal_reasoning=0
         if len(prompt)+len(tokens)==self.profile['card']['max_model_len']:
             from moe_exp.schemas import TraceRecord
             from moe_exp.correlation_pipeline.dynamics.classes import saved_layout
             reasoning=saved_layout(TraceRecord(**trace))['reasoning_tokens']
-            require(len(tokens)-1 not in reasoning,'native cap leaves a required reasoning representation unavailable')
-            # A terminal non-reasoning token is outside every main-paper
-            # representation. Preserve its original identity and explicit
-            # unavailable capture; do not extend the model context limit.
+            # The final token of a trace that filled the context has no room for teacher forcing. Its
+            # identity is preserved and its routing is recorded as unavailable (a capped trace ends inside
+            # reasoning, so this is one reasoning token of ~131k); never extend the model context limit.
+            terminal_reasoning=int(len(tokens)-1 in reasoning)
             tokens=tokens[:-1]
         uid = digest(['deterministic-native-replay', prompt, tokens, self.profile['profile_sha256']])
         request = {'uid': uid, 'prompt': prompt, 'prefix': tokens, 'closure': self.closure,
@@ -141,7 +142,8 @@ class Backend:
             temporary.replace(destination)
             return publish(receipt, {'status': 'complete', 'path': str(destination), 'file_sha256': file_sha(destination),
                 'trace_sha256': digest(trace), 'input_tokens': len(prompt)+len(tokens), 'completion_tokens': len(original_tokens),
-                'captured_completion_tokens':len(tokens), 'unavailable_terminal_nonreasoning_tokens':len(original_tokens)-len(tokens),
+                'captured_completion_tokens':len(tokens), 'unavailable_terminal_nonreasoning_tokens':len(original_tokens)-len(tokens)-terminal_reasoning,
+                'unavailable_terminal_reasoning_tokens':terminal_reasoning,
                 'seconds': time.monotonic()-tick, 'bytes': destination.stat().st_size,
                 'profile': 'teacher-forced-native-input-token', 'discarded_output_tokens': 1,
                 'native_validation': report['native_validation'], 'load_seconds': self.load_seconds})

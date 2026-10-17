@@ -60,6 +60,57 @@ def trace_record(binding, row, raw, tokenizer):
     return TraceRecord(**value).model_dump()
 
 
+START, END = '<START OF RESPONSE>', '<END OF RESPONSE>'
+
+
+def judge_inputs(value, units, index):
+    """Judge inputs exactly as correlation_pipeline/annotate.py built them for the seven source models: the user
+    message(s) of the generation prompt (falling back to the bare prompt), one neighbouring unit on each side and
+    the original edge sentinels."""
+    messages = value.get('generation_messages') or value['metadata'].get('generation_messages') or []
+    question = '\n\n'.join(m['content'] for m in messages if m['role'] == 'user') or value['prompt']
+    return {'problem_statement': question,
+            'previous_sentence': units[index-1]['text'] if index else START,
+            'sentence': units[index]['text'],
+            'next_sentence': units[index+1]['text'] if index+1 < len(units) else END}
+
+
+def repair_annotation_inputs(binding):
+    """Rebuild the LFM judge tasks of the frozen 100k sample with source-parity inputs (2026-10-17 audit A7:
+    the first build used the bare question and empty edges). Same sentences; new context identities."""
+    from moe_exp.research_campaign_v3_r6.inputs import read_source
+    from moe_exp.research_campaign_v3_r6.annotation import context_id
+    from moe_exp.correlation_pipeline.dynamics.classes import saved_layout
+    from moe_exp.schemas import TraceRecord
+    root, bulk = Path(binding['root']), Path(binding['config']['bulk_root'])
+    parent = load(Path(binding['source_campaign'])/'CAMPAIGN.json')
+    tasks_path, sampled_path = root/'lfm25/ANNOTATION_TASKS.json', bulk/'lfm25/SAMPLED_SENTENCES.json'
+    old_tasks, old_sampled = verified(tasks_path), verified(sampled_path)
+    if old_tasks.get('judge_inputs') == 'source-parity-v1':
+        return old_tasks
+    sources = {s['attempt_id']: s for s in verified(root/'lfm25/SOURCES.json')['records']}
+    grouped = defaultdict(list)
+    for r in old_sampled['records']:
+        grouped[r['attempt_id']].append(r)
+    annotation, layouts = {}, []
+    for attempt, rows in grouped.items():
+        value = read_source(sources[attempt]['source_location'])
+        units = saved_layout(TraceRecord(**value))['units']
+        for r in rows:
+            require(units[r['sentence_index']]['text'] == r['text'], 'sampled sentence identity changed')
+            inputs = judge_inputs(value, units, r['sentence_index'])
+            uid = context_id(inputs, parent['annotator'])
+            annotation[uid] = {'uid': uid, 'inputs': inputs, 'model': 'lfm25'}
+            layouts.append({**r, 'annotation_uid': uid})
+    require(len(layouts) == len(old_sampled['records']) == 100000, 'sample size changed')
+    for path in (tasks_path, sampled_path):
+        path.rename(path.with_name(path.stem+'.problem-statement-v0.json'))
+    publish(sampled_path, {'records': layouts, 'judge_inputs': 'source-parity-v1'})
+    return publish(tasks_path, {'records': sorted(annotation.values(), key=lambda r: r['uid']),
+                                'sampled_sentences': 100000, 'judge_inputs': 'source-parity-v1',
+                                'replaces_sha256': old_tasks['sha256']})
+
+
 def materialize(binding):
     """Commit exact native lines and run the unchanged 100k stratified sampler."""
     from transformers import AutoTokenizer
@@ -152,8 +203,9 @@ def materialize(binding):
         for index in choice.combined:
             require(index in by_index, 'sampled native sentence lacks exact context')
             c = by_index[index]
-            uid = context_id(c['inputs'], parent['annotator'])
-            annotation[uid] = {'uid': uid, 'inputs': c['inputs'], 'model': 'lfm25'}
+            inputs = judge_inputs(value, layout['units'], index)
+            uid = context_id(inputs, parent['annotator'])
+            annotation[uid] = {'uid': uid, 'inputs': inputs, 'model': 'lfm25'}
             owned = layout['unit_tokens'][index]
             layouts.append({'attempt_id': source['attempt_id'], 'question': question, 'benchmark': info.dataset,
                 'family': row['family'], 'fold': row['fold'], 'sentence_index': index, 'annotation_uid': uid,
@@ -217,11 +269,13 @@ def derive(binding):
         require(file_sha(path) == receipt['file_sha256'], 'replay changed before analysis')
         with np.load(path, allow_pickle=False) as z:
             ids,weights = z['ids'],z['weights']
+        missing = receipt.get('unavailable_terminal_reasoning_tokens', 0)
+        reasoning_tokens = [p for p in layout['reasoning_tokens'] if p < ids.shape[1]]
         require(ids.shape == (38, receipt['captured_completion_tokens'], 4) and
-                all(p<ids.shape[1] for p in layout['reasoning_tokens']), 'LFM replay geometry/reasoning coverage differs')
+                len(layout['reasoning_tokens'])-len(reasoning_tokens) == missing, 'LFM replay geometry/reasoning coverage differs')
         ownership = defaultdict(list)
-        ownership[7] = layout['reasoning_tokens']
-        positions=np.asarray(layout['reasoning_tokens'],int)
+        ownership[7] = reasoning_tokens
+        positions=np.asarray(reasoning_tokens,int)
         adjacent=np.diff(positions)==1
         native_row={'benchmark':source['benchmark'],'family':source['family'],'attempt_id':source['attempt_id']}
         for li,layer in enumerate(range(2,40)):
@@ -239,8 +293,10 @@ def derive(binding):
         routing_rows.append(native_row)
         for r in by_attempt[source['attempt_id']]:
             label = (labels.state(r['annotation_uid']) or {}).get('label')
-            if label not in CLASSES or not r['token_indices']:
+            owned = [p for p in r['token_indices'] if p < ids.shape[1]]  # capped trace: final token unavailable
+            if label not in CLASSES or not owned:
                 continue
+            r = {**r, 'token_indices': owned}
             c = CLASSES.index(label)
             ownership[c].extend(r['token_indices'])
             ownership[8].extend(r['token_indices'])

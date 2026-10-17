@@ -69,6 +69,8 @@ def continuation_table(models, design='main'):
             strong['arm'] = strong.arm.str.replace('strong_', '', regex=False)
             return pd.concat([native, strong], ignore_index=True)
         outcomes, sentences = read('outcomes'), read('sentences')
+        if design == 'strong':  # routing forced over the whole window: measure [0, H) for strong and native rows
+            outcomes = outcomes.assign(pulse_tokens=0)
         sentences = predict(sentences, LEXICAL/'readout-v1')
         groups = {u: g.to_dict('records') for u, g in sentences.groupby('uid')}
         rows = []
@@ -93,6 +95,7 @@ def paired(table):
     t = table.copy()
     t['log_tokens'] = np.log(t.generated_tokens.clip(lower=1))
     t['log_total'] = np.log((t.generated_tokens+t.prefix_tokens).clip(lower=1))
+    t['log_reasoning'] = np.log(t.reasoning_tokens.clip(lower=1))
     t['correct'] = t.strict_correct.astype(float)
     native = t[t.arm == 'native'].set_index(['model', 'family'])
     rows = []
@@ -106,7 +109,7 @@ def paired(table):
             for kind, key in (('occupancy', 'occ_'), ('first', 'first_'), ('soft_occupancy', 'occs_')):
                 out[f'{direction}:{kind}'] = sign*(ta[key+c]-ra[key+c]) if ta and ra else np.nan
                 out[f'{direction}:{kind}:vs_native'] = sign*(ta[key+c]-nat[key+c]) if ta and nat else np.nan
-            for metric in ('log_tokens', 'log_total', 'correct', 'generated_tokens'):
+            for metric in ('log_tokens', 'log_total', 'log_reasoning', 'correct', 'generated_tokens', 'ended'):
                 out[f'{direction}:{metric}'] = ta[metric]-ra[metric] if ta and ra else np.nan
                 out[f'{direction}:{metric}:vs_native'] = ta[metric]-nat[metric] if ta and nat else np.nan
                 out[f'random_{direction}:{metric}:vs_native'] = ra[metric]-nat[metric] if ra and nat else np.nan
@@ -179,9 +182,10 @@ def analyze(models, out, design='main'):
                                   for m in models}
     result['primary_by_class'] = {c: summarize(boot, pairs[pairs['class'] == c], list(PRIMARY), f'primary-4:{c}')
                                   for c in CLASSES}
-    efficiency = [f'{d}:{m}' for d in ('activate', 'deactivate') for m in ('log_tokens', 'correct')]
-    efficiency += [f'{d}:{m}:vs_native' for d in ('activate', 'deactivate') for m in ('log_tokens', 'correct')]
-    efficiency += [f'random_{d}:{m}:vs_native' for d in ('activate', 'deactivate') for m in ('log_tokens', 'correct')]
+    metrics = ('log_tokens', 'log_total', 'log_reasoning', 'correct', 'ended')
+    efficiency = [f'{d}:{m}' for d in ('activate', 'deactivate') for m in metrics]
+    efficiency += [f'{d}:{m}:vs_native' for d in ('activate', 'deactivate') for m in metrics]
+    efficiency += [f'random_{d}:{m}:vs_native' for d in ('activate', 'deactivate') for m in metrics]
     result['efficiency_pooled'] = summarize(boot, pairs, efficiency, 'efficiency')
     result['efficiency_by_class'] = {c: summarize(boot, pairs[pairs['class'] == c], efficiency, f'efficiency:{c}')
                                      for c in CLASSES}
@@ -203,8 +207,11 @@ def analyze(models, out, design='main'):
             corrected[c] = {'youden_j': j, 'estimate': v['estimate']/j, 'ci': [x/j for x in v['ci']]}
     result['rogan_gladen_sensitivity'] = corrected
     prereg = DRIVER/'EFFICIENCY_LINK_PREREG.json'
-    if prereg.exists():
-        result['efficiency_link'] = efficiency_link(load(prereg), pairs, boot)
+    if prereg.exists() and design == 'main':  # the pre-registration excludes other strengths
+        from .common import verified
+        frozen = verified(prereg)
+        result['efficiency_link'] = efficiency_link(frozen, pairs, boot)
+        result['efficiency_link']['prereg_sha256'] = frozen['sha256']
     out.mkdir(parents=True, exist_ok=True)
     table.to_parquet(out/'continuations.parquet', index=False)
     pairs.to_parquet(out/'pairs.parquet', index=False)
@@ -212,38 +219,61 @@ def analyze(models, out, design='main'):
 
 
 def efficiency_link(prereg, pairs, boot):
-    """Pre-registered test (EFFICIENCY_LINK_PREREG.json 'test'): Spearman(beta(m,c), Delta(m,c)) across cells,
-    Delta = family mean of targeted-minus-random activation in log total tokens (accuracy analogously);
-    family-bootstrap 95% interval; sign agreement on signed cells with an exact binomial test."""
+    """The pre-registered test (EFFICIENCY_LINK_PREREG.json 'test'): frozen beta(m,c) vs measured Delta(m,c) =
+    family mean of targeted-minus-random activation (log total tokens; strict accuracy). Spearman rho and the
+    sign-agreement rate on signed cells, each with a 95% percentile interval from a family-cluster bootstrap of
+    the intervention side (2,000 draws, seed 20261017, betas fixed), plus an exact binomial test. Secondary:
+    tok_total / acc_excl_trunc / between-question (dataset_fe) predictors and the sign-robust restricted rho."""
     from scipy.stats import binomtest, spearmanr
-    out = {}
-    for name, outcome, column in (('tokens', 'tok_reason', 'activate:log_total'), ('accuracy', 'acc', 'activate:correct')):
-        beta = {(r['model'], r['class']): r[outcome] for r in prereg['cells']}
-        keys = sorted(k for k in beta if ((pairs.model == k[0]) & (pairs['class'] == k[1])).any())
-        if len(keys) < 4:
-            out[name] = {'status': 'insufficient_cells', 'cells': len(keys)}
-            continue
-        means = {k: pairs[(pairs.model == k[0]) & (pairs['class'] == k[1])][['family', column]].dropna()
-                 .groupby('family')[column].mean() for k in keys}
-        cols = {k: np.array([boot.index[f] for f in m.index]) for k, m in means.items()}
+    link = Bootstrap(boot.families, dict(zip(boot.families, boot.benchmark)), draws=2000, seed=20261017)
 
-        def deltas(weights):
-            if weights is None:
-                return np.array([means[k].mean() for k in keys])
-            return np.array([(weights[cols[k]]*means[k].to_numpy()).sum()/max(weights[cols[k]].sum(), 1) for k in keys])
+    def test(cells, outcome, column, restrict=False):
+        beta = {(r['model'], r['class']): r[outcome] for r in cells if r.get(outcome) and r[outcome].get('beta') is not None}
+        if restrict:
+            beta = {k: v for k, v in beta.items() if v.get('sign') in ('+', '-') and not v.get('opposite_sign_in')}
+        means = {}
+        for k in sorted(beta):
+            sub = pairs[(pairs.model == k[0]) & (pairs['class'] == k[1])][['family', column]].dropna()
+            if len(sub):
+                means[k] = sub.groupby('family')[column].mean()
+        keys = sorted(means)
+        if len(keys) < 4:
+            return {'status': 'insufficient_cells', 'cells': len(keys)}
+        cols = {k: np.array([link.index[f] for f in means[k].index]) for k in keys}
         xs = np.array([beta[k]['beta'] for k in keys])
-        point = deltas(None)
-        rho = spearmanr(xs, point).statistic
-        draws = np.array([spearmanr(xs, deltas(boot.weights[i])).statistic for i in range(len(boot.weights))])
-        signed = [(k, beta[k]['sign']) for k in keys if beta[k]['sign'] in ('+', '-')]
-        agree = sum(1 for (k, sg), y in zip(signed, [point[keys.index(k)] for k, _ in signed])
-                    if (y > 0 and sg == '+') or (y < 0 and sg == '-'))
-        out[name] = {'spearman': float(rho), 'ci': np.nanquantile(draws, [.025, .975]).tolist(), 'cells': len(keys),
-                     'bootstrap_draws': int(len(draws)), 'signed_cells': len(signed), 'sign_agreement': agree,
-                     'binomial_p': float(binomtest(agree, len(signed), .5).pvalue) if signed else None,
-                     'supported': bool(np.nanquantile(draws, .025) > 0),
-                     'cells_detail': [{'model': k[0], 'class': k[1], 'beta': float(beta[k]['beta']),
-                                       'predicted_sign': beta[k]['sign'], 'delta': float(y)} for k, y in zip(keys, point)]}
+        signed = np.array([beta[k].get('sign') in ('+', '-') for k in keys])
+        predicted = np.array([1 if beta[k].get('sign') == '+' else -1 for k in keys])
+
+        def stats(weights):
+            if weights is None:
+                ys = np.array([means[k].mean() for k in keys])
+            else:
+                ys = np.array([(weights[cols[k]]*means[k].to_numpy()).sum()/max(weights[cols[k]].sum(), 1) for k in keys])
+            agree = ((np.sign(ys) == predicted) & (ys != 0))[signed]
+            return spearmanr(xs, ys).statistic, (agree.mean() if signed.any() else np.nan), ys
+        rho, rate, ys = stats(None)
+        draws = np.array([stats(link.weights[i])[:2] for i in range(len(link.weights))])
+        agree = int(round(rate*signed.sum())) if signed.any() else 0
+        return {'spearman': float(rho), 'spearman_ci': np.nanquantile(draws[:, 0], [.025, .975]).tolist(),
+                'sign_agreement_rate': float(rate) if signed.any() else None,
+                'sign_agreement_ci': np.nanquantile(draws[:, 1], [.025, .975]).tolist() if signed.any() else None,
+                'signed_cells': int(signed.sum()), 'sign_agreement': agree,
+                'binomial_p': float(binomtest(agree, int(signed.sum()), .5).pvalue) if signed.any() else None,
+                'supported': bool(np.nanquantile(draws[:, 0], .025) > 0), 'cells': len(keys),
+                'bootstrap_draws': len(link.weights), 'seed': 20261017,
+                'cells_detail': [{'model': k[0], 'class': k[1], 'beta': float(beta[k]['beta']),
+                                  'predicted_sign': beta[k].get('sign'), 'delta': float(y)} for k, y in zip(keys, ys)]}
+    cells = prereg['cells']
+    out = {'tokens': test(cells, 'tok_reason', 'activate:log_total'),
+           'accuracy': test(cells, 'acc', 'activate:correct'),
+           'secondary': {'tok_total': test(cells, 'tok_total', 'activate:log_total'),
+                         'acc_excl_trunc': test(cells, 'acc_excl_trunc', 'activate:correct'),
+                         'tokens_restricted': test(cells, 'tok_reason', 'activate:log_total', restrict=True),
+                         'accuracy_restricted': test(cells, 'acc', 'activate:correct', restrict=True)}}
+    fe = (prereg.get('sensitivity') or {}).get('dataset_fe', {}).get('cells')
+    if fe:
+        out['secondary']['dataset_fe_tokens'] = test(fe, 'tok_reason', 'activate:log_total')
+        out['secondary']['dataset_fe_accuracy'] = test(fe, 'acc', 'activate:correct')
     return out
 
 

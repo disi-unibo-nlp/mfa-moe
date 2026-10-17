@@ -105,7 +105,12 @@ class StreamCapture:
                     start, stop = self.boundaries[i:i+2]
                     pos = [axis[start:stop] for axis in positions] if positions and isinstance(positions[0], list) \
                         else positions[start:stop]
-                    observed = self.clocks[uid].observe(token_ids[start:stop], pos)
+                    clock = self.clocks[uid]
+                    passes = clock.passes
+                    observed = clock.observe(token_ids[start:stop], pos)
+                    if clock.passes != passes:  # recompute from position 0: the capture is rebuilt from this pass
+                        self.records[uid] = {}
+                        self.counts[uid].update(active_positions=set(), changed_positions=set())
                     contexts[start:stop] = observed
                     r = self.requests[uid]
                     origin = len(r['prefix'])
