@@ -703,7 +703,7 @@ def parse_shard(text):
 def main(argv=None):
     ap = argparse.ArgumentParser(prog='moe_exp.study.driver')
     ap.add_argument('command', choices=['plan', 'run', 'native', 'annotate', 'lfm-materialize', 'lfm-replay',
-                                        'lfm-derive', 'smoke', 'status', 'plan-strong'])
+                                        'lfm-derive', 'smoke', 'status', 'plan-strong', 'lfm-repair-contexts'])
     ap.add_argument('--model')
     ap.add_argument('--shard', default='0/1', type=parse_shard)
     ap.add_argument('--max-inflight', type=int, default=64)
@@ -721,6 +721,11 @@ def main(argv=None):
     if args.command == 'lfm-materialize':
         from .lfm import materialize
         log({'event': 'materialize', **materialize(binding())})
+        return
+    if args.command == 'lfm-repair-contexts':
+        from .lfm import repair_annotation_inputs
+        value = repair_annotation_inputs(binding())
+        log({'event': 'repaired', 'contexts': len(value['records']), 'sha256': value['sha256']})
         return
     if args.command == 'lfm-derive':
         from .lfm import derive
