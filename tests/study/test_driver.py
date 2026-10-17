@@ -218,3 +218,10 @@ class SubShards(unittest.TestCase):
         parts = [{r['uid'] for r in driver.shard_rows('glm', (2, 4), sub=(j, 3))} for j in range(3)]
         self.assertEqual(set().union(*parts), whole)
         self.assertEqual(sum(map(len, parts)), len(whole))
+
+    def test_nested_sub_shards_partition_a_sub_shard(self):
+        whole = {r['uid'] for r in driver.shard_rows('glm', (2, 4), sub=[(2, 3)])}
+        parts = [{r['uid'] for r in driver.shard_rows('glm', (2, 4), sub=[(2, 3), (j, 3)])} for j in range(3)]
+        self.assertEqual(set().union(*parts), whole)
+        self.assertEqual(sum(map(len, parts)), len(whole))
+        self.assertEqual({r['uid'] for r in driver.shard_rows('glm', (2, 4), sub=(2, 3))}, whole)

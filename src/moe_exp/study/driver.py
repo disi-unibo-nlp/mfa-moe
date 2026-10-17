@@ -158,13 +158,13 @@ def plan_strong(models, seed_tag='strong-dose-v1'):
 
 
 def shard_rows(model, shard, design='main', sub=None):
-    """Families with rank % count == index; `sub` (j, m) further splits that shard's families by rank % m."""
+    """Families with rank % count == index; each `sub` (j, m) in turn keeps that subset's ranks with rank % m == j."""
     index, count = shard
     rows = verified(DRIVER/model/MANIFESTS[design])['records']
     families = sorted({r['family'] for r in rows})
     mine = [f for i, f in enumerate(families) if i % count == index]
-    if sub is not None:
-        mine = [f for i, f in enumerate(mine) if i % sub[1] == sub[0]]
+    for j, m in ([sub] if isinstance(sub, tuple) else (sub or [])):
+        mine = [f for i, f in enumerate(mine) if i % m == j]
     mine = set(mine)
     return [r for r in rows if r['family'] in mine]
 
@@ -712,7 +712,7 @@ def main(argv=None):
     ap.add_argument('--shard', default='0/1', type=parse_shard)
     ap.add_argument('--max-inflight', type=int, default=64)
     ap.add_argument('--design', choices=sorted(MANIFESTS), default='main')
-    ap.add_argument('--sub', type=parse_shard, default=None)
+    ap.add_argument('--sub', type=parse_shard, action='append', default=None)
     args = ap.parse_args(argv)
     if args.command == 'plan':
         log({'event': 'plan', 'models': plan([args.model] if args.model else None)})
