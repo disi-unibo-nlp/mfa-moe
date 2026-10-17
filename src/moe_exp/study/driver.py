@@ -157,11 +157,15 @@ def plan_strong(models, seed_tag='strong-dose-v1'):
     return out
 
 
-def shard_rows(model, shard, design='main'):
+def shard_rows(model, shard, design='main', sub=None):
+    """Families with rank % count == index; `sub` (j, m) further splits that shard's families by rank % m."""
     index, count = shard
     rows = verified(DRIVER/model/MANIFESTS[design])['records']
     families = sorted({r['family'] for r in rows})
-    mine = {f for i, f in enumerate(families) if i % count == index}
+    mine = [f for i, f in enumerate(families) if i % count == index]
+    if sub is not None:
+        mine = [f for i, f in enumerate(mine) if i % sub[1] == sub[0]]
+    mine = set(mine)
     return [r for r in rows if r['family'] in mine]
 
 
@@ -449,14 +453,14 @@ def recover_outputs(store, rows):
     return recovered
 
 
-def run_model(model, shard, deadline, *, max_inflight=64, design='main'):
+def run_model(model, shard, deadline, *, max_inflight=64, design='main', sub=None):
     from .runtime import closure
     b = binding()
-    rows = shard_rows(model, shard, design)
+    rows = shard_rows(model, shard, design, sub)
     store = Store(bulk(b)/model/STORES[design])
     recovered = recover_outputs(store, rows)
     pending = [r for r in rows if (store.state(r['uid']) or {'status': 'partial'})['status'] == 'partial']
-    log({'event': 'start', 'model': model, 'design': design, 'shard': shard, 'rows': len(rows), 'pending': len(pending),
+    log({'event': 'start', 'model': model, 'design': design, 'shard': shard, 'sub': sub, 'rows': len(rows), 'pending': len(pending),
          'recovered_outputs': recovered})
     if not pending:
         return {'status': 'complete', 'rows': len(rows)}
@@ -708,6 +712,7 @@ def main(argv=None):
     ap.add_argument('--shard', default='0/1', type=parse_shard)
     ap.add_argument('--max-inflight', type=int, default=64)
     ap.add_argument('--design', choices=sorted(MANIFESTS), default='main')
+    ap.add_argument('--sub', type=parse_shard, default=None)
     args = ap.parse_args(argv)
     if args.command == 'plan':
         log({'event': 'plan', 'models': plan([args.model] if args.model else None)})
@@ -739,7 +744,7 @@ def main(argv=None):
     require(os.environ.get('SLURM_JOB_ID') and os.environ.get('SLURM_JOB_GPUS'), 'GPU commands require a Slurm GPU allocation')
     deadline = deadline_from_slurm()
     if args.command == 'run':
-        run_model(args.model, args.shard, deadline, max_inflight=args.max_inflight, design=args.design)
+        run_model(args.model, args.shard, deadline, max_inflight=args.max_inflight, design=args.design, sub=args.sub)
     elif args.command == 'native':
         lfm_native(args.shard, deadline)
     elif args.command == 'annotate':

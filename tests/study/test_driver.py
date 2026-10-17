@@ -210,3 +210,11 @@ class ReviewFixes(unittest.TestCase):
             self.assertEqual(driver.recover_outputs(store, [row]), 1)
             self.assertEqual(store.state(uid)['status'], 'unknown')
             self.assertTrue(store.state(uid)['recovered_after_crash'])
+
+
+class SubShards(unittest.TestCase):
+    def test_sub_shards_partition_one_shard(self):
+        whole = {r['uid'] for r in driver.shard_rows('glm', (2, 4))}
+        parts = [{r['uid'] for r in driver.shard_rows('glm', (2, 4), sub=(j, 3))} for j in range(3)]
+        self.assertEqual(set().union(*parts), whole)
+        self.assertEqual(sum(map(len, parts)), len(whole))
