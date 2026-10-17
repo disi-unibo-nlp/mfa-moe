@@ -59,6 +59,9 @@ def record(b, model, row, raw, tokenizer, close):
     tokens = prefix+raw['token_ids']
     text, replay = make_token_replay(tokenizer, prompt, tokens)
     reasoning, final = parts(tokenizer, profile, text)
+    fallback = bool(reasoning) and reasoning not in text
+    if fallback:  # parser text not verbatim in the decoded sequence: use the explicit <think> span instead
+        reasoning = None
     trace = SimpleNamespace(**{**original, 'cot_text': text, 'metadata': {
         **original.get('metadata', {}), 'token_replay': replay, 'reasoning_content': reasoning,
         'assistant_content': final, 'finish_reason': raw['finish_reason']}})
@@ -80,7 +83,7 @@ def record(b, model, row, raw, tokenizer, close):
     return {'sentences': sentences, 'reasoning_end': reasoning_end, 'nonreasoning': nonreasoning,
             'generated_tokens': len(raw['token_ids']), 'prefix_tokens': len(prefix),
             'reasoning_tokens': sum(p >= len(prefix) for p in reasoning_positions),
-            'finish_reason': raw['finish_reason'], 'answer_present': final is not None,
+            'finish_reason': raw['finish_reason'], 'answer_present': final is not None, 'reasoning_fallback': fallback,
             'strict_correct': strict, 'accuracy_bounds': [lo, hi]}
 
 
@@ -111,6 +114,7 @@ def extract(model, shard, design='main'):
             'generated_tokens': rec['generated_tokens'], 'prefix_tokens': rec['prefix_tokens'],
             'reasoning_tokens': rec['reasoning_tokens'], 'reasoning_end': rec['reasoning_end'],
             'finish_reason': rec['finish_reason'], 'answer_present': rec['answer_present'],
+            'reasoning_fallback': rec['reasoning_fallback'],
             'strict_correct': rec['strict_correct'], 'accuracy_lower': rec['accuracy_bounds'][0],
             'accuracy_upper': rec['accuracy_bounds'][1], 'segments': result.get('segments'),
             'straddles_prefix': any(s['straddles_prefix'] for s in rec['sentences']),
