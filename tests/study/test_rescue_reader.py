@@ -146,6 +146,11 @@ class RescueReaderTest(unittest.TestCase):
         raw['segments'].insert(0, {'job': 'failed-old-operator', 'history': 0, 'generated': 0})
         self.assertTrue(generation_matches(self.row, raw, {'qualified'}))
 
+    def test_actual_empty_admission_without_redundant_generated_field(self):
+        raw = copy.deepcopy(self.raw)
+        raw['segments'].insert(0, {'job': 'failed-old-operator', 'history': 0})
+        self.assertTrue(generation_matches(self.row, raw, {'qualified'}))
+
     def test_source_mismatch_is_rejected_before_text_extraction(self):
         with patch('moe_exp.study.runtime.closure', return_value=[]):
             builder = RescueContexts(self.study, 'gpt', object(), {'jobs': ['another-release']})
