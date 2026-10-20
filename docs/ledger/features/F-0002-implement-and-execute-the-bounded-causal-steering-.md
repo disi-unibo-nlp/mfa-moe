@@ -10,7 +10,7 @@
 
 ## Tasks
 
-- [ ] F-0002.1 Freeze full cohort, source/runtime/classifier bindings, fixed generation roster, historical references and explicit HOME/WORK destinations.
+- [x] F-0002.1 Freeze full cohort, source/runtime/classifier bindings, fixed generation roster, historical references and explicit HOME/WORK destinations; evidence: report/final-routing-rescue-20261020-r2/COHORT.json logical SHA 0d6d1c87f4c5e8694d2b5c31f21b632562fdcf4a6278b465b9d48c8c840b2a0f; SOURCE.json binds 626 files and local commit 5614db4455f3a970e9b8e5bece8f4bf5d42673ac. Counts match 5380 candidate, 37 incompatible unknown and 2007 authorized generation assignments.
 - [ ] F-0002.2 Enforce accepted job ownership, nonblocking store locks, stable execution identities, exact allocation checks, terminal generation index, no partial redraw and early empty/deadline gates.
 - [ ] F-0002.3 Qualify all historical captures, token replay and extraction joins on allocated CPUs, preserving failed assignments as unknown.
 - [ ] F-0002.4 Freeze deterministic 64-cell engineering design; implement all-layer dose telemetry and native/hooked/zero-pulse, concurrency, pulse-boundary and longest-prefix canaries; pass allocated engineering before science.
@@ -29,3 +29,5 @@
 | Study CPU regressions | Maintained study suite before final provenance refinements | 52 focused audit tests | 129 tests passed in 674.392 wall seconds; latest frozen source still requires allocated verification | Native tool result, local development run |
 | Exact semantic integration | Demo cohort with nondefault roots, historical/new/incompatible dispositions and native broadcasting | Missing annotation gave compatibility midpoint 0 | New labels changed exported semantic activation to 1 while lexical activation stayed 0; unknown assignment retained | tests/study/test_cohort.py; 20 cohort/scheduler tests passed before final contingent-submission test |
 | Actual artifact joins | Deployed C10 and one saved GPT/Qwen candidate | Provisional metadata eligibility only | READOUT and five folds valid; both sampled capture/output/result joins pass; full replay remains allocated work | Native bounded metadata probe; READOUT SHA above |
+| Final targeted checks | Driver and reader contracts, plus zero-token historical admission correction | Pre-submission source candidate rejected historical metadata | 22 driver/reader tests passed in 7.229 seconds; 12 reader tests passed after adding the actual missing-generated-field regression in 7.995 seconds | tests/study/test_driver.py and test_rescue_reader.py; PRE_SUBMISSION_CORRECTION.json |
+| Frozen cohort | Original rescue manifests and saved metadata | 7424 planned assignments | Exact approved disposition counts; no generation or allocation was needed to seal metadata | report/final-routing-rescue-20261020-r2/COHORT.json |
