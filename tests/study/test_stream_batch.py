@@ -24,9 +24,9 @@ class WholeBatchTests(unittest.TestCase):
             expected_weights, expected_ids = score_override_dual_masked(logits, nw, ni, roles[:, 0], roles[:, 1], active)
             torch.testing.assert_close(weights, expected_weights)
             self.assertTrue(torch.equal(ids, expected_ids))
-            groups = torch.arange(length) % count
-            torch.testing.assert_close(compiled_dose(nw, ni, weights, ids, active, prompt, roles, groups, count),
-                                       batched_dose(nw, ni, weights, ids, active, prompt, roles, groups, count))
+            lengths = torch.full((count,), length//count, dtype=torch.long)
+            torch.testing.assert_close(compiled_dose(nw, ni, weights, ids, active, prompt, roles, lengths),
+                                       batched_dose(nw, ni, weights, ids, active, prompt, roles, lengths))
 
     def test_masked_operator_matches_individual_roles_and_inactive_bits(self):
         torch.manual_seed(725)

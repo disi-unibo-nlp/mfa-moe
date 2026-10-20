@@ -32,6 +32,13 @@ promote replaced185 deactivation nominations across35cells, retaining
 Evidence: report/whole-reasoning-20261020-r3/CPU_VALIDATION.json,
 NOMINATION_AUDIT.json and NOMINATION_CHANGES.csv.
 
+The batched source3a848b4 also passed all190allocated tests in CPU61580365
+(149s,0.165556core-hours); no GPU was released from it. Its final engineering
+correction uses deterministic contiguous segment sums, because floating
+atomic groups could disagree between ranks. Seven focused graph/operator/
+counter/audit/recompute tests pass. Continue the deterministic subdirectory;
+its1.637778CPU/0.842222GPU-hour prior retains every allocation and local charge.
+
 ## Results
 
 | Metric | Dataset | Baseline | Result | Evidence |
