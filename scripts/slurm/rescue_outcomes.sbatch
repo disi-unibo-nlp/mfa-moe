@@ -21,9 +21,9 @@ export OPENBLAS_NUM_THREADS="$SLURM_CPUS_PER_TASK"
 export MKL_NUM_THREADS="$SLURM_CPUS_PER_TASK"
 export HF_HOME=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/cache/hf
 export TIKTOKEN_ENCODINGS_BASE=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/cache/tiktoken
-tmp="/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/final-routing-rescue/extract-${SLURM_JOB_ID}"
+tmp="/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/r/${SLURM_JOB_ID}"
 mkdir -p "$tmp"
 export TMPDIR="$tmp" TIKTOKEN_RS_CACHE_DIR="$tmp/tiktoken"
 export HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1
-exec srun --kill-on-bad-exit=1 env TMPDIR="$tmp" "$env_root/bin/python" -B -m moe_exp.study.outcomes \
+exec srun --kill-on-bad-exit=1 env TMPDIR="$tmp" VLLM_RPC_BASE_PATH="$tmp" "$env_root/bin/python" -B -m moe_exp.study.outcomes \
     --model "$model" --shard 0/1 --design rescue --cohort "$3"

@@ -70,12 +70,13 @@ def runtime_binding() -> dict:
     native = native_runtime_binding()
     root = Path(importlib.metadata.distribution('vllm').locate_file('vllm'))
     engine = set((root/'v1/engine').glob('*.py'))
-    engine.update(root/name for name in ('sampling_params.py', 'entrypoints/llm.py'))
+    engine.update(root/name for name in ('sampling_params.py', 'entrypoints/llm.py', 'envs.py',
+                                       'utils/network_utils.py', 'distributed/device_communicators/shm_broadcast.py'))
     return {
         'native': native,
         'request_engine_files': {str(path): file_sha(path) for path in sorted(engine)},
         'analysis_packages': {name: importlib.metadata.version(name)
-                              for name in ('scipy', 'pandas', 'pyarrow', 'tokenizers', 'matplotlib')},
+                              for name in ('scipy', 'pandas', 'pyarrow', 'tokenizers', 'matplotlib', 'pyzmq')},
     }
 
 

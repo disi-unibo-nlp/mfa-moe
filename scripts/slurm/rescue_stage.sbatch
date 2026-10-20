@@ -14,7 +14,7 @@ cd /leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo
 module load python/3.11.7
 module load cuda/12.6
 env_root=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/envs/vllm-cu129
-tmp="/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/causal-rescue/${stage}-${SLURM_JOB_ID}"
+tmp="/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/r/${SLURM_JOB_ID}"
 mkdir -p "$tmp"
 export TMPDIR="$tmp" XDG_CACHE_HOME="$tmp/xdg" TORCH_HOME="$tmp/torch"
 export TRITON_CACHE_DIR="$tmp/triton" TORCHINDUCTOR_CACHE_DIR="$tmp/inductor"
@@ -29,5 +29,5 @@ export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 NUMEXPR_NUM_TH
 export HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1
 export VLLM_USE_FLASHINFER_SAMPLER=0 VLLM_ENABLE_V1_MULTIPROCESSING=0
 # Set the task environment after srun establishes its native step environment.
-exec srun --kill-on-bad-exit=1 env TMPDIR="$tmp" "$env_root/bin/python" -B -m moe_exp.study.rescue \
+exec srun --kill-on-bad-exit=1 env TMPDIR="$tmp" VLLM_RPC_BASE_PATH="$tmp" "$env_root/bin/python" -B -m moe_exp.study.rescue \
     worker --cohort "$cohort" --stage "$stage" --model "$model"

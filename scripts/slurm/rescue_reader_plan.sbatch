@@ -12,11 +12,11 @@ fi
 cd /leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo
 env_root="$1"
 module load python/3.11.7
-tmp="/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/final-routing-rescue/reader-plan-${SLURM_JOB_ID}"
+tmp="/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/r/${SLURM_JOB_ID}"
 mkdir -p "$tmp"
 export TMPDIR="$tmp"
 export PYTHONDONTWRITEBYTECODE=1 PATH="$env_root/bin:$PATH"
 export PYTHONPATH="$PWD/src:$PWD/scripts/experimental_resume${PYTHONPATH:+:$PYTHONPATH}"
 export OMP_NUM_THREADS="$SLURM_CPUS_PER_TASK" OPENBLAS_NUM_THREADS="$SLURM_CPUS_PER_TASK"
 export MKL_NUM_THREADS="$SLURM_CPUS_PER_TASK" HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1
-exec srun --kill-on-bad-exit=1 env TMPDIR="$tmp" "$env_root/bin/python" -B -m moe_exp.study.rescue_reader plan --model "$2" --cohort "$3"
+exec srun --kill-on-bad-exit=1 env TMPDIR="$tmp" VLLM_RPC_BASE_PATH="$tmp" "$env_root/bin/python" -B -m moe_exp.study.rescue_reader plan --model "$2" --cohort "$3"

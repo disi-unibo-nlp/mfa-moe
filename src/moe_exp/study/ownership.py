@@ -73,10 +73,17 @@ def task_staging() -> Path:
         tests or model loading rather than falling back to a system directory.
     """
     import tempfile
+    import zmq
+    from uuid import UUID
     require(bool(os.environ.get('TMPDIR')), 'worker needs explicit private TMPDIR')
     root = writable(Path(os.environ['TMPDIR']))
     require(root.is_dir(), 'worker private TMPDIR does not exist')
+    # vLLM appends a UUID to this directory before binding an AF_UNIX socket.
+    # Validate its native byte limit before any engine initialization.
+    socket_bytes = len(str(root/str(UUID(int=0))).encode())
+    require(socket_bytes <= zmq.IPC_PATH_MAX_LEN, 'private TMPDIR exceeds the native IPC socket path limit')
     tempfile.tempdir = str(root)
+    os.environ['VLLM_RPC_BASE_PATH'] = str(root)
     return root
 
 

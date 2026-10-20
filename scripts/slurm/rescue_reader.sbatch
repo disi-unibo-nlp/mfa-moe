@@ -13,7 +13,7 @@ cd /leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo
 env_root="$1"
 module load python/3.11.7
 module load cuda/12.6
-tmp="/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/final-routing-rescue/reader-${SLURM_JOB_ID}"
+tmp="/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/r/${SLURM_JOB_ID}"
 mkdir -p "$tmp"
 export TMPDIR="$tmp" XDG_CACHE_HOME="$tmp/xdg" TORCH_HOME="$tmp/torch"
 export TRITON_CACHE_DIR="$tmp/triton" VLLM_CACHE_ROOT="$tmp/vllm" MPLCONFIGDIR="$tmp/matplotlib"
@@ -25,4 +25,4 @@ export PYTHONPATH="$PWD/src:$PWD/scripts/experimental_resume${PYTHONPATH:+:$PYTH
 export OMP_NUM_THREADS="$SLURM_CPUS_PER_TASK" OPENBLAS_NUM_THREADS="$SLURM_CPUS_PER_TASK"
 export MKL_NUM_THREADS="$SLURM_CPUS_PER_TASK" HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1
 export VLLM_USE_FLASHINFER_SAMPLER=0 VLLM_ENABLE_V1_MULTIPROCESSING=0
-exec srun --kill-on-bad-exit=1 env TMPDIR="$tmp" "$env_root/bin/python" -B -m moe_exp.study.rescue_reader run --model "$2" --cohort "$3"
+exec srun --kill-on-bad-exit=1 env TMPDIR="$tmp" VLLM_RPC_BASE_PATH="$tmp" "$env_root/bin/python" -B -m moe_exp.study.rescue_reader run --model "$2" --cohort "$3"

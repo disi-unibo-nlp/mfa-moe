@@ -1,5 +1,12 @@
 # Corrected causal steering cohort
 
+**Engineering terminal:** both GPU jobs failed 1:0 during IPC initialization,
+after 312/311 seconds, before any canary or scientific continuation output.
+Native pyzmq rejected the long WORK pathname at its 107-byte limit. Preserve all
+receipts and the 0.346111 GPU-hour charge. Saved qualification remains successful.
+The separate r4 correction shortens private WORK staging and reduces corrected
+engineering limits to retain the original per-model and whole-study ceilings.
+
 **Accepted 2026-10-20:** source commit `0084256`, manifest commit `fbc7ccd`.
 CPU qualification 61554184 completed 0:0 after 637 seconds: all 138 tests passed
 in 82.741 seconds and all 5,380 saved candidates passed full capture, token-replay,
