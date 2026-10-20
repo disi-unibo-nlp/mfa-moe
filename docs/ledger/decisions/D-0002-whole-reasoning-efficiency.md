@@ -98,6 +98,13 @@ composite SD=sigma_w*sqrt(2/m). Accuracy comes from main-study driver outcomes
 or re-scored labels, never legacy trace is_correct. Mark transport SUSPECTED;
 no gate uses this planning value. Preserve cross-model family covariance in
 the pooled calculation. The following original v2 expectations are historical.
+
+Allocated CPU61577861 found no main-study native_repeat assignments/outcomes
+for either model (129native, zero repeats per manifest). SD_MDE.json in the
+whole r3 report therefore records zero paired observations and unavailable
+SUSPECTED SD/MDE values. The implemented paired formula is retained; no
+between-family estimate, rescue-window estimate or invented replicate is
+substituted. This evidence limitation does not block the authorized canaries.
 - Composite family-level SDs from main-study native outcomes: about 0.19 / 0.16 log-tokens and 0.10 / 0.07 accuracy
   (GPT / Qwen). Recompute these and record them in a receipt before production. If you cannot reproduce them, use and
   report the native-only SDs.
