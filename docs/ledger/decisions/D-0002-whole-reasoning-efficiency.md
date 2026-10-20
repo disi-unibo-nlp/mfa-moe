@@ -27,6 +27,16 @@ an efficiency claim. The proposal and historical means are documented in
 report/whole-reasoning-20261020-r2/CONTROL_FEASIBLE_RD_BOTH_DOSES.json and the
 user's Alignment v3 review; they are not whole-experiment results.
 
+The original whole r3 canary measured an instrumentation bottleneck before
+any unit completed:26.5785 aggregate tokens/s across48GPT rows. The engineering
+correction batches the same row-wise equations, per-layer additive counters
+and full audit records; no scientific setting changes. All failed qualification
+costs remain charged. Production walltimes may be shortened below their
+approved165/240-minute maxima at admission so every committed maximum plus
+actual terminal costs fits72GPU-hours. This is budget admission, not an
+outcome-driven dose or nomination choice. See the original r3 PERFORMANCE_HALT
+and the batched continuation's PRIOR_USAGE.json.
+
 Canaries retain the same eight families/48 rows with each production allowance.
 Compare with same-run native/native_repeat: cap-rate excess >0.15, geometric
 length ratio >1.40, repetition excess >0.10 fail. GPT45/Qwen90-minute canaries

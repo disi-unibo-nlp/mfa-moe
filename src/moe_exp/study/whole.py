@@ -448,6 +448,33 @@ def native_accounting(jobs: list[dict]) -> dict:
     return result
 
 
+def scheduler_dependency(dependency: str | None) -> str | None:
+    """Reconcile only purged, natively proven satisfied scheduler conditions."""
+    if not dependency:
+        return None
+    kind, *identifiers = dependency.split(':')
+    require(kind in ('afterok', 'afterany'), 'unsupported whole dependency condition')
+    live, retired = [], []
+    for job_id in identifiers:
+        result = subprocess.run(['scontrol', 'show', 'job', '-o', job_id], capture_output=True, text=True)
+        if result.returncode == 0:
+            live.append(job_id)
+            continue
+        if 'invalid job id' not in result.stderr.lower():
+            result.check_returncode()
+        state = native_accounting([{'id': job_id}]).get(job_id, {})
+        require(terminal(state) and (kind == 'afterany' or
+                state['state'] == 'COMPLETED' and state['exit_code'] == '0:0'),
+                'purged dependency lacks its required native successful/terminal evidence')
+        retired.append({'id': job_id, 'native': state})
+    effective = kind+':'+':'.join(live) if live else None
+    if retired:
+        publish(ROOT/'dependencies'/(digest([dependency, effective])+'.json'), {
+            'requested': dependency, 'effective': effective, 'satisfied_purged_conditions': retired,
+        })
+    return effective
+
+
 def submit_stage(command: str, *, model=None, dose=None, shard=None, dependency=None, held=False) -> dict:
     """Submit one bounded approved stage and read back its exact native resource request."""
     release = verified(ROOT/'RELEASE.json')
@@ -456,7 +483,7 @@ def submit_stage(command: str, *, model=None, dose=None, shard=None, dependency=
     memory = 120 if gpu else 2 if command == 'monitor' else 24 if command != 'analyze' else 32
     minutes = {
         'canary': CANARY_MINUTES.get(model),
-        'run': RUN_MINUTES.get(model),
+        'run': planned_run_minutes(model) if model else None,
         'validate': 30,
         'monitor': 960,
         'extract': 90,
@@ -482,8 +509,6 @@ def submit_stage(command: str, *, model=None, dose=None, shard=None, dependency=
            '--export=ALL,'+','.join(key+'='+value for key, value in exports.items())]
     if gpu:
         cmd += ['--gres=gpu:2']
-    if dependency:
-        cmd += ['--dependency='+dependency]
     if held:
         cmd += ['--hold']
     cmd += [str(Path(release['release_root'])/'scripts/study/driver.sh'), *args]
@@ -492,8 +517,12 @@ def submit_stage(command: str, *, model=None, dose=None, shard=None, dependency=
         return verified(folder/'ACCEPTED.json')
     if (folder/'SUBMITTED.json').exists():
         submitted = verified(folder/'SUBMITTED.json')
-        require(submitted['args'] == cmd, 'recorded whole submission arguments differ')
+        require([arg for arg in submitted['args'] if not arg.startswith('--dependency=')] == cmd and
+                submitted['requested_dependency'] == dependency, 'recorded whole submission arguments differ')
     else:
+        effective = scheduler_dependency(dependency)
+        if effective:
+            cmd.insert(1, '--dependency='+effective)
         result = subprocess.run(cmd, capture_output=True, text=True, check=True)
         job_id = result.stdout.strip().split(';')[0]
         require(job_id.isdecimal(), 'sbatch did not return a job ID')
@@ -501,6 +530,7 @@ def submit_stage(command: str, *, model=None, dose=None, shard=None, dependency=
             'id': job_id, 'command': command, 'model': model, 'dose': dose, 'shard': shard,
             'gpus': 2 if gpu else 0, 'cpus': cpus, 'minutes': minutes, 'held': held,
             'sbatch': result.stdout.strip(), 'args': cmd, 'submitted': time.time(),
+            'requested_dependency': dependency,
         })
     # Persist the ID before scheduler readback: a transient scontrol failure
     # retries this acceptance instead of submitting another allocation.
@@ -558,7 +588,13 @@ def production_progress(model: str) -> dict:
             'complete_families': sum(by_family[f] == count for f, count in planned_family.items())}
 
 
-def reserved_gpu_hours(schedule: dict, accounting: dict, stopped: set) -> float:
+def planned_run_minutes(model: str) -> int:
+    """Use the budget-bound shard limit once published, with the approved maximum before admission."""
+    path = ROOT/model/'SHARD_PLAN.json'
+    return verified(path)['minutes'] if path.exists() else RUN_MINUTES[model]
+
+
+def reserved_gpu_hours(schedule: dict, accounting: dict, stopped: set, *, include_unsubmitted=True) -> float:
     """Charge finished allocations and reserve every outstanding planned GPU maximum."""
     jobs = [job for kind in ('canaries', 'production') for rows in schedule[kind].values() for job in rows]
     reserved = verified(ROOT/'RELEASE.json').get('prior_usage', {}).get('new_gpu_hours', 0.)
@@ -566,10 +602,27 @@ def reserved_gpu_hours(schedule: dict, accounting: dict, stopped: set) -> float:
         state = accounting.get(job['id'], {})
         reserved += state['elapsed']*job['gpus']/3600 if terminal(state) else job['gpus']*job['minutes']/60
     for model in MODELS:
-        if model not in stopped:
+        if include_unsubmitted and model not in stopped:
             missing = SHARDS[model]-len(schedule['production'].get(model, []))
-            reserved += missing*2*RUN_MINUTES[model]/60
+            reserved += missing*2*planned_run_minutes(model)/60
     return reserved
+
+
+def admit_shard_plan(schedule: dict, model: str, accounting: dict, stopped: set) -> None:
+    """Bind all shard walltimes to remaining budget, charging every earlier failure."""
+    path = ROOT/model/'SHARD_PLAN.json'
+    if path.exists():
+        return
+    committed = reserved_gpu_hours(schedule, accounting, stopped, include_unsubmitted=False)
+    other = next(m for m in MODELS if m != model)
+    future_other = (SHARDS[other]-len(schedule['production'][other]))*2*planned_run_minutes(other)/60
+    available = GPU_CEILING-committed-(future_other if other not in stopped else 0.)
+    minutes = min(RUN_MINUTES[model], math.floor(available*60/(2*SHARDS[model])))
+    require(minutes > 0, 'remaining GPU allowance cannot admit this model')
+    publish(path, {'model': model, 'shards': SHARDS[model], 'minutes': minutes,
+                   'approved_maximum_minutes': RUN_MINUTES[model], 'committed_gpu_hours': committed,
+                   'other_future_maximum_gpu_hours': future_other, 'gpu_ceiling': GPU_CEILING,
+                   'reason': 'full allocation maxima plus all charged predecessor costs stay within72GPU-hours'})
 
 
 def advance_canary(schedule: dict, model: str, accounting: dict, stopped: set) -> None:
@@ -586,6 +639,7 @@ def advance_canary(schedule: dict, model: str, accounting: dict, stopped: set) -
     current_canary = attempt['id'] == os.environ.get('SLURM_JOB_ID')
     if gate and gate['passed'] and (state.get('state') == 'COMPLETED' or current_canary):
         bound_store(model, attempt['dose'])
+        admit_shard_plan(schedule, model, accounting, stopped)
         count = SHARDS[model]
         for index in range(len(schedule['production'][model]), count):
             job = submit_stage('run', model=model, dose=attempt['dose'], shard=[index, count],
@@ -599,11 +653,11 @@ def advance_canary(schedule: dict, model: str, accounting: dict, stopped: set) -
         return
     elif gate and gate['fluency_failures'] and not gate['software_failures'] and attempt['dose'] == 'main':
         fallback_maximum = 2*CANARY_MINUTES[model]/60
-        reserved = reserved_gpu_hours(schedule, accounting, stopped)+fallback_maximum
+        reserved = reserved_gpu_hours(schedule, accounting, stopped, include_unsubmitted=False)+fallback_maximum
         if reserved > GPU_CEILING:
             stopped.add(model)
             publish(ROOT/model/'PRE_PRODUCTION_STOP.json', {
-                'reason': 'half-dose canary cannot fit its full walltime plus the remaining shard maxima',
+                'reason': 'half-dose canary cannot fit alongside already committed allocation maxima',
                 'reserved_gpu_hours': reserved,
             })
             return
@@ -632,7 +686,7 @@ def check_projection(schedule: dict, model: str, accounting: dict, progress: dic
         other_projection = other_usage/(other_progress['pairs']/other_progress['executable_pairs'])
     else:
         planned_maximum = sum(j['gpus']*j['minutes']/60 for j in other_jobs)
-        planned_maximum += (SHARDS[other]-len(other_jobs))*2*RUN_MINUTES[other]/60
+        planned_maximum += (SHARDS[other]-len(other_jobs))*2*planned_run_minutes(other)/60
         other_projection = other_usage if other in stopped else planned_maximum
     canary_usage = sum(accounting.get(j['id'], {}).get('elapsed', 0)*j['gpus']/3600
                        for m in MODELS for j in schedule['canaries'][m])

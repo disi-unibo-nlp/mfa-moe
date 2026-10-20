@@ -360,6 +360,15 @@ class ExecutionGateTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'nonempty unbound'):
                 whole.bound_store('gpt', 'main')
 
+    def test_shard_admission_charges_failures_and_allocation_maxima_before_submission(self):
+        schedule = {'production': {m: [] for m in whole.MODELS},
+                    'canaries': {m: [{'id': m, 'gpus': 2, 'minutes': whole.CANARY_MINUTES[m]}]
+                                 for m in whole.MODELS}}
+        whole.admit_shard_plan(schedule, 'gpt', {}, set())
+        plan = whole.verified(self.root/'gpt/SHARD_PLAN.json')
+        self.assertEqual(plan['minutes'], 142)
+        self.assertLessEqual(whole.reserved_gpu_hours(schedule, {}, set()), whole.GPU_CEILING)
+
     def test_only_fluency_failure_selects_the_one_half_dose_fallback(self):
         schedule = {'canaries': {'gpt': [{'id': '1', 'dose': 'main', 'gpus': 2, 'minutes': 45}]},
                     'production': {'gpt': []}}
@@ -393,7 +402,8 @@ class ExecutionGateTests(unittest.TestCase):
             calls.append({'command': command, **kwargs})
             return {'id': str(len(calls)+10), 'held': kwargs.get('held', False)}
         with patch.object(whole, 'submit_stage', side_effect=record_submission), \
-             patch.object(whole, 'bound_store'), patch.object(whole.driver, 'checkpoint'):
+             patch.object(whole, 'bound_store'), patch.object(whole, 'admit_shard_plan'), \
+             patch.object(whole.driver, 'checkpoint'):
             for model in whole.MODELS:
                 whole.advance_canary(schedule, model, {'1': {'state': 'COMPLETED'}, '2': {'state': 'COMPLETED'}}, set())
         production = [c for c in calls if c['command'] == 'run']

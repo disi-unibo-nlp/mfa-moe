@@ -63,6 +63,9 @@ class StreamCapture:
         self.model = runner.get_model()
         self.aliases, self.requests, self.clocks, self.records, self.counts = {}, {}, {}, {}, {}
         self.native_validation, self.geometry, self.originals = {}, [], []
+        self.whole_slots, self.whole_totals, self.whole_role_cache = {}, {}, {}
+        self.next_whole_slot = 0
+        self.whole_operator, self.whole_dose = None, None
         self.boundaries, self.req_ids, self.contexts, self.plan = [], [], [], {}
         self.handle = None
         self.original_prepare = runner._prepare_inputs
@@ -113,6 +116,10 @@ class StreamCapture:
                     if clock.passes != passes:  # recompute from position 0: the capture is rebuilt from this pass
                         self.records[uid] = {}
                         self.counts[uid].update(active_positions=set(), changed_positions=set(), dose={})
+                        if uid in self.whole_slots:
+                            for totals in self.whole_totals.values():
+                                if self.whole_slots[uid] < len(totals):
+                                    totals[self.whole_slots[uid]].zero_()
                     contexts[start:stop] = observed
                     r = self.requests[uid]
                     origin = len(r['prefix'])
@@ -148,6 +155,8 @@ class StreamCapture:
                 return nw, ni
             logits = signature.bind(*args, **kwargs).arguments['router_logits']
             require(len(logits) == len(self.contexts), 'router token ownership differs')
+            if all(self.requests[uid].get('whole') for uid, _ in work):
+                return self._whole_batch(layer, work, logits, nw, ni, native_policy)
             weights, ids = nw, ni
             for uid, rows in work:
                 r = self.requests[uid]
@@ -229,6 +238,98 @@ class StreamCapture:
             return weights, ids
         return wrap
 
+    def _whole_buffer(self, layer, device):
+        """Grow a small aggregate counter matrix and refresh its per-unit views."""
+        import torch
+        totals = self.whole_totals.get(layer)
+        if totals is None or len(totals) < self.next_whole_slot:
+            capacity = max(64, 1 << (self.next_whole_slot-1).bit_length())
+            grown = torch.zeros((capacity, len(DOSE_KEYS)), device=device, dtype=torch.float32)
+            if totals is not None:
+                grown[:len(totals)] = totals
+            self.whole_totals[layer] = totals = grown
+            for uid, slot in self.whole_slots.items():
+                if str(layer) in self.counts[uid]['dose']:
+                    self.counts[uid]['dose'][str(layer)] = dict(zip(DOSE_KEYS, totals[slot].unbind()))
+        return totals
+
+    def _whole_roles(self, layer, work, device):
+        """Cache admission-validated role masks for the current scheduler request order."""
+        import torch
+        identity = tuple(uid for uid, _ in work)
+        cached = self.whole_role_cache.get(layer)
+        if cached is None or cached[0] != identity:
+            roles = torch.zeros((len(work), 2, self.contract['experts']), dtype=torch.bool)
+            for index, (uid, _) in enumerate(work):
+                action = self.requests[uid]['actions'].get(layer, {})
+                roles[index, 0, action.get('activate', [])] = True
+                roles[index, 1, action.get('deactivate', [])] = True
+            cached = self.whole_role_cache[layer] = (identity, roles.to(device))
+        return cached[1]
+
+    def _whole_batch(self, layer, work, logits, nw, ni, native_policy):
+        """Execute and measure one layer in a batch, with one audit transfer per layer."""
+        import torch
+        from moe_exp.final_routing.operator import score_override_dual_masked
+        if self.whole_operator is None:
+            # Fuse pointwise telemetry kernels after batching; eager CPU execution
+            # remains the reference used by the complete equivalence suite.
+            self.whole_operator = (torch.compile(score_override_dual_masked, fullgraph=True, dynamic=True)
+                                   if logits.is_cuda else score_override_dual_masked)
+            self.whole_dose = (torch.compile(batched_dose, fullgraph=True, dynamic=True)
+                               if logits.is_cuda else batched_dose)
+        indices, groups, flags, prompts = [], [], [], []
+        for group, (uid, rows) in enumerate(work):
+            request = self.requests[uid]
+            action = request['actions'].get(layer, {})
+            for index, context in rows:
+                indices.append(index)
+                groups.append(group)
+                prompts.append(context['prompt'])
+                flags.append(bool((action.get('activate') or action.get('deactivate')) and context['reasoning'] and
+                                  (not context['prompt'] or request['prompt_scope'])))
+        take = torch.tensor(indices, device=logits.device)
+        group_ids = torch.tensor(groups, device=logits.device)
+        active = torch.tensor(flags, device=logits.device)
+        roles = self._whole_roles(layer, work, logits.device)[group_ids]
+        aw, ai = self.whole_operator(logits[take], nw[take], ni[take], roles[:, 0], roles[:, 1],
+                                     active, **native_policy)
+        weights, ids = nw.clone(), ni.clone()
+        weights[take], ids[take] = aw, ai
+        values = self.whole_dose(nw[take], ni[take], aw, ai, active,
+                                 torch.tensor(prompts, device=logits.device), roles, group_ids, len(work))
+        totals = self._whole_buffer(layer, logits.device)
+        slots = torch.tensor([self.whole_slots[uid] for uid, _ in work], device=logits.device)
+        totals.index_add_(0, slots, values)
+        for uid, _ in work:
+            if str(layer) not in self.counts[uid]['dose']:
+                self.counts[uid]['dose'][str(layer)] = dict(zip(DOSE_KEYS, totals[self.whole_slots[uid]].unbind()))
+        if any(self.requests[uid].get('audit_capture') for uid, _ in work):
+            packed = torch.cat((ni[take].float(), nw[take].float(), ai.float(), aw.float()), -1).detach().cpu().tolist()
+            self._whole_audit(layer, work, packed, flags)
+        return weights, ids
+
+    def _whole_audit(self, layer, work, packed, active):
+        """Split the one batch transfer into the unchanged per-request audit records."""
+        offset, width = 0, self.contract['native_k']
+        for uid, rows in work:
+            if self.requests[uid].get('audit_capture'):
+                record = self.records[uid].setdefault(str(layer), {'positions': [], 'native_ids': [],
+                    'native_weights': [], 'executed_ids': [], 'executed_weights': [], 'active': []})
+                for index, (_, context) in enumerate(rows, offset):
+                    position = context['generated_position']
+                    if position < len(record['positions']):
+                        continue
+                    require(position == len(record['positions']), 'whole audit capture gap')
+                    values = packed[index]
+                    record['positions'].append(position)
+                    record['native_ids'].append([int(v) for v in values[:width]])
+                    record['native_weights'].append(values[width:2*width])
+                    record['executed_ids'].append([int(v) for v in values[2*width:3*width]])
+                    record['executed_weights'].append(values[3*width:])
+                    record['active'].append(active[index])
+            offset += len(rows)
+
     def _whole_layer(self, uid, layer, rows, logits, nw, ni, weights, ids, native_policy):
         """Apply one dual action and reduce dose online; audit rows retain generated captures."""
         import torch
@@ -280,6 +381,14 @@ class StreamCapture:
             require(uid not in self.requests, 'request already attached')
             # One action (pre-registered design) or one action per layer (post-hoc strong-dose arm).
             actions = list(r.get('actions') or ([r['action']] if r.get('action') else []))
+            if r.get('whole'):
+                for action in actions:
+                    positive, negative = set(action['activate']), set(action['deactivate'])
+                    require(not positive & negative and len(positive) < self.contract['native_k'] and
+                            self.contract['experts']-len(negative) >= self.contract['native_k'],
+                            'whole dual roles cannot preserve native k')
+                self.whole_slots[uid] = self.next_whole_slot
+                self.next_whole_slot += 1
             require(len({a['layer'] for a in actions}) == len(actions), 'at most one action per layer')
             layers = set(r['capture_layers']) | {a['layer'] for a in actions}
             require(layers <= set(self.contract['hook_layers']), 'request layer is not hooked')
@@ -302,6 +411,7 @@ class StreamCapture:
         for internal in [k for k, v in self.aliases.items() if v == uid]:
             del self.aliases[internal]
         stats = self.counts.pop(uid)
+        self.whole_slots.pop(uid, None)
         if stats['dose']:
             import torch
             for layer, totals in stats['dose'].items():
@@ -325,6 +435,39 @@ class StreamCapture:
         for router, original in self.originals:
             router._compute_routing = original
         self.originals = []
+
+
+DOSE_KEYS = ('active_positions', 'active_prompt_positions', 'active_generated_positions', 'changed_membership',
+             'native_target_weight', 'executed_target_weight', 'native_activate_weight', 'executed_activate_weight',
+             'native_deactivate_weight', 'executed_deactivate_weight', 'native_activate_share', 'executed_activate_share',
+             'l1', 'finite', 'membership_failures', 'observations')
+
+
+def batched_dose(native_weights, native_ids, weights, ids, active, prompt, roles, groups, count):
+    """Reduce per-token dose into per-request counters in two GPU reductions."""
+    import torch
+    experts = roles.shape[-1]
+    native = torch.zeros((len(ids), experts), device=weights.device, dtype=torch.float32)
+    executed = torch.zeros_like(native)
+    native.scatter_(1, native_ids.long(), native_weights.float())
+    executed.scatter_(1, ids.long(), weights.float())
+    members = torch.zeros_like(native, dtype=torch.bool).scatter_(1, ids.long(), True)
+    activate, deactivate = roles[:, 0], roles[:, 1]
+    na, nd = (native*activate).sum(-1), (native*deactivate).sum(-1)
+    ea, ed = (executed*activate).sum(-1), (executed*deactivate).sum(-1)
+    changed = (native_ids.sort(-1).values != ids.sort(-1).values).any(-1)
+    failed = ((activate & ~members).any(-1) | (deactivate & members).any(-1)) & active
+    values = torch.stack((active, active & prompt, active & ~prompt, active & changed,
+        (na+nd)*active, (ea+ed)*active, na*active, ea*active, nd*active, ed*active,
+        na/native_weights.sum(-1).clamp_min(1e-30)*active,
+        ea/weights.sum(-1).clamp_min(1e-30)*active,
+        (native-executed).abs().sum(-1)*active, (~torch.isfinite(weights).all(-1)).float(),
+        failed, torch.zeros_like(active)), -1).float()
+    totals = torch.zeros((count, len(DOSE_KEYS)), device=weights.device, dtype=torch.float32)
+    totals.index_add_(0, groups, values)
+    totals[:, 13] = (totals[:, 13] == 0).float()
+    totals[:, 15] = 1
+    return totals
 
 
 def dose_totals(native_weights, native_ids, weights, ids, active, prompt, activate, deactivate, experts):
