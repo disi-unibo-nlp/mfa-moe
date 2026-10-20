@@ -1,3 +1,13 @@
+**GPT whole canary failed — 2026-10-21:** final GPT61581237 FAILED1:0 after
+545s. The first error is `tensor-parallel captures disagree`; cleanup then
+masked it with `unknown released request`. Three canary units completed and
+45partials remain preserved. No GPT production was submitted and no half-dose
+fallback is permitted for a software failure. GPT extraction61581597 completed
+0:0 after227s, with zero production units and zero extraction failures. Qwen
+61581238 and monitor61581239 continue independently. Do not treat the three
+completed canary units as production or waive the capture-agreement gate.
+See deterministic/gpt/CANARY.json, PRE_PRODUCTION_STOP.json and original logs.
+
 **Final deterministic source qualified — 2026-10-20:** source16cf599 is
 materialized and source-bound in the deterministic subdirectory. CPU61581053
 passed all190tests (73.767s test stage) after rebuilding both doses; all70 GPT

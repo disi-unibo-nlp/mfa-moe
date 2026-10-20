@@ -47,6 +47,12 @@ Final canaries GPT61581237/Qwen61581238 and monitor61581239 started23:42:29
 Rome. Native resource readbacks are preserved in that root's JOBS.json and
 OBSERVED_LAUNCH.json. Passing CPU tests do not establish a passing canary.
 W-0002 now traces the final source and allocated nomination evidence.
+GPT61581237 then failed1:0 after545s on strict tensor-parallel capture
+agreement. Three canary units completed; none is production. GPT extraction
+61581597 completed0:0 in227s with zero production units/failures. Qwen's
+canary61581238 continues; the software gate prevents GPT production and the
+fluency-only half-dose fallback. W-0003 traces one actual completed GPT canary
+unit and explicitly preserves the later allocation failure.
 
 ## Results
 
