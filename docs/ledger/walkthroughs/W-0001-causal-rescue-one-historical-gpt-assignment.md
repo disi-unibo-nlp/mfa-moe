@@ -1,7 +1,7 @@
 # W-0001: Causal rescue, one historical GPT assignment
 - date: 2026-10-20
-- commit: 5614db4455f3a970e9b8e5bece8f4bf5d42673ac
-- source: report/final-routing-rescue-20261020-r2/SAMPLE_CAPTURE.json
+- commit: 00842564a11f9c67106882af4c271a11d7ac7a2f
+- source: report/final-routing-rescue-20261020-r3/SAMPLE_CAPTURE.json
 - paths: src/moe_exp/study, tests/study
 - keywords: rescue, capture, provenance, historical, qualification
 
