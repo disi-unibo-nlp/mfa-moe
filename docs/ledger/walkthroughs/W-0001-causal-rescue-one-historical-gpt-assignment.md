@@ -1,7 +1,7 @@
 # W-0001: Causal rescue, one historical GPT assignment
 - date: 2026-10-20
 - commit: 00842564a11f9c67106882af4c271a11d7ac7a2f
-- source: report/final-routing-rescue-20261020-r3/SAMPLE_CAPTURE.json
+- source: report/final-routing-rescue-20261020-r3/SAMPLE_CAPTURE.json and WALKTHROUGH_REPLAY.json
 - paths: src/moe_exp/study, tests/study
 - keywords: rescue, capture, provenance, historical, qualification
 
@@ -33,12 +33,28 @@ finite weights, membership and pulse boundaries. The returned logical hashes are
 
 ## 3. Allocated replay gate (`cohort.qualify_saved`)
 
-This stage was skipped in the bounded login-side sample. The released CPU stage
-must validate saved-token replay and rebuild extraction for every candidate.
-This sample does not establish full qualification or a steering effect.
+CPU job 61554184 completed 0:0 after 637 seconds and qualified all 5380 saved
+candidates. The sample's replay row is joined back to the qualification index
+by UID and its exact canonical hash.
+
+| Field | Actual value |
+|---|---|
+| qualification | eligible |
+| replay SHA-256 | 8444e213f96653f329c656ac5d42f4bf8f7dd655e0b43747c3bcee3267246eb7 |
+| generated tokens | 512 |
+| extracted sentences | 22 |
+| first complete sentence index | 10 |
+| first complete token interval | [0, 13) |
+| straddles prefix | false |
+
+## 4. Reader and effect join (`rescue_reader.semantic_labels`)
+
+Semantic annotation has not executed. The sentence qualifies for an exact-context
+reader task when terminal cohort extraction runs. Qualification alone supplies
+no observed semantic label or steering estimate.
 
 ## Worth noticing
 
 - Earlier empty admissions may omit `generated`; history lengths establish that they contributed no tokens.
 - Passing current capture checks does not retroactively repair the historical source closure.
-- No model was loaded for this trace; inference and full replay remain allocated work.
+- Full saved-token replay is allocated evidence; semantic annotation and engineering remain pending.

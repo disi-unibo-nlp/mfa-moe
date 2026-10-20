@@ -1,11 +1,14 @@
 # Corrected causal steering cohort
 
 **Accepted 2026-10-20:** source commit `0084256`, manifest commit `fbc7ccd`.
-CPU qualification 61554184 is observed RUNNING; GPT engineering 61554207 and
-Qwen engineering 61554215 are PENDING on its afterok gate. All three resource
+CPU qualification 61554184 completed 0:0 after 637 seconds: all 138 tests passed
+in 82.741 seconds and all 5,380 saved candidates passed full capture, token-replay,
+extraction and join checks. GPT engineering 61554207 and Qwen engineering
+61554215 are PENDING for Priority after the CPU gate cleared. All three resource
 cards and accepted store owners were read back. The initial actual-terminal plus
-full-outstanding ledger is 8 GPU-hours and 4.195556 CPU core-hours, including the
-failed predecessor. Scientific generation is not yet submitted or qualified.
+full-outstanding ledger was 8 GPU-hours and 4.195556 CPU core-hours. Actual CPU
+usage including the failed predecessor is now 0.903333 core-hours; eight GPU-hours
+remain reserved for pending engineering. Scientific generation is not yet submitted or qualified.
 See `OBSERVED_LAUNCH.json`, the submission journal and source archive verification.
 
 This is the separately bound continuation authorized by the user's “keep going”
