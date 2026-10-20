@@ -4,7 +4,7 @@ import unittest
 from pathlib import Path
 from types import SimpleNamespace
 from moe_exp.study import driver
-from moe_exp.study.common import FAST, verified
+from moe_exp.study.common import WORK, verified
 from moe_exp.study.stream import Clock
 
 
@@ -121,7 +121,7 @@ class EngineTest(unittest.TestCase):
             left = 400-len(history)
             return {'prompt_ids': prompt+history, 'params': SimpleNamespace(seed=segment, max_tokens=left),
                     'request': None, 'total': 400}
-        with tempfile.TemporaryDirectory(dir=FAST) as tmp:
+        with tempfile.TemporaryDirectory(dir=WORK/'tools/tmp') as tmp:
             store = driver.Store(Path(tmp))
             done = {}
 
@@ -161,7 +161,7 @@ class ReviewFixes(unittest.TestCase):
             return {'prompt_ids': [0]*4+history, 'params': SimpleNamespace(seed=segment, max_tokens=50),
                     'request': None, 'total': 50}
         uid = '%064x' % 7
-        with tempfile.TemporaryDirectory(dir=FAST) as tmp:
+        with tempfile.TemporaryDirectory(dir=WORK/'tools/tmp') as tmp:
             store = driver.Store(Path(tmp))
             folder = store.folder(uid)
             driver.checkpoint(folder/'PARTIAL.json', {'uid': uid, 'tokens': [], 'segments': [
@@ -184,7 +184,7 @@ class ReviewFixes(unittest.TestCase):
         class Failing(driver.Engine):
             def release(self, uids):
                 raise RuntimeError('release failed')
-        with tempfile.TemporaryDirectory(dir=FAST) as tmp:
+        with tempfile.TemporaryDirectory(dir=WORK/'tools/tmp') as tmp:
             store = driver.Store(Path(tmp))
             e = Failing(SimpleNamespace(llm_engine=FakeEngine({uid: 10**6})), store, time.time()+30,
                         hooked=False, max_inflight=2, drain_seconds=0)
@@ -199,7 +199,7 @@ class ReviewFixes(unittest.TestCase):
         from moe_exp.study.common import publish
         uid = '%064x' % 9
         row = {'uid': uid}
-        with tempfile.TemporaryDirectory(dir=FAST) as tmp:
+        with tempfile.TemporaryDirectory(dir=WORK/'tools/tmp') as tmp:
             store = driver.Store(Path(tmp))
             folder = store.folder(uid)
             driver.checkpoint(folder/'PARTIAL.json', {'uid': uid, 'tokens': [1], 'segments': [{'history': 0}],

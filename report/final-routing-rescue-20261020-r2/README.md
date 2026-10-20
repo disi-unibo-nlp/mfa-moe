@@ -1,5 +1,14 @@
 # Causal steering cohort
 
+**Terminal validation failure:** CPU job 61547162 failed 1:0 after 176 seconds.
+Its 134-test suite had twelve fixture errors because global temporary-directory
+selection returned `/tmp`; the private-storage guard rejected publication.
+Saved-token replay and model loading were not reached. Jobs 61547164,
+61547167 and 61547170 cancelled with Start=None, no allocated resources and zero
+runtime. Actual charge is 0.195556 CPU core-hours and zero GPU-hours. The user
+instructed “keep going”; a separately bound correction must carry this charge
+and preserve this cohort, source archive, test receipt and all journal entries.
+
 The user authorized an additional **64 GPU-hours and 16 CPU-only core-hours**
 for the fixed final implementation plan. Historical failures remain charged
 separately. Science stops at **2026-10-23 05:30 Europe/Rome**, with reporting due

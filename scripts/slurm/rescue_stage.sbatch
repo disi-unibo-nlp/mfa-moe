@@ -28,5 +28,6 @@ export PYTHONDONTWRITEBYTECODE=1
 export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1 NUMEXPR_NUM_THREADS=1
 export HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1
 export VLLM_USE_FLASHINFER_SAMPLER=0 VLLM_ENABLE_V1_MULTIPROCESSING=0
-exec srun --kill-on-bad-exit=1 "$env_root/bin/python" -B -m moe_exp.study.rescue \
+# Set the task environment after srun establishes its native step environment.
+exec srun --kill-on-bad-exit=1 env TMPDIR="$tmp" "$env_root/bin/python" -B -m moe_exp.study.rescue \
     worker --cohort "$cohort" --stage "$stage" --model "$model"

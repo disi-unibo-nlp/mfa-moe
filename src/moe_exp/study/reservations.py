@@ -2,7 +2,7 @@
 from pathlib import Path
 import re
 import time
-from .common import submission_paths, reservation_paths, control_root, digest, locked, publish, require, verified
+from .common import submission_paths, reservation_paths, control_root, digest, file_sha, locked, publish, require, verified
 
 TERMINAL = {'COMPLETED', 'FAILED', 'CANCELLED', 'TIMEOUT', 'OUT_OF_MEMORY',
             'NODE_FAIL', 'PREEMPTED', 'BOOT_FAIL', 'DEADLINE'}
@@ -113,6 +113,51 @@ def check_storage(binding):
     return available
 
 
+def freeze_predecessor(path: Path, records: list[dict], bulk_root: Path) -> dict:
+    """Carry terminal allocations into a separately bound corrected cohort.
+
+    Args:
+        path: Preserved predecessor cohort, whose executable sources may differ.
+        records: Unchanged complete assignment/disposition roster.
+        bulk_root: Fresh destination that cannot adopt the failed release's state.
+
+    Returns:
+        Immutable predecessor receipt with exact accepted jobs and native actuals.
+    """
+    from .cohort import read
+    from .ownership import TERMINAL_STATES, accounting
+    previous = read(path, verify_source=False)
+    require(previous['records'] == records, 'replacement cannot change the frozen scientific population')
+    require(Path(previous['paths']['bulk']).resolve() != bulk_root.resolve(), 'replacement requires fresh stores')
+    inherited = previous.get('predecessor') or {}
+    files = dict(inherited.get('files', {}))
+    paths = [Path(path).resolve(), Path(previous['source']['path'])]
+    for name in ('SOURCE.tar.gz', 'SOURCE_MATERIALIZED.tar.gz', 'ARCHIVE_VERIFICATION.json',
+                 'TERMINAL.json', 'ALLOCATED_TESTS.json', 'ENGINEERING.json', 'OBSERVED_LAUNCH_CLARIFICATION.json'):
+        evidence = Path(previous['paths']['control'])/name
+        if evidence.exists():
+            paths.append(evidence)
+    jobs = list(inherited.get('jobs', []))
+    for reservation in sorted((Path(previous['paths']['control'])/'schedule').glob('*/RESERVED.json')):
+        folder = reservation.parent
+        require((folder/'SBATCH.json').exists() and (folder/'ACCEPTED.json').exists(),
+                'predecessor has an unresolved reservation; reconcile it before replacement')
+        submitted = verified(folder/'SBATCH.json')
+        accepted = verified(folder/'ACCEPTED.json')
+        require(submitted['job'] == accepted['job'] and verified(reservation)['card'] == accepted['card'],
+                'predecessor accepted submission differs')
+        jobs.append({'job': accepted['job'], 'card': accepted['card'],
+                     'accepted_path': str((folder/'ACCEPTED.json').resolve()),
+                     'accepted_sha256': accepted['sha256']})
+        paths.extend((reservation, folder/'SBATCH.json', folder/'ACCEPTED.json'))
+    require(len({row['job'] for row in jobs}) == len(jobs), 'duplicate inherited allocation')
+    observed = [accounting(row['job']) for row in jobs]
+    require(all(row['state'] in TERMINAL_STATES for row in observed), 'predecessor allocation is still live')
+    files.update({str(item): file_sha(item) for item in paths})
+    return {'path': str(Path(path).resolve()), 'sha256': previous['sha256'],
+            'files': files, 'jobs': jobs, 'observed_terminal_accounting': observed}
+
+
 class CohortSchedule:
     """One locked, deadline-bound ledger for the additional causal rescue budget.
 
@@ -191,6 +236,9 @@ class CohortSchedule:
         """Charge actual terminal use and full outstanding or ambiguous reservations."""
         from .ownership import TERMINAL_STATES, accounting
         totals, rows = {'gpu_hours': 0., 'cpu_core_hours': 0.}, []
+        prior_rows = self._predecessor_usage()
+        for row in prior_rows:
+            totals[row['budget']] += row['charged']
         for path in sorted((self.root/'schedule').glob('*/RESERVED.json')):
             reservation = verified(path)
             card = reservation['card']
@@ -203,8 +251,30 @@ class CohortSchedule:
             totals[name] += hours
             rows.append({'stage': card['stage'], 'model': card['model'], 'job': usage['job'] if usage else None,
                          'charged': hours, 'budget': name, 'usage': usage, 'card': card})
-        return {'totals': totals, 'records': rows, 'historical_failures_reset': False,
+        return {'totals': totals, 'records': rows, 'predecessor_records': prior_rows, 'historical_failures_reset': False,
                 'scope': 'additional 64 GPU-hours and 16 CPU-only core-hours, historical usage separate'}
+
+    def _predecessor_usage(self) -> list[dict]:
+        """Refresh terminal predecessor charges without making them new prerequisites."""
+        from .ownership import TERMINAL_STATES, accounting
+        rows = []
+        for record in (self.value.get('predecessor') or {}).get('jobs', []):
+            accepted = verified(Path(record['accepted_path']))
+            require(accepted['sha256'] == record['accepted_sha256'] and accepted['job'] == record['job']
+                    and accepted['card'] == record['card'], 'inherited acceptance differs')
+            usage = accounting(record['job'], self.run)
+            require(usage['state'] in TERMINAL_STATES, 'inherited allocation is not terminal')
+            card = record['card']
+            rows.append({
+                'job': record['job'],
+                'stage': card['stage'],
+                'model': card['model'],
+                'budget': 'gpu_hours' if card['gpus'] else 'cpu_core_hours',
+                'charged': usage['elapsed_seconds']/3600*(card['gpus'] or card['cpus']),
+                'usage': usage,
+                'card': card,
+            })
+        return rows
 
     def _dependencies(self, card: dict) -> list[str]:
         """Verify native terminal prerequisites and actual successful artifacts."""

@@ -89,13 +89,14 @@ def _destinations(root: Path, control: Path) -> dict:
     return paths
 
 
-def create(source_path: Path, destination: Path, classifier: Path) -> dict:
+def create(source_path: Path, destination: Path, classifier: Path, *, predecessor_path: Path | None = None) -> dict:
     """Freeze the original population and the authorized untouched-generation list.
 
     Args:
         source_path: Newly sealed source receipt with explicit fresh study roots.
         destination: New immutable cohort descriptor.
         classifier: Deployed C10 directory containing READOUT and all five folds.
+        predecessor_path: Explicit terminal release whose allocations remain charged.
 
     Returns:
         Descriptor retaining every assignment and its original evidence reference.
@@ -116,6 +117,8 @@ def create(source_path: Path, destination: Path, classifier: Path) -> dict:
                       'authorized_generation': 2007}, f'saved rescue population differs from the approved audit: {counts}')
     campaign = frozen_campaign(study)
     paths = _destinations(root, control)
+    from .reservations import freeze_predecessor
+    predecessor = freeze_predecessor(predecessor_path, records, root) if predecessor_path is not None else None
     return publish(destination, {
         'schema': 'causal-rescue-cohort-v1',
         'source': {'path': str(source_path.resolve()), 'sha256': source['sha256']},
@@ -139,6 +142,7 @@ def create(source_path: Path, destination: Path, classifier: Path) -> dict:
         'selection': {'seed': SELECTION_SEED, 'engineering_purpose': 'engineering-blocks',
                       'audit_purpose': 'trajectory-occurrences', 'audit_per_stratum': 32},
         'budget': {'gpu_hours': 64, 'cpu_core_hours': 16, 'protected_analysis_core_hours': 4},
+        'predecessor': predecessor,
         'science_cutoff': SCIENCE_CUTOFF,
         'report_deadline': REPORT_DEADLINE,
         'counts': counts,
@@ -177,6 +181,10 @@ def read(path: Path, *, verify_source: bool = True) -> dict:
     check_files(value['historical_files'])
     check_files(value['reader_runtime_files'])
     check_files(value['reuse_indexes'])
+    if value.get('predecessor'):
+        previous = value['predecessor']
+        check_files(previous['files'])
+        require(verified(Path(previous['path']))['sha256'] == previous['sha256'], 'predecessor cohort differs')
     require(file_sha(Path(value['annotator']['program'])) == value['annotator']['config']['program_sha256'],
             'frozen reader program bytes changed')
     for name in ('bulk', 'control', 'extraction', 'reader', 'analysis'):

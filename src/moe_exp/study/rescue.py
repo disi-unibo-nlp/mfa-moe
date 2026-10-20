@@ -228,13 +228,14 @@ def main(argv=None):
                                            'submit', 'status', 'analyze', 'worker', 'reader-admit'))
     parser.add_argument('--cohort', type=Path, required=True)
     parser.add_argument('--source-receipt', type=Path)
+    parser.add_argument('--predecessor', type=Path)
     parser.add_argument('--classifier', type=Path)
     parser.add_argument('--model', choices=(*RESCUE_MODELS, 'all'))
     parser.add_argument('--stage')
     args = parser.parse_args(argv)
     if args.command == 'cohort':
         require(args.source_receipt is not None and args.classifier is not None, 'cohort needs source and deployed classifier')
-        value = cohort.create(args.source_receipt, args.cohort, args.classifier)
+        value = cohort.create(args.source_receipt, args.cohort, args.classifier, predecessor_path=args.predecessor)
     elif args.command == 'qualify-saved':
         value = stage_worker(args.cohort, 'validate', None)
     elif args.command == 'index':

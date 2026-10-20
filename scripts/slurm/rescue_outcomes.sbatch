@@ -25,5 +25,5 @@ tmp="/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/final-routing-rescue/extract-
 mkdir -p "$tmp"
 export TMPDIR="$tmp" TIKTOKEN_RS_CACHE_DIR="$tmp/tiktoken"
 export HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1
-exec srun --kill-on-bad-exit=1 "$env_root/bin/python" -B -m moe_exp.study.outcomes \
+exec srun --kill-on-bad-exit=1 env TMPDIR="$tmp" "$env_root/bin/python" -B -m moe_exp.study.outcomes \
     --model "$model" --shard 0/1 --design rescue --cohort "$3"
