@@ -40,7 +40,7 @@ def generation_matches(row: dict, raw: dict, jobs: set[str]) -> bool:
         raw.get('total_allowance') == row['horizon']
         and len(raw['token_ids']) <= row['horizon']
         and bool(segments)
-        and all(segment.get('generated') == 0 and segment.get('history') == 0
+        and all(segment.get('generated', 0) == 0 and segment.get('history') == 0
                 for segment in segments[:-1])
         and segments[-1].get('job') in jobs
         and segments[-1].get('history') == 0

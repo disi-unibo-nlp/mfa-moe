@@ -113,7 +113,7 @@ def create(source_path: Path, destination: Path, classifier: Path) -> dict:
     records, manifests = _historical_population(original)
     counts = dict(Counter(row['disposition'] for row in records))
     require(counts == {'historical_candidate': 5380, 'incompatible_unknown': 37,
-                      'authorized_generation': 2007}, 'saved rescue population differs from the approved audit')
+                      'authorized_generation': 2007}, f'saved rescue population differs from the approved audit: {counts}')
     campaign = frozen_campaign(study)
     paths = _destinations(root, control)
     return publish(destination, {
