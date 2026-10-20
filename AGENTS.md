@@ -1,3 +1,17 @@
+**GPT capture diagnostics prepared — 2026-10-21:** the failed GPT canary
+remains failed and its first error was capture disagreement. The separate
+`whole diagnose` command retains both rank payloads losslessly and cannot
+qualify or submit production. It has at most2GPUs/15minutes (0.5GPU-hours).
+Release cleanup records consumed worker states and preserves the first engine
+exception. Five focused lifecycle/resource/admission checks pass. A fresh
+source-bound full CPU validation and both-dose preparation precede this
+engineering allocation at `report/whole-reasoning-20261021-rank-diagnostics/`.
+All prior actual costs and Qwen's committed/future maxima remain reserved
+inside72GPU/16CPUcore-hours; no budget resets. Qwen61581238/monitor61581239
+continue in their immutable16cf599release. Never edit or resume their partials.
+The diagnostic changes no operator, nomination, dose, scope, seed or gate;
+successful repaired qualification remains mandatory before GPT production.
+
 **GPT whole canary failed — 2026-10-21:** final GPT61581237 FAILED1:0 after
 545s. The first error is `tensor-parallel captures disagree`; cleanup then
 masked it with `unknown released request`. Three canary units completed and

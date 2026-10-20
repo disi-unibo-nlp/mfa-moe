@@ -252,5 +252,30 @@ class DesignAndCoverageTests(unittest.TestCase):
         self.assertAlmostEqual(table.loc['invalid', 'log_reasoning:upper'], math.log1p(100))
 
 
+class EngineeringDiagnosticsTests(unittest.TestCase):
+    def test_diagnostic_command_never_queues_production(self):
+        with patch.object(whole, 'verify_release'), patch.object(whole, 'inference_stage') as stage, \
+             patch.object(whole, 'queue_after_canary') as queue, \
+             patch.dict('os.environ', {'SLURM_JOB_ID': '123'}):
+            whole.main(['diagnose', '--model', 'gpt', '--dose', 'main'])
+        self.assertEqual(stage.call_args.args[0].command, 'diagnose')
+        queue.assert_not_called()
+
+    def test_diagnostic_allocation_is_two_gpus_fifteen_minutes_and_journaled(self):
+        with tempfile.TemporaryDirectory(dir=WORK/'tools/tmp') as temporary:
+            root = Path(temporary)
+            publish(root/'RELEASE.json', {'release_root': str(REPO)})
+            readback = ('UserId=lmolfett(1) Account=iscrc_miosr Partition=boost_usr_prod '
+                        'NumCPUs=16 gres/gpu=2 TimeLimit=00:15:00 ')
+            answers = [SimpleNamespace(stdout='123\n'), SimpleNamespace(stdout=readback)]
+            with patch.object(whole, 'ROOT', root), patch.object(whole.subprocess, 'run', side_effect=answers) as run:
+                job = whole.submit_stage('diagnose', model='gpt', dose='main')
+                repeated = whole.submit_stage('diagnose', model='gpt', dose='main')
+            self.assertEqual(job['id'], repeated['id'])
+            self.assertEqual(job['minutes']*job['gpus']/60, .5)
+            self.assertEqual(run.call_count, 2)
+            self.assertIn('--time=15', job['args'])
+
+
 if __name__ == '__main__':
     unittest.main()

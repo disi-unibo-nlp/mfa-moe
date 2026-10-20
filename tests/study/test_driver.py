@@ -3,6 +3,7 @@ import time
 import unittest
 from pathlib import Path
 from types import SimpleNamespace
+from unittest.mock import patch
 from moe_exp.study import driver
 from moe_exp.study.common import WORK, verified
 from moe_exp.study.stream import Clock
@@ -109,6 +110,65 @@ class FakeEngine:
 
 
 class EngineTest(unittest.TestCase):
+    def test_cleanup_error_preserves_the_original_engine_error(self):
+        uid = '%064x' % 414
+
+        class Broken(driver.Engine):
+            def step(self, finish):
+                raise ValueError('original capture disagreement')
+
+            def drain(self):
+                raise RuntimeError('secondary cleanup failure')
+
+        def build(row, history, segment):
+            return {'prompt_ids': [1], 'params': SimpleNamespace(seed=1, max_tokens=10), 'total': 10}
+
+        with tempfile.TemporaryDirectory(dir=WORK/'tools/tmp') as temporary:
+            engine = Broken(SimpleNamespace(llm_engine=FakeEngine({uid: 10})), driver.Store(Path(temporary)),
+                            time.time()+30, hooked=False, max_inflight=2, drain_seconds=0)
+            with patch.object(driver, 'log') as log:
+                with self.assertRaisesRegex(ValueError, 'original capture disagreement'):
+                    engine.run([{'uid': uid}], build, lambda *args: None)
+            self.assertEqual(log.call_args.args[0]['error'], 'secondary cleanup failure')
+
+    def test_rank_disagreement_is_retained_and_drain_does_not_release_twice(self):
+        from moe_exp.study.common import digest
+        uid = '%064x' % 413
+        calls = []
+        record = {'positions': [0], 'native_ids': [[1, 2]], 'executed_ids': [[1, 2]],
+                  'native_weights': [[.6, .4]], 'executed_weights': [[.6, .4]], 'active': [False]}
+        reports = []
+        for value in (.5, .50000006):
+            capture = {'capture': {'0': record}, 'stats': {'l1': value},
+                       'closed': False, 'passes': 1, 'observed_tokens': 1}
+            reports.append({uid: {**capture, 'sha256': digest(capture)}})
+
+        def rpc(method, *, kwargs):
+            self.assertEqual(method, 'fs_release')
+            calls.append(kwargs['uids'])
+            self.assertEqual(len(calls), 1)
+            return reports
+
+        with tempfile.TemporaryDirectory(dir=WORK/'tools/tmp') as tmp:
+            store = driver.Store(Path(tmp))
+            fake = FakeEngine({uid: 100})
+            engine = driver.Engine(SimpleNamespace(llm_engine=fake, collective_rpc=rpc), store,
+                                   time.time()+30, hooked=True, max_inflight=2)
+            engine.inflight[uid] = {'progress': {'tokens': [1], 'segments': [{}]}, 'new': 1}
+            with patch('moe_exp.study.whole.work_remaining_bytes', return_value=100*2**30):
+                with self.assertRaisesRegex(ValueError, 'tensor-parallel captures disagree'):
+                    engine.release([uid])
+            for rank, expected in enumerate((.5, .50000006)):
+                folder = store.folder(uid)/'TP_DISAGREEMENT'/str(rank)
+                saved = verified(folder/'CAPTURE.json')
+                self.assertEqual(saved['stats']['l1'], expected)
+                self.assertTrue((folder/'AUDIT.npz').is_file())
+                self.assertEqual(saved['routing_capture_sha256'], reports[rank][uid]['sha256'])
+            engine.drain()
+            self.assertEqual(calls, [[uid]])
+            self.assertEqual(store.state(uid)['tokens'], [1])
+            self.assertFalse(engine.inflight)
+
     def test_drain_and_resume_continue_the_same_trajectory(self):
         uids = [('%064x' % i) for i in range(5)]
         lengths = {u: 40+30*i for i, u in enumerate(uids)}
