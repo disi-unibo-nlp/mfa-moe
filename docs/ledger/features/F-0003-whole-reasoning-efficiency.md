@@ -54,6 +54,11 @@ agreement. Three canary units completed; none is production. GPT extraction
 canary61581238 continues; the software gate prevents GPT production and the
 fluency-only half-dose fallback. W-0003 traces one actual completed GPT canary
 unit and explicitly preserves the later allocation failure.
+The separate diagnostic source6d4341f passed all194allocated tests in
+CPU61583800 (170s,0.188889core-hours); both-dose preparation preserves all70
+DP matches. GPT61584000 is accepted for2GPUs/15minutes and cannot launch
+production. Its admission reserves63.645278GPU-hours with Qwen's optional
+half-dose and full production maxima, without admitting further GPT science.
 
 ## Results
 
