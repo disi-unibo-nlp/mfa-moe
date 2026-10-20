@@ -527,7 +527,8 @@ def check_projection(schedule: dict, model: str, accounting: dict, progress: dic
         other_projection = 0. if other in stopped else 11.2 if other == 'gpt' else 48.3
     canary_usage = sum(accounting.get(j['id'], {}).get('elapsed', 0)*j['gpus']/3600
                        for m in MODELS for j in schedule['canaries'][m])
-    projection = projected_model+max(other_usage, other_projection)+canary_usage
+    prior_gpu_hours = verified(ROOT/'RELEASE.json').get('prior_usage', {}).get('new_gpu_hours', 0.)
+    projection = prior_gpu_hours+projected_model+max(other_usage, other_projection)+canary_usage
     publish(ROOT/model/'PROJECTION.json', {'progress': progress, 'gpu_hours': gpu_hours,
             'model_projected_gpu_hours': projected_model, 'total_projected_gpu_hours': projection})
     if projection > GPU_CEILING:
@@ -589,8 +590,10 @@ def accounting_snapshot(jobs: list[dict]) -> tuple[dict, float]:
     accounting = native_accounting(jobs)
     require(all(j['id'] in accounting for j in jobs if j['gpus'] and time.time()-j['submitted'] > 120),
             'native GPU accounting unavailable beyond the bounded registration delay')
-    gpu_hours = sum(accounting.get(j['id'], {}).get('elapsed', 0)*j['gpus']/3600 for j in jobs)
-    cpu_hours = sum(accounting.get(j['id'], {}).get('elapsed', 0)*j['cpus']/3600 for j in jobs if not j['gpus'])
+    prior = verified(ROOT/'RELEASE.json').get('prior_usage', {})
+    gpu_hours = prior.get('new_gpu_hours', 0.)+sum(accounting.get(j['id'], {}).get('elapsed', 0)*j['gpus']/3600 for j in jobs)
+    cpu_hours = prior.get('new_cpu_core_hours', 0.)+sum(
+        accounting.get(j['id'], {}).get('elapsed', 0)*j['cpus']/3600 for j in jobs if not j['gpus'])
     driver.checkpoint(ROOT/'ACCOUNTING.json', {'native': accounting, 'new_gpu_hours': gpu_hours,
                       'retained_r3_gpu_hours': .3461111111111111, 'new_cpu_core_hours': cpu_hours,
                       'gpu_ceiling': GPU_CEILING, 'cpu_ceiling': 16, 'time': time.time(),
@@ -621,7 +624,9 @@ def monitor() -> None:
             validation = accounting.get(schedule['validation']['id'], {})
             if terminal(validation) and validation.get('state') != 'COMPLETED':
                 cancel_jobs([j for j in jobs if j['gpus']], accounting)
-                stopped.update(MODELS)
+                if not (ROOT/'STOP.json').exists():
+                    publish(ROOT/'STOP.json', {'reason': 'cpu_validation_failed', 'native': validation})
+                return
             for model in MODELS:
                 advance_canary(schedule, model, accounting, stopped)
                 check_production(schedule, model, accounting, checked, projected, stopped, gpu_hours)
@@ -666,13 +671,13 @@ def validate_stage() -> None:
     import unittest
     native_quota = work_remaining_bytes()
     require(native_quota > 14*2**30, 'WORK reserve is insufficient for the bounded whole experiment')
+    preparation = prepare()
     suite = unittest.defaultTestLoader.discover(str(REPO/'tests/study'), top_level_dir=str(REPO/'tests/study'))
     result = unittest.TextTestRunner(verbosity=2).run(suite)
     if not result.wasSuccessful():
         publish(ROOT/'CPU_VALIDATION.json', {'passed': False, 'tests': result.testsRun,
                                             'job': os.environ['SLURM_JOB_ID']})
         raise ValueError('allocated whole study suite failed')
-    preparation = prepare()
     publish(ROOT/'CPU_VALIDATION.json', {'passed': True, 'tests': result.testsRun,
                                         'job': os.environ['SLURM_JOB_ID'], 'preparation': preparation,
                                         'work_remaining_bytes': native_quota,

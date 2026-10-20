@@ -166,13 +166,16 @@ class CohortContracts(unittest.TestCase):
         self.assertAlmostEqual(float(total), 1.)
         self.assertEqual(result['full_unknown'], 2/512)
 
-    def test_lexical_overlap_keeps_a_truncated_unit_while_complete_event_is_unknown(self):
+    def test_truncated_unit_keeps_occupancy_but_no_complete_overlap_event(self):
         outcome = {'pulse_tokens': 512, 'horizon': 512, 'reasoning_end': None, 'generated_tokens': 512,
                    'finish_reason': 'length', 'nonreasoning': '[]'}
         sentence = {'token_start': 0, 'token_end': 512, 'complete': False, 'straddles_prefix': True,
                     'lexical_label': 'Plan', **{'p_'+label: float(label == 'Plan') for label in CLASSES}}
         result = effects.endpoints(outcome, [sentence])
-        self.assertEqual(result['first_overlap_lower'][CLASSES.index('Plan')], 1)
+        self.assertEqual(result['full_occupancy_lower'][CLASSES.index('Plan')], 1)
+        self.assertFalse(result['first_overlap_available'])
+        self.assertTrue((result['first_overlap_lower'] == 0).all())
+        self.assertTrue((result['first_overlap_upper'] == 1).all())
         self.assertTrue((result['first_upper']-result['first_lower'] == 1).all())
 
     def test_joint_six_family_shares_critical_value_and_bound_components(self):
