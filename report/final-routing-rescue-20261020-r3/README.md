@@ -1,5 +1,13 @@
 # Corrected causal steering cohort
 
+**Accepted 2026-10-20:** source commit `0084256`, manifest commit `fbc7ccd`.
+CPU qualification 61554184 is observed RUNNING; GPT engineering 61554207 and
+Qwen engineering 61554215 are PENDING on its afterok gate. All three resource
+cards and accepted store owners were read back. The initial actual-terminal plus
+full-outstanding ledger is 8 GPU-hours and 4.195556 CPU core-hours, including the
+failed predecessor. Scientific generation is not yet submitted or qualified.
+See `OBSERVED_LAUNCH.json`, the submission journal and source archive verification.
+
 This is the separately bound continuation authorized by the user's “keep going”
 after r2 CPU validation failed. Preserve r2 and its complete source archive,
 allocated test receipt, terminal accounting, ownership and submission journals.
