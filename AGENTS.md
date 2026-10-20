@@ -1,3 +1,13 @@
+**Final deterministic source qualified — 2026-10-20:** source16cf599 is
+materialized and source-bound in the deterministic subdirectory. CPU61581053
+passed all190tests (73.767s test stage) after rebuilding both doses; all70 GPT
+promote cells match the saved DP and all210cells qualify. CPU_VALIDATION.json
+binds these proofs. Scientific parameters, exact capture agreement and gates
+are unchanged. Final canaries GPT61581237/Qwen61581238 and monitor61581239
+started23:42:29 Rome. Their native acceptance/resources were read back; canary
+qualification and production remain pending. Follow that directory's JOBS.json
+and native terminal accounting; never resume prior partials.
+
 **Whole r3 deterministic batching — 2026-10-20:** source3a848b4's allocated
 CPU61580365 completed0:0 in149s; all190tests passed and both doses rebuilt.
 No GPU job was submitted from that source. Code review then replaced its

@@ -1,12 +1,12 @@
 # W-0002: Whole nomination and an actual control-feasible GPT cell
 - date: 2026-10-20
-- commit: 95d4cb048a4e819bd735fcdd82b3f63cab86d168
-- source: report/whole-reasoning-20261020-r3/gpt/WHOLE.json; WHOLE_NOMINATIONS.json; NOMINATION_AUDIT.json; fold0 / Read / promote / main
+- commit: 16cf59973f27a066d6f1a47a620d02c5c519928e
+- source: report/whole-reasoning-20261020-r3-batched/deterministic/gpt/WHOLE.json; WHOLE_NOMINATIONS.json; NOMINATION_AUDIT.json; fold0 / Read / promote / main
 - paths: src/moe_exp/final_routing/selection.py, src/moe_exp/study/whole.py
 - keywords: whole, risk difference, quintile, feasibility, controls
 
 **Input:** The actual GPT Read nomination for held-out fold0, rebuilt in
-CPU61577861 from discovery folds1,2,3,4. No whole-arm outcome was read.
+CPU61581053 from discovery folds1,2,3,4. No whole-arm outcome was read.
 
 ## 1. Global nomination (`selection.global_pairs`)
 
@@ -37,10 +37,11 @@ fraction0.9901352674329091. Mean native frequency across steered experts is
 
 ## 5. Allocated qualification (`whole.audit_nominations`)
 
-CPU61577861 completed0:0 after288seconds. All184 study tests passed; the
+CPU61581053 completed0:0 after293seconds. All190 study tests passed; the
 rebuilt manifests match the saved DP targets and controls in all70 GPT
 promote cells across both doses. Every one of the210 model/dose cells is
-qualified. Both doses retain3096 GPT and2838 Qwen executable rows.
+qualified. Both doses retain3096 GPT and2838 Qwen executable rows. The prior
+95d4cb0 and3a848b4 qualifications and every receipt remain preserved.
 
 ## Worth noticing
 
