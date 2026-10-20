@@ -3,18 +3,32 @@ from pathlib import Path
 import math
 import os
 import time
-from .common import CLASSES, Units, check_files, digest, load, publish, require
+from .common import CLASSES, Units, check_files, digest, load, publish, require, verified
 
 
 class Reader:
-    def __init__(self, binding, deadline):
+    def __init__(self, binding, deadline, *, load_model=True):
+        """Initialize the frozen reader, optionally deferring GPU model loading."""
         from moe_exp.final_routing.renderer import Renderer
-        from vllm import LLM
         parent = load(Path(binding['source_campaign'])/'CAMPAIGN.json')
         self.binding, self.deadline, self.annotator = binding, deadline, parent['annotator']
         require(self.annotator['config']['max_tokens'] == 16384, 'fixed reader allowance changed')
         require(os.environ.get('SLURM_JOB_GPUS'), 'reader requires allocated GPUs')
         self.renderer = Renderer(parent)
+        self.llm = None
+        self.load_seconds = 0.
+        self.root = Path(binding['config']['bulk_root'])/'reader'
+        self.units = Units(self.root/'annotations')
+        self.old_indices = {}
+        if load_model:
+            self.load_model()
+        else:
+            from transformers import AutoTokenizer
+            self.tokenizer = AutoTokenizer.from_pretrained(self.annotator['path'], local_files_only=True)
+
+    def load_model(self):
+        """Load the fixed judge only after work and admission have been checked."""
+        from vllm import LLM
         a = self.annotator
         started = time.monotonic()
         self.llm = LLM(model=a['path'], tokenizer=a['path'], tensor_parallel_size=2, dtype='bfloat16',
@@ -26,9 +40,6 @@ class Reader:
         self.load_seconds = time.monotonic()-started
         self.tokenizer = self.llm.get_tokenizer()
         require(type(self.llm.llm_engine.engine_core).__name__ == 'InprocClient', 'reader executor changed')
-        self.root = Path(binding['config']['bulk_root'])/'reader'
-        self.units = Units(self.root/'annotations')
-        self.old_indices = {}
 
     def parse(self, row, raw):
         from vllm.reasoning import ReasoningParserManager
@@ -42,7 +53,12 @@ class Reader:
         _, content = parser.extract_reasoning(text, request)
         parsed = self.renderer.request('parse', content=content or '') if raw['finish_reason'] == 'stop' else {}
         label = parsed.get('label')
-        return {'status': 'complete' if label in CLASSES else 'unknown',
+        identity = {}
+        if hasattr(self, 'cohort'):
+            from .rescue_reader import annotation_binding
+            identity['annotation_binding'] = annotation_binding(self.cohort, row)
+            require(raw['annotation_binding'] == identity['annotation_binding'], 'raw reader binding differs')
+        return {**identity, 'status': 'complete' if label in CLASSES else 'unknown',
                 'label': label if label in CLASSES else None, 'raw_sha256': raw['sha256'],
                 'finish_reason': raw['finish_reason'], 'generated_tokens': len(raw['token_ids'])}
 
@@ -50,7 +66,7 @@ class Reader:
         from vllm import SamplingParams
         from vllm.sampling_params import RequestOutputKind
         from moe_exp.research_campaign_v3_r6.reader_contract import token_ids
-        a, engine = self.annotator, self.llm.llm_engine
+        a = self.annotator
         preparation_started = time.monotonic()
         pending = []
         for row in rows:
@@ -58,7 +74,9 @@ class Reader:
             if state is None:
                 state = self.reuse(row)
             if state and state['status'] == 'output':
-                self.units.commit(row, self.parse(row, load(self.units.folder(row['uid'])/'OUTPUT.json')))
+                raw = verified(self.units.folder(row['uid'])/'OUTPUT.json')
+                require(raw['assignment_sha256'] == digest(row), 'reader OUTPUT task join differs')
+                self.units.commit(row, self.parse(row, raw))
             elif state is None:
                 conversation = self.renderer.request('render', inputs=row['inputs'])['conversation']
                 prompt = token_ids(self.tokenizer, conversation, a['config'])
@@ -68,10 +86,15 @@ class Reader:
                 pending.append((row, prompt))
         preparation_seconds = time.monotonic()-preparation_started
         result = []
+        if pending and self.llm is None:
+            require(time.time()+900 < self.deadline, 'reader deadline before model loading')
+            self.load_model()
+        engine = self.llm.llm_engine if self.llm is not None else None
         for offset in range(0, len(pending), 64):
             batch = pending[offset:offset+64]
             reserve = admission['batch_seconds'] if admission else 600
-            require(time.time()+reserve+60 < self.deadline, 'reader will not admit batch past deadline reserve')
+            if time.time()+reserve+60 >= self.deadline:
+                break
             require(not engine.has_unfinished_requests(), 'neighboring reader batch still active')
             lookup = {r['uid']: r for r, _ in batch}
             tick, outputs = time.monotonic(), {}
@@ -87,13 +110,18 @@ class Reader:
                     self.units.admitted(row, os.environ['SLURM_JOB_ID'], internal_id)
                 session.bind()
                 while engine.has_unfinished_requests():
-                    require(time.time() < self.deadline, 'reader allocation deadline after admission')
+                    if time.time() >= self.deadline:
+                        raise TimeoutError('reader allocation deadline after admission')
                     for response in session.step():
                         require(response.request_id in lookup and len(response.outputs) == 1, 'reader response attribution differs')
                         if response.finished:
                             output = response.outputs[0]
                             row = lookup[response.request_id]
-                            outputs[row['uid']] = self.units.output(row, {'token_ids': list(output.token_ids),
+                            identity = {}
+                            if hasattr(self, 'cohort'):
+                                from .rescue_reader import annotation_binding
+                                identity['annotation_binding'] = annotation_binding(self.cohort, row)
+                            outputs[row['uid']] = self.units.output(row, {**identity, 'token_ids': list(output.token_ids),
                                 'finish_reason': output.finish_reason, 'elapsed_seconds': time.monotonic()-tick})
                 require(len(outputs) == len(batch), 'missing terminal reader output')
                 parsing_started = time.monotonic()
@@ -102,6 +130,7 @@ class Reader:
                 parsing_seconds = time.monotonic()-parsing_started
                 seconds = time.monotonic()-tick + preparation_seconds*len(batch)/len(pending)
                 receipt = publish(self.root/'batches'/(digest(list(lookup))+'.json'), {
+                    'cohort_sha256': self.cohort['sha256'] if hasattr(self, 'cohort') else None,
                     'status': 'complete', 'batch_size': len(batch), 'seconds': seconds,
                     'load_seconds': self.load_seconds, 'input_bin': str(input_bin),
                     'input_min': min(len(p) for _, p in batch), 'input_max': max(len(p) for _, p in batch),
@@ -115,6 +144,22 @@ class Reader:
 
     def reuse(self, row):
         """Only complete rendered-context identities match; original unknowns stay unknown."""
+        if hasattr(self, 'cohort'):
+            from .rescue_reader import annotation_binding
+            if not hasattr(self, 'reused_labels'):
+                snapshot = verified(Path(self.cohort['paths']['control'])/'REUSED_LABELS.json')
+                require(snapshot['cohort_sha256'] == self.cohort['sha256'], 'reused labels cohort differs')
+                self.reused_labels = {record['uid']: record for record in snapshot['records']}
+            match = self.reused_labels.get(row['uid'])
+            if match is None:
+                return None
+            require(match['inputs_sha256'] == digest(row['inputs']) and (match['label'] is None or match['label'] in CLASSES),
+                    'reused annotation input/class differs')
+            if not self.units.intent(row, 'exact-context-reuse'):
+                return self.units.state(row['uid'])
+            return self.units.commit(row, {
+                'status': 'complete' if match['label'] in CLASSES else 'unknown', 'label': match['label'], 'source': match,
+                'annotation_binding': annotation_binding(self.cohort, row, reused=True), 'stochastic_redraw': False})
         import sqlite3
         from moe_exp.research_campaign_v3_r6.contracts import Units as OldUnits
         model = row['model']
@@ -146,7 +191,8 @@ class Reader:
 
     def close(self):
         try:
-            self.llm.llm_engine.engine_core.shutdown()
+            if self.llm is not None:
+                self.llm.llm_engine.engine_core.shutdown()
         finally:
             for db in self.old_indices.values():
                 db.close()

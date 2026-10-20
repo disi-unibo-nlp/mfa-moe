@@ -1,5 +1,7 @@
 """One ledger: terminal actuals plus full limits for all outstanding work."""
 from pathlib import Path
+import re
+import time
 from .common import submission_paths, reservation_paths, control_root, digest, locked, publish, require, verified
 
 TERMINAL = {'COMPLETED', 'FAILED', 'CANCELLED', 'TIMEOUT', 'OUT_OF_MEMORY',
@@ -109,3 +111,258 @@ def check_storage(binding):
         available[name] = quota_bytes(command(['lfs', 'quota', '-p', project, mount]), mount)
         require(available[name] > reserve, name + ' separate storage reserve exhausted')
     return available
+
+
+class CohortSchedule:
+    """One locked, deadline-bound ledger for the additional causal rescue budget.
+
+    Full limits are reserved before sbatch. An unresolved intent keeps its entire
+    reservation until native job-ID reconciliation; it is never resubmitted.
+    """
+
+    def __init__(self, cohort_path: Path, run=None):
+        """Load the frozen cohort and injectable native scheduler runner."""
+        from .cohort import read
+        from .scheduler import command
+        self.path = Path(cohort_path).resolve()
+        self.value = read(self.path)
+        self.root = Path(self.value['paths']['control'])
+        self.run = run or command
+
+    def card(self, stage: str, model: str | None) -> dict:
+        """Return a resource card drawn only from the approved stage limits."""
+        limits = {'validate': 60, 'prepare': 60, 'analysis': 60, 'engineering': 120,
+                  'generate': 360, 'pilot': 60, 'wave-0': 360, 'wave-1': 360, 'reserve': 540}
+        require(stage in limits, 'unknown causal rescue stage')
+        require((stage == 'engineering' and model in ('gpt', 'qwen36')) or
+                (stage == 'generate' and model == 'qwen36') or
+                (stage not in ('engineering', 'generate') and model is None), 'stage/model roster differs')
+        gpu = stage not in ('validate', 'prepare', 'analysis')
+        card = {
+            'cohort_sha256': self.value['sha256'],
+            'stage': stage,
+            'model': model,
+            'minutes': limits[stage],
+            'gpus': 2 if gpu else 0,
+            'cpus': 16 if gpu else 4,
+            'memory_gib': 120 if gpu else 24,
+            'partition': 'boost_usr_prod',
+            'qos': 'normal',
+        }
+        card['job_name'] = 'causal-'+stage+'-'+(model or 'all')+'-'+digest(card)[:10]
+        if stage == 'reserve':
+            card['operation'], card['operation_model'] = self._reserve_target()
+            card['job_name'] += '-'+card['operation']
+        return card
+
+    def _reserve_target(self) -> tuple:
+        """Choose the first eligible unfinished stage, using no scientific effects."""
+        existing = self.root/'schedule'/'reserve-all'/'RESERVED.json'
+        if existing.exists():
+            card = verified(existing)['card']
+            return card['operation'], card['operation_model']
+        rows = {(row['stage'], row['model']): row for row in self.status()['records']}
+        for stage, model in [('engineering', 'gpt'), ('engineering', 'qwen36'), ('generate', 'qwen36'),
+                             ('pilot', None), ('wave-0', None), ('wave-1', None)]:
+            row = rows.get((stage, model))
+            require(row is not None and row['usage'] is not None, 'reserve cannot replace an unattempted base stage')
+            usage = row['usage']
+            if stage == 'engineering':
+                completed = (self.root/'engineering'/model/'QUALIFIED.json').exists()
+            elif stage == 'generate':
+                from .driver import Store
+                store = Store(Path(self.value['paths']['bulk'])/'driver'/'qwen36'/'rescue'/'units')
+                completed = all(store.state(uid) is not None for uid in self.value['generation_uids'])
+            else:
+                plan = verified(self.root/'READER_WAVES.json')
+                from .common import Units
+                units = Units(Path(self.value['paths']['reader'])/'annotations')
+                completed = all(units.state(uid) is not None and units.state(uid)['status'] != 'output'
+                                for uid in plan[stage])
+            if completed:
+                continue
+            require(usage['state'] in TERMINAL, 'reserve predecessor is not terminal')
+            require(usage['exit_code'] == '2:0' or usage['state'] in ('TIMEOUT', 'NODE_FAIL', 'PREEMPTED'),
+                    'software failure halts reserve release')
+            return stage, model
+        raise ValueError('no eligible unfinished stage for the single reserve')
+
+    def status(self) -> dict:
+        """Charge actual terminal use and full outstanding or ambiguous reservations."""
+        from .ownership import TERMINAL_STATES, accounting
+        totals, rows = {'gpu_hours': 0., 'cpu_core_hours': 0.}, []
+        for path in sorted((self.root/'schedule').glob('*/RESERVED.json')):
+            reservation = verified(path)
+            card = reservation['card']
+            accepted = path.parent/'SBATCH.json'
+            usage = accounting(verified(accepted)['job'], self.run) if accepted.exists() else None
+            seconds = (usage['elapsed_seconds'] if usage is not None and usage['state'] in TERMINAL_STATES
+                       else card['minutes']*60)
+            name = 'gpu_hours' if card['gpus'] else 'cpu_core_hours'
+            hours = seconds/3600*(card['gpus'] or card['cpus'])
+            totals[name] += hours
+            rows.append({'stage': card['stage'], 'model': card['model'], 'job': usage['job'] if usage else None,
+                         'charged': hours, 'budget': name, 'usage': usage, 'card': card})
+        return {'totals': totals, 'records': rows, 'historical_failures_reset': False,
+                'scope': 'additional 64 GPU-hours and 16 CPU-only core-hours, historical usage separate'}
+
+    def _dependencies(self, card: dict) -> list[str]:
+        """Verify native terminal prerequisites and actual successful artifacts."""
+        from .ownership import TERMINAL_STATES
+        state = self.status()
+        by_stage = {(row['stage'], row['model']): row for row in state['records']}
+        for row in state['records']:
+            if row['stage'] == 'reserve':
+                by_stage[(row['card']['operation'], row['card']['operation_model'])] = row
+        stage = card['stage']
+        if stage == 'analysis':
+            require(all(row['usage'] is not None and row['usage']['state'] in TERMINAL_STATES
+                        for row in state['records'] if row['stage'] != 'analysis'),
+                    'final analysis requires every accepted science owner to be terminal')
+        prerequisites = {
+            'validate': [], 'engineering': [('validate', None)],
+            'generate': [('engineering', 'gpt'), ('engineering', 'qwen36')],
+            'prepare': [('generate', 'qwen36')], 'pilot': [('prepare', None)],
+            'wave-0': [('pilot', None)], 'wave-1': [('wave-0', None)],
+            'analysis': [],
+        }
+        if stage == 'reserve':
+            operation, model = card['operation'], card['operation_model']
+            row = by_stage[(operation, model)]
+            return [row['job']]
+        jobs = []
+        for key in prerequisites[stage]:
+            require(key in by_stage and by_stage[key]['usage'] is not None, f'prerequisite not accepted: {key}')
+            row = by_stage[key]
+            accepted = self.root/'schedule'/(row['stage']+'-'+(row['model'] or 'all'))/'ACCEPTED.json'
+            require(accepted.exists(), f'prerequisite has no verified acceptance: {key}')
+            receipt = verified(accepted)
+            require(receipt['job'] == row['job'] and receipt['card']['cohort_sha256'] == self.value['sha256'],
+                    'prerequisite acceptance job/cohort differs')
+            contingent = stage in ('engineering', 'generate') and row['usage']['state'] not in TERMINAL_STATES
+            if contingent:
+                jobs.append(row['job'])
+                continue
+            require(row['usage']['state'] in TERMINAL_STATES, f'prerequisite is not terminal: {key}')
+            allowed = {'0:0', '2:0'} if key[0] in ('generate', 'pilot', 'wave-0') else {'0:0'}
+            require(row['usage']['exit_code'] in allowed, f'upstream software failure halts release: {key}')
+            require(row['usage']['state'] == 'COMPLETED' or row['usage']['exit_code'] == '2:0',
+                    f'cancelled or interrupted prerequisite requires operational adjudication: {key}')
+            jobs.append(row['job'])
+        if stage == 'generate' and all(by_stage[key]['usage']['state'] in TERMINAL_STATES for key in prerequisites[stage]):
+            for model in ('gpt', 'qwen36'):
+                gate = verified(self.root/'engineering'/model/'QUALIFIED.json')
+                require(gate['status'] == 'complete' and gate['cohort_sha256'] == self.value['sha256'], 'engineering gate absent')
+        if stage.startswith('wave-'):
+            admission = verified(self.root/'READER_ADMISSION.json')
+            require(admission['status'] == 'admitted', 'measured reader admission failed')
+        return jobs
+
+    def _store(self, card: dict) -> tuple:
+        """Locate the canonical worker store and its fixed execution identity."""
+        from .cohort import identity
+        stage, model = card['stage'], card['model']
+        if stage == 'reserve':
+            stage, model = card['operation'], card['operation_model']
+        bulk = Path(self.value['paths']['bulk'])
+        if stage == 'engineering':
+            manifest = verified(self.root/'ENGINEERING.json')
+            uids = [row['uid'] for row in manifest['records']+manifest['canaries'] if row['model'] == model]
+            return bulk/'engineering'/model, identity(self.value, model, 'engineering', uids)
+        if stage == 'generate':
+            return bulk/'driver'/model/'rescue', identity(self.value, model, 'generation', self.value['generation_uids'])
+        if stage in ('pilot', 'wave-0', 'wave-1'):
+            tasks = verified(self.root/'READER_TASKS.json')
+            return Path(self.value['paths']['reader']), identity(self.value, 'reader', 'annotation',
+                                                               [row['uid'] for row in tasks['records']])
+        if stage in ('validate', 'prepare', 'analysis'):
+            role = 'analysis' if stage == 'analysis' else 'extraction'
+            return Path(self.value['paths'][role]), identity(self.value, 'cpu', role,
+                    [row['assignment']['uid'] for row in self.value['records']])
+        return self.root/'phases'/stage, identity(self.value, 'cpu', stage, [row['assignment']['uid'] for row in self.value['records']])
+
+    def _preflight(self) -> dict:
+        """Refresh native credits, grants, partition and separate filesystem reserves."""
+        import socket
+        import getpass
+        require(getpass.getuser() == 'lmolfett' and 'leonardo' in socket.getfqdn(), 'wrong cluster/account')
+        balance = self.run(['/cineca/bin/saldo', '-b'])
+        fields = next(line.split() for line in balance.splitlines() if line.strip().startswith('IscrC_MIOSR '))
+        total, consumed = float(fields[3]), float(fields[4])
+        # Two-GPU allocations also reserve sixteen CPU billing units. The full
+        # additional envelope is 512 local hours plus sixteen CPU-only hours.
+        require(total-consumed >= 528 and consumed+528 <= 42050,
+                'live credit or inherited study ceiling does not cover the full additional envelope')
+        associations = self.run(['sacctmgr', '-nP', 'show', 'assoc', 'where', 'user=lmolfett',
+                                 'format=Account,Partition,QOS,DefaultQOS'])
+        require('iscrc_miosr' in associations and 'normal' in associations, 'native association/QoS missing')
+        partition = self.run(['scontrol', 'show', 'partition', 'boost_usr_prod'])
+        require('State=UP' in partition, 'Booster partition unavailable')
+        qos = self.run(['sacctmgr', '-nP', 'show', 'qos', 'where', 'name=normal',
+                        'format=Name,MaxWall,MaxJobsPU,MaxSubmitPU,MaxTRESPU,UsageFactor'])
+        require(any(line.startswith('normal|') for line in qos.splitlines()), 'normal QoS details unavailable')
+        storage = check_storage({'config': {'budget': {'reserve_gib_per_filesystem': 10}}})
+        require(storage['work'] > 14*1024**3, 'WORK cannot retain the 10-GiB reserve plus 4-GiB output forecast')
+        return {'balance': balance, 'associations': associations, 'partition': partition, 'qos': qos, 'storage': storage}
+
+    def submit(self, stage: str, model: str | None = None) -> dict:
+        """Reserve, submit and verify one authorized stage before releasing its worker.
+
+        Args:
+            stage: Approved stage name; an accepted stage cannot be redrawn.
+            model: Required only for engineering and generation.
+
+        Returns:
+            Exact accepted job/resource/owner receipt or an unresolved reservation.
+        """
+        from .ownership import accept, allocation, check_time
+        card = self.card(stage, model)
+        folder = self.root/'schedule'/(stage+'-'+(model or 'all'))
+        with locked(self.root, 'cohort-submissions'):
+            if (folder/'ACCEPTED.json').exists():
+                return verified(folder/'ACCEPTED.json')
+            check_time(self.value, seconds=card['minutes']*60, reporting=stage == 'analysis')
+            dependencies = self._dependencies(card)
+            state = self.status()
+            totals = state['totals'].copy()
+            budget = 'gpu_hours' if card['gpus'] else 'cpu_core_hours'
+            if not (folder/'RESERVED.json').exists():
+                totals[budget] += card['minutes']/60*(card['gpus'] or card['cpus'])
+            require(totals['gpu_hours'] <= 64 and totals['cpu_core_hours'] <= (16 if stage == 'analysis' else 12),
+                    'cohort resource ceiling or protected final-analysis reserve would be exceeded')
+            preflight = self._preflight()
+            if (folder/'RESERVED.json').exists():
+                require(verified(folder/'RESERVED.json')['card'] == card, 'reserved resource card changed')
+            else:
+                publish(folder/'RESERVED.json', {'card': card, 'full_limit_hours': card['minutes']/60*(card['gpus'] or card['cpus']),
+                                                'preflight': preflight, 'totals_at_reservation': totals})
+            logs = self.root/'logs'
+            logs.mkdir(parents=True, exist_ok=True, mode=0o700)
+            args = ['sbatch', '--parsable', '--no-requeue', '--account=iscrc_miosr', '--partition='+card['partition'],
+                    '--qos='+card['qos'], '--nodes=1', '--ntasks=1', '--cpus-per-task='+str(card['cpus']),
+                    '--mem='+str(card['memory_gib'])+'G', '--time='+str(card['minutes']),
+                    '--job-name='+card['job_name'], '--chdir='+str(Path(__file__).resolve().parents[3]),
+                    '--deadline='+self.value['report_deadline' if stage == 'analysis' else 'science_cutoff'][:19],
+                    '--output='+str(logs/'%x-%j.out'), '--error='+str(logs/'%x-%j.err')]
+            if card['gpus']:
+                args += ['--gres=gpu:'+str(card['gpus'])]
+            if dependencies and stage in ('engineering', 'generate'):
+                args += ['--dependency=afterok:'+':'.join(dependencies), '--kill-on-invalid-dep=yes']
+            args += [str(Path(__file__).resolve().parents[3]/'scripts/slurm/rescue_stage.sbatch'),
+                     str(self.path), stage, model or 'all']
+            if (folder/'INTENT.json').exists() and not (folder/'SBATCH.json').exists():
+                intent = verified(folder/'INTENT.json')
+                raw = self.run(['sacct', '-nPX', '-S', intent['date'], '--name='+card['job_name'], '--format=JobIDRaw'])
+                found = sorted(set(line.strip('| ') for line in raw.splitlines() if line.strip('| ').isdigit()))
+                require(len(found) == 1, 'ambiguous sbatch intent retained; reconcile exact job ID before proceeding')
+                publish(folder/'SBATCH.json', {'job': found[0]})
+            if not (folder/'SBATCH.json').exists():
+                publish(folder/'INTENT.json', {'argv': args, 'date': time.strftime('%Y-%m-%d'), 'dependencies': dependencies})
+                raw = self.run(args)
+                require(re.fullmatch(r'\d+(;[\w.-]+)?', raw), 'ambiguous sbatch response; full reservation retained')
+                publish(folder/'SBATCH.json', {'job': raw.split(';')[0]})
+            job = verified(folder/'SBATCH.json')['job']
+            fields = allocation(job, card, self.run)
+            store, execution = self._store(card)
+            owner = accept(store, execution, job, card, run=self.run)
+            return publish(folder/'ACCEPTED.json', {'job': job, 'card': card, 'fields': fields, 'owner': owner})

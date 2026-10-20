@@ -13,7 +13,7 @@ from __future__ import annotations
 import inspect
 from .common import digest, require
 from .observer import discover
-from moe_exp.final_routing.operator import hard_select, policy
+from moe_exp.final_routing.operator import hard_select, policy, score_override_select
 
 
 class Clock:
@@ -152,17 +152,38 @@ class StreamCapture:
                                c['output_position'] < origin+action['pulse_tokens']) for _, c in rows]
                 stats = self.counts[uid]
                 if any(active):
-                    aw, ai, changed = hard_select(logits[ix], nw[ix], ni[ix], action['experts'],
-                                                  action['direction'], active=active, **native_policy)
+                    operator = action.get('operator', 'hard_select')
+                    if operator == 'hard_select':
+                        aw, ai, changed = hard_select(logits[ix], nw[ix], ni[ix], action['experts'],
+                                                      action['direction'], active=active, **native_policy)
+                        validation_logits = logits[ix]
+                    elif operator == 'score_override':
+                        aw, ai, changed = score_override_select(
+                            logits[ix], nw[ix], ni[ix], action['experts'], action['direction'],
+                            epsilon=action.get('epsilon', .01), active=active, **native_policy)
+                        validation_logits = logits[ix]
+                    else:
+                        raise ValueError('unknown routing operator: '+operator)
                     if weights is nw:
                         weights, ids = nw.clone(), ni.clone()
                     weights[ix], ids[ix] = aw, ai
                     require(bool(torch.isfinite(weights[ix]).all()), 'nonfinite dispatched weights')
-                    if bool(changed.any()):
+                    if bool(changed.any()) and operator == 'hard_select':
                         sel = ids[ix][changed].long()
-                        expected = self._expected(logits[ix][changed], sel, native_policy)
+                        expected = self._expected(validation_logits[changed], sel, native_policy)
                         require(bool(torch.allclose(expected, weights[ix][changed].float(), rtol=.02, atol=.02)),
                                 'intervened affinity/normalization/scaling equation differs')
+                    if operator == 'score_override':
+                        scores = validation_logits.float().log_softmax(-1)
+                        flags = torch.as_tensor(active, device=scores.device)
+                        target = torch.tensor(action['experts'], device=scores.device)
+                        extreme = (scores.max(-1).values+action.get('epsilon', .01)
+                                   if action['direction'] == 'activate' else
+                                   scores.min(-1).values-action.get('epsilon', .01))
+                        scores[:, target] = extreme[:, None]
+                        expected = self._expected(scores[flags], ids[ix][flags], native_policy)
+                        require(bool(torch.allclose(expected, weights[ix][flags].float(), rtol=.02, atol=.02)),
+                                'score override mixture normalization/scaling differs')
                     flags = torch.as_tensor(active, device=ix.device)
                     dispatched = ids[ix][flags].tolist()
                     require(all(len(set(v)) == self.contract['native_k'] for v in dispatched),
@@ -171,7 +192,9 @@ class StreamCapture:
                     passed = all((wanted <= set(v) if action['direction'] == 'activate' else not wanted.intersection(v))
                                  for v in dispatched)
                     stats['target_contract'] &= passed
-                    require(passed, 'assigned inclusion/exclusion was not dispatched')
+                    require(passed, 'assigned inclusion/exclusion was not dispatched '
+                            f'operator={operator} direction={action["direction"]} '
+                            f'wanted={sorted(wanted)} dispatched={dispatched}')
                     unchanged = ~changed
                     stats['noop_exact'] &= bool(torch.equal(ids[ix][unchanged], ni[ix][unchanged]) and
                                                 torch.equal(weights[ix][unchanged], nw[ix][unchanged]))
@@ -269,6 +292,12 @@ class StreamWorkerExtension:
 
     def fs_validation(self):
         return self._fs_capture.native_validation
+
+    def fs_state(self):
+        """Expose request-map emptiness for the allocated abort/isolation canary."""
+        capture = self._fs_capture
+        return {'requests': len(capture.requests), 'aliases': len(capture.aliases),
+                'clocks': len(capture.clocks), 'records': len(capture.records)}
 
     def fs_end(self):
         capture = getattr(self, '_fs_capture', None)

@@ -22,6 +22,84 @@ def frame(path, rows):
     return write(path, rows)
 
 
+def _response_figures(folder: Path, result: dict) -> None:
+    """Write both full-window response matrices in a common class order."""
+    import matplotlib.pyplot as plt
+    import numpy as np
+    import pandas as pd
+    from .common import CLASSES
+    for direction, matrix in result.get('directional_response_matrices', {}).items():
+        values = np.array([[matrix[target].get(f'{direction}:response:{observed}', {}).get('estimate', np.nan)
+                            for observed in CLASSES] for target in CLASSES], float)
+        pd.DataFrame(values, index=CLASSES, columns=CLASSES).to_csv(folder/(direction+'-response.csv'))
+        figure, axis = plt.subplots(figsize=(6, 5))
+        maximum = max(float(np.nanmax(np.abs(values))), 1e-6) if np.isfinite(values).any() else 1.
+        plot = axis.imshow(values, cmap='RdBu_r', vmin=-maximum, vmax=maximum)
+        axis.set_xticks(range(7), CLASSES, rotation=45, ha='right')
+        axis.set_yticks(range(7), CLASSES)
+        axis.set_xlabel('Observed class')
+        axis.set_ylabel('Target class')
+        axis.set_title(direction+'; full-window response')
+        figure.colorbar(plot, ax=axis, label='Compatibility midpoint of occupancy difference')
+        figure.tight_layout()
+        figure.savefig(folder/(direction+'-response.pdf'))
+        plt.close(figure)
+
+
+def causal_exhibits(folder: Path, result: dict) -> dict:
+    """Export paper-ready causal intervals and directional response matrices.
+
+    Args:
+        folder: Fresh analysis destination, outside the canonical manuscript.
+        result: Verified effect summary including missing-outcome bounds.
+
+    Returns:
+        Receipt binding standalone PDF figures and CSV/LaTeX tables.
+    """
+    import matplotlib
+    matplotlib.use('Agg')
+    import matplotlib.pyplot as plt
+    import numpy as np
+    import pandas as pd
+    from .common import CLASSES
+    contrasts = result.get('joint_six_contrasts', result['primary_pooled'])
+    rows = []
+    for name, value in contrasts.items():
+        interval = value.get('bound_simultaneous')
+        rows.append({
+            'contrast': name,
+            'status': value['status'],
+            'compatibility_midpoint': value.get('estimate'),
+            'lower': interval[0] if interval else None,
+            'upper': interval[1] if interval else None,
+            'unknown_cells': value.get('unknown_cells'),
+            'point_identified': value.get('point_identified'),
+        })
+    table = pd.DataFrame(rows)
+    table.to_csv(folder/'contrasts.csv', index=False)
+    table.to_latex(folder/'contrasts.tex', index=False, float_format='%.5f')
+    pd.DataFrame(result['availability']).to_csv(folder/'coverage.csv', index=False)
+    efficiency = [{'contrast': name, **row} for name, row in result['efficiency_pooled'].items()]
+    pd.DataFrame(efficiency).to_csv(folder/'accuracy-token-tradeoffs.csv', index=False)
+    figure, axis = plt.subplots(figsize=(7, max(2.5, len(rows)*.45)))
+    for index, row in enumerate(rows):
+        if row['lower'] is None:
+            continue
+        axis.plot([row['lower'], row['upper']], [index, index], color='#235a83', linewidth=2)
+        if row['point_identified']:
+            axis.scatter([row['compatibility_midpoint']], [index], color='#235a83', s=18)
+    axis.axvline(0, color='0.5', linewidth=.8)
+    axis.set_yticks(range(len(rows)), [row['contrast'] for row in rows])
+    axis.set_xlabel('Signed target minus random effect; simultaneous identification interval')
+    figure.tight_layout()
+    figure.savefig(folder/'contrasts.pdf')
+    plt.close(figure)
+    _response_figures(folder, result)
+    files = {str(path): file_sha(path) for pattern in ('*.pdf', '*.csv', '*.tex') for path in folder.glob(pattern)}
+    return publish(folder/'EXHIBITS.json', {'effects_sha256': result['sha256'], 'files': files,
+                                          'midpoints_with_unknowns_are_not_observed_effects': True})
+
+
 def export(binding, mode):
     from .analysis import assemble,paired_summaries
     from .delivery import catalogue,diagnostics,figures,legacy_complete

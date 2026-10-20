@@ -14,6 +14,7 @@ Commands (python -m moe_exp.study.driver ...):
   native --shard I/N            GPU: LFM native population (unhooked engine)
   annotate --shard I/N          GPU: LFM discovery judge labels (unhooked engine)
   lfm-materialize | lfm-derive  CPU: reuse study.lfm / final_routing.importer
+  lfm-readout | lfm-dynamics    CPU: LFM native readout (study.readouts) and native-dynamics panel
   lfm-replay --shard I/N        GPU: reuse study.lfm.replay (Backend.capture_trace)
   smoke                         GPU: GPT engineering gate
   status                        login: dispositions per model
@@ -112,8 +113,8 @@ def plan(models=None):
     return out
 
 
-MANIFESTS = {'main': 'ASSIGNMENTS.json', 'strong': 'STRONG.json'}
-STORES = {'main': 'units', 'strong': 'strong/units'}
+MANIFESTS = {'main': 'ASSIGNMENTS.json', 'strong': 'STRONG.json', 'rescue': 'RESCUE.json'}
+STORES = {'main': 'units', 'strong': 'strong/units', 'rescue': 'rescue/units'}
 
 
 def plan_strong(models, seed_tag='strong-dose-v1'):
@@ -155,6 +156,12 @@ def plan_strong(models, seed_tag='strong-dose-v1'):
             'arms': counts, 'nominations_sha256': nominations['sha256'], 'records': rows})
         out[model] = {'rows': len(rows), 'arms': counts, 'sha256': value['sha256']}
     return out
+
+
+def plan_rescue(models=None):
+    """Build the separate score-override rescue manifests from frozen nominations."""
+    from .rescue import RESCUE_MODELS, plan
+    return plan(models or RESCUE_MODELS)
 
 
 def shard_rows(model, shard, design='main', sub=None):
@@ -211,7 +218,8 @@ class Engine:
         blocks = getattr(cache, 'num_gpu_blocks', None)
         self.kv_tokens = blocks*cache.block_size if blocks else None
         self.metrics = {'admitted': 0, 'resumed': 0, 'finished': 0, 'drained': 0, 'generated_tokens': 0,
-                        'prefill_tokens': 0, 'steps': 0, 'step_seconds': 0.}
+                        'prefill_tokens': 0, 'steps': 0, 'step_seconds': 0., 'peak_inflight': 0,
+                        'mixed_eight_verified': False}
         require(not self.engine.has_unfinished_requests(), 'engine has neighboring requests')
 
     def admit(self, row, build):
@@ -239,10 +247,18 @@ class Engine:
         require(isinstance(internal, str) and internal, 'vLLM returned no internal ID')
         if self.hooked:
             reports = self.llm.collective_rpc('fs_add', kwargs={'requests': [spec['request']], 'aliases': {internal: uid}})
-            require(len({r['mapping_sha256'] for r in reports}) == 1, 'tensor-parallel request maps disagree')
+            require(len(reports) == 2 and len({r['mapping_sha256'] for r in reports}) == 1,
+                    'tensor-parallel request maps disagree')
         self.inflight[uid] = {'row': row, 'progress': progress, 'internal': internal, 'new': 0,
                               'context': len(spec['prompt_ids'])}
         self.metrics['admitted'] += 1
+        self.metrics['peak_inflight'] = max(self.metrics['peak_inflight'], len(self.inflight))
+        active_rows = [state['row'] for state in self.inflight.values()]
+        if len(active_rows) == 8:
+            self.metrics['mixed_eight_verified'] |= (
+                len({row.get('family') for row in active_rows}) > 1
+                and len({row.get('arm') for row in active_rows}) > 1
+                and any(row.get('action') or row.get('actions') for row in active_rows))
         self.metrics['resumed'] += bool(history)
         self.metrics['prefill_tokens'] += len(spec['prompt_ids'])
         return True
@@ -251,6 +267,7 @@ class Engine:
         if not self.hooked or not uids:
             return {}
         reports = self.llm.collective_rpc('fs_release', kwargs={'uids': list(uids)})
+        require(len(reports) == 2, 'routing release lacks both tensor-parallel ranks')
         for uid in uids:
             require(len({r[uid]['sha256'] for r in reports}) == 1, 'tensor-parallel captures disagree')
         return reports[0]
@@ -399,6 +416,8 @@ def intervention_builder(b, model, tokenizer, closure, *, greedy=False, limit=No
             cache[key] = prompt_prefix(b, model, row, tokenizer)[:2]
         prompt, prefix = cache[key]
         total = remaining(p, prompt, prefix)
+        if str(row.get('dose', '')).startswith('rescue-'):
+            total = min(total, int(row['horizon']))
         if limit is not None:
             total = min(total, limit)
         left = total-len(history)
@@ -453,17 +472,92 @@ def recover_outputs(store, rows):
     return recovered
 
 
-def run_model(model, shard, deadline, *, max_inflight=64, design='main', sub=None):
-    from .runtime import closure
+def rescue_completion(store: Store, rows: list[dict]) -> dict:
+    """Count assigned states independently of whether the engine drained its queue.
+
+    Args:
+        store: Exact source-bound rescue unit store.
+        rows: Every assignment in this dispatched shard.
+
+    Returns:
+        Complete only when every assignment has a committed complete RESULT.
+    """
+    from collections import Counter
+
+    counts = Counter()
+    complete_results = 0
+    for row in rows:
+        state = store.state(row['uid'])
+        status = state['status'] if state is not None else 'untouched'
+        counts[status] += 1
+        if status == 'complete' and (store.folder(row['uid'])/'RESULT.json').is_file():
+            complete_results += 1
+    return {
+        'status': 'complete' if complete_results == len(rows) else 'incomplete',
+        'rows': len(rows),
+        'state_counts': dict(sorted(counts.items())),
+    }
+
+
+def run_model(model, shard, deadline, *, max_inflight=64, design='main', sub=None, source_receipt=None, cohort=None):
+    if design == 'rescue':
+        require(cohort is not None, 'rescue generation requires --cohort')
+        require(shard == (0, 1) and sub is None, 'cohort generation uses its exact frozen roster')
+        from .rescue import generate
+        return generate(Path(cohort), model, deadline, max_inflight=max_inflight, source_receipt=source_receipt)
     b = binding()
     rows = shard_rows(model, shard, design, sub)
     store = Store(bulk(b)/model/STORES[design])
+    return execute_rows(b, model, rows, store, deadline, max_inflight=max_inflight,
+                        design=design, shard=shard)
+
+
+def _empty_generation_receipt(b, model, shard, execution, store, rows) -> dict:
+    """Persist assigned unknowns even when no engine work remains."""
+    receipt = {
+        'model': model,
+        'shard': list(shard),
+        'job': os.environ.get('SLURM_JOB_ID'),
+        'execution_sha256': digest(execution),
+        'engine_loaded': False,
+        'code': code_hashes(),
+        **rescue_completion(store, rows),
+    }
+    publish(bulk(b)/model/'jobs'/('rescue-'+os.environ.get('SLURM_JOB_ID', 'local')+'.json'), receipt)
+    log({'event': 'end', **receipt})
+    return receipt
+
+
+def execute_rows(b, model, rows, store, deadline, *, max_inflight, design, shard=(0, 1), execution=None,
+                 pending_uids=None):
+    """Execute a caller-owned roster with the maintained engine and publication path.
+
+    Args:
+        b: Verified study binding.
+        model: Loaded scientific model.
+        rows: Full assigned store roster.
+        store: Already exclusively owned store for a cohort execution.
+        deadline: Absolute engine deadline.
+        max_inflight: Maximum concurrent requests.
+        design: Main, strong or rescue.
+        shard: Historical shard identity.
+        execution: Optional stable cohort execution identity.
+        pending_uids: Explicit untouched cohort UIDs, excluding all partial draws.
+
+    Returns:
+        Terminal job receipt, with incomplete disposition for unsuccessful work.
+    """
+    from .runtime import closure
     recovered = recover_outputs(store, rows)
-    pending = [r for r in rows if (store.state(r['uid']) or {'status': 'partial'})['status'] == 'partial']
-    log({'event': 'start', 'model': model, 'design': design, 'shard': shard, 'sub': sub, 'rows': len(rows), 'pending': len(pending),
+    pending = [r for r in rows if (r['uid'] in pending_uids if pending_uids is not None else
+               (store.state(r['uid']) or {'status': 'partial'})['status'] == 'partial')]
+    log({'event': 'start', 'model': model, 'design': design, 'shard': shard, 'rows': len(rows), 'pending': len(pending),
          'recovered_outputs': recovered})
     if not pending:
+        if design == 'rescue':
+            return _empty_generation_receipt(b, model, shard, execution, store, rows)
         return {'status': 'complete', 'rows': len(rows)}
+    require(time.time()+900 < deadline, 'insufficient time for model loading before deadline')
     llm, kwargs, load_seconds = hooked_llm(b, model, max_inflight)
     try:
         contract = contract_for(b, model, rows)
@@ -482,6 +576,9 @@ def run_model(model, shard, deadline, *, max_inflight=64, design='main', sub=Non
     receipt = {'model': model, 'shard': list(shard), 'job': os.environ.get('SLURM_JOB_ID'), 'load_seconds': load_seconds,
                'engine': {k: v for k, v in kwargs.items() if k != 'logits_processors'}, 'metrics': metrics,
                'native_validation': validation[0], 'code': code_hashes()}
+    if execution is not None:
+        receipt['execution_sha256'] = digest(execution)
+        receipt.update(rescue_completion(store, rows))
     publish(bulk(b)/model/'jobs'/(design+'-'+os.environ.get('SLURM_JOB_ID', 'local')+'.json'), receipt)
     log({'event': 'end', **receipt})
     return receipt
@@ -707,11 +804,16 @@ def parse_shard(text):
 def main(argv=None):
     ap = argparse.ArgumentParser(prog='moe_exp.study.driver')
     ap.add_argument('command', choices=['plan', 'run', 'native', 'annotate', 'lfm-materialize', 'lfm-replay',
-                                        'lfm-derive', 'smoke', 'status', 'plan-strong', 'lfm-repair-contexts'])
+                                        'lfm-derive', 'smoke', 'status', 'plan-strong', 'plan-rescue',
+                                        'lfm-repair-contexts',
+                                        'lfm-readout', 'lfm-dynamics'])
     ap.add_argument('--model')
     ap.add_argument('--shard', default='0/1', type=parse_shard)
     ap.add_argument('--max-inflight', type=int, default=64)
     ap.add_argument('--design', choices=sorted(MANIFESTS), default='main')
+    ap.add_argument('--source-receipt', type=Path,
+                    help='explicit source receipt for a new rescue release; historical stores remain read-only')
+    ap.add_argument('--cohort', type=Path)
     ap.add_argument('--sub', type=parse_shard, action='append', default=None)
     args = ap.parse_args(argv)
     if args.command == 'plan':
@@ -719,6 +821,9 @@ def main(argv=None):
         return
     if args.command == 'plan-strong':
         log({'event': 'plan-strong', 'models': plan_strong(args.model.split(','))})
+        return
+    if args.command == 'plan-rescue':
+        log({'event': 'plan-rescue', 'models': plan_rescue(args.model.split(',') if args.model else None)})
         return
     if args.command == 'status':
         print(json.dumps(status(), indent=1))
@@ -741,10 +846,24 @@ def main(argv=None):
         derive_model(b, 'lfm25')
         log({'event': 'derived', 'plan': plan(['lfm25'])})
         return
+    if args.command == 'lfm-readout':
+        from .readouts import lfm
+        value = lfm(binding())
+        log({'event': 'readout', 'sha256': value['sha256'],
+             **{mode: {k: r[k] for k in ('routing', 'routing_excess_over_lexical_null')}
+                for mode, r in value['models']['lfm25'].items()}})
+        return
+    if args.command == 'lfm-dynamics':
+        from .lfm import dynamics_summary
+        log({'event': 'dynamics', 'sha256': dynamics_summary(binding())['sha256']})
+        return
     require(os.environ.get('SLURM_JOB_ID') and os.environ.get('SLURM_JOB_GPUS'), 'GPU commands require a Slurm GPU allocation')
     deadline = deadline_from_slurm()
     if args.command == 'run':
-        run_model(args.model, args.shard, deadline, max_inflight=args.max_inflight, design=args.design, sub=args.sub)
+        result = run_model(args.model, args.shard, deadline, max_inflight=args.max_inflight, design=args.design,
+                           sub=args.sub, source_receipt=args.source_receipt, cohort=args.cohort)
+        if args.design == 'rescue' and result.get('status') != 'complete':
+            raise SystemExit(2)
     elif args.command == 'native':
         lfm_native(args.shard, deadline)
     elif args.command == 'annotate':
