@@ -33,6 +33,30 @@ checks and exploratory-bootstrap differences; rerun main/strong analyses in
 fresh directories. No canonical manuscript edits or remote pushes. This note
 records authorization and implementation requirements, not completed science.
 
+**Whole r3 allocated qualification — 2026-10-20:** source95d4cb0 is archived
+under `mfa-moe/releases/95d4cb048a4e819bd735fcdd82b3f63cab86d168`.
+CPU61577861 is COMPLETED0:0 after288s:184 full study tests passed, all210
+model/dose cells qualified and all70 rebuilt GPT promote cells exactly match
+the saved DP selections/controls. Both doses have3096 GPT/2838 Qwen executable
+rows. NOMINATION_CHANGES.csv records each cell. Historical main manifests have
+129native rows and zero native_repeat rows per model; the paired planning SD
+is unavailable/SUSPECTED, with no between-family substitution or science gate.
+Prior whole CPU charge0.791667 plus this0.32core-hour allocation is retained.
+Canary submission follows this allocated qualification; no GPU outcome is
+implied by it. Continue the one existing r3 JOBS.json graph.
+
+**Whole r3 canaries running — 2026-10-20:** GPT61578496 and Qwen61578497
+started22:40:53 Rome on two A100s/16CPUs/120GiB each, at64 in flight.
+Monitor61578500 started concurrently on1CPU/2GiB for at most16h. All exact
+resource readbacks are in the existing r3 JOBS.json/submission receipts.
+The completed CPU job was already purged from Slurm's controller; one
+afterok-CPU submission was rejected before acceptance with "Job dependency
+problem". Native accounting and the immutable184-test proof were checked
+before direct canary submission. No allocation was created by that rejection.
+Production still requires its passing canary and afterok dependency. The
+current graph, source95d4cb0, stores and receipts must be preserved; do not
+launch another dispatcher. GPU canary outcomes remain pending in this snapshot.
+
 **Corrected causal rescue accepted — 2026-10-20:** continue
 `report/final-routing-rescue-20261020-r3/COHORT.json` and ledger feature F-0002.
 The user approved the final 64-GPU/16-CPU-hour plan and instructed “keep going”

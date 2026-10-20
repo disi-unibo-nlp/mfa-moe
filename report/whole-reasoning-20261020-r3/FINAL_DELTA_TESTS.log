@@ -1,0 +1,21 @@
+test_transient_scontrol_readback_never_duplicates_sbatch (test_whole_launch.MonitorSurvivalTests.test_transient_scontrol_readback_never_duplicates_sbatch) ... ok
+test_cpu_budget_exhaustion_never_starts_another_cpu_worker_or_stops_gpus (test_whole_launch.MonitorSurvivalTests.test_cpu_budget_exhaustion_never_starts_another_cpu_worker_or_stops_gpus) ... ok
+test_main_allocation_maxima_reserve_71_point_5_gpu_hours (test_whole_launch.MonitorSurvivalTests.test_main_allocation_maxima_reserve_71_point_5_gpu_hours) ... ok
+test_cardinality_unique_uids_native_seeds_and_family_block_order (test_whole.ManifestTests.test_cardinality_unique_uids_native_seeds_and_family_block_order) ... ERROR
+
+======================================================================
+ERROR: test_cardinality_unique_uids_native_seeds_and_family_block_order (test_whole.ManifestTests.test_cardinality_unique_uids_native_seeds_and_family_block_order)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/tests/study/test_whole.py", line 318, in test_cardinality_unique_uids_native_seeds_and_family_block_order
+    canary = whole.canary_rows(value)
+             ^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/src/moe_exp/study/whole.py", line 273, in canary_rows
+    canary['uid'] = digest(['whole-canary', value['sha256'], canary])
+                                            ~~~~~^^^^^^^^^^
+KeyError: 'sha256'
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.272s
+
+FAILED (errors=1)
