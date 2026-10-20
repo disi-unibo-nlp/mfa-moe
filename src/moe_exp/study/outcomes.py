@@ -31,7 +31,8 @@ def continuation_sentences(trace, replay, prefix, window, finish_reason):
             continue
         complete = i < len(units)-1 or finish_reason == 'stop' or u['text'].rstrip().endswith(('.', '!', '?'))
         generated.append((i, u, max(min(owned), prefix), max(owned)+1, complete, min(owned) < prefix))
-    first = next((i for i, u, a, b, complete, straddles in generated if complete and not straddles), None)
+    first = next((i for i, u, a, b, complete, straddles in generated
+                  if complete and not straddles and 0 <= a-prefix < window), None)
     selected = []
     for i, u, start, end, complete, straddles in generated:
         if start-prefix >= window and i != first:
@@ -46,7 +47,7 @@ def continuation_sentences(trace, replay, prefix, window, finish_reason):
     return selected, layout
 
 
-def record(b, model, row, raw, tokenizer, close):
+def record(b, model, row, raw, tokenizer, close, *, frozen_input=None):
     """One continuation: exact text, sentence windows, closure, strict score (contexts.build semantics)."""
     from types import SimpleNamespace
     from moe_exp.models.token_replay import make_token_replay
@@ -55,7 +56,7 @@ def record(b, model, row, raw, tokenizer, close):
     from .contexts import parts
     from .runtime import prompt_prefix
     profile = b['models'][model]
-    prompt, prefix, original = prompt_prefix(b, model, row, tokenizer)
+    prompt, prefix, original = frozen_input or prompt_prefix(b, model, row, tokenizer)
     tokens = prefix+raw['token_ids']
     text, replay = make_token_replay(tokenizer, prompt, tokens)
     reasoning, final = parts(tokenizer, profile, text)
@@ -87,7 +88,11 @@ def record(b, model, row, raw, tokenizer, close):
             'strict_correct': strict, 'accuracy_bounds': [lo, hi]}
 
 
-def extract(model, shard, design='main'):
+def extract(model, shard, design='main', *, cohort=None):
+    if design == 'rescue':
+        require(cohort is not None, 'rescue extraction requires --cohort')
+        from .cohort import extract_terminal
+        return extract_terminal(Path(cohort), model)
     import pandas as pd
     from transformers import AutoTokenizer
     from .common import load
@@ -110,7 +115,9 @@ def extract(model, shard, design='main'):
             continue
         outcomes.append({'uid': row['uid'], 'model': model, 'arm': row['arm'], 'class': row['class'],
             'family': row['family'], 'fold': row['fold'], 'benchmark': row['benchmark'],
-            'layer': (row['action'] or {}).get('layer'), 'pulse_tokens': row['pulse_tokens'], 'horizon': row['horizon'],
+            'layer': ((row.get('actions') or [row.get('action')])[0] or {}).get('layer'),
+            'layer_regime': row.get('layer_regime'), 'operator': ((row.get('actions') or [row.get('action')])[0] or {}).get('operator', 'hard_select'),
+            'pulse_tokens': row['pulse_tokens'], 'horizon': row['horizon'],
             'generated_tokens': rec['generated_tokens'], 'prefix_tokens': rec['prefix_tokens'],
             'reasoning_tokens': rec['reasoning_tokens'], 'reasoning_end': rec['reasoning_end'],
             'finish_reason': rec['finish_reason'], 'answer_present': rec['answer_present'],
@@ -140,14 +147,26 @@ def extract(model, shard, design='main'):
 
 
 def main(argv=None):
+    """Extract saved continuations inside the accepted cohort preparation allocation."""
     from .driver import parse_shard
     ap = argparse.ArgumentParser(prog='moe_exp.study.outcomes')
     ap.add_argument('--model', required=True)
     ap.add_argument('--shard', default='0/1', type=parse_shard)
     ap.add_argument('--design', choices=sorted(STORES), default='main')
+    ap.add_argument('--cohort', type=Path)
     args = ap.parse_args(argv)
     require(args.model in [p.name for p in DRIVER.iterdir() if p.is_dir()], 'unknown model manifest')
-    extract(args.model, args.shard, args.design)
+    if args.design == 'rescue':
+        from .cohort import assignments, identity, read
+        from .ownership import worker
+        require(args.cohort is not None, 'rescue extraction requires --cohort')
+        value = read(args.cohort)
+        execution = identity(value, 'cpu', 'extraction', [row['uid'] for row in assignments(value)])
+        with worker(Path(value['paths']['extraction']), execution) as owner:
+            require(owner['shape']['stage'] == 'prepare', 'extraction requires its accepted preparation job')
+            extract(args.model, args.shard, args.design, cohort=args.cohort)
+    else:
+        extract(args.model, args.shard, args.design)
 
 
 if __name__ == '__main__':

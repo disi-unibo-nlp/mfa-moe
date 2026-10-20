@@ -18,7 +18,7 @@ from pathlib import Path
 import numpy as np
 from scipy import optimize, sparse
 from . import readout_text as RT
-from .common import CLASSES, file_sha, publish, require
+from .common import CLASSES, check_files, file_sha, publish, require, verified
 
 CIDX = {c: i for i, c in enumerate(CLASSES)}
 MAXC = 600
@@ -215,11 +215,43 @@ class _Unpickler:
         return self.inner.load()
 
 
-def predict(sentences, root):
+def artifact_binding(root: Path) -> dict:
+    """Verify the deployed C10 READOUT and every fold before loading pickles.
+
+    Args:
+        root: Deployed readout directory; candidate artifacts are not substituted.
+
+    Returns:
+        Physical-file binding suitable for an immutable cohort descriptor.
+    """
+    root = root.resolve()
+    receipt = verified(root/'READOUT.json')
+    require(receipt['spec'] == SPEC, 'deployed C10 readout specification differs')
+    folds = receipt['folds']
+    require(len(folds) == 5 and {row['fold'] for row in folds} == set(range(5)),
+            'readout requires exactly five valid fold models')
+    files = {str(root/'READOUT.json'): file_sha(root/'READOUT.json')}
+    for row in folds:
+        path = root/f"fold-{row['fold']}.pkl"
+        require(path.is_file() and file_sha(path) == row['sha256'], 'readout fold bytes changed or missing')
+        files[str(path)] = row['sha256']
+    return {'root': str(root), 'readout_sha256': receipt['sha256'], 'files': files}
+
+
+def predict(sentences, root, *, frozen=None):
     """Add p_<class> and lexical_label to a continuation sentence table (columns: fold, sentence_text,
     prev_sentence, next_sentence); each row read by the classifier of its own held-out fold."""
-    import pickle
+    binding = artifact_binding(root)
+    if frozen is not None:
+        require(binding == frozen, 'cohort classifier artifact changed')
     sentences = sentences.reset_index(drop=True)
+    require(sentences.fold.notna().all() and sentences.fold.isin(range(5)).all(),
+            'sentence rows are not covered by valid classifier folds')
+    if sentences.empty:
+        for c in CLASSES:
+            sentences['p_'+c] = np.array([], dtype=float)
+        sentences['lexical_label'] = []
+        return sentences
     b = blocks(sentences.sentence_text.fillna('').tolist(), sentences.prev_sentence.fillna('').tolist(),
                sentences.next_sentence.fillna('').tolist())
     P = np.zeros((len(sentences), 7))
@@ -231,6 +263,10 @@ def predict(sentences, root):
             saved = _Unpickler(stream).load()
         require(saved['spec'] == SPEC and saved['fold'] == f, 'lexical readout specification differs')
         P[idx] = saved['model'].proba(saved['featurizer'].transform(b, idx))
+    require(P.shape == (len(sentences), len(CLASSES)) and np.isfinite(P).all()
+            and (P >= 0).all() and (P <= 1).all() and np.allclose(P.sum(1), 1., atol=1e-7),
+            'invalid classifier probabilities; rows cannot be mapped to Read')
+    check_files(binding['files'])
     for i, c in enumerate(CLASSES):
         sentences['p_'+c] = P[:, i]
     sentences['lexical_label'] = [CLASSES[i] for i in P.argmax(1)]

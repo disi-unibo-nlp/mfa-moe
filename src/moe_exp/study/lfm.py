@@ -345,3 +345,55 @@ def derive(binding):
         'label_states': label_counts, 'judge_inputs': verified(root/'lfm25/ANNOTATION_TASKS.json').get('judge_inputs'),
         'counts': str(count_path), 'counts_sha256': file_sha(count_path),
         'sentences': str(sentence_path), 'sentences_sha256':file_sha(sentence_path)})
+
+
+def dynamics_summary(binding):
+    """Native-dynamics panel for LFM, built as research_campaign_v3_r6.derive builds it for the other seven models:
+    per-attempt occupancy, dwell, re-entry and next-state rates from the published trajectories, then the
+    10,000-draw family bootstrap with simultaneous intervals."""
+    import numpy as np
+    import pandas as pd
+    from moe_exp.research_campaign_v3_r6.statistics import bootstrap_panel, trajectories
+    root = Path(binding['root'])
+    inputs = verified(root/'lfm25/DISCOVERY_INPUTS.json')
+    require(file_sha(Path(inputs['sentences'])) == inputs['sentences_sha256'], 'LFM derived sentences changed')
+    sentences = pd.read_parquet(inputs['sentences']).to_dict('records')
+    dynamics = verified(root/'lfm25/DYNAMICS.json')
+    recomputed = trajectories(sentences)
+    require(all(canonical(dynamics[k]) == canonical(recomputed[k]) for k in ('dwell', 'transitions', 'reentry')),
+            'published LFM trajectories differ from the current sentences')
+    source_lookup = {s['attempt_id']: s for s in inputs['sources']}
+    by_attempt = defaultdict(list)
+    for s in sentences:
+        by_attempt[s['attempt_id']].append(s)
+    dwell_by_attempt, transitions_by_attempt, reentry_by_attempt = defaultdict(list), defaultdict(list), defaultdict(list)
+    for d in dynamics['dwell']:
+        dwell_by_attempt[d['attempt_id']].append(d)
+    for d in dynamics['transitions']:
+        transitions_by_attempt[d['attempt_id']].append(d)
+    for d in dynamics['reentry']:
+        reentry_by_attempt[d['attempt_id']].append(d)
+    rows = []
+    for aid, sent in by_attempt.items():
+        source = source_lookup[aid]
+        n = sum(s['n_tokens'] for s in sent)
+        row = {'benchmark': source['benchmark'], 'family': source['family'], 'attempt_id': aid,
+               'observed_labelled_tokens': n,
+               'label_coverage': n/source['completion_tokens'] if source['completion_tokens'] else None}
+        for c in CLASSES:
+            row[c+':occupancy'] = sum(s['n_tokens'] for s in sent if s['class'] == c)/n if n else None
+            dwell = [d for d in dwell_by_attempt[aid] if d['class'] == c]
+            uncensored = [d['tokens'] for d in dwell if not d['left_censored'] and not d['right_censored']]
+            row[c+':observed_dwell_tokens'] = float(np.mean([d['tokens'] for d in dwell])) if dwell else None
+            row[c+':uncensored_dwell_tokens'] = float(np.mean(uncensored)) if uncensored else None
+            trans = [d for d in transitions_by_attempt[aid] if d['source'] == c]
+            row[c+':reentry_per_observed_boundary'] = (sum(d['class'] == c for d in reentry_by_attempt[aid])/len(trans)
+                                                       if trans else None)
+            for next_class in CLASSES:
+                row[c+':next:'+next_class] = sum(d['destination'] == next_class for d in trans)/len(trans) if trans else None
+        rows.append(row)
+    pd.DataFrame(rows).to_parquet(Path(binding['config']['bulk_root'])/'lfm25/derived/native_dynamics_estimands.parquet',
+                                  index=False)
+    columns = sorted({k for r in rows for k in r if k not in ('benchmark', 'family', 'attempt_id')})
+    return publish(root/'lfm25/NATIVE_DYNAMICS_SUMMARY.json',
+                   bootstrap_panel(rows, columns, panel='native-dynamics:lfm25'))

@@ -23,7 +23,7 @@ class Units:
             return verified(folder / 'RESULT.json')
         if (folder / 'OUTPUT.json').exists():
             return {'status': 'output', 'path': str(folder / 'OUTPUT.json')}
-        if (folder / 'INTENT.json').exists():
+        if (folder / 'INTENT.json').exists() or (folder / 'ADMITTED.json').exists():
             return {'status': 'unknown', 'ambiguous_admission': True,
                     'admitted_receipt': (folder / 'ADMITTED.json').exists()}
         return None
