@@ -12,10 +12,15 @@ qualification. Historical r8 outputs retain their incomplete original source
 closure; they are never products of this release.
 
 `BINDING.json` changes only the private bulk/control destinations. `SOURCE.json`
-will bind the scoped code commit, Python closure, wrappers, tests, inputs and
+binds code commit `5614db4`, the Python closure, wrappers, tests, inputs and
 installed runtime. `COHORT.json` follows that source receipt and fixes the
 population, classifier folds, reader configuration and historical references.
 `ENGINEERING.json` fixes eight four-cell blocks per model using metadata only.
+`RELEASE_READINESS.json` records 64 cells, 12 separate canaries and 134 frozen
+validation cases. The allocated full suite and saved-token qualification remain
+required. `PRE_SUBMISSION_CORRECTION.json` preserves the rejected metadata-only
+candidate and its zero-token-admission correction; neither candidate submitted
+an allocation before sealing.
 
 The approved allocation limits are:
 
@@ -77,3 +82,4 @@ numbers are not submitted jobs, and the estimates are not guaranteed.
 
 Remaining manuscript work is separate: LFM/readout integration, accepted
 text-judge corrections, outstanding page reviews and final PDF verification.
+Standalone exhibits also require their final author-style and visual check.
