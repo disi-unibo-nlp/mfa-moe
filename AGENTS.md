@@ -1,3 +1,86 @@
+**Alignment v3 whole-reasoning continuation — 2026-10-20:** this session is
+the only owner and submitter; the second session is closed. Preserve commits
+abbcffd, 385ea15, 0c0243b and both r2 feasibility records. The user authorized
+the full correction, local commit, new whole release r3, one allocated CPU
+validation, canaries and production without further approval. Continue F-0003
+and D-0002 in `report/whole-reasoning-20261020-r3/`; the earlier 512-token rescue
+is superseded and must not restart. New work stays within 72 GPU-hours and
+16 CPU core-hours; retained rescue engineering 0.346111 GPU-hours is separate.
+Use control-feasible RD nominations with exact layer/quintile/role controls at
+both doses, never tertiles. The greedy walk must match all 70 saved GPT DP
+optima and preserve every Qwen/GPT suppress exact-rank cell. Execute with 64
+in flight and continuous admission: all native and efficiency-directed rows
+first, then remaining promote rows, family/arm ordered within each tier.
+Canaries use the same eight families and 48 rows at production allowances;
+relative gates are cap excess >0.15, geometric length ratio >1.40 and 16-gram
+excess >0.10 against their own native/native_repeat references. Main/half-dose
+software qualification remains mandatory. Main canary maxima are GPT45/Qwen90
+minutes; production is 2 GPT165-minute and 7 Qwen240-minute two-GPU shards,
+all unheld afterok on a passing canary (71.5 GPU-hour base maximum). Any half
+canary must also fit actual charged usage plus remaining allocation maxima.
+The one-CPU/2-GB/16-hour monitor never stops production on its own deadline,
+CPU reserve or transient scheduler/quota errors; retry errors after 60 seconds.
+Only declared early gates, quarter projection, storage reserve or October23
+05:30 Rome cutoff publish scientific STOP. Queue each eight-CPU/90-minute
+extraction with its model's shards, and eight-CPU/120-minute analysis afterany
+both extractions. CPU walltime reservations exceed 16 core-hours if exhausted:
+charge actual usage, reserve CPU tail work and bound CPU workers separately,
+without stopping GPUs. Exclude non-nominated cells as not_in_design; every
+efficiency cell must be nominated. Disclose extraction failures, bound failed
+coverage units, observe closed reasoning even at a cap, and use paired native
+repeat noise with driver accuracy for SUSPECTED planning. Report manipulation
+checks and exploratory-bootstrap differences; rerun main/strong analyses in
+fresh directories. No canonical manuscript edits or remote pushes. This note
+records authorization and implementation requirements, not completed science.
+
+**Corrected causal rescue accepted — 2026-10-20:** continue
+`report/final-routing-rescue-20261020-r3/COHORT.json` and ledger feature F-0002.
+The user approved the final 64-GPU/16-CPU-hour plan and instructed “keep going”
+after r2 failed. Source 0084256 and manifest fbc7ccd are locally committed.
+CPU qualification 61554184 completed 0:0 after 637 seconds: all 138 allocated
+tests and all 5380 saved-capture/token-replay qualifications passed. GPT/Qwen
+engineering 61554207/61554215 are accepted, resource-verified and pending Priority. Generation
+is not yet submitted; it requires actual engineering qualifications. The 138
+corrected local tests pass. R2 CPU 61547162 remains FAILED 1:0 after 176 seconds;
+its 12 fixture errors selected system temporary storage. All three r2 GPU jobs
+cancelled with zero runtime, Start=None and no allocation. Fresh WORK roots,
+explicit task staging and native predecessor accounting preserve its 0.195556
+CPU core-hours; no budget is reset. Preserve both releases, every source archive
+and receipt, and the fixed 7424/2007/37 population. Science cutoff is October 23
+05:30 Rome, report deadline 11:30; follow native status and the existing bounded
+commands. Saved qualification does not establish allocated engineering or
+completed science. Canonical manuscript edits and remote pushes remain excluded.
+
+**Steering audit — 2026-10-20:** native queue is empty. Later reduced-driver
+work supersedes the October 16 execution snapshot below: saved eight-model
+analysis contains all 29,377 executable continuations. Rescue jobs
+61497098/61497099 both completed in Slurm, but their shared store contains
+3,712 GPT and 1,705 Qwen3.6 completions; 2,007 Qwen assignments are untouched.
+Source changes reused the same IDs: 29 GPT completions are uncapped and eight
+Qwen completions contain earlier-version tokens. Only 5,380/7,424 assignments
+meet r8 positive-source/window eligibility, which is not full qualification.
+Reader plans 61497693/61497694 failed on the wrong store root. No rescue
+reader GPU job or new job was submitted by this audit.
+
+See `report/final-routing-rescue-20261019-r1/README.md`,
+`OBSERVED_STATUS.json` and `GENERATION_PROVENANCE_AUDIT.json`. All failures
+remain charged: rescue usage is 16.122222 GPU-hours against the approved
+20-hour ceiling; the original two-hour/two-GPU reader would exceed it.
+Preserve the verified `SOURCE-r8.tar.gz` and every historical receipt.
+Reader/provenance, signed-interval, missing-outcome/bootstrap and score-helper
+corrections are uncommitted development changes, not a released binding.
+The new execution guard rejects old unbound stores before model loading;
+explicit fresh HOME/WORK bindings preserve all scientific parameters. Rescue
+completion receipts now count every assigned state, with CLI exit 2 when work
+is incomplete. Generation wrappers forward their source receipt and use WORK
+staging. Fifty-two focused CPU tests pass; see `AUDIT_VALIDATION-r1.json`.
+Actual saved metadata checks pass, but saved-token replay and allocated
+qualification remain incomplete. Do not overwrite r8 seals or blindly resume
+its mixed store. Prepare an explicit cohort/release, engineering telemetry,
+reader/analysis integration and revised budget admission before release.
+The October 16 SSH exception remains unused; this audit used native login-side
+accounting. No manuscript changes or remote pushes.
+
 **Study accounting mount failure; exception pending — 2026-10-16:** CPU60676733 failed before tests/model loading because compute nodes lack `/cineca`. An actual read-only step in existing allocation60676738 confirmed `/leonardo/cineca` exists, but native saldo hard-codes `/cineca/usr/acct/bin/saldo.pl`; adding PATH cannot fix it. Engine60676737 and prices60676738/60676739 exited upstream_unavailable without model loading; owners60676740–60676742 failed on the same accounting call. Login-side reconciliation submitted original closeout60676900/60676901; both COMPLETED0:0 (20/8s). Release2f71a69 is terminal, required results incomplete, manuscript not integrated. No eight-model qualification or production was submitted. All failures remain charged and all frozen sources unchanged.
 
 A short strict-SSH accounting-only query to `lmolfett@login01.leonardo.local /cineca/bin/saldo -b` was rejected BEFORE execution by automatic approval review because installed rules prohibit SSH back to login. An explicit user exception is pending; do not retry or route around this rejection without it. Prepared maintained-source fallback requires a separate approved receipt and performs no SSH while it is absent. Local tests/reviews are recorded in STUDY_ACCOUNTING_CORRECTION_PENDING.json when complete. Further preparation forecast including one corrected CPU validation is CPU39.679167/40, qualification829.316667/1280, reader79.827778/80, including all prior usage and margin. Reporting60509618–60509621 remains unchanged. See STUDY_ACCOUNTING_MOUNT_FAILURE.json. Earlier running/automatic observations below are historical.

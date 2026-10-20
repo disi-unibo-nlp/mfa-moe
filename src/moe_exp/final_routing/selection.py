@@ -1,5 +1,6 @@
 """Cross-fitted COUNT nominations; legacy mass selectors are never substituted."""
 from collections import Counter
+import math
 import numpy as np
 from .common import CLASSES, digest, require
 from .design import strengths
@@ -193,6 +194,55 @@ def global_pairs(counts, tokens, sources, layers, k, activate_count, deactivate_
                             'candidates': candidates, 'selected': selected, 'availability': availability,
                             'frequency': frequency.tolist(), 'sign_refits': 4, 'native_k': k})
     return records
+
+
+def select_pairs(candidates: list[dict], count: int, layers: list[int], role: str, *,
+                 frequency=None, excluded=(), fixed_targets=()) -> tuple[list[dict], dict]:
+    """Walk absolute-RD ranks under layer caps and optional joint control capacity.
+
+    Args:
+        candidates: Sign-stable pairs in descending absolute risk difference.
+        count, layers, role: Requested dose, physical layers and target role.
+        frequency: Optional training-only frequencies for exact quintile matching.
+        excluded: Fixed targets and opposite-polarity exclusions for this cell.
+        fixed_targets: Previously selected activation targets needing controls too.
+
+    Returns:
+        Selected pairs and the unchanged half-availability qualification record.
+    """
+    cap = 1 if role == 'activate' else math.ceil(count/len(layers))
+    bins, capacity = {}, Counter()
+    excluded = set(map(tuple, excluded))
+    if frequency is not None:
+        for layer, rates in zip(layers, frequency):
+            require(np.isfinite(rates).all(), 'native frequency missing for whole selection')
+            for rank, expert in enumerate(sorted(range(len(rates)), key=lambda e: (rates[e], e))):
+                bins[layer, expert] = (layer, min(4, rank*5//len(rates)))
+        capacity.update(bin_id for pair, bin_id in bins.items() if pair not in excluded)
+        capacity.subtract(bins[p['layer'], p['expert']] for p in fixed_targets)
+    used, selected = Counter(), []
+    for pair in candidates:
+        if len(selected) == count:
+            break
+        key = pair['layer'], pair['expert']
+        # A new target consumes its own pool slot and one distinct control;
+        # a pair already excluded consumes only the control. Reserve activation
+        # controls jointly, so later deactivation draws cannot reuse them.
+        cost = 1+(key not in excluded)
+        if used[pair['layer']] >= cap or (bins and capacity[bins[key]] < cost):
+            continue
+        selected.append(pair)
+        used[pair['layer']] += 1
+        if bins:
+            capacity[bins[key]] -= cost
+    qualified = len(selected) >= math.ceil(count/2)
+    return (selected if qualified else []), {
+        'requested': count,
+        'available': len(selected),
+        'used': len(selected) if qualified else 0,
+        'per_layer_cap': cap,
+        'qualified': qualified,
+    }
 
 
 def layer_matched_controls(activate, deactivate, frequency, layers, excluded, identity, seed=20261020):

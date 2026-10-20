@@ -234,7 +234,7 @@ class AnalysisTests(unittest.TestCase):
         self.assertAlmostEqual(capped['log_reasoning:lower'], math.log1p(4000))
         self.assertAlmostEqual(capped['log_reasoning:upper'], math.log1p(9000))
         self.assertEqual(capped['accuracy:upper'], 0)
-        self.assertAlmostEqual(unit_bounds({**row, 'reasoning_end': 4000})['log_reasoning:upper'], math.log1p(9000))
+        self.assertAlmostEqual(unit_bounds({**row, 'reasoning_end': 4000})['log_reasoning:upper'], math.log1p(4000))
         missing = unit_bounds({'total_allowance': 7000, 'outcome_status': 'missing'})
         self.assertEqual(missing['log_reasoning:lower'], 0)
         self.assertEqual(missing['accuracy:lower'], 0)
@@ -315,6 +315,9 @@ class ManifestTests(unittest.TestCase):
             self.assertEqual(len(rows), expected)
             self.assertEqual(len({r['uid'] for r in rows}), expected)
             self.assertEqual(sum(r['audit_capture'] for r in rows), 32)
+            canary = whole.canary_rows({**value, 'sha256': 'synthetic-manifest'})
+            self.assertEqual(len(canary), 48)
+            self.assertTrue(all(r['total_allowance'] == r['horizon'] == 32766 for r in canary))
             for family, members in groupby(rows, key=lambda r: r['family']):
                 members = list(members)
                 self.assertEqual([r['arm'] for r in members[:2]], ['native', 'native_repeat'])
@@ -358,13 +361,14 @@ class ExecutionGateTests(unittest.TestCase):
                 whole.bound_store('gpt', 'main')
 
     def test_only_fluency_failure_selects_the_one_half_dose_fallback(self):
-        schedule = {'canaries': {'gpt': [{'id': '1', 'dose': 'main'}]}, 'production': {'gpt': []}}
+        schedule = {'canaries': {'gpt': [{'id': '1', 'dose': 'main', 'gpus': 2, 'minutes': 45}]},
+                    'production': {'gpt': []}}
         publish(self.root/'gpt/CANARY.json', {'gate': {'passed': False, 'fluency_failures': ['cap'],
                                                     'software_failures': []}})
         publish(self.root/'gpt/WHOLE_HALF.json', {'dose': 'half', 'records': []})
         with patch.object(whole, 'submit_stage', return_value={'id': '2', 'dose': 'half'}) as submit, \
              patch.object(whole.driver, 'checkpoint'):
-            whole.advance_canary(schedule, 'gpt', {'1': {'state': 'FAILED'}}, set())
+            whole.advance_canary(schedule, 'gpt', {'1': {'state': 'FAILED', 'elapsed': 60}}, set())
         self.assertEqual(submit.call_args.kwargs['dose'], 'half')
         self.assertEqual([job['dose'] for job in schedule['canaries']['gpt']], ['main', 'half'])
         self.assertEqual(whole.verified(self.root/'gpt/SELECTED.json')['dose'], 'half')
@@ -379,24 +383,26 @@ class ExecutionGateTests(unittest.TestCase):
         submit.assert_not_called()
         self.assertEqual(stopped, {'gpt'})
 
-    def test_passing_canaries_submit_seven_shards_with_only_six_released(self):
+    def test_passing_canaries_submit_nine_unheld_shards_and_dependent_cpu_work(self):
         schedule = {'canaries': {m: [{'id': str(i+1), 'dose': 'main'}] for i, m in enumerate(whole.MODELS)},
                     'production': {m: [] for m in whole.MODELS}}
         for model in whole.MODELS:
             publish(self.root/model/'CANARY.json', {'gate': {'passed': True}})
-        def submission(command, **kwargs):
-            return {'id': str(len(calls)+10), 'held': kwargs['held']}
         calls = []
         def record_submission(command, **kwargs):
-            calls.append(kwargs)
-            return submission(command, **kwargs)
+            calls.append({'command': command, **kwargs})
+            return {'id': str(len(calls)+10), 'held': kwargs.get('held', False)}
         with patch.object(whole, 'submit_stage', side_effect=record_submission), \
              patch.object(whole, 'bound_store'), patch.object(whole.driver, 'checkpoint'):
             for model in whole.MODELS:
                 whole.advance_canary(schedule, model, {'1': {'state': 'COMPLETED'}, '2': {'state': 'COMPLETED'}}, set())
-        self.assertEqual(len(calls), 7)
-        self.assertEqual(sum(c['held'] for c in calls), 1)
-        self.assertTrue(all(c['dependency'].startswith('afterok:') for c in calls))
+        production = [c for c in calls if c['command'] == 'run']
+        self.assertEqual(len(production), 9)
+        self.assertFalse(any(c.get('held') for c in calls))
+        self.assertTrue(all(c['dependency'].startswith('afterok:') for c in production))
+        self.assertEqual([c['command'] for c in calls].count('extract'), 2)
+        self.assertEqual(calls[-1]['command'], 'analyze')
+        self.assertTrue(all(c['dependency'].startswith('afterany:') for c in calls if c['command'] != 'run'))
 
     def test_quarter_pair_projection_cancels_exact_remaining_shards_above_ceiling(self):
         schedule = {'production': {'gpt': [{'id': '10', 'gpus': 2}], 'qwen36': []},
@@ -408,7 +414,7 @@ class ExecutionGateTests(unittest.TestCase):
         self.assertTrue((self.root/'STOP.json').exists())
         self.assertEqual(stopped, {'gpt', 'qwen36'})
         self.assertEqual([job['id'] for job in cancel.call_args.args[0]], ['10'])
-        self.assertAlmostEqual(whole.verified(self.root/'gpt/PROJECTION.json')['total_projected_gpu_hours'], 90.3)
+        self.assertAlmostEqual(whole.verified(self.root/'gpt/PROJECTION.json')['total_projected_gpu_hours'], 98.)
 
     def test_accounting_carries_all_earlier_terminal_costs(self):
         jobs = [{'id': 'gpu', 'gpus': 2, 'cpus': 16, 'submitted': 0},
@@ -434,7 +440,8 @@ class ExecutionGateTests(unittest.TestCase):
              patch.object(whole, 'cancel_jobs') as cancel, patch.object(whole, 'advance_extraction') as extraction:
             whole.monitor()
         extraction.assert_not_called()
-        self.assertEqual(whole.verified(self.root/'STOP.json')['reason'], 'cpu_validation_failed')
+        self.assertFalse((self.root/'STOP.json').exists())
+        self.assertEqual(whole.load(self.root/'VALIDATION_STOP.json')['reason'], 'cpu_validation_failed')
         self.assertTrue(all(job['gpus'] == 2 for job in cancel.call_args.args[0]))
 
 
@@ -494,8 +501,12 @@ class ClosedAnalysisTests(unittest.TestCase):
              patch.object(whole_effects, 'load', side_effect=lambda path: {'records': allocation}
                           if Path(path).name == 'ALLOCATION.json' else original_load(path)):
             publish(Path(temporary)/'RELEASE.json', {'role': 'bounded closeout fixture'})
+            publish(Path(temporary)/'gpt/extraction/EXTRACTION.json', {
+                'failures': [{'uid': 'failed-replay-unit', 'error': 'synthetic replay failure'}]})
             result = whole_effects.analyze()
             self.assertTrue((Path(temporary)/'analysis/EFFECTS.json').is_file())
+            self.assertIn('Extraction failures: 1', (Path(temporary)/'analysis/REPORT.md').read_text())
+        self.assertEqual(result['extraction_failures']['count'], 1)
         self.assertEqual(len(result['primary']), 6)
         self.assertTrue(all(value['status'] == 'qualified_bounds' for value in result['primary'].values()))
         self.assertEqual(result['primary']['gpt:accuracy']['bound_simultaneous'], [-1., 1.])

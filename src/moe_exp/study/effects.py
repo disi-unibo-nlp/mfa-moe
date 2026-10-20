@@ -753,6 +753,20 @@ def _qualified_efficiency_link(prereg: Path, pairs, boot) -> dict:
     result['token_primary'] = 'activate:log_total'
     result['token_secondary'] = 'activate:log_reasoning'
     result['frozen_token_predictor'] = 'tok_reason'
+    bounded = []
+    for row in pairs.to_dict('records'):
+        reasons = []
+        for metric in ('log_total', 'correct'):
+            name = 'activate:'+metric
+            if not np.isfinite(row.get(name, np.nan)) or row.get(name+':lower') != row.get(name+':upper'):
+                reasons.append(metric+': capped, missing or unknown endpoint; retained interval')
+        if reasons:
+            bounded.append({**{key: row[key] for key in ('model', 'family', 'class', 'layer_regime') if key in row},
+                            'reasons': reasons,
+                            'log_total_bounds': [row.get('activate:log_total:lower'), row.get('activate:log_total:upper')],
+                            'accuracy_bounds': [row.get('activate:correct:lower'), row.get('activate:correct:upper')]})
+    result['bounded_rows'] = bounded
+    result['bounded_row_count'] = len(bounded)
     return result
 
 
