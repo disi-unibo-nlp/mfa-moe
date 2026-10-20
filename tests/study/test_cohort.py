@@ -71,6 +71,17 @@ class CohortContracts(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'deadline expired'):
             ownership.check_time({'science_cutoff': '2000-01-01T00:00:00+00:00'})
 
+    def test_task_staging_pins_cached_default_to_private_work(self):
+        with patch.dict(os.environ, {'TMPDIR': str(self.root)}), patch.object(tempfile, 'tempdir', '/tmp'):
+            self.assertEqual(ownership.task_staging(), self.root)
+            with tempfile.TemporaryDirectory() as directory:
+                self.assertTrue(Path(directory).is_relative_to(self.root))
+
+    def test_task_staging_rejects_system_tmp_before_creating_files(self):
+        with patch.dict(os.environ, {'TMPDIR': '/tmp'}):
+            with self.assertRaisesRegex(ValueError, 'user HOME/WORK'):
+                ownership.task_staging()
+
     def test_admitted_without_intent_or_output_stays_unknown(self):
         from moe_exp.study.common import Units
         units = Units(self.root/'annotations')

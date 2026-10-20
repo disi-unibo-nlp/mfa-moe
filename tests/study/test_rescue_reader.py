@@ -5,7 +5,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from moe_exp.study.common import digest, file_sha, publish
+from moe_exp.study.common import WORK, digest, file_sha, publish
 from moe_exp.study import rescue_reader
 from moe_exp.study.rescue_reader import RescueContexts, frozen_campaign, generation_matches, validate_inventory
 
@@ -13,7 +13,7 @@ from moe_exp.study.rescue_reader import RescueContexts, frozen_campaign, generat
 class RescueReaderTest(unittest.TestCase):
     def setUp(self):
         """Build a saved-driver fixture with valid assignment/output/result joins."""
-        self.temporary = tempfile.TemporaryDirectory()
+        self.temporary = tempfile.TemporaryDirectory(dir=WORK/'tools/tmp')
         self.addCleanup(self.temporary.cleanup)
         self.root = Path(self.temporary.name)
         self.study = {

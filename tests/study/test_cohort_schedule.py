@@ -5,7 +5,7 @@ import tempfile
 import unittest
 from unittest.mock import patch
 from moe_exp.study.common import WORK, publish, verified
-from moe_exp.study.reservations import CohortSchedule
+from moe_exp.study.reservations import CohortSchedule, freeze_predecessor
 
 
 class CohortScheduleTests(unittest.TestCase):
@@ -75,6 +75,49 @@ class CohortScheduleTests(unittest.TestCase):
             'job': '123', 'card': {'cohort_sha256': self.value['sha256']}})
         with patch.object(schedule, 'status', return_value={'records': [predecessor]}):
             self.assertEqual(schedule._dependencies(schedule.card('engineering', 'gpt')), ['123'])
+
+    def predecessor_fixture(self):
+        """Build one accepted failed CPU job in an immutable predecessor journal."""
+        source = self.root/'SOURCE.json'
+        publish(source, {'release': 'failed'})
+        self.value.update({'records': [{'uid': 'original'}], 'source': {'path': str(source)}})
+        self.value['paths']['bulk'] = str(self.root/'old-bulk')
+        path = self.root/'COHORT.json'
+        publish(path, self.value)
+        schedule = CohortSchedule(path)
+        card = schedule.card('validate', None)
+        folder = self.root/'schedule'/'validate-all'
+        publish(folder/'RESERVED.json', {'card': card})
+        publish(folder/'SBATCH.json', {'job': '7'})
+        publish(folder/'ACCEPTED.json', {'job': '7', 'card': card})
+        return path
+
+    def test_terminal_predecessor_is_charged_once_and_cannot_satisfy_new_prerequisites(self):
+        path = self.predecessor_fixture()
+        usage = {'job': '7', 'state': 'FAILED', 'elapsed_seconds': 176, 'exit_code': '1:0'}
+        with patch('moe_exp.study.ownership.accounting', return_value=usage):
+            previous = freeze_predecessor(path, self.value['records'], self.root/'new-bulk')
+            self.value['predecessor'] = previous
+            self.value['paths'] = {'control': str(self.root/'replacement')}
+            schedule = CohortSchedule(self.root/'replacement'/'COHORT.json')
+            state = schedule.status()
+            self.assertAlmostEqual(state['totals']['cpu_core_hours'], 176*4/3600)
+            self.assertEqual(state['records'], [])
+            self.assertEqual(len(state['predecessor_records']), 1)
+            with self.assertRaisesRegex(ValueError, 'prerequisite not accepted'):
+                schedule._dependencies(schedule.card('engineering', 'gpt'))
+            card = schedule.card('validate', None)
+            publish(schedule.root/'schedule'/'validate-all'/'RESERVED.json', {'card': card})
+            self.assertAlmostEqual(schedule.status()['totals']['cpu_core_hours'], 4+176*4/3600)
+
+    def test_live_or_unresolved_predecessor_rejects_replacement(self):
+        path = self.predecessor_fixture()
+        with patch('moe_exp.study.ownership.accounting', return_value={'state': 'RUNNING'}):
+            with self.assertRaisesRegex(ValueError, 'still live'):
+                freeze_predecessor(path, self.value['records'], self.root/'new-bulk')
+        (self.root/'schedule'/'validate-all'/'ACCEPTED.json').unlink()
+        with self.assertRaisesRegex(ValueError, 'unresolved reservation'):
+            freeze_predecessor(path, self.value['records'], self.root/'new-bulk')
 
 
 if __name__ == '__main__':

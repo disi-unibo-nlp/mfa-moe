@@ -34,5 +34,5 @@ export OPENBLAS_NUM_THREADS="$SLURM_CPUS_PER_TASK"
 export MKL_NUM_THREADS="$SLURM_CPUS_PER_TASK"
 export HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1
 export VLLM_USE_FLASHINFER_SAMPLER=0 VLLM_ENABLE_V1_MULTIPROCESSING=0
-exec srun --kill-on-bad-exit=1 "$env_root/bin/python" -B -m moe_exp.study.driver \
+exec srun --kill-on-bad-exit=1 env TMPDIR="$tmp" "$env_root/bin/python" -B -m moe_exp.study.driver \
     run --model "$model" --shard 0/1 --design rescue --max-inflight 8 --source-receipt "$source_receipt" --cohort "$4"

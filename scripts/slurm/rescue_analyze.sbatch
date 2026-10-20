@@ -12,10 +12,13 @@ fi
 cd /leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo
 env_root="$1"
 module load python/3.11.7
+tmp="/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/rescue-analyze-${SLURM_JOB_ID}"
+mkdir -p "$tmp"
+export TMPDIR="$tmp" MPLCONFIGDIR="$tmp/matplotlib"
 export PYTHONDONTWRITEBYTECODE=1
 export PATH="$env_root/bin:$PATH"
 export PYTHONPATH="$PWD/src:$PWD/scripts/experimental_resume${PYTHONPATH:+:$PYTHONPATH}"
 export OMP_NUM_THREADS="$SLURM_CPUS_PER_TASK"
 export OPENBLAS_NUM_THREADS="$SLURM_CPUS_PER_TASK"
 export MKL_NUM_THREADS="$SLURM_CPUS_PER_TASK"
-exec srun --kill-on-bad-exit=1 "$env_root/bin/python" -B -m moe_exp.study.rescue analyze --cohort "$2"
+exec srun --kill-on-bad-exit=1 env TMPDIR="$tmp" "$env_root/bin/python" -B -m moe_exp.study.rescue analyze --cohort "$2"

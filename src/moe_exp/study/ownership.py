@@ -65,6 +65,21 @@ def allocation(job: str, shape: dict, run=command) -> dict:
     return fields
 
 
+def task_staging() -> Path:
+    """Pin Python temporary files to the task's explicit HOME/WORK directory.
+
+    Returns:
+        Existing private staging directory; invalid task environments fail before
+        tests or model loading rather than falling back to a system directory.
+    """
+    import tempfile
+    require(bool(os.environ.get('TMPDIR')), 'worker needs explicit private TMPDIR')
+    root = writable(Path(os.environ['TMPDIR']))
+    require(root.is_dir(), 'worker private TMPDIR does not exist')
+    tempfile.tempdir = str(root)
+    return root
+
+
 @contextmanager
 def store_lock(root: Path):
     """Reject a concurrent owner immediately, without waiting for another engine."""
@@ -140,6 +155,7 @@ def worker(root: Path, execution: dict, *, run=command):
     root = writable(root)
     job = os.environ.get('SLURM_JOB_ID', '')
     require(job.isdigit(), 'cohort worker requires an accepted Slurm job owner')
+    task_staging()
     with store_lock(root):
         require(not (root/'SEALED.json').exists(), 'terminal generation index sealed this store against new execution')
         owner = verified(root/'owners'/(job+'.json'))
