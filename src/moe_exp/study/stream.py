@@ -259,7 +259,7 @@ class StreamCapture:
         identity = tuple(uid for uid, _ in work)
         cached = self.whole_role_cache.get(layer)
         if cached is None or cached[0] != identity:
-            roles = torch.zeros((len(work), 2, self.contract['experts']), dtype=torch.bool)
+            roles = torch.zeros((len(work), 2, self.contract['experts']), dtype=torch.bool, device='cpu')
             for index, (uid, _) in enumerate(work):
                 action = self.requests[uid]['actions'].get(layer, {})
                 roles[index, 0, action.get('activate', [])] = True
@@ -297,7 +297,8 @@ class StreamCapture:
         weights, ids = nw.clone(), ni.clone()
         weights[take], ids[take] = aw, ai
         values = self.whole_dose(nw[take], ni[take], aw, ai, active,
-                                 torch.tensor(prompts, device=logits.device), roles, group_ids, len(work))
+                                 torch.tensor(prompts, device=logits.device), roles,
+                                 torch.tensor([len(rows) for _, rows in work], device=logits.device))
         totals = self._whole_buffer(layer, logits.device)
         slots = torch.tensor([self.whole_slots[uid] for uid, _ in work], device=logits.device)
         totals.index_add_(0, slots, values)
@@ -443,8 +444,8 @@ DOSE_KEYS = ('active_positions', 'active_prompt_positions', 'active_generated_po
              'l1', 'finite', 'membership_failures', 'observations')
 
 
-def batched_dose(native_weights, native_ids, weights, ids, active, prompt, roles, groups, count):
-    """Reduce per-token dose into per-request counters in two GPU reductions."""
+def batched_dose(native_weights, native_ids, weights, ids, active, prompt, roles, lengths):
+    """Reduce contiguous request segments deterministically, preserving exact rank agreement."""
     import torch
     experts = roles.shape[-1]
     native = torch.zeros((len(ids), experts), device=weights.device, dtype=torch.float32)
@@ -463,8 +464,10 @@ def batched_dose(native_weights, native_ids, weights, ids, active, prompt, roles
         ea/weights.sum(-1).clamp_min(1e-30)*active,
         (native-executed).abs().sum(-1)*active, (~torch.isfinite(weights).all(-1)).float(),
         failed, torch.zeros_like(active)), -1).float()
-    totals = torch.zeros((count, len(DOSE_KEYS)), device=weights.device, dtype=torch.float32)
-    totals.index_add_(0, groups, values)
+    # Atomic floating sums can differ between tensor-parallel ranks. Each
+    # request owns a contiguous segment, so one fixed-order segment sum suffices.
+    totals = (values.clone() if len(values) == len(lengths) else
+              torch.segment_reduce(values, 'sum', lengths=lengths, unsafe=True))
     totals[:, 13] = (totals[:, 13] == 0).float()
     totals[:, 15] = 1
     return totals

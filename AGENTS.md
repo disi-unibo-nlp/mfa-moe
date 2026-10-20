@@ -1,3 +1,15 @@
+**Whole r3 deterministic batching — 2026-10-20:** source3a848b4's allocated
+CPU61580365 completed0:0 in149s; all190tests passed and both doses rebuilt.
+No GPU job was submitted from that source. Code review then replaced its
+floating atomic grouped reduction with fixed-order contiguous segment sums,
+preserving the strict tensor-parallel capture hashes. Seven focused full-graph,
+operator, counter, complete-audit and recompute tests pass. The final source
+continues at `report/whole-reasoning-20261020-r3-batched/deterministic/` and
+requires allocated qualification before GPU release. Preserve both prior roots
+and their seals; new-GPU prior remains0.842222hours, cumulative predecessor
+and local CPU charge is1.637778core-hours, retained rescue0.346111GPU-hours
+stays separate. Scientific parameters and all qualification gates are unchanged.
+
 **Whole r3 batching correction — 2026-10-20:** the original r3 CPU qualification
 remains successful, but no GPU qualification or production succeeded. Native
 GPT61578496/Qwen61578497 and monitor61578500 were canceled after758s when
