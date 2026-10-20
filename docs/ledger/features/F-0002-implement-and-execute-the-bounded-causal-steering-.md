@@ -1,5 +1,5 @@
 # F-0002: Implement and execute the bounded causal steering analysis
-- status: active
+- status: abandoned
 - date: 2026-10-20
 - request: Implement the Final implementation and experiment plan in a fresh context and carry the work through implementation and verification. Deliver a reproducible causal analysis of the steering experiments, including a defensible null or inconclusive result if that is what the evidence supports.
 - purpose: Qualify and reconcile historical and newly authorized evidence without changing the scientific design or deleting missing outcomes.
@@ -8,19 +8,21 @@
 - paths: src/moe_exp/study, tests/study, scripts/slurm
 - decisions: D-0001
 
+Replaced by F-0003 at the user's explicit Alignment v2 instruction. Completed evidence and failures remain historical.
+
 ## Tasks
 
 - [x] F-0002.1 Freeze full cohort, source/runtime/classifier bindings, fixed generation roster, historical references and explicit HOME/WORK destinations; evidence: report/final-routing-rescue-20261020-r2/COHORT.json logical SHA 0d6d1c87f4c5e8694d2b5c31f21b632562fdcf4a6278b465b9d48c8c840b2a0f; SOURCE.json binds 626 files and local commit 5614db4455f3a970e9b8e5bece8f4bf5d42673ac. Counts match 5380 candidate, 37 incompatible unknown and 2007 authorized generation assignments.
 - [x] F-0002.2 Enforce accepted job ownership, nonblocking store locks, stable execution identities, exact allocation checks, terminal generation index, no partial redraw and early empty/deadline gates; evidence: commit 0084256, ownership/cohort/execution regressions in the 138 passing allocated tests, and exact accepted owners for 61554184/61554207/61554215. Actual terminal index publication remains part of execution F-0002.11.
 - [x] F-0002.3 Qualify all historical captures, token replay and extraction joins on allocated CPUs, preserving failed assignments as unknown; evidence: 61554184 COMPLETED 0:0 after 637 seconds; all 5380 candidates eligible in r3 SAVED_QUALIFICATION.json eb1a9e9a2c4431d45254f737a7d0ba584bd9b7e60e814a1882e7df38577e1777 and two hashed saved-replay tables. The 37 known incompatible assignments remain unknown; historical source-closure limitations are preserved.
-- [ ] F-0002.4 Freeze deterministic 64-cell engineering design; implement all-layer dose telemetry and native/hooked/zero-pulse, concurrency, pulse-boundary and longest-prefix canaries; pass allocated engineering before science.
-- [ ] F-0002.5 Generate only 2007 untouched Qwen UIDs under the original parameters with at most eight concurrent requests.
+- [-] F-0002.4 Freeze deterministic 64-cell engineering design; implement all-layer dose telemetry and native/hooked/zero-pulse, concurrency, pulse-boundary and longest-prefix canaries; pass allocated engineering before science.; dropped by user 2026-10-20: "This message replaces that plan and the 2026-10-20 final implementation plan." Continued whole-design work is tracked by F-0003.
+- [-] F-0002.5 Generate only 2007 untouched Qwen UIDs under the original parameters with at most eight concurrent requests.; dropped by user 2026-10-20: "This message replaces that plan and the 2026-10-20 final implementation plan." Continued whole-design work is tracked by F-0003.
 - [x] F-0002.6 Integrate exact reader labels and recovery rules; freeze C10 artifact and validate all five folds, index bytes and row joins; evidence: src/moe_exp/study/lexical.py, rescue_reader.py and reader.py; tests/study/test_cohort.py integrated actual effect export, invalid folds/probabilities and tampered snapshot rejection. Deployed READOUT receipt 10a19b41894610fefce128288b1024847eb30209129d8a7046bce142723c6449; all five physical fold hashes checked.
-- [ ] F-0002.7 Implement six contrasts, planned unknowns, conserved 512-token mass, equal weighting, 10000 shared stratified draws, simultaneous bounds, directional response matrices and fixed-seed null diagnostic.
-- [ ] F-0002.8 Freeze 16-stratum 512-occurrence trajectory audit and inclusion probabilities; estimate HT measurement disagreement with separate finite-population uncertainty.
-- [ ] F-0002.9 Reserve full allocations under journal lock, reconcile ambiguous submissions, refresh live preflights, enforce cutoff and protected final-analysis CPU budget; admit reader waves from measured pilot with margin.
+- [-] F-0002.7 Implement six contrasts, planned unknowns, conserved 512-token mass, equal weighting, 10000 shared stratified draws, simultaneous bounds, directional response matrices and fixed-seed null diagnostic.; dropped by user 2026-10-20: "This message replaces that plan and the 2026-10-20 final implementation plan." Continued whole-design work is tracked by F-0003.
+- [-] F-0002.8 Freeze 16-stratum 512-occurrence trajectory audit and inclusion probabilities; estimate HT measurement disagreement with separate finite-population uncertainty.; dropped by user 2026-10-20: "This message replaces that plan and the 2026-10-20 final implementation plan." Continued whole-design work is tracked by F-0003.
+- [-] F-0002.9 Reserve full allocations under journal lock, reconcile ambiguous submissions, refresh live preflights, enforce cutoff and protected final-analysis CPU budget; admit reader waves from measured pilot with margin.; dropped by user 2026-10-20: "This message replaces that plan and the 2026-10-20 final implementation plan." Continued whole-design work is tracked by F-0003.
 - [x] F-0002.10 Complete focused regression and end-to-end checks, review and scoped local commit/seal before execution; halt downstream on software failures; evidence: 138 tests passed in 1037.008 seconds, final 7 accounting tests passed in 0.263 seconds; correction commit 0084256 and r3 RELEASE_READINESS.json. r2 software failure cancelled every dependent GPU job before allocation; all failure receipts and both source archives remain preserved. Allocated frozen-suite and saved-replay evidence remain required by F-0002.3.
-- [ ] F-0002.11 Execute admitted stages, reconcile all accounting and unknowns; produce corrected separate analyses, figures/tables, reproducible commands and manuscript checklist without canonical manuscript edits or pushes.
+- [-] F-0002.11 Execute admitted stages, reconcile all accounting and unknowns; produce corrected separate analyses, figures/tables, reproducible commands and manuscript checklist without canonical manuscript edits or pushes.; dropped by user 2026-10-20: "This message replaces that plan and the 2026-10-20 final implementation plan." Continued whole-design work is tracked by F-0003.
 
 ## Results
 

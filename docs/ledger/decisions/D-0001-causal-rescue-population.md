@@ -1,5 +1,6 @@
 # D-0001: Preserve planned outcomes and fixed causal rescue science
-- status: active
+- status: superseded
+- superseded_by: D-0002
 - date: 2026-10-20
 - decided_by: user
 - scope: The authorized causal steering rescue and corrected main/strong analyses.

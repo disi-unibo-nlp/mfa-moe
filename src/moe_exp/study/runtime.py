@@ -41,8 +41,10 @@ def prompt_prefix(binding, model, row, tokenizer):
     trace = read_source(source['source_location'])
     replay = trace['metadata']['token_replay']
     prompt, completion = replay['prompt_token_ids'], replay['completion_token_ids']
+    require(not row.get('prompt_sha256') or digest(prompt) == row['prompt_sha256'], 'original prompt token IDs changed')
     n = row['source']['prefix_tokens']
-    require(0 < n <= len(completion), 'frozen prefix token boundary differs')
+    require(0 <= n <= len(completion), 'frozen prefix token boundary differs')
+    require(n > 0 or row.get('original_prompt'), 'empty prefix requires an original-prompt assignment')
     return list(prompt), list(completion[:n]), trace
 
 

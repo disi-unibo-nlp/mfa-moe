@@ -93,7 +93,11 @@ def build(receipt_path: Path | None = None, *, study_binding_path: Path | None =
     binding_path = Path(study_binding_path or STUDY_BINDING).resolve()
     load_study_binding(binding_path)
     import subprocess
-    release_commit = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=REPO, text=True).strip()
+    marker = REPO/'RELEASE_COMMIT'
+    release_commit = (marker.read_text().strip() if marker.is_file() else
+                      subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=REPO, text=True).strip())
+    require(len(release_commit) == 40 and all(c in '0123456789abcdef' for c in release_commit),
+            'invalid source release commit')
     files = {str(path): file_sha(path) for path in paths(binding_path).values()}
     value = {'schema': 'final-routing-rescue-source-v2',
              'purpose': 'score-override rescue source receipt',

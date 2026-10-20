@@ -86,8 +86,8 @@ def endpoints(outcome, sentences):
     complete = [s for s in spans if s['complete']]
     first = next((s for s in complete if not s.get('straddles_prefix', False)
                   and 0 <= s['token_start'] < horizon), None)
-    first_post = next((s for s in complete if s['token_start'] >= pulse), None)
-    first_overlap = next((s for s in spans
+    first_post = next((s for s in complete if pulse <= s['token_start'] < horizon and s['token_end'] <= horizon), None)
+    first_overlap = next((s for s in complete
                           if s['token_start'] < pulse and s['token_end'] > 0), None)
     if first_overlap is None:
         first_overlap = first_post
@@ -198,6 +198,9 @@ def analysis_assignments(model: str, design: str) -> list[dict]:
         Original assignments; no new continuation or random draw is created.
     """
     from .driver import MANIFESTS
+    if design == 'whole':
+        from .whole import manifest
+        return manifest(model)['records']
     manifest = verified(DRIVER/model/MANIFESTS[design])
     rows = list(manifest['records'])
     if design == 'main' and manifest.get('unavailable'):
@@ -318,6 +321,26 @@ def continuation_table(models, design='main', *, cohort=None, classifier=None, c
         if design == 'strong':  # routing forced over the whole window: measure [0, H) for strong and native rows
             outcomes = outcomes.assign(pulse_tokens=0)
         outcomes = restore_outcomes(outcomes, assignments)
+        if 'total_allowance' not in outcomes and design == 'rescue':
+            outcomes['total_allowance'] = outcomes.horizon
+        if 'total_allowance' not in outcomes:
+            from .runtime import prompt_prefix, remaining
+            study_binding = binding()
+            profile = binding()['models'][model]
+            card = profile['card']
+            by_source, by_uid = {}, {}
+            for assignment in assignments:
+                source = assignment.get('source') or {}
+                if 'attempt_id' not in source:
+                    by_uid[assignment['uid']] = min(card['max_model_len'], card['max_tokens'] or card['max_model_len'])
+                    continue
+                key = source['attempt_id'], source['prefix_tokens']
+                if key not in by_source:
+                    prompt, prefix, _ = prompt_prefix(study_binding, model, assignment, None)
+                    by_source[key] = remaining(profile, prompt, prefix)
+                by_uid[assignment['uid']] = by_source[key]
+            outcomes['total_allowance'] = outcomes.uid.map(by_uid)
+            outcomes['allowance_role'] = 'actual original request allowance; unavailable prompts use a conservative card bound'
         if not sentences.empty:
             from .lexical import LEXICAL, predict
             readout = cohort_value['classifier'] if cohort_value is not None else classifier
@@ -331,6 +354,8 @@ def continuation_table(models, design='main', *, cohort=None, classifier=None, c
                                       'generated_tokens', 'prefix_tokens', 'reasoning_tokens', 'finish_reason',
                                       'strict_correct', 'accuracy_lower', 'accuracy_upper', 'segments', 'outcome_status')}
             row.update({key: o[key] for key in ('layer_regime', 'operator') if key in o})
+            row['total_allowance'] = o['total_allowance']
+            row['reasoning_end'] = o.get('reasoning_end')
             row.update(ended=e['ended'], uncovered=e['uncovered'], covered=e['covered'],
                        available=e['available'], pulse_available=e['pulse_available'])
             row.update(full_ended=e['full_ended'], full_unknown=e['full_unknown'], full_nonreasoning=e['full_nonreasoning'])
@@ -434,6 +459,18 @@ def paired(table):
     t['log_tokens'] = np.log(t.generated_tokens.clip(lower=1))
     t['log_total'] = np.log((t.generated_tokens+t.prefix_tokens).clip(lower=1))
     t['log_reasoning'] = np.log(t.reasoning_tokens.clip(lower=1))
+    for metric, values in (('log_tokens', t.generated_tokens),
+                           ('log_total', t.generated_tokens+t.prefix_tokens),
+                           ('log_reasoning', t.reasoning_tokens)):
+        if 'total_allowance' not in t:
+            continue
+        missing = ~np.isfinite(values.astype(float))
+        capped = (t.finish_reason == 'length') if 'finish_reason' in t else np.zeros(len(t), bool)
+        if metric == 'log_reasoning' and 'reasoning_end' in t:
+            capped &= t.reasoning_end.isna()
+        upper_tokens = t.total_allowance+(t.prefix_tokens.fillna(0) if metric == 'log_total' else 0)
+        t[metric+':lower'] = np.log(values.clip(lower=1)).where(~missing, 0.)
+        t[metric+':upper'] = np.log(upper_tokens.clip(lower=1)).where(missing | capped, t[metric+':lower'])
     t['correct'] = t.strict_correct.astype(float)
     t['correct'] = t['correct'].fillna((t.accuracy_lower+t.accuracy_upper)/2)
     t['correct_lower'] = t.accuracy_lower.astype(float)
@@ -463,6 +500,9 @@ def paired(table):
                     out[f'{direction}:{kind}:vs_native'] = np.nan
                     out[f'{direction}:{kind}:vs_native:lower'] = np.nan
                     out[f'{direction}:{kind}:vs_native:upper'] = np.nan
+                    out[f'random_{direction}:{kind}:vs_native'] = np.nan
+                    out[f'random_{direction}:{kind}:vs_native:lower'] = np.nan
+                    out[f'random_{direction}:{kind}:vs_native:upper'] = np.nan
                     continue
                 lower_key, upper_key = base+'lower_', base+'upper_'
                 # Reversing the contrast also reverses its interval endpoints.
@@ -472,6 +512,9 @@ def paired(table):
                 out[f'{direction}:{kind}:lower'] = sign*(ta[lower_key+c]-ra[upper_key+c])
                 out[f'{direction}:{kind}:upper'] = sign*(ta[upper_key+c]-ra[lower_key+c])
                 out[f'{direction}:{kind}'] = (out[f'{direction}:{kind}:lower']+out[f'{direction}:{kind}:upper'])/2
+                out[f'random_{direction}:{kind}:vs_native'] = sign*(ra[base+c]-nat[base+c]) if nat else np.nan
+                out[f'random_{direction}:{kind}:vs_native:lower'] = sign*(ra[lower_key+c]-nat[upper_key+c]) if nat else np.nan
+                out[f'random_{direction}:{kind}:vs_native:upper'] = sign*(ra[upper_key+c]-nat[lower_key+c]) if nat else np.nan
                 if nat:
                     out[f'{direction}:{kind}:vs_native'] = sign*(ta[base+c]-nat[base+c])
                     out[f'{direction}:{kind}:vs_native:lower'] = sign*(ta[lower_key+c]-nat[upper_key+c])
@@ -505,6 +548,18 @@ def paired(table):
                         continue
                     for bound in ('lower', 'upper'):
                         out[f'{comparison}:correct{suffix}:{bound}'] = out[f'{comparison}:correct_{bound}{suffix}']
+            if ta and ra:
+                for metric in ('log_tokens', 'log_total', 'log_reasoning'):
+                    if metric+':lower' not in ta:
+                        continue
+                    for comparison, treated, control in ((direction, ta, ra),
+                                                          (direction+':vs_native', ta, nat),
+                                                          ('random_'+direction+':vs_native', ra, nat)):
+                        name = (comparison.replace(':vs_native', ':'+metric+':vs_native')
+                                if ':vs_native' in comparison else comparison+':'+metric)
+                        out[name+':lower'] = treated[metric+':lower']-control[metric+':upper'] if control else np.nan
+                        out[name+':upper'] = treated[metric+':upper']-control[metric+':lower'] if control else np.nan
+                        out[name] = (out[name+':lower']+out[name+':upper'])/2
             for metric in ('dyn_selfrate', 'dyn_clsdist', 'dyn_entropy', 'dyn_target_first',
                            'dyn_target_occupancy_sent', 'dyn_target_persistence', 'dyn_target_entry',
                            'dyn_target_exit', 'dyn_target_runmean', 'dyn_target_runs'):
@@ -517,9 +572,10 @@ def paired(table):
             for c2 in CLASSES:  # response matrix: targeted vs random on every observed class
                 if ta and ra:
                     prefix = 'full_occ_' if ta.get('operator') == 'score_override' else 'occ_'
-                    out[f'{direction}:response:{c2}'] = ta[prefix+c2]-ra[prefix+c2]
-                    out[f'{direction}:response:{c2}:lower'] = ta[prefix+'lower_'+c2]-ra[prefix+'upper_'+c2]
-                    out[f'{direction}:response:{c2}:upper'] = ta[prefix+'upper_'+c2]-ra[prefix+'lower_'+c2]
+                    lower_role, upper_role = ('lower_', 'upper_') if sign > 0 else ('upper_', 'lower_')
+                    out[f'{direction}:response:{c2}'] = sign*(ta[prefix+c2]-ra[prefix+c2])
+                    out[f'{direction}:response:{c2}:lower'] = sign*(ta[prefix+lower_role+c2]-ra[prefix+upper_role+c2])
+                    out[f'{direction}:response:{c2}:upper'] = sign*(ta[prefix+upper_role+c2]-ra[prefix+lower_role+c2])
                     out[f'{direction}:response:{c2}'] = (out[f'{direction}:response:{c2}:lower']+
                                                           out[f'{direction}:response:{c2}:upper'])/2
                 else:
@@ -549,7 +605,7 @@ class Bootstrap:
 
     def estimate(self, frame, column):
         """frame rows (family, value); value averaged within family first (equal model/class weights)."""
-        sub = frame[['family', column]]
+        sub = frame[['family', column]].copy()
         if sub.empty:
             return None
         require(set(sub.family) <= set(self.index), 'analysis family is outside the bootstrap population')
@@ -560,7 +616,11 @@ class Bootstrap:
             'benchmarks': len({self.benchmark[self.index[f]] for f in sub.family}),
             'missing_cells': missing,
         }
-        if missing:
+        if missing and column+':lower' in frame and column+':upper' in frame:
+            # Compatibility midpoints only fill this metric, never an unrelated endpoint.
+            absent = ~np.isfinite(sub[column].to_numpy(dtype=float))
+            sub.loc[absent, column] = (frame.loc[absent, column+':lower']+frame.loc[absent, column+':upper'])/2
+        if not np.isfinite(sub[column].to_numpy(dtype=float)).all():
             return {'status': 'unqualified_missing_outcomes', **counts,
                     'reason': 'Unbounded or undefined outcomes remain; no complete-case interval is reported.'}
         means = sub.groupby('family')[column].mean()
@@ -568,10 +628,11 @@ class Bootstrap:
         for f, x in means.items():
             v[self.index[f]] = x
         point, boot, used = 0., 0., 0
-        for b in BENCHMARKS:
+        for b in sorted(set(self.benchmark)):
             ids = np.where((self.benchmark == b) & ~np.isnan(v))[0]
             if not len(ids):
-                continue
+                return {'status': 'unqualified_missing_benchmark', **counts,
+                        'reason': f'The subset omits the planned benchmark {b}.'}
             point += v[ids].mean()
             w = self.weights[:, ids]
             denominator = w.sum(1)
@@ -668,7 +729,7 @@ def _analysis_metadata(models: list[str], design: str, table, pairs) -> dict:
         'continuations': int(len(table)),
         'pairs': int(len(pairs)),
         'readout': 'lexical-readout-v1 (cross-fitted; no judge on intervention text)',
-        'analysis_version': 'planned-denominators-v1',
+        'analysis_version': 'per-metric-bounds-log-total-link-v2',
         'bootstrap': 'shared family draws stratified by the frozen benchmark roster',
     }
     result['availability'] = [
@@ -681,12 +742,17 @@ def _analysis_metadata(models: list[str], design: str, table, pairs) -> dict:
 def _qualified_efficiency_link(prereg: Path, pairs, boot) -> dict:
     """Keep the fixed correlation test unqualified when its outcomes remain unknown."""
     frozen = verified(prereg)
-    incomplete = (not np.isfinite(pairs['activate:log_reasoning']).all() or
+    incomplete = (not np.isfinite(pairs['activate:log_total']).all() or
+                  ('activate:log_total:lower' in pairs and
+                   (pairs['activate:log_total:lower'] != pairs['activate:log_total:upper']).any()) or
                   (pairs['activate:correct:lower'] != pairs['activate:correct:upper']).any())
     result = ({'status': 'unqualified_missing_outcomes',
                'reason': 'The preregistered link cannot omit unavailable families or impute censored accuracy.'}
               if incomplete else efficiency_link(frozen, pairs, boot))
     result['prereg_sha256'] = frozen['sha256']
+    result['token_primary'] = 'activate:log_total'
+    result['token_secondary'] = 'activate:log_reasoning'
+    result['frozen_token_predictor'] = 'tok_reason'
     return result
 
 
@@ -770,7 +836,8 @@ def analyze(models, out, design='main', *, cohort=None, classifier=None, closeou
                                            ['activate:log_tokens', 'activate:correct', 'activate:log_tokens:vs_native',
                                             'activate:correct:vs_native'], f'efficiency:{m}:{c}')
                                            for m in models for c in CLASSES}
-    secondary = [f'{d}:{k}' for d in ('activate', 'deactivate') for k in ('soft_occupancy', 'occupancy:vs_native',
+    secondary = [f'{d}:{k}' for d in ('activate', 'deactivate', 'random_activate', 'random_deactivate') for k in ('occupancy:vs_native',)]
+    secondary += [f'{d}:{k}' for d in ('activate', 'deactivate') for k in ('soft_occupancy',
                                                                             'first:vs_native')]
     result['secondary_pooled'] = summarize(boot, pairs, secondary, 'secondary')
     bounded = [f'{d}:{k}' for d in ('activate', 'deactivate')
@@ -836,7 +903,7 @@ def null_diagnostic(repetitions: int = 100) -> dict:
 
 def efficiency_link(prereg, pairs, boot):
     """The pre-registered test (EFFICIENCY_LINK_PREREG.json 'test'): frozen beta(m,c) vs measured Delta(m,c) =
-    family mean of targeted-minus-random activation (log reasoning tokens; strict accuracy). Spearman rho and the
+    family mean of targeted-minus-random activation (log total tokens; strict accuracy). Spearman rho and the
     sign-agreement rate on signed cells, each with a 95% percentile interval from a family-cluster bootstrap of
     the intervention side (2,000 draws, seed 20261017, betas fixed), plus an exact binomial test. Secondary:
     tok_total / acc_excl_trunc / between-question (dataset_fe) predictors and the sign-robust restricted rho."""
@@ -880,9 +947,10 @@ def efficiency_link(prereg, pairs, boot):
                 'cells_detail': [{'model': k[0], 'class': k[1], 'beta': float(beta[k]['beta']),
                                   'predicted_sign': beta[k].get('sign'), 'delta': float(y)} for k, y in zip(keys, ys)]}
     cells = prereg['cells']
-    out = {'tokens': test(cells, 'tok_reason', 'activate:log_reasoning'),
+    out = {'tokens': test(cells, 'tok_reason', 'activate:log_total'),
            'accuracy': test(cells, 'acc', 'activate:correct'),
            'secondary': {'tok_total': test(cells, 'tok_total', 'activate:log_total'),
+                         'tok_reasoning': test(cells, 'tok_reason', 'activate:log_reasoning'),
                          'acc_excl_trunc': test(cells, 'acc_excl_trunc', 'activate:correct'),
                          'tokens_restricted': test(cells, 'tok_reason', 'activate:log_total', restrict=True),
                          'accuracy_restricted': test(cells, 'acc', 'activate:correct', restrict=True)}}
@@ -898,9 +966,13 @@ def main(argv=None):
     ap = argparse.ArgumentParser(prog='moe_exp.study.effects')
     ap.add_argument('--models', default=','.join(MODELS))
     ap.add_argument('--out', type=Path)
-    ap.add_argument('--design', choices=['main', 'strong', 'rescue'], default='main')
+    ap.add_argument('--design', choices=['main', 'strong', 'rescue', 'whole'], default='main')
     ap.add_argument('--cohort', type=Path)
     args = ap.parse_args(argv)
+    if args.design == 'whole':
+        from .whole_effects import analyze
+        analyze()
+        return
     models = args.models.split(',')
     require(models and len(set(models)) == len(models), 'analysis model roster is empty or duplicated')
     if args.design == 'rescue':

@@ -29,7 +29,7 @@ import time
 from pathlib import Path
 from .common import CLASSES, MODELS, REPO, digest, file_sha, load, private, publish, require, verified
 
-ROOT = REPO/'report/final-routing-20261015-r1'
+ROOT = Path(os.environ.get('STUDY_DATA_ROOT', REPO/'report/final-routing-20261015-r1'))
 DRIVER = ROOT/'driver'
 SELECTOR = 'one-layer-per-fold-class: training association, then stability, then layer ID'
 
@@ -113,8 +113,14 @@ def plan(models=None):
     return out
 
 
-MANIFESTS = {'main': 'ASSIGNMENTS.json', 'strong': 'STRONG.json', 'rescue': 'RESCUE.json'}
-STORES = {'main': 'units', 'strong': 'strong/units', 'rescue': 'rescue/units'}
+MANIFESTS = {'main': 'ASSIGNMENTS.json', 'strong': 'STRONG.json', 'rescue': 'RESCUE.json', 'whole': 'WHOLE.json'}
+STORES = {'main': 'units', 'strong': 'strong/units', 'rescue': 'rescue/units', 'whole': 'whole/units'}
+
+
+def plan_whole(models=('gpt', 'qwen36')):
+    """Build the predeclared main and half-dose original-prompt family blocks."""
+    from .whole import prepare
+    return prepare(models)
 
 
 def plan_strong(models, seed_tag='strong-dose-v1'):
@@ -167,7 +173,11 @@ def plan_rescue(models=None):
 def shard_rows(model, shard, design='main', sub=None):
     """Families with rank % count == index; each `sub` (j, m) in turn keeps that subset's ranks with rank % m == j."""
     index, count = shard
-    rows = verified(DRIVER/model/MANIFESTS[design])['records']
+    if design == 'whole':
+        from .whole import manifest
+        rows = manifest(model)['records']
+    else:
+        rows = verified(DRIVER/model/MANIFESTS[design])['records']
     families = sorted({r['family'] for r in rows})
     mine = [f for i, f in enumerate(families) if i % count == index]
     for j, m in ([sub] if isinstance(sub, tuple) else (sub or [])):
@@ -316,7 +326,7 @@ class Engine:
                 self.metrics['drained'] += 1
         require(not self.engine.has_unfinished_requests(), 'abort left unfinished engine requests')
 
-    def run(self, rows, build, finish, *, stop_admission=None):
+    def run(self, rows, build, finish, *, stop_admission=None, stop_execution=None, family_blocks=False):
         queue = [r for r in rows if (self.store.state(r['uid']) or {'status': 'partial'})['status'] == 'partial']
         # Resume partial units first: they hold the longest outstanding work.
         queue.sort(key=lambda r: self.store.state(r['uid']) is None)
@@ -324,10 +334,12 @@ class Engine:
         try:
             while queue or self.inflight:
                 now = time.time()
-                if now > self.deadline:
+                if now > self.deadline or (stop_execution is not None and stop_execution()):
                     break
                 admitting = now < self.deadline-self.drain_seconds and (stop_admission is None or not stop_admission())
                 while admitting and queue and len(self.inflight) < self.max_inflight:
+                    if family_blocks and self.inflight and queue[0]['family'] != next(iter(self.inflight.values()))['row']['family']:
+                        break
                     row = queue.pop(0)
                     admitted = self.admit(row, build)
                     if admitted == 'deferred':
@@ -427,12 +439,46 @@ def intervention_builder(b, model, tokenizer, closure, *, greedy=False, limit=No
         request = {'uid': row['uid'], 'prompt': prompt, 'prefix': prefix, 'closure': closure,
                    'action': row['action'], 'actions': row.get('actions'), 'capture_layers': row['capture_layers'],
                    'window': row['horizon']}
+        if row.get('whole'):
+            request.update(whole=True, prompt_scope=row['prompt_scope'], audit_capture=row['audit_capture'])
         return {'prompt_ids': prompt+prefix+history, 'params': params, 'request': request, 'total': total}
     return build
 
 
+def compress_audit_capture(folder: Path, capture: dict) -> dict:
+    """Keep full audit arrays losslessly without per-token JSON expansion.
+
+    Args:
+        folder: This unit's private output directory.
+        capture: Tensor-parallel-agreed full routing capture.
+
+    Returns:
+        Capture receipt with a hashed compressed-array reference.
+    """
+    import numpy as np
+    arrays = {}
+    for layer, record in capture['capture'].items():
+        for key, values in record.items():
+            dtype = (np.uint8 if key.endswith('_ids') else np.float32 if key.endswith('_weights')
+                     else np.bool_ if key == 'active' else np.int32)
+            arrays['layer_'+layer+'_'+key] = np.asarray(values, dtype=dtype)
+    from .whole import work_remaining_bytes
+    require(work_remaining_bytes() > 13*2**30+sum(array.nbytes for array in arrays.values()),
+            'full audit would breach the existing WORK reserve and concurrent-write margin')
+    folder.mkdir(parents=True, exist_ok=True)
+    destination = folder/'AUDIT.npz'
+    require(not destination.exists(), 'whole audit capture already exists')
+    with destination.open('xb') as stream:
+        np.savez_compressed(stream, **arrays)
+    return {**capture, 'capture': {}, 'full_capture': {
+        'path': str(destination), 'sha256_file': file_sha(destination),
+        'bytes': destination.stat().st_size, 'format': 'numpy-compressed-exact-float32-uint8'}}
+
+
 def intervention_finisher(store, b, model):
+    """Bind the existing output publication callback to this model and store."""
     def finish(row, progress, reason, stop, capture):
+        """Commit a completed draw and its agreed routing telemetry atomically by receipt."""
         uid = row['uid']
         folder = store.folder(uid)
         if progress is None:  # allowance already exhausted by saved tokens
@@ -443,10 +489,14 @@ def intervention_finisher(store, b, model):
             'segments': progress['segments'], 'total_allowance': progress['total_allowance'],
             'profile_sha256': b['models'][model]['profile_sha256']})
         status, why = 'complete', None
-        if capture is None or not all(str(l) in capture['capture'] and capture['capture'][str(l)]['positions']
-                                      for l in row['capture_layers']):
+        capture_valid = capture is not None and (
+            all(str(l) in capture['stats']['dose'] for l in row['capture_layers']) if row.get('whole') else
+            all(str(l) in capture['capture'] and capture['capture'][str(l)]['positions'] for l in row['capture_layers']))
+        if not capture_valid:
             status, why = 'unknown', 'required_routing_capture_missing'
         else:
+            if row.get('whole') and row.get('audit_capture'):
+                capture = compress_audit_capture(folder, capture)
             publish(folder/'CAPTURE.json', {'uid': uid, 'raw_sha256': raw['sha256'], **capture})
         publish(folder/'RESULT.json', {'uid': uid, 'assignment_sha256': digest(row), 'status': status,
             'reason': why, 'raw_sha256': raw['sha256'], 'generated_tokens': len(progress['tokens']),
@@ -500,6 +550,9 @@ def rescue_completion(store: Store, rows: list[dict]) -> dict:
 
 
 def run_model(model, shard, deadline, *, max_inflight=64, design='main', sub=None, source_receipt=None, cohort=None):
+    if design == 'whole':
+        from .whole import run
+        return run(model, shard, deadline, max_inflight=max_inflight)
     if design == 'rescue':
         require(cohort is not None, 'rescue generation requires --cohort')
         require(shard == (0, 1) and sub is None, 'cohort generation uses its exact frozen roster')
@@ -806,7 +859,7 @@ def main(argv=None):
     ap.add_argument('command', choices=['plan', 'run', 'native', 'annotate', 'lfm-materialize', 'lfm-replay',
                                         'lfm-derive', 'smoke', 'status', 'plan-strong', 'plan-rescue',
                                         'lfm-repair-contexts',
-                                        'lfm-readout', 'lfm-dynamics'])
+                                        'lfm-readout', 'lfm-dynamics', 'plan-whole'])
     ap.add_argument('--model')
     ap.add_argument('--shard', default='0/1', type=parse_shard)
     ap.add_argument('--max-inflight', type=int, default=64)
@@ -816,6 +869,9 @@ def main(argv=None):
     ap.add_argument('--cohort', type=Path)
     ap.add_argument('--sub', type=parse_shard, action='append', default=None)
     args = ap.parse_args(argv)
+    if args.command == 'plan-whole':
+        log({'event': 'plan-whole', 'models': plan_whole(args.model.split(',') if args.model else ('gpt', 'qwen36'))})
+        return
     if args.command == 'plan':
         log({'event': 'plan', 'models': plan([args.model] if args.model else None)})
         return

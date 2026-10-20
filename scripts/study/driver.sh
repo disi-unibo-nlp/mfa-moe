@@ -9,11 +9,11 @@ umask 077
 : "${SLURM_JOB_ID:?Submit through Slurm; direct execution on login nodes is forbidden}"
 : "${SLURM_CPUS_PER_TASK:?Missing CPU allocation}"
 test "$(id -un)" = lmolfett
-cd /leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo
+cd "${RELEASE_ROOT:-/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo}"
 module load python/3.11.7
 module load cuda/12.6
 ENV=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/envs/vllm-cu129
-RUN="/leonardo_scratch/fast/IscrC_MIOSR/lmolfett/mfa-moe/campaign-runs/final-routing-20261015-r1/runtime/drv-${SLURM_JOB_ID}"
+RUN="/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/runtime/drv-${SLURM_JOB_ID}"
 RPC="/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/r/${SLURM_JOB_ID}"
 mkdir -p "$RUN" "$RPC"
 trap 'rm -rf "$RPC" "$RUN"' EXIT
@@ -26,9 +26,12 @@ export HF_HOME=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/cache/hf
 export TIKTOKEN_ENCODINGS_BASE=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/cache/tiktoken TIKTOKEN_RS_CACHE_DIR="$RUN/tiktoken"
 export HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 PYTHONDONTWRITEBYTECODE=1
 export PATH="$ENV/bin:$PATH"
-export PYTHONPATH="$PWD/src:$PWD/scripts/experimental_resume${PYTHONPATH:+:$PYTHONPATH}"
-export OMP_NUM_THREADS=4 OPENBLAS_NUM_THREADS=4 MKL_NUM_THREADS=4
+export PYTHONPATH="$PWD/src:$PWD/scripts/experimental_resume"
+THREADS=$(( SLURM_CPUS_PER_TASK < 4 ? SLURM_CPUS_PER_TASK : 4 ))
+export OMP_NUM_THREADS="$THREADS" OPENBLAS_NUM_THREADS="$THREADS" MKL_NUM_THREADS="$THREADS"
 export VLLM_USE_FLASHINFER_SAMPLER=0 VLLM_ENABLE_V1_MULTIPROCESSING=0
-nvidia-smi --query-gpu=index,name,memory.total --format=csv,noheader || true
+if [[ -n "${SLURM_JOB_GPUS:-}" ]]; then
+    nvidia-smi --query-gpu=index,name,memory.total --format=csv,noheader
+fi
 echo "job ${SLURM_JOB_ID} on $(hostname) args: $*"
-"$ENV/bin/python" -B -m moe_exp.study.driver "$@"
+"$ENV/bin/python" -B -m "${STUDY_MODULE:-moe_exp.study.driver}" "$@"
