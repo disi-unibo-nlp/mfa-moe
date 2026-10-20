@@ -37,6 +37,15 @@ actual terminal costs fits72GPU-hours. This is budget admission, not an
 outcome-driven dose or nomination choice. See the original r3 PERFORMANCE_HALT
 and the batched continuation's PRIOR_USAGE.json.
 
+GPT61581237 later failed the unchanged strict rank-capture hash check. Its
+failing rank payloads were not retained, and a second release in cleanup masked
+the first exception. A separate15-minute/two-GPU engineering command now saves
+both payloads losslessly, records consumed release state and preserves the first
+error. It cannot qualify or submit production. Full allocated CPU validation
+precedes it; actual diagnosis and repaired allocated qualification are still
+required. Every charge remains inside the original72/16ceilings, together with
+the existing Qwen graph's maximum reservations. No scientific parameter changes.
+
 Canaries retain the same eight families/48 rows with each production allowance.
 Compare with same-run native/native_repeat: cap-rate excess >0.15, geometric
 length ratio >1.40, repetition excess >0.10 fail. GPT45/Qwen90-minute canaries

@@ -376,7 +376,7 @@ def admission_order(rows: list[dict]) -> list[dict]:
     ))
 
 
-def run(model, shard, deadline, *, max_inflight=64, canary=False, dose=None):
+def run(model, shard, deadline, *, max_inflight=64, canary=False, dose=None, engineering_only=False):
     """Run one source-bound shard or canary on the existing hooked engine."""
     from .runtime import closure
     verify_release()
@@ -413,10 +413,13 @@ def run(model, shard, deadline, *, max_inflight=64, canary=False, dose=None):
               'metrics': metrics, 'native_validation': validation[0], **driver.rescue_completion(store, rows)}
     if canary:
         result['gate'] = fluency(store, rows, require_complete=True)
-        publish(ROOT/model/('CANARY.json' if value['dose'] == 'main' else 'CANARY_HALF.json'), result)
+        path = ('ENGINEERING.json' if engineering_only else
+                'CANARY.json' if value['dose'] == 'main' else 'CANARY_HALF.json')
+        publish(ROOT/model/path, {**result, 'engineering_only': engineering_only})
         if result['gate']['passed']:
-            publish(ROOT/model/'SELECTED.json', {'dose': value['dose'], 'manifest_sha256': value['sha256'],
-                                                'canary_job': result['job']})
+            if not engineering_only:
+                publish(ROOT/model/'SELECTED.json', {'dose': value['dose'], 'manifest_sha256': value['sha256'],
+                                                    'canary_job': result['job']})
         else:
             raise SystemExit(3 if result['gate']['fluency_failures'] and not result['gate']['software_failures'] else 2)
     else:
@@ -478,11 +481,12 @@ def scheduler_dependency(dependency: str | None) -> str | None:
 def submit_stage(command: str, *, model=None, dose=None, shard=None, dependency=None, held=False) -> dict:
     """Submit one bounded approved stage and read back its exact native resource request."""
     release = verified(ROOT/'RELEASE.json')
-    gpu = command in ('canary', 'run')
+    gpu = command in ('canary', 'run', 'diagnose')
     cpus = 16 if gpu else 1 if command == 'monitor' else 4 if command == 'validate' else 8
     memory = 120 if gpu else 2 if command == 'monitor' else 24 if command != 'analyze' else 32
     minutes = {
         'canary': CANARY_MINUTES.get(model),
+        'diagnose': 15,
         'run': planned_run_minutes(model) if model else None,
         'validate': 30,
         'monitor': 960,
@@ -868,10 +872,13 @@ def inference_stage(args: argparse.Namespace) -> None:
     require(os.environ.get('SLURM_JOB_GPUS'), 'whole inference requires allocated GPUs')
     try:
         run(args.model, args.shard, driver.deadline_from_slurm(margin=120), max_inflight=args.max_inflight,
-            canary=args.command == 'canary', dose=args.dose)
+            canary=args.command in ('canary', 'diagnose'), dose=args.dose,
+            engineering_only=args.command == 'diagnose')
     except BaseException as error:
-        if args.command == 'canary':
-            path = ROOT/args.model/('CANARY_HALF.json' if args.dose == 'half' else 'CANARY.json')
+        if args.command in ('canary', 'diagnose'):
+            name = ('ENGINEERING.json' if args.command == 'diagnose' else
+                    'CANARY_HALF.json' if args.dose == 'half' else 'CANARY.json')
+            path = ROOT/args.model/name
             if not path.exists():
                 publish(path, {'model': args.model, 'dose': args.dose or 'main',
                     'job': os.environ['SLURM_JOB_ID'], 'gate': {'passed': False, 'fluency_failures': [],
@@ -936,7 +943,7 @@ def audit_nominations() -> dict:
 def main(argv=None):
     """Dispatch preparation, canary and generation through one maintained entry point."""
     parser = argparse.ArgumentParser(__doc__)
-    parser.add_argument('command', choices=('prepare', 'canary', 'run', 'extract', 'analyze', 'validate', 'monitor', 'launch'))
+    parser.add_argument('command', choices=('prepare', 'canary', 'diagnose', 'run', 'extract', 'analyze', 'validate', 'monitor', 'launch'))
     parser.add_argument('--model', choices=MODELS)
     parser.add_argument('--dose', choices=('main', 'half'))
     parser.add_argument('--shard', type=driver.parse_shard, default=(0, 1))
@@ -962,7 +969,7 @@ def main(argv=None):
     require(os.environ.get('SLURM_JOB_ID'), 'whole stages require allocated Slurm resources')
     if args.command == 'prepare':
         driver.log({'event': 'prepare-whole', 'results': prepare((args.model,) if args.model else MODELS)})
-    elif args.command in ('canary', 'run'):
+    elif args.command in ('canary', 'run', 'diagnose'):
         inference_stage(args)
         if args.command == 'canary':
             try:

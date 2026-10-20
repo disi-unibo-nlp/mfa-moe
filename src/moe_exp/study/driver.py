@@ -278,8 +278,18 @@ class Engine:
             return {}
         reports = self.llm.collective_rpc('fs_release', kwargs={'uids': list(uids)})
         require(len(reports) == 2, 'routing release lacks both tensor-parallel ranks')
+        # fs_release consumes worker state, including when comparison below fails.
         for uid in uids:
-            require(len({r[uid]['sha256'] for r in reports}) == 1, 'tensor-parallel captures disagree')
+            self.inflight[uid]['capture_released'] = True
+        for uid in uids:
+            if len({r[uid]['sha256'] for r in reports}) != 1:
+                folder = self.store.folder(uid)/'TP_DISAGREEMENT'
+                for rank, report in enumerate(reports):
+                    capture = report[uid]
+                    saved = compress_audit_capture(folder/str(rank), capture)
+                    publish(folder/str(rank)/'CAPTURE.json',
+                            {**saved, 'routing_capture_sha256': capture['sha256']})
+                raise ValueError(f'tensor-parallel captures disagree: {folder}')
         return reports[0]
 
     def save_progress(self):
@@ -318,7 +328,7 @@ class Engine:
         if uids:
             self.save_progress()  # persist every token before touching the engine
             self.engine.abort_request(uids, internal=False)
-            self.release(uids)
+            self.release([uid for uid in uids if not self.inflight[uid].get('capture_released')])
             for uid in uids:
                 st = self.inflight.pop(uid)
                 st['progress']['segments'][-1].update(drained=time.time(), generated=st['new'])
@@ -358,7 +368,13 @@ class Engine:
                     log({'event': 'progress', 'inflight': len(self.inflight), 'queue': len(queue),
                          'tokens_per_second': self.metrics['generated_tokens']/elapsed,
                          **{k: self.metrics[k] for k in ('admitted', 'resumed', 'finished', 'generated_tokens')}})
-        finally:
+        except BaseException:
+            try:
+                self.drain()
+            except Exception as error:
+                log({'event': 'engine-error-cleanup-failed', 'error': str(error)})
+            raise
+        else:
             self.drain()
         self.metrics['wall_seconds'] = time.time()-started
         self.metrics['remaining_queue'] = len(queue)
