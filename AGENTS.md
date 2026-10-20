@@ -1,3 +1,13 @@
+**GPT diagnostic source allocated — 2026-10-21:** source6d4341f is sealed in
+the rank-diagnostics root. CPU61583800 COMPLETED0:0 after170s; all194tests passed
+in34.864s, both doses rebuilt and all70GPT DP matches remain exact. Isolated
+GPT61584000 is accepted/resource-verified for2GPUs/15minutes, pending Priority.
+ENGINEERING_ADMISSION.json reserves63.645278GPU-hours including all prior
+failures, the optional Qwen half canary, Qwen's56-hour production maximum and
+this0.5-hour diagnostic. Further GPT qualification/production is unadmitted
+and must fit the remaining shared ceiling. The diagnostic cannot qualify or
+submit production. Qwen61581238 and monitor61581239 continue unchanged.
+
 **GPT capture diagnostics prepared — 2026-10-21:** the failed GPT canary
 remains failed and its first error was capture disagreement. The separate
 `whole diagnose` command retains both rank payloads losslessly and cannot
