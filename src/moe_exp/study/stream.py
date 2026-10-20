@@ -13,7 +13,7 @@ from __future__ import annotations
 import inspect
 from .common import digest, require
 from .observer import discover
-from moe_exp.final_routing.operator import hard_select, policy, score_override_select
+from moe_exp.final_routing.operator import hard_select, policy, score_override_select, score_override_dual
 
 
 class Clock:
@@ -51,7 +51,9 @@ class Clock:
                 self.tail = (self.tail+[token])[-self.width:]
                 if any(tuple(self.tail[-len(s):]) == s for s in self.closure):
                     self.closed = True
-            contexts.append({'output_position': position-self.prompt+1, 'reasoning': not self.closed})
+            contexts.append({'output_position': position-self.prompt+1, 'reasoning': not self.closed,
+                             'absolute_position': position, 'prompt': position < self.prompt,
+                             'generated_position': position-self.prompt})
         return contexts
 
 
@@ -110,11 +112,15 @@ class StreamCapture:
                     observed = clock.observe(token_ids[start:stop], pos)
                     if clock.passes != passes:  # recompute from position 0: the capture is rebuilt from this pass
                         self.records[uid] = {}
-                        self.counts[uid].update(active_positions=set(), changed_positions=set())
+                        self.counts[uid].update(active_positions=set(), changed_positions=set(), dose={})
                     contexts[start:stop] = observed
                     r = self.requests[uid]
                     origin = len(r['prefix'])
-                    rows = [(start+j, c) for j, c in enumerate(observed) if origin <= c['output_position'] < r['end']]
+                    if r.get('whole'):
+                        rows = [(start+j, c) for j, c in enumerate(observed)
+                                if c['prompt'] or (c['reasoning'] and c['generated_position'] < r['end'])]
+                    else:
+                        rows = [(start+j, c) for j, c in enumerate(observed) if origin <= c['output_position'] < r['end']]
                     if rows:
                         for layer in r['layers']:
                             plan.setdefault(layer, []).append((uid, rows))
@@ -145,6 +151,11 @@ class StreamCapture:
             weights, ids = nw, ni
             for uid, rows in work:
                 r = self.requests[uid]
+                if r.get('whole'):
+                    if weights is nw:
+                        weights, ids = nw.clone(), ni.clone()
+                    self._whole_layer(uid, layer, rows, logits, nw, ni, weights, ids, native_policy)
+                    continue
                 action, origin = r['actions'].get(layer), len(r['prefix'])
                 index = [j for j, _ in rows]
                 ix = torch.tensor(index, device=logits.device)
@@ -218,6 +229,40 @@ class StreamCapture:
             return weights, ids
         return wrap
 
+    def _whole_layer(self, uid, layer, rows, logits, nw, ni, weights, ids, native_policy):
+        """Apply one dual action and reduce dose online; audit rows retain generated captures."""
+        import torch
+        request = self.requests[uid]
+        action = request['actions'].get(layer, {})
+        activate, deactivate = action.get('activate', []), action.get('deactivate', [])
+        active = [bool((activate or deactivate) and c['reasoning'] and
+                       (not c['prompt'] or request['prompt_scope'])) for _, c in rows]
+        index = torch.tensor([i for i, _ in rows], device=logits.device)
+        aw, ai = nw[index], ni[index]
+        if any(active):
+            aw, ai, _ = score_override_dual(logits[index], aw, ai, activate, deactivate,
+                                            active=active, epsilon=.01, **native_policy)
+        weights[index], ids[index] = aw, ai
+        aggregate = dose_totals(nw[index], ni[index], aw, ai, active, [c['prompt'] for _, c in rows],
+                                activate, deactivate, self.contract['experts'])
+        dose = self.counts[uid]['dose'].setdefault(str(layer), {key: 0 for key in aggregate})
+        for key, value in aggregate.items():
+            dose[key] += value
+        if request.get('audit_capture'):
+            record = self.records[uid].setdefault(str(layer), {'positions': [], 'native_ids': [],
+                'native_weights': [], 'executed_ids': [], 'executed_weights': [], 'active': []})
+            keep = [(j, c) for j, c in enumerate(c for _, c in rows)
+                    if c['generated_position'] >= len(record['positions'])]
+            if keep:
+                require(keep[0][1]['generated_position'] == len(record['positions']), 'whole audit capture gap')
+                take = torch.tensor([j for j, _ in keep], device=logits.device)
+                record['positions'].extend(c['generated_position'] for _, c in keep)
+                record['native_ids'].extend(ni[index][take].detach().cpu().tolist())
+                record['native_weights'].extend(nw[index][take].detach().float().cpu().tolist())
+                record['executed_ids'].extend(ai[take].detach().cpu().tolist())
+                record['executed_weights'].extend(aw[take].detach().float().cpu().tolist())
+                record['active'].extend(active[j] for j, _ in keep)
+
     @staticmethod
     def _expected(logits, selected, native_policy):
         q = logits.float().softmax(-1) if native_policy['scoring'] == 'softmax' else logits.float().sigmoid()
@@ -242,7 +287,7 @@ class StreamCapture:
             self.requests[uid] = {**r, 'actions': {a['layer']: a for a in actions}, 'layers': sorted(layers), 'end': end}
             self.clocks[uid] = Clock(r['prompt'], r['prefix'], r['closure'])
             self.records[uid] = {}
-            self.counts[uid] = {'active_positions': set(), 'changed_positions': set(),
+            self.counts[uid] = {'active_positions': set(), 'changed_positions': set(), 'dose': {},
                                 'noop_exact': True, 'target_contract': True}
         require(len(aliases) == len(set(aliases.values())), 'request map is not one-to-one')
         require(set(aliases.values()) == {r['uid'] for r in requests}, 'request map does not match admission')
@@ -257,6 +302,14 @@ class StreamCapture:
         for internal in [k for k, v in self.aliases.items() if v == uid]:
             del self.aliases[internal]
         stats = self.counts.pop(uid)
+        if stats['dose']:
+            import torch
+            for layer, totals in stats['dose'].items():
+                keys = list(totals)
+                values = torch.stack([totals[key].double() for key in keys]).detach().cpu().tolist()
+                stats['dose'][layer] = dict(zip(keys, values))
+                require(stats['dose'][layer]['finite'] == stats['dose'][layer]['observations'] and
+                        stats['dose'][layer]['membership_failures'] == 0, 'whole routing contract failed')
         stats = {**stats, 'active_positions': sorted(stats['active_positions']),
                  'changed_positions': sorted(stats['changed_positions'])}
         records = self.records.pop(uid)
@@ -272,6 +325,54 @@ class StreamCapture:
         for router, original in self.originals:
             router._compute_routing = original
         self.originals = []
+
+
+def dose_totals(native_weights, native_ids, weights, ids, active, prompt, activate, deactivate, experts):
+    """Reduce same-state dose to additive counters without retaining per-token arrays.
+
+    Args:
+        native_weights, native_ids, weights, ids: Native and executed top-k tensors.
+        active, prompt: Token masks defining intervention and prompt scope.
+        activate, deactivate: Assigned pair roles for this layer.
+        experts: Physical routed expert count.
+
+    Returns:
+        Additive position, membership, target-weight and L1 counters.
+    """
+    import torch
+    flags = torch.as_tensor(active, device=weights.device, dtype=torch.bool)
+    prompt_mask = torch.as_tensor(prompt, device=weights.device, dtype=torch.bool)
+    native_dense = torch.zeros((len(ids), experts), device=weights.device, dtype=torch.float32)
+    executed_dense = torch.zeros_like(native_dense)
+    native_dense.scatter_(1, native_ids.long(), native_weights.float())
+    executed_dense.scatter_(1, ids.long(), weights.float())
+    changed = (native_ids.sort(-1).values != ids.sort(-1).values).any(-1)
+    targeted = sorted(set(activate+deactivate))
+    member = torch.ones(len(ids), device=weights.device, dtype=torch.bool)
+    if activate:
+        wanted = torch.tensor(activate, device=ids.device)
+        member &= (ids[:, :, None] == wanted).any(1).all(-1)
+    if deactivate:
+        unwanted = torch.tensor(deactivate, device=ids.device)
+        member &= ~(ids[:, :, None] == unwanted).any((1, 2))
+    return {
+        'active_positions': flags.sum(),
+        'active_prompt_positions': (flags & prompt_mask).sum(),
+        'active_generated_positions': (flags & ~prompt_mask).sum(),
+        'changed_membership': (flags & changed).sum(),
+        'native_target_weight': (native_dense[:, targeted].sum(-1)*flags).sum(),
+        'executed_target_weight': (executed_dense[:, targeted].sum(-1)*flags).sum(),
+        'native_activate_weight': (native_dense[:, activate].sum(-1)*flags).sum(),
+        'executed_activate_weight': (executed_dense[:, activate].sum(-1)*flags).sum(),
+        'native_deactivate_weight': (native_dense[:, deactivate].sum(-1)*flags).sum(),
+        'executed_deactivate_weight': (executed_dense[:, deactivate].sum(-1)*flags).sum(),
+        'native_activate_share': (native_dense[:, activate].sum(-1)/native_weights.sum(-1).clamp_min(1e-30)*flags).sum(),
+        'executed_activate_share': (executed_dense[:, activate].sum(-1)/weights.sum(-1).clamp_min(1e-30)*flags).sum(),
+        'l1': ((native_dense-executed_dense).abs().sum(-1)*flags).sum(),
+        'finite': torch.isfinite(weights).all().long(),
+        'membership_failures': (flags & ~member).sum(),
+        'observations': torch.ones((), device=weights.device, dtype=torch.long),
+    }
 
 
 class StreamWorkerExtension:

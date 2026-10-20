@@ -76,6 +76,12 @@ def record(b, model, row, raw, tokenizer, close, *, frozen_input=None):
                 value = max(0, i-len(prefix))
                 reasoning_end = value if reasoning_end is None else min(reasoning_end, value)
                 break
+    if row.get('whole') and reasoning_end is not None:
+        # A direct final-channel answer has zero reasoning, even though the
+        # legacy layout fallback permits annotating final-only model outputs.
+        reasoning_positions = {p for p in reasoning_positions if p < len(prefix)+reasoning_end}
+        nonreasoning = [p-len(prefix) for p in range(len(prefix), len(tokens)) if p not in reasoning_positions]
+        sentences = [s for s in sentences if s['token_start'] < reasoning_end]
     detail = score_completion_detailed({'gold_answer': original.get('gold_answer')}, answer_type='math',
                                        model_text=final or '')
     strict = bool(detail['is_correct']) if final is not None and detail.get('is_correct') is not None else (
@@ -84,7 +90,7 @@ def record(b, model, row, raw, tokenizer, close, *, frozen_input=None):
     return {'sentences': sentences, 'reasoning_end': reasoning_end, 'nonreasoning': nonreasoning,
             'generated_tokens': len(raw['token_ids']), 'prefix_tokens': len(prefix),
             'reasoning_tokens': sum(p >= len(prefix) for p in reasoning_positions),
-            'finish_reason': raw['finish_reason'], 'answer_present': final is not None, 'reasoning_fallback': fallback,
+            'finish_reason': raw['finish_reason'], 'answer_present': bool(final and final.strip()), 'reasoning_fallback': fallback,
             'strict_correct': strict, 'accuracy_bounds': [lo, hi]}
 
 

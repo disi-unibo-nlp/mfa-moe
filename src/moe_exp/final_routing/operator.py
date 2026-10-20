@@ -138,6 +138,54 @@ def score_override_select(logits, native_weights, native_ids, targets, direction
     return out_weights, out_ids, changed
 
 
+def score_override_dual(logits, native_weights, native_ids, activate, deactivate, *, epsilon=0.01,
+                        active=None, scoring='softmax', renormalize=True, correction_bias=None,
+                        scale=1., expert_scale=None):
+    """Override disjoint positive/negative pairs once, then apply native selection.
+
+    Args:
+        logits, native_weights, native_ids: Same-state native router tensors.
+        activate, deactivate: Expert identities at this layer.
+        epsilon: Score offset above/below the original log-softmax extrema.
+        active: Boolean token-row mask; inactive rows retain their original bits.
+        scoring, renormalize, correction_bias, scale, expert_scale: Native policy.
+
+    Returns:
+        Executed weights, expert identities and changed-row mask.
+    """
+    import torch
+    activate, deactivate = sorted(set(activate)), sorted(set(deactivate))
+    experts, k = logits.shape[-1], native_ids.shape[-1]
+    require(scoring == 'softmax', 'dual override requires native softmax scoring')
+    require(not set(activate) & set(deactivate), 'dual expert sets overlap')
+    require(len(activate) < k and experts-len(deactivate) >= k, 'dual override cannot preserve native k')
+    require(all(type(e) is int and 0 <= e < experts for e in activate+deactivate), 'invalid dual expert')
+    require(native_weights.shape == native_ids.shape and len(logits) == len(native_ids), 'dual shape differs')
+    mask = (torch.ones(len(logits), dtype=torch.bool, device=logits.device) if active is None else
+            torch.as_tensor(active, dtype=torch.bool, device=logits.device))
+    require(mask.shape == (len(logits),), 'dual active mask differs')
+    if not (activate or deactivate) or (isinstance(active, (list, tuple)) and not any(active)):
+        return native_weights, native_ids, torch.zeros_like(mask)
+    scores = logits.float().log_softmax(-1)
+    maximum, minimum = scores.max(-1, keepdim=True).values, scores.min(-1, keepdim=True).values
+    scores[:, activate] = maximum+epsilon
+    scores[:, deactivate] = minimum-epsilon
+    affinity = scores.softmax(-1)
+    priority = affinity if correction_bias is None else affinity+correction_bias.float()
+    ids = priority.topk(k, dim=-1, sorted=True).indices
+    weights = affinity.gather(1, ids)
+    if renormalize:
+        weights = weights/weights.sum(-1, keepdim=True).clamp_min(torch.finfo(weights.dtype).tiny)
+    weights = weights*scale
+    if expert_scale is not None:
+        weights = weights*expert_scale[ids].to(weights.dtype)
+    weights = torch.where(mask[:, None], weights.to(native_weights.dtype), native_weights)
+    ids = torch.where(mask[:, None], ids.to(native_ids.dtype), native_ids)
+    changed = mask & (((ids.sort(-1).values != native_ids.sort(-1).values).any(-1)) |
+                      (weights != native_weights).any(-1))
+    return weights, ids, changed
+
+
 def policy(router, parent):
     name = type(router).__name__
     require(getattr(router, 'eplb_state', None) is None, 'EPLB is outside the qualified profile')

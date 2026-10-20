@@ -123,6 +123,10 @@ class PairingTest(unittest.TestCase):
                         self.assertAlmostEqual(contrasts[name+':upper'], bounds[1])
                         self.assertLessEqual(contrasts[name+':lower'], contrasts[name])
                         self.assertLessEqual(contrasts[name], contrasts[name+':upper'])
+        self.assertAlmostEqual(contrasts['deactivate:response:Verify:lower'], -.6)
+        self.assertAlmostEqual(contrasts['deactivate:response:Verify:upper'], .3)
+        self.assertAlmostEqual(contrasts['random_deactivate:occupancy:vs_native:lower'], -.4)
+        self.assertAlmostEqual(contrasts['random_deactivate:occupancy:vs_native:upper'], .3)
 
 
 class BootstrapTest(unittest.TestCase):

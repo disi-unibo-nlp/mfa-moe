@@ -1,7 +1,7 @@
 """Reference existing science and derive new COUNT nominations on allocated CPUs."""
 from collections import defaultdict
 from pathlib import Path
-from .common import MODELS, check_files, file_sha, load, publish, require
+from .common import MODELS, check_files, digest, file_sha, load, publish, require
 from .design import allocate, assignments
 
 
@@ -82,6 +82,38 @@ def finish_assignments(binding,model,result):
         publish(root/model/('ASSIGNMENTS-'+mode+'.json'), {'records': rows, 'mode': mode,
                 'nominations_sha256': result['sha256'], 'allocation_sha256': allocation['sha256'],
                 'available_executions': sum(r['prefix_status'] == 'enrolled' and r['nomination_status'] == 'nominated' for r in rows)})
+
+
+def derive_whole(binding, model, destination):
+    """Publish global RD candidates from the same frozen discovery inputs.
+
+    Args:
+        binding: Original study binding, used only for discovery data/profile.
+        model: GPT or Qwen model identity.
+        destination: Fresh whole experiment model directory.
+
+    Returns:
+        WHOLE_NOMINATIONS receipt; no main-family outcome is read.
+    """
+    from .selection import global_pairs
+    from moe_exp.research_campaign_v3_r6.inputs import counts_for
+    source = Path(binding['config']['source_campaign'])
+    parent = load(source/'CAMPAIGN.json')
+    folds = load(source/'FOLDS.json')
+    sources = [{**row, 'fold': folds['folds'][row['family']]}
+               for row in load(source/model/'SOURCES.json')['records']]
+    counts, tokens = counts_for(parent, model, sources)
+    profile = binding['models'][model]
+    records = global_pairs(counts, tokens, sources, profile['layers'], profile['native_k'],
+                           10 if model == 'gpt' else 15, 50 if model == 'gpt' else 500)
+    return publish(Path(destination)/'WHOLE_NOMINATIONS.json', {
+        'model': model, 'selector': 'global-inclusion-risk-difference-sign-stable-four-refits',
+        'release_commit': (Path(__file__).resolve().parents[3]/'RELEASE_COMMIT').read_text().strip(),
+        'sources_sha256': digest(sources),
+        'source_campaign_sha256': parent['sha256'],
+        'counts_sha256_file': file_sha(parent['saved_inputs'][model]['counts']),
+        'outcomes_used': False, 'layers': profile['layers'], 'experts': int(counts.shape[-1]),
+        'records': records})
 
 
 def context_inventory(binding, model, sources):
