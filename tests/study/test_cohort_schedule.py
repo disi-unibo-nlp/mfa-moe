@@ -119,6 +119,17 @@ class CohortScheduleTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'unresolved reservation'):
             freeze_predecessor(path, self.value['records'], self.root/'new-bulk')
 
+    def test_failed_engineering_startup_reduces_each_corrected_full_wall_limit(self):
+        schedule = CohortSchedule(self.root/'COHORT.json')
+        prior = [{'stage': 'engineering', 'model': model, 'charged': seconds*2/3600}
+                 for model, seconds in (('gpt', 312), ('qwen36', 311))]
+        with patch.object(schedule, '_predecessor_usage', return_value=prior):
+            cards = [schedule.card('engineering', model) for model in ('gpt', 'qwen36')]
+        self.assertEqual([card['minutes'] for card in cards], [114, 114])
+        engineering_hours = sum(row['charged'] for row in prior)+sum(card['minutes']/60*card['gpus'] for card in cards)
+        self.assertLessEqual(engineering_hours, 8)
+        self.assertLessEqual(engineering_hours+12+2+24+18, 64)
+
 
 if __name__ == '__main__':
     unittest.main()

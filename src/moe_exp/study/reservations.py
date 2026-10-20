@@ -8,6 +8,8 @@ TERMINAL = {'COMPLETED', 'FAILED', 'CANCELLED', 'TIMEOUT', 'OUT_OF_MEMORY',
             'NODE_FAIL', 'PREEMPTED', 'BOOT_FAIL', 'DEADLINE'}
 LIMITS = {'preparation_qualification': 1280., 'preparation_reader': 80.,
           'preparation_cpu': 40.}
+ENGINEERING_GPU_HOURS_PER_MODEL = 4.
+MODEL_LOAD_RESERVE_MINUTES = 15
 
 
 def charged_hours(card, usage, margin):
@@ -194,6 +196,16 @@ class CohortSchedule:
             'partition': 'boost_usr_prod',
             'qos': 'normal',
         }
+        if stage == 'engineering':
+            # Preserve each model's original four-GPU-hour engineering budget,
+            # including failed startup time in every predecessor release.
+            import math
+            spent = sum(row['charged'] for row in self._predecessor_usage()
+                        if row['stage'] == 'engineering' and row['model'] == model)
+            remaining_minutes = math.floor((ENGINEERING_GPU_HOURS_PER_MODEL-spent)*60/card['gpus'] + 1e-9)
+            require(remaining_minutes > MODEL_LOAD_RESERVE_MINUTES,
+                    'model engineering budget cannot cover the minimum load reserve')
+            card['minutes'] = min(card['minutes'], remaining_minutes)
         card['job_name'] = 'causal-'+stage+'-'+(model or 'all')+'-'+digest(card)[:10]
         if stage == 'reserve':
             card['operation'], card['operation_model'] = self._reserve_target()
