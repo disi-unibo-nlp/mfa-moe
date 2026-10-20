@@ -1,3 +1,27 @@
+**Whole r3 batching correction — 2026-10-20:** the original r3 CPU qualification
+remains successful, but no GPU qualification or production succeeded. Native
+GPT61578496/Qwen61578497 and monitor61578500 were canceled after758s when
+GPT's two checkpoints showed26.58aggregate tokens/s across48rows,0.554 per
+sequence. No unit completed and no production was submitted. Preserve source
+95d4cb0, every partial, receipt and archive in the original whole r3 root.
+These jobs retain0.842222 new GPU-hours and0.210556 monitor CPU core-hours;
+CPU61577861 retains0.32core-hours. The separately bound correction continues
+the same experiment in `report/whole-reasoning-20261020-r3-batched/`, with
+1.422222 predecessor/local CPU core-hours and0.842222 new GPU-hours charged.
+The accepted scientific operator, roles, doses, masks, counters, audit unit
+selection, seeds, families and estimands are unchanged. Batch the identical
+row operations and GPU reductions, fuse project-owned tensor kernels and copy
+full audit tensors once per layer. Exact CPU operator/counter/capture checks
+and full-graph tracing precede another source-bound allocated qualification.
+An additional CPU validation is necessary because this engineering bottleneck
+was measured only in the first GPU canary; it remains inside16core-hours.
+Every new GPU allocation, startup and failure remains within72GPU-hours total.
+Before accepting production, bind shard walltimes at or below the original
+165/240-minute maxima to remaining budget, including every committed maximum.
+Only already satisfied purged Slurm dependencies may be pruned, with native
+terminal/success proof; preserve all afterok/afterany semantics. No approval,
+budget reset, scientific tuning, manuscript edit or remote push is introduced.
+
 **Alignment v3 whole-reasoning continuation — 2026-10-20:** this session is
 the only owner and submitter; the second session is closed. Preserve commits
 abbcffd, 385ea15, 0c0243b and both r2 feasibility records. The user authorized

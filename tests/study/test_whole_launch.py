@@ -167,6 +167,17 @@ class MonitorSurvivalTests(unittest.TestCase):
         self.assertEqual(reserved, 71.5)
         self.assertLess(reserved, whole.GPU_CEILING)
 
+    def test_purged_dependency_requires_native_success_before_afterok_is_satisfied(self):
+        gone = SimpleNamespace(returncode=1, stderr='slurm_load_jobs error: Invalid job id specified')
+        with patch.object(whole.subprocess, 'run', return_value=gone), \
+             patch.object(whole, 'native_accounting', return_value={'old': {'state': 'COMPLETED', 'exit_code': '0:0'}}):
+            self.assertIsNone(whole.scheduler_dependency('afterok:old'))
+        with patch.object(whole.subprocess, 'run', return_value=gone), \
+             patch.object(whole, 'native_accounting', return_value={'failed': {'state': 'FAILED', 'exit_code': '1:0'}}):
+            with self.assertRaisesRegex(ValueError, 'required native'):
+                whole.scheduler_dependency('afterok:failed')
+            self.assertIsNone(whole.scheduler_dependency('afterany:failed'))
+
 
 class PairedPlanningTests(unittest.TestCase):
     def test_planning_noise_uses_repeat_differences_and_driver_accuracy(self):

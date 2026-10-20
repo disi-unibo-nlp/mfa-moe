@@ -186,6 +186,40 @@ def score_override_dual(logits, native_weights, native_ids, activate, deactivate
     return weights, ids, changed
 
 
+def score_override_dual_masked(logits, native_weights, native_ids, activate, deactivate, active, *,
+                               epsilon=.01, scoring='softmax', renormalize=True, correction_bias=None,
+                               scale=1., expert_scale=None):
+    """Apply the same dual equation to a batch of prevalidated per-row expert masks.
+
+    Args:
+        logits, native_weights, native_ids: Same-state router tensors.
+        activate, deactivate: Disjoint boolean row/expert masks, validated at admission.
+        active: Boolean row mask; inactive native tensors retain their exact bits.
+        epsilon, scoring, renormalize, correction_bias, scale, expert_scale: Native policy.
+
+    Returns:
+        Executed weights and expert identities, without per-request GPU synchronizations.
+    """
+    import torch
+    require(scoring == 'softmax', 'dual override requires native softmax scoring')
+    require(activate.shape == deactivate.shape == logits.shape, 'dual expert mask shape differs')
+    scores = logits.float().log_softmax(-1)
+    maximum, minimum = scores.max(-1, keepdim=True).values, scores.min(-1, keepdim=True).values
+    scores = torch.where(activate, maximum+epsilon, scores)
+    scores = torch.where(deactivate, minimum-epsilon, scores)
+    affinity = scores.softmax(-1)
+    priority = affinity if correction_bias is None else affinity+correction_bias.float()
+    ids = priority.topk(native_ids.shape[-1], dim=-1, sorted=True).indices
+    weights = affinity.gather(1, ids)
+    if renormalize:
+        weights = weights/weights.sum(-1, keepdim=True).clamp_min(torch.finfo(weights.dtype).tiny)
+    weights = weights*scale
+    if expert_scale is not None:
+        weights = weights*expert_scale[ids].to(weights.dtype)
+    return (torch.where(active[:, None], weights.to(native_weights.dtype), native_weights),
+            torch.where(active[:, None], ids.to(native_ids.dtype), native_ids))
+
+
 def policy(router, parent):
     name = type(router).__name__
     require(getattr(router, 'eplb_state', None) is None, 'EPLB is outside the qualified profile')
