@@ -39,6 +39,15 @@ atomic groups could disagree between ranks. Seven focused graph/operator/
 counter/audit/recompute tests pass. Continue the deterministic subdirectory;
 its1.637778CPU/0.842222GPU-hour prior retains every allocation and local charge.
 
+Final source16cf599 then passed all190allocated tests in CPU61581053; its
+73.767-second test stage follows fresh main/half preparation for both models.
+All70 GPT promote DP matches and all210qualified cells remain unchanged.
+Evidence: report/whole-reasoning-20261020-r3-batched/deterministic/CPU_VALIDATION.json.
+Final canaries GPT61581237/Qwen61581238 and monitor61581239 started23:42:29
+Rome. Native resource readbacks are preserved in that root's JOBS.json and
+OBSERVED_LAUNCH.json. Passing CPU tests do not establish a passing canary.
+W-0002 now traces the final source and allocated nomination evidence.
+
 ## Results
 
 | Metric | Dataset | Baseline | Result | Evidence |
