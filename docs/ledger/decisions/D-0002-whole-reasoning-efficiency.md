@@ -5,11 +5,44 @@
 - supersedes: D-0001
 - scope: Whole-reasoning GPT/Qwen efficiency experiment and corrected main/strong CPU analyses.
 - not_scope: Further 512-token rescue work, manuscript edits, pushes, outcome-driven tuning.
-- chosen: Original saved prompts, cross-fitted global sign-stable inclusion risk differences, dual score override at epsilon 0.01, prompt and reasoning steering until closure, matched random, native and native_repeat. Six simultaneous bounded accuracy/token-benefit contrasts with equally weighted models and efficiency cells. Immutable release code and fresh bound stores. Mandatory canaries, declared half-dose fluency fallback, projection and hard budget stops.
+- chosen: Alignment v3 control-feasible global sign-stable RD nomination with exact layer/quintile/role controls at both doses; original prompts, dual score override at epsilon 0.01, prompt and reasoning steering until closure, native and native_repeat. Continuous 64-slot admission with native and efficiency cells before other promote cells. Relative full-allowance canaries, two GPT and seven Qwen shards, immutable releases, fresh stores and six simultaneous bounded contrasts. Monitor deadlines/errors never stop production; actual CPU usage remains bounded separately.
 - rejected: Full-top-k promotion, new 512-token generation, routine dose sweeps, mixed doses per model, treating the exploratory sign-transfer link as a preregistered replication.
 - evidence: User's Alignment v2, 2026-10-20: "This message replaces that plan and the 2026-10-20 'final implementation plan'." Exact endpoints, debate, gates and authorization are recorded in report/whole-reasoning-20261020/README.md. New-work ceiling 72 GPU-hours plus retained r3 engineering 0.346111; CPU ceiling 16 core-hours. Science cutoff 2026-10-23 05:30 Europe/Rome.
 - keywords: whole, efficiency, routing, bootstrap, nomination, SteerMoE, rescue
 - paths: src/moe_exp/study, src/moe_exp/final_routing, tests/study, scripts/study
+
+## Alignment v3 amendments (user, before any whole GPU outcome)
+
+User: "adopt your control-feasible nomination. Do not use tertiles" and "This
+session is the only owner and submitter." Keep all v2 scientific parameters
+except the explicit v3 amendments in report/whole-reasoning-20261020-r3/README.md.
+The absolute-RD greedy walk reserves distinct controls jointly across roles;
+all 35 main and 35 half GPT promote selections must equal the saved DP proposal.
+All Qwen and GPT suppress targets retain exact ranks. Record retained RD per
+cell and native-frequency, changed-membership, L1 and deactivated-weight checks
+by model/arm. Targets remain the larger frequency perturbation (reviewed GPT
+means: controls 0.290 vs targets 0.375). Generic disruption historically
+lengthened reasoning and cut accuracy, so the residual mismatch works against
+an efficiency claim. The proposal and historical means are documented in
+report/whole-reasoning-20261020-r2/CONTROL_FEASIBLE_RD_BOTH_DOSES.json and the
+user's Alignment v3 review; they are not whole-experiment results.
+
+Canaries retain the same eight families/48 rows with each production allowance.
+Compare with same-run native/native_repeat: cap-rate excess >0.15, geometric
+length ratio >1.40, repetition excess >0.10 fail. GPT45/Qwen90-minute canaries
+and 2 GPT165/7 Qwen240-minute two-GPU shards reserve 71.5 GPU-hours. No shard
+is held. The half-dose fallback must fit remaining charged usage and maxima.
+The monitor cannot stop GPUs at its own deadline, on a CPU-budget exit or on
+an exception. Scheduler/quota exceptions log and retry after 60 seconds.
+Extraction is queued with production, analysis after both extractions.
+
+Non-nominated cells are not_in_design and excluded from every composite;
+efficiency-directed cells must all be nominated. Extraction failures are
+reported explicitly, sentence coverage failures make that unit unknown, and
+reasoning closed before a cap is point-observed while fixed-budget accuracy
+remains zero. The exploratory link uses shared 10,000 draws/seed20261015, which
+differs from the preregistered 2,000/20261017. Corrected main analysis records
+every bounded activate:log_total row and its reason.
 
 ## Frozen endpoints (user, verbatim)
 
@@ -26,7 +59,7 @@ derives from the pre-registration; the suppress side is a new hypothesis):
 - Inference: 10,000 benchmark-stratified family bootstrap draws, seed 20261015, equal class/direction weights within
   model, max-|t| simultaneous envelope over all point AND bound components.
 - **Bounds.**
-  - Capped run: log reasoning ∈ [log observed, log total_allowance], using each request's actual allowance, not a
+  - Capped run with reasoning still open: log reasoning ∈ [log observed, log total_allowance], using each request's actual allowance, not a
     hard-coded 32,768.
   - Missing run: [log 1, log allowance] for tokens and [0,1] for accuracy.
   - Token-benefit lower bound = −(target_upper − random_lower).
@@ -58,6 +91,13 @@ keep `log_reasoning` as a declared secondary.
 - Full per-token captures only for 32 pre-selected audit units per model.
 
 **Statistical planning.**
+
+Alignment v3 supersedes the between-family fallback below: use the main-study
+native_repeat−native within-family differences d, sigma_w=SD(d)/sqrt(2), then
+composite SD=sigma_w*sqrt(2/m). Accuracy comes from main-study driver outcomes
+or re-scored labels, never legacy trace is_correct. Mark transport SUSPECTED;
+no gate uses this planning value. Preserve cross-model family covariance in
+the pooled calculation. The following original v2 expectations are historical.
 - Composite family-level SDs from main-study native outcomes: about 0.19 / 0.16 log-tokens and 0.10 / 0.07 accuracy
   (GPT / Qwen). Recompute these and record them in a receipt before production. If you cannot reproduce them, use and
   report the native-only SDs.

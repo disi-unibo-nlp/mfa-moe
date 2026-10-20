@@ -326,7 +326,7 @@ class Engine:
                 self.metrics['drained'] += 1
         require(not self.engine.has_unfinished_requests(), 'abort left unfinished engine requests')
 
-    def run(self, rows, build, finish, *, stop_admission=None, stop_execution=None, family_blocks=False):
+    def run(self, rows, build, finish, *, stop_admission=None, stop_execution=None):
         queue = [r for r in rows if (self.store.state(r['uid']) or {'status': 'partial'})['status'] == 'partial']
         # Resume partial units first: they hold the longest outstanding work.
         queue.sort(key=lambda r: self.store.state(r['uid']) is None)
@@ -338,8 +338,6 @@ class Engine:
                     break
                 admitting = now < self.deadline-self.drain_seconds and (stop_admission is None or not stop_admission())
                 while admitting and queue and len(self.inflight) < self.max_inflight:
-                    if family_blocks and self.inflight and queue[0]['family'] != next(iter(self.inflight.values()))['row']['family']:
-                        break
                     row = queue.pop(0)
                     admitted = self.admit(row, build)
                     if admitted == 'deferred':

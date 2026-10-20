@@ -17,8 +17,9 @@ import time
 
 import numpy as np
 
-from .common import CLASSES, REPO, check_files, digest, load, publish, require, verified
+from .common import CLASSES, REPO, check_files, digest, load, locked, publish, require, verified
 from . import driver
+from moe_exp.final_routing.selection import select_pairs
 
 MODELS = ('gpt', 'qwen36')
 SUPPRESS = {'gpt': ('Read', 'Analyze', 'Plan', 'Explore'), 'qwen36': ('Analyze', 'Plan', 'Implement')}
@@ -29,10 +30,16 @@ DOSES = {
                'half': {'promote': (8, 0), 'suppress': (0, 250)}},
 }
 ROOT = Path(os.environ.get('WHOLE_ROOT', REPO/'report/whole-reasoning-20261020'))
-# A minute of the full 12-GPU concurrency plus cancellation latency stays inside 72.
+# Main canaries and all nine production allocations reserve 71.5 GPU-hours.
 GPU_CEILING = 72.
-GPU_STOP = 71.6
+SHARDS = {'gpt': 2, 'qwen36': 7}
+RUN_MINUTES = {'gpt': 165, 'qwen36': 240}
+CANARY_MINUTES = {'gpt': 45, 'qwen36': 90}
 CUTOFF = 1792726200.  # 2026-10-23 03:30 UTC (05:30 Europe/Rome).
+# CPU allocation time is charged across monitor, extraction and analysis. Leave
+# half a core-hour for concurrent shutdown and native-accounting latency.
+CPU_WORK_LIMIT = 15.5
+CPU_TAIL_RESERVE = 8.
 
 
 def verify_release() -> dict:
@@ -60,23 +67,6 @@ def work_remaining_bytes() -> int:
     return (min(limits)-used)*1024
 
 
-def select_pairs(candidates: list[dict], count: int, layers: list[int], role: str) -> tuple[list[dict], dict]:
-    """Apply the declared layer cap and half-availability rule to ranked pairs."""
-    cap = 1 if role == 'activate' else math.ceil(count/len(layers))
-    used, selected = Counter(), []
-    for pair in candidates:
-        if len(selected) == count:
-            break
-        if used[pair['layer']] < cap:
-            selected.append(pair)
-            used[pair['layer']] += 1
-    qualified = len(selected) >= math.ceil(count/2)
-    return (selected if qualified else []), {
-        'requested': count, 'available': len(selected), 'used': len(selected) if qualified else 0,
-        'per_layer_cap': cap, 'qualified': qualified,
-    }
-
-
 def _layer_actions(roles: dict, profile: dict) -> list[dict]:
     """Collect disjoint roles once per layer while preserving native top-k capacity."""
     result = []
@@ -98,18 +88,31 @@ def cell_actions(nomination: dict, profile: dict, model: str, dose: str, operati
     layers = profile['layers']
     act_count, deact_count = DOSES[model][dose][operation]
     positive, negative = nomination['candidates']['positive'], nomination['candidates']['negative']
-    activate, act_availability = select_pairs(positive, act_count, layers, 'activate')
-    deactivate, deact_availability = select_pairs(negative if operation == 'promote' else positive,
-                                                  deact_count, layers, 'deactivate')
+    original_activate, _ = select_pairs(positive, act_count, layers, 'activate')
+    deact_candidates = negative if operation == 'promote' else positive
+    original_deactivate, _ = select_pairs(deact_candidates, deact_count, layers, 'deactivate')
     opposite_act, _ = select_pairs(negative, act_count, layers, 'activate')
     opposite_deact, _ = select_pairs(positive if operation == 'promote' else negative,
                                      deact_count, layers, 'deactivate')
-    excluded = {(pair['layer'], pair['expert']) for pair in activate+deactivate+opposite_act+opposite_deact}
+    opposite = {(p['layer'], p['expert']) for p in opposite_act+opposite_deact}
+    activate, act_availability = select_pairs(positive, act_count, layers, 'activate',
+                                             frequency=nomination['frequency'], excluded=opposite)
+    fixed = opposite | {(p['layer'], p['expert']) for p in activate}
+    deactivate, deact_availability = select_pairs(deact_candidates, deact_count, layers, 'deactivate',
+        frequency=nomination['frequency'], excluded=fixed, fixed_targets=activate)
+    excluded = fixed | {(p['layer'], p['expert']) for p in deactivate}
     qualified = act_availability['qualified'] and deact_availability['qualified']
     controls = (layer_matched_controls(activate, deactivate, nomination['frequency'], layers, excluded,
                 [model, nomination['fold'], nomination['class'], dose, operation]) if qualified else
                 {'activate': [], 'deactivate': []})
 
+    original_rd = sum(abs(p['delta']) for p in original_deactivate)
+    retained_rd = sum(abs(p['delta']) for p in deactivate)
+    native_frequency = {}
+    for arm, roles in (('target', {'activate': activate, 'deactivate': deactivate}), ('random', controls)):
+        pairs = roles['activate']+roles['deactivate']
+        native_frequency[arm] = (float(np.mean([nomination['frequency'][layers.index(p['layer'])][p['expert']]
+                                               for p in pairs])) if pairs else None)
     return {
         'fold': nomination['fold'], 'class': nomination['class'], 'operation': operation,
         'dose': dose, 'qualified': qualified,
@@ -117,6 +120,13 @@ def cell_actions(nomination: dict, profile: dict, model: str, dose: str, operati
         'target': _layer_actions({'activate': activate, 'deactivate': deactivate}, profile),
         'random': _layer_actions(controls, profile),
         'excluded_pairs': sorted(map(list, excluded)),
+        'selection_rule': 'control-feasible absolute-RD greedy; exact layer/quintile/role matching',
+        'retained_rd_fraction': retained_rd/original_rd if original_rd else 1.,
+        'original_deactivation_rd': original_rd, 'retained_deactivation_rd': retained_rd,
+        'activation_changed': activate != original_activate,
+        'mean_native_frequency': native_frequency,
+        'replaced_deactivation_pairs': len({(p['layer'], p['expert']) for p in original_deactivate} -
+                                           {(p['layer'], p['expert']) for p in deactivate}),
     }
 
 
@@ -141,6 +151,8 @@ def build_manifest(model: str, dose: str, nominations: dict, b: dict, natives: l
              for operation in ('promote', 'suppress')
              if operation == 'promote' or n['class'] in SUPPRESS[model]]
     by_cell = {(c['fold'], c['class'], c['operation']): c for c in cells}
+    require(all(c['qualified'] for c in cells if c['operation'] == 'suppress' or
+                c['class'] in ('Verify', 'Monitor')), 'every efficiency-directed cell must be nominated')
     rows = []
     for native in sorted(natives, key=lambda row: row['family']):
         prompt = inputs[native['family']]
@@ -164,6 +176,7 @@ def build_manifest(model: str, dose: str, nominations: dict, b: dict, natives: l
                 for role in ('target', 'random'):
                     rows.append({**base, 'arm': role+'_'+operation, 'class': class_name,
                                  'operation': operation, 'actions': cell[role],
+                                 'steered_native_frequency': cell.get('mean_native_frequency', {}).get(role),
                                  'nomination_status': 'nominated' if cell['qualified'] else 'dropped_availability'})
     # Audit flags are selected without reading a whole-arm outcome, before execution.
     audit_keys = sorted(range(len(rows)), key=lambda i: digest(['whole-audit', model, dose, rows[i]]))[:32]
@@ -205,7 +218,12 @@ def prepare(models=MODELS):
                             build_manifest(model, dose, nominations, b, natives, inputs, scope))
             results[model+':'+dose] = {key: value[key] for key in ('sha256', 'planned', 'executable', 'scope')}
     from .whole_effects import planning
-    publish(ROOT/'SD_MDE.json', planning(models))
+    try:
+        planning_result = planning(models)
+    except Exception as error:
+        planning_result = {'transport_status': 'SUSPECTED', 'available': False,
+                           'error': f'{type(error).__name__}: {error}', 'gates_science': False}
+    publish(ROOT/'SD_MDE.json', planning_result)
     return results
 
 
@@ -251,8 +269,7 @@ def canary_rows(value: dict) -> list[dict]:
                 row['operation'] == 'promote' and row['class'] == 'Verify') or (
                 row['operation'] == 'suppress' and row['class'] == chosen_class)
             if keep and row['nomination_status'] == 'nominated':
-                canary = {**row, 'canary': True, 'audit_capture': True, 'horizon': 4096,
-                          'total_allowance': min(4096, row['total_allowance'])}
+                canary = {**row, 'canary': True, 'audit_capture': True}
                 canary['uid'] = digest(['whole-canary', value['sha256'], canary])
                 records.append(canary)
     require(sum(r['operation'] != 'native' for r in records) == 32, 'canary cell availability differs')
@@ -263,6 +280,51 @@ def repetition_rate(tokens: list[int], width: int = 16) -> float:
     """Fraction of token n-gram positions whose n-gram has already appeared."""
     grams = [tuple(tokens[i:i+width]) for i in range(max(0, len(tokens)-width+1))]
     return 1-len(set(grams))/len(grams) if grams else 0.
+
+
+def relative_fluency(observed: list[dict]) -> dict:
+    """Compare completed steered units with same-family native and repeat units.
+
+    Args:
+        observed: Completed rows with token length, cap and repetition diagnostics.
+
+    Returns:
+        Relative gates and their denominators. Early gates use only families whose
+        two native references completed; the canary requires all 48 rows.
+    """
+    native = {}
+    for row in observed:
+        if row['arm'] in ('native', 'native_repeat'):
+            native.setdefault(row['family'], []).append(row)
+    steered = [r for r in observed if r['operation'] != 'native' and len(native.get(r['family'], [])) == 2]
+    references = [native[r['family']] for r in steered]
+    cap_rate = float(np.mean([r['cap'] for r in steered])) if steered else None
+    native_cap = float(np.mean([n['cap'] for pair in references for n in pair])) if steered else None
+    repetition = float(np.mean([r['repetition'] for r in steered])) if steered else None
+    native_repetition = float(np.mean([n['repetition'] for pair in references for n in pair])) if steered else None
+    ratios = [math.log(max(1, r['tokens']))-np.mean([math.log(max(1, n['tokens'])) for n in pair])
+              for r, pair in zip(steered, references)]
+    ratio = math.exp(float(np.mean(ratios))) if ratios else None
+    failures = []
+    if cap_rate is not None and cap_rate-native_cap > .15:
+        failures.append('cap')
+    if ratio is not None and ratio > 1.40:
+        failures.append('length')
+    if repetition is not None and repetition-native_repetition > .10:
+        failures.append('repetition')
+    return {
+        'steered_units': len(steered),
+        'cap_count': sum(r['cap'] for r in steered),
+        'cap_rate': cap_rate,
+        'native_cap_rate': native_cap,
+        'cap_rate_difference': cap_rate-native_cap if steered else None,
+        'geometric_length_ratio_to_native': ratio,
+        'repetition_16gram': repetition,
+        'native_repetition_16gram': native_repetition,
+        'repetition_16gram_difference': repetition-native_repetition if steered else None,
+        'fluency_failures': failures,
+        'reference': 'same-family native and native_repeat; both complete; weighted by compared steered units',
+    }
 
 
 def fluency(store, rows: list[dict], *, require_complete: bool = False) -> dict:
@@ -294,34 +356,27 @@ def fluency(store, rows: list[dict], *, require_complete: bool = False) -> dict:
             doses.append((row, dose))
     if require_complete and len(observed) != len(rows):
         software.append('incomplete_canary')
-    steered = [row for row in observed if row['operation'] != 'native']
-    native = {r['family']: r['tokens'] for r in observed if r['arm'] == 'native'}
-    ratios = [math.log(max(1, row['tokens'])/max(1, native[row['family']])) for row in steered
-              if row['family'] in native]
-    cap_count = sum(row['cap'] for row in steered)
-    cap_rate = cap_count/len(steered) if steered else None
-    ratio = math.exp(float(np.mean(ratios))) if ratios else None
-    repetition = float(np.mean([row['repetition'] for row in steered])) if steered else None
+    relative = relative_fluency(observed)
     deactivation = [dose for row, dose in doses if row['operation'] == 'suppress']
     changed = (sum(d['changed_membership'] for d in deactivation)/sum(d['active_positions'] for d in deactivation)
                if deactivation else None)
     if changed is not None and changed < .05:
         software.append('deactivation_membership_below_5_percent')
-    failures = []
-    if cap_rate is not None and cap_rate > 2/32:
-        failures.append('cap')
-    if ratio is not None and ratio > 1.40:
-        failures.append('length')
-    if repetition is not None and repetition > .20:
-        failures.append('repetition')
-    return {'passed': not software and not failures and bool(steered), 'completed': len(observed),
-            'steered_units': len(steered), 'cap_count': cap_count, 'cap_rate': cap_rate,
-            'geometric_length_ratio_to_native': ratio, 'repetition_16gram': repetition,
+    return {'passed': not software and not relative['fluency_failures'] and bool(relative['steered_units']),
+            'completed': len(observed), **relative,
             'deactivation_changed_membership': changed, 'software_failures': software,
-            'fluency_failures': failures}
+            'observed_steered_units': sum(r['operation'] != 'native' for r in observed)}
 
 
-def run(model, shard, deadline, *, max_inflight=24, canary=False, dose=None):
+def admission_order(rows: list[dict]) -> list[dict]:
+    """Order all primary and native rows before other promote rows, without barriers."""
+    return sorted(rows, key=lambda r: (
+        int(r['operation'] == 'promote' and r['class'] not in ('Verify', 'Monitor')),
+        r['family'], r['arm'], r['class'] or '',
+    ))
+
+
+def run(model, shard, deadline, *, max_inflight=64, canary=False, dose=None):
     """Run one source-bound shard or canary on the existing hooked engine."""
     from .runtime import closure
     verify_release()
@@ -336,7 +391,7 @@ def run(model, shard, deadline, *, max_inflight=24, canary=False, dose=None):
     rows = canary_rows(value) if canary else driver.shard_rows(model, shard, 'whole')
     store = bound_store(model, value['dose'], canary)
     require(not any(store.state(r['uid']) for r in rows), 'whole execution is fresh only; preserve partials')
-    executable = [r for r in rows if r['nomination_status'] == 'nominated']
+    executable = admission_order([r for r in rows if r['nomination_status'] == 'nominated'])
     b = driver.binding()
     llm, kwargs, load_seconds = driver.hooked_llm(b, model, max_inflight)
     try:
@@ -346,10 +401,9 @@ def run(model, shard, deadline, *, max_inflight=24, canary=False, dose=None):
         tokenizer = llm.get_tokenizer()
         engine = driver.Engine(llm, store, min(deadline, CUTOFF), hooked=True, max_inflight=max_inflight,
                                checkpoint_seconds=120, drain_seconds=120)
-        build = driver.intervention_builder(b, model, tokenizer, closure(tokenizer, model),
-                                             limit=4096 if canary else None)
+        build = driver.intervention_builder(b, model, tokenizer, closure(tokenizer, model))
         metrics = engine.run(executable, build, driver.intervention_finisher(store, b, model),
-                             family_blocks=True, stop_execution=lambda: (ROOT/'STOP.json').exists())
+                             stop_execution=lambda: (ROOT/'STOP.json').exists() or (ROOT/model/'STOP.json').exists())
         validation = llm.collective_rpc('fs_validation')
         llm.collective_rpc('fs_end')
     finally:
@@ -398,15 +452,15 @@ def submit_stage(command: str, *, model=None, dose=None, shard=None, dependency=
     """Submit one bounded approved stage and read back its exact native resource request."""
     release = verified(ROOT/'RELEASE.json')
     gpu = command in ('canary', 'run')
-    cpus = 16 if gpu else 1 if command == 'monitor' else 4 if command == 'validate' else 2
+    cpus = 16 if gpu else 1 if command == 'monitor' else 4 if command == 'validate' else 8
     memory = 120 if gpu else 2 if command == 'monitor' else 24 if command != 'analyze' else 32
     minutes = {
-        'canary': 60,
-        'run': 290,
+        'canary': CANARY_MINUTES.get(model),
+        'run': RUN_MINUTES.get(model),
         'validate': 30,
-        'monitor': 540,
-        'extract': 30,
-        'analyze': 60,
+        'monitor': 960,
+        'extract': 90,
+        'analyze': 120,
     }[command]
     args = [command]
     if model:
@@ -415,9 +469,11 @@ def submit_stage(command: str, *, model=None, dose=None, shard=None, dependency=
         args += ['--dose', dose]
     if shard:
         args += ['--shard', f'{shard[0]}/{shard[1]}']
+    if gpu:
+        args += ['--max-inflight', '64']
     exports = {'RELEASE_ROOT': release['release_root'], 'STUDY_DATA_ROOT': str(driver.ROOT),
                'WHOLE_ROOT': str(ROOT), 'STUDY_MODULE': 'moe_exp.study.whole',
-               'MOE_EXP_SCORING_PROCESSES': '2'}
+               'MOE_EXP_SCORING_PROCESSES': '8' if command == 'extract' else '2'}
     cmd = ['sbatch', '--parsable', '--account=iscrc_miosr', '--partition=boost_usr_prod', '--qos=normal',
            '--nodes=1', '--ntasks=1', f'--cpus-per-task={cpus}', f'--mem={memory}G', f'--time={minutes}',
            '--job-name=whole-'+command+('-'+model if model else '')+('-'+dose if dose else ''),
@@ -431,17 +487,32 @@ def submit_stage(command: str, *, model=None, dose=None, shard=None, dependency=
     if held:
         cmd += ['--hold']
     cmd += [str(Path(release['release_root'])/'scripts/study/driver.sh'), *args]
-    result = subprocess.run(cmd, capture_output=True, text=True, check=True)
-    job_id = result.stdout.strip().split(';')[0]
-    require(job_id.isdecimal(), 'sbatch did not return a job ID')
+    folder = ROOT/'submissions'/digest([command, model, dose, shard])
+    if (folder/'ACCEPTED.json').exists():
+        return verified(folder/'ACCEPTED.json')
+    if (folder/'SUBMITTED.json').exists():
+        submitted = verified(folder/'SUBMITTED.json')
+        require(submitted['args'] == cmd, 'recorded whole submission arguments differ')
+    else:
+        result = subprocess.run(cmd, capture_output=True, text=True, check=True)
+        job_id = result.stdout.strip().split(';')[0]
+        require(job_id.isdecimal(), 'sbatch did not return a job ID')
+        submitted = publish(folder/'SUBMITTED.json', {
+            'id': job_id, 'command': command, 'model': model, 'dose': dose, 'shard': shard,
+            'gpus': 2 if gpu else 0, 'cpus': cpus, 'minutes': minutes, 'held': held,
+            'sbatch': result.stdout.strip(), 'args': cmd, 'submitted': time.time(),
+        })
+    # Persist the ID before scheduler readback: a transient scontrol failure
+    # retries this acceptance instead of submitting another allocation.
+    job_id = submitted['id']
     readback = subprocess.run(['scontrol', 'show', 'job', '-o', job_id], capture_output=True, text=True, check=True).stdout
     require('UserId=lmolfett(' in readback and 'Account=iscrc_miosr ' in readback and
             'Partition=boost_usr_prod ' in readback and f'NumCPUs={cpus} ' in readback,
             'accepted whole job resource/account readback differs')
     require(not gpu or 'gres/gpu=2' in readback, 'accepted whole GPU count differs')
-    return {'id': job_id, 'command': command, 'model': model, 'dose': dose, 'shard': shard,
-            'gpus': 2 if gpu else 0, 'cpus': cpus, 'minutes': minutes, 'held': held,
-            'sbatch': result.stdout.strip(), 'args': cmd, 'readback': readback, 'submitted': time.time()}
+    require(f'TimeLimit={minutes//60:02d}:{minutes%60:02d}:00 ' in readback,
+            'accepted whole walltime differs')
+    return publish(folder/'ACCEPTED.json', {**submitted, 'readback': readback})
 
 
 def all_jobs(schedule: dict) -> list[dict]:
@@ -487,24 +558,55 @@ def production_progress(model: str) -> dict:
             'complete_families': sum(by_family[f] == count for f, count in planned_family.items())}
 
 
+def reserved_gpu_hours(schedule: dict, accounting: dict, stopped: set) -> float:
+    """Charge finished allocations and reserve every outstanding planned GPU maximum."""
+    jobs = [job for kind in ('canaries', 'production') for rows in schedule[kind].values() for job in rows]
+    reserved = verified(ROOT/'RELEASE.json').get('prior_usage', {}).get('new_gpu_hours', 0.)
+    for job in jobs:
+        state = accounting.get(job['id'], {})
+        reserved += state['elapsed']*job['gpus']/3600 if terminal(state) else job['gpus']*job['minutes']/60
+    for model in MODELS:
+        if model not in stopped:
+            missing = SHARDS[model]-len(schedule['production'].get(model, []))
+            reserved += missing*2*RUN_MINUTES[model]/60
+    return reserved
+
+
 def advance_canary(schedule: dict, model: str, accounting: dict, stopped: set) -> None:
     """Advance only passing canaries, or the one declared fluency fallback."""
     attempts = schedule['canaries'][model]
     attempt = attempts[-1]
     state = accounting.get(attempt['id'], {})
-    if model in stopped or schedule['production'][model] or not terminal(state):
+    if (ROOT/'STOP.json').exists() or (ROOT/model/'STOP.json').exists() or (ROOT/model/'PRE_PRODUCTION_STOP.json').exists():
+        stopped.add(model)
+    if model in stopped:
         return
     path = ROOT/model/('CANARY.json' if attempt['dose'] == 'main' else 'CANARY_HALF.json')
     gate = verified(path)['gate'] if path.exists() else None
-    if state.get('state') == 'COMPLETED' and gate and gate['passed']:
+    current_canary = attempt['id'] == os.environ.get('SLURM_JOB_ID')
+    if gate and gate['passed'] and (state.get('state') == 'COMPLETED' or current_canary):
         bound_store(model, attempt['dose'])
-        count = 2 if model == 'gpt' else 5
-        for index in range(count):
+        count = SHARDS[model]
+        for index in range(len(schedule['production'][model]), count):
             job = submit_stage('run', model=model, dose=attempt['dose'], shard=[index, count],
-                               dependency='afterok:'+attempt['id'], held=model == 'qwen36' and index == 4)
+                               dependency='afterok:'+attempt['id'])
             schedule['production'][model].append(job)
             driver.checkpoint(ROOT/'JOBS.json', schedule)
+        # Queue dependent CPU work in the same step as these shards. Their
+        # execution no longer needs a live monitor once this step returns.
+        advance_extraction(schedule, accounting, stopped)
+    elif not terminal(state):
+        return
     elif gate and gate['fluency_failures'] and not gate['software_failures'] and attempt['dose'] == 'main':
+        fallback_maximum = 2*CANARY_MINUTES[model]/60
+        reserved = reserved_gpu_hours(schedule, accounting, stopped)+fallback_maximum
+        if reserved > GPU_CEILING:
+            stopped.add(model)
+            publish(ROOT/model/'PRE_PRODUCTION_STOP.json', {
+                'reason': 'half-dose canary cannot fit its full walltime plus the remaining shard maxima',
+                'reserved_gpu_hours': reserved,
+            })
+            return
         attempts.append(submit_stage('canary', model=model, dose='half', dependency='afterany:'+attempt['id']))
         driver.checkpoint(ROOT/'JOBS.json', schedule)
         publish(ROOT/model/'SELECTED.json', {'dose': 'half', 'manifest_sha256': manifest(model, 'half')['sha256'],
@@ -529,7 +631,9 @@ def check_projection(schedule: dict, model: str, accounting: dict, progress: dic
     if other_progress and other_progress['pairs'] >= .25*other_progress['executable_pairs']:
         other_projection = other_usage/(other_progress['pairs']/other_progress['executable_pairs'])
     else:
-        other_projection = 0. if other in stopped else 11.2 if other == 'gpt' else 48.3
+        planned_maximum = sum(j['gpus']*j['minutes']/60 for j in other_jobs)
+        planned_maximum += (SHARDS[other]-len(other_jobs))*2*RUN_MINUTES[other]/60
+        other_projection = other_usage if other in stopped else planned_maximum
     canary_usage = sum(accounting.get(j['id'], {}).get('elapsed', 0)*j['gpus']/3600
                        for m in MODELS for j in schedule['canaries'][m])
     prior_gpu_hours = verified(ROOT/'RELEASE.json').get('prior_usage', {}).get('new_gpu_hours', 0.)
@@ -557,6 +661,7 @@ def check_production(schedule: dict, model: str, accounting: dict, checked: set,
             publish(ROOT/model/'EARLY_GATE.json', {'gate': gate, 'elapsed': elapsed, 'progress': progress})
             checked.add(model)
             if not gate['passed']:
+                publish(ROOT/model/'STOP.json', {'reason': 'early_fluency_gate', 'gate': gate, 'elapsed': elapsed})
                 cancel_jobs(production, accounting)
                 stopped.add(model)
         else:
@@ -569,17 +674,12 @@ def check_production(schedule: dict, model: str, accounting: dict, checked: set,
 
 
 def advance_extraction(schedule: dict, accounting: dict, stopped: set) -> None:
-    """Release at most the fifth shard, then arrange afterany extraction and analysis."""
-    production_jobs = [j for m in MODELS for j in schedule['production'][m]]
-    if any(terminal(accounting.get(j['id'], {})) for j in production_jobs):
-        for job in production_jobs:
-            if job['held'] and not terminal(accounting.get(job['id'], {})) and not (ROOT/'STOP.json').exists():
-                subprocess.run(['scontrol', 'release', job['id']], check=True)
-                job['held'] = False
-                driver.checkpoint(ROOT/'JOBS.json', schedule)
+    """Queue afterany extraction with each complete shard graph, then analysis."""
+    schedule.setdefault('extraction', {})
     for model in MODELS:
         production = schedule['production'][model]
-        if (production or model in stopped) and model not in schedule['extraction']:
+        ready = len(production) == SHARDS[model] or model in stopped
+        if ready and model not in schedule['extraction']:
             dependencies = production or schedule['canaries'][model]
             schedule['extraction'][model] = submit_stage('extract', model=model,
                 dependency='afterany:'+':'.join(j['id'] for j in dependencies))
@@ -606,56 +706,107 @@ def accounting_snapshot(jobs: list[dict]) -> tuple[dict, float]:
     return accounting, gpu_hours
 
 
+def queue_after_canary(model: str) -> None:
+    """Queue dependent work from the passing canary even if the monitor has exited."""
+    with locked(ROOT, 'schedule-progression'):
+        schedule = load(ROOT/'JOBS.json')
+        accounting = native_accounting(all_jobs(schedule))
+        advance_canary(schedule, model, accounting, set())
+
+
+def cpu_stage(command: str, model: str | None) -> None:
+    """Run a CPU stage under the cumulative actual-allocation ceiling.
+
+    Args:
+        command, model: Extraction or analysis stage to dispatch in a child process.
+
+    Returns:
+        On child success. A budget-exhausted CPU stage fails visibly while every
+        GPU shard continues independently under its own allocation deadline.
+    """
+    import signal
+    import sys
+    arguments = [sys.executable, '-B', '-m', 'moe_exp.study.whole', command, '--cpu-worker']
+    if model:
+        arguments += ['--model', model]
+    prior = verified(ROOT/'RELEASE.json').get('prior_usage', {}).get('new_cpu_core_hours', 0.)
+    jobs = [j for j in all_jobs(load(ROOT/'JOBS.json')) if not j['gpus']]
+    accounting = native_accounting(jobs)
+    require(all(j['id'] in accounting for j in jobs), 'native CPU accounting required before CPU stage')
+    last_usage = prior+sum(accounting[j['id']]['elapsed']*j['cpus']/3600 for j in jobs)
+    last_time = time.time()
+    require(last_usage < CPU_WORK_LIMIT, 'CPU allowance exhausted before stage; GPU production continues')
+    process = subprocess.Popen(arguments, start_new_session=True)
+    while process.poll() is None:
+        try:
+            jobs = [j for j in all_jobs(load(ROOT/'JOBS.json')) if not j['gpus']]
+            accounting = native_accounting(jobs)
+            require(all(j['id'] in accounting for j in jobs), 'CPU accounting registration pending')
+            last_usage = prior+sum(accounting[j['id']]['elapsed']*j['cpus']/3600 for j in jobs)
+            last_time = time.time()
+        except Exception as error:
+            driver.log({'event': 'whole-cpu-accounting-retry', 'error': str(error)})
+        # At most two eight-CPU extractions and the one-CPU monitor overlap.
+        upper_usage = last_usage+17*(time.time()-last_time)/3600
+        if upper_usage >= CPU_WORK_LIMIT:
+            os.killpg(process.pid, signal.SIGTERM)
+            try:
+                process.wait(timeout=20)
+            except subprocess.TimeoutExpired:
+                os.killpg(process.pid, signal.SIGKILL)
+                process.wait()
+            publish(ROOT/'cpu-budget'/(command+'-'+str(model)+'.json'), {
+                'command': command, 'model': model, 'charged_core_hours_upper': upper_usage,
+                'reason': 'actual CPU core-hour ceiling; GPU production continues',
+            })
+            raise SystemExit(2)
+        time.sleep(10)
+    require(process.returncode == 0, f'whole {command} worker failed with exit {process.returncode}')
+
+
 def monitor() -> None:
     """Supervise this bounded graph; every native failure and load second is charged.
 
     Returns:
-        After final CPU analysis, or after cancelling GPUs at the bounded deadline.
+        After analysis or its own deadline. Only declared scientific gates stop GPUs.
     """
-    deadline = min(driver.deadline_from_slurm(margin=240), CUTOFF-3600)
+    deadline = driver.deadline_from_slurm(margin=120)
     checked, projected, stopped = set(), set(), set()
-    try:
-        while time.time() < deadline:
+    while time.time() < deadline:
+        try:
             schedule = load(ROOT/'JOBS.json')
             jobs = all_jobs(schedule)
             accounting, gpu_hours = accounting_snapshot(jobs)
             storage_stop = load(ROOT/'ACCOUNTING.json')['work_remaining_bytes'] < 14*2**30
-            if gpu_hours >= GPU_STOP or time.time() >= CUTOFF-600 or storage_stop:
+            if (ROOT/'STOP.json').exists() or time.time() >= CUTOFF or storage_stop:
                 if not (ROOT/'STOP.json').exists():
-                    publish(ROOT/'STOP.json', {'reason': 'storage_reserve' if storage_stop else 'hard_budget_or_cutoff',
+                    publish(ROOT/'STOP.json', {'reason': 'storage_reserve' if storage_stop else 'science_cutoff',
                                                'gpu_hours': gpu_hours})
                 cancel_jobs([j for j in jobs if j['gpus']], accounting)
                 stopped.update(MODELS)
             validation = accounting.get(schedule['validation']['id'], {})
             if terminal(validation) and validation.get('state') != 'COMPLETED':
                 cancel_jobs([j for j in jobs if j['gpus']], accounting)
-                if not (ROOT/'STOP.json').exists():
-                    publish(ROOT/'STOP.json', {'reason': 'cpu_validation_failed', 'native': validation})
+                driver.checkpoint(ROOT/'VALIDATION_STOP.json', {'reason': 'cpu_validation_failed', 'native': validation})
                 return
             for model in MODELS:
-                advance_canary(schedule, model, accounting, stopped)
                 check_production(schedule, model, accounting, checked, projected, stopped, gpu_hours)
-            advance_extraction(schedule, accounting, stopped)
+            with locked(ROOT, 'schedule-progression'):
+                schedule = load(ROOT/'JOBS.json')
+                for model in MODELS:
+                    advance_canary(schedule, model, accounting, stopped)
+                advance_extraction(schedule, accounting, stopped)
             if schedule.get('analysis') and terminal(accounting.get(schedule['analysis']['id'], {})):
                 return
-            time.sleep(45)
-        if not (ROOT/'STOP.json').exists():
-            publish(ROOT/'STOP.json', {'reason': 'bounded_supervision_deadline'})
-    except BaseException as error:
-        if not (ROOT/'STOP.json').exists():
-            publish(ROOT/'STOP.json', {'reason': 'supervision_failure', 'error': f'{type(error).__name__}: {error}'})
-        raise
-    finally:
-        schedule = load(ROOT/'JOBS.json')
-        jobs = all_jobs(schedule)
-        try:
-            accounting = native_accounting(jobs)
+            if load(ROOT/'ACCOUNTING.json').get('new_cpu_core_hours', 0.) >= CPU_WORK_LIMIT-CPU_TAIL_RESERVE:
+                driver.log({'event': 'whole-monitor-cpu-reserve', 'production_continues': True})
+                return
+            time.sleep(60)
         except Exception:
-            accounting = {}
-        cancel_jobs([j for j in jobs if j['gpus']], accounting)
-        qualification = ROOT/'CPU_VALIDATION.json'
-        if qualification.exists() and verified(qualification)['passed']:
-            advance_extraction(schedule, accounting, set(MODELS))
+            import traceback
+            driver.log({'event': 'whole-monitor-retry', 'error': traceback.format_exc()})
+            time.sleep(60)
+    driver.log({'event': 'whole-monitor-deadline', 'production_continues': True})
 
 
 def inference_stage(args: argparse.Namespace) -> None:
@@ -680,6 +831,7 @@ def validate_stage() -> None:
     native_quota = work_remaining_bytes()
     require(native_quota > 14*2**30, 'WORK reserve is insufficient for the bounded whole experiment')
     preparation = prepare()
+    nomination_proof = audit_nominations()
     suite = unittest.defaultTestLoader.discover(str(REPO/'tests/study'), top_level_dir=str(REPO/'tests/study'))
     result = unittest.TextTestRunner(verbosity=2).run(suite)
     if not result.wasSuccessful():
@@ -689,7 +841,42 @@ def validate_stage() -> None:
     publish(ROOT/'CPU_VALIDATION.json', {'passed': True, 'tests': result.testsRun,
                                         'job': os.environ['SLURM_JOB_ID'], 'preparation': preparation,
                                         'work_remaining_bytes': native_quota,
+                                        'nomination_audit_sha256': nomination_proof['sha256'],
                                         'sd_mde_sha256': verified(ROOT/'SD_MDE.json')['sha256']})
+
+
+def audit_nominations() -> dict:
+    """Check rebuilt manifests against the saved DP selections and record every cell.
+
+    Returns:
+        Source-bound per-cell audit, including actual retained RD and manipulation
+        frequencies. A mismatch in any GPT promote optimum fails qualification.
+    """
+    release = verified(ROOT/'RELEASE.json')
+    proposal = verified(Path(release['nomination_reference']))
+    references = {(r['dose'], r['fold'], r['class']): r for r in proposal['records']}
+    records = []
+    for model in MODELS:
+        for dose in ('main', 'half'):
+            for cell in manifest(model, dose)['cells']:
+                record = {key: cell[key] for key in ('fold', 'class', 'operation', 'qualified',
+                    'activate', 'deactivate', 'retained_rd_fraction', 'replaced_deactivation_pairs',
+                    'activation_changed', 'mean_native_frequency')}
+                if model == 'gpt' and cell['operation'] == 'promote':
+                    reference = references[dose, cell['fold'], cell['class']]
+                    for arm, roles in (('target', reference), ('random', reference['controls'])):
+                        for role in ('activate', 'deactivate'):
+                            actual = {(a['layer'], e) for a in cell[arm] for e in a[role]}
+                            expected = {(p['layer'], p['expert']) for p in roles[role]}
+                            require(actual == expected, f'rebuilt GPT {dose}/{cell["fold"]}/{cell["class"]} differs from DP')
+                    require(math.isclose(cell['retained_rd_fraction'], reference['rd_fraction']), 'retained RD differs from DP')
+                    record['saved_dp_match'] = True
+                records.append({'model': model, 'dose': dose, **record})
+    return publish(ROOT/'NOMINATION_AUDIT.json', {
+        'records': records, 'dp_reference_sha256': proposal['sha256'],
+        'gpt_promote_dp_matches': sum(r.get('saved_dp_match', False) for r in records),
+        'outcomes_used': False,
+    })
 
 
 def main(argv=None):
@@ -699,7 +886,8 @@ def main(argv=None):
     parser.add_argument('--model', choices=MODELS)
     parser.add_argument('--dose', choices=('main', 'half'))
     parser.add_argument('--shard', type=driver.parse_shard, default=(0, 1))
-    parser.add_argument('--max-inflight', type=int, default=24)
+    parser.add_argument('--max-inflight', type=int, default=64)
+    parser.add_argument('--cpu-worker', action='store_true', help=argparse.SUPPRESS)
     args = parser.parse_args(argv)
     verify_release()
     if args.command == 'launch':
@@ -722,17 +910,32 @@ def main(argv=None):
         driver.log({'event': 'prepare-whole', 'results': prepare((args.model,) if args.model else MODELS)})
     elif args.command in ('canary', 'run'):
         inference_stage(args)
+        if args.command == 'canary':
+            try:
+                queue_after_canary(args.model)
+            except Exception as error:
+                driver.log({'event': 'whole-canary-scheduling-retry-needed', 'error': str(error)})
     elif args.command == 'extract':
+        if not args.cpu_worker:
+            return cpu_stage(args.command, args.model)
         from .whole_effects import extract
         extract(args.model)
     elif args.command == 'analyze':
+        if not args.cpu_worker:
+            return cpu_stage(args.command, args.model)
         from .whole_effects import analyze
         analyze()
         from .effects import analyze as historical_analysis
         models = [m for m in driver.MODELS if (driver.DRIVER/m/'ASSIGNMENTS.json').exists()]
-        historical_analysis(models, ROOT/'corrected-main', 'main')
+        main_result = historical_analysis(models, ROOT/'corrected-main', 'main')
         strong_models = [m for m in models if (driver.DRIVER/m/'STRONG.json').exists()]
         historical_analysis(strong_models, ROOT/'corrected-strong', 'strong')
+        link = main_result.get('efficiency_link', {})
+        publish(ROOT/'analysis/CORRECTED_MAIN_LINK.json', link)
+        with (ROOT/'analysis/REPORT.md').open('a') as report:
+            report.write('\nCorrected main activate:log_total link status: '+str(link.get('status', 'qualified'))+
+                         '; bounded rows: '+str(link.get('bounded_row_count', 0))+'. '
+                         'Every bounded identity, interval and reason is in CORRECTED_MAIN_LINK.json.\n')
     elif args.command == 'validate':
         validate_stage()
     elif args.command == 'monitor':
