@@ -52,6 +52,7 @@ def unit_bounds(row: dict) -> dict:
 
 def _extract_one(row: dict, *, b: dict, model: str, tokenizer, close, store, inputs):
     """Replay and score one completed draw, recording a per-unit extraction failure."""
+    from .outcomes import record
     try:
         if (store.state(row['uid']) or {}).get('status') != 'complete':
             return None
@@ -84,7 +85,6 @@ def _extract_one(row: dict, *, b: dict, model: str, tokenizer, close, store, inp
 def extract(model: str) -> dict:
     """Extract whatever completed, preserving missing rows for the subsequent planned join."""
     from transformers import AutoTokenizer
-    from .outcomes import record
     from .runtime import closure, prompt_prefix
     value = manifest(model)
     store = bound_store(model, value['dose'])
@@ -434,7 +434,12 @@ def analyze() -> dict:
     mechanism = {}
     for model in MODELS:
         for operation in ('promote', 'suppress'):
-            for class_name in (CLASSES if operation == 'promote' else SUPPRESS[model]):
+            for class_name in CLASSES:
+                if operation == 'suppress' and class_name not in SUPPRESS[model]:
+                    mechanism['|'.join((model, operation, class_name))] = {
+                        'status': 'not_in_design', 'observed_classes': list(CLASSES),
+                        'reason': 'This suppress class was not assigned; no zero effect is imputed.'}
+                    continue
                 sub = cells[(cells.model == model) & (cells.operation == operation) & (cells['class'] == class_name)]
                 columns = [comparison+':response:'+observed for comparison in
                            ('target_random', 'target_native', 'random_native') for observed in CLASSES]

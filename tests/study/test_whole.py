@@ -361,11 +361,13 @@ class ExecutionGateTests(unittest.TestCase):
         schedule = {'canaries': {'gpt': [{'id': '1', 'dose': 'main'}]}, 'production': {'gpt': []}}
         publish(self.root/'gpt/CANARY.json', {'gate': {'passed': False, 'fluency_failures': ['cap'],
                                                     'software_failures': []}})
+        publish(self.root/'gpt/WHOLE_HALF.json', {'dose': 'half', 'records': []})
         with patch.object(whole, 'submit_stage', return_value={'id': '2', 'dose': 'half'}) as submit, \
              patch.object(whole.driver, 'checkpoint'):
             whole.advance_canary(schedule, 'gpt', {'1': {'state': 'FAILED'}}, set())
         self.assertEqual(submit.call_args.kwargs['dose'], 'half')
         self.assertEqual([job['dose'] for job in schedule['canaries']['gpt']], ['main', 'half'])
+        self.assertEqual(whole.verified(self.root/'gpt/SELECTED.json')['dose'], 'half')
 
     def test_software_failure_never_becomes_a_dose_failure(self):
         schedule = {'canaries': {'gpt': [{'id': '1', 'dose': 'main'}]}, 'production': {'gpt': []}}
@@ -437,6 +439,35 @@ class ExecutionGateTests(unittest.TestCase):
 
 
 class ClosedAnalysisTests(unittest.TestCase):
+    def test_completed_whole_output_replays_and_extracts_in_worker_scope(self):
+        from moe_exp.study import whole_effects
+        text = ('<|channel|>analysis<|message|>Reason.<|end|><|start|>assistant'
+                '<|channel|>final<|message|>2<|return|>')
+        tokens = list(range(len(text)))
+        replay = {'completion_token_ids': tokens, 'completion_offsets': [[i, i+1] for i in tokens]}
+        row = {'uid': 'a'*64, 'family': 'family', 'model': 'gpt', 'fold': 0, 'class': 'Verify',
+               'arm': 'target_promote', 'horizon': 1000, 'whole': True, 'total_allowance': 1000,
+               'profile_sha256': 'profile', 'seed': 7}
+        original = {'prompt': 'Question', 'gold_answer': '2', 'metadata': {}}
+        with tempfile.TemporaryDirectory(dir=WORK/'tools/tmp') as temporary:
+            folder = Path(temporary)
+            store = SimpleNamespace(state=lambda uid: {'status': 'complete'}, folder=lambda uid: folder)
+            publish(folder/'OUTPUT.json', {'assignment_sha256': whole.digest(row), 'total_allowance': 1000,
+                    'profile_sha256': 'profile', 'segments': [{'seed': 7}], 'token_ids': tokens,
+                    'finish_reason': 'stop', 'reasoning_tokens': 0})
+            publish(folder/'CAPTURE.json', {'stats': {'dose': {}}})
+            with patch('moe_exp.models.token_replay.make_token_replay', return_value=(text, replay)), \
+                 patch('moe_exp.correlation_pipeline.scoring.score_completion_detailed',
+                       return_value={'is_correct': True, 'model_answer': '2'}):
+                outcome, sentences, failure = whole_effects._extract_one(
+                    row, b={'models': {'gpt': {'key': 'gpt'}}}, model='gpt', tokenizer=None,
+                    close=[[9000]], store=store, inputs={'family': ([1], [], original)})
+        self.assertIsNone(failure)
+        self.assertEqual(outcome['reasoning_tokens'], len('Reason.'))
+        self.assertTrue(outcome['strict_correct'])
+        self.assertTrue(outcome['answer_present'])
+        self.assertEqual(sentences[0]['sentence_text'], 'Reason.')
+
     def test_all_missing_production_still_exports_six_bounded_primary_contrasts(self):
         from moe_exp.study import whole_effects
         manifests, allocation = {}, []
@@ -469,6 +500,7 @@ class ClosedAnalysisTests(unittest.TestCase):
         self.assertTrue(all(value['status'] == 'qualified_bounds' for value in result['primary'].values()))
         self.assertEqual(result['primary']['gpt:accuracy']['bound_simultaneous'], [-1., 1.])
         self.assertTrue(all('inconclusive' in value for value in result['verdict'].values()))
+        self.assertEqual(result['mechanism']['qwen36|suppress|Read']['status'], 'not_in_design')
 
 
 if __name__ == '__main__':

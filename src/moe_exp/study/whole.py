@@ -330,6 +330,9 @@ def run(model, shard, deadline, *, max_inflight=24, canary=False, dose=None):
     if not canary:
         selected = verified(ROOT/model/'SELECTED.json')
         require(selected['manifest_sha256'] == value['sha256'], 'production manifest lacks a passing canary')
+        proof = verified(ROOT/model/('CANARY_HALF.json' if value['dose'] == 'half' else 'CANARY.json'))
+        require(proof['gate']['passed'] and proof['job'] == selected['canary_job'] and
+                proof['manifest_sha256'] == value['sha256'], 'production canary qualification differs')
     rows = canary_rows(value) if canary else driver.shard_rows(model, shard, 'whole')
     store = bound_store(model, value['dose'], canary)
     require(not any(store.state(r['uid']) for r in rows), 'whole execution is fresh only; preserve partials')
@@ -504,6 +507,8 @@ def advance_canary(schedule: dict, model: str, accounting: dict, stopped: set) -
     elif gate and gate['fluency_failures'] and not gate['software_failures'] and attempt['dose'] == 'main':
         attempts.append(submit_stage('canary', model=model, dose='half', dependency='afterany:'+attempt['id']))
         driver.checkpoint(ROOT/'JOBS.json', schedule)
+        publish(ROOT/model/'SELECTED.json', {'dose': 'half', 'manifest_sha256': manifest(model, 'half')['sha256'],
+                                            'canary_job': attempts[-1]['id']})
     else:
         stopped.add(model)
         publish(ROOT/model/'PRE_PRODUCTION_STOP.json', {'job': attempt['id'], 'state': state,
@@ -648,6 +653,9 @@ def monitor() -> None:
         except Exception:
             accounting = {}
         cancel_jobs([j for j in jobs if j['gpus']], accounting)
+        qualification = ROOT/'CPU_VALIDATION.json'
+        if qualification.exists() and verified(qualification)['passed']:
+            advance_extraction(schedule, accounting, set(MODELS))
 
 
 def inference_stage(args: argparse.Namespace) -> None:
