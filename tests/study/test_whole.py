@@ -204,6 +204,17 @@ class PromptScopeTests(unittest.TestCase):
 
 
 class AnalysisTests(unittest.TestCase):
+    def test_native_only_pooled_planning_retains_cross_model_family_covariance(self):
+        from moe_exp.study.whole_effects import _pooled_native_planning
+        residuals = {
+            'gpt': pd.DataFrame({'log_reasoning': [1., -1.], 'correct': [.5, -.5]}, index=['a', 'b']),
+            'qwen36': pd.DataFrame({'log_reasoning': [-1., 1.], 'correct': [-.5, .5]}, index=['a', 'b']),
+        }
+        result = _pooled_native_planning(residuals, 3.48)
+        self.assertEqual(result['mde_log_tokens'], 0.)
+        self.assertEqual(result['mde_accuracy'], 0.)
+        self.assertEqual(result['transport_status'], 'SUSPECTED')
+
     def test_first_endpoints_reject_incomplete_overlap_and_out_of_horizon_sentences(self):
         from moe_exp.study.effects import endpoints
         outcome = {'pulse_tokens': 4, 'horizon': 8, 'reasoning_end': None, 'generated_tokens': 8,
@@ -335,9 +346,10 @@ class ExecutionGateTests(unittest.TestCase):
         root_patch = patch.object(whole, 'ROOT', self.root)
         root_patch.start()
         self.addCleanup(root_patch.stop)
+        publish(self.root/'RELEASE.json', {'release_root': str(whole.REPO),
+                'prior_usage': {'new_gpu_hours': 2., 'new_cpu_core_hours': 3.}})
 
     def test_nonempty_unbound_store_rejects_before_any_engine_load(self):
-        publish(self.root/'RELEASE.json', {'release_root': str(whole.REPO)})
         folder = self.root/'stores/gpt/main/units'
         folder.mkdir(parents=True)
         (folder/'PARTIAL.json').write_text('{}')
@@ -394,6 +406,34 @@ class ExecutionGateTests(unittest.TestCase):
         self.assertTrue((self.root/'STOP.json').exists())
         self.assertEqual(stopped, {'gpt', 'qwen36'})
         self.assertEqual([job['id'] for job in cancel.call_args.args[0]], ['10'])
+        self.assertAlmostEqual(whole.verified(self.root/'gpt/PROJECTION.json')['total_projected_gpu_hours'], 90.3)
+
+    def test_accounting_carries_all_earlier_terminal_costs(self):
+        jobs = [{'id': 'gpu', 'gpus': 2, 'cpus': 16, 'submitted': 0},
+                {'id': 'cpu', 'gpus': 0, 'cpus': 4, 'submitted': 0}]
+        usage = {'gpu': {'state': 'COMPLETED', 'elapsed': 1800}, 'cpu': {'state': 'FAILED', 'elapsed': 900}}
+        with patch.object(whole, 'native_accounting', return_value=usage), \
+             patch.object(whole, 'work_remaining_bytes', return_value=20*2**30):
+            _, gpu_hours = whole.accounting_snapshot(jobs)
+        self.assertEqual(gpu_hours, 3.)
+        self.assertEqual(whole.load(self.root/'ACCOUNTING.json')['new_cpu_core_hours'], 4.)
+
+    def test_failed_validation_never_queues_empty_extraction_or_analysis(self):
+        import time
+        schedule = {'validation': {'id': 'cpu', 'gpus': 0, 'cpus': 4},
+                    'canaries': {'gpt': [{'id': 'g', 'gpus': 2}], 'qwen36': [{'id': 'q', 'gpus': 2}]},
+                    'production': {'gpt': [], 'qwen36': []}, 'extraction': {}}
+        whole.driver.checkpoint(self.root/'JOBS.json', schedule)
+        whole.driver.checkpoint(self.root/'ACCOUNTING.json', {'work_remaining_bytes': 20*2**30})
+        usage = {'cpu': {'state': 'FAILED'}, 'g': {'state': 'CANCELLED'}, 'q': {'state': 'CANCELLED'}}
+        with patch.object(whole.driver, 'deadline_from_slurm', return_value=time.time()+300), \
+             patch.object(whole, 'accounting_snapshot', return_value=(usage, 0.)), \
+             patch.object(whole, 'native_accounting', return_value=usage), \
+             patch.object(whole, 'cancel_jobs') as cancel, patch.object(whole, 'advance_extraction') as extraction:
+            whole.monitor()
+        extraction.assert_not_called()
+        self.assertEqual(whole.verified(self.root/'STOP.json')['reason'], 'cpu_validation_failed')
+        self.assertTrue(all(job['gpus'] == 2 for job in cancel.call_args.args[0]))
 
 
 class ClosedAnalysisTests(unittest.TestCase):

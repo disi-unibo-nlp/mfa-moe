@@ -237,7 +237,7 @@ def planning(models=MODELS) -> dict:
     from moe_exp.correlation_pipeline.dynamics.classes import saved_layout
     from scipy.stats import norm
     b = driver.binding()
-    results = {}
+    results, native_residuals = {}, {}
     for model in models:
         sources = {r['attempt_id']: r for r in load(Path(b['source_campaign'])/model/'SOURCES.json')['records']}
         natives = [r for r in verified(driver.DRIVER/model/'ASSIGNMENTS.json')['records'] if r['arm'] == 'native']
@@ -254,6 +254,8 @@ def planning(models=MODELS) -> dict:
         frame = pd.DataFrame(values)
         # Remove benchmark means, retaining family variation within the declared strata.
         residual = frame[['log_reasoning', 'correct']]-frame.groupby('benchmark')[['log_reasoning', 'correct']].transform('mean')
+        residual.index = frame.family
+        native_residuals[model] = residual
         token_sd, accuracy_sd = residual.std(ddof=1).tolist()
         critical = float(norm.ppf(1-.05/12)+norm.ppf(.8))
         results[model] = {'source': 'main-design original native token replay; benchmark-centered family SD',
@@ -267,15 +269,27 @@ def planning(models=MODELS) -> dict:
                           'transport_status': 'SUSPECTED', 'native_values_sha256': digest(values)}
     if set(MODELS) <= set(results):
         critical = results['gpt']['planning_z']
-        results['pooled'] = {
-            'transport_status': 'SUSPECTED', 'model_weights': [.5, .5],
-            'mde_log_tokens': critical*math.sqrt(sum(results[m]['log_reasoning_sd']**2 for m in MODELS)/4/129),
-            'mde_accuracy': (critical*math.sqrt(sum(results[m]['accuracy_sd']**2 for m in MODELS)/4/129)
-                             if all(results[m]['accuracy_sd'] is not None for m in MODELS) else None),
-            'covariance_role': 'conservative planning assumes zero cross-model covariance; unverified transport',
-        }
+        results['pooled'] = _pooled_native_planning(native_residuals, critical)
     return {'models': results, 'hypothesis_cells_frozen_before_production': True,
             'note': 'Claimed composite SDs 0.19/0.16 and 0.10/0.07 are not native-only SDs; transport is unverified.'}
+
+
+def _pooled_native_planning(residuals: dict, critical: float) -> dict:
+    """Use paired native family covariance in the explicitly suspected planning fallback."""
+    require(residuals['gpt'].index.is_unique and residuals['qwen36'].index.is_unique and
+            set(residuals['gpt'].index) == set(residuals['qwen36'].index), 'native planning families differ')
+    pooled = .5*residuals['gpt']+.5*residuals['qwen36']
+    token_sd, accuracy_sd = pooled.std(ddof=1).tolist()
+    if not pooled.correct.notna().all():
+        accuracy_sd = np.nan
+    return {
+        'transport_status': 'SUSPECTED', 'model_weights': [.5, .5],
+        'log_reasoning_sd': token_sd, 'accuracy_sd': accuracy_sd if np.isfinite(accuracy_sd) else None,
+        'accuracy_observed': int(pooled.correct.notna().sum()),
+        'mde_log_tokens': critical*token_sd/math.sqrt(len(pooled)),
+        'mde_accuracy': critical*accuracy_sd/math.sqrt(len(pooled)) if np.isfinite(accuracy_sd) else None,
+        'covariance_role': 'paired native family residuals; no independence assumption; treatment-variance transport unverified',
+    }
 
 
 def _total_bounds(unit: dict):

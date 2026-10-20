@@ -316,11 +316,12 @@ class RecoveryTests(unittest.TestCase):
     def test_inherited_scientific_checks_do_not_patch_the_old_scheduler(self):
         from moe_exp.study.inherited import parent_campaign
         from moe_exp.study.common import load
+        from moe_exp.study.driver import binding as study_binding
         from moe_exp.research_campaign_v3_r6 import scheduler as historical
         original = (historical.card, historical.Slurm.verify)
         # A frozen checkout can contain the manifest at a different path while
         # the manifest retains the original scientific campaign root.
-        manifest = load(Path(self.cfg['source_campaign']) / 'CAMPAIGN.json')
+        manifest = load(Path(study_binding()['source_campaign']) / 'CAMPAIGN.json')
         alias = self.root / 'frozen-source/report/parent'
         publish(alias / 'CAMPAIGN.json', {k:v for k,v in manifest.items() if k != 'sha256'})
         binding = {**self.binding, 'source_campaign': str(alias)}
