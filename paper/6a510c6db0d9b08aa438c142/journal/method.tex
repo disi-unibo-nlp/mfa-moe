@@ -116,6 +116,61 @@ A lexical classifier trained on the judge-labelled native sentences of the other
 Efficiency is measured by the generated tokens to a final answer and by strict answer accuracy.
 %
 
+\subsection{Steering expert selection throughout reasoning}
+\label{sec:whole-steering}
+
+A pulse tests whether a local edit redirects the next sentence.
+%
+Expert steering in MoE LLMs instead fixes expert participation over the whole generation~\citep{fayyaz2025steermoe}.
+%
+We therefore also steer expert selection at every prompt and reasoning token, from the first prompt token until the reasoning closes, and leave the final answer to native routing.
+%
+
+Whole-reasoning steering promotes or suppresses a reasoning activity $c$ through a set $A_c$ of activated and a set $D_c$ of deactivated layer--expert pairs.
+%
+Nomination uses the inclusion risk difference $\Delta_{\ell,e,c}$, the rate at which expert $e$ of layer $\ell$ is selected on sentences of class $c$ minus its rate on sentences of the other classes, estimated on the training families of each fold and retained only when its sign is stable across subsample refits.
+%
+Promoting $c$ activates the pairs with the largest positive differences and deactivates those with the most negative ones, whereas suppressing $c$ deactivates the pairs with the largest positive differences.
+%
+Nominations range over all MoE layers, so a single edit can change many layers at once.
+%
+
+At a steered position, the override follows SteerMoE~\citep{fayyaz2025steermoe}.
+%
+For a softmax router with log-probabilities $s_{\ell,t}=\log q_{\ell,t}$, an activated expert receives $\max_e s_{\ell,t,e}+\epsilon$ and a deactivated expert $\min_e s_{\ell,t,e}-\epsilon$ before the native top-$k_\ell$ selection and renormalization.
+%
+For a sigmoid router with selection biases, an activated expert takes the affinity $\sigma(\max_e z_{\ell,t,e}+\epsilon)$ of the largest router logit $z_{\ell,t}$ and is always selected, a deactivated expert is never selected, and the combination weights are renormalized and scaled as natively.
+%
+We use $\epsilon=0.01$, and every layer activates fewer than $k_\ell$ experts and keeps at least $k_\ell$ selectable ones, so the selection budget of Equation~\eqref{eq:routing-scores} is preserved.
+%
+
+The edit size follows the counts published for SteerMoE~\citep{fayyaz2025steermoe}.
+%
+GPT-OSS-20B promotes with 10 activated and 50 deactivated pairs and suppresses with 20 deactivated pairs, and the Qwen models promote with 15 activated pairs and suppress with 500 deactivated pairs.
+%
+Each other model receives the same share of its own pairs, scaling activation counts by its number of MoE layers and deactivation counts by its number of layer--expert pairs, relative to the 48 layers and 128 experts of Qwen3-30B-A3B.
+%
+Full, half and quarter strength edit $\lceil f\,n\rceil$ pairs for $f\in\{1,\tfrac12,\tfrac14\}$ and each published count $n$.
+%
+
+The direction of each edit comes from the native association between reasoning states and the remaining solution length (Appendix~\ref{app:efficiency-link}).
+%
+Classes whose sentences precede shorter remaining reasoning at the same question and position are promoted, and classes that precede longer remaining reasoning are suppressed.
+%
+Each model uses its own pre-registered association, except LFM2.5, whose native association was not part of the pre-registration and which therefore uses the signs pooled across the other models.
+%
+A matched random control edits the same number of pairs at the same layers, with the same role and from the same native-frequency quintiles, disjoint from the target and from the nominations of the opposite direction.
+%
+A targeted-minus-random contrast therefore tests the nominated identities at a fixed edit size and placement.
+%
+
+Efficiency is the reduction in $\log(1+T)$, where $T$ counts the tokens until the reasoning closes, together with the change in strict accuracy.
+%
+Steering is efficient when the simultaneous lower bound of the token reduction exceeds zero and the accuracy change stays above $-5$ percentage points.
+%
+The lexical readout of Appendix~\ref{app:lexical-readout} also measures the share of reasoning tokens in each state, testing whether a promoted state grows and a suppressed state shrinks.
+%
+
 \subsection{Incremental information about the present state}
 \label{sec:present-method}
 
