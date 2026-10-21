@@ -1,3 +1,26 @@
+**Whole-reasoning production and strength sweep live — 2026-10-21 15:20 Rome (Claude supervises; Codex frozen):**
+- Base production (one strength per model, unsteered rows included):
+  - r7 (`report/whole-reasoning-20261021-r7`, commit c48806a): full strength for Qwen3.6, Qwen3.5,
+    Qwen3-30B, Gemma, Nemotron and LFM2.5; GLM at half strength (its full-strength canary broke down).
+    Ceilings 700 GPU-h / 80 CPU core-h; GPU cutoff 2026-10-23 05:30 Rome.
+  - r8 (commit a7df701): GPT at half strength under the user's recorded decision (gpt/CANARY_DECISION.json).
+  - Gemma shard 0/9 job 61617118 hung while loading weights and was cancelled; the same shard runs as
+    61623952 from the same release, and whole-extract-gemma 61617129 waits for it (gemma/REPLACEMENT.json).
+    61623952 is outside r7's JOBS.json and ACCOUNTING.json: add its GPU time in the final accounting.
+- Strength sweep (user-approved plan, commit d665816; levels are quarter, half and full of SteerMoE's counts):
+  - r9: quarter strength for all eight models. r10: full for GPT and GLM, half for the other six.
+  - Efficiency-directed cells only (target and matched random), no unsteered rows, no canaries; each model
+    reuses its base nominations. Ceilings 430 GPU-h each (every shard's full walltime); GPU cutoff
+    2026-10-23 23:00 Rome. Breakdown (rows at the length limit, looping) is an outcome, never a stop.
+  - Combined analysis whole-combine 61625161 (r10) runs after all 24 extractions of r7, r8, r9 and r10 and
+    writes `report/whole-reasoning-20261021-r10/analysis-combined/EFFECTS_WHOLE.json`: full-strength primary
+    for all eight models, dose response with slope on log2 strength, per-cell effects, breakdown by strength.
+    The paper uses this receipt, not the per-release `analysis/EFFECTS.json` (r7's frozen code marks
+    models with fewer questions, LFM2.5/Nemotron/Qwen3-30B, as unqualified).
+- Release script: `/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/r/claude-review/release_r4.sh`.
+- Do not touch: running stores, JOBS.json, submissions, or any receipt of r7-r10. Random control experts are
+  redrawn at each strength (matched to that strength's targets); prompts and sampling seeds are shared.
+
 **GPT diagnostic source allocated — 2026-10-21:** source6d4341f is sealed in
 the rank-diagnostics root. CPU61583800 COMPLETED0:0 after170s; all194tests passed
 in34.864s, both doses rebuilt and all70GPT DP matches remain exact. Isolated
