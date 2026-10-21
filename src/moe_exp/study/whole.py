@@ -351,20 +351,29 @@ def topup_manifest(model: str, spec: dict) -> dict:
 
     Args:
         model: Model whose base release lost shards.
-        spec: {'parent': parent release root, 'shards': [[index, count], ...]} of the failed jobs.
+        spec: {'parent': parent release root, 'shards': [[index, count], ...] of the failed jobs, or
+            'all' once every parent shard has ended, and optionally 'siblings': earlier top-up roots of
+            the same parent, all of whose jobs have ended; a row started there stays there}.
     """
     dose, parent = SWEEP[model], Path(spec['parent'])
     base = verified(manifest_path(model, dose, parent))
-    store = driver.Store(parent/'stores'/model/dose/'units')
+    stores = [driver.Store(parent/'stores'/model/dose/'units')]
+    for sibling in map(Path, spec.get('siblings', [])):
+        require(verified(manifest_path(model, dose, sibling))['parent_manifest_sha256'] == base['sha256'],
+                'sibling top-up has another parent')
+        stores.append(driver.Store(sibling/'stores'/model/dose/'units'))
     families = sorted({row['family'] for row in base['records']})
-    failed = {family for i, family in enumerate(families) for index, count in spec['shards'] if i % count == index}
-    rows = [row for row in base['records'] if row['family'] in failed and not store.state(row['uid'])]
+    failed = set(families) if spec['shards'] == 'all' else {
+        family for i, family in enumerate(families) for index, count in spec['shards'] if i % count == index}
+    rows = [row for row in base['records']
+            if row['family'] in failed and not any(store.state(row['uid']) for store in stores)]
     require(rows, 'top-up has no never-started rows')
     kept = {k: v for k, v in base.items() if k not in ('sha256', 'records', 'planned', 'executable')}
     value = publish(manifest_path(model, dose), {
         **kept, 'records': rows, 'planned': len(rows),
         'executable': sum(row['nomination_status'] == 'nominated' for row in rows), 'design': 'top-up',
-        'parent_root': str(parent), 'parent_manifest_sha256': base['sha256'], 'failed_shards': spec['shards']})
+        'parent_root': str(parent), 'parent_manifest_sha256': base['sha256'], 'failed_shards': spec['shards'],
+        'siblings': spec.get('siblings', [])})
     publish(ROOT/model/'SELECTED.json', {'dose': dose, 'manifest_sha256': value['sha256'], 'canary_job': None,
                                          'sweep': True, 'topup': True})
     return {key: value[key] for key in ('sha256', 'planned', 'executable', 'scope')}
