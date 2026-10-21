@@ -18,7 +18,7 @@ These findings make routing an observable record of the processed text.
 %
 Whether expert selections add information about the function of a reasoning sentence beyond the words that express it remains an open question.
 %
-Our readouts address it with text baselines on held-out problem families, so that token identity cannot by itself account for the measured state information.
+Our readouts address it by measuring the state information that routing adds to text baselines on held-out problem families.
 %
 
 \paragraph{Reasoning states and their dynamics}
@@ -84,7 +84,9 @@ Local-geometry methods replace a single global direction with regions and within
 %
 The reliability of these interventions varies.
 %
-Steering effects differ across inputs and some concepts are brittle under reasonable prompt changes~\citep{tan2024reliability}, and across 36 models from 14 families the effects of the same steering methods vary widely, with no improvement or degraded performance in some models~\citep{silva2025offcourse}.
+Steering effects differ across inputs, and some concepts are brittle under reasonable prompt changes~\citep{tan2024reliability}.
+%
+Across 36 models from 14 families, the effects of the same steering methods vary widely, with no improvement or degraded performance in some models~\citep{silva2025offcourse}.
 %
 Expert edits act on a discrete part of the computation, namely the set of experts that process a token.
 %
@@ -106,7 +108,9 @@ THESIS-MoE instead localizes sycophancy across model components and edits activa
 %
 Causal audits qualify associations of this kind.
 %
-In three MoE models, observational routing metrics fail to predict which experts matter under token-level ablation~\citep{engmann2026observation}, and in a pre-registered test of one frontier MoE with size-matched random-expert controls, only one of six routing-defined expert families meets a robust selectivity criterion, although the others also have causal effects~\citep{salomone2026modular}.
+In three MoE models, observational routing metrics fail to predict which experts matter under token-level ablation~\citep{engmann2026observation}.
+%
+In a pre-registered test of one frontier MoE with size-matched random-expert controls, only one of six routing-defined expert families meets a robust selectivity criterion, although the others also have causal effects~\citep{salomone2026modular}.
 %
 The steering methods target behaviors such as safety, faithfulness or reasoning depth, while the audits show that an association with routing need not imply selective control.
 %
@@ -124,9 +128,9 @@ STACK assesses each step for uncertainty and redundancy and switches between com
 %
 These methods change how much reasoning is produced, and their evaluation makes the cost of an intervention part of the outcome.
 %
-Compression methods attach efficiency to an altered executable model and differ in the quantity that ranks experts.
+Compression methods alter the executable model for efficiency and use different quantities to rank experts.
 %
-Post-training expert pruning can retain the experts that minimize the reconstruction loss of the layer output and add dynamic expert skipping~\citep{lu2024naee}, EAC-MoE prunes rarely selected experts~\citep{chen2025eac}, and REAP ranks experts by router gate values and expert activation norms~\citep{lasby2026reap}.
+Post-training expert pruning can select, layer by layer, the expert combination that minimizes token reconstruction loss and add dynamic expert skipping~\citep{lu2024naee}, EAC-MoE prunes rarely selected experts~\citep{chen2025eac}, and REAP ranks experts by router gate values and expert activation norms~\citep{lasby2026reap}.
 %
 Coverage-maximized pruning allocates a global budget by attribution-guided channel scores within experts~\citep{ding2026coverage}.
 %
