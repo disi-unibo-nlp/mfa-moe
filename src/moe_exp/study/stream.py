@@ -65,7 +65,7 @@ class StreamCapture:
         self.native_validation, self.geometry, self.originals = {}, [], []
         self.whole_slots, self.whole_totals, self.whole_role_cache = {}, {}, {}
         self.next_whole_slot = 0
-        self.whole_operator, self.whole_dose = None, None
+        self.whole_step, self.whole_row_cache, self.whole_audit_pending = 0, None, []
         self.boundaries, self.req_ids, self.contexts, self.plan = [], [], [], {}
         self.handle = None
         self.original_prepare = runner._prepare_inputs
@@ -103,6 +103,9 @@ class StreamCapture:
                 bound = inspect.signature(module.forward).bind(*args, **kwargs)
                 token_ids = bound.arguments['input_ids'].detach().cpu().tolist()
                 positions = bound.arguments['positions'].detach().cpu().tolist()
+                # The previous step has finished on the device; its audit slices belong to the old contexts.
+                self._flush_whole_audit()
+                self.whole_step += 1
                 contexts = [None]*len(token_ids)
                 plan = {}
                 require(self.boundaries and self.boundaries[-1] <= len(token_ids), 'missing request row boundaries')
@@ -253,82 +256,112 @@ class StreamCapture:
                     self.counts[uid]['dose'][str(layer)] = dict(zip(DOSE_KEYS, totals[slot].unbind()))
         return totals
 
-    def _whole_roles(self, layer, work, device):
-        """Cache admission-validated role masks for the current scheduler request order."""
+    def _whole_roles(self, work, device):
+        """Cache every hooked layer's role masks for the current scheduler request order.
+
+        Returns:
+            Request identity, layer-to-index map and a [layers, requests, 2, experts] mask,
+            copied to the device once per change of batch membership.
+        """
         import torch
         identity = tuple(uid for uid, _ in work)
-        cached = self.whole_role_cache.get(layer)
+        cached = self.whole_role_cache.get('all')
         if cached is None or cached[0] != identity:
-            roles = torch.zeros((len(work), 2, self.contract['experts']), dtype=torch.bool, device='cpu')
+            layers = list(self.contract['hook_layers'])
+            roles = torch.zeros((len(layers), len(work), 2, self.contract['experts']), dtype=torch.bool)
             for index, (uid, _) in enumerate(work):
-                action = self.requests[uid]['actions'].get(layer, {})
-                roles[index, 0, action.get('activate', [])] = True
-                roles[index, 1, action.get('deactivate', [])] = True
-            cached = self.whole_role_cache[layer] = (identity, roles.to(device))
-        return cached[1]
+                for position, layer in enumerate(layers):
+                    action = self.requests[uid]['actions'].get(layer)
+                    if action:
+                        roles[position, index, 0, action.get('activate', [])] = True
+                        roles[position, index, 1, action.get('deactivate', [])] = True
+            cached = self.whole_role_cache['all'] = (identity, {l: i for i, l in enumerate(layers)}, roles.to(device))
+        return cached
+
+    def _whole_rows(self, work, device):
+        """Build one step's row ownership tensors once; every hooked layer sees the same whole rows."""
+        import torch
+        identity = (self.whole_step, tuple((uid, len(rows)) for uid, rows in work))
+        if self.whole_row_cache is None or self.whole_row_cache[0] != identity:
+            indices, groups, base, prompts, audit = [], [], [], [], []
+            for group, (uid, rows) in enumerate(work):
+                request = self.requests[uid]
+                for index, context in rows:
+                    indices.append(index)
+                    groups.append(group)
+                    prompts.append(context['prompt'])
+                    base.append(bool(context['reasoning'] and (not context['prompt'] or request['prompt_scope'])))
+                    audit.append(bool(request.get('audit_capture')))
+            row_values = torch.tensor([indices, groups, base, prompts], dtype=torch.long).to(device)
+            group_values = torch.tensor([[len(rows) for _, rows in work],
+                                         [self.whole_slots[uid] for uid, _ in work]], dtype=torch.long).to(device)
+            audit_rows = [i for i, flag in enumerate(audit) if flag]
+            self.whole_row_cache = (identity, {
+                'take': row_values[0], 'groups': row_values[1], 'base': row_values[2].bool(),
+                'prompt': row_values[3].bool(), 'lengths': group_values[0], 'slots': group_values[1],
+                'audit': torch.tensor(audit_rows, dtype=torch.long).to(device) if audit_rows else None,
+                'audit_owners': [(uid, rows) for uid, rows in work if self.requests[uid].get('audit_capture')]})
+        return self.whole_row_cache[1]
 
     def _whole_batch(self, layer, work, logits, nw, ni, native_policy):
-        """Execute and measure one layer in a batch, with one audit transfer per layer."""
+        """Execute and measure one layer for every whole row, without host synchronization.
+
+        Eager kernels only: both tensor-parallel ranks must reproduce identical routing and counters.
+        """
         import torch
         from moe_exp.final_routing.operator import score_override_dual_masked
-        if self.whole_operator is None:
-            # Fuse pointwise telemetry kernels after batching; eager CPU execution
-            # remains the reference used by the complete equivalence suite.
-            self.whole_operator = (torch.compile(score_override_dual_masked, fullgraph=True, dynamic=True)
-                                   if logits.is_cuda else score_override_dual_masked)
-            self.whole_dose = (torch.compile(batched_dose, fullgraph=True, dynamic=True)
-                               if logits.is_cuda else batched_dose)
-        indices, groups, flags, prompts = [], [], [], []
-        for group, (uid, rows) in enumerate(work):
-            request = self.requests[uid]
-            action = request['actions'].get(layer, {})
-            for index, context in rows:
-                indices.append(index)
-                groups.append(group)
-                prompts.append(context['prompt'])
-                flags.append(bool((action.get('activate') or action.get('deactivate')) and context['reasoning'] and
-                                  (not context['prompt'] or request['prompt_scope'])))
-        take = torch.tensor(indices, device=logits.device)
-        group_ids = torch.tensor(groups, device=logits.device)
-        active = torch.tensor(flags, device=logits.device)
-        roles = self._whole_roles(layer, work, logits.device)[group_ids]
-        aw, ai = self.whole_operator(logits[take], nw[take], ni[take], roles[:, 0], roles[:, 1],
-                                     active, **native_policy)
+        step = self._whole_rows(work, logits.device)
+        _, positions, all_roles = self._whole_roles(work, logits.device)
+        layer_roles = all_roles[positions[layer]]
+        # Rows of requests without targets at this layer keep their exact native bits.
+        active = step['base'] & layer_roles.flatten(1).any(-1)[step['groups']]
+        roles, take = layer_roles[step['groups']], step['take']
+        aw, ai = score_override_dual_masked(logits[take], nw[take], ni[take], roles[:, 0], roles[:, 1],
+                                            active, **native_policy)
         weights, ids = nw.clone(), ni.clone()
         weights[take], ids[take] = aw, ai
-        values = self.whole_dose(nw[take], ni[take], aw, ai, active,
-                                 torch.tensor(prompts, device=logits.device), roles,
-                                 torch.tensor([len(rows) for _, rows in work], device=logits.device))
+        values = batched_dose(nw[take], ni[take], aw, ai, active, step['prompt'], roles, step['lengths'])
         totals = self._whole_buffer(layer, logits.device)
-        slots = torch.tensor([self.whole_slots[uid] for uid, _ in work], device=logits.device)
-        totals.index_add_(0, slots, values)
+        totals.index_add_(0, step['slots'], values)
         for uid, _ in work:
             if str(layer) not in self.counts[uid]['dose']:
                 self.counts[uid]['dose'][str(layer)] = dict(zip(DOSE_KEYS, totals[self.whole_slots[uid]].unbind()))
-        if any(self.requests[uid].get('audit_capture') for uid, _ in work):
-            packed = torch.cat((ni[take].float(), nw[take].float(), ai.float(), aw.float()), -1).detach().cpu().tolist()
-            self._whole_audit(layer, work, packed, flags)
+        if step['audit'] is not None:
+            rows = take[step['audit']]
+            packed = torch.cat((ni[rows].float(), nw[rows].float(), ai[step['audit']].float(),
+                                aw[step['audit']].float(), active[step['audit'], None].float()), -1)
+            self.whole_audit_pending.append((layer, step['audit_owners'], packed))
         return weights, ids
 
-    def _whole_audit(self, layer, work, packed, active):
-        """Split the one batch transfer into the unchanged per-request audit records."""
+    def _flush_whole_audit(self):
+        """Move the finished step's audit slices to the host in one transfer."""
+        if not self.whole_audit_pending:
+            return
+        import torch
+        pending, self.whole_audit_pending = self.whole_audit_pending, []
+        host = torch.cat([packed for _, _, packed in pending]).cpu().tolist()
+        offset = 0
+        for layer, owners, packed in pending:
+            self._whole_audit(layer, owners, host[offset:offset+len(packed)])
+            offset += len(packed)
+
+    def _whole_audit(self, layer, owners, packed):
+        """Split one layer's audit rows into the unchanged per-request audit records."""
         offset, width = 0, self.contract['native_k']
-        for uid, rows in work:
-            if self.requests[uid].get('audit_capture'):
-                record = self.records[uid].setdefault(str(layer), {'positions': [], 'native_ids': [],
-                    'native_weights': [], 'executed_ids': [], 'executed_weights': [], 'active': []})
-                for index, (_, context) in enumerate(rows, offset):
-                    position = context['generated_position']
-                    if position < len(record['positions']):
-                        continue
-                    require(position == len(record['positions']), 'whole audit capture gap')
-                    values = packed[index]
-                    record['positions'].append(position)
-                    record['native_ids'].append([int(v) for v in values[:width]])
-                    record['native_weights'].append(values[width:2*width])
-                    record['executed_ids'].append([int(v) for v in values[2*width:3*width]])
-                    record['executed_weights'].append(values[3*width:])
-                    record['active'].append(active[index])
+        for uid, rows in owners:
+            record = self.records[uid].setdefault(str(layer), {'positions': [], 'native_ids': [],
+                'native_weights': [], 'executed_ids': [], 'executed_weights': [], 'active': []})
+            for values, (_, context) in zip(packed[offset:offset+len(rows)], rows):
+                position = context['generated_position']
+                if position < len(record['positions']):
+                    continue
+                require(position == len(record['positions']), 'whole audit capture gap')
+                record['positions'].append(position)
+                record['native_ids'].append([int(v) for v in values[:width]])
+                record['native_weights'].append(values[width:2*width])
+                record['executed_ids'].append([int(v) for v in values[2*width:3*width]])
+                record['executed_weights'].append(values[3*width:4*width])
+                record['active'].append(bool(values[4*width]))
             offset += len(rows)
 
     def _whole_layer(self, uid, layer, rows, logits, nw, ni, weights, ids, native_policy):
@@ -407,6 +440,7 @@ class StreamCapture:
 
     def release(self, uid):
         require(uid in self.requests, 'unknown released request')
+        self._flush_whole_audit()
         self.requests.pop(uid)
         clock = self.clocks.pop(uid)
         for internal in [k for k, v in self.aliases.items() if v == uid]:

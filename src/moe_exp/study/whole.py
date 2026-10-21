@@ -35,6 +35,7 @@ GPU_CEILING = 72.
 SHARDS = {'gpt': 2, 'qwen36': 7}
 RUN_MINUTES = {'gpt': 165, 'qwen36': 240}
 CANARY_MINUTES = {'gpt': 45, 'qwen36': 90}
+CANARY_TOKENS = 32768
 CUTOFF = 1792726200.  # 2026-10-23 03:30 UTC (05:30 Europe/Rome).
 # CPU allocation time is charged across monitor, extraction and analysis. Leave
 # half a core-hour for concurrent shutdown and native-accounting latency.
@@ -269,7 +270,8 @@ def canary_rows(value: dict) -> list[dict]:
                 row['operation'] == 'promote' and row['class'] == 'Verify') or (
                 row['operation'] == 'suppress' and row['class'] == chosen_class)
             if keep and row['nomination_status'] == 'nominated':
-                canary = {**row, 'canary': True, 'audit_capture': True}
+                # Gates read dose counters only; full audits stay on the pre-selected production units.
+                canary = {**row, 'canary': True}
                 canary['uid'] = digest(['whole-canary', value['sha256'], canary])
                 records.append(canary)
     require(sum(r['operation'] != 'native' for r in records) == 32, 'canary cell availability differs')
@@ -401,7 +403,10 @@ def run(model, shard, deadline, *, max_inflight=64, canary=False, dose=None, eng
         tokenizer = llm.get_tokenizer()
         engine = driver.Engine(llm, store, min(deadline, CUTOFF), hooked=True, max_inflight=max_inflight,
                                checkpoint_seconds=120, drain_seconds=120)
-        build = driver.intervention_builder(b, model, tokenizer, closure(tokenizer, model))
+        # Canary rows share one 32,768-token cap so the relative gates compare like with like
+        # inside the canary walltime; production keeps the full model-card allowance.
+        build = driver.intervention_builder(b, model, tokenizer, closure(tokenizer, model),
+                                            limit=CANARY_TOKENS if canary else None)
         metrics = engine.run(executable, build, driver.intervention_finisher(store, b, model),
                              stop_execution=lambda: (ROOT/'STOP.json').exists() or (ROOT/model/'STOP.json').exists())
         validation = llm.collective_rpc('fs_validation')
@@ -478,6 +483,17 @@ def scheduler_dependency(dependency: str | None) -> str | None:
     return effective
 
 
+def submission_environment(exports: dict) -> dict:
+    """Return the caller's environment without its Slurm job state, plus the stage exports.
+
+    Slurm always propagates SLURM_* and, under --export=ALL, the caller's values win over
+    explicit ones. A stage submitted from inside a GPU canary would otherwise inherit
+    SLURM_JOB_GPUS and the canary's own exports.
+    """
+    prefixes = ('SLURM_', 'SBATCH_', 'SRUN_', 'SALLOC_')
+    return {**{k: v for k, v in os.environ.items() if not k.startswith(prefixes)}, **exports}
+
+
 def submit_stage(command: str, *, model=None, dose=None, shard=None, dependency=None, held=False) -> dict:
     """Submit one bounded approved stage and read back its exact native resource request."""
     release = verified(ROOT/'RELEASE.json')
@@ -527,7 +543,7 @@ def submit_stage(command: str, *, model=None, dose=None, shard=None, dependency=
         effective = scheduler_dependency(dependency)
         if effective:
             cmd.insert(1, '--dependency='+effective)
-        result = subprocess.run(cmd, capture_output=True, text=True, check=True)
+        result = subprocess.run(cmd, capture_output=True, text=True, check=True, env=submission_environment(exports))
         job_id = result.stdout.strip().split(';')[0]
         require(job_id.isdecimal(), 'sbatch did not return a job ID')
         submitted = publish(folder/'SUBMITTED.json', {
