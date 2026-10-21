@@ -12,7 +12,8 @@ import numpy as np
 import pandas as pd
 
 from moe_exp.study import driver, whole, whole_effects
-from moe_exp.study.common import REPO, WORK, load, publish
+from moe_exp.study.common import BENCHMARKS, REPO, WORK, load, publish
+from moe_exp.study.effects import Bootstrap
 from moe_exp.final_routing.selection import select_pairs
 from test_driver import FakeEngine
 
@@ -202,7 +203,7 @@ class DesignAndCoverageTests(unittest.TestCase):
         """A complete synthetic design with distinct non-primary Read perturbations."""
         records = []
         for model in whole.MODELS:
-            base = {'model': model, 'family': 'family', 'nomination_status': 'nominated',
+            base = {'model': model, 'dose': 'main', 'family': 'family', 'nomination_status': 'nominated',
                     **{metric+suffix: value for metric, value in (('log_reasoning', 2.), ('accuracy', 1.))
                        for suffix in ('', ':lower', ':upper')},
                     **{'occ_'+cls+suffix: 0. for cls in whole.CLASSES for suffix in ('', ':lower', ':upper')}}
@@ -234,7 +235,7 @@ class DesignAndCoverageTests(unittest.TestCase):
     def test_sentence_coverage_failure_bounds_one_unit_and_keeps_the_other_observed(self):
         with tempfile.TemporaryDirectory(dir=WORK/'tools/tmp') as temporary:
             root = Path(temporary)
-            records = [{'uid': uid, 'family': uid, 'model': 'gpt', 'total_allowance': 100,
+            records = [{'uid': uid, 'family': uid, 'model': 'gpt', 'dose': 'main', 'total_allowance': 100,
                         'nomination_status': 'nominated'} for uid in ('valid', 'invalid')]
             folder = root/'gpt/extraction'
             folder.mkdir(parents=True)
@@ -245,10 +246,9 @@ class DesignAndCoverageTests(unittest.TestCase):
             pd.DataFrame(outcomes).to_parquet(folder/'outcomes.parquet')
             pd.DataFrame(spans).to_parquet(folder/'sentences.parquet')
             publish(root/'RELEASE.json', {'classifier': {}})
-            with patch.object(whole_effects, 'ROOT', root), patch.object(whole_effects, 'MODELS', ('gpt',)), \
-                 patch.object(whole_effects, 'manifest', return_value={'records': records}), \
-                 patch('moe_exp.study.lexical.predict', side_effect=lambda frame, *args, **kwargs: frame):
-                table = whole_effects.load_table().set_index('uid')
+            publish(whole.manifest_path('gpt', 'main', root), {'records': records})
+            with patch('moe_exp.study.lexical.predict', side_effect=lambda frame, *args, **kwargs: frame):
+                table = whole_effects.load_table([{'model': 'gpt', 'root': str(root), 'dose': 'main'}]).set_index('uid')
         self.assertEqual(table.loc['valid', 'outcome_status'], 'observed')
         self.assertEqual(table.loc['invalid', 'outcome_status'], 'unknown_sentence_coverage')
         self.assertEqual(table.loc['invalid', 'accuracy:lower'], 0.)
@@ -256,29 +256,158 @@ class DesignAndCoverageTests(unittest.TestCase):
         self.assertAlmostEqual(table.loc['invalid', 'log_reasoning:upper'], math.log1p(100))
 
 
-class EngineeringDiagnosticsTests(unittest.TestCase):
-    def test_diagnostic_command_never_queues_production(self):
-        with patch.object(whole, 'verify_release'), patch.object(whole, 'inference_stage') as stage, \
-             patch.object(whole, 'queue_after_canary') as queue, \
-             patch.dict('os.environ', {'SLURM_JOB_ID': '123'}):
-            whole.main(['diagnose', '--model', 'gpt', '--dose', 'main'])
-        self.assertEqual(stage.call_args.args[0].command, 'diagnose')
-        queue.assert_not_called()
+class SweepLaunchTests(unittest.TestCase):
+    def test_sweep_release_queues_production_after_validation_without_a_canary(self):
+        submitted = []
 
-    def test_diagnostic_allocation_is_two_gpus_fifteen_minutes_and_journaled(self):
+        def submit(command, *, model=None, dose=None, shard=None, dependency=None, held=False):
+            job = {'id': str(len(submitted)+1), 'command': command, 'model': model, 'dose': dose, 'shard': shard,
+                   'dependency': dependency, 'gpus': 2 if command == 'run' else 0, 'cpus': 1, 'minutes': 240,
+                   'submitted': time.time()}
+            submitted.append(job)
+            return job
+        with tempfile.TemporaryDirectory(dir=WORK/'tools/tmp') as temporary:
+            root, base = Path(temporary)/'sweep', Path(temporary)/'base'
+            publish(root/'RELEASE.json', {'release_root': str(REPO)})
+            driver.checkpoint(base/'JOBS.json', {'extraction': {'gpt': {'id': '900'}}})
+            publish(root/'SOURCES.json', {'sources': [{'model': 'gpt', 'root': str(base), 'dose': 'half'},
+                                                      {'model': 'gpt', 'root': str(root), 'dose': 'quarter'}]})
+            with patch.object(whole, 'ROOT', root), patch.object(whole, 'MODELS', ('gpt',)), \
+                 patch.object(whole, 'SWEEP', {'gpt': 'quarter'}), patch.object(whole, 'SHARDS', {'gpt': 2}), \
+                 patch.object(whole, 'GPU_CEILING', 100.), patch.object(whole, 'verify_release'), \
+                 patch.object(whole.driver, 'log'), patch.object(whole, 'submit_stage', side_effect=submit):
+                whole.main(['launch'])
+            schedule = load(root/'JOBS.json')
+            plan = load(root/'gpt/SHARD_PLAN.json')
+        self.assertEqual([job['command'] for job in submitted], ['validate', 'run', 'run', 'extract', 'combine', 'monitor'])
+        self.assertEqual(schedule['canaries'], {'gpt': []})
+        self.assertTrue(all(job['dependency'] == 'afterok:1' and job['dose'] == 'quarter'
+                            for job in submitted if job['command'] == 'run'))
+        self.assertEqual(submitted[3]['dependency'], 'afterany:2:3')
+        # The combined analysis waits for this release's and the base release's extractions.
+        self.assertEqual(submitted[4]['dependency'], 'afterany:4:900')
+        self.assertEqual(schedule['analysis']['command'], 'combine')
+        self.assertEqual(plan['minutes'], whole.RUN_MINUTES['gpt'])
+
+    def test_combined_analysis_allocation_and_release_settings(self):
         with tempfile.TemporaryDirectory(dir=WORK/'tools/tmp') as temporary:
             root = Path(temporary)
             publish(root/'RELEASE.json', {'release_root': str(REPO)})
             readback = ('UserId=lmolfett(1) Account=iscrc_miosr Partition=boost_usr_prod '
-                        'NumCPUs=16 gres/gpu=2 TimeLimit=00:15:00 ')
+                        'NumCPUs=8 TimeLimit=06:00:00 ')
             answers = [SimpleNamespace(stdout='123\n'), SimpleNamespace(stdout=readback)]
-            with patch.object(whole, 'ROOT', root), patch.object(whole.subprocess, 'run', side_effect=answers) as run:
-                job = whole.submit_stage('diagnose', model='gpt', dose='main')
-                repeated = whole.submit_stage('diagnose', model='gpt', dose='main')
-            self.assertEqual(job['id'], repeated['id'])
-            self.assertEqual(job['minutes']*job['gpus']/60, .5)
-            self.assertEqual(run.call_count, 2)
-            self.assertIn('--time=15', job['args'])
+            with patch.object(whole, 'ROOT', root), patch.object(whole, 'SWEEP', {'gpt': 'quarter'}), \
+                 patch.object(whole.subprocess, 'run', side_effect=answers) as run:
+                job = whole.submit_stage('combine')
+            environment = run.call_args_list[0].kwargs['env']
+        self.assertIn('--mem=96G', job['args'])
+        self.assertIn('--time=360', job['args'])
+        self.assertEqual(environment['WHOLE_SWEEP'], 'gpt:quarter')
+        self.assertEqual(float(environment['WHOLE_CUTOFF']), whole.CUTOFF)
+
+
+class DoseResponseTests(unittest.TestCase):
+    # Eight families per benchmark, so no bootstrap draw of a benchmark misses every family a model ran.
+    families = [(str(i), benchmark) for i, benchmark in enumerate(BENCHMARKS*8)]
+
+    def cells(self, values: dict, model='gpt', families=None):
+        """Efficiency cells whose target-minus-random benefit is fixed per dose."""
+        rows = []
+        for dose, value in values.items():
+            for family, _ in families or self.families:
+                row = {'model': model, 'dose': dose, 'family': family, 'efficiency_directed': True,
+                       'nomination_status': 'nominated'}
+                for metric in ('tokens', 'accuracy'):
+                    for suffix in ('', ':lower', ':upper'):
+                        row['target_random:'+metric+suffix] = value
+                rows.append(row)
+        return pd.DataFrame(rows)
+
+    def bootstrap(self):
+        return Bootstrap([f for f, _ in self.families], dict(self.families), draws=200, seed=1)
+
+    def test_slope_on_log2_strength_with_point_identified_bounds(self):
+        cells = pd.concat([self.cells({'main': 3., 'half': 2., 'quarter': 1.}),
+                           self.cells({'main': 1., 'half': 1., 'quarter': 1.}, model='qwen36')])
+        result = whole_effects.dose_response(self.bootstrap(), cells)
+        contrasts = result['contrasts']
+        self.assertAlmostEqual(contrasts['gpt:slope:tokens']['estimate'], 1.)
+        self.assertAlmostEqual(contrasts['qwen36:slope:tokens']['estimate'], 0.)
+        self.assertAlmostEqual(contrasts['pooled:slope:tokens']['estimate'], .5)
+        self.assertAlmostEqual(contrasts['gpt@half:tokens']['estimate'], 2.)
+        self.assertTrue(contrasts['gpt:slope:tokens']['point_identified'])
+        self.assertEqual(result['slope_models'], ['gpt', 'qwen36'])
+
+    def test_a_model_missing_a_strength_has_no_slope(self):
+        cells = pd.concat([self.cells({'main': 3., 'half': 2., 'quarter': 1.}),
+                           self.cells({'half': 1., 'quarter': 1.}, model='glm')])
+        result = whole_effects.dose_response(self.bootstrap(), cells)
+        self.assertEqual(result['slope_models'], ['gpt'])
+        self.assertNotIn('glm:slope:tokens', result['contrasts'])
+        self.assertEqual(result['models_by_dose']['main'], ['gpt'])
+
+    def test_a_model_with_fewer_families_is_summarized_over_its_own(self):
+        lfm_families = self.families[:-1]
+        cells = pd.concat([self.cells({'main': 1.}), self.cells({'main': 2.}, model='lfm25', families=lfm_families)])
+        frame = whole_effects.primary_frame(cells, dose='main')
+        result = whole_effects.summarize_present(self.bootstrap(), frame, 'test')
+        self.assertIn(result['lfm25:tokens']['status'], ('qualified', 'qualified_bounds'))
+        self.assertEqual(result['lfm25:tokens']['families'], len(lfm_families))
+        self.assertAlmostEqual(result['lfm25:tokens']['estimate'], 2.)
+        self.assertEqual(result['pooled:tokens']['families'], len(self.families))
+
+    def test_sweep_doses_pair_with_the_base_release_natives(self):
+        table = DesignAndCoverageTests().frame()
+        steered = table[(table.model == 'gpt') & (table.operation != 'native')]
+        quarter = steered[[whole.efficiency_directed('gpt', op, c) for op, c in zip(steered.operation, steered['class'])]].copy()
+        quarter['dose'] = 'quarter'
+        for suffix in ('', ':lower', ':upper'):
+            quarter.loc[quarter.arm.str.startswith('target_'), 'log_reasoning'+suffix] = 1.
+        cells, noise = whole_effects.family_contrasts(pd.concat([table, quarter], ignore_index=True))
+        self.assertEqual(len(noise), len(whole.MODELS))
+        with self.assertRaisesRegex(ValueError, 'several doses'):
+            whole_effects.primary_frame(cells)
+        frame = whole_effects.primary_frame(cells, 'target_native', 'quarter').iloc[0]
+        self.assertEqual(frame['gpt:tokens'], 1.)
+        self.assertEqual(set(cells[cells.dose == 'quarter'].model), {'gpt'})
+
+    def test_combine_reads_base_and_sweep_releases(self):
+        allocation = [{'family': family, 'benchmark': benchmark} for family, benchmark in self.families]
+        with tempfile.TemporaryDirectory(dir=WORK/'tools/tmp') as temporary:
+            base, sweep = Path(temporary)/'base', Path(temporary)/'sweep'
+            for root, dose, natives in ((base, 'main', True), (sweep, 'quarter', False)):
+                rows = []
+                for family in allocation:
+                    row = {**family, 'model': 'gpt', 'dose': dose, 'fold': 0, 'total_allowance': 1000,
+                           'nomination_status': 'nominated'}
+                    for arm in (('native', 'native_repeat') if natives else ()):
+                        rows.append({**row, 'uid': dose+family['family']+arm, 'arm': arm, 'class': None,
+                                     'operation': 'native'})
+                    for operation, classes in (('promote', whole.directions('gpt')['promote']),
+                                               ('suppress', whole.directions('gpt')['suppress'])):
+                        for cls in classes:
+                            for role in ('target', 'random'):
+                                rows.append({**row, 'uid': dose+family['family']+operation+cls+role, 'class': cls,
+                                             'arm': role+'_'+operation, 'operation': operation})
+                publish(whole.manifest_path('gpt', dose, root), {'model': 'gpt', 'dose': dose, 'records': rows})
+                publish(root/'RELEASE.json', {'classifier': {}})
+            sources = publish(Path(temporary)/'SOURCES.json', {'sources': [
+                {'model': 'gpt', 'root': str(base), 'dose': 'main'},
+                {'model': 'gpt', 'root': str(sweep), 'dose': 'quarter'}]})
+            original_load = whole_effects.load
+            with patch.object(whole_effects, 'ROOT', sweep), \
+                 patch.object(whole_effects, 'load', side_effect=lambda path: {'records': allocation}
+                              if Path(path).name == 'ALLOCATION.json' else original_load(path)):
+                result = whole_effects.combine(Path(temporary)/'SOURCES.json')
+            self.assertTrue((sweep/'analysis-combined/EFFECTS_WHOLE.json').is_file())
+        self.assertEqual(set(result['primary']), {'gpt:tokens', 'gpt:accuracy', 'pooled:tokens', 'pooled:accuracy'})
+        self.assertIn('gpt@quarter:tokens', result['dose_response']['contrasts'])
+        self.assertEqual(result['dose_response']['slope_models'], [])
+        self.assertIn('gpt|quarter|promote|Verify', result['cell_effects'])
+        self.assertEqual({(level['dose'], level['arm']) for level in result['levels'] if level['arm'] == 'native'},
+                         {('main', 'native')})
+        self.assertEqual(len(result['sources']), 2)
+        self.assertEqual(sources['sources'][1]['dose'], 'quarter')
 
 
 class NestedSubmissionAndRankTests(unittest.TestCase):

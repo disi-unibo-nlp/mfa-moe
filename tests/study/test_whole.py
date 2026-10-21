@@ -332,7 +332,7 @@ class ManifestTests(unittest.TestCase):
         rows = []
         for model, cells, value in (('gpt', 6, 2.), ('qwen36', 5, 4.)):
             for i in range(cells):
-                row = {'model': model, 'family': 'family', 'efficiency_directed': True}
+                row = {'model': model, 'dose': 'main', 'family': 'family', 'efficiency_directed': True}
                 for metric in ('tokens', 'accuracy'):
                     for suffix in ('', ':lower', ':upper'):
                         row['target_random:'+metric+suffix] = value
@@ -502,7 +502,7 @@ class ClosedAnalysisTests(unittest.TestCase):
         for model in whole.MODELS:
             rows = []
             for family in allocation:
-                base = {**family, 'model': model, 'fold': int(family['family']) % 5,
+                base = {**family, 'model': model, 'dose': 'main', 'fold': int(family['family']) % 5,
                         'total_allowance': 1000, 'source': {}, 'actions': []}
                 for arm in ('native', 'native_repeat'):
                     rows.append({**base, 'uid': model+family['family']+arm, 'class': None,
@@ -512,15 +512,19 @@ class ClosedAnalysisTests(unittest.TestCase):
                         for role in ('target', 'random'):
                             rows.append({**base, 'uid': model+family['family']+operation+cls+role,
                                          'class': cls, 'arm': role+'_'+operation, 'operation': operation})
-            manifests[model] = {'records': rows, 'scope': 'prompt-and-generated-reasoning', 'sha256': model}
+            manifests[model] = {'model': model, 'dose': 'main', 'records': rows,
+                                'scope': 'prompt-and-generated-reasoning'}
         original_load = whole_effects.load
         with tempfile.TemporaryDirectory(dir=WORK/'tools/tmp') as temporary, \
              patch.object(whole_effects, 'ROOT', Path(temporary)), \
-             patch.object(whole_effects, 'manifest', side_effect=lambda model: manifests[model]), \
+             patch.object(whole_effects, 'manifest', side_effect=lambda model, dose=None: manifests[model]), \
              patch.object(whole_effects, 'load', side_effect=lambda path: {'records': allocation}
                           if Path(path).name == 'ALLOCATION.json' else original_load(path)):
+            for model in whole.MODELS:
+                manifests[model] = publish(whole.manifest_path(model, 'main', Path(temporary)), manifests[model])
             publish(Path(temporary)/'RELEASE.json', {'role': 'bounded closeout fixture'})
             publish(Path(temporary)/'gpt/extraction/EXTRACTION.json', {
+                'manifest_sha256': manifests['gpt']['sha256'],
                 'failures': [{'uid': 'failed-replay-unit', 'error': 'synthetic replay failure'}]})
             result = whole_effects.analyze()
             self.assertTrue((Path(temporary)/'analysis/EFFECTS.json').is_file())
@@ -530,7 +534,9 @@ class ClosedAnalysisTests(unittest.TestCase):
         self.assertTrue(all(value['status'] == 'qualified_bounds' for value in result['primary'].values()))
         self.assertEqual(result['primary']['gpt:accuracy']['bound_simultaneous'], [-1., 1.])
         self.assertTrue(all('inconclusive' in value for value in result['verdict'].values()))
-        self.assertEqual(result['mechanism']['qwen36|suppress|Read']['status'], 'not_in_design')
+        # Unassigned suppress classes have no cell, so no zero effect is imputed for them.
+        self.assertNotIn('qwen36|main|suppress|Read', result['mechanism'])
+        self.assertIn('qwen36|main|suppress|Analyze', result['mechanism'])
 
 
 if __name__ == '__main__':

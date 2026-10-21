@@ -27,33 +27,57 @@ from moe_exp.final_routing.selection import select_pairs
 # Per-model run plan: production shards x walltime, canary walltime and the shared canary token cap.
 # Sized from main-study throughput at ~70% speed with a margin, so shards finish their rows instead of
 # being cut at the walltime (unfinished rows are lost work). GLM decodes about four times slower than
-# the others and gets proportionally more shards and a lower canary cap.
+# the others and gets proportionally more shards and a lower canary cap. Strength-sweep releases run
+# about 60% of the rows (efficiency cells only, no natives) with `sweep_shards`; GPT and GLM get extra
+# sweep shards because their full dose reasons much longer and some rows run to the length limit.
 PLAN = {
     # GPT's full dose broke down in canary 61601039 (6/32 rows stuck at the cap), so it starts at the
     # declared half dose; its promote arms reason ~3x longer, hence the larger production plan.
-    'gpt': dict(shards=4, run_minutes=240, canary_minutes=90, canary_tokens=32768, start_dose='half'),
-    'qwen36': dict(shards=9, run_minutes=240, canary_minutes=150, canary_tokens=32768),
-    'qwen35': dict(shards=10, run_minutes=240, canary_minutes=150, canary_tokens=32768),
-    'qwen330b': dict(shards=6, run_minutes=240, canary_minutes=120, canary_tokens=32768),
-    'gemma': dict(shards=9, run_minutes=240, canary_minutes=150, canary_tokens=32768),
-    'glm': dict(shards=24, run_minutes=240, canary_minutes=180, canary_tokens=16384),
-    'nemotron': dict(shards=6, run_minutes=240, canary_minutes=120, canary_tokens=32768),
-    'lfm25': dict(shards=7, run_minutes=240, canary_minutes=120, canary_tokens=32768),
+    'gpt': dict(shards=4, sweep_shards=6, run_minutes=240, canary_minutes=90, canary_tokens=32768,
+                start_dose='half'),
+    'qwen36': dict(shards=9, sweep_shards=6, run_minutes=240, canary_minutes=150, canary_tokens=32768),
+    'qwen35': dict(shards=10, sweep_shards=6, run_minutes=240, canary_minutes=150, canary_tokens=32768),
+    'qwen330b': dict(shards=6, sweep_shards=4, run_minutes=240, canary_minutes=120, canary_tokens=32768),
+    'gemma': dict(shards=9, sweep_shards=6, run_minutes=240, canary_minutes=150, canary_tokens=32768),
+    'glm': dict(shards=24, sweep_shards=16, run_minutes=240, canary_minutes=180, canary_tokens=16384),
+    'nemotron': dict(shards=6, sweep_shards=4, run_minutes=240, canary_minutes=120, canary_tokens=32768),
+    'lfm25': dict(shards=7, sweep_shards=5, run_minutes=240, canary_minutes=120, canary_tokens=32768),
 }
-# One release steers the models named in WHOLE_MODELS under its own GPU ceiling; both are exported
-# to every stage. GPT-OSS and Qwen3.6 ran first (release r5) with the defaults.
+# Steering strength levels as fractions of SteerMoE's published counts ('main' = full).
+DOSES = {'main': 1., 'half': .5, 'quarter': .25}
+
+# One release steers the models named in WHOLE_MODELS under its own ceilings and science cutoff, all
+# exported to every stage. A strength-sweep release also names one dose per model in WHOLE_SWEEP
+# ("model:dose,..."): it runs only the efficiency-directed cells at that dose, without native rows and
+# without a canary, and is analyzed together with the base releases (whole_effects.combine).
 MODELS = tuple(os.environ.get('WHOLE_MODELS', 'gpt,qwen36').split(','))
+SWEEP = dict(item.split(':') for item in os.environ.get('WHOLE_SWEEP', '').split(',') if item)
 GPU_CEILING = float(os.environ.get('WHOLE_GPU_CEILING', '72'))
+CPU_CEILING = float(os.environ.get('WHOLE_CPU_CEILING', '16'))
+CUTOFF = float(os.environ.get('WHOLE_CUTOFF', '1792726200'))  # default 2026-10-23 05:30 Europe/Rome
 require(set(MODELS) <= PLAN.keys(), 'unknown whole model')
-SHARDS = {model: plan['shards'] for model, plan in PLAN.items()}
+require(set(SWEEP) <= set(MODELS) and set(SWEEP.values()) <= DOSES.keys(), 'unknown whole sweep model or dose')
+SHARDS = {model: plan['sweep_shards' if model in SWEEP else 'shards'] for model, plan in PLAN.items()}
 RUN_MINUTES = {model: plan['run_minutes'] for model, plan in PLAN.items()}
 CANARY_MINUTES = {model: plan['canary_minutes'] for model, plan in PLAN.items()}
 ROOT = Path(os.environ.get('WHOLE_ROOT', REPO/'report/whole-reasoning-20261020'))
+# Bootstrap draws and seed shared by every whole-reasoning interval.
+DRAWS, SEED = 10000, 20261015
+
+
+def manifest_path(model: str, dose: str, root: Path | None = None) -> Path:
+    """The frozen manifest of one model and dose; main and half keep their original names."""
+    return (root or ROOT)/model/('WHOLE.json' if dose == 'main' else f'WHOLE_{dose.upper()}.json')
+
+
+def canary_path(model: str, dose: str) -> Path:
+    """The canary receipt of one model and dose; main and half keep their original names."""
+    return ROOT/model/('CANARY.json' if dose == 'main' else f'CANARY_{dose.upper()}.json')
 
 # SteerMoE's published (activated, deactivated) counts: GPT-OSS-20B "faithful"/"unsafe", and
 # Qwen3-30B-A3B "safe" for promotion and "faithful" for suppression (48 layers x 128 experts).
 # The Qwen3 family uses those counts directly; other models get the same share of their own
-# layer-expert pairs. The half dose is the declared fluency fallback.
+# layer-expert pairs. Lower doses take the ceiling of the same fraction of every count.
 PUBLISHED = {'gpt': {'promote': (10, 50), 'suppress': (0, 20)},
              'qwen3': {'promote': (15, 0), 'suppress': (0, 500)}}
 QWEN3_LAYERS, QWEN3_EXPERTS = 48, 128
@@ -70,7 +94,7 @@ def dose_counts(model: str, profile: dict, dose: str, operation: str) -> tuple[i
         layers, experts = len(profile['layers']), profile['experts']
         counts = (round(activate*layers/QWEN3_LAYERS),
                   round(deactivate*layers*experts/(QWEN3_LAYERS*QWEN3_EXPERTS)))
-    return counts if dose == 'main' else tuple((count+1)//2 for count in counts)
+    return tuple(math.ceil(count*DOSES[dose]) for count in counts)
 
 
 @lru_cache(maxsize=None)
@@ -94,11 +118,9 @@ def efficiency_directed(model: str, operation: str, class_name: str | None) -> b
     return class_name in directions(model)['promote' if operation == 'promote' else 'suppress']
 
 
-CUTOFF = 1792726200.  # 2026-10-23 03:30 UTC (05:30 Europe/Rome).
 # CPU allocation time is charged across monitor, extraction and analysis, under the release's own
-# core-hour ceiling (exported like the GPU ceiling). Leave half a core-hour for concurrent shutdown and
-# native-accounting latency; the monitor stops supervising once only the tail reserve remains.
-CPU_CEILING = float(os.environ.get('WHOLE_CPU_CEILING', '16'))
+# core-hour ceiling. Leave half a core-hour for concurrent shutdown and native-accounting latency; the
+# monitor stops supervising once only the tail reserve remains.
 CPU_WORK_LIMIT = CPU_CEILING-.5
 CPU_TAIL_RESERVE = 8.
 
@@ -192,16 +214,18 @@ def cell_actions(nomination: dict, profile: dict, model: str, dose: str, operati
 
 
 def build_manifest(model: str, dose: str, nominations: dict, b: dict, natives: list[dict],
-                   inputs: dict, prompt_scope: bool) -> dict:
+                   inputs: dict, prompt_scope: bool, *, sweep: bool = False) -> dict:
     """Freeze all planned rows, including unavailable cells, in complete family blocks.
 
     Args:
-        model, dose: Model identity and declared main/half fluency operating point.
+        model, dose: Model identity and steering strength (see DOSES).
         nominations: Discovery-only global risk-difference receipt.
         b: Original study profile binding.
         natives: Original main-design native assignments.
         inputs: Family to original prompt token list.
         prompt_scope: Whether prompt qualification passed before the fallback cutoff.
+        sweep: Strength-sweep manifest: efficiency-directed cells only, no native rows (they are the same
+            computation as the base release's) and no audit captures.
 
     Returns:
         Manifest with planned row counts, actual cell counts and unique UIDs.
@@ -209,9 +233,10 @@ def build_manifest(model: str, dose: str, nominations: dict, b: dict, natives: l
     from moe_exp.final_routing.runtime import remaining
     profile = b['models'][model]
     suppressed = directions(model)['suppress']
+    promoted = directions(model)['promote'] if sweep else CLASSES
     cells = [cell_actions(n, profile, model, dose, operation) for n in nominations['records']
              for operation in ('promote', 'suppress')
-             if operation == 'promote' or n['class'] in suppressed]
+             if n['class'] in (promoted if operation == 'promote' else suppressed)]
     by_cell = {(c['fold'], c['class'], c['operation']): c for c in cells}
     require(all(c['qualified'] for c in cells if efficiency_directed(model, c['operation'], c['class'])),
             'every efficiency-directed cell must be nominated')
@@ -224,7 +249,7 @@ def build_manifest(model: str, dose: str, nominations: dict, b: dict, natives: l
                     prompt_sha256=digest(prompt), whole=True, prompt_scope=prompt_scope,
                     pulse_tokens=0, horizon=allowance, total_allowance=allowance, prefix_status='enrolled',
                     capture_layers=profile['layers'], action=None, dose=dose, depth_third=None)
-        for arm in ('native', 'native_repeat'):
+        for arm in (() if sweep else ('native', 'native_repeat')):
             row = {**base, 'arm': arm, 'class': None, 'operation': 'native', 'actions': [],
                    'nomination_status': 'nominated'}
             if arm == 'native_repeat':
@@ -232,8 +257,7 @@ def build_manifest(model: str, dose: str, nominations: dict, b: dict, natives: l
                 require(row['seed'] != native['seed'], 'native repeat seed collision')
             rows.append(row)
         for operation in ('promote', 'suppress'):
-            classes = CLASSES if operation == 'promote' else suppressed
-            for class_name in classes:
+            for class_name in (promoted if operation == 'promote' else suppressed):
                 cell = by_cell[native['fold'], class_name, operation]
                 for role in ('target', 'random'):
                     rows.append({**base, 'arm': role+'_'+operation, 'class': class_name,
@@ -241,18 +265,21 @@ def build_manifest(model: str, dose: str, nominations: dict, b: dict, natives: l
                                  'steered_native_frequency': cell.get('mean_native_frequency', {}).get(role),
                                  'nomination_status': 'nominated' if cell['qualified'] else 'dropped_availability'})
     # Audit flags are selected without reading a whole-arm outcome, before execution.
-    audit_keys = sorted(range(len(rows)), key=lambda i: digest(['whole-audit', model, dose, rows[i]]))[:32]
+    audit_units = 0 if sweep else 32
+    audit_keys = sorted(range(len(rows)), key=lambda i: digest(['whole-audit', model, dose, rows[i]]))[:audit_units]
     for index, row in enumerate(rows):
         row['audit_capture'] = index in audit_keys
         row['uid'] = digest(['whole-v1', nominations.get('release_commit', 'development'), nominations['sha256'], row])
-    # Two native arms plus a target and a random arm for every promote and suppress cell.
-    expected = len(natives)*(2+2*(len(CLASSES)+len(suppressed)))
+    # Two native arms (none in a sweep) plus a target and a random arm for every planned cell.
+    expected = len(natives)*((0 if sweep else 2)+2*(len(promoted)+len(suppressed)))
     require(len(rows) == expected and len({r['uid'] for r in rows}) == expected, 'whole row count/UID differs')
-    return {'model': model, 'dose': dose, 'scope': 'prompt-and-generated-reasoning' if prompt_scope else
-            'generated-reasoning-only; not a SteerMoE whole-token replication',
-            'nominations_sha256': nominations['sha256'], 'cells': cells, 'records': rows,
-            'planned': expected, 'executable': sum(r['nomination_status'] == 'nominated' for r in rows),
-            'audit_units': 32, 'outcomes_used_for_selection': False}
+    value = {'model': model, 'dose': dose, 'scope': 'prompt-and-generated-reasoning' if prompt_scope else
+             'generated-reasoning-only; not a SteerMoE whole-token replication',
+             'nominations_sha256': nominations['sha256'], 'cells': cells, 'records': rows,
+             'planned': expected, 'executable': sum(r['nomination_status'] == 'nominated' for r in rows),
+             'audit_units': audit_units, 'outcomes_used_for_selection': False}
+    # Base manifests keep their original keys, so rebuilt r7/r8 manifests stay byte-identical.
+    return {**value, 'design': 'efficiency-sweep'} if sweep else value
 
 
 def prepare(models=MODELS):
@@ -268,7 +295,7 @@ def prepare(models=MODELS):
         except Exception as error:
             # One infeasible model must not block the others; its canary then stops on the missing manifest.
             results[model] = {'prepared': False, 'error': f'{type(error).__name__}: {error}'}
-    require(any(key.endswith(':main') for key in results), 'no whole model could be prepared')
+    require(any(':' in key for key in results), 'no whole model could be prepared')
     from .whole_effects import planning
     try:
         planning_result = planning(models)
@@ -280,7 +307,11 @@ def prepare(models=MODELS):
 
 
 def prepare_model(b: dict, model: str, scope: bool) -> dict:
-    """Derive one model's nominations and publish its main and half-dose manifests."""
+    """Derive one model's nominations and publish its manifests.
+
+    A base release publishes the main and half-dose manifests; a sweep release publishes the one sweep
+    dose and selects it (no canary).
+    """
     from moe_exp.final_routing.importer import derive_whole
     from .runtime import prompt_prefix
     folder = ROOT/model
@@ -296,19 +327,22 @@ def prepare_model(b: dict, model: str, scope: bool) -> dict:
         require(not prefix, 'original prompt row retained a prefix')
         inputs[row['family']] = prompt
     results = {}
-    for dose in ('main', 'half'):
-        value = publish(folder/('WHOLE.json' if dose == 'main' else 'WHOLE_HALF.json'),
-                        build_manifest(model, dose, nominations, b, natives, inputs, scope))
+    for dose in ([SWEEP[model]] if model in SWEEP else ['main', 'half']):
+        value = publish(manifest_path(model, dose),
+                        build_manifest(model, dose, nominations, b, natives, inputs, scope, sweep=model in SWEEP))
         results[model+':'+dose] = {key: value[key] for key in ('sha256', 'planned', 'executable', 'scope')}
+        if model in SWEEP:
+            publish(folder/'SELECTED.json', {'dose': dose, 'manifest_sha256': value['sha256'], 'canary_job': None,
+                                             'sweep': True})
     return results
 
 
 def manifest(model: str, dose: str | None = None) -> dict:
-    """Read the selected manifest; selection is fixed by the passing canary."""
+    """Read the selected manifest; selection is fixed by the passing canary (or the sweep)."""
     if dose is None:
         selected = ROOT/model/'SELECTED.json'
         dose = verified(selected)['dose'] if selected.exists() else 'main'
-    return verified(ROOT/model/('WHOLE.json' if dose == 'main' else 'WHOLE_HALF.json'))
+    return verified(manifest_path(model, dose))
 
 
 def bound_store(model: str, dose: str, canary: bool = False) -> driver.Store:
@@ -505,7 +539,7 @@ def admission_order(rows: list[dict]) -> list[dict]:
     ))
 
 
-def run(model, shard, deadline, *, max_inflight=64, canary=False, dose=None, engineering_only=False):
+def run(model, shard, deadline, *, max_inflight=64, canary=False, dose=None):
     """Run one source-bound shard or canary on the existing hooked engine."""
     from .runtime import closure
     verify_release()
@@ -514,15 +548,22 @@ def run(model, shard, deadline, *, max_inflight=64, canary=False, dose=None, eng
     if not canary:
         selected = verified(ROOT/model/'SELECTED.json')
         require(selected['manifest_sha256'] == value['sha256'], 'production manifest lacks a passing canary')
-        if (ROOT/model/'CANARY_DECISION.json').exists():
-            canary_decision(model, value)
-        else:
-            proof = verified(ROOT/model/('CANARY_HALF.json' if value['dose'] == 'half' else 'CANARY.json'))
-            require(proof['gate']['passed'] and proof['job'] == selected['canary_job'] and
-                    proof['manifest_sha256'] == value['sha256'], 'production canary qualification differs')
+        # A sweep dose runs without a canary (breakdown is measured as an outcome). Otherwise a recorded
+        # user decision replaces a failed canary, or the passing canary receipt qualifies the manifest.
+        if not selected.get('sweep'):
+            if (ROOT/model/'CANARY_DECISION.json').exists():
+                canary_decision(model, value)
+            else:
+                proof = verified(canary_path(model, value['dose']))
+                require(proof['gate']['passed'] and proof['job'] == selected['canary_job'] and
+                        proof['manifest_sha256'] == value['sha256'], 'production canary qualification differs')
     rows = canary_rows(value) if canary else driver.shard_rows(model, shard, 'whole')
     store = bound_store(model, value['dose'], canary)
     require(not any(store.state(r['uid']) for r in rows), 'whole execution is fresh only; preserve partials')
+    if time.time() >= CUTOFF:
+        # A shard that starts after the science cutoff leaves its rows unknown without loading the model.
+        driver.log({'event': 'whole-shard-after-cutoff', 'model': model, 'shard': list(shard)})
+        return None
     executable = admission_order([r for r in rows if r['nomination_status'] == 'nominated'])
     b = driver.binding()
     llm, kwargs, load_seconds = driver.hooked_llm(b, model, max_inflight)
@@ -548,13 +589,10 @@ def run(model, shard, deadline, *, max_inflight=64, canary=False, dose=None, eng
               'metrics': metrics, 'native_validation': validation[0], **driver.rescue_completion(store, rows)}
     if canary:
         result['gate'] = fluency(store, rows, require_complete=True, censor_unfinished=True)
-        path = ('ENGINEERING.json' if engineering_only else
-                'CANARY.json' if value['dose'] == 'main' else 'CANARY_HALF.json')
-        publish(ROOT/model/path, {**result, 'engineering_only': engineering_only})
+        publish(canary_path(model, value['dose']), result)
         if result['gate']['passed']:
-            if not engineering_only:
-                publish(ROOT/model/'SELECTED.json', {'dose': value['dose'], 'manifest_sha256': value['sha256'],
-                                                    'canary_job': result['job']})
+            publish(ROOT/model/'SELECTED.json', {'dose': value['dose'], 'manifest_sha256': value['sha256'],
+                                                'canary_job': result['job']})
         else:
             raise SystemExit(3 if result['gate']['fluency_failures'] and not result['gate']['software_failures'] else 2)
     else:
@@ -627,17 +665,17 @@ def submission_environment(exports: dict) -> dict:
 def submit_stage(command: str, *, model=None, dose=None, shard=None, dependency=None, held=False) -> dict:
     """Submit one bounded approved stage and read back its exact native resource request."""
     release = verified(ROOT/'RELEASE.json')
-    gpu = command in ('canary', 'run', 'diagnose')
+    gpu = command in ('canary', 'run')
     cpus = 16 if gpu else 1 if command == 'monitor' else 4 if command == 'validate' else 8
-    memory = 120 if gpu else 2 if command == 'monitor' else 24 if command != 'analyze' else 32
+    memory = {'monitor': 2, 'validate': 24, 'extract': 24, 'analyze': 32, 'combine': 96}.get(command, 120)
     minutes = {
         'canary': CANARY_MINUTES.get(model),
-        'diagnose': 15,
         'run': planned_run_minutes(model) if model else None,
         'validate': 60,
         'monitor': 960,
         'extract': 90,
         'analyze': 120,
+        'combine': 360,
     }[command]
     args = [command]
     if model:
@@ -651,7 +689,8 @@ def submit_stage(command: str, *, model=None, dose=None, shard=None, dependency=
     exports = {'RELEASE_ROOT': release['release_root'], 'STUDY_DATA_ROOT': str(driver.ROOT),
                'WHOLE_ROOT': str(ROOT), 'STUDY_MODULE': 'moe_exp.study.whole',
                'WHOLE_MODELS': ','.join(MODELS), 'WHOLE_GPU_CEILING': str(GPU_CEILING),
-               'WHOLE_CPU_CEILING': str(CPU_CEILING),
+               'WHOLE_CPU_CEILING': str(CPU_CEILING), 'WHOLE_CUTOFF': str(CUTOFF),
+               'WHOLE_SWEEP': ','.join(m+':'+d for m, d in SWEEP.items()),
                'MOE_EXP_SCORING_PROCESSES': '8' if command == 'extract' else '2'}
     cmd = ['sbatch', '--parsable', '--account=iscrc_miosr', '--partition=boost_usr_prod', '--qos=normal',
            '--nodes=1', '--ntasks=1', f'--cpus-per-task={cpus}', f'--mem={memory}G', f'--time={minutes}',
@@ -791,7 +830,7 @@ def advance_canary(schedule: dict, model: str, accounting: dict, stopped: set) -
         stopped.add(model)
     if model in stopped:
         return
-    path = ROOT/model/('CANARY.json' if attempt['dose'] == 'main' else 'CANARY_HALF.json')
+    path = canary_path(model, attempt['dose'])
     gate = verified(path)['gate'] if path.exists() else None
     current_canary = attempt['id'] == os.environ.get('SLURM_JOB_ID')
     if gate and gate['passed'] and (state.get('state') == 'COMPLETED' or current_canary):
@@ -869,7 +908,9 @@ def check_production(schedule: dict, model: str, accounting: dict, checked: set,
         return
     progress = production_progress(model)
     elapsed = max((accounting.get(job['id'], {}).get('elapsed', 0) for job in production), default=0)
-    if model not in checked and elapsed >= (2700 if model == 'gpt' else 4500):
+    # The early gate compares steered rows with their family's native rows, which a sweep does not run;
+    # sweep breakdown is reported as an outcome instead.
+    if model not in checked and model not in SWEEP and elapsed >= (2700 if model == 'gpt' else 4500):
         value = manifest(model)
         gate = fluency(bound_store(model, value['dose']), value['records'])
         if gate['steered_units']:
@@ -883,13 +924,18 @@ def check_production(schedule: dict, model: str, accounting: dict, checked: set,
             driver.checkpoint(ROOT/model/'EARLY_GATE_PENDING.json', {'elapsed': elapsed, 'progress': progress})
     if model in stopped:
         return
-    if model not in projected and progress['pairs'] >= .25*progress['executable_pairs']:
+    # A sweep release's ceiling covers every shard's full walltime, so walltimes already bound its charge;
+    # a projection from slow early rows (cold start, rows at the length limit) could only stop it falsely.
+    if model not in projected and model not in SWEEP and progress['pairs'] >= .25*progress['executable_pairs']:
         check_projection(schedule, model, accounting, progress, stopped, gpu_hours)
         projected.add(model)
 
 
 def advance_extraction(schedule: dict, accounting: dict, stopped: set) -> None:
-    """Queue afterany extraction with each complete shard graph, then analysis."""
+    """Queue afterany extraction with each complete shard graph, then the per-release analysis.
+
+    A sweep release has no analysis of its own: whole_effects.combine reads it with the base releases.
+    """
     schedule.setdefault('extraction', {})
     for model in MODELS:
         production = schedule['production'][model]
@@ -899,10 +945,21 @@ def advance_extraction(schedule: dict, accounting: dict, stopped: set) -> None:
             schedule['extraction'][model] = submit_stage('extract', model=model,
                 dependency='afterany:'+':'.join(j['id'] for j in dependencies))
             driver.checkpoint(ROOT/'JOBS.json', schedule)
-    if len(schedule['extraction']) == len(MODELS) and not schedule.get('analysis'):
+    if len(schedule['extraction']) == len(MODELS) and not schedule.get('analysis') and not SWEEP:
         schedule['analysis'] = submit_stage('analyze', dependency='afterany:'+':'.join(
             j['id'] for j in schedule['extraction'].values()))
         driver.checkpoint(ROOT/'JOBS.json', schedule)
+
+
+def source_extractions(schedule: dict) -> list[str]:
+    """Extraction job IDs of every release named in SOURCES.json, for the combined analysis."""
+    ids = set()
+    for source in verified(ROOT/'SOURCES.json')['sources']:
+        root = Path(source['root'])
+        jobs = schedule if root == ROOT else load(root/'JOBS.json')
+        require(source['model'] in jobs['extraction'], f'{root.name} has no {source["model"]} extraction yet')
+        ids.add(jobs['extraction'][source['model']]['id'])
+    return sorted(ids)
 
 
 def accounting_snapshot(jobs: list[dict]) -> tuple[dict, float]:
@@ -1011,7 +1068,8 @@ def monitor() -> None:
                 for model in MODELS:
                     advance_canary(schedule, model, accounting, stopped)
                 advance_extraction(schedule, accounting, stopped)
-            if schedule.get('analysis') and terminal(accounting.get(schedule['analysis']['id'], {})):
+            final = [schedule['analysis']] if schedule.get('analysis') else list(schedule['extraction'].values())
+            if len(schedule['extraction']) == len(MODELS) and all(terminal(accounting.get(j['id'], {})) for j in final):
                 return
             if load(ROOT/'ACCOUNTING.json').get('new_cpu_core_hours', 0.) >= CPU_WORK_LIMIT-CPU_TAIL_RESERVE:
                 driver.log({'event': 'whole-monitor-cpu-reserve', 'production_continues': True})
@@ -1029,13 +1087,10 @@ def inference_stage(args: argparse.Namespace) -> None:
     require(os.environ.get('SLURM_JOB_GPUS'), 'whole inference requires allocated GPUs')
     try:
         run(args.model, args.shard, driver.deadline_from_slurm(margin=120), max_inflight=args.max_inflight,
-            canary=args.command in ('canary', 'diagnose'), dose=args.dose,
-            engineering_only=args.command == 'diagnose')
+            canary=args.command == 'canary', dose=args.dose)
     except BaseException as error:
-        if args.command in ('canary', 'diagnose'):
-            name = ('ENGINEERING.json' if args.command == 'diagnose' else
-                    'CANARY_HALF.json' if args.dose == 'half' else 'CANARY.json')
-            path = ROOT/args.model/name
+        if args.command == 'canary':
+            path = canary_path(args.model, args.dose or 'main')
             if not path.exists():
                 publish(path, {'model': args.model, 'dose': args.dose or 'main',
                     'job': os.environ['SLURM_JOB_ID'], 'gate': {'passed': False, 'fluency_failures': [],
@@ -1051,7 +1106,8 @@ def validate_stage() -> None:
     nomination_proof = audit_nominations()
     # The suite tests the default GPT/Qwen3.6 configuration plus explicit multi-model cases, so it runs
     # in a fresh interpreter without this release's model selection.
-    env = {k: v for k, v in os.environ.items() if k not in ('WHOLE_MODELS', 'WHOLE_GPU_CEILING', 'WHOLE_CPU_CEILING')}
+    settings = ('WHOLE_MODELS', 'WHOLE_GPU_CEILING', 'WHOLE_CPU_CEILING', 'WHOLE_CUTOFF', 'WHOLE_SWEEP')
+    env = {k: v for k, v in os.environ.items() if k not in settings}
     suite = subprocess.run([sys.executable, '-B', '-m', 'unittest', 'discover', '-v', '-s', str(REPO/'tests/study'),
                             '-t', str(REPO/'tests/study')], env=env, capture_output=True, text=True)
     sys.stderr.write(suite.stderr)
@@ -1079,14 +1135,15 @@ def audit_nominations() -> dict:
     references = {(r['dose'], r['fold'], r['class']): r for r in proposal['records']}
     records = []
     for model in MODELS:
-        if not (ROOT/model/'WHOLE.json').exists():
+        doses = [SWEEP[model]] if model in SWEEP else ['main', 'half']
+        if not manifest_path(model, doses[0]).exists():
             continue  # preparation failed for this model; recorded in CPU_VALIDATION.json
-        for dose in ('main', 'half'):
+        for dose in doses:
             for cell in manifest(model, dose)['cells']:
                 record = {key: cell[key] for key in ('fold', 'class', 'operation', 'qualified',
                     'activate', 'deactivate', 'retained_rd_fraction', 'replaced_deactivation_pairs',
                     'activation_changed', 'mean_native_frequency')}
-                if model == 'gpt' and cell['operation'] == 'promote':
+                if model == 'gpt' and cell['operation'] == 'promote' and (dose, cell['fold'], cell['class']) in references:
                     reference = references[dose, cell['fold'], cell['class']]
                     for arm, roles in (('target', reference), ('random', reference['controls'])):
                         for role in ('activate', 'deactivate'):
@@ -1106,10 +1163,10 @@ def audit_nominations() -> dict:
 def main(argv=None):
     """Dispatch preparation, canary and generation through one maintained entry point."""
     parser = argparse.ArgumentParser(__doc__)
-    parser.add_argument('command', choices=('prepare', 'canary', 'diagnose', 'run', 'extract', 'analyze', 'validate', 'monitor', 'launch',
-                                            'produce'))
+    parser.add_argument('command', choices=('prepare', 'canary', 'run', 'extract', 'analyze', 'combine', 'historical',
+                                            'validate', 'monitor', 'launch', 'produce'))
     parser.add_argument('--model', choices=MODELS)
-    parser.add_argument('--dose', choices=('main', 'half'))
+    parser.add_argument('--dose', choices=tuple(DOSES))
     parser.add_argument('--shard', type=driver.parse_shard, default=(0, 1))
     parser.add_argument('--max-inflight', type=int, default=64)
     parser.add_argument('--cpu-worker', action='store_true', help=argparse.SUPPRESS)
@@ -1123,10 +1180,22 @@ def main(argv=None):
                     'production': {m: [] for m in MODELS}, 'extraction': {}}
         driver.checkpoint(ROOT/'JOBS.json', schedule)
         for model in MODELS:
+            if model in SWEEP:
+                # A sweep dose has no canary: its shards wait only for the allocated validation.
+                admit_shard_plan(schedule, model, {}, set())
+                for index in range(SHARDS[model]):
+                    schedule['production'][model].append(submit_stage('run', model=model, dose=SWEEP[model],
+                        shard=[index, SHARDS[model]], dependency='afterok:'+validation['id']))
+                    driver.checkpoint(ROOT/'JOBS.json', schedule)
+                continue
             if (ROOT/model/'CANARY_DECISION.json').exists():
-                continue  # a recorded user decision replaces this canary; production follows `produce`
+                continue  # a recorded decision replaces the canary; production follows `produce`
             schedule['canaries'][model].append(submit_stage('canary', model=model,
                 dose=PLAN[model].get('start_dose', 'main'), dependency='afterok:'+validation['id']))
+            driver.checkpoint(ROOT/'JOBS.json', schedule)
+        advance_extraction(schedule, {}, set())
+        if (ROOT/'SOURCES.json').exists():
+            schedule['analysis'] = submit_stage('combine', dependency='afterany:'+':'.join(source_extractions(schedule)))
             driver.checkpoint(ROOT/'JOBS.json', schedule)
         schedule['monitor'] = submit_stage('monitor', dependency='afterany:'+validation['id'])
         driver.checkpoint(ROOT/'JOBS.json', schedule)
@@ -1138,7 +1207,7 @@ def main(argv=None):
     require(os.environ.get('SLURM_JOB_ID'), 'whole stages require allocated Slurm resources')
     if args.command == 'prepare':
         driver.log({'event': 'prepare-whole', 'results': prepare((args.model,) if args.model else MODELS)})
-    elif args.command in ('canary', 'run', 'diagnose'):
+    elif args.command in ('canary', 'run'):
         inference_stage(args)
         if args.command == 'canary':
             try:
@@ -1150,11 +1219,13 @@ def main(argv=None):
             return cpu_stage(args.command, args.model)
         from .whole_effects import extract
         extract(args.model)
-    elif args.command == 'analyze':
+    elif args.command in ('analyze', 'combine'):
         if not args.cpu_worker:
             return cpu_stage(args.command, args.model)
-        from .whole_effects import analyze
-        analyze()
+        from .whole_effects import analyze, combine
+        analyze() if args.command == 'analyze' else combine(ROOT/'SOURCES.json')
+    elif args.command == 'historical':
+        # Corrected re-analysis of the pulsed main and strong designs (the paper's earlier study).
         from .effects import analyze as historical_analysis
         models = [m for m in driver.MODELS if (driver.DRIVER/m/'ASSIGNMENTS.json').exists()]
         main_result = historical_analysis(models, ROOT/'corrected-main', 'main')
