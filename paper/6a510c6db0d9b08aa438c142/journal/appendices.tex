@@ -1,0 +1,752 @@
+\journalappendix{Readout Estimates and Temporal Support}{app:readout}
+
+Table~\ref{tab:readout-detail} supplies the complete present-state contrasts behind Figure~\ref{fig:readout}.
+%
+Sentence counts differ because each model generates its own solution and contributes its own labelled sentences.
+%
+The independent question and family population is common.
+%
+Positive RIG favors the routing-augmented classifier.
+%
+
+\input{journal/tables/readout}
+
+\subsection{Readout representations and model selection}
+\label{app:readout-features}
+
+The readout tests information about the assigned sentence label while holding the evaluation families fixed.
+%
+Token-identity features use 4,096 buckets, retain terms supported by at least two training sentences, and apply sublinear term-frequency/inverse-document-frequency weighting.
+%
+Each resulting row is normalized to Euclidean length one and scaled by ten.
+%
+The extended reader-context representation hashes word unigrams and bigrams and character 3-, 4-, and 5-grams into $2^{18}$ buckets, with the same row scale.
+%
+Only training data determine the frequency weights.
+%
+Dense routing features are standardized within the training fold.
+%
+Coordinate means and population standard deviations use the training rows.
+%
+A nonfinite mean is replaced by zero, a standard deviation at most $10^{-12}$ by one, and a missing standardized value by zero.
+%
+
+Let $a_{\ell,t}$ be the top-1 expert at sparse layer $\ell$ for token $t$.
+%
+For each adjacent layer pair, training-token counts $N_\ell(a,b)$ define the smoothed conditional probability
+\begin{equation}
+\widehat p_\ell(b\mid a)=
+\frac{N_\ell(a,b)+0.5}{\sum_{b'}N_\ell(a,b')+0.5E}.
+\end{equation}
+Here $E$ is the number of experts per sparse layer.
+%
+Depth-path surprise $D_s$ is the sentence mean of $-\log\widehat p_\ell(a_{\ell+1,t}\mid a_{\ell,t})$, averaged equally over its tokens and the $L-1$ adjacent layer pairs.
+%
+It measures how unexpected the observed sequence of expert identities across depth is under the training transitions.
+%
+It is nonnegative in nats and has no population-independent finite upper bound.
+%
+
+Temporal persistence measures the fraction of layers retaining the same top-1 expert between consecutive tokens.
+%
+For a sentence $j$, let $A_j$ contain its token positions whose preceding token is adjacent and belongs to that sentence.
+%
+The feature is
+\begin{equation}
+R_j=\frac{1}{|A_j|L}\sum_{t\in A_j}\sum_{\ell=1}^{L}
+\mathbf{1}\{a_{\ell,t}=a_{\ell,t-1}\}.
+\end{equation}
+Its range is zero to one, where one means that every layer retains its top-1 identity across every supported token pair.
+%
+When $A_j$ is empty, the feature is missing and becomes zero after training-fold standardization, the standardized training mean.
+%
+Neither feature bridges a sentence boundary or a missing-token gap.
+%
+
+The routing composition is centered on the training mean and projected to 64 principal components.
+%
+The retained randomized decomposition uses 16 oversampling directions and four power iterations.
+%
+Routing features also contain depth-path surprise and temporal persistence.
+%
+Multinomial ridge fitting selects its penalty from $10^{-3},10^{-2},10^{-1},1,10,100$ by inner held-out cross-entropy, breaking ties toward stronger regularization.
+%
+The five outer and three inner folds keep duplicate families together.
+%
+All transforms are fitted anew on each training split.
+%
+The saved intervals condition on these fitted readouts.
+%
+The routing-augmented penalty is 0.01 in every outer fold for all seven models.
+%
+The text penalty is 0.001 throughout for GPT-OSS, Nemotron, Qwen3.5, Qwen3.6 and Qwen3-30B, and 0.01 throughout for Gemma.
+%
+GLM uses 0.001, 0.01, 0.01, 0.001 and 0.001 in fold order.
+%
+
+\subsection{Next-state support}
+\label{app:next-state}
+The original next-state endpoint and its source-length sensitivity have different question and pair counts (Table~\ref{tab:next-state}).
+%
+Both use only tokens owned by the source sentence.
+%
+The sensitivity retains sources with at least 32 tokens, ensuring a full 16-token trailing window.
+%
+It restricts eligible pairs without restricting the sentences used to build profiles within the selected training attempts.
+%
+Loss averages pairs within a question before averaging questions, and resampling keeps duplicate families together.
+%
+
+\input{journal/tables/next_state}
+
+The next-state profiles use all available labelled sentences from the training attempts represented in a fold.
+%
+Each sentence contributes its whole-sentence selected-slot histogram.
+%
+The raw marginal $\bar\pi^0$ averages these histograms within attempts, then across attempts.
+%
+For class $c$, $\widehat\pi^c$ first averages sentences of that class within an attempt, then averages the supported attempts.
+%
+Let $n_c$ be the number of training sentences assigned to $c$.
+%
+The regularized profiles are
+\begin{equation}
+ \pi^0=F_\epsilon(\bar\pi^0),\qquad
+ \pi^c=F_\epsilon\!\left(
+ \frac{n_c\widehat\pi^c+50\bar\pi^0}{n_c+50}\right),
+\label{eq:routing-profiles}
+\end{equation}
+where $F_\epsilon$ floors each entry at $\epsilon=10^{-6}$ and then normalizes across experts within each layer.
+%
+An unsupported class uses the marginal profile.
+%
+The seven scores in Equation~\ref{eq:next-features} are standardized on the training rows before fitting the readout.
+%
+
+The sensitivity uses a restricted source-length population and is not an independent replication.
+%
+Five models have no completed next-state estimate.
+
+% Necessary local flush: the next-state table belongs to Appendix A.2.
+\FloatBarrier
+\journalappendix{Expert Retention by Family Fold}{app:selection}
+
+Table~\ref{tab:selection-folds} retains every model, fold, and selection method from the 75\%-retention comparison.
+%
+Each model uses the same five assignments of duplicate families.
+%
+A held-out family contributes to one test fold, while the four remaining folds provide training data.
+%
+Class balancing and frequency share the same labelled inputs, quotas, and tie rule.
+%
+The random priorities are fixed per model.
+%
+
+\input{journal/tables/selection_folds}
+
+The test-family counts sum to 1,486 within each model.
+%
+Complete class support holds in every displayed fold.
+%
+The fold bars and means in Figure~\ref{fig:selection} are descriptive summaries of these particular family assignments.
+%
+
+\journalappendix{Full Reasoning-State Distributions}{app:dynamics}
+
+Table~\ref{tab:occupancy-detail} gives the numerical values underlying all seven classes in Figure~\ref{fig:occupancy}.
+%
+For each attempt, a class's token count is divided by the total observed labelled-token count.
+%
+Repeats then average within benchmark--family occurrences, families average within benchmarks, and benchmarks receive equal weight.
+%
+Every reported occupancy has support in all six benchmarks.
+%
+
+\input{journal/tables/occupancy}
+
+The simultaneous correction belongs to the complete model-specific native-dynamics panel, which also contains transition, dwell, re-entry, and annotation-coverage endpoints.
+%
+It is retained when a subset of occupancies is displayed.
+%
+Original undefined draws remain part of the support decision for each endpoint.
+%
+There are 161 unavailable transition intervals across the eight model panels, including all 49 Qwen3.6 transition intervals and 71\% of the 49 LFM2.5 intervals, whose labels cover 10\% of completion tokens.
+%
+For example, its observed Verify-to-Verify mean is 27.63\% on 212 supported families.
+%
+Original undefined resamples prevent an interval under the retained support gate.
+%
+Supported occupancy and dwell intervals do not repair those transition endpoints.
+%
+
+Observed dwell is the token length of an uninterrupted run of adjacent, identically labelled sentences.
+%
+Both the start and end of a sampled segment can censor a run.
+%
+The separate uncensored-dwell estimate uses only runs with observed boundaries on both sides.
+%
+Sparse sentence annotation consequently describes the observed segments at their measured coverage.
+%
+It cannot reconstruct uncensored full solutions.
+%
+
+\begin{figure}[tb]
+\centering
+\includegraphics[width=\linewidth]{figures/journal/transition_summary.pdf}
+\caption{Observed transitions from Analyze to Implement (a), Implement to Verify (b), and Verify to Verify (c), with Verify dwell (d).
+%
+Transition panels share a percentage scale.
+%
+Dwell counts labelled tokens in an observed run and can be censored by missing-label boundaries.
+%
+Horizontal values give means.
+%
+Whiskers show the whole-family-bootstrap, model-specific simultaneous 95\% intervals.
+%
+A dagger marks unavailable transition intervals.
+%
+These endpoints describe observed state dynamics.}
+\label{fig:transition-summary}
+\end{figure}
+
+% Necessary local flush: the state/dwell figure must remain in Appendix C.
+\FloatBarrier
+\journalappendix{Benchmark Denominators and Model Configurations}{app:benchmark-details}
+
+The complete native score table retains all six benchmark cells for every evaluated model (Table~\ref{tab:benchmark-details}).
+%
+The intervals are the original source-question bootstrap intervals.
+%
+The 32 attempts for each competition question remain dependent measurements, and unresolved answers are excluded from the scored denominator.
+%
+
+\input{journal/tables/benchmark_details}
+
+\subsection{Model identities}
+The evaluated models are OpenAI's GPT-OSS-20B, NVIDIA's Nemotron-3.5-Lightning-30B-A3B-NVFP4, Qwen3.5-35B-A3B-GPTQ-Int4, Qwen3.6-35B-A3B-FP8, NVIDIA's Gemma-4-26B-A4B-NVFP4, Z.ai's GLM-4.7-Flash, Qwen3-30B-A3B, and LiquidAI's LFM2.5-24B-A2B.
+%
+The native evaluation retains their model-specific tokenizers and reasoning parsers.
+%
+GPT-OSS has a 131,072-token context capacity.
+%
+The retained five long-context profiles use 133,120 tokens, while Qwen3-30B uses 40,960.
+%
+Its output cap is 38,912 tokens.
+%
+The five long-context card profiles have a 131,072-token output cap, and GPT-OSS output is bounded by the remaining context.
+%
+LFM2.5 runs in BF16 with a 131,072-token context, and its output is bounded by the remaining context.
+%
+Its 38 routed layers follow two dense layers and use sigmoid selection scores with a correction bias.
+%
+
+\subsection{Native benchmark prompt}
+\label{app:native-prompt}
+
+The eight evaluated models receive the same user-message template for these benchmarks.
+%
+The problem text replaces the italicized field.
+%
+\begin{quote}\small
+Please reason step by step, and put your final answer within \verb|\boxed{}|.\\ Question: \emph{problem text}
+\end{quote}
+There are no few-shot examples or separate system messages.
+%
+Each model uses its native chat template.
+%
+Gemma and LFM2.5 explicitly enable thinking, and GPT-OSS uses medium reasoning effort.
+%
+The other profiles retain their native thinking settings without a template override.
+%
+These conditions describe the completed native evaluation.
+%
+
+\journalappendix{Annotation and External Prefix Probes}{app:annotation}
+
+\subsection{Native sentence sampling and token alignment}
+
+Native reasoning regions are identified using each model's reasoning delimiters.
+%
+A deterministic punctuation/newline splitter protects mathematical expressions and records exact character offsets.
+%
+It splits the reasoning region into sentence units, rather than applying a learned linguistic parser.
+%
+A completion token belongs to the sentence with greatest character overlap.
+%
+Ties choose the earlier sentence, and whitespace gaps attach to the preceding sentence.
+%
+Delimiter and answer tokens have no sentence owner.
+%
+
+One uniformly sampled attempt per question defines the native allocation population.
+%
+Within those attempts, the annotation floor samples up to ten sentences without replacement.
+%
+Remaining assignments sample the pooled unused sentences toward the 100,000-unit budget.
+%
+A separate competition sample includes up to four successful and four unsuccessful attempts from questions having at least two of each.
+%
+It assigns up to 60 sentences per attempt.
+%
+When an attempt overlaps the allocation population, its sentence assignments are unioned, so the available union can exceed the nominal budget.
+%
+Unscored attempts are not assigned to its success/failure strata.
+%
+The allocation comparison continues to use its original single sampled attempt per question.
+%
+Unassigned, invalid or unavailable labels remain missing and break sentence adjacency.
+%
+
+\subsection{External annotation development}
+
+The external annotation development corpus contains 38 released DeepSeek-R1 SAT responses and 3,125 labelled units.
+%
+Complete responses define the partitions before units are flattened.
+%
+The Qwen3.8 seed deployment check uses 407 reused validation units, obtaining accuracy 0.710 under both low and medium effort.
+%
+The settings change 41 labels, or 10.1\% of those units.
+%
+Equal aggregate accuracy therefore does not imply an unchanged set of individual judgments.
+%
+
+The retained prompt has balanced accuracy 0.7400 in its selection comparison, against 0.7288 for the optimized candidate.
+%
+The Plan-recall gate retains the seed.
+%
+An earlier response-grouped, static-reward prompt study obtains macro-F1 0.6505 with a light optimization budget and 0.6437 with a heavy budget over 2,789 units.
+%
+These are different development comparisons, and their scores do not supply native seven-model annotation accuracy.
+%
+
+\subsection{Lexical reading of intervention continuations}
+\label{app:lexical-readout}
+
+The state of an intervention continuation is assigned by a text classifier rather than by the annotation reader.
+%
+It receives the sentence and its two neighbours, the same text the reader sees apart from the problem statement.
+%
+Word unigrams and bigrams and character 3- to 5-grams of the sentence, and word unigrams and bigrams of each neighbour, enter as hashed sublinear TF-IDF blocks fitted on the training rows.
+%
+The neighbour blocks carry half the weight of the sentence block, and nine format features record length, digit and symbol density, closing question marks or colons, bullets, and the response-boundary markers.
+%
+A multinomial logistic regression with an $L_2$ penalty maps these features to the seven classes.
+%
+
+Training uses the reader-labelled native sentences of the seven source models, at most 60,000 unique contexts per model and 420,000 in total.
+%
+Each evaluation fold has its own classifier, fitted on the families of the other four folds, so no continuation is read by a classifier that saw its question family.
+%
+On held-out native sentences the classifier agrees with the reader on 73.4\% of labels, with macro-F1 0.696 and per-model accuracy between 72.0\% and 75.0\%.
+%
+Its Youden index, sensitivity minus false-positive rate, ranges from 0.42 for Read to 0.74 for Implement.
+%
+The reader itself agrees with a repeated judgment of the same context in 83 to 95\% of duplicated contexts, which bounds the agreement any reader-trained classifier can reach.
+%
+LFM2.5 contributes no training sentence.
+%
+On its 96,137 reader-labelled native contexts, the same fold-specific classifiers agree with the reader on 72.7\% of labels, with macro-F1 0.672 and Youden indices between 0.37 for Read and 0.74 for Implement.
+%
+
+Non-differential classification errors shrink a contrast in class occupancy by the Youden index of that class without changing its sign.
+%
+The main analysis therefore reports uncorrected occupancy contrasts and gives Rogan--Gladen corrections, which divide by the native Youden index, as a sensitivity analysis.
+%
+On 27,746 reader-labelled sentences from an earlier steering study, an equivalent classifier reaches 74.4\% agreement, and its accuracy differs between targeted and random arms by 0.3 points with a 95\% interval from $-0.8$ to $1.4$.
+%
+Classifier contrasts between those arms correlate with reader contrasts at $r=0.71$, with a slope consistent with the Youden attenuation.
+%
+These checks cover a single model and milder edits, so the readout supports statements about lexical signatures of the reasoning classes rather than independently verified cognitive states.
+%
+
+\subsection{Prospective hidden-state information}
+\label{app:probes}
+
+The external prefix-probe study removes 38 synthetic closing-think units, leaving 3,087 annotated units.
+%
+The feature for a sentence is the hidden state immediately before its first token.
+%
+Each encoder receives the released response as a teacher-forced continuation.
+%
+The probe therefore observes the problem and preceding text without the target sentence.
+%
+
+The probes use balanced one-versus-rest logistic regression with L2 regularization, $C=1$, and raw hidden activations without standardization or principal-component reduction.
+%
+Five common response-disjoint outer folds hold out complete responses.
+%
+Inner validation selects the layer for each one-versus-rest target by area under the receiver operating characteristic curve (AUROC), and the selected classifier is refitted on the outer development responses.
+%
+A position-only baseline uses the logarithms of preceding unit and token counts, without future content or final response length.
+%
+
+\begin{table}[htbp]
+\centering\small
+\caption{Response-disjoint prospective probes on 38 SAT responses.
+%
+AUROC averages the five folds and seven binary targets.
+%
+Subscripts give $\pm$ 95\% response-bootstrap confidence intervals, conditional on the saved folds, layers, and fits.
+%
+Gain subtracts the position baseline.
+%
+Bold and underline identify the highest and second-highest distinct probe AUROC and paired gain.
+%
+Probes use encoder-specific representations.}
+\label{tab:prefix-probes}
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{@{}lrrr@{}}
+\toprule
+Encoder & Probe AUROC & Position AUROC & Paired gain \\
+\midrule
+\modelname{qwen}{Qwen3.5-35B-A3B} & \bestcid{0.852}{0.014}{0.016} & \cid{0.566}{0.014}{0.028} & \bestcid{0.286}{0.027}{0.016} \\
+\modelname{openai}{GPT-OSS-20B} & \cid{0.780}{0.019}{0.017} & \cid{0.571}{0.014}{0.029} & \cid{0.209}{0.030}{0.018} \\
+\modelname{gemma}{Gemma-4-26B-A4B} & \secondcid{0.788}{0.016}{0.017} & \cid{0.566}{0.013}{0.028} & \secondcid{0.221}{0.026}{0.016} \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}
+
+Every encoder exceeds its position baseline (Table~\ref{tab:prefix-probes}).
+%
+The intervals resample whole responses and condition on the chosen layers and fitted classifiers.
+%
+They omit refitting and split-seed variation.
+%
+Macro binary F1 is 0.521 for Qwen3.5, 0.400 for GPT-OSS, and 0.426 for Gemma at the retained decision rule.
+%
+Ranking information does not therefore establish reliable seven-class annotation of a model's own generated solutions.
+%
+
+\subsection{Candidate-specific verification qualification}
+\label{app:verification-qualification}
+
+The separate prospective verification protocol recognizes a checkable candidate value inside an already emitted reasoning prefix.
+%
+Its frozen qualification combines family support, precision, and evidence of whether that candidate has already been checked.
+%
+The completed recognition audits do not qualify in five models.
+%
+Qwen3.5 and GLM remain incomplete under that protocol (Table~\ref{tab:verification-qualification}).
+%
+No new targeted-control outcome is measured for these seven protocol cells.
+%
+
+\begin{table}[htb]
+\centering\small
+\caption{Qualification of the separate candidate-specific verification protocol.
+%
+Engineering qualification concerns execution.
+%
+Recognition and targeted-control outcomes are assessed separately.}
+\label{tab:verification-qualification}
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{@{}llll@{}}
+\toprule
+Model & Engineering & Recognition & Targeted control \\
+\midrule
+\modelname{openai}{GPT-OSS-20B} & Qualified & Criterion unmet & Unmeasured \\
+\modelname{nvidia}{\shortstack[l]{Nemotron-3.5-Lightning\\30B-A3B}} & Qualified & Criterion unmet & Unmeasured \\
+\modelname{qwen}{Qwen3.5-35B-A3B} & Qualified & Incomplete & Unmeasured \\
+\modelname{qwen}{Qwen3.6-35B-A3B} & Qualified & Criterion unmet & Unmeasured \\
+\modelname{gemma}{Gemma-4-26B-A4B} & Qualified & Criterion unmet & Unmeasured \\
+\modelname{zhipu}{GLM-4.7-Flash (30B-A3B)} & Qualified & Incomplete & Unmeasured \\
+\modelname{qwen}{Qwen3-30B-A3B} & Qualified & Criterion unmet & Unmeasured \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}
+
+GPT-OSS's complete audit has 128 prefix assignments and two original reader draws per assignment.
+%
+Apparent eligibility precision is 22.41\% across 29 families, and already-checked precision is 18.75\% across eight families.
+%
+The frozen thresholds are 70\% precision and ten families for each qualification.
+%
+Both measured precisions fall below that criterion, and already-checked support also falls below ten families.
+%
+These results limit this recognition procedure's applicability.
+%
+An unmeasured control outcome does not estimate a causal null.
+
+% Necessary local flush: the qualification float belongs to Appendix E.
+\FloatBarrier
+\journalappendix{Exploratory Correctness Associations}{app:associations}
+
+An exploratory analysis relates whole-reasoning use of class-enriched expert sets to adjudicated correctness.
+%
+The retained rule nominates up to three experts per selected layer for each class on the full allocation corpus, without using correctness to rank them.
+%
+Their selected-slot use is measured over all reasoning tokens, including tokens outside the class used for nomination.
+%
+The class sets can overlap.
+%
+
+The original partial Pearson correlations adjust for benchmark, log completion length, retrospective difficulty, the labelled class's token share, and a cap indicator when present.
+%
+Difficulty uses other attempts on repeated competition questions or the other models on single-attempt benchmarks.
+%
+It is a retrospective adjustment variable.
+%
+
+The strongest corrected associations occur in Qwen3.5 and Qwen3.6.
+%
+Analyze-profile use has $r=0.0918$ and $r=0.0818$, while Verify-profile use has $r=-0.0972$ and $r=-0.1008$.
+%
+The Monitor-profile correlations are $-0.0770$ and $-0.0995$.
+%
+Nemotron's Monitor association is $-0.0853$.
+%
+The remaining tested mean-feature associations do not pass the original corrected threshold.
+%
+
+That threshold applies Benjamini--Hochberg correction within each model's 21 mean-feature comparisons~\citep{benjamini1995fdr}.
+%
+The original intervals use 1,000 question-ID bootstrap draws, refitting nuisance regressions while holding nominated sets and difficulty fixed.
+%
+They do not cluster duplicate families.
+%
+This is same-cohort association evidence.
+%
+It does not supply held-out expert usefulness or the effect of removing a class-associated expert.
+%
+
+\journalappendix{Paired Routing Interventions}{app:routing-levels}
+
+Table~\ref{tab:routing-levels} gives the accuracy and token levels behind the paired contrasts of Section~\ref{sec:routing-results}.
+%
+Native routing ends naturally in at least 98\% of continuations in every model, and no edited arm changes this share by more than one point.
+%
+The levels carry wider intervals than the paired contrasts because they retain the variation between families that pairing removes.
+%
+
+\input{journal/tables/routing_levels}
+
+\subsection{Pre-registered efficiency link}
+\label{app:efficiency-link}
+
+The efficiency link was frozen on native traces before any intervention outcome existed.
+%
+For each model and class, a regression of the log remaining reasoning tokens on the class indicator absorbs question and absolute-position fixed effects, without relative position or trace effects that would leak the outcome (Table~\ref{tab:efficiency-link}).
+%
+Its intervals use 2,000 family-bootstrap resamples with seed 20261017, shared across models, classes and outcomes.
+%
+The prediction states that the token effect of targeted activation relative to matched random activation correlates positively with this coefficient across model--class cells, and that the accuracy effect correlates positively with the corresponding correctness coefficient.
+%
+The test reports the Spearman correlation and the sign-agreement rate over cells whose native interval excludes zero.
+%
+LFM2.5 has no frozen coefficient because its labels became available after the pre-registration.
+%
+
+\input{journal/tables/efficiency_link}
+
+Verify and Monitor precede shorter remaining reasoning in every model, and Analyze precedes longer remaining reasoning in every model.
+%
+The correctness coefficients are small, and only 20\% of the 49 cells exclude zero.
+%
+Neither prediction holds: the token correlation is $-0.11$, with a 95\% interval from $-0.29$ to $0.13$, and the accuracy correlation is $0.07$, from $-0.16$ to $0.31$.
+%
+Fixed effects for benchmark, total tokens instead of reasoning tokens, and accuracy restricted to completed traces give the same conclusion.
+%
+
+\subsection{Exploratory strong-dose arm}
+\label{app:routing-strong}
+
+The strong-dose arm was specified after the primary contrasts of three models had been inspected.
+%
+It reuses each family's native prefix and seed, and forces the high-count nominated sets of all three depth regions throughout the analysis window rather than for a pulse.
+%
+Its matched control forces the corresponding high-count control sets of the same layers.
+%
+The arm adds 7,196 continuations in GPT-OSS, Nemotron, Qwen3-30B and Gemma (Table~\ref{tab:routing-strong}).
+%
+
+\input{journal/tables/routing_strong}
+
+Neither occupancy nor the first sentence moves toward the forced class beyond the matched control.
+%
+Both forced arms lower mean accuracy relative to native routing, with simultaneous intervals that include zero.
+%
+Sustained routing edits therefore leave the state unchanged even when they persist across the whole window.
+%
+
+\journalappendix{Historical Routing Interventions}{app:interventions}
+
+The sparse Qwen3.6 prefix interventions have four distinct populations.
+%
+The first pilot contains eight families and 128 assigned branches, with a 1,024-token horizon.
+%
+The second contains thirteen families and 156 branches at the same horizon.
+%
+An operator comparison uses thirteen families and 208 branches at 256 tokens.
+%
+The fresh comparison contains 123 families, 134 starts, and 3,480 branches at 1,024 tokens.
+%
+The numbers count different units of repeated generation.
+%
+
+Each intervention resumes the same original prompt and emitted reasoning prefix across its arms.
+%
+Native routing supplies the untreated control.
+%
+Target promotion changes only the declared routing operator and expert identities.
+%
+The routing-engagement endpoint divides observed target memberships by intended pulse positions times the number of targeted layer--expert identities.
+%
+This fraction ranges from zero to one.
+%
+Early reasoning closure reduces actual exposure without reducing that intended denominator.
+%
+Seeds average within prefixes, prefixes within families, and families receive equal weight.
+%
+The first two pilots have separate correction families.
+%
+The first comparison promotes two targets in eight verification families.
+%
+The second uses one pulse across thirteen families, with two verification targets (layer 28, experts 9 and 189) and one commitment target (layer 24, expert 159).
+%
+Each pilot adds a $+1$ bias for 256 tokens.
+%
+
+The fresh verification contrast covers 100 families and 100 starts within the larger 123-family collection.
+%
+Force-in dispatch includes experts 9 and 189 at layer 28 during a 256-token pulse.
+%
+The matched-random control forces a frozen two-expert set at that same layer and pulse position.
+%
+Native applies no routing policy.
+%
+Every arm uses generation seeds 0 and 1, a 1,024-token horizon, temperature 1, top-$p$ 0.95, top-$k$ 20, minimum probability zero, and prefix-aware restoration of the original presence penalty.
+%
+
+Semantic success requires the new continuation to substantively test the same previously unchecked candidate against an original constraint or by an independent calculation.
+%
+Checking language, unrelated calculation and a final answer alone do not satisfy the event.
+%
+Two independently seeded Qwen3.8 readers see the original problem, emitted prefix and new reasoning, but not the arm, experts, gold answer, other branches or future native text.
+%
+Only two valid, naturally stopped positive judgments count as observed success.
+%
+These are repeated audits by one model, not human gold labels.
+%
+Missing or invalid judgments and generation errors remain in the primary denominator with no observed success.
+%
+
+Seeds average within starts, starts within families, and families receive equal weight.
+%
+The original semantic family uses 50,000 whole-family bootstrap draws and Bonferroni percentile intervals over 28 frozen contrasts.
+%
+Force minus native gives \cid{+5.50}{10.00}{10.00} percentage points, and force minus matched random gives \cid{+11.00}{11.50}{12.50}.
+%
+Subscripts give $\pm$ simultaneous 95\% confidence intervals.
+%
+Across the complete collection, 2,920 branch assignments have valid reader pairs and 560 have unknown judgments.
+%
+Those valid pairs are not the primary comparison's denominator.
+%
+Allowing unknown outcomes to take either value gives identification bounds from $-16.5$ to $+24.5$ and from $-7.5$ to $+30.0$ points for the two verification contrasts.
+%
+These bounds reflect unknown judgments, while the bootstrap intervals quantify sampling uncertainty.
+%
+
+The completed dense sentence ledger has 187,524 assigned identities, of which 187,136 are valid and 388 unusable.
+%
+This measurement supports descriptive trajectory analysis.
+%
+It does not replace the missing substantive verification judgments or provide original-prompt utility outcomes.
+%
+
+\subsection{Global steering and scoring sensitivity}
+
+The separate historical Qwen3.5 and GPT-OSS policies use a dataset-stratified 70/30 source-problem split with seed 42.
+%
+Each complete stochastic evaluation pairs 1,395 attempts on 465 held-out problems with its compatible native baseline.
+%
+Generation uses the same prompt, prompt tokens and per-attempt seed within each pair, temperature 0.6, top-$p$ 0.95 and a 32,768-token output cap.
+%
+Hooks act during prefill and decoding with eager native expert dispatch, without prefix caching or speculative decoding.
+%
+Table~\ref{tab:historical-interventions} reports the paired accuracy contrasts.
+%
+
+\input{journal/tables/interventions}
+
+Identity selection ranks layer-qualified experts by activation-weighted accuracy lift.
+%
+For calibration attempt $r$, let $y_r\in\{0,1\}$ denote correctness and $f_{r\ell e}\in[0,1]$ the fraction of saved routing tokens selecting expert $e$ at layer $\ell$.
+%
+If source problem $p(r)$ has $m_{p(r)}$ usable attempts, $w_r=1/m_{p(r)}$ gives each problem total weight one.
+%
+The calibration accuracy and expert lift are
+\begin{equation}
+\pi=\frac{\sum_r w_r y_r}{\sum_r w_r},\qquad
+\Lambda_{\ell e}=\frac{\sum_r w_r f_{r\ell e}y_r}
+                           {\sum_r w_r f_{r\ell e}}-\pi.
+\end{equation}
+The lift is defined when $\sum_r w_r f_{r\ell e}>0$ and lies between $-\pi$ and $1-\pi$.
+%
+It is a dimensionless accuracy difference.
+%
+Positive values associate the expert's observed routing with higher correctness without establishing a causal effect.
+%
+Experts require at least four supporting problems.
+%
+Positive sets have positive lift, while the separate negative sets have negative lift.
+%
+At most eight identities are selected at each of Qwen's layers 27, 34, 35, 36, 38 and 39.
+%
+GPT-OSS selects four at layers 15, 19, 21 and 23.
+%
+Fixed bias adds the signed strength times each target's lift normalized by the largest retained magnitude.
+%
+A negative strength suppresses the same positive-lift set.
+%
+Strong promotion instead sets target log-softmax scores to the original maximum plus 0.01, and strong suppression uses the minimum minus 0.01.
+%
+These conditions retain our selector and do not reproduce SteerMoE's expert detection.
+%
+
+The margin policy calibrates the trace-mean selection-boundary gap $p_{(k)}-p_{(k+1)}$ using five problem-weighted quantile bins.
+%
+Among bins with at least four supporting problems, it selects the highest-accuracy positive-lift bin.
+%
+At inference, mixing with the uniform distribution reduces the token-level gap, while mixing with a distribution uniform over the selected top-$k$ increases it.
+%
+The operation targets a calibrated interval, although finite precision can also change selected membership.
+%
+Qwen calibration uses 4-bit replay and GPTQ generation, an additional unisolated deployment difference.
+%
+
+All GPT-OSS comparisons use concurrency 25.
+%
+Qwen fixed positive $+1$ and its first margin comparison use 16, while fixed $+2$, fixed $-1$ and the second margin comparison use 25.
+%
+Baselines are matched within each condition, so cross-dose differences are not a controlled ranking of strengths.
+%
+
+Table~\ref{tab:historical-interventions} reports all thirteen complete stochastic comparisons after a common offline answer-equivalence pass.
+%
+The pass uses the last nonempty balanced boxed candidate with the retained answer-extraction fallbacks.
+%
+It compares mathematical objects under the same rule in both conditions.
+%
+The original generated solutions and calibration labels are retained.
+%
+
+Each interval uses 5,000 paired, dataset-stratified source-problem resamples.
+%
+Attempt weighting is the original primary statistic.
+%
+Equal-problem weighting first averages each problem's repeated answers and then the problems.
+%
+These exploratory intervals have no multiple-comparison adjustment.
+%
+
+No positive revised interval excludes zero.
+%
+GPT-OSS's strong promotion policies reduce attempt-weighted accuracy by 61.65 and 59.57 points, and their intervals remain below zero under equal-problem weighting.
+%
+The interrupted Qwen promotion subset is separate: only 35.4\% of the 1,395 assigned attempts completed, all with a capped guided output.
+%
+It does not estimate the full evaluation effect.
+%

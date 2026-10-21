@@ -1,0 +1,340 @@
+% Native SYNCO class bars in PORTS/MoM compact model panels.
+% Seven actual state means and saved simultaneous intervals in every panel.
+% Shared 0--60% scale; short numeric offsets avoid label or bar collisions.
+\begin{tikzpicture}
+\begin{axis}[journalaxis,scale only axis,width=80pt,height=64pt,anchor=outer south west,at={(0pt,108pt)},
+ybar=0pt,bar width=5.6pt,xmin=0,xmax=8,enlarge x limits=false,ymin=0,ymax=60,ytick={0,25,50},
+xtick={1,2,3,4,5,6,7},xticklabels={Re,An,Ex,Pl,Im,Ve,Mo},
+xticklabel style={rotate=0,anchor=north,font=\fontsize{6.5}{7.5}\selectfont},
+every tick label/.append style={font=\fontsize{7}{8}\selectfont},title={\textbf{(a)}\,\modelname{openai}{GPT-OSS}},title style={font=\fontsize{8}{9}\selectfont}]
+\addplot[fill=black!45,draw=black,line width=.35pt,bar shift=0pt,
+restrict expr to domain={\thisrow{x}}{1:1},journalerror]
+table[x expr=1,y=read,y error minus expr={max(\thisrow{rminus},\thisrow{rplus})},y error plus expr={max(\thisrow{rminus},\thisrow{rplus})}]{figures/journal/data/occupancy.dat};
+\addplot[fill=syncoanalyze,draw=black,line width=.35pt,bar shift=0pt,
+restrict expr to domain={\thisrow{x}}{1:1},journalerror]
+table[x expr=2,y=analyze,y error minus expr={max(\thisrow{aminus},\thisrow{aplus})},y error plus expr={max(\thisrow{aminus},\thisrow{aplus})}]{figures/journal/data/occupancy.dat};
+\addplot[fill=momexpert,draw=black,line width=.35pt,bar shift=0pt,
+restrict expr to domain={\thisrow{x}}{1:1},journalerror]
+table[x expr=3,y=explore,y error minus expr={max(\thisrow{eminus},\thisrow{eplus})},y error plus expr={max(\thisrow{eminus},\thisrow{eplus})}]{figures/journal/data/occupancy.dat};
+\addplot[fill=gomorangeone,draw=black,line width=.35pt,bar shift=0pt,
+restrict expr to domain={\thisrow{x}}{1:1},journalerror]
+table[x expr=4,y=plan,y error minus expr={max(\thisrow{pminus},\thisrow{pplus})},y error plus expr={max(\thisrow{pminus},\thisrow{pplus})}]{figures/journal/data/occupancy.dat};
+\addplot[fill=syncoimplement,draw=black,line width=.35pt,bar shift=0pt,
+restrict expr to domain={\thisrow{x}}{1:1},journalerror]
+table[x expr=5,y=implement,y error minus expr={max(\thisrow{iminus},\thisrow{iplus})},y error plus expr={max(\thisrow{iminus},\thisrow{iplus})}]{figures/journal/data/occupancy.dat};
+\addplot[fill=syncoverify,draw=black,line width=.35pt,bar shift=0pt,
+restrict expr to domain={\thisrow{x}}{1:1},journalerror]
+table[x expr=6,y=verify,y error minus expr={max(\thisrow{vminus},\thisrow{vplus})},y error plus expr={max(\thisrow{vminus},\thisrow{vplus})}]{figures/journal/data/occupancy.dat};
+\addplot[fill=syncomonitor,draw=black,line width=.35pt,bar shift=0pt,
+restrict expr to domain={\thisrow{x}}{1:1},journalerror]
+table[x expr=7,y=monitor,y error minus expr={max(\thisrow{mminus},\thisrow{mplus})},y error plus expr={max(\thisrow{mminus},\thisrow{mplus})}]{figures/journal/data/occupancy.dat};
+\draw[black!35,line width=.3pt] (axis cs:7,5.113297636388646)--(axis cs:7,6.227583350674361);
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:7,6.82758335067436) {4.6};
+\draw[black!35,line width=.3pt] (axis cs:4,5.42382385969229)--(axis cs:4,6.538109573978004);
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:4,7.138109573978004) {4.7};
+\draw[black!35,line width=.3pt] (axis cs:1,6.967918711091851)--(axis cs:1,8.082204425377567);
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:1,8.682204425377567) {6.0};
+\draw[black!35,line width=.3pt] (axis cs:3,10.775262670857115)--(axis cs:3,13.82382385969229);
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:3,14.42382385969229) {9.4};
+\draw[black!35,line width=.3pt] (axis cs:6,13.88340823722926)--(axis cs:6,14.997693951514975);
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:6,15.597693951514975) {12.5};
+\draw[black!35,line width=.3pt] (axis cs:2,27.914423406627346)--(axis cs:2,29.028709120913057);
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:2,29.628709120913058) {25.4};
+\draw[black!35,line width=.3pt] (axis cs:5,40.76346898417008)--(axis cs:5,41.877754698455796);
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:5,42.4777546984558) {37.5};
+\end{axis}
+\begin{axis}[journalaxis,scale only axis,width=80pt,height=64pt,anchor=outer south west,at={(100pt,108pt)},
+ybar=0pt,bar width=5.6pt,xmin=0,xmax=8,enlarge x limits=false,ymin=0,ymax=60,ytick={0,25,50},
+xtick={1,2,3,4,5,6,7},xticklabels={Re,An,Ex,Pl,Im,Ve,Mo},
+xticklabel style={rotate=0,anchor=north,font=\fontsize{6.5}{7.5}\selectfont},
+every tick label/.append style={font=\fontsize{7}{8}\selectfont},title={\textbf{(b)}\,\modelname{nvidia}{Nemotron}},title style={font=\fontsize{8}{9}\selectfont}]
+\addplot[fill=black!45,draw=black,line width=.35pt,bar shift=0pt,
+restrict expr to domain={\thisrow{x}}{2:2},journalerror]
+table[x expr=1,y=read,y error minus expr={max(\thisrow{rminus},\thisrow{rplus})},y error plus expr={max(\thisrow{rminus},\thisrow{rplus})}]{figures/journal/data/occupancy.dat};
+\addplot[fill=syncoanalyze,draw=black,line width=.35pt,bar shift=0pt,
+restrict expr to domain={\thisrow{x}}{2:2},journalerror]
+table[x expr=2,y=analyze,y error minus expr={max(\thisrow{aminus},\thisrow{aplus})},y error plus expr={max(\thisrow{aminus},\thisrow{aplus})}]{figures/journal/data/occupancy.dat};
+\addplot[fill=momexpert,draw=black,line width=.35pt,bar shift=0pt,
+restrict expr to domain={\thisrow{x}}{2:2},journalerror]
+table[x expr=3,y=explore,y error minus expr={max(\thisrow{eminus},\thisrow{eplus})},y error plus expr={max(\thisrow{eminus},\thisrow{eplus})}]{figures/journal/data/occupancy.dat};
+\addplot[fill=gomorangeone,draw=black,line width=.35pt,bar shift=0pt,
+restrict expr to domain={\thisrow{x}}{2:2},journalerror]
+table[x expr=4,y=plan,y error minus expr={max(\thisrow{pminus},\thisrow{pplus})},y error plus expr={max(\thisrow{pminus},\thisrow{pplus})}]{figures/journal/data/occupancy.dat};
+\addplot[fill=syncoimplement,draw=black,line width=.35pt,bar shift=0pt,
+restrict expr to domain={\thisrow{x}}{2:2},journalerror]
+table[x expr=5,y=implement,y error minus expr={max(\thisrow{iminus},\thisrow{iplus})},y error plus expr={max(\thisrow{iminus},\thisrow{iplus})}]{figures/journal/data/occupancy.dat};
+\addplot[fill=syncoverify,draw=black,line width=.35pt,bar shift=0pt,
+restrict expr to domain={\thisrow{x}}{2:2},journalerror]
+table[x expr=6,y=verify,y error minus expr={max(\thisrow{vminus},\thisrow{vplus})},y error plus expr={max(\thisrow{vminus},\thisrow{vplus})}]{figures/journal/data/occupancy.dat};
+\addplot[fill=syncomonitor,draw=black,line width=.35pt,bar shift=0pt,
+restrict expr to domain={\thisrow{x}}{2:2},journalerror]
+table[x expr=7,y=monitor,y error minus expr={max(\thisrow{mminus},\thisrow{mplus})},y error plus expr={max(\thisrow{mminus},\thisrow{mplus})}]{figures/journal/data/occupancy.dat};
+\draw[black!35,line width=.3pt] (axis cs:4,4.682216029853045)--(axis cs:4,5.79650174413876);
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:4,6.396501744138759) {4.0};
+\draw[black!35,line width=.3pt] (axis cs:7,5.0563950140248535)--(axis cs:7,6.170680728310568);
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:7,6.770680728310568) {4.4};
+\draw[black!35,line width=.3pt] (axis cs:3,11.370271810277902)--(axis cs:3,13.082216029853045);
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:3,13.682216029853045) {9.7};
+\draw[black!35,line width=.3pt] (axis cs:6,12.920563880548956)--(axis cs:6,14.034849594834672);
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:6,14.634849594834671) {11.5};
+\draw[black!35,line width=.3pt] (axis cs:1,13.464470458877058)--(axis cs:1,14.578756173162772);
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:1,15.178756173162771) {11.8};
+\draw[black!35,line width=.3pt] (axis cs:2,28.40404871023974)--(axis cs:2,29.518334424525456);
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:2,30.118334424525457) {25.8};
+\draw[black!35,line width=.3pt] (axis cs:5,35.777524499908154)--(axis cs:5,36.89181021419387);
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:5,37.49181021419387) {32.9};
+\end{axis}
+\begin{axis}[journalaxis,scale only axis,width=80pt,height=64pt,anchor=outer south west,at={(200pt,108pt)},
+ybar=0pt,bar width=5.6pt,xmin=0,xmax=8,enlarge x limits=false,ymin=0,ymax=60,ytick={0,25,50},
+xtick={1,2,3,4,5,6,7},xticklabels={Re,An,Ex,Pl,Im,Ve,Mo},
+xticklabel style={rotate=0,anchor=north,font=\fontsize{6.5}{7.5}\selectfont},
+every tick label/.append style={font=\fontsize{7}{8}\selectfont},title={\textbf{(c)}\,\modelname{qwen}{Qwen3.5}},title style={font=\fontsize{8}{9}\selectfont}]
+\addplot[fill=black!45,draw=black,line width=.35pt,bar shift=0pt,
+restrict expr to domain={\thisrow{x}}{3:3},journalerror]
+table[x expr=1,y=read,y error minus expr={max(\thisrow{rminus},\thisrow{rplus})},y error plus expr={max(\thisrow{rminus},\thisrow{rplus})}]{figures/journal/data/occupancy.dat};
+\addplot[fill=syncoanalyze,draw=black,line width=.35pt,bar shift=0pt,
+restrict expr to domain={\thisrow{x}}{3:3},journalerror]
+table[x expr=2,y=analyze,y error minus expr={max(\thisrow{aminus},\thisrow{aplus})},y error plus expr={max(\thisrow{aminus},\thisrow{aplus})}]{figures/journal/data/occupancy.dat};
+\addplot[fill=momexpert,draw=black,line width=.35pt,bar shift=0pt,
+restrict expr to domain={\thisrow{x}}{3:3},journalerror]
+table[x expr=3,y=explore,y error minus expr={max(\thisrow{eminus},\thisrow{eplus})},y error plus expr={max(\thisrow{eminus},\thisrow{eplus})}]{figures/journal/data/occupancy.dat};
+\addplot[fill=gomorangeone,draw=black,line width=.35pt,bar shift=0pt,
+restrict expr to domain={\thisrow{x}}{3:3},journalerror]
+table[x expr=4,y=plan,y error minus expr={max(\thisrow{pminus},\thisrow{pplus})},y error plus expr={max(\thisrow{pminus},\thisrow{pplus})}]{figures/journal/data/occupancy.dat};
+\addplot[fill=syncoimplement,draw=black,line width=.35pt,bar shift=0pt,
+restrict expr to domain={\thisrow{x}}{3:3},journalerror]
+table[x expr=5,y=implement,y error minus expr={max(\thisrow{iminus},\thisrow{iplus})},y error plus expr={max(\thisrow{iminus},\thisrow{iplus})}]{figures/journal/data/occupancy.dat};
+\addplot[fill=syncoverify,draw=black,line width=.35pt,bar shift=0pt,
+restrict expr to domain={\thisrow{x}}{3:3},journalerror]
+table[x expr=6,y=verify,y error minus expr={max(\thisrow{vminus},\thisrow{vplus})},y error plus expr={max(\thisrow{vminus},\thisrow{vplus})}]{figures/journal/data/occupancy.dat};
+\addplot[fill=syncomonitor,draw=black,line width=.35pt,bar shift=0pt,
+restrict expr to domain={\thisrow{x}}{3:3},journalerror]
+table[x expr=7,y=monitor,y error minus expr={max(\thisrow{mminus},\thisrow{mplus})},y error plus expr={max(\thisrow{mminus},\thisrow{mplus})}]{figures/journal/data/occupancy.dat};
+\draw[black!35,line width=.3pt] (axis cs:4,6.397000092297784)--(axis cs:4,7.511285806583498);
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:4,8.111285806583497) {5.6};
+\draw[black!35,line width=.3pt] (axis cs:1,6.465832483538852)--(axis cs:1,7.580118197824568);
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:1,8.180118197824568) {5.7};
+\draw[black!35,line width=.3pt] (axis cs:7,7.549309935012658)--(axis cs:7,8.663595649298372);
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:7,9.263595649298372) {6.7};
+\draw[black!35,line width=.3pt] (axis cs:3,8.968677548032943)--(axis cs:3,14.797000092297782);
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:3,15.397000092297782) {7.9};
+\draw[black!35,line width=.3pt] (axis cs:6,11.00199828995296)--(axis cs:6,15.949309935012659);
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:6,16.54930993501266) {10.1};
+\draw[black!35,line width=.3pt] (axis cs:2,34.33093339265222)--(axis cs:2,35.445219106937934);
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:2,36.045219106937935) {31.8};
+\draw[black!35,line width=.3pt] (axis cs:5,34.8132675640006)--(axis cs:5,35.92755327828631);
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:5,36.52755327828631) {32.2};
+\end{axis}
+\begin{axis}[journalaxis,scale only axis,width=80pt,height=64pt,anchor=outer south west,at={(300pt,108pt)},name=occupancytopright,
+ybar=0pt,bar width=5.6pt,xmin=0,xmax=8,enlarge x limits=false,ymin=0,ymax=60,ytick={0,25,50},
+xtick={1,2,3,4,5,6,7},xticklabels={Re,An,Ex,Pl,Im,Ve,Mo},
+xticklabel style={rotate=0,anchor=north,font=\fontsize{6.5}{7.5}\selectfont},
+every tick label/.append style={font=\fontsize{7}{8}\selectfont},title={\textbf{(d)}\,\modelname{qwen}{Qwen3.6}},title style={font=\fontsize{8}{9}\selectfont}]
+\addplot[fill=black!45,draw=black,line width=.35pt,bar shift=0pt,
+restrict expr to domain={\thisrow{x}}{4:4},journalerror]
+table[x expr=1,y=read,y error minus expr={max(\thisrow{rminus},\thisrow{rplus})},y error plus expr={max(\thisrow{rminus},\thisrow{rplus})}]{figures/journal/data/occupancy.dat};
+\addplot[fill=syncoanalyze,draw=black,line width=.35pt,bar shift=0pt,
+restrict expr to domain={\thisrow{x}}{4:4},journalerror]
+table[x expr=2,y=analyze,y error minus expr={max(\thisrow{aminus},\thisrow{aplus})},y error plus expr={max(\thisrow{aminus},\thisrow{aplus})}]{figures/journal/data/occupancy.dat};
+\addplot[fill=momexpert,draw=black,line width=.35pt,bar shift=0pt,
+restrict expr to domain={\thisrow{x}}{4:4},journalerror]
+table[x expr=3,y=explore,y error minus expr={max(\thisrow{eminus},\thisrow{eplus})},y error plus expr={max(\thisrow{eminus},\thisrow{eplus})}]{figures/journal/data/occupancy.dat};
+\addplot[fill=gomorangeone,draw=black,line width=.35pt,bar shift=0pt,
+restrict expr to domain={\thisrow{x}}{4:4},journalerror]
+table[x expr=4,y=plan,y error minus expr={max(\thisrow{pminus},\thisrow{pplus})},y error plus expr={max(\thisrow{pminus},\thisrow{pplus})}]{figures/journal/data/occupancy.dat};
+\addplot[fill=syncoimplement,draw=black,line width=.35pt,bar shift=0pt,
+restrict expr to domain={\thisrow{x}}{4:4},journalerror]
+table[x expr=5,y=implement,y error minus expr={max(\thisrow{iminus},\thisrow{iplus})},y error plus expr={max(\thisrow{iminus},\thisrow{iplus})}]{figures/journal/data/occupancy.dat};
+\addplot[fill=syncoverify,draw=black,line width=.35pt,bar shift=0pt,
+restrict expr to domain={\thisrow{x}}{4:4},journalerror]
+table[x expr=6,y=verify,y error minus expr={max(\thisrow{vminus},\thisrow{vplus})},y error plus expr={max(\thisrow{vminus},\thisrow{vplus})}]{figures/journal/data/occupancy.dat};
+\addplot[fill=syncomonitor,draw=black,line width=.35pt,bar shift=0pt,
+restrict expr to domain={\thisrow{x}}{4:4},journalerror]
+table[x expr=7,y=monitor,y error minus expr={max(\thisrow{mminus},\thisrow{mplus})},y error plus expr={max(\thisrow{mminus},\thisrow{mplus})}]{figures/journal/data/occupancy.dat};
+\draw[black!35,line width=.3pt] (axis cs:1,6.324178268400132)--(axis cs:1,7.438463982685846);
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:1,8.038463982685846) {5.4};
+\draw[black!35,line width=.3pt] (axis cs:4,6.71331083218093)--(axis cs:4,7.827596546466644);
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:4,8.427596546466644) {5.7};
+\draw[black!35,line width=.3pt] (axis cs:3,8.470770653017086)--(axis cs:3,15.11331083218093);
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:3,15.71331083218093) {7.1};
+\draw[black!35,line width=.3pt] (axis cs:7,9.739442804058468)--(axis cs:7,10.853728518344184);
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:7,11.453728518344183) {8.2};
+\draw[black!35,line width=.3pt] (axis cs:6,11.822375405646088)--(axis cs:6,18.13944280405847);
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:6,18.73944280405847) {10.4};
+\draw[black!35,line width=.3pt] (axis cs:2,32.001141309924755)--(axis cs:2,33.11542702421047);
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:2,33.71542702421047) {28.7};
+\draw[black!35,line width=.3pt] (axis cs:5,37.87368807009077)--(axis cs:5,38.987973784376486);
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:5,39.58797378437649) {34.4};
+\end{axis}
+\begin{axis}[journalaxis,scale only axis,width=80pt,height=64pt,anchor=outer south west,at={(0pt,0pt)},
+ybar=0pt,bar width=5.6pt,xmin=0,xmax=8,enlarge x limits=false,ymin=0,ymax=60,ytick={0,25,50},
+xtick={1,2,3,4,5,6,7},xticklabels={Re,An,Ex,Pl,Im,Ve,Mo},
+xticklabel style={rotate=0,anchor=north,font=\fontsize{6.5}{7.5}\selectfont},
+every tick label/.append style={font=\fontsize{7}{8}\selectfont},title={\textbf{(e)}\,\modelname{gemma}{Gemma}},title style={font=\fontsize{8}{9}\selectfont}]
+\addplot[fill=black!45,draw=black,line width=.35pt,bar shift=0pt,
+restrict expr to domain={\thisrow{x}}{5:5},journalerror]
+table[x expr=1,y=read,y error minus expr={max(\thisrow{rminus},\thisrow{rplus})},y error plus expr={max(\thisrow{rminus},\thisrow{rplus})}]{figures/journal/data/occupancy.dat};
+\addplot[fill=syncoanalyze,draw=black,line width=.35pt,bar shift=0pt,
+restrict expr to domain={\thisrow{x}}{5:5},journalerror]
+table[x expr=2,y=analyze,y error minus expr={max(\thisrow{aminus},\thisrow{aplus})},y error plus expr={max(\thisrow{aminus},\thisrow{aplus})}]{figures/journal/data/occupancy.dat};
+\addplot[fill=momexpert,draw=black,line width=.35pt,bar shift=0pt,
+restrict expr to domain={\thisrow{x}}{5:5},journalerror]
+table[x expr=3,y=explore,y error minus expr={max(\thisrow{eminus},\thisrow{eplus})},y error plus expr={max(\thisrow{eminus},\thisrow{eplus})}]{figures/journal/data/occupancy.dat};
+\addplot[fill=gomorangeone,draw=black,line width=.35pt,bar shift=0pt,
+restrict expr to domain={\thisrow{x}}{5:5},journalerror]
+table[x expr=4,y=plan,y error minus expr={max(\thisrow{pminus},\thisrow{pplus})},y error plus expr={max(\thisrow{pminus},\thisrow{pplus})}]{figures/journal/data/occupancy.dat};
+\addplot[fill=syncoimplement,draw=black,line width=.35pt,bar shift=0pt,
+restrict expr to domain={\thisrow{x}}{5:5},journalerror]
+table[x expr=5,y=implement,y error minus expr={max(\thisrow{iminus},\thisrow{iplus})},y error plus expr={max(\thisrow{iminus},\thisrow{iplus})}]{figures/journal/data/occupancy.dat};
+\addplot[fill=syncoverify,draw=black,line width=.35pt,bar shift=0pt,
+restrict expr to domain={\thisrow{x}}{5:5},journalerror]
+table[x expr=6,y=verify,y error minus expr={max(\thisrow{vminus},\thisrow{vplus})},y error plus expr={max(\thisrow{vminus},\thisrow{vplus})}]{figures/journal/data/occupancy.dat};
+\addplot[fill=syncomonitor,draw=black,line width=.35pt,bar shift=0pt,
+restrict expr to domain={\thisrow{x}}{5:5},journalerror]
+table[x expr=7,y=monitor,y error minus expr={max(\thisrow{mminus},\thisrow{mplus})},y error plus expr={max(\thisrow{mminus},\thisrow{mplus})}]{figures/journal/data/occupancy.dat};
+\draw[black!35,line width=.3pt] (axis cs:4,3.881103054713506)--(axis cs:4,4.995388768999221);
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:4,5.5953887689992206) {3.3};
+\draw[black!35,line width=.3pt] (axis cs:7,4.190436211882292)--(axis cs:7,5.304721926168007);
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:7,5.904721926168007) {2.8};
+\draw[black!35,line width=.3pt] (axis cs:3,5.1049232859494555)--(axis cs:3,12.281103054713506);
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:3,12.881103054713506) {3.9};
+\draw[black!35,line width=.3pt] (axis cs:1,9.217538489147154)--(axis cs:1,10.33182420343287);
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:1,10.93182420343287) {8.0};
+\draw[black!35,line width=.3pt] (axis cs:6,11.826471456355735)--(axis cs:6,12.94075717064145);
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:6,13.54075717064145) {10.7};
+\draw[black!35,line width=.3pt] (axis cs:2,28.617432355318446)--(axis cs:2,29.731718069604163);
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:2,30.331718069604165) {25.9};
+\draw[black!35,line width=.3pt] (axis cs:5,48.209653318447174)--(axis cs:5,49.32393903273289);
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:5,49.92393903273289) {45.3};
+\end{axis}
+\begin{axis}[journalaxis,scale only axis,width=80pt,height=64pt,anchor=outer south west,at={(100pt,0pt)},
+ybar=0pt,bar width=5.6pt,xmin=0,xmax=8,enlarge x limits=false,ymin=0,ymax=60,ytick={0,25,50},
+xtick={1,2,3,4,5,6,7},xticklabels={Re,An,Ex,Pl,Im,Ve,Mo},
+xticklabel style={rotate=0,anchor=north,font=\fontsize{6.5}{7.5}\selectfont},
+every tick label/.append style={font=\fontsize{7}{8}\selectfont},title={\textbf{(f)}\,\modelname{zhipu}{GLM}},title style={font=\fontsize{8}{9}\selectfont}]
+\addplot[fill=black!45,draw=black,line width=.35pt,bar shift=0pt,
+restrict expr to domain={\thisrow{x}}{6:6},journalerror]
+table[x expr=1,y=read,y error minus expr={max(\thisrow{rminus},\thisrow{rplus})},y error plus expr={max(\thisrow{rminus},\thisrow{rplus})}]{figures/journal/data/occupancy.dat};
+\addplot[fill=syncoanalyze,draw=black,line width=.35pt,bar shift=0pt,
+restrict expr to domain={\thisrow{x}}{6:6},journalerror]
+table[x expr=2,y=analyze,y error minus expr={max(\thisrow{aminus},\thisrow{aplus})},y error plus expr={max(\thisrow{aminus},\thisrow{aplus})}]{figures/journal/data/occupancy.dat};
+\addplot[fill=momexpert,draw=black,line width=.35pt,bar shift=0pt,
+restrict expr to domain={\thisrow{x}}{6:6},journalerror]
+table[x expr=3,y=explore,y error minus expr={max(\thisrow{eminus},\thisrow{eplus})},y error plus expr={max(\thisrow{eminus},\thisrow{eplus})}]{figures/journal/data/occupancy.dat};
+\addplot[fill=gomorangeone,draw=black,line width=.35pt,bar shift=0pt,
+restrict expr to domain={\thisrow{x}}{6:6},journalerror]
+table[x expr=4,y=plan,y error minus expr={max(\thisrow{pminus},\thisrow{pplus})},y error plus expr={max(\thisrow{pminus},\thisrow{pplus})}]{figures/journal/data/occupancy.dat};
+\addplot[fill=syncoimplement,draw=black,line width=.35pt,bar shift=0pt,
+restrict expr to domain={\thisrow{x}}{6:6},journalerror]
+table[x expr=5,y=implement,y error minus expr={max(\thisrow{iminus},\thisrow{iplus})},y error plus expr={max(\thisrow{iminus},\thisrow{iplus})}]{figures/journal/data/occupancy.dat};
+\addplot[fill=syncoverify,draw=black,line width=.35pt,bar shift=0pt,
+restrict expr to domain={\thisrow{x}}{6:6},journalerror]
+table[x expr=6,y=verify,y error minus expr={max(\thisrow{vminus},\thisrow{vplus})},y error plus expr={max(\thisrow{vminus},\thisrow{vplus})}]{figures/journal/data/occupancy.dat};
+\addplot[fill=syncomonitor,draw=black,line width=.35pt,bar shift=0pt,
+restrict expr to domain={\thisrow{x}}{6:6},journalerror]
+table[x expr=7,y=monitor,y error minus expr={max(\thisrow{mminus},\thisrow{mplus})},y error plus expr={max(\thisrow{mminus},\thisrow{mplus})}]{figures/journal/data/occupancy.dat};
+\draw[black!35,line width=.3pt] (axis cs:4,4.4406809207094184)--(axis cs:4,5.554966634995133);
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:4,6.154966634995133) {3.8};
+\draw[black!35,line width=.3pt] (axis cs:7,6.484551284869378)--(axis cs:7,7.598836999155093);
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:7,8.198836999155093) {5.1};
+\draw[black!35,line width=.3pt] (axis cs:1,7.590065007280206)--(axis cs:1,8.70435072156592);
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:1,9.30435072156592) {6.3};
+\draw[black!35,line width=.3pt] (axis cs:3,12.099853947201796)--(axis cs:3,13.214139661487511);
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:3,13.814139661487511) {10.7};
+\draw[black!35,line width=.3pt] (axis cs:6,17.51026998532139)--(axis cs:6,18.624555699607104);
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:6,19.224555699607105) {15.7};
+\draw[black!35,line width=.3pt] (axis cs:2,29.789738522008527)--(axis cs:2,30.90402423629424);
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:2,31.504024236294242) {27.2};
+\draw[black!35,line width=.3pt] (axis cs:5,33.953508739763855)--(axis cs:5,35.06779445404957);
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:5,35.66779445404957) {31.2};
+\end{axis}
+\begin{axis}[journalaxis,scale only axis,width=80pt,height=64pt,anchor=outer south west,at={(200pt,0pt)},
+ybar=0pt,bar width=5.6pt,xmin=0,xmax=8,enlarge x limits=false,ymin=0,ymax=60,ytick={0,25,50},
+xtick={1,2,3,4,5,6,7},xticklabels={Re,An,Ex,Pl,Im,Ve,Mo},
+xticklabel style={rotate=0,anchor=north,font=\fontsize{6.5}{7.5}\selectfont},
+every tick label/.append style={font=\fontsize{7}{8}\selectfont},title={\textbf{(g)}\,\modelname{qwen}{Qwen3}},title style={font=\fontsize{8}{9}\selectfont}]
+\addplot[fill=black!45,draw=black,line width=.35pt,bar shift=0pt,
+restrict expr to domain={\thisrow{x}}{7:7},journalerror]
+table[x expr=1,y=read,y error minus expr={max(\thisrow{rminus},\thisrow{rplus})},y error plus expr={max(\thisrow{rminus},\thisrow{rplus})}]{figures/journal/data/occupancy.dat};
+\addplot[fill=syncoanalyze,draw=black,line width=.35pt,bar shift=0pt,
+restrict expr to domain={\thisrow{x}}{7:7},journalerror]
+table[x expr=2,y=analyze,y error minus expr={max(\thisrow{aminus},\thisrow{aplus})},y error plus expr={max(\thisrow{aminus},\thisrow{aplus})}]{figures/journal/data/occupancy.dat};
+\addplot[fill=momexpert,draw=black,line width=.35pt,bar shift=0pt,
+restrict expr to domain={\thisrow{x}}{7:7},journalerror]
+table[x expr=3,y=explore,y error minus expr={max(\thisrow{eminus},\thisrow{eplus})},y error plus expr={max(\thisrow{eminus},\thisrow{eplus})}]{figures/journal/data/occupancy.dat};
+\addplot[fill=gomorangeone,draw=black,line width=.35pt,bar shift=0pt,
+restrict expr to domain={\thisrow{x}}{7:7},journalerror]
+table[x expr=4,y=plan,y error minus expr={max(\thisrow{pminus},\thisrow{pplus})},y error plus expr={max(\thisrow{pminus},\thisrow{pplus})}]{figures/journal/data/occupancy.dat};
+\addplot[fill=syncoimplement,draw=black,line width=.35pt,bar shift=0pt,
+restrict expr to domain={\thisrow{x}}{7:7},journalerror]
+table[x expr=5,y=implement,y error minus expr={max(\thisrow{iminus},\thisrow{iplus})},y error plus expr={max(\thisrow{iminus},\thisrow{iplus})}]{figures/journal/data/occupancy.dat};
+\addplot[fill=syncoverify,draw=black,line width=.35pt,bar shift=0pt,
+restrict expr to domain={\thisrow{x}}{7:7},journalerror]
+table[x expr=6,y=verify,y error minus expr={max(\thisrow{vminus},\thisrow{vplus})},y error plus expr={max(\thisrow{vminus},\thisrow{vplus})}]{figures/journal/data/occupancy.dat};
+\addplot[fill=syncomonitor,draw=black,line width=.35pt,bar shift=0pt,
+restrict expr to domain={\thisrow{x}}{7:7},journalerror]
+table[x expr=7,y=monitor,y error minus expr={max(\thisrow{mminus},\thisrow{mplus})},y error plus expr={max(\thisrow{mminus},\thisrow{mplus})}]{figures/journal/data/occupancy.dat};
+\draw[black!35,line width=.3pt] (axis cs:1,5.333479097186795)--(axis cs:1,6.44776481147251);
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:1,7.0477648114725095) {4.5};
+\draw[black!35,line width=.3pt] (axis cs:7,5.615223022587066)--(axis cs:7,6.7295087368727815);
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:7,7.329508736872781) {5.1};
+\draw[black!35,line width=.3pt] (axis cs:4,6.971899622190659)--(axis cs:4,8.086185336476372);
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:4,8.686185336476372) {6.3};
+\draw[black!35,line width=.3pt] (axis cs:3,12.169258433324023)--(axis cs:3,15.371899622190657);
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:3,15.971899622190657) {10.8};
+\draw[black!35,line width=.3pt] (axis cs:6,14.0066305787412)--(axis cs:6,15.120916293026912);
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:6,15.720916293026912) {12.9};
+\draw[black!35,line width=.3pt] (axis cs:2,26.923676022457773)--(axis cs:2,28.03796173674349);
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:2,28.63796173674349) {24.4};
+\draw[black!35,line width=.3pt] (axis cs:5,38.9197168865848)--(axis cs:5,40.034002600870515);
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:5,40.63400260087052) {36.1};
+\end{axis}
+\begin{axis}[journalaxis,scale only axis,width=80pt,height=64pt,anchor=south west,at={(occupancytopright.south west)},yshift=-108pt,
+ybar=0pt,bar width=5.6pt,xmin=0,xmax=8,enlarge x limits=false,ymin=0,ymax=60,ytick={0,25,50},
+xtick={1,2,3,4,5,6,7},xticklabels={Re,An,Ex,Pl,Im,Ve,Mo},
+xticklabel style={rotate=0,anchor=north,font=\fontsize{6.5}{7.5}\selectfont},
+every tick label/.append style={font=\fontsize{7}{8}\selectfont},title={\textbf{(h)}\,\modelname{liquid}{LFM2.5}},title style={font=\fontsize{8}{9}\selectfont}]
+\addplot[fill=black!45,draw=black,line width=.35pt,bar shift=0pt,
+restrict expr to domain={\thisrow{x}}{8:8},journalerror]
+table[x expr=1,y=read,y error minus expr={max(\thisrow{rminus},\thisrow{rplus})},y error plus expr={max(\thisrow{rminus},\thisrow{rplus})}]{figures/journal/data/occupancy.dat};
+\addplot[fill=syncoanalyze,draw=black,line width=.35pt,bar shift=0pt,
+restrict expr to domain={\thisrow{x}}{8:8},journalerror]
+table[x expr=2,y=analyze,y error minus expr={max(\thisrow{aminus},\thisrow{aplus})},y error plus expr={max(\thisrow{aminus},\thisrow{aplus})}]{figures/journal/data/occupancy.dat};
+\addplot[fill=momexpert,draw=black,line width=.35pt,bar shift=0pt,
+restrict expr to domain={\thisrow{x}}{8:8},journalerror]
+table[x expr=3,y=explore,y error minus expr={max(\thisrow{eminus},\thisrow{eplus})},y error plus expr={max(\thisrow{eminus},\thisrow{eplus})}]{figures/journal/data/occupancy.dat};
+\addplot[fill=gomorangeone,draw=black,line width=.35pt,bar shift=0pt,
+restrict expr to domain={\thisrow{x}}{8:8},journalerror]
+table[x expr=4,y=plan,y error minus expr={max(\thisrow{pminus},\thisrow{pplus})},y error plus expr={max(\thisrow{pminus},\thisrow{pplus})}]{figures/journal/data/occupancy.dat};
+\addplot[fill=syncoimplement,draw=black,line width=.35pt,bar shift=0pt,
+restrict expr to domain={\thisrow{x}}{8:8},journalerror]
+table[x expr=5,y=implement,y error minus expr={max(\thisrow{iminus},\thisrow{iplus})},y error plus expr={max(\thisrow{iminus},\thisrow{iplus})}]{figures/journal/data/occupancy.dat};
+\addplot[fill=syncoverify,draw=black,line width=.35pt,bar shift=0pt,
+restrict expr to domain={\thisrow{x}}{8:8},journalerror]
+table[x expr=6,y=verify,y error minus expr={max(\thisrow{vminus},\thisrow{vplus})},y error plus expr={max(\thisrow{vminus},\thisrow{vplus})}]{figures/journal/data/occupancy.dat};
+\addplot[fill=syncomonitor,draw=black,line width=.35pt,bar shift=0pt,
+restrict expr to domain={\thisrow{x}}{8:8},journalerror]
+table[x expr=7,y=monitor,y error minus expr={max(\thisrow{mminus},\thisrow{mplus})},y error plus expr={max(\thisrow{mminus},\thisrow{mplus})}]{figures/journal/data/occupancy.dat};
+\draw[black!35,line width=.3pt] (axis cs:1,12.415141555082181)--(axis cs:1,13.52942726908218);
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:1,14.12942726908218) {10.4};
+\draw[black!35,line width=.3pt] (axis cs:2,30.957161757198705)--(axis cs:2,32.0714474711987);
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:2,32.671447471198704) {27.8};
+\draw[black!35,line width=.3pt] (axis cs:3,9.530867685375972)--(axis cs:3,15.4);
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:3,16.0) {8.0};
+\draw[black!35,line width=.3pt] (axis cs:4,4.2541539815045795)--(axis cs:4,5.36843969550458);
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:4,5.968439695504579) {3.5};
+\draw[black!35,line width=.3pt] (axis cs:5,37.36698559302044)--(axis cs:5,38.481271307020435);
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:5,39.08127130702044) {33.8};
+\draw[black!35,line width=.3pt] (axis cs:6,13.898071182740871)--(axis cs:6,15.01235689674087);
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:6,15.61235689674087) {11.9};
+\draw[black!35,line width=.3pt] (axis cs:7,5.611000429694671)--(axis cs:7,6.725286143694671);
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:7,7.325286143694671) {4.6};
+\end{axis}
+\node[journallegend,anchor=north west,font=\fontsize{8.5}{10}\selectfont]
+at (2pt,-13pt) {\begin{tabular}{@{}p{87pt}p{87pt}p{87pt}l@{}}
+\statekey{black!45}{Re Read} & \statekey{syncoanalyze}{An Analyze} &
+\statekey{momexpert}{Ex Explore} & \statekey{gomorangeone}{Pl Plan}\\[2pt]
+\statekey{syncoimplement}{Im Implement} & \statekey{syncoverify}{Ve Verify} &
+\statekey{syncomonitor}{Mo Monitor} &
+\end{tabular}};
+\end{tikzpicture}

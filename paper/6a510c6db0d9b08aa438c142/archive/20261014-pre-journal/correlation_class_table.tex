@@ -1,0 +1,19 @@
+\begingroup\scriptsize\setlength{\tabcolsep}{4pt}
+\begin{longtable}{@{}lrrrrrrrr@{}}
+\caption{Class coverage in the completed run. Qwen3.8-27B labels on Qwen3.5-35B-A3B generations. Units are tagged sentences; dataset columns count traces with selected class tokens. Classes overlap across traces; missing classes are not zero-valued features.}\label{tab:qwen-class-coverage}\\
+\toprule
+Class & Units & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva & Total traces \\
+\midrule\endfirsthead
+\multicolumn{9}{l}{\textit{Continued from previous page}}\\
+\toprule
+Class & Units & MATH-500 & AIME24 & AIME25 & Olympiad & AMC23 & Minerva & Total traces \\
+\midrule\endhead
+\bottomrule\endfoot
+Read & 6,358 & 378 & 30 & 26 & 514 & 27 & 270 & 1245 \\
+Analyze & 22,378 & 424 & 30 & 30 & 619 & 38 & 271 & 1412 \\
+Plan & 5,654 & 407 & 28 & 28 & 507 & 28 & 271 & 1269 \\
+Implement & 23,844 & 477 & 30 & 30 & 667 & 39 & 271 & 1514 \\
+Explore & 7,151 & 260 & 28 & 27 & 474 & 22 & 251 & 1062 \\
+Verify & 10,745 & 400 & 29 & 30 & 617 & 38 & 270 & 1384 \\
+Monitor & 23,870 & 451 & 30 & 29 & 583 & 29 & 272 & 1394 \\
+\end{longtable}\endgroup

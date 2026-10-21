@@ -677,6 +677,20 @@ report/research-campaign-v3-20261014-r6/ops_r1/milestone/*
 !report/research-campaign-v3-20261014-r6/ops_r1/milestone/output/*.json
 !report/research-campaign-v3-20261014-r6/ops_r1/milestone/output/*.md
 
+# Authored CL manuscript closure and compact pre-rewrite source preservation.
+!paper/6a510c6db0d9b08aa438c142/*.bst
+!paper/6a510c6db0d9b08aa438c142/writing_brief.md
+!paper/6a510c6db0d9b08aa438c142/paper-rules.md
+!paper/6a510c6db0d9b08aa438c142/journal/
+!paper/6a510c6db0d9b08aa438c142/journal/**
+!paper/6a510c6db0d9b08aa438c142/archive/
+!paper/6a510c6db0d9b08aa438c142/archive/20261014-pre-journal/
+!paper/6a510c6db0d9b08aa438c142/archive/20261014-pre-journal/**/
+!paper/6a510c6db0d9b08aa438c142/archive/20261014-pre-journal/**/*.tex
+!paper/6a510c6db0d9b08aa438c142/archive/20261014-pre-journal/**/*.bib
+!paper/6a510c6db0d9b08aa438c142/archive/20261014-pre-journal/SOURCE_SNAPSHOT.json
+paper/6a510c6db0d9b08aa438c142/.paper-review/
+
 # Approved eight-model final-routing sources, contracts and compact receipts.
 !tests/final_routing/
 !tests/final_routing/*.py
