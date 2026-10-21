@@ -25,17 +25,18 @@ from . import driver
 from moe_exp.final_routing.selection import select_pairs
 
 # Per-model run plan: production shards x walltime, canary walltime and the shared canary token cap.
-# Sized from main-study throughput. GLM decodes about four times slower than the others, so its shards
-# cover the primary rows (always admitted first) and only part of the secondary promote rows.
+# Sized from main-study throughput at ~70% speed with a margin, so shards finish their rows instead of
+# being cut at the walltime (unfinished rows are lost work). GLM decodes about four times slower than
+# the others and gets proportionally more shards and a lower canary cap.
 PLAN = {
     'gpt': dict(shards=2, run_minutes=165, canary_minutes=45, canary_tokens=32768),
     'qwen36': dict(shards=7, run_minutes=240, canary_minutes=90, canary_tokens=32768),
-    'qwen35': dict(shards=8, run_minutes=240, canary_minutes=90, canary_tokens=32768),
-    'qwen330b': dict(shards=5, run_minutes=240, canary_minutes=90, canary_tokens=32768),
-    'gemma': dict(shards=7, run_minutes=240, canary_minutes=90, canary_tokens=32768),
-    'glm': dict(shards=12, run_minutes=240, canary_minutes=120, canary_tokens=16384),
-    'nemotron': dict(shards=5, run_minutes=240, canary_minutes=90, canary_tokens=32768),
-    'lfm25': dict(shards=5, run_minutes=240, canary_minutes=90, canary_tokens=32768),
+    'qwen35': dict(shards=10, run_minutes=240, canary_minutes=150, canary_tokens=32768),
+    'qwen330b': dict(shards=6, run_minutes=240, canary_minutes=120, canary_tokens=32768),
+    'gemma': dict(shards=9, run_minutes=240, canary_minutes=150, canary_tokens=32768),
+    'glm': dict(shards=24, run_minutes=240, canary_minutes=180, canary_tokens=16384),
+    'nemotron': dict(shards=6, run_minutes=240, canary_minutes=120, canary_tokens=32768),
+    'lfm25': dict(shards=7, run_minutes=240, canary_minutes=120, canary_tokens=32768),
 }
 # One release steers the models named in WHOLE_MODELS under its own GPU ceiling; both are exported
 # to every stage. GPT-OSS and Qwen3.6 ran first (release r5) with the defaults.
