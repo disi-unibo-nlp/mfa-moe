@@ -1,0 +1,1 @@
+{"cpu_core_hour_ceiling":80.0,"models":["gpt","qwen36","qwen35","qwen330b","gemma","glm","nemotron","lfm25"],"new_gpu_hour_ceiling":700.0,"no_budget_reset":true,"plan":"per-model shards, walltimes and canary caps in whole.PLAN at c48806a","sha256":"92bd49f4de5a4790a6c3af7ec1d56072bc82af0fa4da73a180ea7db220d4ae5c"}
