@@ -371,6 +371,29 @@ class DoseResponseTests(unittest.TestCase):
         self.assertEqual(frame['gpt:tokens'], 1.)
         self.assertEqual(set(cells[cells.dose == 'quarter'].model), {'gpt'})
 
+    def test_topup_outcomes_join_their_base_manifest_by_uid(self):
+        with tempfile.TemporaryDirectory(dir=WORK/'tools/tmp') as temporary:
+            base, topup = Path(temporary)/'base', Path(temporary)/'topup'
+            rows = [{'uid': uid, 'family': uid, 'model': 'gpt', 'dose': 'half', 'total_allowance': 100,
+                     'nomination_status': 'nominated'} for uid in ('early', 'late')]
+            planned = publish(whole.manifest_path('gpt', 'half', base), {'records': rows})
+            publish(whole.manifest_path('gpt', 'half', topup), {'records': rows[1:],
+                                                                'parent_manifest_sha256': planned['sha256']})
+            for root, uid in ((base, 'early'), (topup, 'late')):
+                (root/'gpt/extraction').mkdir(parents=True)
+                pd.DataFrame([{'uid': uid, 'outcome_status': 'observed', 'reasoning_tokens': 5, 'reasoning_end': 5,
+                               'strict_correct': True, 'finish_reason': 'stop'}]).to_parquet(
+                    root/'gpt/extraction/outcomes.parquet')
+            source = {'model': 'gpt', 'root': str(base), 'dose': 'half', 'topups': [str(topup)]}
+            table = whole_effects.load_table([source]).set_index('uid')
+            self.assertEqual(set(table.outcome_status), {'observed'})
+            # A row observed in both releases would be run twice: refused.
+            pd.DataFrame([{'uid': 'early', 'outcome_status': 'observed', 'reasoning_tokens': 5, 'reasoning_end': 5,
+                           'strict_correct': True, 'finish_reason': 'stop'}]).to_parquet(
+                topup/'gpt/extraction/outcomes.parquet')
+            with self.assertRaisesRegex(ValueError, 'duplicate whole extracted UID'):
+                whole_effects.load_table([source])
+
     def test_combine_reads_base_and_sweep_releases(self):
         allocation = [{'family': family, 'benchmark': benchmark} for family, benchmark in self.families]
         with tempfile.TemporaryDirectory(dir=WORK/'tools/tmp') as temporary:

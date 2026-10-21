@@ -162,27 +162,42 @@ def load_table(sources: list[dict] | None = None) -> pd.DataFrame:
         return pd.concat(pool.map(_source_table, sources), ignore_index=True)
 
 
-def _source_table(source: dict) -> pd.DataFrame:
-    """Join one model and dose of one release (see load_table)."""
+def _extracted(root: Path, model: str, value: dict) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """Read one release's extracted outcomes and lexically labelled sentences for one manifest."""
     from .lexical import LEXICAL, predict
-    model, root = source['model'], Path(source['root'])
-    value = verified(manifest_path(model, source['dose'], root))
     folder = root/model/'extraction'
     if (folder/'EXTRACTION.json').exists():
         require(verified(folder/'EXTRACTION.json')['manifest_sha256'] == value['sha256'],
                 'whole extraction belongs to another manifest')
     observed = pd.read_parquet(folder/'outcomes.parquet') if (folder/'outcomes.parquet').exists() else pd.DataFrame()
-    by_uid = {r['uid']: r for r in observed.to_dict('records')}
-    require(len(by_uid) == len(observed), 'duplicate whole extracted UID')
-    require(set(by_uid) <= {r['uid'] for r in value['records']}, 'whole extraction UID outside manifest')
     sentences = pd.read_parquet(folder/'sentences.parquet') if (folder/'sentences.parquet').exists() else pd.DataFrame()
-    groups = {}
     if not sentences.empty:
         frozen = verified(root/'RELEASE.json')['classifier']
         # Full solutions have far more sentences than the old 512-token windows.
         sentences = pd.concat([predict(sentences.iloc[start:start+10000], LEXICAL/'readout-v1', frozen=frozen)
                                for start in range(0, len(sentences), 10000)], ignore_index=True)
-        groups = {uid: g.to_dict('records') for uid, g in sentences.groupby('uid')}
+    return observed, sentences
+
+
+def _source_table(source: dict) -> pd.DataFrame:
+    """Join one model and dose of one release (see load_table).
+
+    A source may list top-up releases ('topups') that ran the never-started rows of its failed shards;
+    their outcomes join the source's manifest by UID.
+    """
+    model, root = source['model'], Path(source['root'])
+    value = verified(manifest_path(model, source['dose'], root))
+    parts = [_extracted(root, model, value)]
+    for topup in map(Path, source.get('topups', [])):
+        planned = verified(manifest_path(model, source['dose'], topup))
+        require(planned['parent_manifest_sha256'] == value['sha256'], 'top-up belongs to another manifest')
+        parts.append(_extracted(topup, model, planned))
+    observed = pd.concat([part[0] for part in parts], ignore_index=True)
+    sentences = pd.concat([part[1] for part in parts], ignore_index=True)
+    by_uid = {r['uid']: r for r in observed.to_dict('records')}
+    require(len(by_uid) == len(observed), 'duplicate whole extracted UID')
+    require(set(by_uid) <= {r['uid'] for r in value['records']}, 'whole extraction UID outside manifest')
+    groups = {uid: g.to_dict('records') for uid, g in sentences.groupby('uid')} if not sentences.empty else {}
     rows = []
     for assignment in value['records']:
         row = {**assignment, **by_uid.get(assignment['uid'], {
@@ -593,10 +608,11 @@ def failures(table: pd.DataFrame, sources: list[dict]) -> dict:
     """Extraction, sentence-coverage and design exclusions, each kept with its unit and reason."""
     extraction = []
     for source in sources:
-        path = Path(source['root'])/source['model']/'extraction/EXTRACTION.json'
-        if path.exists():
-            extraction.extend({'model': source['model'], 'dose': source['dose'], **failure}
-                              for failure in verified(path)['failures'])
+        for root in [source['root'], *source.get('topups', [])]:
+            path = Path(root)/source['model']/'extraction/EXTRACTION.json'
+            if path.exists():
+                extraction.extend({'model': source['model'], 'dose': source['dose'], **failure}
+                                  for failure in verified(path)['failures'])
     drops = table[table.get('nomination_status', pd.Series('nominated', index=table.index)) != 'nominated']
     return {'extraction_failures': {'count': len(extraction), 'units': extraction},
             'unit_failures': table.loc[table.get('unit_failure_reason', pd.Series(index=table.index, dtype=object)).notna(),
