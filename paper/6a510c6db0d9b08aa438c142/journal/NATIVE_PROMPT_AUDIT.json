@@ -1,0 +1,106 @@
+{
+  "scope": "Read-only prompt verification; one retained record per evaluated model plus the common producer.",
+  "prompt_prefix": "Please reason step by step, and put your final answer within \\boxed{}.\nQuestion: ",
+  "producer": {
+    "path": "src/moe_exp/correlation_pipeline/benchmarks.py",
+    "sha256": "09d84a8078b7653291b4d6a1ce9661fe447863887350a56a0e4d6a8009548a74",
+    "lines": "309-334"
+  },
+  "evidence": [
+    {
+      "model": "gemma",
+      "path": "results/correlation_pipeline/card-v3/gemma/generation/nvidia--Gemma-4-26B-A4B-NVFP4/minerva/traces.jsonl",
+      "record": "first retained Minerva record",
+      "record_sha256": "7c4d105cace3b3ed763638ebe4dd4e1c45bc790fe85bd7e1c98bdee611fac4b3",
+      "model_id": "nvidia/Gemma-4-26B-A4B-NVFP4",
+      "revision": "a19cfe00be84568a6867111c9a68c9c44fdcffe6",
+      "chat_template_kwargs": {
+        "enable_thinking": true
+      },
+      "reasoning_effort": null,
+      "single_user_message": true,
+      "system_message": null,
+      "shared_prompt_verified": true
+    },
+    {
+      "model": "glm",
+      "path": "results/correlation_pipeline/card-v3/glm/generation/zai-org--GLM-4.7-Flash/minerva/traces.jsonl",
+      "record": "first retained Minerva record",
+      "record_sha256": "4fd81dae3bbb9381464e03c35001ea87c80f53ec458707e0343b9878d55b2ce4",
+      "model_id": "zai-org/GLM-4.7-Flash",
+      "revision": "7dd20894a642a0aa287e9827cb1a1f7f91386b67",
+      "chat_template_kwargs": {},
+      "reasoning_effort": null,
+      "single_user_message": true,
+      "system_message": null,
+      "shared_prompt_verified": true
+    },
+    {
+      "model": "gpt",
+      "path": "results/correlation_pipeline/card-v3/gpt/generation/openai--gpt-oss-20b/minerva/traces.jsonl",
+      "record": "first retained Minerva record",
+      "record_sha256": "79a33206321449977e4b367c786b3c27ef0d38077133d8a9efd9a8c57dc7e956",
+      "model_id": "openai/gpt-oss-20b",
+      "revision": "6cee5e81ee83917806bbde320786a8fb61efebee",
+      "chat_template_kwargs": {},
+      "reasoning_effort": "medium",
+      "single_user_message": true,
+      "system_message": null,
+      "shared_prompt_verified": true
+    },
+    {
+      "model": "nemotron",
+      "path": "results/correlation_pipeline/card-v3/nemotron/generation/nvidia--NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4/minerva/traces.jsonl",
+      "record": "first retained Minerva record",
+      "record_sha256": "60c6af424625b66724b99a657421a9a909774ec974d5f47d34fd15e530b4c9ce",
+      "model_id": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4",
+      "revision": "bee7596271d1495f6992ae224aefde4410e816b8",
+      "chat_template_kwargs": {},
+      "reasoning_effort": null,
+      "single_user_message": true,
+      "system_message": null,
+      "shared_prompt_verified": true
+    },
+    {
+      "model": "qwen330b",
+      "path": "results/correlation_pipeline/card-v3/qwen330b/generation/Qwen--Qwen3-30B-A3B/minerva/traces.jsonl",
+      "record": "first retained Minerva record",
+      "record_sha256": "1ac005bbca95f48be7cf4c1f06ce0de118e31d5db399afd77aab4d4628fb823f",
+      "model_id": "Qwen/Qwen3-30B-A3B",
+      "revision": "ad44e777bcd18fa416d9da3bd8f70d33ebb85d39",
+      "chat_template_kwargs": {},
+      "reasoning_effort": null,
+      "single_user_message": true,
+      "system_message": null,
+      "shared_prompt_verified": true
+    },
+    {
+      "model": "qwen35",
+      "path": "results/correlation_pipeline/card-v3/qwen35/generation/Qwen--Qwen3.5-35B-A3B-GPTQ-Int4/minerva/traces.jsonl",
+      "record": "first retained Minerva record",
+      "record_sha256": "c1fafa95c3ad2ca10d8c8f3fc7c275b246210c4b5b21ba7ebb464fb2a8ffceb8",
+      "model_id": "Qwen/Qwen3.5-35B-A3B-GPTQ-Int4",
+      "revision": "3af5ca2972faf6de1fd6f4efc4d8d319ca751e8b",
+      "chat_template_kwargs": {},
+      "reasoning_effort": null,
+      "single_user_message": true,
+      "system_message": null,
+      "shared_prompt_verified": true
+    },
+    {
+      "model": "qwen36",
+      "path": "results/correlation_pipeline/card-v3/qwen36/generation/Qwen--Qwen3.6-35B-A3B-FP8/minerva/traces.jsonl",
+      "record": "first retained Minerva record",
+      "record_sha256": "96b30fada99fb5283bf8d080b3799ad4c271393f6113838840cf571db5e46fff",
+      "model_id": "Qwen/Qwen3.6-35B-A3B-FP8",
+      "revision": "95a723d08a9490559dae23d0cff1d9466213d989",
+      "chat_template_kwargs": {},
+      "reasoning_effort": null,
+      "single_user_message": true,
+      "system_message": null,
+      "shared_prompt_verified": true
+    }
+  ],
+  "new_generation": false,
+  "completion_text_copied": false
+}

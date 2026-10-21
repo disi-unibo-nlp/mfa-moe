@@ -1,102 +1,62 @@
-\documentclass[final]{clv2025}
-
-\usepackage{amsmath}
-\usepackage{booktabs}
-\usepackage{longtable}
-\usepackage{graphicx}
-\usepackage{xcolor}
-\usepackage{etoolbox}
-\setlength{\emergencystretch}{2em}
-\newcommand{\modelmetrics}[2]{\textit{Model(s):} #1. \textit{Metrics:} #2.}
-% Preserve descriptions in archived source while using the journal class.
-\providecommand{\Description}[1]{}
-\AtBeginEnvironment{longtable}{\footnotesize\setlength{\tabcolsep}{2.2pt}}
+\documentclass{clv2025}
+\input{journal/style}
+\usepackage{placeins}
 
 \jvol{vv}
 \jnum{nn}
 \jyear{2026}
-\dochead{Long Paper --- Working Draft}
-\pageonefooter{Working draft. Author details and submission metadata remain to be completed.}
-\runningtitle{Reasoning States and Expert Routing}
-\runningauthor{Author information pending}
+\dochead{}
+\pageonefooter{}
+\runningtitle{Routing Interventions for Efficient Reasoning}
+\runningauthor{Molfetta and Moro}
 
 \begin{document}
-\title{Reasoning States and Expert Routing in\newline Mixture-of-Experts Language Models}
-% The prior manuscript supplied no author block. Do not invent affiliations.
-\author{Author information to be completed\thanks{Draft author list; affiliation and contact details pending.}}
-\affilblock{\affil{Affiliations and corresponding-author details to be completed}}
+\title{Guiding Mixture-of-Experts Large Language Models through Routing Interventions for Efficient Reasoning}
+\author{Lorenzo Molfetta, Gianluca Moro}
+\affilblock{\affil{University of Bologna, Italy\newline
+lorenzo.molfetta@unibo.it\newline
+gianluca.moro@unibo.it}}
 \maketitle
 
 \begin{abstract}
-Mixture-of-experts language models select a subset of feed-forward experts
-for each token. We examine what these selections reveal about labelled
-mathematical reasoning across seven checkpoints and six benchmarks.
-On a common population of 522 questions in 509 problem families, routing
-improves held-out reasoning-label prediction beyond a retrospective text
-baseline in every model, reducing cross-entropy by 0.079--0.149 nats per
-sentence. The original corrected intervals exclude zero, including under
-a lexical-null comparison. A separate next-class analysis finds predictive
-information beyond past text and history for GPT-OSS and Qwen3.6; its scope
-is limited to those two checkpoints. We also compare expert keep-sets
-learned on training families at 75\% retention per layer. Across five folds
-covering 1,486 families, state-balanced selection improves minimum held-out
-class coverage over labelled-frequency selection in five models; frequency
-performs better in Qwen3.5 and Qwen3.6. Thus reasoning labels provide
-information about expert allocation, while the benefit of balancing them
-depends on the model. These results concern prediction and coverage of
-saved native routes. Accuracy after expert removal and realized resident
-memory savings remain unestablished.
+Efficient reasoning in large language models (LLMs) requires computation to advance a solution, yet long reasoning traces can repeat work without resolving uncertainty.
+%
+Mixture-of-experts (MoE) LLMs expose a token-level control point through the router's choice of experts.
+%
+We test whether editing this choice can steer the reasoning state of a solution and reduce its cost while keeping model weights fixed.
+%
+We evaluate on mathematics problems and relate native expert selections to the function of each reasoning sentence.
+%
+Routing improves held-out reasoning-state prediction beyond a text baseline, and native states such as verification precede shorter remaining reasoning.
+%
+Class-balanced retention increases coverage of the least-covered state in most evaluated architectures, with reversals under the same budget.
+%
+Activating or deactivating the experts nominated for a state at a frozen prefix changes neither the following state nor the generated tokens relative to matched random edits, and state effects larger than half a percentage point are excluded.
+%
+Routing therefore encodes reasoning states, but steering their associated experts does not by itself redirect reasoning or make it more efficient.
 \end{abstract}
 
-\input{model_analysis_main}
-\IfFileExists{generated/research_campaign_v3/main_results.tex}{%
-  \input{generated/research_campaign_v3/main_results}}{}
+\input{journal/introduction}
+\input{journal/related_work}
+\input{journal/method}
+\input{journal/setup}
+\input{journal/results}
+\input{journal/discussion}
 
 \begin{acknowledgments}
-Automated assistants were used for manuscript editing, inspection of saved
-artifacts, and assistance with code and analysis development. The author
-team must finalize this disclosure, the complete author list, funding
-acknowledgments and material-availability statement before submission.
+Generative AI assistants were used for manuscript editing, inspection of saved experimental artifacts, and assistance with code and analysis development.
+%
+The authors are responsible for the paper's claims, citations, and interpretation of the results.
+%
 \end{acknowledgments}
 
-\clearpage
 \bibliographystyle{compling}
 \bibliography{references}
 
+% Structural boundary: appendix floats must not precede the bibliography.
 \clearpage
 \appendix
+\input{journal/appendix_links}
 \renewcommand{\thesection}{\Alph{section}}
-\renewcommand{\thefigure}{\thesection.\arabic{figure}}
-\renewcommand{\thetable}{\thesection.\arabic{table}}
-\renewcommand{\theequation}{\thesection.\arabic{equation}}
-\let\CLsection\section
-% Preserve all historical sections without changing their source files.
-% The standard class appendix heading resets figure/table/equation counters.
-\renewcommand{\section}[1]{%
-  \clearpage\refstepcounter{section}%
-  \setcounter{subsection}{0}\setcounter{table}{0}%
-  \setcounter{figure}{0}\setcounter{equation}{0}%
-  \CLsection*{Appendix \Alph{section}: #1}}
-
-\input{experimental_setup}
-\input{gepaLLMAsJudge}
-\input{probeTest}
-\input{correlation_pipeline}
-\input{multimodel_correlation_results}
-\input{class_transition_results}
-\input{guiding_results}
-\input{active_synthesis}
-\input{verification_study}
-\input{saved_data_supplement}
-\begingroup
-\small
-% The historical file enters appendix mode again; preserve its source while
-% keeping one continuous appendix and figure/table namespace in this manuscript.
-\let\appendix\relax
-\input{reproducibility}
-\endgroup
-\input{correlation_plot_atlas}
-\input{multimodel_correlation_atlas}
-\input{generated/research_campaign_v3/status}
-\input{generated/research_campaign_v3/r5_launch_status}
+\input{journal/appendices}
 \end{document}

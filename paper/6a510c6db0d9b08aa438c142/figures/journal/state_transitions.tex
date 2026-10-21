@@ -1,0 +1,56 @@
+% Native PORTS temperature-heatmap cell grid, compact 4+4 manuscript model panels.
+% Recipe: plot-ports-temperature-heatmap.tex; native matrix adapted to 7 states.
+% Author override: absolute 0--0.7 blue/white/red probability scale, beige carrier.
+% Saved observed probabilities and missing-interval flags remain unchanged.
+\begin{tikzpicture}
+\definecolor{transitionlow}{HTML}{F00000}
+\pgfplotsset{colormap={journaltransitionmap}{
+  color(0pt)=(gomblueone);color(500pt)=(white);color(1000pt)=(transitionlow)},
+  transitionpanel/.style={journalaxis,
+    scale only axis,width=71pt,height=71pt,anchor=outer south west,
+    xmin=.5,xmax=7.5,ymin=.5,ymax=7.5,y dir=reverse,
+    xtick={1,2,3,4,5,6,7},xticklabels={Re,An,Ex,Pl,Im,Ve,Mo},
+xticklabel style={rotate=0,anchor=north,font=\fontsize{7}{8}\selectfont},
+    ytick={1,2,3,4,5,6,7},yticklabels={Re,An,Ex,Pl,Im,Ve,Mo},
+    enlarge x limits=false,xmajorgrids=false,ymajorgrids=false,
+    every tick label/.append style={font=\fontsize{7}{8}\selectfont},
+    title style={font=\fontsize{8}{9}\selectfont},
+    point meta min=0,point meta max=.7,colormap name=journaltransitionmap}}
+\foreach \model/\icon/\name/\posx/\posy/\letter/\missing in {
+  gpt/openai/GPT-OSS/0/103/a/0,nemotron/nvidia/Nemotron/96/103/b/1,
+  qwen35/qwen/Qwen3.5/192/103/c/1,qwen36/qwen/Qwen3.6/288/103/d/1,
+  gemma/gemma/Gemma/0/0/e/1,glm/zhipu/GLM/96/0/f/1,
+  qwen330b/qwen/Qwen3/192/0/g/1,lfm25/liquid/LFM2.5/288/0/h/1}{
+\begin{axis}[transitionpanel,name=matrix\model,at={(\posx pt,\posy pt)},
+  title={\textbf{(\letter)}\,\modelname{\icon}{\name}}]
+\addplot[matrix plot*,mesh/cols=7,point meta=explicit,
+  draw=black!25,line width=.2pt]
+table[x=to,y=from,meta=probability]
+{figures/journal/data/state_transitions_\model.dat};
+\ifnum\missing=1
+\addplot[only marks,mark=*,mark size=.85pt,forget plot,
+  draw=black!75,mark options={fill=white,line width=.35pt}]
+table[x=to,y=from]
+{figures/journal/data/state_transitions_missing_\model.dat};
+\fi
+\end{axis}}
+% Vertical probability scale, with numeric ticks on its right side.
+\fill[gray!12]
+(379pt,10pt) rectangle (417pt,190pt);
+\shade[bottom color=gomblueone,top color=white]
+(384pt,25pt) rectangle (391pt,99pt);
+\shade[bottom color=white,top color=transitionlow]
+(384pt,99pt) rectangle (391pt,173pt);
+\draw[draw=gomaxis,line width=.45pt] (384pt,25pt) rectangle (391pt,173pt);
+\foreach \value/\pos in {0/25,.35/99,.7/173}
+\node[anchor=west,inner sep=.1pt,font=\fontsize{7}{8}\selectfont] at (394pt,\pos pt) {\value};
+\node[rotate=90,inner sep=.1pt,font=\fontsize{8}{9}\selectfont] at (413pt,99pt) {Probability};
+\node[journallegend,anchor=north west,font=\fontsize{8}{9.5}\selectfont]
+at (0pt,-6pt) {\begin{tabular}{@{}p{87pt}p{87pt}p{87pt}l@{}}
+Re Read & An Analyze & Ex Explore & Pl Plan\\[1pt]
+Im Implement & Ve Verify & Mo Monitor &\\[2pt]
+\multicolumn{2}{@{}l}{Source $\downarrow$\quad Destination $\rightarrow$} &
+\multicolumn{2}{l@{}}{\tikz[baseline=-.3ex]\draw[draw=black!75,fill=white,line width=.35pt]
+(0,0) circle (1.2pt);\, CI unavailable}
+\end{tabular}};
+\end{tikzpicture}

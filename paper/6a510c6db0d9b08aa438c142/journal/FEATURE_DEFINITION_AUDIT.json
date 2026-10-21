@@ -1,0 +1,183 @@
+{
+  "scope": "Read-only reconstruction of already executed feature construction; no fits, inference, or resampling. Reviewer did not author R3 corrections.",
+  "build_reviewed": "source-round-22",
+  "source_files": [
+    {
+      "path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/forum/tests/r3_context/code/dp/s3_readout.py",
+      "sha256": "2ed52769497bb970a7ebe4247c6099685fc7499e36d8472e6358da52452c40c1",
+      "anchors": [
+        {
+          "line": 171,
+          "text": "def path_variant(md: ModelData, top1: np.ndarray) -> PathVariant:"
+        },
+        {
+          "line": 203,
+          "text": "def sentence_f1(md: ModelData, pv: PathVariant, train_rows: np.ndarray) -> np.ndarray:"
+        },
+        {
+          "line": 224,
+          "text": "def randomized_pca(x: sparse.csr_matrix, k: int, seed: int, n_iter: int = PCA_ITERS,"
+        },
+        {
+          "line": 276,
+          "text": "def fold_design(md: ModelData, pv: PathVariant | None, tr: np.ndarray, evs: list[np.ndarray], seed: int"
+        },
+        {
+          "line": 289,
+          "text": "raw = np.column_stack([md.base, f1, pv.f2, scores])"
+        }
+      ]
+    },
+    {
+      "path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/forum/tests/r3_context/code/dynrt/features.py",
+      "sha256": "1a15eb3c5560a082621a1f05548dba338179ab3c0a9f95023c41944702ee5e87",
+      "anchors": [
+        {
+          "line": 47,
+          "text": "def _floor_normalise(p: np.ndarray, eps: float) -> np.ndarray:"
+        },
+        {
+          "line": 52,
+          "text": "def fit_profiles(h: np.ndarray, cls: np.ndarray, attempt: np.ndarray, layers: int, experts: int,"
+        },
+        {
+          "line": 57,
+          "text": "p0 = (sums / counts[:, None]).mean(0)"
+        },
+        {
+          "line": 69,
+          "text": "p = (n_class[:, None] * p_hat + kappa * p0[None]) / (n_class[:, None] + kappa)"
+        },
+        {
+          "line": 75,
+          "text": "def d_scores(h: np.ndarray, profiles: Profiles) -> np.ndarray:"
+        },
+        {
+          "line": 79,
+          "text": "return (h.astype(np.float32, copy=False) @ lr.T).astype(np.float64) / layers"
+        }
+      ]
+    },
+    {
+      "path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/forum/tests/r3_context/code/dynrt/extract.py",
+      "sha256": "0b01714996c8db9825bb54785a596b67216b77e7a7fa07073cc7ef6f94c35701",
+      "anchors": [
+        {
+          "line": 30,
+          "text": "EDGE = 16"
+        },
+        {
+          "line": 38,
+          "text": "def hist_frequencies(ids: np.ndarray, token_lists: list, num_experts: int) -> np.ndarray:"
+        },
+        {
+          "line": 53,
+          "text": "out[a:a + len(part)] = counts / (lens[:, None, None] * k)"
+        },
+        {
+          "line": 172,
+          "text": "l16 = hist_frequencies(ids, [tok_lists[i][-EDGE:] for i in last_rows], E).astype(np.float16) \\"
+        }
+      ]
+    },
+    {
+      "path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/forum/tests/r3_context/code/dynrt/cv.py",
+      "sha256": "d5952f260f6c961cde29d7a537a3319cc20e259ff8a09d381ee559ac46997ce3",
+      "anchors": [
+        {
+          "line": 73,
+          "text": "class Scaler:"
+        },
+        {
+          "line": 79,
+          "text": "mean = np.nanmean(x, axis=0)"
+        },
+        {
+          "line": 80,
+          "text": "sd = np.nanstd(x, axis=0)"
+        },
+        {
+          "line": 85,
+          "text": "return np.where(np.isnan(z), 0.0, z)"
+        }
+      ]
+    },
+    {
+      "path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/forum/tests/r3_context/code/rkin/k2.py",
+      "sha256": "34811c58c19fd3f29133536f52ff8fb78704776c517b940fe7552e4bc85596e8",
+      "anchors": [
+        {
+          "line": 239,
+          "text": "class Blocks:"
+        },
+        {
+          "line": 261,
+          "text": "def block(self, key: str):"
+        },
+        {
+          "line": 269,
+          "text": "def dense(self, keys):"
+        }
+      ]
+    },
+    {
+      "path": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/r3d_anticipation.py",
+      "sha256": "4f1e0e1aa57126eb3757a554560992314ffabbaf65310e007be40cb638f717ca",
+      "anchors": [
+        {
+          "line": 52,
+          "text": "def augment_baseline(model, pairs, cohort, P, T):"
+        },
+        {
+          "line": 89,
+          "text": "def configure_blocks(K, F, C, Softmax, T, folds):"
+        },
+        {
+          "line": 120,
+          "text": "if key in ('composition16', 'composition_antic'):"
+        },
+        {
+          "line": 127,
+          "text": "self._profiles = F.fit_profiles(table.h[rows], table.cls[rows], table.attempt[rows],"
+        },
+        {
+          "line": 133,
+          "text": "raw = F.d_scores(h, self._profiles)"
+        },
+        {
+          "line": 333,
+          "text": "selected = response_rows[pairs['n_tokens'].to_numpy()[response_rows]>=32] if contained else response_rows"
+        },
+        {
+          "line": 352,
+          "text": "h16=hist['last16'][pos].reshape(len(selected),-1).astype(np.float32)"
+        },
+        {
+          "line": 368,
+          "text": "models={'base':['base','prefix_class'],'weak':['weak_sparse','weak_base','prefix_class']}"
+        }
+      ]
+    }
+  ],
+  "verified_findings": [
+    "Present-state composition is the vector of per-layer top-1 expert fractions for the source sentence. Depth surprise averages training-smoothed adjacent-layer surprise over tokens and layer pairs. Persistence averages unchanged top-1 identities over adjacent owned token pairs. Training-centered randomized PCA supplies 64 composition components. Dense columns are standardized on the training fold after concatenation.",
+    "Next-state composition16 uses all selected slots, not top-1 frequencies or the present-state PCA vector. Its source-owned last16 histogram produces seven layer-averaged log(pi0/pi_c) scores via d_scores. Those seven columns are standardized with training-fold means/SDs.",
+    "Profiles use all available labelled sentences of the training attempts present in the current fold. The raw marginal averages sentences within attempts then attempts. Each raw class profile averages sentences within attempt/class then supported attempts. Shrinkage uses training sentence count n_c and kappa=50 toward the RAW marginal; both marginal and shrunken class profiles are then floored at 1e-6 and renormalized per layer.",
+    "last16 is tok_lists[i][-16:], so it is always clipped to owned tokens of the source sentence and has min(16, sentence length) tokens. The saved next-contained filter is n_tokens>=32. For the reported composition16 endpoint this is a source-length subset, ensuring a full 16-token window; it does not repair an originally cross-boundary histogram.",
+    "Next-state baseline retains previous/current sentence text, lexical controls, earlier observed class history and grouped-OOF current-class estimates; retrospective present-state baseline may additionally include available next sentence. These information sets must remain distinct."
+  ],
+  "bounded_equations": {
+    "present": "h1_s[ell,e]=mean_{t in T_s} 1(a_ell,t=e); r_s=Z_train([D_s; R_s; P_train(h1_s-mu_train)]).",
+    "next": "W_s=last min(16,|T_s|) owned tokens; h16_s[ell,e]=f_ell,e(W_s)/k_ell; d_s,c=mean_ell sum_e h16_s[ell,e] log(pi0_ell,e/pi_c,ell,e); r_s_next=Z_train((d_s,c)_c).",
+    "profiles": "pi0=F_eps(raw_marginal); pi_c=F_eps((n_c*raw_class_profile_c+50*raw_marginal)/(n_c+50)); F_eps floors at 1e-6 then renormalizes per layer.",
+    "standardization": "Coordinate means and population SDs use training rows; nonfinite means become zero, SD<=1e-12 becomes one, and missing transformed values become zero."
+  },
+  "revision": "Final bounded method-definition correction after source-round-22 review",
+  "manuscript_equations": [
+    "eq:present-features",
+    "eq:next-features",
+    "eq:routing-profiles"
+  ],
+  "scientific_values_reestimated": false,
+  "source_description": "Top-1/PCA present-state input and seven class-profile log-ratio next-state input are distinct. The saved source-length filter does not repair a cross-boundary window."
+}

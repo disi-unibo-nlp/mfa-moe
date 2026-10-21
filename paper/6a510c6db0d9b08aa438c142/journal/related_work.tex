@@ -1,0 +1,121 @@
+\section{Related Work}
+\label{sec:related-work}
+
+\paragraph{Efficient reasoning and inference budgets}
+A longer reasoning trace spends more computation, but its additional steps can repeat a solution or explore alternatives with little effect on the answer.
+%
+\citet{chen2025overthinking} characterize this redundancy through both outcome and process efficiency, then use self-training to favor more concise solutions.
+%
+Budget forcing in s1 controls the duration of reasoning by terminating generation or extending it when the model attempts to finish~\citep{muennighoff2025s1}.
+%
+These mechanisms act on how much reasoning is produced.
+%
+Their evaluation also makes the cost of an intervention part of the problem: a shorter trace is useful when the saved computation preserves or improves the answer.
+%
+We study a complementary decision within that budget, namely which experts process a token during a particular reasoning activity.
+%
+This distinction motivates reporting answer quality and generated tokens alongside changes in routing or episode frequency.
+%
+
+\paragraph{Reasoning episodes, graphs, and transitions}
+Reasoning activity can be described through the function of a step or the geometry of the representation that produced it.
+%
+Schoenfeld-inspired annotations distinguish reading, analysis, exploration, planning, implementation, verification, and monitoring in model-generated mathematical solutions~\citep{li2025schoenfeld}.
+%
+These labels give a semantic vocabulary for asking whether a model performs a check or revises its approach.
+%
+Representation-based analyses recover a different kind of state.
+%
+\citet{minegishi2025topology} cluster hidden representations into reasoning graphs and study cycles, diameter, and connectivity.
+%
+\citet{yu2025stateaware} construct spectral representations of reasoning steps, cluster them, and model transitions with a Markov chain.
+%
+Step-specific representation geometry can also carry correctness signals~\citep{sun2026trajectories}.
+%
+Together, these approaches separate the order and recurrence of reasoning from the correctness of its final answer.
+%
+Their state definitions need not coincide: a latent cluster may contain several linguistic functions, and a function may occupy several clusters.
+%
+We retain the explicit episode vocabulary and ask how it relates to layer-local expert selections.
+%
+Our retrospective and next-state readouts separate label information observed after a sentence from signals available before it.
+%
+
+\paragraph{Activation steering and local geometry}
+Activation steering modifies an LLM's intermediate representations while preserving its parameters.
+%
+Contrastive Activation Addition derives a direction from paired positive and negative examples and adds it during generation~\citep{rimsky2024caa}.
+%
+Applied to reasoning, such directions can modulate backtracking, uncertainty, and example testing~\citep{venhoff2025steering}.
+%
+Efficiency-oriented interventions use related mechanisms with different targets.
+%
+SEAL distinguishes execution, reflection, and transition thoughts and calibrates reasoning through a contrastively derived vector~\citep{chen2025seal}.
+%
+Overclocking changes a representation of progress through the thinking phase~\citep{eisenstadt2025overclocking}.
+%
+Manifold Steering projects an overthinking direction onto a low-dimensional activation subspace to reduce interference from irrelevant dimensions~\citep{huang2025manifold}.
+%
+These studies motivate controlling specific activities rather than applying a uniform preference for longer or shorter reasoning.
+%
+
+The reliability of the representation matters for control.
+%
+\citet{tan2024reliability} find substantial input-dependent variation in steerability and brittleness to prompt changes for some concepts.
+%
+Local-geometry methods consequently offer a useful comparison with global directions.
+%
+\citet{shafran2026regions} use a mixture of factor analyzers to represent activations through regional centroids and local covariance, then evaluate concept localization and steering.
+%
+A region, a direction, and a selected expert identify different objects in the computation.
+%
+Our routing interventions change the participating expert identities.
+%
+They do not assume that an episode is a single linear feature or that an expert implements only one function.
+%
+Held-out label information supports an association.
+%
+Causal interpretation requires matched evidence that the intervention changes the intended continuation.
+%
+
+\paragraph{Expert routing as control and online adaptation}
+Sparse expert architectures make participation in the feed-forward computation an accessible intervention point.
+%
+SteerMoE identifies experts associated with a behavior through contrasting activation patterns, then promotes or suppresses their participation at inference time~\citep{fayyaz2025steermoe}.
+%
+Counterfactual routing analysis evaluates native selections against equal-compute alternatives under fixed model parameters~\citep{yoon2026misrouted}.
+%
+Its predictive utility endpoint provides a distinct test from semantic episode control.
+%
+Continuous rerouting instead adapts additive router-logit vectors online, using self-supervision from the input and generated sequence at prefill and later adaptation intervals~\citep{su2026rewiring}.
+%
+That objective can select useful routes without an externally specified next reasoning action.
+%
+THESIS-MoE further distinguishes expert participation from expert computation: it localizes sycophancy within the model and conditionally edits activations using projection or a learned gate while preserving model weights~\citep{hassani2026thesismoe}.
+%
+Our comparison focuses on episode-associated expert sets and an explicit desired continuation, with native and matched-random controls.
+%
+This evaluates whether changing routes engages the intended experts and changes the reasoning activity, while retaining solution quality and computational cost as separate outcomes.
+%
+
+\paragraph{Expert selection, compression, and efficiency endpoints}
+Compression methods attach efficiency to an altered executable model.
+%
+EAC-MoE combines expert-selection-aware quantization with pruning based on selection frequency~\citep{chen2025eac}.
+%
+REAP combines router gate values and expert-output magnitudes to assess the contribution of an expert to the layer output~\citep{lasby2026reap}.
+%
+These criteria emphasize different quantities: frequency counts participation, output-aware scores estimate contribution, and class balancing gives rarely observed reasoning activities equal influence on selection.
+%
+We compare the latter with frequency and random selection under common expert budgets and quotas.
+%
+The endpoint is coverage of held-out native selected slots for the least-covered episode.
+%
+It describes which activities a keep-set retains, while physically removing experts additionally changes routing and the resulting solutions.
+%
+Efficient reasoning therefore requires measurements of the deployed model and its generated answers.
+%
+Changing identities under a fixed top-$k$ rule can alter reasoning without reducing the number of executed experts.
+%
+A routing edit can therefore save generated tokens, but it cannot by itself reduce the experts held in memory.
+%
