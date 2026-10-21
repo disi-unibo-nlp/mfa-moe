@@ -30,12 +30,12 @@ class ActualNominationTests(unittest.TestCase):
             for dose in ('main', 'half'):
                 for nomination in nominations['records']:
                     for operation in ('promote', 'suppress'):
-                        if operation == 'suppress' and nomination['class'] not in whole.SUPPRESS[model]:
+                        if operation == 'suppress' and nomination['class'] not in whole.directions(model)['suppress']:
                             continue
                         cell = whole.cell_actions(nomination, profile, model, dose, operation)
                         targets = {role: {(a['layer'], e) for a in cell['target'] for e in a[role]}
                                    for role in ('activate', 'deactivate')}
-                        counts = whole.DOSES[model][dose][operation]
+                        counts = whole.dose_counts(model, profile, dose, operation)
                         if model == 'gpt' and operation == 'promote':
                             reference = references[dose, nomination['fold'], nomination['class']]
                             for role in targets:
@@ -55,7 +55,7 @@ class ActualNominationTests(unittest.TestCase):
 class ContinuousAdmissionTests(unittest.TestCase):
     def test_tiers_order_all_primary_families_before_other_promote(self):
         rows = [
-            {'family': f, 'arm': arm, 'class': cls, 'operation': operation}
+            {'model': 'gpt', 'family': f, 'arm': arm, 'class': cls, 'operation': operation}
             for f in ('a', 'b') for arm, cls, operation in (
                 ('target_promote', 'Read', 'promote'), ('target_promote', 'Verify', 'promote'),
                 ('random_suppress', 'Analyze', 'suppress'), ('native_repeat', None, 'native'),
@@ -163,7 +163,7 @@ class MonitorSurvivalTests(unittest.TestCase):
         self.assertFalse((self.root/'STOP.json').exists())
 
     def test_main_allocation_maxima_reserve_71_point_5_gpu_hours(self):
-        reserved = sum(2*(whole.CANARY_MINUTES[m]+whole.SHARDS[m]*whole.RUN_MINUTES[m])/60 for m in whole.MODELS)
+        reserved = sum(2*(whole.CANARY_MINUTES[m]+whole.SHARDS[m]*whole.RUN_MINUTES[m])/60 for m in ('gpt', 'qwen36'))
         self.assertEqual(reserved, 71.5)
         self.assertLess(reserved, whole.GPU_CEILING)
 
@@ -205,7 +205,7 @@ class DesignAndCoverageTests(unittest.TestCase):
             for arm in ('native', 'native_repeat'):
                 records.append({**base, 'arm': arm, 'class': None, 'operation': 'native'})
             for operation in ('promote', 'suppress'):
-                for cls in (whole.CLASSES if operation == 'promote' else whole.SUPPRESS[model]):
+                for cls in (whole.CLASSES if operation == 'promote' else whole.directions(model)['suppress']):
                     for role in ('target', 'random'):
                         records.append({**base, 'arm': role+'_'+operation, 'class': cls, 'operation': operation})
         return pd.DataFrame(records)
@@ -305,7 +305,7 @@ class NestedSubmissionAndRankTests(unittest.TestCase):
                          'nomination_status': 'nominated', 'audit_capture': False} for arm in ('native', 'native_repeat')]
             records += [{'family': family, 'benchmark': f'b{index%6}', 'arm': role+'_'+operation, 'operation': operation,
                          'class': name, 'nomination_status': 'nominated', 'audit_capture': role == 'target'}
-                        for operation, name in (('promote', 'Verify'), ('suppress', whole.SUPPRESS['gpt'][0]))
+                        for operation, name in (('promote', 'Verify'), ('suppress', whole.directions('gpt')['suppress'][0]))
                         for role in ('target', 'random')]
         rows = whole.canary_rows({'model': 'gpt', 'sha256': 'm', 'records': records})
         self.assertEqual(len(rows), 48)

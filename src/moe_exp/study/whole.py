@@ -9,10 +9,13 @@ from __future__ import annotations
 
 import argparse
 from collections import Counter
+from functools import lru_cache
 import math
 import os
 from pathlib import Path
+import re
 import subprocess
+import sys
 import time
 
 import numpy as np
@@ -21,25 +24,79 @@ from .common import CLASSES, REPO, check_files, digest, load, locked, publish, r
 from . import driver
 from moe_exp.final_routing.selection import select_pairs
 
-MODELS = ('gpt', 'qwen36')
-SUPPRESS = {'gpt': ('Read', 'Analyze', 'Plan', 'Explore'), 'qwen36': ('Analyze', 'Plan', 'Implement')}
-DOSES = {
-    'gpt': {'main': {'promote': (10, 50), 'suppress': (0, 20)},
-            'half': {'promote': (5, 25), 'suppress': (0, 10)}},
-    'qwen36': {'main': {'promote': (15, 0), 'suppress': (0, 500)},
-               'half': {'promote': (8, 0), 'suppress': (0, 250)}},
+# Per-model run plan: production shards x walltime, canary walltime and the shared canary token cap.
+# Sized from main-study throughput. GLM decodes about four times slower than the others, so its shards
+# cover the primary rows (always admitted first) and only part of the secondary promote rows.
+PLAN = {
+    'gpt': dict(shards=2, run_minutes=165, canary_minutes=45, canary_tokens=32768),
+    'qwen36': dict(shards=7, run_minutes=240, canary_minutes=90, canary_tokens=32768),
+    'qwen35': dict(shards=8, run_minutes=240, canary_minutes=90, canary_tokens=32768),
+    'qwen330b': dict(shards=5, run_minutes=240, canary_minutes=90, canary_tokens=32768),
+    'gemma': dict(shards=7, run_minutes=240, canary_minutes=90, canary_tokens=32768),
+    'glm': dict(shards=12, run_minutes=240, canary_minutes=120, canary_tokens=16384),
+    'nemotron': dict(shards=5, run_minutes=240, canary_minutes=90, canary_tokens=32768),
+    'lfm25': dict(shards=5, run_minutes=240, canary_minutes=90, canary_tokens=32768),
 }
+# One release steers the models named in WHOLE_MODELS under its own GPU ceiling; both are exported
+# to every stage. GPT-OSS and Qwen3.6 ran first (release r5) with the defaults.
+MODELS = tuple(os.environ.get('WHOLE_MODELS', 'gpt,qwen36').split(','))
+GPU_CEILING = float(os.environ.get('WHOLE_GPU_CEILING', '72'))
+require(set(MODELS) <= PLAN.keys(), 'unknown whole model')
+SHARDS = {model: plan['shards'] for model, plan in PLAN.items()}
+RUN_MINUTES = {model: plan['run_minutes'] for model, plan in PLAN.items()}
+CANARY_MINUTES = {model: plan['canary_minutes'] for model, plan in PLAN.items()}
 ROOT = Path(os.environ.get('WHOLE_ROOT', REPO/'report/whole-reasoning-20261020'))
-# Main canaries and all nine production allocations reserve 71.5 GPU-hours.
-GPU_CEILING = 72.
-SHARDS = {'gpt': 2, 'qwen36': 7}
-RUN_MINUTES = {'gpt': 165, 'qwen36': 240}
-CANARY_MINUTES = {'gpt': 45, 'qwen36': 90}
-CANARY_TOKENS = 32768
+
+# SteerMoE's published (activated, deactivated) counts: GPT-OSS-20B "faithful"/"unsafe", and
+# Qwen3-30B-A3B "safe" for promotion and "faithful" for suppression (48 layers x 128 experts).
+# The Qwen3 family uses those counts directly; other models get the same share of their own
+# layer-expert pairs. The half dose is the declared fluency fallback.
+PUBLISHED = {'gpt': {'promote': (10, 50), 'suppress': (0, 20)},
+             'qwen3': {'promote': (15, 0), 'suppress': (0, 500)}}
+QWEN3_LAYERS, QWEN3_EXPERTS = 48, 128
+
+
+def dose_counts(model: str, profile: dict, dose: str, operation: str) -> tuple[int, int]:
+    """Return (activated, deactivated) pair counts for one model, dose and operation."""
+    if model == 'gpt':
+        counts = PUBLISHED['gpt'][operation]
+    elif model in ('qwen36', 'qwen35', 'qwen330b'):
+        counts = PUBLISHED['qwen3'][operation]
+    else:
+        activate, deactivate = PUBLISHED['qwen3'][operation]
+        layers, experts = len(profile['layers']), profile['experts']
+        counts = (round(activate*layers/QWEN3_LAYERS),
+                  round(deactivate*layers*experts/(QWEN3_LAYERS*QWEN3_EXPERTS)))
+    return counts if dose == 'main' else tuple((count+1)//2 for count in counts)
+
+
+@lru_cache(maxsize=None)
+def directions(model: str) -> dict:
+    """Classes to promote (tied to shorter reasoning) and suppress (tied to longer reasoning).
+
+    Signs come from the pre-registered efficiency link on native reasoning only. LFM2.5 was not in
+    that receipt (no native lexical table then), so it uses the receipt's pooled cross-model signs.
+    """
+    prereg = verified(driver.DRIVER/'EFFICIENCY_LINK_PREREG.json')
+    rows = ([cell for cell in prereg['cells'] if cell['model'] == model] if model in prereg['models']
+            else prereg['pooled'])
+    signs = {row['class']: row['tok_reason']['sign'] for row in rows}
+    return {'promote': tuple(c for c in CLASSES if signs[c] == '-'),
+            'suppress': tuple(c for c in CLASSES if signs[c] == '+'),
+            'source': 'model' if model in prereg['models'] else 'pooled'}
+
+
+def efficiency_directed(model: str, operation: str, class_name: str | None) -> bool:
+    """Whether a cell enters the primary efficiency contrast."""
+    return class_name in directions(model)['promote' if operation == 'promote' else 'suppress']
+
+
 CUTOFF = 1792726200.  # 2026-10-23 03:30 UTC (05:30 Europe/Rome).
-# CPU allocation time is charged across monitor, extraction and analysis. Leave
-# half a core-hour for concurrent shutdown and native-accounting latency.
-CPU_WORK_LIMIT = 15.5
+# CPU allocation time is charged across monitor, extraction and analysis, under the release's own
+# core-hour ceiling (exported like the GPU ceiling). Leave half a core-hour for concurrent shutdown and
+# native-accounting latency; the monitor stops supervising once only the tail reserve remains.
+CPU_CEILING = float(os.environ.get('WHOLE_CPU_CEILING', '16'))
+CPU_WORK_LIMIT = CPU_CEILING-.5
 CPU_TAIL_RESERVE = 8.
 
 
@@ -87,7 +144,7 @@ def cell_actions(nomination: dict, profile: dict, model: str, dose: str, operati
     """Build one cell and its role/layer/frequency matched random control."""
     from moe_exp.final_routing.selection import layer_matched_controls
     layers = profile['layers']
-    act_count, deact_count = DOSES[model][dose][operation]
+    act_count, deact_count = dose_counts(model, profile, dose, operation)
     positive, negative = nomination['candidates']['positive'], nomination['candidates']['negative']
     original_activate, _ = select_pairs(positive, act_count, layers, 'activate')
     deact_candidates = negative if operation == 'promote' else positive
@@ -148,12 +205,13 @@ def build_manifest(model: str, dose: str, nominations: dict, b: dict, natives: l
     """
     from moe_exp.final_routing.runtime import remaining
     profile = b['models'][model]
+    suppressed = directions(model)['suppress']
     cells = [cell_actions(n, profile, model, dose, operation) for n in nominations['records']
              for operation in ('promote', 'suppress')
-             if operation == 'promote' or n['class'] in SUPPRESS[model]]
+             if operation == 'promote' or n['class'] in suppressed]
     by_cell = {(c['fold'], c['class'], c['operation']): c for c in cells}
-    require(all(c['qualified'] for c in cells if c['operation'] == 'suppress' or
-                c['class'] in ('Verify', 'Monitor')), 'every efficiency-directed cell must be nominated')
+    require(all(c['qualified'] for c in cells if efficiency_directed(model, c['operation'], c['class'])),
+            'every efficiency-directed cell must be nominated')
     rows = []
     for native in sorted(natives, key=lambda row: row['family']):
         prompt = inputs[native['family']]
@@ -171,7 +229,7 @@ def build_manifest(model: str, dose: str, nominations: dict, b: dict, natives: l
                 require(row['seed'] != native['seed'], 'native repeat seed collision')
             rows.append(row)
         for operation in ('promote', 'suppress'):
-            classes = CLASSES if operation == 'promote' else SUPPRESS[model]
+            classes = CLASSES if operation == 'promote' else suppressed
             for class_name in classes:
                 cell = by_cell[native['fold'], class_name, operation]
                 for role in ('target', 'random'):
@@ -184,7 +242,8 @@ def build_manifest(model: str, dose: str, nominations: dict, b: dict, natives: l
     for index, row in enumerate(rows):
         row['audit_capture'] = index in audit_keys
         row['uid'] = digest(['whole-v1', nominations.get('release_commit', 'development'), nominations['sha256'], row])
-    expected = 3096 if model == 'gpt' else 2838
+    # Two native arms plus a target and a random arm for every promote and suppress cell.
+    expected = len(natives)*(2+2*(len(CLASSES)+len(suppressed)))
     require(len(rows) == expected and len({r['uid'] for r in rows}) == expected, 'whole row count/UID differs')
     return {'model': model, 'dose': dose, 'scope': 'prompt-and-generated-reasoning' if prompt_scope else
             'generated-reasoning-only; not a SteerMoE whole-token replication',
@@ -206,7 +265,8 @@ def prepare(models=MODELS):
         nomination_path = folder/'WHOLE_NOMINATIONS.json'
         nominations = verified(nomination_path) if nomination_path.exists() else derive_whole(b, model, folder)
         natives = [r for r in verified(driver.DRIVER/model/'ASSIGNMENTS.json')['records'] if r['arm'] == 'native']
-        require(len(natives) == 129, 'whole original native family roster differs')
+        # 129 families for every model except LFM2.5, whose native roster holds 112.
+        require(natives and len({r['family'] for r in natives}) == len(natives), 'whole native family roster differs')
         inputs = {}
         for row in natives:
             original = {**row, 'original_prompt': True, 'source': {**row['source'], 'prefix_tokens': 0}}
@@ -262,7 +322,9 @@ def canary_rows(value: dict) -> list[dict]:
     families += [row['family'] for row in ordered if row['family'] not in families][:8-len(families)]
     records = []
     model = value['model']
-    chosen_class = SUPPRESS[model][0]
+    # Verify is a promote class for every model; the suppress cell is the model's first suppress class.
+    require('Verify' in directions(model)['promote'], 'canary promote class differs')
+    chosen_class = directions(model)['suppress'][0]
     for family in families:
         members = [r for r in value['records'] if r['family'] == family]
         for row in members:
@@ -373,7 +435,7 @@ def fluency(store, rows: list[dict], *, require_complete: bool = False) -> dict:
 def admission_order(rows: list[dict]) -> list[dict]:
     """Order all primary and native rows before other promote rows, without barriers."""
     return sorted(rows, key=lambda r: (
-        int(r['operation'] == 'promote' and r['class'] not in ('Verify', 'Monitor')),
+        int(r['operation'] == 'promote' and not efficiency_directed(r['model'], 'promote', r['class'])),
         r['family'], r['arm'], r['class'] or '',
     ))
 
@@ -403,10 +465,10 @@ def run(model, shard, deadline, *, max_inflight=64, canary=False, dose=None, eng
         tokenizer = llm.get_tokenizer()
         engine = driver.Engine(llm, store, min(deadline, CUTOFF), hooked=True, max_inflight=max_inflight,
                                checkpoint_seconds=120, drain_seconds=120)
-        # Canary rows share one 32,768-token cap so the relative gates compare like with like
+        # Canary rows share one per-model token cap so the relative gates compare like with like
         # inside the canary walltime; production keeps the full model-card allowance.
         build = driver.intervention_builder(b, model, tokenizer, closure(tokenizer, model),
-                                            limit=CANARY_TOKENS if canary else None)
+                                            limit=PLAN[model]['canary_tokens'] if canary else None)
         metrics = engine.run(executable, build, driver.intervention_finisher(store, b, model),
                              stop_execution=lambda: (ROOT/'STOP.json').exists() or (ROOT/model/'STOP.json').exists())
         validation = llm.collective_rpc('fs_validation')
@@ -504,7 +566,7 @@ def submit_stage(command: str, *, model=None, dose=None, shard=None, dependency=
         'canary': CANARY_MINUTES.get(model),
         'diagnose': 15,
         'run': planned_run_minutes(model) if model else None,
-        'validate': 30,
+        'validate': 60,
         'monitor': 960,
         'extract': 90,
         'analyze': 120,
@@ -520,6 +582,8 @@ def submit_stage(command: str, *, model=None, dose=None, shard=None, dependency=
         args += ['--max-inflight', '64']
     exports = {'RELEASE_ROOT': release['release_root'], 'STUDY_DATA_ROOT': str(driver.ROOT),
                'WHOLE_ROOT': str(ROOT), 'STUDY_MODULE': 'moe_exp.study.whole',
+               'WHOLE_MODELS': ','.join(MODELS), 'WHOLE_GPU_CEILING': str(GPU_CEILING),
+               'WHOLE_CPU_CEILING': str(CPU_CEILING),
                'MOE_EXP_SCORING_PROCESSES': '8' if command == 'extract' else '2'}
     cmd = ['sbatch', '--parsable', '--account=iscrc_miosr', '--partition=boost_usr_prod', '--qos=normal',
            '--nodes=1', '--ntasks=1', f'--cpus-per-task={cpus}', f'--mem={memory}G', f'--time={minutes}',
@@ -634,15 +698,16 @@ def admit_shard_plan(schedule: dict, model: str, accounting: dict, stopped: set)
     if path.exists():
         return
     committed = reserved_gpu_hours(schedule, accounting, stopped, include_unsubmitted=False)
-    other = next(m for m in MODELS if m != model)
-    future_other = (SHARDS[other]-len(schedule['production'][other]))*2*planned_run_minutes(other)/60
-    available = GPU_CEILING-committed-(future_other if other not in stopped else 0.)
+    # Reserve every other unstopped model's not-yet-submitted shard maxima before sizing this one.
+    future_others = sum((SHARDS[m]-len(schedule['production'][m]))*2*planned_run_minutes(m)/60
+                        for m in MODELS if m != model and m not in stopped)
+    available = GPU_CEILING-committed-future_others
     minutes = min(RUN_MINUTES[model], math.floor(available*60/(2*SHARDS[model])))
     require(minutes > 0, 'remaining GPU allowance cannot admit this model')
     publish(path, {'model': model, 'shards': SHARDS[model], 'minutes': minutes,
                    'approved_maximum_minutes': RUN_MINUTES[model], 'committed_gpu_hours': committed,
-                   'other_future_maximum_gpu_hours': future_other, 'gpu_ceiling': GPU_CEILING,
-                   'reason': 'full allocation maxima plus all charged predecessor costs stay within72GPU-hours'})
+                   'other_future_maximum_gpu_hours': future_others, 'gpu_ceiling': GPU_CEILING,
+                   'reason': 'full allocation maxima plus all charged predecessor costs stay within the GPU ceiling'})
 
 
 def advance_canary(schedule: dict, model: str, accounting: dict, stopped: set) -> None:
@@ -691,27 +756,31 @@ def advance_canary(schedule: dict, model: str, accounting: dict, stopped: set) -
                 'gate': gate, 'reason': 'canary_failure; no efficacy-driven tuning or software retry'})
 
 
+def projected_gpu_hours(schedule: dict, model: str, accounting: dict, stopped: set) -> float:
+    """A model's production GPU-hours: usage scaled from a completed quarter of its pairs, else its maxima."""
+    jobs = schedule['production'][model]
+    usage = sum(accounting.get(j['id'], {}).get('elapsed', 0)*j['gpus']/3600 for j in jobs)
+    progress = production_progress(model) if jobs else None
+    if progress and progress['pairs'] >= .25*progress['executable_pairs']:
+        return max(usage, usage/(progress['pairs']/progress['executable_pairs']))
+    if model in stopped:
+        return usage
+    planned = sum(j['gpus']*j['minutes']/60 for j in jobs)+(SHARDS[model]-len(jobs))*2*planned_run_minutes(model)/60
+    return max(usage, planned)
+
+
 def check_projection(schedule: dict, model: str, accounting: dict, progress: dict, stopped: set,
                      gpu_hours: float) -> None:
-    """Project at the first completed quarter, with the other model's quarter or frozen margin."""
+    """Project at this model's first completed quarter, adding every other model's projection or maxima."""
     production = schedule['production'][model]
     model_usage = sum(accounting.get(job['id'], {}).get('elapsed', 0)*job['gpus']/3600 for job in production)
     fraction = progress['pairs']/progress['executable_pairs']
     projected_model = model_usage/fraction
-    other = next(m for m in MODELS if m != model)
-    other_jobs = schedule['production'][other]
-    other_progress = production_progress(other) if other_jobs else None
-    other_usage = sum(accounting.get(j['id'], {}).get('elapsed', 0)*j['gpus']/3600 for j in other_jobs)
-    if other_progress and other_progress['pairs'] >= .25*other_progress['executable_pairs']:
-        other_projection = other_usage/(other_progress['pairs']/other_progress['executable_pairs'])
-    else:
-        planned_maximum = sum(j['gpus']*j['minutes']/60 for j in other_jobs)
-        planned_maximum += (SHARDS[other]-len(other_jobs))*2*planned_run_minutes(other)/60
-        other_projection = other_usage if other in stopped else planned_maximum
+    others = sum(projected_gpu_hours(schedule, m, accounting, stopped) for m in MODELS if m != model)
     canary_usage = sum(accounting.get(j['id'], {}).get('elapsed', 0)*j['gpus']/3600
                        for m in MODELS for j in schedule['canaries'][m])
     prior_gpu_hours = verified(ROOT/'RELEASE.json').get('prior_usage', {}).get('new_gpu_hours', 0.)
-    projection = prior_gpu_hours+projected_model+max(other_usage, other_projection)+canary_usage
+    projection = prior_gpu_hours+projected_model+others+canary_usage
     publish(ROOT/model/'PROJECTION.json', {'progress': progress, 'gpu_hours': gpu_hours,
             'model_projected_gpu_hours': projected_model, 'total_projected_gpu_hours': projection})
     if projection > GPU_CEILING:
@@ -775,7 +844,7 @@ def accounting_snapshot(jobs: list[dict]) -> tuple[dict, float]:
         accounting.get(j['id'], {}).get('elapsed', 0)*j['cpus']/3600 for j in jobs if not j['gpus'])
     driver.checkpoint(ROOT/'ACCOUNTING.json', {'native': accounting, 'new_gpu_hours': gpu_hours,
                       'retained_r3_gpu_hours': .3461111111111111, 'new_cpu_core_hours': cpu_hours,
-                      'gpu_ceiling': GPU_CEILING, 'cpu_ceiling': 16, 'time': time.time(),
+                      'gpu_ceiling': GPU_CEILING, 'cpu_ceiling': CPU_CEILING, 'time': time.time(),
                       'work_remaining_bytes': work_remaining_bytes()})
     return accounting, gpu_hours
 
@@ -904,18 +973,22 @@ def inference_stage(args: argparse.Namespace) -> None:
 
 def validate_stage() -> None:
     """Run the allocated study suite, nominations and planning before publishing qualification."""
-    import unittest
     native_quota = work_remaining_bytes()
     require(native_quota > 14*2**30, 'WORK reserve is insufficient for the bounded whole experiment')
     preparation = prepare()
     nomination_proof = audit_nominations()
-    suite = unittest.defaultTestLoader.discover(str(REPO/'tests/study'), top_level_dir=str(REPO/'tests/study'))
-    result = unittest.TextTestRunner(verbosity=2).run(suite)
-    if not result.wasSuccessful():
-        publish(ROOT/'CPU_VALIDATION.json', {'passed': False, 'tests': result.testsRun,
-                                            'job': os.environ['SLURM_JOB_ID']})
+    # The suite tests the default GPT/Qwen3.6 configuration plus explicit multi-model cases, so it runs
+    # in a fresh interpreter without this release's model selection.
+    env = {k: v for k, v in os.environ.items() if k not in ('WHOLE_MODELS', 'WHOLE_GPU_CEILING', 'WHOLE_CPU_CEILING')}
+    suite = subprocess.run([sys.executable, '-B', '-m', 'unittest', 'discover', '-v', '-s', str(REPO/'tests/study'),
+                            '-t', str(REPO/'tests/study')], env=env, capture_output=True, text=True)
+    sys.stderr.write(suite.stderr)
+    ran = re.search(r'^Ran (\d+) tests?', suite.stderr, re.MULTILINE)
+    tests = int(ran.group(1)) if ran else 0
+    if suite.returncode != 0 or not tests:
+        publish(ROOT/'CPU_VALIDATION.json', {'passed': False, 'tests': tests, 'job': os.environ['SLURM_JOB_ID']})
         raise ValueError('allocated whole study suite failed')
-    publish(ROOT/'CPU_VALIDATION.json', {'passed': True, 'tests': result.testsRun,
+    publish(ROOT/'CPU_VALIDATION.json', {'passed': True, 'tests': tests,
                                         'job': os.environ['SLURM_JOB_ID'], 'preparation': preparation,
                                         'work_remaining_bytes': native_quota,
                                         'nomination_audit_sha256': nomination_proof['sha256'],

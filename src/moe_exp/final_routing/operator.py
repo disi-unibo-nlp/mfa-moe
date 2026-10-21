@@ -201,14 +201,25 @@ def score_override_dual_masked(logits, native_weights, native_ids, activate, dea
         Executed weights and expert identities, without per-request GPU synchronizations.
     """
     import torch
-    require(scoring == 'softmax', 'dual override requires native softmax scoring')
+    require(scoring in ('softmax', 'sigmoid'), 'dual override supports softmax and sigmoid routers')
     require(activate.shape == deactivate.shape == logits.shape, 'dual expert mask shape differs')
-    scores = logits.float().log_softmax(-1)
-    maximum, minimum = scores.max(-1, keepdim=True).values, scores.min(-1, keepdim=True).values
-    scores = torch.where(activate, maximum+epsilon, scores)
-    scores = torch.where(deactivate, minimum-epsilon, scores)
-    affinity = scores.softmax(-1)
-    priority = affinity if correction_bias is None else affinity+correction_bias.float()
+    if scoring == 'softmax':
+        # SteerMoE: move target log-probabilities just past the row extremes, then renormalize.
+        scores = logits.float().log_softmax(-1)
+        maximum, minimum = scores.max(-1, keepdim=True).values, scores.min(-1, keepdim=True).values
+        scores = torch.where(activate, maximum+epsilon, scores)
+        scores = torch.where(deactivate, minimum-epsilon, scores)
+        affinity = scores.softmax(-1)
+        priority = affinity if correction_bias is None else affinity+correction_bias.float()
+    else:
+        # Sigmoid routers score experts independently. An activated expert takes the row's highest
+        # logit plus epsilon as its affinity; selection is forced past the correction bias in both
+        # directions, because the bias alone could keep a target in or out of the top-k.
+        scores = logits.float()
+        scores = torch.where(activate, scores.max(-1, keepdim=True).values+epsilon, scores)
+        affinity = scores.sigmoid()
+        priority = affinity if correction_bias is None else affinity+correction_bias.float()
+        priority = torch.where(activate, torch.inf, torch.where(deactivate, -torch.inf, priority))
     ids = priority.topk(native_ids.shape[-1], dim=-1, sorted=True).indices
     weights = affinity.gather(1, ids)
     if renormalize:
