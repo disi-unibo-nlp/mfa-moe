@@ -84,34 +84,55 @@ def finish_assignments(binding,model,result):
                 'available_executions': sum(r['prefix_status'] == 'enrolled' and r['nomination_status'] == 'nominated' for r in rows)})
 
 
+def discovery_inputs(binding, model):
+    """Load one model's frozen discovery sources (with folds), class counts and token denominators.
+
+    LFM2.5 was extracted after the seven-model campaign, so its counts live in its own native
+    discovery receipt; every other model reads the source campaign.
+
+    Returns:
+        sources, counts, tokens and the provenance hashes of those inputs.
+    """
+    import numpy as np
+    config = binding['config']
+    if model == 'lfm25':
+        data = load(Path(config['root'])/'lfm25/DISCOVERY_INPUTS.json')
+        with np.load(data['counts'], allow_pickle=False) as archive:
+            counts, tokens = archive['counts'], archive['tokens']
+        return data['sources'], counts, tokens, {'discovery_inputs_sha256': data['sha256'],
+                                                 'counts_sha256_file': file_sha(data['counts'])}
+    from moe_exp.research_campaign_v3_r6.inputs import counts_for
+    source = Path(config['source_campaign'])
+    parent = load(source/'CAMPAIGN.json')
+    folds = load(source/'FOLDS.json')
+    sources = [{**row, 'fold': folds['folds'][row['family']]}
+               for row in load(source/model/'SOURCES.json')['records']]
+    counts, tokens = counts_for(parent, model, sources)
+    return sources, counts, tokens, {'source_campaign_sha256': parent['sha256'],
+                                     'counts_sha256_file': file_sha(parent['saved_inputs'][model]['counts'])}
+
+
 def derive_whole(binding, model, destination):
     """Publish global RD candidates from the same frozen discovery inputs.
 
     Args:
         binding: Original study binding, used only for discovery data/profile.
-        model: GPT or Qwen model identity.
+        model: Any study model.
         destination: Fresh whole experiment model directory.
 
     Returns:
         WHOLE_NOMINATIONS receipt; no main-family outcome is read.
     """
     from .selection import global_pairs
-    from moe_exp.research_campaign_v3_r6.inputs import counts_for
-    source = Path(binding['config']['source_campaign'])
-    parent = load(source/'CAMPAIGN.json')
-    folds = load(source/'FOLDS.json')
-    sources = [{**row, 'fold': folds['folds'][row['family']]}
-               for row in load(source/model/'SOURCES.json')['records']]
-    counts, tokens = counts_for(parent, model, sources)
+    sources, counts, tokens, provenance = discovery_inputs(binding, model)
     profile = binding['models'][model]
+    # The capped selection stored here is a preview; manifests apply each model's own dose to the candidates.
     records = global_pairs(counts, tokens, sources, profile['layers'], profile['native_k'],
                            10 if model == 'gpt' else 15, 50 if model == 'gpt' else 500)
     return publish(Path(destination)/'WHOLE_NOMINATIONS.json', {
         'model': model, 'selector': 'global-inclusion-risk-difference-sign-stable-four-refits',
         'release_commit': (Path(__file__).resolve().parents[3]/'RELEASE_COMMIT').read_text().strip(),
-        'sources_sha256': digest(sources),
-        'source_campaign_sha256': parent['sha256'],
-        'counts_sha256_file': file_sha(parent['saved_inputs'][model]['counts']),
+        'sources_sha256': digest(sources), **provenance,
         'outcomes_used': False, 'layers': profile['layers'], 'experts': int(counts.shape[-1]),
         'records': records})
 

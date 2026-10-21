@@ -19,7 +19,7 @@ import pandas as pd
 
 from .common import CLASSES, digest, load, publish, require, verified
 from . import driver
-from .whole import ROOT, MODELS, SUPPRESS, manifest, bound_store, repetition_rate
+from .whole import ROOT, MODELS, directions, efficiency_directed, manifest, bound_store, repetition_rate
 
 LINK_WORDING = ('The frozen preregistered test (activation arms, central strength, log total tokens, main design) '
                 'is not estimable in this design. We report an exploratory transfer of the frozen beta_tok signs '
@@ -219,10 +219,10 @@ def family_contrasts(table: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
                 noise[name+suffix] = value
         native_repeats.append(noise)
         for operation in ('promote', 'suppress'):
-            for class_name in (CLASSES if operation == 'promote' else SUPPRESS[model]):
+            for class_name in (CLASSES if operation == 'promote' else directions(model)['suppress']):
                 arms = {r['arm']: r for r in records if r['class'] == class_name and r['operation'] == operation}
                 target, random = arms['target_'+operation], arms['random_'+operation]
-                efficiency = operation == 'suppress' or class_name in ('Verify', 'Monitor')
+                efficiency = efficiency_directed(model, operation, class_name)
                 nominated = all(r.get('nomination_status', 'nominated') == 'nominated' for r in (target, random))
                 require(nominated or not efficiency, 'efficiency-directed cell is not nominated')
                 if not nominated:
@@ -262,7 +262,8 @@ def primary_frame(cells: pd.DataFrame, comparison: str = 'target_random') -> pd.
         for suffix in ('', ':lower', ':upper'):
             for model in MODELS:
                 frame[model+':'+metric+suffix] = grouped[comparison+':'+metric+suffix].xs(model, level='model')
-            frame['pooled:'+metric+suffix] = .5*frame['gpt:'+metric+suffix]+.5*frame['qwen36:'+metric+suffix]
+            # Equal model weights; a family absent for one model (LFM2.5 has 112) averages the others.
+            frame['pooled:'+metric+suffix] = frame[[m+':'+metric+suffix for m in MODELS]].mean(axis=1)
     return frame.reset_index()
 
 
@@ -283,7 +284,7 @@ def planning(models=MODELS) -> dict:
         folder = driver.bulk()/model/'outcomes'
         outcomes = _read_outcome_table(folder, 'outcomes', 'main')
         differences = native_repeat_differences(outcomes)
-        cell_count = 2+len(SUPPRESS[model])
+        cell_count = len(directions(model)['promote'])+len(directions(model)['suppress'])
         composite = differences/math.sqrt(cell_count)
         native_residuals[model] = composite
         difference_sd = differences.std(ddof=1)
@@ -306,7 +307,7 @@ def planning(models=MODELS) -> dict:
             'paired_values_sha256': digest(differences.reset_index().to_dict('records')),
         }
     if set(MODELS) <= set(results):
-        critical = results['gpt']['planning_z']
+        critical = results[MODELS[0]]['planning_z']
         results['pooled'] = _pooled_native_planning(native_residuals, critical)
     return {'models': results, 'hypothesis_cells_frozen_before_production': True,
             'note': 'Within-family paired noise, transported with the declared sqrt(2/m) approximation; no gate uses it.'}
@@ -327,15 +328,14 @@ def native_repeat_differences(outcomes: pd.DataFrame) -> pd.DataFrame:
 
 
 def _pooled_native_planning(residuals: dict, critical: float) -> dict:
-    """Retain cross-model covariance of the scaled within-family noise differences."""
-    require(residuals['gpt'].index.is_unique and residuals['qwen36'].index.is_unique and
-            set(residuals['gpt'].index) == set(residuals['qwen36'].index), 'native planning families differ')
-    pooled = .5*residuals['gpt']+.5*residuals['qwen36']
+    """Average the scaled within-family noise differences with equal model weights."""
+    require(all(frame.index.is_unique for frame in residuals.values()), 'native planning families are duplicated')
+    pooled = pd.concat(residuals.values()).groupby(level=0).mean()
     token_sd, accuracy_sd = pooled.std(ddof=1).tolist()
     if not pooled.correct.notna().all():
         accuracy_sd = np.nan
     return {
-        'transport_status': 'SUSPECTED', 'model_weights': [.5, .5],
+        'transport_status': 'SUSPECTED', 'model_weights': 'equal over models present for each family',
         'log_reasoning_sd': token_sd, 'accuracy_sd': accuracy_sd if np.isfinite(accuracy_sd) else None,
         'accuracy_observed': int(pooled.correct.notna().sum()),
         'mde_log_tokens': critical*token_sd/math.sqrt(len(pooled)),
@@ -375,6 +375,8 @@ def exploratory_link(cells: pd.DataFrame, table: pd.DataFrame, boot) -> dict:
             for family, group in table[(table.model == model) & (table['class'] == class_name) &
                                        (table.operation == 'promote')].groupby('family'):
                 arms = {r['arm']: r for r in group.to_dict('records')}
+                if not {'target_promote', 'random_promote'} <= arms.keys():
+                    continue  # a dropped promote cell has no executed pair for this family
                 target, random = arms['target_promote'], arms['random_promote']
                 tl, tu = _total_bounds(target)
                 rl, ru = _total_bounds(random)
@@ -516,7 +518,7 @@ def analyze() -> dict:
     for model in MODELS:
         for operation in ('promote', 'suppress'):
             for class_name in CLASSES:
-                if operation == 'suppress' and class_name not in SUPPRESS[model]:
+                if operation == 'suppress' and class_name not in directions(model)['suppress']:
                     mechanism['|'.join((model, operation, class_name))] = {
                         'status': 'not_in_design', 'observed_classes': list(CLASSES),
                         'reason': 'This suppress class was not assigned; no zero effect is imputed.'}

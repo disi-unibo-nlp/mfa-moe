@@ -502,7 +502,7 @@ class ClosedAnalysisTests(unittest.TestCase):
                     rows.append({**base, 'uid': model+family['family']+arm, 'class': None,
                                  'arm': arm, 'operation': 'native'})
                 for operation in ('promote', 'suppress'):
-                    for cls in (CLASSES if operation == 'promote' else whole.SUPPRESS[model]):
+                    for cls in (CLASSES if operation == 'promote' else whole.directions(model)['suppress']):
                         for role in ('target', 'random'):
                             rows.append({**base, 'uid': model+family['family']+operation+cls+role,
                                          'class': cls, 'arm': role+'_'+operation, 'operation': operation})
