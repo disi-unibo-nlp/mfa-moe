@@ -275,6 +275,8 @@ The random experts are drawn separately at each strength to match its targets.
 %
 Every continuation receives the full completion allowance of the model card, and continuations still running at the end of the generation period are kept as unknown outcomes.
 %
+Continuations left unstarted by a failed or time-limited compute job ran later in separate jobs with the same prompt, seed and edit, whereas a continuation interrupted during generation is never restarted and remains an unknown outcome.
+%
 
 Before production, a check of 48 continuations from eight families per model compared steered with native continuations under a 32,768-token limit.
 %
@@ -287,17 +289,13 @@ Full strength broke down for GPT-OSS-20B and GLM, so their base runs use half st
 At half strength, 15.6\% of the steered GPT-OSS-20B continuations and no native continuation reached the limit, just beyond the 15-point threshold, and we proceeded at that strength because production uses the full allowance of the model card.
 %
 
-Effects are paired within a family and cell, averaged over the efficiency-directed cells of a model, and averaged over models for pooled estimates, with the benchmark weighting and the 10,000-resample family bootstrap of Section~\ref{sec:intervention-setup}.
+Effects follow Equations~\eqref{eq:whole-contrasts}--\eqref{eq:whole-slope}, with the benchmark weighting and the 10,000-resample family bootstrap of Section~\ref{sec:intervention-setup}.
 %
-A continuation that reaches its allowance before the reasoning closes counts as incorrect, and its reasoning length lies between the observed length and the allowance.
+Simultaneous intervals cover the lower and upper bounds of every contrast together.
 %
-An unfinished continuation retains the full range of both outcomes.
-%
-Simultaneous intervals cover these lower and upper bounds together.
-%
-The primary analysis is full strength, where the token and accuracy contrasts of the eight models and of the pooled population share one simultaneous envelope.
+The primary analysis is full strength, where the token and accuracy composites of the eight models and of the pooled population share one simultaneous envelope.
 %
 The comparison across strengths was declared while the base runs were in progress, before their outcomes were analyzed.
 %
-It places all strengths under a second envelope and summarizes each model by the least-squares slope of its family-level effect on $\log_2$ strength.
+It places all strengths and the slopes of Equation~\eqref{eq:whole-slope} under a second envelope.
 %

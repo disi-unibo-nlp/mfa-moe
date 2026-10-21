@@ -279,3 +279,20 @@
 - on: text
 - seen: MoE 2026-10
 
+
+### LOC-042: Frame the paper around both intervention results
+- level: hard
+- applies: prose, sections
+- why: On 2026-10-21 the author chose to reframe the abstract, introduction and conclusion once whole-reasoning steering showed state-specific effects that the pulsed edits lacked; the title stays.
+- judge: Do the abstract, introduction, Discussion and Conclusion state both findings, that brief pulsed edits leave the next state and the cost unchanged while steering expert selection throughout reasoning changes reasoning length and accuracy in a state-specific way, with each claim matching the final whole-reasoning receipt and its intervals, and the title unchanged?
+- on: text
+- seen: MoE 2026-10
+- supersedes: LOC-041
+
+### LOC-043: Draft whole-reasoning prose only from exporter receipts
+- level: hard
+- applies: prose, tables, plots, process
+- why: On 2026-10-21 the author approved drafting the Results against the intermediate combined receipt and replacing every number with the final receipt.
+- judge: Does every whole-reasoning number in the active sources come from figures/journal/data/whole_results.json written by scripts/paper/export_whole_results.py from a sealed EFFECTS_WHOLE.json, with the source receipt named in each generated exhibit, and no hand-typed or mock value?
+- on: text
+- seen: MoE 2026-10
