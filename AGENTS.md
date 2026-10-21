@@ -1,3 +1,18 @@
+**Incidents and top-up r11 — 2026-10-21 19:25 Rome (Claude supervises):**
+- WORK nearly filled at 16:10. Twelve base shards (r7 and r8) failed when a full audit write met the WORK
+  space reserve, and the release monitors would have cancelled all production at 14 GiB free. All four monitors
+  (r7-r10) were cancelled. 52 GB of unrelated Hugging Face weights moved from `lmolfett/cache/huggingface` to
+  FAST (`/leonardo_scratch/fast/IscrC_MIOSR/lmolfett/work-offload/cache/huggingface`; the old path is a link).
+  WORK then had about 60 GB free. GPU cutoffs are enforced inside each shard; no monitor watches r7-r10.
+- Weight loading hangs: every hang froze on a checkpoint file stored on Lustre target OST 107 (Gemma
+  `model-00002-of-00002.safetensors`, Qwen3.5 `model.safetensors-00010-of-00014.safetensors`). Hung shards are
+  cancelled and resubmitted by hand from their frozen release; see the REPLACEMENT*.json receipts. Moving the
+  two files (`lfs migrate`) awaits the user.
+- r11 (commit c41d23d) runs the never-started rows of the 13 failed base shards (12 audit-reserve failures plus
+  GLM shard 2/24, an engine RPC timeout), with the parent UIDs and seeds. Its combine job 61646735 is the
+  final analysis: `report/whole-reasoning-20261021-r11/analysis-combined/EFFECTS_WHOLE.json`. r10's combine
+  stays as a fallback without the top-ups.
+
 **Whole-reasoning production and strength sweep live — 2026-10-21 15:20 Rome (Claude supervises; Codex frozen):**
 - Base production (one strength per model, unsteered rows included):
   - r7 (`report/whole-reasoning-20261021-r7`, commit c48806a): full strength for Qwen3.6, Qwen3.5,
