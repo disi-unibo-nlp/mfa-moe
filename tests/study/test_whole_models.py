@@ -9,8 +9,8 @@ from unittest.mock import patch
 import torch
 
 from moe_exp.final_routing.operator import score_override_dual_masked
-from moe_exp.study import whole
-from moe_exp.study.common import CLASSES, WORK
+from moe_exp.study import driver, whole
+from moe_exp.study.common import CLASSES, WORK, digest
 from moe_exp.study.whole import build_manifest, dose_counts, directions
 
 
@@ -99,31 +99,89 @@ class SigmoidRouterTests(unittest.TestCase):
         self.assertTrue(torch.equal(ids.sort(-1).values, ni.sort(-1).values))
 
 
+def synthetic_cell(nomination, profile, model, dose, operation):
+    """A deterministic stand-in for cell_actions whose actions follow the dose counts."""
+    counts = dose_counts(model, profile, dose, operation)
+    return {'fold': nomination['fold'], 'class': nomination['class'], 'operation': operation, 'dose': dose,
+            'target': [{'layer': 0, 'activate': list(range(counts[0] % 3)), 'deactivate': list(range(counts[1] % 5))}],
+            'random': [], 'qualified': True, 'mean_native_frequency': {'target': .1, 'random': .2}}
+
+
+def synthetic_manifest(model, families, layers, experts, k, dose='main', sweep=False):
+    """Build a manifest from synthetic natives, prompts and nominations."""
+    natives = [{'model': model, 'family': f'{i:03d}', 'benchmark': 'math500', 'fold': i % 5,
+                'seed': 100+i, 'source': {'attempt_id': str(i), 'prefix_tokens': 12},
+                'profile_sha256': 'profile'} for i in range(families)]
+    profile = {'layers': list(range(layers)), 'native_k': k, 'experts': experts,
+               'card': {'max_model_len': 32768, 'max_tokens': None}}
+    nominations = {'sha256': 'nomination', 'release_commit': 'abc',
+                   'records': [{'fold': f, 'class': c} for f in range(5) for c in CLASSES]}
+    with patch('moe_exp.study.whole.cell_actions', side_effect=synthetic_cell):
+        return build_manifest(model, dose, nominations, {'models': {model: profile}}, natives,
+                              {r['family']: [1, 2] for r in natives}, True, sweep=sweep)
+
+
 class ManifestTests(unittest.TestCase):
-    def manifest(self, model, families, layers, experts, k):
-        natives = [{'model': model, 'family': f'{i:03d}', 'benchmark': 'math500', 'fold': i % 5,
-                    'seed': 100+i, 'source': {'attempt_id': str(i), 'prefix_tokens': 12},
-                    'profile_sha256': 'profile'} for i in range(families)]
-        profile = {'layers': list(range(layers)), 'native_k': k, 'experts': experts,
-                   'card': {'max_model_len': 32768, 'max_tokens': None}}
-        nominations = {'sha256': 'nomination', 'records': [{'fold': f, 'class': c} for f in range(5) for c in CLASSES]}
-
-        def cell(nomination, profile, model, dose, operation):
-            return {'fold': nomination['fold'], 'class': nomination['class'], 'operation': operation,
-                    'target': [], 'random': [], 'qualified': True}
-        with patch('moe_exp.study.whole.cell_actions', side_effect=cell):
-            return build_manifest(model, 'main', nominations, {'models': {model: profile}}, natives,
-                                  {r['family']: [1, 2] for r in natives}, True)
-
     def test_row_counts_follow_each_models_suppress_classes_and_roster(self):
         for model, families, layers, experts, k in (('glm', 129, 46, 64, 4), ('lfm25', 112, 38, 64, 4),
                                                     ('gemma', 129, 30, 128, 8)):
-            value = self.manifest(model, families, layers, experts, k)
+            value = synthetic_manifest(model, families, layers, experts, k)
             expected = families*(2+2*(len(CLASSES)+len(directions(model)['suppress'])))
             self.assertEqual(len(value['records']), expected)
             self.assertEqual(len({r['uid'] for r in value['records']}), expected)
             canary = whole.canary_rows({**value, 'sha256': 'synthetic'})
             self.assertEqual(sum(r['operation'] != 'native' for r in canary), 32)
+
+    def test_base_manifests_of_the_running_releases_are_unchanged(self):
+        # Digests from the code that built the r7/r8 production manifests (commit a7df701), on the
+        # same synthetic inputs: the strength sweep must not move any planned row or UID.
+        frozen = {('gemma', 'main'): '171a90091a827d91d7f4e875d4559457f25f1ac3f5013f4019bdfe67082b7f9a',
+                  ('glm', 'half'): '5e82f59ffad516d7bbdccb25f3d27dc300187dcb87bc3459c2be0ecac8632c9c',
+                  ('gpt', 'half'): '8c0b31d3d9e96c6309921bddc8ef306f5ea223094865279a0a35afc5b098203f',
+                  ('lfm25', 'main'): '9bf6583a95fc137768b8b2be5432cd00e2702da18504c0c765be6a291a2a41ce'}
+        shapes = {'gemma': (129, 30, 128, 8), 'glm': (129, 46, 64, 4), 'gpt': (129, 24, 32, 4), 'lfm25': (112, 38, 64, 4)}
+        for (model, dose), expected in frozen.items():
+            self.assertEqual(digest(synthetic_manifest(model, *shapes[model], dose=dose)), expected)
+
+
+class StrengthSweepTests(unittest.TestCase):
+    def test_counts_grow_with_strength_and_keep_native_top_k(self):
+        b = driver.binding()
+        for model in whole.PLAN:
+            profile = b['models'][model]
+            layers, experts, k = len(profile['layers']), profile['experts'], profile['native_k']
+            for operation in ('promote', 'suppress'):
+                counts = [dose_counts(model, profile, dose, operation) for dose in ('quarter', 'half', 'main')]
+                for role in (0, 1):
+                    series = [count[role] for count in counts]
+                    self.assertEqual(series, sorted(series), (model, operation, role))
+                    # A role present at full strength is present at every strength.
+                    self.assertTrue(series[-1] == 0 or series[0] > 0)
+                activate, deactivate = counts[-1]
+                self.assertLessEqual(activate, layers*(k-1))
+                self.assertLessEqual(deactivate, layers*(experts-k))
+
+    def test_sweep_manifest_runs_only_efficiency_cells_without_natives(self):
+        model, shape = 'gemma', (129, 30, 128, 8)
+        sweep = synthetic_manifest(model, *shape, dose='half', sweep=True)
+        base = synthetic_manifest(model, *shape, dose='half')
+        planned = len(directions(model)['promote'])+len(directions(model)['suppress'])
+        self.assertEqual(len(sweep['records']), 129*2*planned)
+        self.assertEqual(sweep['design'], 'efficiency-sweep')
+        self.assertNotIn('design', base)
+        self.assertFalse(any(r['operation'] == 'native' or r['audit_capture'] for r in sweep['records']))
+        self.assertTrue(all(whole.efficiency_directed(model, r['operation'], r['class']) for r in sweep['records']))
+        self.assertEqual(len({r['uid'] for r in sweep['records']}), len(sweep['records']))
+        quarter = synthetic_manifest(model, *shape, dose='quarter', sweep=True)
+        main = synthetic_manifest(model, *shape)
+        self.assertFalse({r['uid'] for r in quarter['records']} & {r['uid'] for r in main['records']})
+        # Sweep rows are the base rows of the same dose: same prompt, seed and actions (common random numbers).
+        strip = lambda row: {k: v for k, v in row.items() if k not in ('uid', 'audit_capture')}
+        same_dose = {(r['family'], r['arm'], r['class']): strip(r) for r in base['records']}
+        for row in sweep['records']:
+            self.assertEqual(strip(row), same_dose[row['family'], row['arm'], row['class']])
+        seeds = {(r['family'], r['arm'], r['class']): r['seed'] for r in main['records']}
+        self.assertTrue(all(seeds[r['family'], r['arm'], r['class']] == r['seed'] for r in quarter['records']))
 
 
 class CanaryDeadlineTests(unittest.TestCase):
@@ -172,6 +230,16 @@ class CanaryDecisionTests(unittest.TestCase):
             self.assertEqual(whole.canary_decision('gpt', {'sha256': 'manifest'})['decision'], 'proceed')
             with self.assertRaisesRegex(ValueError, 'canary decision differs'):
                 whole.canary_decision('gpt', {'sha256': 'another manifest'})
+
+    def test_sweep_production_is_never_gated_or_projected(self):
+        schedule = {'production': {'gpt': [{'id': '1', 'gpus': 2, 'minutes': 240}]}}
+        progress = {'pairs': 90, 'executable_pairs': 100}
+        with patch.object(whole, 'SWEEP', {'gpt': 'main'}), \
+             patch.object(whole, 'production_progress', return_value=progress), \
+             patch.object(whole, 'fluency') as gate, patch.object(whole, 'check_projection') as projection:
+            whole.check_production(schedule, 'gpt', {'1': {'elapsed': 10000}}, set(), set(), set(), 1.)
+        gate.assert_not_called()
+        projection.assert_not_called()
 
     def test_models_without_a_canary_attempt_are_not_advanced(self):
         schedule = {'canaries': {'gpt': []}, 'production': {'gpt': []}}
