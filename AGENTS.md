@@ -1,3 +1,12 @@
+**Second-round top-ups r12-r14 — 2026-10-22 00:20 Rome (Claude supervises):**
+- Every r7-r11 production job had ended. r12 (base strengths: LFM2.5 1,219 rows in 9 shards, Qwen3-30B 165,
+  Qwen3.6 102, Qwen3.5 87, GLM 59), r13 (LFM2.5 quarter, 404 rows) and r14 (LFM2.5 half, 448 rows) run the
+  never-started rows of all parent shards (commit b6ce695; r12 leaves rows started by r11 to it).
+- FINAL combined analysis: r14 whole-combine 61671175 -> `report/whole-reasoning-20261021-r14/analysis-combined/EFFECTS_WHOLE.json`
+  (r7-r14, every top-up joined to its parent by UID). r10 and r11 combines are intermediate checks only.
+- Paper exporter: `scripts/paper/export_whole_results.py --effects <final receipt>`; drafting may use the r11
+  receipt (LOC-043), every number replaced by the final one.
+
 **Related Work rebuilt from a full literature search — 2026-10-21 23:00 Rome (Claude; manuscript edit authorized by the user):**
 - `journal/related_work.tex` now has six mechanism families: routing and specialization, reasoning states, readouts and causal evidence, representation steering, expert-level control, and efficient reasoning with compression. It cites 43 works.
 - The whole paper cites 49 works, inside the author's 40-50 budget: 22 new entries appended to `references.bib`, existing bytes unchanged. `bib-accepted.txt` lists 5 hand-checked entries.
