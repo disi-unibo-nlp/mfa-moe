@@ -58,6 +58,9 @@ CUTOFF = float(os.environ.get('WHOLE_CUTOFF', '1792726200'))  # default 2026-10-
 require(set(MODELS) <= PLAN.keys(), 'unknown whole model')
 require(set(SWEEP) <= set(MODELS) and set(SWEEP.values()) <= DOSES.keys(), 'unknown whole sweep model or dose')
 SHARDS = {model: plan['sweep_shards' if model in SWEEP else 'shards'] for model, plan in PLAN.items()}
+# A release may size its own shards ("model:count,..."), e.g. a top-up of a few hundred rows.
+SHARDS.update({model: int(count) for model, count in
+               (item.split(':') for item in os.environ.get('WHOLE_SHARDS', '').split(',') if item)})
 RUN_MINUTES = {model: plan['run_minutes'] for model, plan in PLAN.items()}
 CANARY_MINUTES = {model: plan['canary_minutes'] for model, plan in PLAN.items()}
 ROOT = Path(os.environ.get('WHOLE_ROOT', REPO/'report/whole-reasoning-20261020'))
@@ -312,6 +315,8 @@ def prepare_model(b: dict, model: str, scope: bool) -> dict:
     A base release publishes the main and half-dose manifests; a sweep release publishes the one sweep
     dose and selects it (no canary).
     """
+    if (ROOT/'TOPUP.json').exists():
+        return {model+':'+SWEEP[model]: topup_manifest(model, verified(ROOT/'TOPUP.json')['models'][model])}
     from moe_exp.final_routing.importer import derive_whole
     from .runtime import prompt_prefix
     folder = ROOT/model
@@ -335,6 +340,34 @@ def prepare_model(b: dict, model: str, scope: bool) -> dict:
             publish(folder/'SELECTED.json', {'dose': dose, 'manifest_sha256': value['sha256'], 'canary_job': None,
                                              'sweep': True})
     return results
+
+
+def topup_manifest(model: str, spec: dict) -> dict:
+    """Publish the never-started rows of a base release's failed shards as this release's manifest.
+
+    A top-up release reruns nothing: rows with any saved state in the parent store (complete, output or
+    partial) stay with the parent, where an unfinished row remains an unknown outcome. The rows keep their
+    parent UIDs, seeds and actions, so whole_effects joins them to the parent release by UID.
+
+    Args:
+        model: Model whose base release lost shards.
+        spec: {'parent': parent release root, 'shards': [[index, count], ...]} of the failed jobs.
+    """
+    dose, parent = SWEEP[model], Path(spec['parent'])
+    base = verified(manifest_path(model, dose, parent))
+    store = driver.Store(parent/'stores'/model/dose/'units')
+    families = sorted({row['family'] for row in base['records']})
+    failed = {family for i, family in enumerate(families) for index, count in spec['shards'] if i % count == index}
+    rows = [row for row in base['records'] if row['family'] in failed and not store.state(row['uid'])]
+    require(rows, 'top-up has no never-started rows')
+    kept = {k: v for k, v in base.items() if k not in ('sha256', 'records', 'planned', 'executable')}
+    value = publish(manifest_path(model, dose), {
+        **kept, 'records': rows, 'planned': len(rows),
+        'executable': sum(row['nomination_status'] == 'nominated' for row in rows), 'design': 'top-up',
+        'parent_root': str(parent), 'parent_manifest_sha256': base['sha256'], 'failed_shards': spec['shards']})
+    publish(ROOT/model/'SELECTED.json', {'dose': dose, 'manifest_sha256': value['sha256'], 'canary_job': None,
+                                         'sweep': True, 'topup': True})
+    return {key: value[key] for key in ('sha256', 'planned', 'executable', 'scope')}
 
 
 def manifest(model: str, dose: str | None = None) -> dict:
@@ -691,6 +724,7 @@ def submit_stage(command: str, *, model=None, dose=None, shard=None, dependency=
                'WHOLE_MODELS': ','.join(MODELS), 'WHOLE_GPU_CEILING': str(GPU_CEILING),
                'WHOLE_CPU_CEILING': str(CPU_CEILING), 'WHOLE_CUTOFF': str(CUTOFF),
                'WHOLE_SWEEP': ','.join(m+':'+d for m, d in SWEEP.items()),
+               'WHOLE_SHARDS': ','.join(f'{m}:{SHARDS[m]}' for m in MODELS),
                'MOE_EXP_SCORING_PROCESSES': '8' if command == 'extract' else '2'}
     cmd = ['sbatch', '--parsable', '--account=iscrc_miosr', '--partition=boost_usr_prod', '--qos=normal',
            '--nodes=1', '--ntasks=1', f'--cpus-per-task={cpus}', f'--mem={memory}G', f'--time={minutes}',
@@ -955,10 +989,10 @@ def source_extractions(schedule: dict) -> list[str]:
     """Extraction job IDs of every release named in SOURCES.json, for the combined analysis."""
     ids = set()
     for source in verified(ROOT/'SOURCES.json')['sources']:
-        root = Path(source['root'])
-        jobs = schedule if root == ROOT else load(root/'JOBS.json')
-        require(source['model'] in jobs['extraction'], f'{root.name} has no {source["model"]} extraction yet')
-        ids.add(jobs['extraction'][source['model']]['id'])
+        for root in map(Path, [source['root'], *source.get('topups', [])]):
+            jobs = schedule if root == ROOT else load(root/'JOBS.json')
+            require(source['model'] in jobs['extraction'], f'{root.name} has no {source["model"]} extraction yet')
+            ids.add(jobs['extraction'][source['model']]['id'])
     return sorted(ids)
 
 
@@ -1106,7 +1140,8 @@ def validate_stage() -> None:
     nomination_proof = audit_nominations()
     # The suite tests the default GPT/Qwen3.6 configuration plus explicit multi-model cases, so it runs
     # in a fresh interpreter without this release's model selection.
-    settings = ('WHOLE_MODELS', 'WHOLE_GPU_CEILING', 'WHOLE_CPU_CEILING', 'WHOLE_CUTOFF', 'WHOLE_SWEEP')
+    settings = ('WHOLE_MODELS', 'WHOLE_GPU_CEILING', 'WHOLE_CPU_CEILING', 'WHOLE_CUTOFF', 'WHOLE_SWEEP',
+                'WHOLE_SHARDS')
     env = {k: v for k, v in os.environ.items() if k not in settings}
     suite = subprocess.run([sys.executable, '-B', '-m', 'unittest', 'discover', '-v', '-s', str(REPO/'tests/study'),
                             '-t', str(REPO/'tests/study')], env=env, capture_output=True, text=True)

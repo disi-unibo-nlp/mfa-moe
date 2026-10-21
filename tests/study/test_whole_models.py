@@ -184,6 +184,31 @@ class StrengthSweepTests(unittest.TestCase):
         self.assertTrue(all(seeds[r['family'], r['arm'], r['class']] == r['seed'] for r in quarter['records']))
 
 
+class TopUpTests(unittest.TestCase):
+    def test_topup_keeps_only_never_started_rows_of_the_failed_shards(self):
+        from moe_exp.study.common import publish
+        with tempfile.TemporaryDirectory(dir=WORK) as directory:
+            parent, child = Path(directory)/'parent', Path(directory)/'child'
+            rows = [{'uid': digest([family, arm]), 'family': family, 'arm': arm, 'nomination_status': 'nominated'}
+                    for family in ('f0', 'f1', 'f2', 'f3') for arm in ('native', 'target_promote')]
+            base = publish(whole.manifest_path('gemma', 'main', parent),
+                           {'model': 'gemma', 'dose': 'main', 'scope': 'prompt-and-generated-reasoning', 'records': rows})
+            units = parent/'stores/gemma/main/units'
+            publish(units/digest(['f1', 'native'])/'RESULT.json', {'status': 'complete'})
+            (units/digest(['f3', 'native'])).mkdir(parents=True)
+            (units/digest(['f3', 'native'])/'PARTIAL.json').write_text(json.dumps({'tokens': [1, 2]}))
+            with patch.object(whole, 'ROOT', child), patch.object(whole, 'SWEEP', {'gemma': 'main'}):
+                result = whole.topup_manifest('gemma', {'parent': str(parent), 'shards': [[1, 2]]})
+                value = whole.load(whole.manifest_path('gemma', 'main', child))
+                selected = whole.load(child/'gemma/SELECTED.json')
+        # Shard 1/2 holds f1 and f3; their started rows stay with the parent as complete or unknown.
+        self.assertEqual({(r['family'], r['arm']) for r in value['records']},
+                         {('f1', 'target_promote'), ('f3', 'target_promote')})
+        self.assertEqual(result['planned'], 2)
+        self.assertEqual((value['design'], value['parent_manifest_sha256']), ('top-up', base['sha256']))
+        self.assertEqual((selected['sweep'], selected['manifest_sha256']), (True, value['sha256']))
+
+
 class CanaryDeadlineTests(unittest.TestCase):
     def test_rows_running_at_the_deadline_count_as_reaching_the_length_limit(self):
         from moe_exp.study import driver
