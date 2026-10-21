@@ -1,5 +1,39 @@
 # Research decisions and open questions
 
+## ADR 20261015 32: direct routing interventions and final-study agreement
+
+Status: author-directed reframing; remaining design choices are under discussion.
+The author requests expert (de)activation in place of physical compaction for
+the final paper experiments, following the SteerMoE reference. Physical compact
+loading, resident-byte qualification and accuracy-memory curves leave the
+revised completion requirements. Earlier allocations, scientific outcomes and
+source seals retain their recorded identities and statuses.
+
+The author has selected causal reasoning effects with accuracy and token cost;
+all eight models including LFM2.5; native plus targeted/random activation and
+deactivation; all seven reasoning classes, three depths and a strength sweep;
+and matched frozen-prefix continuations through the final answer. Expert-count
+versus score-amplitude strength, sweep population, duration, uncertainty and
+the complete resource/ownership transition remain open. These decisions do not
+approve a new workload or alter the accepted r6 execution graph by themselves.
+
+The author subsequently required the completed analyses to determine the
+hypotheses before further sweep choices. Q6–Q8 are paused for that grounding.
+The audit confirms discovery-only class/expert nomination, but also preset depth
+thirds/configurations and no selector dependency on transition or coordination
+findings. The agreement draft now maps retained findings to predictions and
+falsification, and requires discovery evidence, prefix conditions, matched
+controls and independent confirmation for primary claims. The accepted breadth
+remains recorded; its localization/dose/generalization purpose must be explicit.
+
+The [agreement draft](debate/final-routing-experiments-20261015.md) records the
+accepted answers, reuse facts, reframed to-dos and remaining design tree. This
+prospective direction supersedes earlier physical-memory priorities for the
+paper's revised experiments. Direct routing interventions with resident weights
+and unchanged top-k establish neither physical memory savings nor a reduction
+in per-token expert computation; generated-token cost is measured alongside
+accuracy. Final shared understanding precedes implementation and launch.
+
 ## ADR 20261015 31: existing reader price evidence and protected continuation
 
 Reader allocations 60564472 and its deterministic recovery 60566412 failed 1:0
@@ -181,6 +215,33 @@ experiment continuation performs no canonical manuscript edits or remote
 writes; concurrent manuscript work and unrelated dirty files are preserved.
 See the existing r6 recap and `OPS_R1_LOADER_*.json` receipts for acceptance and
 observed results. The earlier exhausted-attempt statement in ADR25 is historical.
+
+## ADR 20261014 26: authorized CL journal rewrite from completed evidence
+
+The user invoked `paper-writer`, requested a complete journal rewrite with
+author-native figures and small model icons, and instructed continuation.
+They supplied Lorenzo Molfetta, Davide Freddi and Gianluca Moro in that order,
+with `name.surname@unibo.it` emails. This authorizes the canonical manuscript
+rewrite for this task, superseding the earlier manuscript deferral. The
+manual-push instruction and scientific campaign boundaries remain unchanged.
+
+Canonical entry: `paper/6a510c6db0d9b08aa438c142/main.tex`; framing and source
+mapping: [writing brief](../6a510c6db0d9b08aa438c142/writing_brief.md) and
+[assembly map](../6a510c6db0d9b08aa438c142/journal/ASSEMBLY_MAP.md).
+The journal uses `clv2025`, `compling.bst`, a scientific abstract and structure,
+five editable vector figures and authentic model images. Completed seven-model
+readout, retention, occupancy and native-residence estimates are reused with
+their original populations and uncertainty. Two-model temporal results and
+historical intervention outcomes retain their narrower scope and controls.
+
+The original 52-file active text closure and 157 display dispositions are
+preserved in the dated source archive. No new annotation, fit, bootstrap,
+generation, scientific-source repair, controller or Slurm workload is created.
+The seven-model research contract is not narrowed: paired physical-removal
+accuracy/memory and new targeted-control outcomes remain unmeasured. Local
+document construction and source-package rebuilds do not establish scientific
+completion or remote delivery. Final review and delivery observations belong
+to the manuscript's local build/delivery receipts.
 
 ## ADR 20261014 25: authorized r6 operations amendment and single validation
 

@@ -1,5 +1,17 @@
 # Active analysis and preserved experiment contracts
 
+**Author-directed reframe — 2026-10-15:** the final paper study will use direct
+expert (de)activation; physical compaction and accuracy-memory curves leave its
+completion path. The author selected eight models including LFM2.5, causal
+reasoning/accuracy/token outcomes, five arms, seven classes, three depths and a
+strength sweep from matched frozen prefixes. The author requires a direct
+finding-to-hypothesis justification before resolving the remaining sweep choices;
+Q6–Q8 are paused for this grounding. The exact sweep and complete workload remain
+under discussion. Use the [current agreement and to-do draft](debate/final-routing-experiments-20261015.md)
+and [ADR32](DECISIONS.md#adr-20261015-32-direct-routing-interventions-and-final-study-agreement).
+The sealed r6 graph is unchanged by this planning entry. Earlier memory-first
+requirements and queue descriptions below retain their historical scope.
+
 **Latest verified execution — 2026-10-15:** reader pricing and the controller's
 embedded failure-identity lookup are repaired. Twelve tests and actual coverage/
 stored-receipt checks pass. The 64 completed coverage observations (maximum

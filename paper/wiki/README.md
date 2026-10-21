@@ -1,3 +1,11 @@
+**Current design discussion — 2026-10-15:** the author requests direct expert
+(de)activation for the final eight-model study, replacing physical-compaction
+requirements. Accepted choices and the remaining scientific/resource decisions
+are in the [agreement and to-do draft](debate/final-routing-experiments-20261015.md)
+and [ADR32](DECISIONS.md#adr-20261015-32-direct-routing-interventions-and-final-study-agreement).
+Earlier execution snapshots and memory-first priorities below are historical;
+the existing sealed graph has not been modified by this planning discussion.
+
 **Latest verified execution — 2026-10-15:** reader pricing and the controller's
 embedded failure-identity lookup are repaired. Twelve tests and actual coverage/
 stored-receipt checks pass. The 64 completed coverage observations (maximum
@@ -45,6 +53,13 @@ an explicit extension. See [ADR28](DECISIONS.md#adr-20261014-28-preserved-full-e
 and [the recap](../../report/research-campaign-v3-20261014-r6/RECAP.md).
 
 # MoE routing and reasoning research wiki
+
+**Journal rewrite authorized — 2026-10-14:** the author's current `paper-writer`
+request supersedes manuscript deferral for this editing task. [ADR26](DECISIONS.md#adr-20261014-26-authorized-cl-journal-rewrite-from-completed-evidence)
+records the supplied author metadata, CL journal structure, compact icons and
+editable native figures. The paper reuses completed results; outstanding
+seven-model removal/utility/control measurements and manual remote publication
+remain separate. The original report and scientific artifacts are preserved.
 
 **Latest terminal boundary — 2026-10-14:** operations validation 60510557 passed
 20 contracts but failed inherited test discovery on unittest's cached top-level

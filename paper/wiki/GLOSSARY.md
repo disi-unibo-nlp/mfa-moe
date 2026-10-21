@@ -20,6 +20,10 @@
 | Current-class association | Routing during a labelled sentence related to that sentence's class | Source-only routing associated with the next sentence's class |
 | Source-conditioned next-class association | Routing in sentence t related to the original adjacent label at t+1, comparing destinations from the same source class | Using destination routing or retrospective future text as a deployable prefix input |
 | Bias | Alter selection scores before native top-k | Membership-preserving reweighting |
+| Routing deactivation | Suppress nominated layer-qualified experts in the selection procedure while retaining the model's allocated weights; the exact score operator is declared | Physical weight removal, output-zeroing after selection, or guaranteed memory/compute savings |
+| Output ablation | Zero selected expert contributions after the native selection under an explicit normalization rule | Excluding experts before selection and replacing them with other native top-k candidates |
+| Intervention strength | A declared control such as the number of targeted experts or calibrated score displacement; its definition is fixed before evaluation | Treating expert-count levels and score amplitudes as the same treatment |
+| Conditional continuation utility | Final-answer accuracy and new/total token cost when completing a declared shared prefix under assigned interventions | Original-question policy utility or benchmark performance from fresh original-prompt runs |
 | Forced inclusion | Ensure specified experts enter the executed set while preserving the declared k | A small logit perturbation |
 | Reweighting | Change the executed selected-mixture weights under a specified support rule | Expert selection frequency |
 | Dose or target engagement | Realized membership/weight displacement during intended action opportunities | Nominal bias magnitude or substantive success |
