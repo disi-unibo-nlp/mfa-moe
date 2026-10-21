@@ -352,6 +352,12 @@ class ExecutionGateTests(unittest.TestCase):
         root_patch = patch.object(whole, 'ROOT', self.root)
         root_patch.start()
         self.addCleanup(root_patch.stop)
+        # These gate regressions use the GPT/Qwen3.6 sizes of release r5 under its 72 GPU-hour ceiling.
+        for name, values in (('SHARDS', {'gpt': 2, 'qwen36': 7}), ('RUN_MINUTES', {'gpt': 165, 'qwen36': 240}),
+                             ('CANARY_MINUTES', {'gpt': 45, 'qwen36': 90})):
+            sizes = patch.dict(getattr(whole, name), values)
+            sizes.start()
+            self.addCleanup(sizes.stop)
         publish(self.root/'RELEASE.json', {'release_root': str(whole.REPO),
                 'prior_usage': {'new_gpu_hours': 2., 'new_cpu_core_hours': 3.}})
 

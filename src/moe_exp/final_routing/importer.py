@@ -94,13 +94,23 @@ def discovery_inputs(binding, model):
         sources, counts, tokens and the provenance hashes of those inputs.
     """
     import numpy as np
+    import pandas as pd
     config = binding['config']
     if model == 'lfm25':
+        from moe_exp.expert_memory_study.selection import validate_counts
+        from .common import CLASSES
         data = load(Path(config['root'])/'lfm25/DISCOVERY_INPUTS.json')
+        sources = data['sources']
+        # The same archive checks as research_campaign_v3_r6.inputs.counts_for.
         with np.load(data['counts'], allow_pickle=False) as archive:
-            counts, tokens = archive['counts'], archive['tokens']
-        return data['sources'], counts, tokens, {'discovery_inputs_sha256': data['sha256'],
-                                                 'counts_sha256_file': file_sha(data['counts'])}
+            ids, counts, tokens = (archive[k] for k in ('attempt_id', 'counts', 'tokens'))
+            require(list(archive['classes']) == list(CLASSES)+['ALL_REASONING', 'ALL_LABELLED'], 'class order mismatch')
+        index = pd.Index(ids).get_indexer([s['attempt_id'] for s in sources])
+        require((index >= 0).all() and len(index) == len(ids), 'archive row join failed')
+        counts, tokens = counts[index], tokens[index]
+        validate_counts(counts, tokens, binding['models'][model]['native_k'])
+        return sources, counts, tokens, {'discovery_inputs_sha256': data['sha256'],
+                                         'counts_sha256_file': file_sha(data['counts'])}
     from moe_exp.research_campaign_v3_r6.inputs import counts_for
     source = Path(config['source_campaign'])
     parent = load(source/'CAMPAIGN.json')
