@@ -150,7 +150,7 @@ GPT-OSS-20B promotes with 10 activated and 50 deactivated pairs and suppresses w
 %
 Each other model receives the same share of its own pairs, scaling activation counts by its number of MoE layers and deactivation counts by its number of layer--expert pairs, relative to the 48 layers and 128 experts of Qwen3-30B-A3B.
 %
-Full, half and quarter strength edit $\lceil f\,n\rceil$ pairs for $f\in\{1,\tfrac12,\tfrac14\}$ and each published count $n$.
+Full, half and quarter strength edit $\lceil \phi\,n\rceil$ pairs for $\phi\in\{1,\tfrac12,\tfrac14\}$ and each published count $n$.
 %
 
 The direction of each edit comes from the native association between reasoning states and the remaining solution length (Appendix~\ref{app:efficiency-link}).
@@ -164,11 +164,49 @@ A matched random control edits the same number of pairs at the same layers, with
 A targeted-minus-random contrast therefore tests the nominated identities at a fixed edit size and placement.
 %
 
-Efficiency is the reduction in $\log(1+T)$, where $T$ counts the tokens until the reasoning closes, together with the change in strict accuracy.
+Let $T$ count the tokens until the reasoning closes and let $y\in\{0,1\}$ be strict answer correctness.
 %
-Steering is efficient when the simultaneous lower bound of the token reduction exceeds zero and the accuracy change stays above $-5$ percentage points.
+Within a family, a steered cell $(o,c)$ with operation $o\in\{\mathrm{promote},\mathrm{suppress}\}$ and strength $\phi$ compares the targeted continuation with its matched random control through
+\begin{equation}
+ \Delta^{\mathrm{tok}}_{o,c,\phi}=\log\bigl(1+T^{\mathrm{rand}}_{o,c,\phi}\bigr)-\log\bigl(1+T^{\mathrm{tgt}}_{o,c,\phi}\bigr),\qquad
+ \Delta^{\mathrm{acc}}_{o,c,\phi}=y^{\mathrm{tgt}}_{o,c,\phi}-y^{\mathrm{rand}}_{o,c,\phi},
+ \label{eq:whole-contrasts}
+\end{equation}
+so positive values mean that the nominated experts shorten the reasoning or raise accuracy relative to an edit of the same size and placement.
 %
-The lexical readout of Appendix~\ref{app:lexical-readout} also measures the share of reasoning tokens in each state, testing whether a promoted state grows and a suppressed state shrinks.
+Replacing the random continuation with the native one of the same family gives the companion contrasts against unedited routing.
+%
+A continuation that reaches its allowance $A$ before the reasoning closes has an unidentified reasoning length and counts as incorrect, and a continuation that never finishes identifies neither outcome.
+%
+We therefore keep $T\in[T^{\mathrm{obs}},A]$ and $y=0$ for the first case and $T\in[0,A]$ and $y\in[0,1]$ for the second, and each contrast in Equation~\eqref{eq:whole-contrasts} inherits the interval whose lower end pairs the less favorable bound of both arms.
+%
+
+The efficiency composite of model $m$ averages the efficiency-directed cells $\mathcal C_m$, which promote the states that precede shorter remaining reasoning and suppress those that precede longer reasoning,
+\begin{equation}
+ \bar\Delta_{m,\phi}=\frac{1}{|\mathcal C_m|}\sum_{(o,c)\in\mathcal C_m}\Delta_{o,c,\phi},
+ \label{eq:whole-composite}
+\end{equation}
+for tokens and accuracy separately, and the pooled composite gives every model the same weight within a family.
+%
+Steering is efficient for model $m$ when the simultaneous lower bound of $\bar\Delta^{\mathrm{tok}}_{m,1}$ exceeds zero and that of $\bar\Delta^{\mathrm{acc}}_{m,1}$ exceeds $-0.05$, that is, when full-strength steering shortens the reasoning at a cost of at most five accuracy points.
+%
+Across strengths, the response of model $m$ is the least-squares slope of its family-level composite on $x_\phi=\log_2\phi$,
+\begin{equation}
+ \beta_m=\sum_{\phi} w_\phi\,\bar\Delta_{m,\phi},\qquad w_\phi=\frac{x_\phi-\bar x}{\sum_{\phi'}(x_{\phi'}-\bar x)^2},
+ \label{eq:whole-slope}
+\end{equation}
+which for quarter, half and full strength equals half the difference between the full-strength and the quarter-strength composite.
+%
+A positive slope means that doubling the number of edited pairs moves the composite further in the efficient direction.
+%
+
+Two quantities describe what the edit does to the reasoning itself.
+%
+The occupancy $\pi_c$ of state $c$ is the share of the completion allowance spent in sentences that the lexical readout of Appendix~\ref{app:lexical-readout} assigns to $c$, bounded by treating unread or unexecuted reasoning as either outside or inside $c$.
+%
+The steered-state response $\rho_{o,c,\phi}=\pm\bigl(\pi^{\mathrm{tgt}}_c-\pi^{\mathrm{rand}}_c\bigr)$, with the positive sign for promotion and the negative sign for suppression, is positive when the steered state moves in the intended direction.
+%
+The breakdown rate is the share of steered continuations that reach the allowance before the reasoning closes, and repetition is the share of 16-token windows that already occurred earlier in the same continuation.
 %
 
 \subsection{Incremental information about the present state}
