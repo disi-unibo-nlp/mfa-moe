@@ -170,17 +170,20 @@ class PromptScopeTests(unittest.TestCase):
         dose = capture.counts['uid']['dose']['0']
         self.assertEqual(dose['active_prompt_positions'], 2500)
         chunk([3, 9, 9, 4], list(range(2500, 2504)))
-        self.assertEqual(capture.records['uid']['0']['positions'], [0, 1])
         active_before = float(capture.counts['uid']['dose']['0']['active_positions'])
         weights, ids = chunk([5], [2504])
+        # Audit rows reach the host at the next step's pre-hook, after the device finished the step.
+        self.assertEqual(capture.records['uid']['0']['positions'], [0, 1])
         self.assertNotIn(0, ids[0].tolist())
         self.assertEqual(float(capture.counts['uid']['dose']['0']['active_positions']), active_before)
         # Re-prefill must rebuild all counters, without counting both passes.
         chunk(prompt, list(range(2500)))
         self.assertEqual(capture.clocks['uid'].passes, 2)
+        capture._flush_whole_audit()  # release() flushes the same way
         self.assertEqual(capture.records['uid']['0']['positions'], [])
         self.assertEqual(capture.counts['uid']['dose']['0']['active_prompt_positions'], 2500)
         chunk([3], [2500])
+        capture._flush_whole_audit()
         self.assertEqual(capture.records['uid']['0']['positions'], [0])
 
     def test_original_prompt_runtime_allows_empty_prefix_only_when_flagged(self):
