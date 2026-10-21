@@ -1,0 +1,1 @@
+{"cpu_core_hour_ceiling":16.0,"models":["gpt"],"new_gpu_hour_ceiling":40.0,"no_budget_reset":true,"plan":"per-model shards, walltimes and canary caps in whole.PLAN at a7df701","sha256":"d6c3e19262b62672e0890266cb66ffe049f01d8ea4753332474eb2cffae05138"}
