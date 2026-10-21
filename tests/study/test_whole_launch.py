@@ -277,5 +277,41 @@ class EngineeringDiagnosticsTests(unittest.TestCase):
             self.assertIn('--time=15', job['args'])
 
 
+class NestedSubmissionAndRankTests(unittest.TestCase):
+    def test_stage_environment_drops_caller_slurm_state_and_keeps_stage_exports(self):
+        caller = {'SLURM_JOB_GPUS': '0,1', 'SLURM_JOB_ID': '1', 'SBATCH_ACCOUNT': 'x', 'SRUN_CPUS_PER_TASK': '16',
+                  'MOE_EXP_SCORING_PROCESSES': '2', 'PATH': '/bin'}
+        with patch.dict('os.environ', caller, clear=True):
+            env = whole.submission_environment({'MOE_EXP_SCORING_PROCESSES': '8', 'WHOLE_ROOT': '/w'})
+        self.assertFalse([k for k in env if k.startswith(('SLURM_', 'SBATCH_', 'SRUN_', 'SALLOC_'))])
+        self.assertEqual((env['MOE_EXP_SCORING_PROCESSES'], env['WHOLE_ROOT'], env['PATH']), ('8', '/w', '/bin'))
+
+    def test_ranks_may_differ_only_in_float_telemetry(self):
+        def payload(l1, changed=3., executed_ids=(1, 2)):
+            dose = {'0': {'active_positions': 5., 'changed_membership': changed, 'l1': l1, 'finite': 1.}}
+            capture = {'0': {'positions': [0], 'executed_ids': [list(executed_ids)]}}
+            return {'capture': capture, 'stats': {'dose': dose}, 'closed': True, 'passes': 1,
+                    'observed_tokens': 9, 'sha256': str(l1)+str(changed)+str(executed_ids)}
+        self.assertTrue(driver.ranks_agree(payload(1.0), payload(1.0+1e-9)))
+        self.assertFalse(driver.ranks_agree(payload(1.0), payload(1.01)))
+        self.assertFalse(driver.ranks_agree(payload(1.0), payload(1.0, changed=4.)))
+        self.assertFalse(driver.ranks_agree(payload(1.0), payload(1.0, executed_ids=(1, 3))))
+
+    def test_canary_rows_keep_production_audit_flags(self):
+        records = []
+        for index in range(8):
+            family = f'f{index}'
+            records += [{'family': family, 'benchmark': f'b{index%6}', 'arm': arm, 'operation': 'native', 'class': None,
+                         'nomination_status': 'nominated', 'audit_capture': False} for arm in ('native', 'native_repeat')]
+            records += [{'family': family, 'benchmark': f'b{index%6}', 'arm': role+'_'+operation, 'operation': operation,
+                         'class': name, 'nomination_status': 'nominated', 'audit_capture': role == 'target'}
+                        for operation, name in (('promote', 'Verify'), ('suppress', whole.SUPPRESS['gpt'][0]))
+                        for role in ('target', 'random')]
+        rows = whole.canary_rows({'model': 'gpt', 'sha256': 'm', 'records': records})
+        self.assertEqual(len(rows), 48)
+        self.assertEqual(sum(r['audit_capture'] for r in rows), 16)
+        self.assertTrue(all(r['canary'] for r in rows))
+
+
 if __name__ == '__main__':
     unittest.main()

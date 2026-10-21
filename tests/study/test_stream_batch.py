@@ -8,9 +8,7 @@ from moe_exp.study.stream import DOSE_KEYS, StreamCapture, batched_dose
 
 
 class WholeBatchTests(unittest.TestCase):
-    def test_dynamic_full_graph_preserves_operator_and_dose(self):
-        compiled_operator = torch.compile(score_override_dual_masked, backend='eager', dynamic=True, fullgraph=True)
-        compiled_dose = torch.compile(batched_dose, backend='eager', dynamic=True, fullgraph=True)
+    def test_segment_dose_equals_per_request_sums(self):
         for length, count in ((6, 2), (4, 4)):
             logits = torch.randn(length, 32)
             affinity = logits.softmax(-1)
@@ -20,13 +18,15 @@ class WholeBatchTests(unittest.TestCase):
             roles = torch.zeros((length, 2, 32), dtype=torch.bool)
             roles[:, 0, 0], roles[:, 1, 3] = True, True
             active, prompt = torch.ones(length, dtype=torch.bool), torch.zeros(length, dtype=torch.bool)
-            weights, ids = compiled_operator(logits, nw, ni, roles[:, 0], roles[:, 1], active)
-            expected_weights, expected_ids = score_override_dual_masked(logits, nw, ni, roles[:, 0], roles[:, 1], active)
-            torch.testing.assert_close(weights, expected_weights)
-            self.assertTrue(torch.equal(ids, expected_ids))
+            weights, ids = score_override_dual_masked(logits, nw, ni, roles[:, 0], roles[:, 1], active)
             lengths = torch.full((count,), length//count, dtype=torch.long)
-            torch.testing.assert_close(compiled_dose(nw, ni, weights, ids, active, prompt, roles, lengths),
-                                       batched_dose(nw, ni, weights, ids, active, prompt, roles, lengths))
+            totals = batched_dose(nw, ni, weights, ids, active, prompt, roles, lengths)
+            size = length//count
+            for group in range(count):
+                part = slice(group*size, (group+1)*size)
+                single = batched_dose(nw[part], ni[part], weights[part], ids[part], active[part], prompt[part],
+                                      roles[part], torch.tensor([size]))
+                torch.testing.assert_close(totals[group], single[0])
 
     def test_masked_operator_matches_individual_roles_and_inactive_bits(self):
         torch.manual_seed(725)
@@ -56,12 +56,12 @@ class WholeBatchTests(unittest.TestCase):
     def capture(self):
         """Two real request states sharing a layer, with prompt and generated token rows."""
         capture = object.__new__(StreamCapture)
-        capture.contract = {'experts': 32, 'native_k': 4}
+        capture.contract = {'experts': 32, 'native_k': 4, 'hook_layers': [0, 1]}
         capture.whole_slots, capture.whole_totals, capture.whole_role_cache = {'a': 0, 'b': 1}, {}, {}
         capture.next_whole_slot = 2
-        capture.whole_operator, capture.whole_dose = None, None
+        capture.whole_step, capture.whole_row_cache, capture.whole_audit_pending = 0, None, []
         capture.requests = {
-            'a': {'actions': {0: {'activate': [0], 'deactivate': [3, 4]}},
+            'a': {'actions': {0: {'activate': [0], 'deactivate': [3, 4]}, 1: {'activate': [], 'deactivate': [5]}},
                   'prompt_scope': True, 'audit_capture': True},
             'b': {'actions': {0: {'activate': [], 'deactivate': [8, 9]}},
                   'prompt_scope': False, 'audit_capture': True},
@@ -79,22 +79,31 @@ class WholeBatchTests(unittest.TestCase):
                        (3, {'reasoning': True, 'prompt': False, 'generated_position': 0}),
                        (4, {'reasoning': True, 'prompt': False, 'generated_position': 1})])]
         for current in (work, list(reversed(work))):
-            logits = torch.randn(5, 32)
-            affinity = logits.softmax(-1)
-            ni = affinity.topk(4, -1).indices
-            nw = affinity.gather(1, ni)
-            nw /= nw.sum(-1, keepdim=True)
-            expected_weights, expected_ids = nw.clone(), ni.clone()
-            for uid, rows in current:
-                reference._whole_layer(uid, 0, rows, logits, nw, ni, expected_weights, expected_ids, {})
-            weights, ids = batched._whole_batch(0, current, logits, nw, ni, {})
-            self.assertTrue(torch.equal(ids, expected_ids))
-            torch.testing.assert_close(weights, expected_weights)
+            batched.whole_step += 1  # one engine step shares its row tensors across both hooked layers
+            for layer in (0, 1):
+                logits = torch.randn(5, 32)
+                affinity = logits.softmax(-1)
+                ni = affinity.topk(4, -1).indices
+                nw = affinity.gather(1, ni)
+                nw /= nw.sum(-1, keepdim=True)
+                expected_weights, expected_ids = nw.clone(), ni.clone()
+                for uid, rows in current:
+                    reference._whole_layer(uid, layer, rows, logits, nw, ni, expected_weights, expected_ids, {})
+                weights, ids = batched._whole_batch(layer, current, logits, nw, ni, {})
+                self.assertTrue(torch.equal(ids, expected_ids))
+                torch.testing.assert_close(weights, expected_weights)
+                if layer == 1:  # request b has no target here: its rows keep the exact native bits
+                    rows_b = [index for index, _ in dict(current)['b']]
+                    self.assertTrue(torch.equal(weights[rows_b], nw[rows_b]) and torch.equal(ids[rows_b], ni[rows_b]))
+            self.assertTrue(batched.whole_audit_pending)
+            batched._flush_whole_audit()  # the next step's pre-hook moves audit rows to the host
+            self.assertFalse(batched.whole_audit_pending)
         self.assertEqual(reference.records, batched.records)
         for uid in reference.requests:
-            for key in DOSE_KEYS:
-                torch.testing.assert_close(batched.counts[uid]['dose']['0'][key].float(),
-                                           reference.counts[uid]['dose']['0'][key].float())
+            for layer in ('0', '1'):
+                for key in DOSE_KEYS:
+                    torch.testing.assert_close(batched.counts[uid]['dose'][layer][key].float(),
+                                               reference.counts[uid]['dose'][layer][key].float())
 
     def test_growing_buffer_preserves_prior_counters_and_refreshes_live_views(self):
         capture = self.capture()

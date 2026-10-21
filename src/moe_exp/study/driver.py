@@ -38,6 +38,37 @@ def binding():
     return load(ROOT/'BINDING.json')
 
 
+# Additive float telemetry; every routing decision and integer counter must still agree exactly.
+FLOAT_DOSE_KEYS = ('native_target_weight', 'executed_target_weight', 'native_activate_weight',
+                   'executed_activate_weight', 'native_deactivate_weight', 'executed_deactivate_weight',
+                   'native_activate_share', 'executed_activate_share', 'l1')
+
+
+def ranks_agree(first, second, rtol=1e-6):
+    """Compare two tensor-parallel release payloads.
+
+    Args:
+        first, second: Per-rank `release()` payloads for one request.
+        rtol: Relative tolerance for float dose telemetry only.
+
+    Returns:
+        True when audit routing, integer counters and stream state match exactly and float
+        telemetry matches within `rtol`.
+    """
+    import math
+
+    def exact(capture):
+        dose = {layer: {k: v for k, v in counters.items() if k not in FLOAT_DOSE_KEYS}
+                for layer, counters in capture['stats'].get('dose', {}).items()}
+        return {**{k: v for k, v in capture.items() if k not in ('sha256', 'stats')},
+                'stats': {**capture['stats'], 'dose': dose}}
+    if exact(first) != exact(second):
+        return False
+    return all(math.isclose(counters[k], second['stats']['dose'][layer][k], rel_tol=rtol, abs_tol=1e-6)
+               for layer, counters in first['stats'].get('dose', {}).items()
+               for k in FLOAT_DOSE_KEYS if k in counters)
+
+
 def bulk(b=None):
     return Path((b or binding())['config']['bulk_root'])/'driver'
 
@@ -283,6 +314,11 @@ class Engine:
             self.inflight[uid]['capture_released'] = True
         for uid in uids:
             if len({r[uid]['sha256'] for r in reports}) != 1:
+                if ranks_agree(reports[0][uid], reports[1][uid]):
+                    self.metrics['float_telemetry_rank_differences'] = self.metrics.get(
+                        'float_telemetry_rank_differences', 0)+1
+                    log({'event': 'tp-float-telemetry-difference', 'uid': uid})
+                    continue
                 folder = self.store.folder(uid)/'TP_DISAGREEMENT'
                 for rank, report in enumerate(reports):
                     capture = report[uid]
