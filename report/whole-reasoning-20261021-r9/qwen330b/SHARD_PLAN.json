@@ -1,0 +1,1 @@
+{"approved_maximum_minutes":240,"committed_gpu_hours":144.0,"gpu_ceiling":430.0,"minutes":240,"model":"qwen330b","other_future_maximum_gpu_hours":248.0,"reason":"full allocation maxima plus all charged predecessor costs stay within the GPU ceiling","sha256":"43183e30d4ec9fc6fb5cc6660f4dc42aaa364c4c2b351e6a82229ca175cb43b8","shards":4}
