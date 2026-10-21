@@ -90,3 +90,61 @@ not treated as proof of semantic control, improved correctness, shorter traces,
 or lower deployed memory. The existing bibliography comparator completed offline against independent
 primary records after the citation edits, with all 27 active entries passing.
 No bulk API lookup or automatic normalization is claimed.
+
+## Related Work rebuild, 2026-10-21
+
+Related Work was rebuilt into six mechanism families: sparse expert routing and
+expert specialization; reasoning states and their dynamics; readouts and causal
+evidence; steering reasoning through representations; expert-level control and
+rerouting; and efficient reasoning and expert compression. It covers the five
+LOC-012 topics. The citation budget is at most 40-50 works for the whole paper
+(author, 2026-10-21): 27 works were already cited and 22 are added, so 49 in total.
+
+The candidates came from 27 deep-research runs, all 53 references of the private
+ICLR PDF, used as discovery leads only, repository notes, and two reference
+harvests over 36 closely related papers. The literature record is
+`/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/literature/related-work-20261021/`
+(RESUME.md, RUNS.md, TRIAGE.md, selection/, briefs/, claimcheck/).
+
+Grounding:
+- Each proposition below was written by an ELM model from the paper's own
+  abstract and introduction, with a verbatim quote that was checked against the
+  text. The quote is stored in briefs/BRIEFS.json.
+- After drafting, a second ELM pass checked every (sentence, citation) pair
+  against the cited text: 39 supported, 3 partly supported (reworded to the
+  supported scope) and 1 without text (the Schoenfeld book, cited only for the
+  origin of the episode vocabulary).
+- `pw bib main.tex --no-normalize` verified the 49 cited entries: 44 against
+  primary records and 5 recorded in bib-accepted.txt with their primary pages.
+  DBLP was unreachable that day.
+- The bibliography is append-only. A normalizing run that dropped DOIs and pages
+  of existing entries was reverted (CIT-007).
+- Venue status: Beyond the Trace, Does the Same Token Mean the Same State?, From
+  Observation to Intervention and How Modular Is a Frontier MoE? are arXiv-only
+  preprints. Expert Selections in MoE Models is an ICLR 2026 workshop paper.
+  Each is cited as a direct competitor.
+
+| New citation key | Supported proposition (from the paper's own text) and claim-check verdict | Primary record |
+|---|---|---|
+| wang2026illusion | Auditing three MoE models on MMLU, the authors find a compact, domain-invariant coalition of routed experts that captures most routing mass even in architectures with shared experts. Claim check: supported. | (book; no URL) |
+| xue2024openmoe | Analysis of the OpenMoE models finds that routing depends predominantly on token identity, with little contextual dependence. Claim check: supported. | https://openreview.net/forum?id=1YDeZU8Lt5 |
+| nuriyev2026selections | A text-reconstruction attack recovers 91.2% of tokens top-1 from expert selections using a sequence decoder trained on 100M tokens and evaluated on 32-token OpenWebText sequences. Claim check: supported. | https://arxiv.org/abs/2602.04105 |
+| chen2026same | Chen et al. propose RAD, which selects among completed sparse-MoE rollouts using routing around fixed token anchors rather than comparing answer strings. Claim check: supported. | https://doi.org/10.48550/ARXIV.2606.22798 |
+| li2026thinkarm | ThinkARM applies Schoenfeld-inspired functional step labels to mathematical traces from diverse models and reports reproducible reasoning dynamics and differences between reasoning and non-reasoning models. Claim check: supported. | (book; no URL) |
+| wang2025thoughts | In two open-source o1-like models on challenging test sets, frequent switching between reasoning thoughts correlates with incorrect answers; the authors also report accuracy gains from a decoding penalty against premature switching. Claim check: supported. | http://papers.nips.cc/paper_files/paper/2025/hash/2bfc4acb2e5c4af1576d14b0df9a664c-Abstract-Conference.html |
+| schoenfeld1985mathematical | No proposition about the book’s contents can be established from the supplied text. Claim check: no-text. | (book; no URL) |
+| chen2026beyond | The preprint reconstructs a semantic reasoning-state readout from native MoE routing and reports that the resulting telemetry supports test-time decisions and router edits that change reasoning in the predicted direction. Claim check: supported. | https://doi.org/10.48550/ARXIV.2608.17638 |
+| elazar2021amnesic | Using amnesic interventions on BERT representations, the paper finds that high probing performance for linguistic properties does not imply that the model uses those properties for its prediction task. Claim check: supported. | (book; no URL) |
+| hase2023localization | For overriding stored facts in language models, Causal Tracing localization does not identify the MLP layer that is best to edit, although the paper finds a relationship for a separately designed editing variant. Claim check: supported. | http://papers.nips.cc/paper_files/paper/2023/hash/3927bbdcf0e8d1fa8aa23c26f358a281-Abstract-Conference.html |
+| belinkov2022probing | This survey of probing classifiers in NLP identifies comparative baselines, metrics, classifier choice, and the method’s correlational nature as limitations of probe-based interpretation. Claim check: supported. | (book; no URL) |
+| hewitt2021conditional | Conditional probing measures information usable from a representation beyond a specified baseline by explicitly conditioning the probe on that baseline. Claim check: supported. | (book; no URL) |
+| turpin2023language | In chain-of-thought prompting experiments, biasing input features can influence models’ answers without being acknowledged in their explanations, showing that visible reasoning need not disclose an answer’s influences. Claim check: supported. | http://papers.nips.cc/paper_files/paper/2023/hash/ed3fea9033a80fea1376299fa7863f4a-Abstract-Conference.html |
+| wu2025axbench | On AXBENCH’s concept-detection and steering evaluations for Gemma-2-2B and 9B, sparse autoencoders are not competitive, illustrating why a useful concept readout should not be assumed to be an effective steering method. Claim check: supported. | https://proceedings.mlr.press/v267/wu25a.html |
+| fang2026controllable | SAE-Steering selects sparse-autoencoder features for five reasoning strategies and reports stronger strategy control than existing methods, alongside a 7% absolute accuracy improvement when redirecting erroneous reasoning paths. Claim check: supported. | (book; no URL) |
+| silva2025offcourse | Across up to 36 models from 14 families, evaluations of DoLa, function vectors, and task vectors find highly variable steering effects, including models with no improvement or degraded performance. Claim check: supported. | (book; no URL) |
+| wang2025rice | RICE identifies experts associated with thinking-marker tokens using normalized PMI and reports that amplifying as few as two improves reasoning depth and efficiency on mathematical and scientific benchmarks for DeepSeek-R1 and Qwen3-235B. Claim check: supported. | http://papers.nips.cc/paper_files/paper/2025/hash/cdcfd67988fea858bb22317497105053-Abstract-Conference.html |
+| engmann2026observation | A token-level ablation audit of three high-redundancy MoE models finds that none of four population-level observational routing metrics reliably predicts causal expert importance at the tested layers. Claim check: supported. | https://doi.org/10.48550/ARXIV.2606.10703 |
+| salomone2026modular | In a pre-registered Command A+ ablation study with size-matched random-expert controls, only one of six routing-defined expert families meets the authors’ robust selectivity criterion across measurement choices. Claim check: partly. | https://doi.org/10.48550/ARXIV.2606.25092 |
+| sui2026think | STACK uses step-wise reasoning-state assessments to switch between knowledge-guided and self-prompted chain-of-thought compression, reporting shorter responses and improved accuracy over existing methods on three mathematical reasoning benchmarks. Claim check: supported. | (book; no URL) |
+| ding2026coverage | This structural MoE compression method allocates a global pruning budget by attribution-guided channel-score coverage rather than expert-level importance alone, reporting strong compressed-model accuracy on DeepSeek and Qwen MoEs. Claim check: supported. | https://proceedings.mlr.press/v306/ding26q.html |
+| lu2024naee | Post-training, task-agnostic and task-specific expert pruning, complemented by dynamic expert skipping, reduces deployment memory and increases inference speed while maintaining satisfactory performance in the evaluated MoE LLMs. Claim check: supported. | (book; no URL) |
