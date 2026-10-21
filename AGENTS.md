@@ -1,3 +1,13 @@
+**Related Work rebuilt from a full literature search — 2026-10-21 23:00 Rome (Claude; manuscript edit authorized by the user):**
+- `journal/related_work.tex` now has six mechanism families: routing and specialization, reasoning states, readouts and causal evidence, representation steering, expert-level control, and efficient reasoning with compression. It cites 43 works.
+- The whole paper cites 49 works, inside the author's 40-50 budget: 22 new entries appended to `references.bib`, existing bytes unchanged. `bib-accepted.txt` lists 5 hand-checked entries.
+- Grounding: each new proposition comes from the paper's own text with a verified quote. An ELM claim check of all 43 sentence-citation pairs ended with 39 supported and 3 reworded; the Schoenfeld book has no online text. `pw bib --no-normalize` reports 44 OK plus the 5 accepted. The build has no undefined citations. See `journal/CITATION_AUDIT.md`.
+- Literature record: `/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/literature/related-work-20261021/` (start with RESUME.md). Map: `paper/wiki/RELATED_WORK.md`.
+- Pending:
+  - Push to Overleaf (needs author approval).
+  - Rerun `pw bib` once DBLP SPARQL answers again.
+  - Do not run `pw bib` with normalization on this bib: it dropped DOIs and pages of existing entries.
+
 **Incidents and top-up r11 — 2026-10-21 19:25 Rome (Claude supervises):**
 - WORK nearly filled at 16:10. Twelve base shards (r7 and r8) failed when a full audit write met the WORK
   space reserve, and the release monitors would have cancelled all production at 14 GiB free. All four monitors
