@@ -208,6 +208,25 @@ class TopUpTests(unittest.TestCase):
         self.assertEqual((value['design'], value['parent_manifest_sha256']), ('top-up', base['sha256']))
         self.assertEqual((selected['sweep'], selected['manifest_sha256']), (True, value['sha256']))
 
+    def test_second_topup_covers_all_shards_and_leaves_rows_started_by_the_first(self):
+        from moe_exp.study.common import publish
+        with tempfile.TemporaryDirectory(dir=WORK) as directory:
+            parent, first, second = (Path(directory)/name for name in ('parent', 'first', 'second'))
+            rows = [{'uid': digest([family, arm]), 'family': family, 'arm': arm, 'nomination_status': 'nominated'}
+                    for family in ('f0', 'f1') for arm in ('native', 'target_promote')]
+            base = publish(whole.manifest_path('gemma', 'main', parent), {'model': 'gemma', 'dose': 'main',
+                           'scope': 'prompt-and-generated-reasoning', 'records': rows})
+            publish(parent/'stores/gemma/main/units'/digest(['f0', 'native'])/'RESULT.json', {'status': 'complete'})
+            # The first top-up planned f1's rows and started one of them; the other never started.
+            publish(whole.manifest_path('gemma', 'main', first), {'records': rows[2:],
+                    'parent_manifest_sha256': base['sha256']})
+            publish(first/'stores/gemma/main/units'/digest(['f1', 'native'])/'RESULT.json', {'status': 'complete'})
+            with patch.object(whole, 'ROOT', second), patch.object(whole, 'SWEEP', {'gemma': 'main'}):
+                whole.topup_manifest('gemma', {'parent': str(parent), 'shards': 'all', 'siblings': [str(first)]})
+                value = whole.load(whole.manifest_path('gemma', 'main', second))
+        self.assertEqual({(r['family'], r['arm']) for r in value['records']},
+                         {('f0', 'target_promote'), ('f1', 'target_promote')})
+
 
 class CanaryDeadlineTests(unittest.TestCase):
     def test_rows_running_at_the_deadline_count_as_reaching_the_length_limit(self):
