@@ -20,7 +20,7 @@ import time
 
 import numpy as np
 
-from .common import CLASSES, REPO, check_files, digest, load, locked, publish, require, verified
+from .common import CLASSES, REPO, check_files, digest, file_sha, load, locked, publish, require, verified
 from . import driver
 from moe_exp.final_routing.selection import select_pairs
 
@@ -464,6 +464,39 @@ def fluency(store, rows: list[dict], *, require_complete: bool = False, censor_u
             'observed_steered_units': sum(r['operation'] != 'native' for r in observed)}
 
 
+def canary_decision(model: str, value: dict) -> dict:
+    """Verify a recorded user decision that replaces a failed canary gate for this exact manifest.
+
+    The decision references the canary receipt it overrides by path and file hash, so the evidence
+    behind it stays auditable.
+    """
+    decision = verified(ROOT/model/'CANARY_DECISION.json')
+    require(decision['decision'] == 'proceed' and decision['manifest_sha256'] == value['sha256'] and
+            file_sha(Path(decision['canary_receipt'])) == decision['canary_receipt_sha256_file'],
+            'production canary decision differs')
+    return decision
+
+
+def produce(model: str) -> None:
+    """Submit production for a model whose canary gate is replaced by a recorded user decision.
+
+    Runs on the login node after the allocated CPU validation passed, like `launch`.
+    """
+    with locked(ROOT, 'schedule-progression'):
+        schedule = load(ROOT/'JOBS.json')
+        require(verified(ROOT/'CPU_VALIDATION.json')['passed'], 'allocated CPU validation did not pass')
+        selected = verified(ROOT/model/'SELECTED.json')
+        canary_decision(model, manifest(model, selected['dose']))
+        bound_store(model, selected['dose'])
+        accounting = native_accounting(all_jobs(schedule))
+        admit_shard_plan(schedule, model, accounting, set())
+        for index in range(len(schedule['production'][model]), SHARDS[model]):
+            schedule['production'][model].append(submit_stage('run', model=model, dose=selected['dose'],
+                                                              shard=[index, SHARDS[model]]))
+            driver.checkpoint(ROOT/'JOBS.json', schedule)
+        advance_extraction(schedule, accounting, set())
+
+
 def admission_order(rows: list[dict]) -> list[dict]:
     """Order all primary and native rows before other promote rows, without barriers."""
     return sorted(rows, key=lambda r: (
@@ -481,9 +514,12 @@ def run(model, shard, deadline, *, max_inflight=64, canary=False, dose=None, eng
     if not canary:
         selected = verified(ROOT/model/'SELECTED.json')
         require(selected['manifest_sha256'] == value['sha256'], 'production manifest lacks a passing canary')
-        proof = verified(ROOT/model/('CANARY_HALF.json' if value['dose'] == 'half' else 'CANARY.json'))
-        require(proof['gate']['passed'] and proof['job'] == selected['canary_job'] and
-                proof['manifest_sha256'] == value['sha256'], 'production canary qualification differs')
+        if (ROOT/model/'CANARY_DECISION.json').exists():
+            canary_decision(model, value)
+        else:
+            proof = verified(ROOT/model/('CANARY_HALF.json' if value['dose'] == 'half' else 'CANARY.json'))
+            require(proof['gate']['passed'] and proof['job'] == selected['canary_job'] and
+                    proof['manifest_sha256'] == value['sha256'], 'production canary qualification differs')
     rows = canary_rows(value) if canary else driver.shard_rows(model, shard, 'whole')
     store = bound_store(model, value['dose'], canary)
     require(not any(store.state(r['uid']) for r in rows), 'whole execution is fresh only; preserve partials')
@@ -747,6 +783,8 @@ def admit_shard_plan(schedule: dict, model: str, accounting: dict, stopped: set)
 def advance_canary(schedule: dict, model: str, accounting: dict, stopped: set) -> None:
     """Advance only passing canaries, or the one declared fluency fallback."""
     attempts = schedule['canaries'][model]
+    if not attempts:
+        return  # no canary: production was submitted by `produce` under a recorded decision
     attempt = attempts[-1]
     state = accounting.get(attempt['id'], {})
     if (ROOT/'STOP.json').exists() or (ROOT/model/'STOP.json').exists() or (ROOT/model/'PRE_PRODUCTION_STOP.json').exists():
@@ -1068,7 +1106,8 @@ def audit_nominations() -> dict:
 def main(argv=None):
     """Dispatch preparation, canary and generation through one maintained entry point."""
     parser = argparse.ArgumentParser(__doc__)
-    parser.add_argument('command', choices=('prepare', 'canary', 'diagnose', 'run', 'extract', 'analyze', 'validate', 'monitor', 'launch'))
+    parser.add_argument('command', choices=('prepare', 'canary', 'diagnose', 'run', 'extract', 'analyze', 'validate', 'monitor', 'launch',
+                                            'produce'))
     parser.add_argument('--model', choices=MODELS)
     parser.add_argument('--dose', choices=('main', 'half'))
     parser.add_argument('--shard', type=driver.parse_shard, default=(0, 1))
@@ -1084,12 +1123,17 @@ def main(argv=None):
                     'production': {m: [] for m in MODELS}, 'extraction': {}}
         driver.checkpoint(ROOT/'JOBS.json', schedule)
         for model in MODELS:
+            if (ROOT/model/'CANARY_DECISION.json').exists():
+                continue  # a recorded user decision replaces this canary; production follows `produce`
             schedule['canaries'][model].append(submit_stage('canary', model=model,
                 dose=PLAN[model].get('start_dose', 'main'), dependency='afterok:'+validation['id']))
             driver.checkpoint(ROOT/'JOBS.json', schedule)
         schedule['monitor'] = submit_stage('monitor', dependency='afterany:'+validation['id'])
         driver.checkpoint(ROOT/'JOBS.json', schedule)
         driver.log({'event': 'whole-accepted', 'jobs': {j['command']+':'+str(j['model']): j['id'] for j in all_jobs(schedule)}})
+        return
+    if args.command == 'produce':
+        produce(args.model)
         return
     require(os.environ.get('SLURM_JOB_ID'), 'whole stages require allocated Slurm resources')
     if args.command == 'prepare':

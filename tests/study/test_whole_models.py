@@ -160,6 +160,26 @@ class CanaryDeadlineTests(unittest.TestCase):
         self.assertIn('incomplete_canary', strict['software_failures'])
 
 
+class CanaryDecisionTests(unittest.TestCase):
+    def test_decision_must_name_this_manifest_and_unchanged_evidence(self):
+        from moe_exp.study.common import file_sha, publish
+        with tempfile.TemporaryDirectory(dir=WORK) as directory, patch.object(whole, 'ROOT', Path(directory)):
+            evidence = publish(Path(directory)/'evidence/CANARY_HALF.json', {'gate': {'passed': False}})
+            path = Path(directory)/'evidence/CANARY_HALF.json'
+            publish(Path(directory)/'gpt/CANARY_DECISION.json', {
+                'decision': 'proceed', 'manifest_sha256': 'manifest', 'canary_receipt': str(path),
+                'canary_receipt_sha256_file': file_sha(path), 'evidence_sha256': evidence['sha256']})
+            self.assertEqual(whole.canary_decision('gpt', {'sha256': 'manifest'})['decision'], 'proceed')
+            with self.assertRaisesRegex(ValueError, 'canary decision differs'):
+                whole.canary_decision('gpt', {'sha256': 'another manifest'})
+
+    def test_models_without_a_canary_attempt_are_not_advanced(self):
+        schedule = {'canaries': {'gpt': []}, 'production': {'gpt': []}}
+        with patch.object(whole, 'submit_stage') as submit:
+            whole.advance_canary(schedule, 'gpt', {}, set())
+        submit.assert_not_called()
+
+
 class BudgetTests(unittest.TestCase):
     def test_six_model_release_reserves_every_other_models_maxima(self):
         models = ('qwen35', 'qwen330b', 'gemma', 'glm', 'nemotron', 'lfm25')
