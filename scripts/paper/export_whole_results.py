@@ -42,6 +42,9 @@ DOSE_LABELS = {"quarter": "Quarter", "half": "Half", "main": "Full"}
 # Three tints of one hue: the bars are an ordered strength series, not categories.
 COLORS = ("gomblueone!30", "gomblueone!65", "gomblueone")
 SHIFTS = (-8, 0, 8)
+# Axis caps of the strength figure: an interval that leaves the panel is cut at its edge (the
+# tables give every interval), so a few unknown outcomes cannot flatten the bars.
+CAPS = {"tok": (-100., 200.), "acc": (-40., 25.), "cap": (0., 100.)}
 DASH = r"\textemdash"
 # Plain model names for captions: the table name without icon, parameter suffix or brand macro.
 PLAIN = {m: re.fullmatch(r"\\modelname\{[^}]*\}\{(.*)\}", name).group(1).split(" (")[0]
@@ -427,13 +430,18 @@ def levels_table(effects, record, source):
 
 # --- dose-response figure --------------------------------------------------------------------
 
-def nice_axis(entries, height, digits):
+def clamp(value, cap):
+    return min(max(value, cap[0]), cap[1])
+
+
+def nice_axis(entries, height, digits, cap):
     """Y limits and ticks that leave room for the rotated value label beyond every whisker end.
 
     entries are (mean, margin) pairs. A label is about 3 pt per character plus padding and sits
-    beyond the whisker end on the side of the bar's sign.
+    beyond the whisker end on the side of the bar's sign; whisker ends beyond the cap count as
+    at it.
     """
-    ends = [(m, m - e, m + e) for m, e in entries]
+    ends = [(m, clamp(m - e, cap), clamp(m + e, cap)) for m, e in entries]
     low = min([0.] + [lo for _, lo, _ in ends])
     high = max([0.] + [hi for _, _, hi in ends])
 
@@ -441,7 +449,9 @@ def nice_axis(entries, height, digits):
         return max([2.9 * len(f"{m:.{digits}f}") + 3 for m, _, _ in ends if (m >= 0) == positive]
                    or [0.])
 
-    top, bottom = reach(True), reach(False)
+    # A label whose whisker reaches the cap sits inside the panel, so it needs no room beyond it.
+    top = 0. if high >= cap[1] else reach(True)
+    bottom = 0. if low <= cap[0] else reach(False)
     if high == low:
         high = low + 1
     scale = (high - low) / (1 - (top + bottom) / height)  # data units across the whole axis
@@ -458,7 +468,7 @@ def axis_options(p, panel, height, gap, panels, series):
     """pgfplots options of one stacked panel."""
     name, title, digits, _ = panel
     entries = [v for dose in DOSES for v in series[name][dose] if v is not None]
-    limits, ticks = nice_axis(entries, height, digits)
+    limits, ticks = nice_axis(entries, height, digits, CAPS[name])
     return ("\\begin{axis}[journalaxis,scale only axis,width=352pt,height=" + str(height) + "pt,"
             "anchor=south west,at={(0pt," + str((panels - 1 - p) * (height + gap)) + "pt)},"
             "ybar=0pt,bar width=7pt,xmin=.5,xmax=9.5,enlarge x limits=false,"
@@ -490,18 +500,25 @@ def dose_figure(series, panels, out):
             column = f"{name}_{dose}"
             options = ("fill=" + COLORS[k] + ",draw=black,line width=.35pt,bar shift="
                        + str(SHIFTS[k]) + "pt" + (",journalerror" if has_error else ""))
-            table = "x=x,y=" + column + (",y error=" + column + "_pm" if has_error else "")
+            table = "x=x,y=" + column + (",y error plus=" + column + "_p,y error minus=" + column
+                                         + "_m" if has_error else "")
             lines.append("\\addplot[" + options + "] table[" + table
                          + "]{figures/journal/data/whole_dose.dat};")
             for x, value in enumerate(series[name][dose], 1):
                 if value is None:
                     continue
                 mean, margin = value
-                end = mean + margin if mean >= 0 else mean - margin
-                anchor = "west" if mean >= 0 else "east"
+                raw = mean + margin if mean >= 0 else mean - margin
+                end = clamp(raw, CAPS[name])
+                # Beyond the whisker end, or just inside the panel edge on a background patch when
+                # the interval is cut at the cap.
+                cut = end != raw
+                outward = "west" if mean >= 0 else "east"
+                anchor = {"west": "east", "east": "west"}[outward] if cut else outward
                 text = f"{round(mean, digits) + 0.:.{digits}f}"
                 lines.append("\\node[rotate=90,anchor=" + anchor + ",inner sep=1pt,"
-                             "font=\\fontsize{5.6}{6}\\selectfont] at ([xshift=" + str(SHIFTS[k])
+                             + ("fill=journalplotbackground," if cut else "")
+                             + "font=\\fontsize{5.6}{6}\\selectfont] at ([xshift=" + str(SHIFTS[k])
                              + "pt]axis cs:" + str(x) + "," + format(end, ".4g") + ") {$"
                              + text + "$};")
         lines.append("\\end{axis}")
@@ -754,14 +771,18 @@ def main():
     columns = ["x"]
     for name, _, _, has_error in panels:
         for dose in DOSES:
-            columns += [f"{name}_{dose}"] + ([f"{name}_{dose}_pm"] if has_error else [])
+            columns += [f"{name}_{dose}"] + ([f"{name}_{dose}_p", f"{name}_{dose}_m"]
+                                             if has_error else [])
     rows = []
     for x in range(9):
         row = [x + 1]
         for name, _, _, has_error in panels:
             for dose in DOSES:
                 mean, margin = series[name][dose][x] or (nan, nan)
-                row += [mean, margin] if has_error else [mean]
+                # Whiskers are cut at the panel caps here: TeX cannot draw a far-off end it clips.
+                low, high = CAPS[name]
+                cut = [min(margin, max(high - mean, 0.)), min(margin, max(mean - low, 0.))]
+                row += [mean, *cut] if has_error else [mean]
         rows.append(" ".join(format(v, ".6g") for v in row))
     (data / "whole_dose.dat").write_text(" ".join(columns) + "\n" + "\n".join(rows) + "\n")
     dose_figure(series, panels, args.out / "figures/journal/whole_dose.tex")

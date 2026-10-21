@@ -1,11 +1,11 @@
 {
   "figure": "whole_dose",
-  "pdf_sha256": "8b8d13ef44f2818d413ff9772657ea2e783e09593f09eda84f6826c385e67ee9",
+  "pdf_sha256": "d6124947ce8f05e408c30272688f87ff92aa01e5e5b8d1c133a84fa0ffc688f5",
   "dimensions_pt": [
     384.0,
     350.2300109863281
   ],
-  "source_sha256": "d5eef972cec717c65d7b58111f425348a35bc7234c071028c46b0b4c24a81c75",
+  "source_sha256": "b1295d685fe4b448cd97bca319fcc6b4165f62f0ed923cb7312bbe9a1cd16181",
   "style_sha256": "a9f467dd5269cf36bc016b1e0d2c0659dec27ef0a7491581bbd3aecd64f999af",
   "data_files": {
     "state_transitions_summary.dat": "adcf54b610f867beb42ffc7a2f567355fb4a9ce6aca010ea691b3057c2c25db3",
@@ -35,7 +35,7 @@
     "state_transitions_gemma.dat": "9c66c9b8395619ed051ca0744a92229c443fe65685b0bd2e9bc44c21166f0189",
     "state_transitions_missing_gemma.dat": "afd2f6b865ffa00ca87b27b35fcb9345b5223c8b2e77fdb88130de36cfd81f99",
     "whole_states_tokens.dat": "28b9fe9b40e7d0d6089a2ebd71b7c4b6a1467b3ca74b85408bd7b755df0bfc20",
-    "whole_dose.dat": "edbdcfbb3dfb98d0608c9728f39dba6e53e9e3b5856cd8da5c774c1238e472ee",
+    "whole_dose.dat": "025cf0748e13923b0154b8d995f4b3b54a7c14da4e945965ded91e4de899c47b",
     "whole_states_accuracy.dat": "4da2bf5aaf9a94e3770ccf7457eafc12e577b6b0c39ded27e3cb0217afe431c8",
     "state_transitions_qwen36.dat": "9f8c890c798c11f80c92af96641ce7da15041a81151b5ca7f7d62daddd8df713",
     "routing.dat": "45206d8597e2cc5953c056964598a227dc70c271587fd33eb4b7388ca73a9f16",
@@ -44,8 +44,8 @@
     "next_state.dat": "40d1b592e9c34d6baf93727d7ce90027c93600a0786071d2e793ac0e4df66300",
     "state_transitions_qwen35.dat": "922e99c4aaa2c4a14ff1d8256cdacf74105f98bc82ae5d6478f8260dda5db2d9"
   },
-  "elapsed_seconds": 10.698320619994774,
+  "elapsed_seconds": 4.769213481107727,
   "offline": true,
   "new_inference": false,
-  "source_snapshot": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/paper/6a510c6db0d9b08aa438c142/.paper-review/figure-builds/whole_dose/source-1792622729037787948"
+  "source_snapshot": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/paper/6a510c6db0d9b08aa438c142/.paper-review/figure-builds/whole_dose/source-1792623009939873616"
 }
