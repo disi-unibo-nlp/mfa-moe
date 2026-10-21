@@ -150,9 +150,9 @@ def main():
     name = lambda keys: [k.replace(':', '_') for k in keys]
     figure(coords, [("(a) Target-state effect, targeted $-$ matched random (pp)", name(
                          ("activate:occupancy", "activate:first", "deactivate:occupancy", "deactivate:first")),
-                     (-5, 5), "-4,-2,0,2,4", 2),
+                     (-6.5, 6), "-6,-4,-2,0,2,4,6", 2),
                     ("(b) Accuracy change from native routing (pp)", name(accuracy), (-17, 10), "-15,-10,-5,0,5", 1),
-                    ("(c) Generated-token change from native routing (\\%)", name(tokens), (-36, 33), "-30,-15,0,15,30", 1)])
+                    ("(c) Generated-token change from native routing (\\%)", name(tokens), (-42, 33), "-30,-15,0,15,30", 1)])
 
     table = r"""% Source: report/final-routing-20261015-r1/driver/analysis-final/EFFECTS.json via scripts/paper/export_routing_results.py.
 \begin{table}[tb]
