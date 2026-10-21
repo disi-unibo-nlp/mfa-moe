@@ -1,4 +1,8 @@
-"""Compile editable native figures to standalone vector PDFs, 45 s per figure."""
+"""Compile editable native figures to standalone vector PDFs, 45 s per figure.
+
+Names given on the command line are built; with none, every name is built. A requested
+figure whose figures/journal/<name>.tex is missing is an error before anything compiles.
+"""
 from pathlib import Path
 import argparse
 import hashlib
@@ -10,10 +14,12 @@ import time
 
 from build_cl_manuscript import PAPER, TOOLS, EXPECTED, sha
 
-NAMES = ('overview', 'conditioning', 'readout', 'selection', 'occupancy', 'next_state', 'state_transitions', 'transition_summary', 'routing_mock')
+NAMES = ('overview', 'conditioning', 'readout', 'selection', 'occupancy', 'next_state', 'state_transitions', 'transition_summary', 'routing', 'whole_dose', 'whole_states')
 
 
 def build(name, allow_cache_fill=False):
+    if not (PAPER / 'figures/journal' / (name + '.tex')).is_file():
+        raise FileNotFoundError('figure source missing: figures/journal/' + name + '.tex')
     engine = TOOLS / 'tectonic'
     if sha(engine) != EXPECTED:
         raise ValueError('verified compiler changed')
@@ -73,8 +79,17 @@ def build(name, allow_cache_fill=False):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--figure', choices=NAMES)
+    parser.add_argument('names', nargs='*', metavar='NAME', help='figures to build (default: all of ' + ', '.join(NAMES) + ')')
+    parser.add_argument('--figure', action='append', default=[], metavar='NAME', help='same as a positional NAME')
     parser.add_argument('--allow-cache-fill', action='store_true')
     args = parser.parse_args()
-    for name in ([args.figure] if args.figure else NAMES):
+    requested = args.figure + args.names
+    unknown = [name for name in requested if name not in NAMES]
+    if unknown:
+        parser.error('unknown figure(s): ' + ', '.join(unknown) + '; choose from ' + ', '.join(NAMES))
+    todo = list(dict.fromkeys(requested)) or list(NAMES)
+    missing = [name for name in todo if not (PAPER / 'figures/journal' / (name + '.tex')).is_file()]
+    if missing:
+        parser.error('figure source missing for requested figure(s): ' + ', '.join(missing))
+    for name in todo:
         build(name, args.allow_cache_fill)

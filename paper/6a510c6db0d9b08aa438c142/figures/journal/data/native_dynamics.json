@@ -11797,5 +11797,1628 @@
     "simultaneous": true,
     "sufficient_statistics_sha256": "d7572d65660ae54a17148e7e59830411becdb81c126dc3c54f7a5fc80c9d6065",
     "undefined_draws_discarded": 0
+  },
+  "lfm25": {
+    "alpha": 0.05,
+    "benchmark_universe": [
+      "aime24",
+      "aime25",
+      "amc23",
+      "math500",
+      "minerva",
+      "olympiad"
+    ],
+    "conditional_on_frozen_selection": true,
+    "coverage_scope": "declared panel conditional on frozen selections; not global across panels",
+    "critical_value": 3.3375562051707,
+    "dependencies": {
+      "Analyze:next:Analyze": [
+        "Analyze:next:Analyze"
+      ],
+      "Analyze:next:Explore": [
+        "Analyze:next:Explore"
+      ],
+      "Analyze:next:Implement": [
+        "Analyze:next:Implement"
+      ],
+      "Analyze:next:Monitor": [
+        "Analyze:next:Monitor"
+      ],
+      "Analyze:next:Plan": [
+        "Analyze:next:Plan"
+      ],
+      "Analyze:next:Read": [
+        "Analyze:next:Read"
+      ],
+      "Analyze:next:Verify": [
+        "Analyze:next:Verify"
+      ],
+      "Analyze:observed_dwell_tokens": [
+        "Analyze:observed_dwell_tokens"
+      ],
+      "Analyze:occupancy": [
+        "Analyze:occupancy"
+      ],
+      "Analyze:reentry_per_observed_boundary": [
+        "Analyze:reentry_per_observed_boundary"
+      ],
+      "Analyze:uncensored_dwell_tokens": [
+        "Analyze:uncensored_dwell_tokens"
+      ],
+      "Explore:next:Analyze": [
+        "Explore:next:Analyze"
+      ],
+      "Explore:next:Explore": [
+        "Explore:next:Explore"
+      ],
+      "Explore:next:Implement": [
+        "Explore:next:Implement"
+      ],
+      "Explore:next:Monitor": [
+        "Explore:next:Monitor"
+      ],
+      "Explore:next:Plan": [
+        "Explore:next:Plan"
+      ],
+      "Explore:next:Read": [
+        "Explore:next:Read"
+      ],
+      "Explore:next:Verify": [
+        "Explore:next:Verify"
+      ],
+      "Explore:observed_dwell_tokens": [
+        "Explore:observed_dwell_tokens"
+      ],
+      "Explore:occupancy": [
+        "Explore:occupancy"
+      ],
+      "Explore:reentry_per_observed_boundary": [
+        "Explore:reentry_per_observed_boundary"
+      ],
+      "Explore:uncensored_dwell_tokens": [
+        "Explore:uncensored_dwell_tokens"
+      ],
+      "Implement:next:Analyze": [
+        "Implement:next:Analyze"
+      ],
+      "Implement:next:Explore": [
+        "Implement:next:Explore"
+      ],
+      "Implement:next:Implement": [
+        "Implement:next:Implement"
+      ],
+      "Implement:next:Monitor": [
+        "Implement:next:Monitor"
+      ],
+      "Implement:next:Plan": [
+        "Implement:next:Plan"
+      ],
+      "Implement:next:Read": [
+        "Implement:next:Read"
+      ],
+      "Implement:next:Verify": [
+        "Implement:next:Verify"
+      ],
+      "Implement:observed_dwell_tokens": [
+        "Implement:observed_dwell_tokens"
+      ],
+      "Implement:occupancy": [
+        "Implement:occupancy"
+      ],
+      "Implement:reentry_per_observed_boundary": [
+        "Implement:reentry_per_observed_boundary"
+      ],
+      "Implement:uncensored_dwell_tokens": [
+        "Implement:uncensored_dwell_tokens"
+      ],
+      "Monitor:next:Analyze": [
+        "Monitor:next:Analyze"
+      ],
+      "Monitor:next:Explore": [
+        "Monitor:next:Explore"
+      ],
+      "Monitor:next:Implement": [
+        "Monitor:next:Implement"
+      ],
+      "Monitor:next:Monitor": [
+        "Monitor:next:Monitor"
+      ],
+      "Monitor:next:Plan": [
+        "Monitor:next:Plan"
+      ],
+      "Monitor:next:Read": [
+        "Monitor:next:Read"
+      ],
+      "Monitor:next:Verify": [
+        "Monitor:next:Verify"
+      ],
+      "Monitor:observed_dwell_tokens": [
+        "Monitor:observed_dwell_tokens"
+      ],
+      "Monitor:occupancy": [
+        "Monitor:occupancy"
+      ],
+      "Monitor:reentry_per_observed_boundary": [
+        "Monitor:reentry_per_observed_boundary"
+      ],
+      "Monitor:uncensored_dwell_tokens": [
+        "Monitor:uncensored_dwell_tokens"
+      ],
+      "Plan:next:Analyze": [
+        "Plan:next:Analyze"
+      ],
+      "Plan:next:Explore": [
+        "Plan:next:Explore"
+      ],
+      "Plan:next:Implement": [
+        "Plan:next:Implement"
+      ],
+      "Plan:next:Monitor": [
+        "Plan:next:Monitor"
+      ],
+      "Plan:next:Plan": [
+        "Plan:next:Plan"
+      ],
+      "Plan:next:Read": [
+        "Plan:next:Read"
+      ],
+      "Plan:next:Verify": [
+        "Plan:next:Verify"
+      ],
+      "Plan:observed_dwell_tokens": [
+        "Plan:observed_dwell_tokens"
+      ],
+      "Plan:occupancy": [
+        "Plan:occupancy"
+      ],
+      "Plan:reentry_per_observed_boundary": [
+        "Plan:reentry_per_observed_boundary"
+      ],
+      "Plan:uncensored_dwell_tokens": [
+        "Plan:uncensored_dwell_tokens"
+      ],
+      "Read:next:Analyze": [
+        "Read:next:Analyze"
+      ],
+      "Read:next:Explore": [
+        "Read:next:Explore"
+      ],
+      "Read:next:Implement": [
+        "Read:next:Implement"
+      ],
+      "Read:next:Monitor": [
+        "Read:next:Monitor"
+      ],
+      "Read:next:Plan": [
+        "Read:next:Plan"
+      ],
+      "Read:next:Read": [
+        "Read:next:Read"
+      ],
+      "Read:next:Verify": [
+        "Read:next:Verify"
+      ],
+      "Read:observed_dwell_tokens": [
+        "Read:observed_dwell_tokens"
+      ],
+      "Read:occupancy": [
+        "Read:occupancy"
+      ],
+      "Read:reentry_per_observed_boundary": [
+        "Read:reentry_per_observed_boundary"
+      ],
+      "Read:uncensored_dwell_tokens": [
+        "Read:uncensored_dwell_tokens"
+      ],
+      "Verify:next:Analyze": [
+        "Verify:next:Analyze"
+      ],
+      "Verify:next:Explore": [
+        "Verify:next:Explore"
+      ],
+      "Verify:next:Implement": [
+        "Verify:next:Implement"
+      ],
+      "Verify:next:Monitor": [
+        "Verify:next:Monitor"
+      ],
+      "Verify:next:Plan": [
+        "Verify:next:Plan"
+      ],
+      "Verify:next:Read": [
+        "Verify:next:Read"
+      ],
+      "Verify:next:Verify": [
+        "Verify:next:Verify"
+      ],
+      "Verify:observed_dwell_tokens": [
+        "Verify:observed_dwell_tokens"
+      ],
+      "Verify:occupancy": [
+        "Verify:occupancy"
+      ],
+      "Verify:reentry_per_observed_boundary": [
+        "Verify:reentry_per_observed_boundary"
+      ],
+      "Verify:uncensored_dwell_tokens": [
+        "Verify:uncensored_dwell_tokens"
+      ],
+      "label_coverage": [
+        "label_coverage"
+      ],
+      "observed_labelled_tokens": [
+        "observed_labelled_tokens"
+      ]
+    },
+    "family_universe_sha256": "6407c980c1c90d69df305d0b9b481f43c504035ee41628a3c8af6bc9029cff32",
+    "paired_family_multiplicities": true,
+    "panel": "native-dynamics:lfm25",
+    "resample_key": "native-dynamics:lfm25",
+    "resamples": 10000,
+    "resampling_identity": "1a2e1dad325260bbbb84c3a8fd8da381529cf9fc4d450a5e7da13b6cce4741d4",
+    "results": {
+      "Analyze:next:Analyze": {
+        "benchmark_family_support": {
+          "aime24": 21,
+          "aime25": 21,
+          "amc23": 10,
+          "math500": 125,
+          "minerva": 66,
+          "olympiad": 304
+        },
+        "bootstrap_valid_resamples": 10000,
+        "estimate": 0.48601424327915677,
+        "family_support": 547,
+        "interval": [
+          0.37891887212804654,
+          0.593109614430267
+        ],
+        "status": "estimable",
+        "unavailable_reason": null
+      },
+      "Analyze:next:Explore": {
+        "benchmark_family_support": {
+          "aime24": 21,
+          "aime25": 21,
+          "amc23": 10,
+          "math500": 125,
+          "minerva": 66,
+          "olympiad": 304
+        },
+        "bootstrap_valid_resamples": 10000,
+        "estimate": 0.11328457145945238,
+        "family_support": 547,
+        "interval": [
+          0.05339474716449371,
+          0.17317439575441104
+        ],
+        "status": "estimable",
+        "unavailable_reason": null
+      },
+      "Analyze:next:Implement": {
+        "benchmark_family_support": {
+          "aime24": 21,
+          "aime25": 21,
+          "amc23": 10,
+          "math500": 125,
+          "minerva": 66,
+          "olympiad": 304
+        },
+        "bootstrap_valid_resamples": 10000,
+        "estimate": 0.1621227805975239,
+        "family_support": 547,
+        "interval": [
+          0.08512506461163434,
+          0.2391204965834135
+        ],
+        "status": "estimable",
+        "unavailable_reason": null
+      },
+      "Analyze:next:Monitor": {
+        "benchmark_family_support": {
+          "aime24": 21,
+          "aime25": 21,
+          "amc23": 10,
+          "math500": 125,
+          "minerva": 66,
+          "olympiad": 304
+        },
+        "bootstrap_valid_resamples": 10000,
+        "estimate": 0.03514153438992676,
+        "family_support": 547,
+        "interval": [
+          0.015296527586850708,
+          0.05498654119300281
+        ],
+        "status": "estimable",
+        "unavailable_reason": null
+      },
+      "Analyze:next:Plan": {
+        "benchmark_family_support": {
+          "aime24": 21,
+          "aime25": 21,
+          "amc23": 10,
+          "math500": 125,
+          "minerva": 66,
+          "olympiad": 304
+        },
+        "bootstrap_valid_resamples": 10000,
+        "estimate": 0.06776789035013471,
+        "family_support": 547,
+        "interval": [
+          0.004900830868719272,
+          0.13063494983155016
+        ],
+        "status": "estimable",
+        "unavailable_reason": null
+      },
+      "Analyze:next:Read": {
+        "benchmark_family_support": {
+          "aime24": 21,
+          "aime25": 21,
+          "amc23": 10,
+          "math500": 125,
+          "minerva": 66,
+          "olympiad": 304
+        },
+        "bootstrap_valid_resamples": 10000,
+        "estimate": 0.07867895881907999,
+        "family_support": 547,
+        "interval": [
+          0.013007153764297646,
+          0.14435076387386234
+        ],
+        "status": "estimable",
+        "unavailable_reason": null
+      },
+      "Analyze:next:Verify": {
+        "benchmark_family_support": {
+          "aime24": 21,
+          "aime25": 21,
+          "amc23": 10,
+          "math500": 125,
+          "minerva": 66,
+          "olympiad": 304
+        },
+        "bootstrap_valid_resamples": 10000,
+        "estimate": 0.05699002110472539,
+        "family_support": 547,
+        "interval": [
+          0.021225716145644453,
+          0.09275432606380632
+        ],
+        "status": "estimable",
+        "unavailable_reason": null
+      },
+      "Analyze:observed_dwell_tokens": {
+        "benchmark_family_support": {
+          "aime24": 29,
+          "aime25": 30,
+          "amc23": 30,
+          "math500": 281,
+          "minerva": 176,
+          "olympiad": 531
+        },
+        "bootstrap_valid_resamples": 10000,
+        "estimate": 20.57743404481478,
+        "family_support": 1077,
+        "interval": [
+          18.985987415670802,
+          22.168880673958757
+        ],
+        "status": "estimable",
+        "unavailable_reason": null
+      },
+      "Analyze:occupancy": {
+        "benchmark_family_support": {
+          "aime24": 30,
+          "aime25": 30,
+          "amc23": 40,
+          "math500": 500,
+          "minerva": 236,
+          "olympiad": 650
+        },
+        "bootstrap_valid_resamples": 10000,
+        "estimate": 0.2781739609861614,
+        "family_support": 1486,
+        "interval": [
+          0.2467763044003357,
+          0.30957161757198703
+        ],
+        "status": "estimable",
+        "unavailable_reason": null
+      },
+      "Analyze:reentry_per_observed_boundary": {
+        "benchmark_family_support": {
+          "aime24": 21,
+          "aime25": 21,
+          "amc23": 10,
+          "math500": 125,
+          "minerva": 66,
+          "olympiad": 304
+        },
+        "bootstrap_valid_resamples": 10000,
+        "estimate": 0.03397344510458542,
+        "family_support": 547,
+        "interval": [
+          0.0011815432778427698,
+          0.06676534693132807
+        ],
+        "status": "estimable",
+        "unavailable_reason": null
+      },
+      "Analyze:uncensored_dwell_tokens": {
+        "benchmark_family_support": {
+          "aime24": 5,
+          "aime25": 3,
+          "amc23": 2,
+          "math500": 26,
+          "minerva": 7,
+          "olympiad": 81
+        },
+        "bootstrap_valid_resamples": 8158,
+        "estimate": 23.94521577224586,
+        "family_support": 124,
+        "interval": null,
+        "status": "insufficient_support_or_degenerate",
+        "unavailable_reason": "missing_required_benchmark_or_undefined_draw_or_degenerate_variance"
+      },
+      "Explore:next:Analyze": {
+        "benchmark_family_support": {
+          "aime24": 15,
+          "aime25": 12,
+          "amc23": 6,
+          "math500": 73,
+          "minerva": 51,
+          "olympiad": 232
+        },
+        "bootstrap_valid_resamples": 9984,
+        "estimate": 0.3106422824105505,
+        "family_support": 389,
+        "interval": null,
+        "status": "insufficient_support_or_degenerate",
+        "unavailable_reason": "missing_required_benchmark_or_undefined_draw_or_degenerate_variance"
+      },
+      "Explore:next:Explore": {
+        "benchmark_family_support": {
+          "aime24": 15,
+          "aime25": 12,
+          "amc23": 6,
+          "math500": 73,
+          "minerva": 51,
+          "olympiad": 232
+        },
+        "bootstrap_valid_resamples": 9984,
+        "estimate": 0.2117602493144729,
+        "family_support": 389,
+        "interval": null,
+        "status": "insufficient_support_or_degenerate",
+        "unavailable_reason": "missing_required_benchmark_or_undefined_draw_or_degenerate_variance"
+      },
+      "Explore:next:Implement": {
+        "benchmark_family_support": {
+          "aime24": 15,
+          "aime25": 12,
+          "amc23": 6,
+          "math500": 73,
+          "minerva": 51,
+          "olympiad": 232
+        },
+        "bootstrap_valid_resamples": 9984,
+        "estimate": 0.08893387654013886,
+        "family_support": 389,
+        "interval": null,
+        "status": "insufficient_support_or_degenerate",
+        "unavailable_reason": "missing_required_benchmark_or_undefined_draw_or_degenerate_variance"
+      },
+      "Explore:next:Monitor": {
+        "benchmark_family_support": {
+          "aime24": 15,
+          "aime25": 12,
+          "amc23": 6,
+          "math500": 73,
+          "minerva": 51,
+          "olympiad": 232
+        },
+        "bootstrap_valid_resamples": 9984,
+        "estimate": 0.09498212133044089,
+        "family_support": 389,
+        "interval": null,
+        "status": "insufficient_support_or_degenerate",
+        "unavailable_reason": "missing_required_benchmark_or_undefined_draw_or_degenerate_variance"
+      },
+      "Explore:next:Plan": {
+        "benchmark_family_support": {
+          "aime24": 15,
+          "aime25": 12,
+          "amc23": 6,
+          "math500": 73,
+          "minerva": 51,
+          "olympiad": 232
+        },
+        "bootstrap_valid_resamples": 9984,
+        "estimate": 0.03932553937298052,
+        "family_support": 389,
+        "interval": null,
+        "status": "insufficient_support_or_degenerate",
+        "unavailable_reason": "missing_required_benchmark_or_undefined_draw_or_degenerate_variance"
+      },
+      "Explore:next:Read": {
+        "benchmark_family_support": {
+          "aime24": 15,
+          "aime25": 12,
+          "amc23": 6,
+          "math500": 73,
+          "minerva": 51,
+          "olympiad": 232
+        },
+        "bootstrap_valid_resamples": 9984,
+        "estimate": 0.038951824897990164,
+        "family_support": 389,
+        "interval": null,
+        "status": "insufficient_support_or_degenerate",
+        "unavailable_reason": "missing_required_benchmark_or_undefined_draw_or_degenerate_variance"
+      },
+      "Explore:next:Verify": {
+        "benchmark_family_support": {
+          "aime24": 15,
+          "aime25": 12,
+          "amc23": 6,
+          "math500": 73,
+          "minerva": 51,
+          "olympiad": 232
+        },
+        "bootstrap_valid_resamples": 9984,
+        "estimate": 0.2154041061334262,
+        "family_support": 389,
+        "interval": null,
+        "status": "insufficient_support_or_degenerate",
+        "unavailable_reason": "missing_required_benchmark_or_undefined_draw_or_degenerate_variance"
+      },
+      "Explore:observed_dwell_tokens": {
+        "benchmark_family_support": {
+          "aime24": 24,
+          "aime25": 24,
+          "amc23": 12,
+          "math500": 145,
+          "minerva": 131,
+          "olympiad": 400
+        },
+        "bootstrap_valid_resamples": 10000,
+        "estimate": 17.286291433586594,
+        "family_support": 736,
+        "interval": [
+          15.578531329513103,
+          18.994051537660084
+        ],
+        "status": "estimable",
+        "unavailable_reason": null
+      },
+      "Explore:occupancy": {
+        "benchmark_family_support": {
+          "aime24": 30,
+          "aime25": 30,
+          "amc23": 40,
+          "math500": 500,
+          "minerva": 236,
+          "olympiad": 650
+        },
+        "bootstrap_valid_resamples": 10000,
+        "estimate": 0.08011607817679005,
+        "family_support": 1486,
+        "interval": [
+          0.06492347949982039,
+          0.09530867685375971
+        ],
+        "status": "estimable",
+        "unavailable_reason": null
+      },
+      "Explore:reentry_per_observed_boundary": {
+        "benchmark_family_support": {
+          "aime24": 15,
+          "aime25": 12,
+          "amc23": 6,
+          "math500": 73,
+          "minerva": 51,
+          "olympiad": 232
+        },
+        "bootstrap_valid_resamples": 9984,
+        "estimate": 0.027162355951083614,
+        "family_support": 389,
+        "interval": null,
+        "status": "insufficient_support_or_degenerate",
+        "unavailable_reason": "missing_required_benchmark_or_undefined_draw_or_degenerate_variance"
+      },
+      "Explore:uncensored_dwell_tokens": {
+        "benchmark_family_support": {
+          "aime24": 4,
+          "aime25": 2,
+          "amc23": 0,
+          "math500": 22,
+          "minerva": 9,
+          "olympiad": 85
+        },
+        "bootstrap_valid_resamples": 0,
+        "estimate": null,
+        "family_support": 122,
+        "interval": null,
+        "status": "insufficient_support_or_degenerate",
+        "unavailable_reason": "missing_required_benchmark_or_undefined_draw_or_degenerate_variance"
+      },
+      "Implement:next:Analyze": {
+        "benchmark_family_support": {
+          "aime24": 19,
+          "aime25": 23,
+          "amc23": 12,
+          "math500": 111,
+          "minerva": 84,
+          "olympiad": 338
+        },
+        "bootstrap_valid_resamples": 10000,
+        "estimate": 0.10361255039933069,
+        "family_support": 587,
+        "interval": [
+          0.055834455870504084,
+          0.1513906449281573
+        ],
+        "status": "estimable",
+        "unavailable_reason": null
+      },
+      "Implement:next:Explore": {
+        "benchmark_family_support": {
+          "aime24": 19,
+          "aime25": 23,
+          "amc23": 12,
+          "math500": 111,
+          "minerva": 84,
+          "olympiad": 338
+        },
+        "bootstrap_valid_resamples": 10000,
+        "estimate": 0.0496453241277024,
+        "family_support": 587,
+        "interval": [
+          -0.00014770004470968795,
+          0.0994383483001145
+        ],
+        "status": "estimable",
+        "unavailable_reason": null
+      },
+      "Implement:next:Implement": {
+        "benchmark_family_support": {
+          "aime24": 19,
+          "aime25": 23,
+          "amc23": 12,
+          "math500": 111,
+          "minerva": 84,
+          "olympiad": 338
+        },
+        "bootstrap_valid_resamples": 10000,
+        "estimate": 0.5609939313298117,
+        "family_support": 587,
+        "interval": [
+          0.46525387358044323,
+          0.6567339890791801
+        ],
+        "status": "estimable",
+        "unavailable_reason": null
+      },
+      "Implement:next:Monitor": {
+        "benchmark_family_support": {
+          "aime24": 19,
+          "aime25": 23,
+          "amc23": 12,
+          "math500": 111,
+          "minerva": 84,
+          "olympiad": 338
+        },
+        "bootstrap_valid_resamples": 10000,
+        "estimate": 0.09892544351281195,
+        "family_support": 587,
+        "interval": [
+          0.03788114345700852,
+          0.15996974356861537
+        ],
+        "status": "estimable",
+        "unavailable_reason": null
+      },
+      "Implement:next:Plan": {
+        "benchmark_family_support": {
+          "aime24": 19,
+          "aime25": 23,
+          "amc23": 12,
+          "math500": 111,
+          "minerva": 84,
+          "olympiad": 338
+        },
+        "bootstrap_valid_resamples": 10000,
+        "estimate": 0.017730107616324504,
+        "family_support": 587,
+        "interval": [
+          0.005605416917592797,
+          0.029854798315056212
+        ],
+        "status": "estimable",
+        "unavailable_reason": null
+      },
+      "Implement:next:Read": {
+        "benchmark_family_support": {
+          "aime24": 19,
+          "aime25": 23,
+          "amc23": 12,
+          "math500": 111,
+          "minerva": 84,
+          "olympiad": 338
+        },
+        "bootstrap_valid_resamples": 10000,
+        "estimate": 0.010835169616001991,
+        "family_support": 587,
+        "interval": [
+          6.855005822388634e-05,
+          0.021601789173780098
+        ],
+        "status": "estimable",
+        "unavailable_reason": null
+      },
+      "Implement:next:Verify": {
+        "benchmark_family_support": {
+          "aime24": 19,
+          "aime25": 23,
+          "amc23": 12,
+          "math500": 111,
+          "minerva": 84,
+          "olympiad": 338
+        },
+        "bootstrap_valid_resamples": 10000,
+        "estimate": 0.15825747339801688,
+        "family_support": 587,
+        "interval": [
+          0.0945147617407869,
+          0.22200018505524685
+        ],
+        "status": "estimable",
+        "unavailable_reason": null
+      },
+      "Implement:observed_dwell_tokens": {
+        "benchmark_family_support": {
+          "aime24": 30,
+          "aime25": 30,
+          "amc23": 36,
+          "math500": 359,
+          "minerva": 198,
+          "olympiad": 593
+        },
+        "bootstrap_valid_resamples": 10000,
+        "estimate": 21.840365741911324,
+        "family_support": 1246,
+        "interval": [
+          19.89989477955679,
+          23.78083670426586
+        ],
+        "status": "estimable",
+        "unavailable_reason": null
+      },
+      "Implement:occupancy": {
+        "benchmark_family_support": {
+          "aime24": 30,
+          "aime25": 30,
+          "amc23": 40,
+          "math500": 500,
+          "minerva": 236,
+          "olympiad": 650
+        },
+        "bootstrap_valid_resamples": 10000,
+        "estimate": 0.33807934484823843,
+        "family_support": 1486,
+        "interval": [
+          0.30248883376627256,
+          0.3736698559302043
+        ],
+        "status": "estimable",
+        "unavailable_reason": null
+      },
+      "Implement:reentry_per_observed_boundary": {
+        "benchmark_family_support": {
+          "aime24": 19,
+          "aime25": 23,
+          "amc23": 12,
+          "math500": 111,
+          "minerva": 84,
+          "olympiad": 338
+        },
+        "bootstrap_valid_resamples": 10000,
+        "estimate": 0.017692567937229075,
+        "family_support": 587,
+        "interval": [
+          0.0009043414797563348,
+          0.034480794394701815
+        ],
+        "status": "estimable",
+        "unavailable_reason": null
+      },
+      "Implement:uncensored_dwell_tokens": {
+        "benchmark_family_support": {
+          "aime24": 3,
+          "aime25": 2,
+          "amc23": 0,
+          "math500": 23,
+          "minerva": 5,
+          "olympiad": 75
+        },
+        "bootstrap_valid_resamples": 0,
+        "estimate": null,
+        "family_support": 108,
+        "interval": null,
+        "status": "insufficient_support_or_degenerate",
+        "unavailable_reason": "missing_required_benchmark_or_undefined_draw_or_degenerate_variance"
+      },
+      "Monitor:next:Analyze": {
+        "benchmark_family_support": {
+          "aime24": 11,
+          "aime25": 10,
+          "amc23": 1,
+          "math500": 59,
+          "minerva": 33,
+          "olympiad": 213
+        },
+        "bootstrap_valid_resamples": 6350,
+        "estimate": 0.31143249742040063,
+        "family_support": 327,
+        "interval": null,
+        "status": "insufficient_support_or_degenerate",
+        "unavailable_reason": "missing_required_benchmark_or_undefined_draw_or_degenerate_variance"
+      },
+      "Monitor:next:Explore": {
+        "benchmark_family_support": {
+          "aime24": 11,
+          "aime25": 10,
+          "amc23": 1,
+          "math500": 59,
+          "minerva": 33,
+          "olympiad": 213
+        },
+        "bootstrap_valid_resamples": 6350,
+        "estimate": 0.141300778844218,
+        "family_support": 327,
+        "interval": null,
+        "status": "insufficient_support_or_degenerate",
+        "unavailable_reason": "missing_required_benchmark_or_undefined_draw_or_degenerate_variance"
+      },
+      "Monitor:next:Implement": {
+        "benchmark_family_support": {
+          "aime24": 11,
+          "aime25": 10,
+          "amc23": 1,
+          "math500": 59,
+          "minerva": 33,
+          "olympiad": 213
+        },
+        "bootstrap_valid_resamples": 6350,
+        "estimate": 0.14032321851480511,
+        "family_support": 327,
+        "interval": null,
+        "status": "insufficient_support_or_degenerate",
+        "unavailable_reason": "missing_required_benchmark_or_undefined_draw_or_degenerate_variance"
+      },
+      "Monitor:next:Monitor": {
+        "benchmark_family_support": {
+          "aime24": 11,
+          "aime25": 10,
+          "amc23": 1,
+          "math500": 59,
+          "minerva": 33,
+          "olympiad": 213
+        },
+        "bootstrap_valid_resamples": 6350,
+        "estimate": 0.11457001813560454,
+        "family_support": 327,
+        "interval": null,
+        "status": "insufficient_support_or_degenerate",
+        "unavailable_reason": "missing_required_benchmark_or_undefined_draw_or_degenerate_variance"
+      },
+      "Monitor:next:Plan": {
+        "benchmark_family_support": {
+          "aime24": 11,
+          "aime25": 10,
+          "amc23": 1,
+          "math500": 59,
+          "minerva": 33,
+          "olympiad": 213
+        },
+        "bootstrap_valid_resamples": 6350,
+        "estimate": 0.05509860858694523,
+        "family_support": 327,
+        "interval": null,
+        "status": "insufficient_support_or_degenerate",
+        "unavailable_reason": "missing_required_benchmark_or_undefined_draw_or_degenerate_variance"
+      },
+      "Monitor:next:Read": {
+        "benchmark_family_support": {
+          "aime24": 11,
+          "aime25": 10,
+          "amc23": 1,
+          "math500": 59,
+          "minerva": 33,
+          "olympiad": 213
+        },
+        "bootstrap_valid_resamples": 6350,
+        "estimate": 0.17427377295273097,
+        "family_support": 327,
+        "interval": null,
+        "status": "insufficient_support_or_degenerate",
+        "unavailable_reason": "missing_required_benchmark_or_undefined_draw_or_degenerate_variance"
+      },
+      "Monitor:next:Verify": {
+        "benchmark_family_support": {
+          "aime24": 11,
+          "aime25": 10,
+          "amc23": 1,
+          "math500": 59,
+          "minerva": 33,
+          "olympiad": 213
+        },
+        "bootstrap_valid_resamples": 6350,
+        "estimate": 0.06300110554529555,
+        "family_support": 327,
+        "interval": null,
+        "status": "insufficient_support_or_degenerate",
+        "unavailable_reason": "missing_required_benchmark_or_undefined_draw_or_degenerate_variance"
+      },
+      "Monitor:observed_dwell_tokens": {
+        "benchmark_family_support": {
+          "aime24": 26,
+          "aime25": 21,
+          "amc23": 21,
+          "math500": 219,
+          "minerva": 166,
+          "olympiad": 458
+        },
+        "bootstrap_valid_resamples": 10000,
+        "estimate": 7.181068337684377,
+        "family_support": 911,
+        "interval": [
+          6.4183268787863526,
+          7.943809796582402
+        ],
+        "status": "estimable",
+        "unavailable_reason": null
+      },
+      "Monitor:occupancy": {
+        "benchmark_family_support": {
+          "aime24": 30,
+          "aime25": 30,
+          "amc23": 40,
+          "math500": 500,
+          "minerva": 236,
+          "olympiad": 650
+        },
+        "bootstrap_valid_resamples": 10000,
+        "estimate": 0.04616687672443057,
+        "family_support": 1486,
+        "interval": [
+          0.036223749151914425,
+          0.05611000429694671
+        ],
+        "status": "estimable",
+        "unavailable_reason": null
+      },
+      "Monitor:reentry_per_observed_boundary": {
+        "benchmark_family_support": {
+          "aime24": 11,
+          "aime25": 10,
+          "amc23": 1,
+          "math500": 59,
+          "minerva": 33,
+          "olympiad": 213
+        },
+        "bootstrap_valid_resamples": 6350,
+        "estimate": 0.024768699600168143,
+        "family_support": 327,
+        "interval": null,
+        "status": "insufficient_support_or_degenerate",
+        "unavailable_reason": "missing_required_benchmark_or_undefined_draw_or_degenerate_variance"
+      },
+      "Monitor:uncensored_dwell_tokens": {
+        "benchmark_family_support": {
+          "aime24": 2,
+          "aime25": 3,
+          "amc23": 1,
+          "math500": 12,
+          "minerva": 5,
+          "olympiad": 66
+        },
+        "bootstrap_valid_resamples": 5222,
+        "estimate": 5.206432780182779,
+        "family_support": 89,
+        "interval": null,
+        "status": "insufficient_support_or_degenerate",
+        "unavailable_reason": "missing_required_benchmark_or_undefined_draw_or_degenerate_variance"
+      },
+      "Plan:next:Analyze": {
+        "benchmark_family_support": {
+          "aime24": 11,
+          "aime25": 13,
+          "amc23": 4,
+          "math500": 52,
+          "minerva": 23,
+          "olympiad": 160
+        },
+        "bootstrap_valid_resamples": 9821,
+        "estimate": 0.3468979917526113,
+        "family_support": 263,
+        "interval": null,
+        "status": "insufficient_support_or_degenerate",
+        "unavailable_reason": "missing_required_benchmark_or_undefined_draw_or_degenerate_variance"
+      },
+      "Plan:next:Explore": {
+        "benchmark_family_support": {
+          "aime24": 11,
+          "aime25": 13,
+          "amc23": 4,
+          "math500": 52,
+          "minerva": 23,
+          "olympiad": 160
+        },
+        "bootstrap_valid_resamples": 9821,
+        "estimate": 0.03603010733479483,
+        "family_support": 263,
+        "interval": null,
+        "status": "insufficient_support_or_degenerate",
+        "unavailable_reason": "missing_required_benchmark_or_undefined_draw_or_degenerate_variance"
+      },
+      "Plan:next:Implement": {
+        "benchmark_family_support": {
+          "aime24": 11,
+          "aime25": 13,
+          "amc23": 4,
+          "math500": 52,
+          "minerva": 23,
+          "olympiad": 160
+        },
+        "bootstrap_valid_resamples": 9821,
+        "estimate": 0.36165720527711015,
+        "family_support": 263,
+        "interval": null,
+        "status": "insufficient_support_or_degenerate",
+        "unavailable_reason": "missing_required_benchmark_or_undefined_draw_or_degenerate_variance"
+      },
+      "Plan:next:Monitor": {
+        "benchmark_family_support": {
+          "aime24": 11,
+          "aime25": 13,
+          "amc23": 4,
+          "math500": 52,
+          "minerva": 23,
+          "olympiad": 160
+        },
+        "bootstrap_valid_resamples": 9821,
+        "estimate": 0.07803757577466817,
+        "family_support": 263,
+        "interval": null,
+        "status": "insufficient_support_or_degenerate",
+        "unavailable_reason": "missing_required_benchmark_or_undefined_draw_or_degenerate_variance"
+      },
+      "Plan:next:Plan": {
+        "benchmark_family_support": {
+          "aime24": 11,
+          "aime25": 13,
+          "amc23": 4,
+          "math500": 52,
+          "minerva": 23,
+          "olympiad": 160
+        },
+        "bootstrap_valid_resamples": 9821,
+        "estimate": 0.12110388618778566,
+        "family_support": 263,
+        "interval": null,
+        "status": "insufficient_support_or_degenerate",
+        "unavailable_reason": "missing_required_benchmark_or_undefined_draw_or_degenerate_variance"
+      },
+      "Plan:next:Read": {
+        "benchmark_family_support": {
+          "aime24": 11,
+          "aime25": 13,
+          "amc23": 4,
+          "math500": 52,
+          "minerva": 23,
+          "olympiad": 160
+        },
+        "bootstrap_valid_resamples": 9821,
+        "estimate": 0.031793911666533954,
+        "family_support": 263,
+        "interval": null,
+        "status": "insufficient_support_or_degenerate",
+        "unavailable_reason": "missing_required_benchmark_or_undefined_draw_or_degenerate_variance"
+      },
+      "Plan:next:Verify": {
+        "benchmark_family_support": {
+          "aime24": 11,
+          "aime25": 13,
+          "amc23": 4,
+          "math500": 52,
+          "minerva": 23,
+          "olympiad": 160
+        },
+        "bootstrap_valid_resamples": 9821,
+        "estimate": 0.024479322006495916,
+        "family_support": 263,
+        "interval": null,
+        "status": "insufficient_support_or_degenerate",
+        "unavailable_reason": "missing_required_benchmark_or_undefined_draw_or_degenerate_variance"
+      },
+      "Plan:observed_dwell_tokens": {
+        "benchmark_family_support": {
+          "aime24": 19,
+          "aime25": 21,
+          "amc23": 12,
+          "math500": 174,
+          "minerva": 107,
+          "olympiad": 378
+        },
+        "bootstrap_valid_resamples": 9999,
+        "estimate": 13.4410129427009,
+        "family_support": 711,
+        "interval": null,
+        "status": "insufficient_support_or_degenerate",
+        "unavailable_reason": "missing_required_benchmark_or_undefined_draw_or_degenerate_variance"
+      },
+      "Plan:occupancy": {
+        "benchmark_family_support": {
+          "aime24": 30,
+          "aime25": 30,
+          "amc23": 40,
+          "math500": 500,
+          "minerva": 236,
+          "olympiad": 650
+        },
+        "bootstrap_valid_resamples": 10000,
+        "estimate": 0.03480294949528853,
+        "family_support": 1486,
+        "interval": [
+          0.027064359175531266,
+          0.0425415398150458
+        ],
+        "status": "estimable",
+        "unavailable_reason": null
+      },
+      "Plan:reentry_per_observed_boundary": {
+        "benchmark_family_support": {
+          "aime24": 11,
+          "aime25": 13,
+          "amc23": 4,
+          "math500": 52,
+          "minerva": 23,
+          "olympiad": 160
+        },
+        "bootstrap_valid_resamples": 9821,
+        "estimate": 0.02542235975829726,
+        "family_support": 263,
+        "interval": null,
+        "status": "insufficient_support_or_degenerate",
+        "unavailable_reason": "missing_required_benchmark_or_undefined_draw_or_degenerate_variance"
+      },
+      "Plan:uncensored_dwell_tokens": {
+        "benchmark_family_support": {
+          "aime24": 0,
+          "aime25": 2,
+          "amc23": 0,
+          "math500": 11,
+          "minerva": 2,
+          "olympiad": 54
+        },
+        "bootstrap_valid_resamples": 0,
+        "estimate": null,
+        "family_support": 69,
+        "interval": null,
+        "status": "insufficient_support_or_degenerate",
+        "unavailable_reason": "missing_required_benchmark_or_undefined_draw_or_degenerate_variance"
+      },
+      "Read:next:Analyze": {
+        "benchmark_family_support": {
+          "aime24": 9,
+          "aime25": 9,
+          "amc23": 0,
+          "math500": 78,
+          "minerva": 41,
+          "olympiad": 180
+        },
+        "bootstrap_valid_resamples": 0,
+        "estimate": null,
+        "family_support": 317,
+        "interval": null,
+        "status": "insufficient_support_or_degenerate",
+        "unavailable_reason": "missing_required_benchmark_or_undefined_draw_or_degenerate_variance"
+      },
+      "Read:next:Explore": {
+        "benchmark_family_support": {
+          "aime24": 9,
+          "aime25": 9,
+          "amc23": 0,
+          "math500": 78,
+          "minerva": 41,
+          "olympiad": 180
+        },
+        "bootstrap_valid_resamples": 0,
+        "estimate": null,
+        "family_support": 317,
+        "interval": null,
+        "status": "insufficient_support_or_degenerate",
+        "unavailable_reason": "missing_required_benchmark_or_undefined_draw_or_degenerate_variance"
+      },
+      "Read:next:Implement": {
+        "benchmark_family_support": {
+          "aime24": 9,
+          "aime25": 9,
+          "amc23": 0,
+          "math500": 78,
+          "minerva": 41,
+          "olympiad": 180
+        },
+        "bootstrap_valid_resamples": 0,
+        "estimate": null,
+        "family_support": 317,
+        "interval": null,
+        "status": "insufficient_support_or_degenerate",
+        "unavailable_reason": "missing_required_benchmark_or_undefined_draw_or_degenerate_variance"
+      },
+      "Read:next:Monitor": {
+        "benchmark_family_support": {
+          "aime24": 9,
+          "aime25": 9,
+          "amc23": 0,
+          "math500": 78,
+          "minerva": 41,
+          "olympiad": 180
+        },
+        "bootstrap_valid_resamples": 0,
+        "estimate": null,
+        "family_support": 317,
+        "interval": null,
+        "status": "insufficient_support_or_degenerate",
+        "unavailable_reason": "missing_required_benchmark_or_undefined_draw_or_degenerate_variance"
+      },
+      "Read:next:Plan": {
+        "benchmark_family_support": {
+          "aime24": 9,
+          "aime25": 9,
+          "amc23": 0,
+          "math500": 78,
+          "minerva": 41,
+          "olympiad": 180
+        },
+        "bootstrap_valid_resamples": 0,
+        "estimate": null,
+        "family_support": 317,
+        "interval": null,
+        "status": "insufficient_support_or_degenerate",
+        "unavailable_reason": "missing_required_benchmark_or_undefined_draw_or_degenerate_variance"
+      },
+      "Read:next:Read": {
+        "benchmark_family_support": {
+          "aime24": 9,
+          "aime25": 9,
+          "amc23": 0,
+          "math500": 78,
+          "minerva": 41,
+          "olympiad": 180
+        },
+        "bootstrap_valid_resamples": 0,
+        "estimate": null,
+        "family_support": 317,
+        "interval": null,
+        "status": "insufficient_support_or_degenerate",
+        "unavailable_reason": "missing_required_benchmark_or_undefined_draw_or_degenerate_variance"
+      },
+      "Read:next:Verify": {
+        "benchmark_family_support": {
+          "aime24": 9,
+          "aime25": 9,
+          "amc23": 0,
+          "math500": 78,
+          "minerva": 41,
+          "olympiad": 180
+        },
+        "bootstrap_valid_resamples": 0,
+        "estimate": null,
+        "family_support": 317,
+        "interval": null,
+        "status": "insufficient_support_or_degenerate",
+        "unavailable_reason": "missing_required_benchmark_or_undefined_draw_or_degenerate_variance"
+      },
+      "Read:observed_dwell_tokens": {
+        "benchmark_family_support": {
+          "aime24": 26,
+          "aime25": 26,
+          "amc23": 21,
+          "math500": 244,
+          "minerva": 167,
+          "olympiad": 453
+        },
+        "bootstrap_valid_resamples": 10000,
+        "estimate": 17.283126657286026,
+        "family_support": 937,
+        "interval": [
+          15.707731358255382,
+          18.858521956316668
+        ],
+        "status": "estimable",
+        "unavailable_reason": null
+      },
+      "Read:occupancy": {
+        "benchmark_family_support": {
+          "aime24": 30,
+          "aime25": 30,
+          "amc23": 40,
+          "math500": 500,
+          "minerva": 236,
+          "olympiad": 650
+        },
+        "bootstrap_valid_resamples": 10000,
+        "estimate": 0.10352935548548357,
+        "family_support": 1486,
+        "interval": [
+          0.08290729542014534,
+          0.1241514155508218
+        ],
+        "status": "estimable",
+        "unavailable_reason": null
+      },
+      "Read:reentry_per_observed_boundary": {
+        "benchmark_family_support": {
+          "aime24": 9,
+          "aime25": 9,
+          "amc23": 0,
+          "math500": 78,
+          "minerva": 41,
+          "olympiad": 180
+        },
+        "bootstrap_valid_resamples": 0,
+        "estimate": null,
+        "family_support": 317,
+        "interval": null,
+        "status": "insufficient_support_or_degenerate",
+        "unavailable_reason": "missing_required_benchmark_or_undefined_draw_or_degenerate_variance"
+      },
+      "Read:uncensored_dwell_tokens": {
+        "benchmark_family_support": {
+          "aime24": 2,
+          "aime25": 1,
+          "amc23": 0,
+          "math500": 9,
+          "minerva": 3,
+          "olympiad": 38
+        },
+        "bootstrap_valid_resamples": 0,
+        "estimate": null,
+        "family_support": 53,
+        "interval": null,
+        "status": "insufficient_support_or_degenerate",
+        "unavailable_reason": "missing_required_benchmark_or_undefined_draw_or_degenerate_variance"
+      },
+      "Verify:next:Analyze": {
+        "benchmark_family_support": {
+          "aime24": 19,
+          "aime25": 17,
+          "amc23": 10,
+          "math500": 87,
+          "minerva": 59,
+          "olympiad": 273
+        },
+        "bootstrap_valid_resamples": 9999,
+        "estimate": 0.14921922808861718,
+        "family_support": 465,
+        "interval": null,
+        "status": "insufficient_support_or_degenerate",
+        "unavailable_reason": "missing_required_benchmark_or_undefined_draw_or_degenerate_variance"
+      },
+      "Verify:next:Explore": {
+        "benchmark_family_support": {
+          "aime24": 19,
+          "aime25": 17,
+          "amc23": 10,
+          "math500": 87,
+          "minerva": 59,
+          "olympiad": 273
+        },
+        "bootstrap_valid_resamples": 9999,
+        "estimate": 0.14480312584153895,
+        "family_support": 465,
+        "interval": null,
+        "status": "insufficient_support_or_degenerate",
+        "unavailable_reason": "missing_required_benchmark_or_undefined_draw_or_degenerate_variance"
+      },
+      "Verify:next:Implement": {
+        "benchmark_family_support": {
+          "aime24": 19,
+          "aime25": 17,
+          "amc23": 10,
+          "math500": 87,
+          "minerva": 59,
+          "olympiad": 273
+        },
+        "bootstrap_valid_resamples": 9999,
+        "estimate": 0.24587686469823367,
+        "family_support": 465,
+        "interval": null,
+        "status": "insufficient_support_or_degenerate",
+        "unavailable_reason": "missing_required_benchmark_or_undefined_draw_or_degenerate_variance"
+      },
+      "Verify:next:Monitor": {
+        "benchmark_family_support": {
+          "aime24": 19,
+          "aime25": 17,
+          "amc23": 10,
+          "math500": 87,
+          "minerva": 59,
+          "olympiad": 273
+        },
+        "bootstrap_valid_resamples": 9999,
+        "estimate": 0.08216881301866026,
+        "family_support": 465,
+        "interval": null,
+        "status": "insufficient_support_or_degenerate",
+        "unavailable_reason": "missing_required_benchmark_or_undefined_draw_or_degenerate_variance"
+      },
+      "Verify:next:Plan": {
+        "benchmark_family_support": {
+          "aime24": 19,
+          "aime25": 17,
+          "amc23": 10,
+          "math500": 87,
+          "minerva": 59,
+          "olympiad": 273
+        },
+        "bootstrap_valid_resamples": 9999,
+        "estimate": 0.04107964932768834,
+        "family_support": 465,
+        "interval": null,
+        "status": "insufficient_support_or_degenerate",
+        "unavailable_reason": "missing_required_benchmark_or_undefined_draw_or_degenerate_variance"
+      },
+      "Verify:next:Read": {
+        "benchmark_family_support": {
+          "aime24": 19,
+          "aime25": 17,
+          "amc23": 10,
+          "math500": 87,
+          "minerva": 59,
+          "olympiad": 273
+        },
+        "bootstrap_valid_resamples": 9999,
+        "estimate": 0.030755284696152563,
+        "family_support": 465,
+        "interval": null,
+        "status": "insufficient_support_or_degenerate",
+        "unavailable_reason": "missing_required_benchmark_or_undefined_draw_or_degenerate_variance"
+      },
+      "Verify:next:Verify": {
+        "benchmark_family_support": {
+          "aime24": 19,
+          "aime25": 17,
+          "amc23": 10,
+          "math500": 87,
+          "minerva": 59,
+          "olympiad": 273
+        },
+        "bootstrap_valid_resamples": 9999,
+        "estimate": 0.3060970343291091,
+        "family_support": 465,
+        "interval": null,
+        "status": "insufficient_support_or_degenerate",
+        "unavailable_reason": "missing_required_benchmark_or_undefined_draw_or_degenerate_variance"
+      },
+      "Verify:observed_dwell_tokens": {
+        "benchmark_family_support": {
+          "aime24": 27,
+          "aime25": 29,
+          "amc23": 25,
+          "math500": 241,
+          "minerva": 146,
+          "olympiad": 518
+        },
+        "bootstrap_valid_resamples": 10000,
+        "estimate": 16.38700632486385,
+        "family_support": 986,
+        "interval": [
+          14.349033714628806,
+          18.424978935098896
+        ],
+        "status": "estimable",
+        "unavailable_reason": null
+      },
+      "Verify:occupancy": {
+        "benchmark_family_support": {
+          "aime24": 30,
+          "aime25": 30,
+          "amc23": 40,
+          "math500": 500,
+          "minerva": 236,
+          "olympiad": 650
+        },
+        "bootstrap_valid_resamples": 10000,
+        "estimate": 0.11913143428360749,
+        "family_support": 1486,
+        "interval": [
+          0.0992821567398063,
+          0.1389807118274087
+        ],
+        "status": "estimable",
+        "unavailable_reason": null
+      },
+      "Verify:reentry_per_observed_boundary": {
+        "benchmark_family_support": {
+          "aime24": 19,
+          "aime25": 17,
+          "amc23": 10,
+          "math500": 87,
+          "minerva": 59,
+          "olympiad": 273
+        },
+        "bootstrap_valid_resamples": 9999,
+        "estimate": 0.014417430418080886,
+        "family_support": 465,
+        "interval": null,
+        "status": "insufficient_support_or_degenerate",
+        "unavailable_reason": "missing_required_benchmark_or_undefined_draw_or_degenerate_variance"
+      },
+      "Verify:uncensored_dwell_tokens": {
+        "benchmark_family_support": {
+          "aime24": 4,
+          "aime25": 3,
+          "amc23": 2,
+          "math500": 22,
+          "minerva": 10,
+          "olympiad": 78
+        },
+        "bootstrap_valid_resamples": 8091,
+        "estimate": 17.70531085259346,
+        "family_support": 119,
+        "interval": null,
+        "status": "insufficient_support_or_degenerate",
+        "unavailable_reason": "missing_required_benchmark_or_undefined_draw_or_degenerate_variance"
+      },
+      "label_coverage": {
+        "benchmark_family_support": {
+          "aime24": 30,
+          "aime25": 30,
+          "amc23": 40,
+          "math500": 500,
+          "minerva": 236,
+          "olympiad": 650
+        },
+        "bootstrap_valid_resamples": 10000,
+        "estimate": 0.09956164563248932,
+        "family_support": 1486,
+        "interval": [
+          0.09133523351472592,
+          0.10778805775025271
+        ],
+        "status": "estimable",
+        "unavailable_reason": null
+      },
+      "observed_labelled_tokens": {
+        "benchmark_family_support": {
+          "aime24": 30,
+          "aime25": 30,
+          "amc23": 40,
+          "math500": 500,
+          "minerva": 236,
+          "olympiad": 650
+        },
+        "bootstrap_valid_resamples": 10000,
+        "estimate": 1070.214315949587,
+        "family_support": 1486,
+        "interval": [
+          731.6073265856712,
+          1408.8213053135028
+        ],
+        "status": "estimable",
+        "unavailable_reason": null
+      }
+    },
+    "run_to_run_sd": null,
+    "sha256": "5e5845ada19e6dd9348c25a59a741b3854747ed04b9d302a26a8c104e22e9052",
+    "simultaneous": true,
+    "sufficient_statistics_sha256": "bdf8efdbb98222ca0d0889b79e47f94ff2e3dca4fe430378a8382e57e6f37687",
+    "undefined_draws_discarded": 0
   }
 }

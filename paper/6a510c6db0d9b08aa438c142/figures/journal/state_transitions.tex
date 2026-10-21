@@ -2,11 +2,13 @@
 % Recipe: plot-ports-temperature-heatmap.tex; native matrix adapted to 7 states.
 % Author override: absolute 0--0.7 blue/white/red probability scale, beige carrier.
 % Saved observed probabilities and missing-interval flags remain unchanged.
+% An undefined estimate is stored as nan: pgfplots leaves that cell blank (never zero), and the
+% inside tick marks are switched off so that a blank row shows no tick stubs.
 \begin{tikzpicture}
 \definecolor{transitionlow}{HTML}{F00000}
 \pgfplotsset{colormap={journaltransitionmap}{
   color(0pt)=(gomblueone);color(500pt)=(white);color(1000pt)=(transitionlow)},
-  transitionpanel/.style={journalaxis,
+  transitionpanel/.style={journalaxis,tick style={draw=none},
     scale only axis,width=71pt,height=71pt,anchor=outer south west,
     xmin=.5,xmax=7.5,ymin=.5,ymax=7.5,y dir=reverse,
     xtick={1,2,3,4,5,6,7},xticklabels={Re,An,Ex,Pl,Im,Ve,Mo},

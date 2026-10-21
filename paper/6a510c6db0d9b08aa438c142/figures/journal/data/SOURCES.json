@@ -51,6 +51,46 @@
     "native_fixtures": {
       "path": "report/research-campaign-v3-20261014-r6/PARTIAL_VALIDATION_EVIDENCE.json",
       "sha256": "6c090b023507d62be7d77caccf44f27cff2851cdd8391a2211a03c714187d57b"
+    },
+    "lfm25:readout": {
+      "path": "report/final-routing-20261015-r1/lfm25/READOUT_RESULTS.json",
+      "sha256": "344b2025eb342971051a3bf521a2058ac8a133f438f12fe61d5925dcf2d861b3"
+    },
+    "lfm25:selection": {
+      "path": "report/final-routing-20261015-r1/lfm25/SELECTION_COVERAGE.json",
+      "sha256": "e0c9a04c683db76575cca65a05bd74e0513be30ef1af018291dd61076db1bb7e"
+    },
+    "lfm25:dynamics": {
+      "path": "report/final-routing-20261015-r1/lfm25/NATIVE_DYNAMICS_SUMMARY.json",
+      "sha256": "0499f3069b1edf9d210f24171817749bb4cd889351e7bd47daaa39098d24dd34"
+    },
+    "lfm25:generation:aime24": {
+      "path": "/leonardo_scratch/fast/IscrC_MIOSR/lmolfett/mfa-moe/campaign-runs/final-routing-20261015-r1/lfm25/generation/LiquidAI--LFM2.5-24B-A2B/aime24/traces.jsonl",
+      "sha256": "b58b367624235ffb843d0a01e487bd24990b728cdc92fd394d1be15e98eca108"
+    },
+    "lfm25:generation:aime25": {
+      "path": "/leonardo_scratch/fast/IscrC_MIOSR/lmolfett/mfa-moe/campaign-runs/final-routing-20261015-r1/lfm25/generation/LiquidAI--LFM2.5-24B-A2B/aime25/traces.jsonl",
+      "sha256": "4f2ee8f544541e66e9964444c52146328d663b5e4d6b65562115ba9976a8734a"
+    },
+    "lfm25:generation:amc23": {
+      "path": "/leonardo_scratch/fast/IscrC_MIOSR/lmolfett/mfa-moe/campaign-runs/final-routing-20261015-r1/lfm25/generation/LiquidAI--LFM2.5-24B-A2B/amc23/traces.jsonl",
+      "sha256": "b109cde109767d6cc974bc3cf454aab04e304cff3aec1749ae05e022b9b50f23"
+    },
+    "lfm25:generation:math500": {
+      "path": "/leonardo_scratch/fast/IscrC_MIOSR/lmolfett/mfa-moe/campaign-runs/final-routing-20261015-r1/lfm25/generation/LiquidAI--LFM2.5-24B-A2B/math500/traces.jsonl",
+      "sha256": "a5562d07a8dd9c05b5edec2d9e7124f2cce8843a0bd8ff9d18ae626acbf5b55c"
+    },
+    "lfm25:generation:minerva": {
+      "path": "/leonardo_scratch/fast/IscrC_MIOSR/lmolfett/mfa-moe/campaign-runs/final-routing-20261015-r1/lfm25/generation/LiquidAI--LFM2.5-24B-A2B/minerva/traces.jsonl",
+      "sha256": "8bd8989f2c0e87b5ae06487f25b38f4869d9f21516491a977226a234d08d711f"
+    },
+    "lfm25:generation:olympiad": {
+      "path": "/leonardo_scratch/fast/IscrC_MIOSR/lmolfett/mfa-moe/campaign-runs/final-routing-20261015-r1/lfm25/generation/LiquidAI--LFM2.5-24B-A2B/olympiad/traces.jsonl",
+      "sha256": "0db5c9f0dacaac31f1339c7328ac9623c235caf0b30daceef941c2bb33fa56e7"
+    },
+    "lfm25:j1_verdicts": {
+      "path": "/leonardo_scratch/fast/IscrC_MIOSR/lmolfett/mfa-moe/campaign-runs/final-routing-20261015-r1/lfm25/j1/new_lfm25_verdicts.jsonl",
+      "sha256": "092fa28fd48fcbb519191d4452624996e203cf43d1d9b972a2219a9da2b80450"
     }
   },
   "import_binding": {

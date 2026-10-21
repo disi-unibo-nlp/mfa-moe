@@ -148,6 +148,14 @@ def lfm_benchmark_cells():
     return cells, sources
 
 
+def replace_lfm_rows(path, rows):
+    """Drop any earlier lfm25 rows, append the given ones, and keep the file's own line ending."""
+    text = path.read_bytes().decode()
+    newline = "\r\n" if "\r\n" in text else "\n"
+    lines = [l for l in text.splitlines() if not l.startswith("lfm25,")]
+    path.write_bytes((newline.join(lines + rows) + newline).encode())
+
+
 def capture_lfm():
     """Append the LFM2.5 rows to the bundled copies; the seven-model rows stay byte-identical."""
     sources = json.loads((DATA / "SOURCES.json").read_text())
@@ -165,17 +173,14 @@ def capture_lfm():
     summaries = json.loads((DATA / "native_dynamics.json").read_text())
     summaries["lfm25"] = json.loads(dynamics.read_text())
     cells, generation_sources = lfm_benchmark_cells()
-    with (DATA / "routing_readout.csv").open() as stream:
-        lines = [l for l in stream.read().splitlines() if not l.startswith("lfm25,")]
-    (DATA / "routing_readout.csv").write_text("\n".join(lines + [",".join(row)]) + "\n")
-    with (DATA / "selection_coverage.csv").open() as stream:
-        lines = [l for l in stream.read().splitlines() if not l.startswith("lfm25,")]
+    replace_lfm_rows(DATA / "routing_readout.csv", [",".join(row)])
+    held_rows = []
     for fold in selection["folds"]:
         for arm in ("labelled_frequency", "random", "state_balanced"):
             held = fold["held_out"][arm]
-            lines.append(",".join(["lfm25", str(fold["fold"]), arm, repr(float(held["minimum_class_coverage"])),
-                                   str(int(fold["test_families"])), str(held["minimum_complete"] in (True, "true"))]))
-    (DATA / "selection_coverage.csv").write_text("\n".join(lines) + "\n")
+            held_rows.append(",".join(["lfm25", str(fold["fold"]), arm, repr(float(held["minimum_class_coverage"])),
+                                       str(int(fold["test_families"])), str(held["minimum_complete"] in (True, "true"))]))
+    replace_lfm_rows(DATA / "selection_coverage.csv", held_rows)
     (DATA / "native_dynamics.json").write_text(json.dumps(summaries, indent=2) + "\n")
     with (DATA / "benchmark_cells.csv").open(newline="") as stream:
         reader = csv.DictReader(stream)
@@ -308,17 +313,24 @@ def export_main_data(*, legacy_table_format=False, refresh_manifest=False):
     for model in MODELS:
         matrix, absent = [], []
         for y, state in enumerate(CLASSES, 1):
-            row_total = 0.0
+            row_total, defined = 0.0, 0
             for x, destination in enumerate(CLASSES, 1):
                 result = dynamics[model]["results"][state + ":next:" + destination]
                 mean = result["estimate"]
                 missing = int(result["interval"] is None)
-                row_total += mean
+                if mean is None:
+                    # An undefined estimate stays missing (nan), never zero, and is not summed.
+                    mean = float("nan")
+                else:
+                    row_total += mean
+                    defined += 1
                 matrix.append((x, y, mean, missing))
                 if missing:
                     absent.append((x + .32, y - .32))
-            if abs(row_total - 1) > 1e-10:
+            if defined == len(CLASSES) and abs(row_total - 1) > 1e-10:
                 raise ValueError("transition row does not sum to one")
+            if row_total > 1 + 1e-10:
+                raise ValueError("transition row exceeds one")
         dat("state_transitions_" + model + ".dat", ("to", "from", "probability", "missing"), matrix)
         if absent:
             dat("state_transitions_missing_" + model + ".dat", ("to", "from"), absent)
@@ -377,10 +389,9 @@ def export_main_data(*, legacy_table_format=False, refresh_manifest=False):
             "files": {str(p.relative_to(PAPER)): sha(p) for p in files},
             "new_inference": False,
             "observed_models": list(MODELS),
-            "planned_models": ["LiquidAI/LFM2.5-24B-A2B"],
+            "planned_models": [],
             "planned_model_source_sha256": sha(PAPER / "journal/PLANNED_MODEL.json"),
             "table_mode": "historical_renderer" if legacy_table_format else "author_formatted_preserved",
-            "mock_preview_files": [str(p.relative_to(PAPER)) for p in files if "routing_mock" in p.name],
             "uncertainty": "original confidence endpoints copied; saved selection folds have no estimated CI"},
             indent=2) + "\n")
     print(json.dumps({"models": len(MODELS), "selection_cells": len(MODELS) * 15, "native_dynamics_models": len(MODELS),
