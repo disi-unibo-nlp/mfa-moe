@@ -4,7 +4,7 @@
 - Grounding: each new proposition comes from the paper's own text with a verified quote. An ELM claim check of all 43 sentence-citation pairs ended with 39 supported and 3 reworded; the Schoenfeld book has no online text. `pw bib --no-normalize` reports 44 OK plus the 5 accepted. The build has no undefined citations. See `journal/CITATION_AUDIT.md`.
 - Literature record: `/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/literature/related-work-20261021/` (start with RESUME.md). Map: `paper/wiki/RELATED_WORK.md`.
 - Pending:
-  - Push to Overleaf (needs author approval).
+  - Pushed to Overleaf on 2026-10-21 with the author's approval (6dfc71e, after a gpt-6-astra style-review round).
   - Rerun `pw bib` once DBLP SPARQL answers again.
   - Do not run `pw bib` with normalization on this bib: it dropped DOIs and pages of existing entries.
 
