@@ -98,9 +98,12 @@ class RelativeGateTests(unittest.TestCase):
     def test_historically_long_and_repetitive_native_does_not_fail_equal_steering(self):
         self.assertEqual(whole.relative_fluency(self.rows())['fluency_failures'], [])
 
-    def test_only_relative_cap_length_and_repetition_excess_fail(self):
+    def test_only_relative_cap_and_repetition_excess_fail(self):
         self.assertEqual(whole.relative_fluency(self.rows(native_cap=False))['fluency_failures'], ['cap'])
-        self.assertEqual(whole.relative_fluency(self.rows(ratio=1.41))['fluency_failures'], ['length'])
+        # Longer but fluent reasoning is the measured outcome, never a gate.
+        value = whole.relative_fluency(self.rows(ratio=3.))
+        self.assertEqual(value['fluency_failures'], [])
+        self.assertGreater(value['geometric_length_ratio_to_native'], 1.4)
         self.assertEqual(whole.relative_fluency(self.rows(steered_rep=.41))['fluency_failures'], ['repetition'])
 
     def test_early_comparison_waits_for_both_same_family_native_references(self):
@@ -141,8 +144,9 @@ class MonitorSurvivalTests(unittest.TestCase):
 
     def test_transient_scontrol_readback_never_duplicates_sbatch(self):
         publish(self.root/'RELEASE.json', {'release_root': str(REPO)})
+        minutes = whole.CANARY_MINUTES['gpt']
         readback = ('UserId=lmolfett(1) Account=iscrc_miosr Partition=boost_usr_prod '
-                    'NumCPUs=16 TRES=cpu=16,gres/gpu=2 TimeLimit=00:45:00 ')
+                    f'NumCPUs=16 TRES=cpu=16,gres/gpu=2 TimeLimit={minutes//60:02d}:{minutes%60:02d}:00 ')
         responses = [SimpleNamespace(stdout='12345;leonardo\n'),
                      subprocess.CalledProcessError(1, ['scontrol']), SimpleNamespace(stdout=readback)]
         with patch.object(whole.subprocess, 'run', side_effect=responses) as run:
@@ -162,10 +166,10 @@ class MonitorSurvivalTests(unittest.TestCase):
         worker.assert_not_called()
         self.assertFalse((self.root/'STOP.json').exists())
 
-    def test_main_allocation_maxima_reserve_71_point_5_gpu_hours(self):
-        reserved = sum(2*(whole.CANARY_MINUTES[m]+whole.SHARDS[m]*whole.RUN_MINUTES[m])/60 for m in ('gpt', 'qwen36'))
-        self.assertEqual(reserved, 71.5)
-        self.assertLess(reserved, whole.GPU_CEILING)
+    def test_all_model_allocation_maxima_fit_the_release_ceiling(self):
+        # Every canary (and one half-dose fallback each) plus every production shard at its maximum walltime.
+        reserved = sum(2*(2*whole.CANARY_MINUTES[m]+whole.SHARDS[m]*whole.RUN_MINUTES[m])/60 for m in whole.PLAN)
+        self.assertLess(reserved, 720.)
 
     def test_purged_dependency_requires_native_success_before_afterok_is_satisfied(self):
         gone = SimpleNamespace(returncode=1, stderr='slurm_load_jobs error: Invalid job id specified')

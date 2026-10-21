@@ -29,8 +29,10 @@ from moe_exp.final_routing.selection import select_pairs
 # being cut at the walltime (unfinished rows are lost work). GLM decodes about four times slower than
 # the others and gets proportionally more shards and a lower canary cap.
 PLAN = {
-    'gpt': dict(shards=2, run_minutes=165, canary_minutes=45, canary_tokens=32768),
-    'qwen36': dict(shards=7, run_minutes=240, canary_minutes=90, canary_tokens=32768),
+    # GPT's full dose broke down in canary 61601039 (6/32 rows stuck at the cap), so it starts at the
+    # declared half dose; its promote arms reason ~3x longer, hence the larger production plan.
+    'gpt': dict(shards=4, run_minutes=240, canary_minutes=90, canary_tokens=32768, start_dose='half'),
+    'qwen36': dict(shards=9, run_minutes=240, canary_minutes=150, canary_tokens=32768),
     'qwen35': dict(shards=10, run_minutes=240, canary_minutes=150, canary_tokens=32768),
     'qwen330b': dict(shards=6, run_minutes=240, canary_minutes=120, canary_tokens=32768),
     'gemma': dict(shards=9, run_minutes=240, canary_minutes=150, canary_tokens=32768),
@@ -257,28 +259,16 @@ def prepare(models=MODELS):
     """Derive and publish main/half manifests and native-only planning evidence on CPUs."""
     require(os.environ.get('SLURM_JOB_ID'), 'whole discovery and planning require an allocated CPU job')
     verify_release()
-    from moe_exp.final_routing.importer import derive_whole
-    from .runtime import prompt_prefix
     b = driver.binding()
     results = {}
+    scope = os.environ.get('WHOLE_PROMPT_SCOPE', '1') == '1'
     for model in models:
-        folder = ROOT/model
-        nomination_path = folder/'WHOLE_NOMINATIONS.json'
-        nominations = verified(nomination_path) if nomination_path.exists() else derive_whole(b, model, folder)
-        natives = [r for r in verified(driver.DRIVER/model/'ASSIGNMENTS.json')['records'] if r['arm'] == 'native']
-        # 129 families for every model except LFM2.5, whose native roster holds 112.
-        require(natives and len({r['family'] for r in natives}) == len(natives), 'whole native family roster differs')
-        inputs = {}
-        for row in natives:
-            original = {**row, 'original_prompt': True, 'source': {**row['source'], 'prefix_tokens': 0}}
-            prompt, prefix, _ = prompt_prefix(b, model, original, None)
-            require(not prefix, 'original prompt row retained a prefix')
-            inputs[row['family']] = prompt
-        scope = os.environ.get('WHOLE_PROMPT_SCOPE', '1') == '1'
-        for dose in ('main', 'half'):
-            value = publish(folder/('WHOLE.json' if dose == 'main' else 'WHOLE_HALF.json'),
-                            build_manifest(model, dose, nominations, b, natives, inputs, scope))
-            results[model+':'+dose] = {key: value[key] for key in ('sha256', 'planned', 'executable', 'scope')}
+        try:
+            results.update(prepare_model(b, model, scope))
+        except Exception as error:
+            # One infeasible model must not block the others; its canary then stops on the missing manifest.
+            results[model] = {'prepared': False, 'error': f'{type(error).__name__}: {error}'}
+    require(any(key.endswith(':main') for key in results), 'no whole model could be prepared')
     from .whole_effects import planning
     try:
         planning_result = planning(models)
@@ -286,6 +276,30 @@ def prepare(models=MODELS):
         planning_result = {'transport_status': 'SUSPECTED', 'available': False,
                            'error': f'{type(error).__name__}: {error}', 'gates_science': False}
     publish(ROOT/'SD_MDE.json', planning_result)
+    return results
+
+
+def prepare_model(b: dict, model: str, scope: bool) -> dict:
+    """Derive one model's nominations and publish its main and half-dose manifests."""
+    from moe_exp.final_routing.importer import derive_whole
+    from .runtime import prompt_prefix
+    folder = ROOT/model
+    nomination_path = folder/'WHOLE_NOMINATIONS.json'
+    nominations = verified(nomination_path) if nomination_path.exists() else derive_whole(b, model, folder)
+    natives = [r for r in verified(driver.DRIVER/model/'ASSIGNMENTS.json')['records'] if r['arm'] == 'native']
+    # Native rosters: 129 families for most models, 128 for Nemotron and Qwen3-30B, 112 for LFM2.5.
+    require(natives and len({r['family'] for r in natives}) == len(natives), 'whole native family roster differs')
+    inputs = {}
+    for row in natives:
+        original = {**row, 'original_prompt': True, 'source': {**row['source'], 'prefix_tokens': 0}}
+        prompt, prefix, _ = prompt_prefix(b, model, original, None)
+        require(not prefix, 'original prompt row retained a prefix')
+        inputs[row['family']] = prompt
+    results = {}
+    for dose in ('main', 'half'):
+        value = publish(folder/('WHOLE.json' if dose == 'main' else 'WHOLE_HALF.json'),
+                        build_manifest(model, dose, nominations, b, natives, inputs, scope))
+        results[model+':'+dose] = {key: value[key] for key in ('sha256', 'planned', 'executable', 'scope')}
     return results
 
 
@@ -370,11 +384,12 @@ def relative_fluency(observed: list[dict]) -> dict:
     ratios = [math.log(max(1, r['tokens']))-np.mean([math.log(max(1, n['tokens'])) for n in pair])
               for r, pair in zip(steered, references)]
     ratio = math.exp(float(np.mean(ratios))) if ratios else None
+    # Only breakdown blocks a run: rows stuck at the length limit or looping. A longer but fluent
+    # reasoning is the outcome under study, so the length ratio is reported, never gated
+    # (user decision 2026-10-21, before any production outcome).
     failures = []
     if cap_rate is not None and cap_rate-native_cap > .15:
         failures.append('cap')
-    if ratio is not None and ratio > 1.40:
-        failures.append('length')
     if repetition is not None and repetition-native_repetition > .10:
         failures.append('repetition')
     return {
@@ -392,11 +407,26 @@ def relative_fluency(observed: list[dict]) -> dict:
     }
 
 
-def fluency(store, rows: list[dict], *, require_complete: bool = False) -> dict:
-    """Evaluate the frozen fluency and same-state dose gates on completed units."""
+def fluency(store, rows: list[dict], *, require_complete: bool = False, censor_unfinished: bool = False) -> dict:
+    """Evaluate the frozen fluency and same-state dose gates.
+
+    Args:
+        store, rows: The execution store and the rows to gate.
+        require_complete: Every row must be observed (the canary).
+        censor_unfinished: A row still decoding when the job reached its deadline counts as reaching the
+            length limit at its observed length, for steered and native rows alike. Dose checks use
+            completed rows only.
+
+    Returns:
+        Relative fluency gates, software checks and their denominators.
+    """
     observed, doses, software = [], [], []
     for row in rows:
-        if (store.state(row['uid']) or {}).get('status') != 'complete':
+        state = store.state(row['uid']) or {}
+        if state.get('status') != 'complete':
+            if censor_unfinished and state.get('status') == 'partial' and state.get('tokens'):
+                observed.append({**row, 'tokens': len(state['tokens']), 'cap': True, 'censored': True,
+                                 'repetition': repetition_rate(state['tokens'])})
             continue
         raw = verified(store.folder(row['uid'])/'OUTPUT.json')
         capture = verified(store.folder(row['uid'])/'CAPTURE.json')
@@ -428,7 +458,8 @@ def fluency(store, rows: list[dict], *, require_complete: bool = False) -> dict:
     if changed is not None and changed < .05:
         software.append('deactivation_membership_below_5_percent')
     return {'passed': not software and not relative['fluency_failures'] and bool(relative['steered_units']),
-            'completed': len(observed), **relative,
+            'completed': sum(not r.get('censored') for r in observed),
+            'censored_at_deadline': sum(bool(r.get('censored')) for r in observed), **relative,
             'deactivation_changed_membership': changed, 'software_failures': software,
             'observed_steered_units': sum(r['operation'] != 'native' for r in observed)}
 
@@ -480,7 +511,7 @@ def run(model, shard, deadline, *, max_inflight=64, canary=False, dose=None, eng
               'job': os.environ['SLURM_JOB_ID'], 'shard': list(shard), 'load_seconds': load_seconds,
               'metrics': metrics, 'native_validation': validation[0], **driver.rescue_completion(store, rows)}
     if canary:
-        result['gate'] = fluency(store, rows, require_complete=True)
+        result['gate'] = fluency(store, rows, require_complete=True, censor_unfinished=True)
         path = ('ENGINEERING.json' if engineering_only else
                 'CANARY.json' if value['dose'] == 'main' else 'CANARY_HALF.json')
         publish(ROOT/model/path, {**result, 'engineering_only': engineering_only})
@@ -591,7 +622,9 @@ def submit_stage(command: str, *, model=None, dose=None, shard=None, dependency=
            '--job-name=whole-'+command+('-'+model if model else '')+('-'+dose if dose else ''),
            '--chdir='+release['release_root'], '--output='+str(ROOT/'logs/%x-%j.out'),
            '--error='+str(ROOT/'logs/%x-%j.err'),
-           '--export=ALL,'+','.join(key+'='+value for key, value in exports.items())]
+           # Stage exports travel in the scrubbed environment (submission_environment); a comma-separated
+           # --export list would split WHOLE_MODELS.
+           '--export=ALL']
     if gpu:
         cmd += ['--gres=gpu:2']
     if held:
@@ -828,7 +861,7 @@ def advance_extraction(schedule: dict, accounting: dict, stopped: set) -> None:
             schedule['extraction'][model] = submit_stage('extract', model=model,
                 dependency='afterany:'+':'.join(j['id'] for j in dependencies))
             driver.checkpoint(ROOT/'JOBS.json', schedule)
-    if len(schedule['extraction']) == 2 and not schedule.get('analysis'):
+    if len(schedule['extraction']) == len(MODELS) and not schedule.get('analysis'):
         schedule['analysis'] = submit_stage('analyze', dependency='afterany:'+':'.join(
             j['id'] for j in schedule['extraction'].values()))
         driver.checkpoint(ROOT/'JOBS.json', schedule)
@@ -1008,6 +1041,8 @@ def audit_nominations() -> dict:
     references = {(r['dose'], r['fold'], r['class']): r for r in proposal['records']}
     records = []
     for model in MODELS:
+        if not (ROOT/model/'WHOLE.json').exists():
+            continue  # preparation failed for this model; recorded in CPU_VALIDATION.json
         for dose in ('main', 'half'):
             for cell in manifest(model, dose)['cells']:
                 record = {key: cell[key] for key in ('fold', 'class', 'operation', 'qualified',
@@ -1049,8 +1084,8 @@ def main(argv=None):
                     'production': {m: [] for m in MODELS}, 'extraction': {}}
         driver.checkpoint(ROOT/'JOBS.json', schedule)
         for model in MODELS:
-            schedule['canaries'][model].append(submit_stage('canary', model=model, dose='main',
-                dependency='afterok:'+validation['id']))
+            schedule['canaries'][model].append(submit_stage('canary', model=model,
+                dose=PLAN[model].get('start_dose', 'main'), dependency='afterok:'+validation['id']))
             driver.checkpoint(ROOT/'JOBS.json', schedule)
         schedule['monitor'] = submit_stage('monitor', dependency='afterany:'+validation['id'])
         driver.checkpoint(ROOT/'JOBS.json', schedule)

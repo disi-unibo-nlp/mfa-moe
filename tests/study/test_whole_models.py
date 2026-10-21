@@ -1,4 +1,5 @@
 """Every study model runs through the same whole-reasoning rules: doses, directions, routers, budgets."""
+import json
 import math
 import tempfile
 import unittest
@@ -123,6 +124,40 @@ class ManifestTests(unittest.TestCase):
             self.assertEqual(len({r['uid'] for r in value['records']}), expected)
             canary = whole.canary_rows({**value, 'sha256': 'synthetic'})
             self.assertEqual(sum(r['operation'] != 'native' for r in canary), 32)
+
+
+class CanaryDeadlineTests(unittest.TestCase):
+    def test_rows_running_at_the_deadline_count_as_reaching_the_length_limit(self):
+        from moe_exp.study import driver
+        from moe_exp.study.common import digest, publish
+        with tempfile.TemporaryDirectory(dir=WORK) as directory:
+            store = driver.Store(Path(directory))
+            rows = []
+            for family in ('a', 'b'):
+                for arm, operation in (('native', 'native'), ('native_repeat', 'native'),
+                                       ('target_promote', 'promote'), ('random_promote', 'promote')):
+                    rows.append({'uid': digest([family, arm]), 'family': family, 'arm': arm, 'operation': operation,
+                                 'class': None if operation == 'native' else 'Verify', 'actions': [],
+                                 'prompt_scope': True})
+            unfinished = {digest(['b', 'native_repeat']), digest(['b', 'target_promote'])}
+            for row in rows:
+                folder = store.folder(row['uid'])
+                folder.mkdir(parents=True)
+                tokens = list(range(400 if row['uid'] in unfinished else 100))
+                if row['uid'] in unfinished:
+                    (folder/'PARTIAL.json').write_text(json.dumps({'tokens': tokens, 'segments': [{}]}))
+                    continue
+                publish(folder/'OUTPUT.json', {'token_ids': tokens, 'finish_reason': 'stop'})
+                publish(folder/'CAPTURE.json', {'stats': {'dose': {}}})
+                publish(folder/'RESULT.json', {'status': 'complete'})
+            gate = whole.fluency(store, rows, require_complete=True, censor_unfinished=True)
+            strict = whole.fluency(store, rows, require_complete=True)
+        self.assertEqual((gate['completed'], gate['censored_at_deadline']), (6, 2))
+        self.assertNotIn('incomplete_canary', gate['software_failures'])
+        # One steered and one native row reached the limit in family b: cap rates move together.
+        self.assertEqual(gate['cap_rate'], .25)
+        self.assertEqual(gate['native_cap_rate'], .25)
+        self.assertIn('incomplete_canary', strict['software_failures'])
 
 
 class BudgetTests(unittest.TestCase):
