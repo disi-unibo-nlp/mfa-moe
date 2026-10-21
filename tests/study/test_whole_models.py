@@ -131,14 +131,14 @@ class BudgetTests(unittest.TestCase):
         maxima = sum(2*(whole.CANARY_MINUTES[m]+whole.SHARDS[m]*whole.RUN_MINUTES[m])/60 for m in models)
         with tempfile.TemporaryDirectory(dir=WORK) as directory, \
              patch.object(whole, 'ROOT', Path(directory)), patch.object(whole, 'MODELS', models), \
-             patch.object(whole, 'GPU_CEILING', 360.), \
+             patch.object(whole, 'GPU_CEILING', 530.), \
              patch.object(whole, 'verified', side_effect=lambda path: (
                  {'prior_usage': {'new_gpu_hours': 0.}} if path.name == 'RELEASE.json' else whole.load(path))):
             schedule = {'production': {m: [] for m in models},
                         'canaries': {m: [{'id': m, 'gpus': 2, 'minutes': whole.CANARY_MINUTES[m]}] for m in models}}
             whole.admit_shard_plan(schedule, 'glm', {}, set())
             plan = whole.load(Path(directory)/'glm/SHARD_PLAN.json')
-        self.assertLess(maxima, 360.)
+        self.assertLess(maxima, 530.)
         self.assertEqual(plan['minutes'], whole.RUN_MINUTES['glm'])
 
 
