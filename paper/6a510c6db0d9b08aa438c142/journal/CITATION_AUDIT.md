@@ -148,3 +148,18 @@ Grounding:
 | sui2026think | STACK uses step-wise reasoning-state assessments to switch between knowledge-guided and self-prompted chain-of-thought compression, reporting shorter responses and improved accuracy over existing methods on three mathematical reasoning benchmarks. Claim check: supported. | (book; no URL) |
 | ding2026coverage | This structural MoE compression method allocates a global pruning budget by attribution-guided channel-score coverage rather than expert-level importance alone, reporting strong compressed-model accuracy on DeepSeek and Qwen MoEs. Claim check: supported. | https://proceedings.mlr.press/v306/ding26q.html |
 | lu2024naee | Post-training, task-agnostic and task-specific expert pruning, complemented by dynamic expert skipping, reduces deployment memory and increases inference speed while maintaining satisfactory performance in the evaluated MoE LLMs. Claim check: supported. | (book; no URL) |
+
+Style review, 2026-10-21. gpt-6-astra (ELM) compared the draft with the
+author's seven exemplar Related Work sections, the paper-writer prose and
+section rules, and the Humanizer guide. It found the draft largely in the
+author's style and proposed four edits.
+- Applied: three edits. Two overloaded evidence sentences (steering reliability
+  and the two expert audits) were split, and an abstract compression sentence
+  was made concrete. Separately, an overclaim about token identity was replaced
+  by a statement of what the text-baseline readouts measure.
+- Rejected: replacing "keep-set", because Method defines the keep-set
+  $K_\ell$ (PRO-014).
+- A follow-up ELM claim check of all 43 sentence-citation pairs found 42
+  supported and the book without text. One NAEE detail was reworded to the
+  paper's own "token reconstruction loss, layer by layer" and rechecked as
+  supported.
