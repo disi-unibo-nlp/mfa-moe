@@ -5,8 +5,11 @@ fitting or resampling here) and writes, relative to --out (default: the paper ro
   journal/tables/whole.tex                 primary contrasts at full strength (8 models, pooled row)
   journal/tables/whole_cells.tex           per-cell length and accuracy effects (appendix)
   journal/tables/whole_occupancy.tex       per-cell response of the steered state (appendix)
+  journal/tables/whole_levels.tex          levels of every arm at every strength (appendix)
   figures/journal/whole_dose.tex           dose-response figure
   figures/journal/data/whole_dose.dat      coordinates of the figure
+  figures/journal/whole_states.tex         per-state effect heatmaps at each model's base strength
+  figures/journal/data/whole_states_tokens.dat, whole_states_accuracy.dat   cells of the heatmaps
   figures/journal/data/whole_results.json  every displayed number with its receipt key
 
 Token contrasts are a benefit on log(1+reasoning tokens), positive meaning fewer tokens than the
@@ -14,6 +17,9 @@ comparator. They are shown as the percent change 100*expm1(-benefit), so the int
 accuracy is shown in percentage points. Intervals are the receipt's simultaneous 95% envelopes
 (over the outcome bounds when the receipt has them), displayed as mean +- the larger one-sided
 margin.
+The heatmaps use the same units. Their colors clip at STATE_CLIP, a number is bold when its
+interval excludes zero, a cell is outlined when its state is efficiency-directed, and a cell is
+empty when the model did not run that state.
 """
 from pathlib import Path
 import argparse
@@ -48,6 +54,20 @@ UNITS = ("Tokens give the percent change in reasoning tokens, with negative valu
          "tokens, and accuracy differences are in percentage points")
 SIMULTANEOUS = ("Intervals are simultaneous over {} and cover the outcome bounds of unfinished "
                 "continuations.")
+LEVEL_ARMS = (("native", "Native"), ("native_repeat", "Native repeat"),
+              ("target_promote", "Targeted promote"), ("random_promote", "Random promote"),
+              ("target_suppress", "Targeted suppress"), ("random_suppress", "Random suppress"))
+# Heatmap columns: the promote block, then the suppress block, each in the paper's state order.
+STATE_COLUMNS = tuple((o, c) for o in OPERATIONS for c in CLASSES)
+STATE_CLIP = {"tokens": 100., "accuracy": 30.}  # symmetric color limits, in display units
+STATE_DIGITS = {"tokens": 0, "accuracy": 1}
+STATE_PANELS = (("tokens", r"(a) Reasoning-token change, targeted $-$ random (\%)"),
+                ("accuracy", "(b) Accuracy change, targeted $-$ random (pp)"))
+CELL_W, CELL_H, BLOCK_GAP, PANEL_GAP = 20, 18, 8, 46  # pt
+# Ends of the diverging scale of state_transitions.tex: gomblueone below zero, F00000 above.
+SCALE_ENDS = {"low": (24, 118, 210), "high": (240, 0, 0)}
+# One \plotmodel label per model, in paper order (the pooled "All models" tick is dropped).
+PLOT_LABELS = re.findall(r"\{\\plotmodel\{[^}]*\}\{[^}]*\}\{[^}]*\}\}", TICKS)
 
 
 # --- receipt access and display units --------------------------------------------------------
@@ -331,6 +351,80 @@ Operation & {states} \\
 """
 
 
+def level_values(record, model, level):
+    """Display cells of one arm's levels, logged under their receipt keys."""
+    key = f"levels/{model}|{level['dose']}|{level['arm']}/"
+    check = level["manipulation_check"]
+    record[key + "completed"] = {"value": level["complete"]}
+    record[key + "planned"] = {"value": level["planned"]}
+    cells = [f"{level['complete']}/{level['planned']}"]
+    for field, scale, digits in (("cap_rate", 100, 1), ("repetition_16gram", 100, 1),
+                                 ("mean_total_tokens", 1, 0)):
+        value = level[field]
+        if value is not None:
+            record[key + field] = {"value": scale * value}
+        cells.append(DASH if value is None else f"{scale * value:.{digits}f}")
+    # Native arms apply no edit, and an arm without active router positions has nothing to check.
+    if level["arm"].startswith("native") or not check["active_layer_positions"]:
+        return cells + [DASH]
+    changed = 100 * check["changed_membership_fraction"]
+    record[key + "changed_membership_fraction"] = {
+        "value": changed, "active_layer_positions": check["active_layer_positions"]}
+    return cells + [f"{changed:.1f}"]
+
+
+def levels_table(effects, record, source):
+    """Appendix longtable: descriptive levels of every arm at every strength a model ran."""
+    by_key = {(lv["model"], lv["dose"], lv["arm"]): lv for lv in effects["levels"]}
+    columns = (r"Arm & Completed/planned & Limit (\%) & Repetition (\%) & Generated tokens"
+               r" & Changed (\%) \\")
+    blocks = []
+    for model in MODELS:
+        parts = []
+        for dose in DOSES:
+            arms = [(arm, label) for arm, label in LEVEL_ARMS if (model, dose, arm) in by_key]
+            if not arms:
+                continue
+            # The model's name row stays with its first strength, and each strength stays whole.
+            lines = [] if parts else ["\\multicolumn{6}{l}{" + TABLE_NAMES[model] + "}"]
+            lines.append("\\multicolumn{6}{l}{\\quad\\textit{" + DOSE_LABELS[dose] + " strength}}")
+            lines += ["\\qquad " + label + " & "
+                      + " & ".join(level_values(record, model, by_key[model, dose, arm]))
+                      for arm, label in arms]
+            parts.append(block(lines))
+        if parts:
+            blocks.append("\n".join(parts))
+    body = "\n\\midrule\n".join(blocks)
+    cap = caption(
+        "Descriptive levels of every arm at each strength it ran, without intervals.",
+        "Quarter, half and full give the strength of the routing edit, and the native arms of a "
+        "model belong to its base strength.",
+        "Completed and planned count the continuations that finished and that were scheduled.",
+        "Limit is the share of completed continuations that reach the length limit, repetition "
+        "is the share of 16-token windows that repeat an earlier window of the same continuation, "
+        "and generated tokens are the mean tokens after the frozen prefix.",
+        "Changed is the share of active router positions at which the edit changed the selected "
+        "experts, and native arms have none.")
+    return rf"""% Multipage longtable: retained outside adjustbox so page breaks remain available.
+% Source: {source} (levels) via scripts/paper/export_whole_results.py.
+\begingroup\small
+\setlength{{\tabcolsep}}{{2pt}}
+\begin{{longtable}}{{lccccc}}
+\caption{{{cap}}}\label{{tab:whole-levels}}\\
+\toprule
+{columns}
+\midrule\endfirsthead
+\multicolumn{{6}}{{l}}{{\textit{{Continued}}}}\\
+\toprule
+{columns}
+\midrule\endhead
+\bottomrule\endfoot
+{body}
+\end{{longtable}}
+\endgroup
+"""
+
+
 # --- dose-response figure --------------------------------------------------------------------
 
 def nice_axis(entries, height, digits):
@@ -456,6 +550,168 @@ def dose_series(effects, record, continuations, prereg):
     return series
 
 
+# --- per-state heatmaps ----------------------------------------------------------------------
+
+def state_grid(effects, record, base, cells, prereg, models, metric):
+    """Targeted-minus-random contrast of every model by state column, at each model's base strength.
+
+    A column the model did not run has no entry; one it ran without a qualified contrast is
+    "unqualified". Significant means the simultaneous interval excludes zero.
+    """
+    grid = {}
+    for row, model in enumerate(models, 1):
+        for col, (operation, class_name) in enumerate(STATE_COLUMNS, 1):
+            if (operation, class_name) not in cells.get(model, ()):
+                continue
+            key = f"{model}|{base[model]}|{operation}|{class_name}"
+            v = effects["cell_effects"][key].get("target_random:" + metric)
+            directed_cell = directed(model, operation, class_name, prereg)
+            cell = {"x": col, "y": row, "directed": directed_cell, "mean": None,
+                    "significant": False}
+            if usable(v):
+                display(record, f"cell_effects/{key}/target_random:{metric}", v, metric)
+                cell["mean"], low, high = scaled(v, metric)
+                cell["significant"] = low > 0 or high < 0
+            state = record.setdefault("states/" + key, {"directed": directed_cell})
+            state[metric + "_significant"] = cell["significant"]
+            grid[row, col] = cell
+    return grid
+
+
+def state_data(grid, models, metric):
+    """Rows of the heatmap's data file, row-major as a matrix plot needs; nan marks empty cells."""
+    clip = STATE_CLIP[metric]
+    lines = ["x y meta value significant directed"]
+    for row in range(1, len(models) + 1):
+        for col in range(1, len(STATE_COLUMNS) + 1):
+            cell = grid.get((row, col))
+            if cell is None or cell["mean"] is None:
+                lines.append(f"{col} {row} nan nan 0 {int(cell is not None and cell['directed'])}")
+                continue
+            mean = cell["mean"]
+            lines.append(f"{col} {row} {max(-clip, min(clip, mean)):.6g} {mean:.6g} "
+                         f"{int(cell['significant'])} {int(cell['directed'])}")
+    return "\n".join(lines) + "\n"
+
+
+def dark_fill(mean, clip):
+    """True where the cell color is dark enough for white text (luminance below 140 of 255)."""
+    t = min(abs(mean) / clip, 1.)
+    end = SCALE_ENDS["low" if mean < 0 else "high"]
+    red, green, blue = (255 + t * (c - 255) for c in end)
+    return 0.299 * red + 0.587 * green + 0.114 * blue < 140
+
+
+def state_label(cell, metric):
+    """Cell text: the rounded mean, bold when the interval excludes zero; a dash if unqualified."""
+    if cell["mean"] is None:
+        return "\\textcolor{black!55}{" + DASH + "}"
+    digits = STATE_DIGITS[metric]
+    # Text mode keeps one font for both weights; an en dash serves as the minus sign.
+    text = f"{round(cell['mean'], digits) + 0.:.{digits}f}".replace("-", "--")
+    return "\\textbf{" + text + "}" if cell["significant"] else text
+
+
+def scale_bar(x, middle, clip, metric):
+    """TikZ lines of one panel's vertical scale (as in state_transitions.tex): blue below zero,
+    red above, ticks at zero, half and full clip, on a gray backdrop; x is its left edge and
+    middle the height of its center, in pt."""
+    half = 50  # pt from the center to either end
+    bar = f"({x}pt,{middle - half:g}pt) rectangle ({x + 7}pt,{middle + half:g}pt)"
+    lines = [f"\\fill[gray!12] ({x - 5}pt,{middle - 60:g}pt) rectangle "
+             f"({x + 42}pt,{middle + 60:g}pt);",
+             f"\\shade[bottom color=gomblueone,top color=white] ({x}pt,{middle - half:g}pt) "
+             f"rectangle ({x + 7}pt,{middle:g}pt);",
+             f"\\shade[bottom color=white,top color=transitionlow] ({x}pt,{middle:g}pt) "
+             f"rectangle ({x + 7}pt,{middle + half:g}pt);",
+             f"\\draw[draw=gomaxis,line width=.45pt] {bar};"]
+    for fraction in (-1, -.5, 0, .5, 1):
+        lines.append("\\node[anchor=west,inner sep=.1pt,font=\\fontsize{7}{8}\\selectfont] at "
+                     f"({x + 10}pt,{middle + half * fraction:g}pt) {{${fraction * clip:g}$}};")
+    unit = "Change (\\%)" if metric == "tokens" else "Change (pp)"
+    lines.append("\\node[rotate=90,inner sep=.1pt,font=\\fontsize{8}{9}\\selectfont] at "
+                 f"({x + 37}pt,{middle:g}pt) {{{unit}}};")
+    return lines
+
+
+def states_figure(grids, models, out):
+    """Per-state heatmaps in the native recipe of state_transitions.tex.
+
+    Two stacked panels (tokens, accuracy), each with a promote block beside a suppress block of the
+    seven states, models as rows and a vertical diverging scale. Cells are matrix plot cells on the
+    beige carrier, so cells a model did not run stay empty; numbers are set as one node per cell.
+    """
+    rows = len(models)
+    height, block_width = rows * CELL_H, len(CLASSES) * CELL_W
+    width = 2 * block_width + BLOCK_GAP
+    labels = ",".join(PLOT_LABELS[MODELS.index(m)] for m in models)
+    states = ",".join(STATE[c] for c in CLASSES)
+    lines = ["% Native PORTS temperature-heatmap cell grid (plot-ports-temperature-heatmap.tex), "
+             "adapted as in state_transitions.tex:",
+             "% matrix plot* cells, blue/white/red scale centered at zero, beige carrier.",
+             "% Generated by scripts/paper/export_whole_results.py from "
+             "figures/journal/data/whole_states_*.dat.",
+             "\\begin{tikzpicture}",
+             "\\definecolor{transitionlow}{HTML}{F00000}",
+             "\\pgfplotsset{colormap={journalstatesmap}{color(0pt)=(gomblueone);"
+             "color(500pt)=(white);color(1000pt)=(transitionlow)},",
+             "  statepanel/.style={journalaxis,scale only axis,width=" + str(block_width)
+             + "pt,height=" + str(height) + "pt,anchor=south west,",
+             "    ymin=.5,ymax=" + str(rows + .5) + ",y dir=reverse,enlarge x limits=false,"
+             "xmajorgrids=false,ymajorgrids=false,",
+             "    xticklabels={" + states + "},xticklabel style={rotate=0,anchor=north,"
+             "font=\\fontsize{7}{8}\\selectfont},",
+             "    yticklabel style={align=center,font=\\fontsize{7}{8}\\selectfont},",
+             "    tick style={draw=none},colormap name=journalstatesmap}}",
+             "\\tikzset{statecell/.style={inner sep=0pt,minimum width=" + str(CELL_W - 2)
+             + "pt,minimum height=" + str(CELL_H - 2) + "pt,font=\\fontsize{6}{7}\\selectfont},",
+             "  directedcell/.style={draw=black,line width=.6pt},lightlabel/.style={text=white}}"]
+    for p, (metric, title) in enumerate(STATE_PANELS):
+        clip, bottom = STATE_CLIP[metric], (len(STATE_PANELS) - 1 - p) * (height + PANEL_GAP)
+        for k, operation in enumerate(OPERATIONS):
+            first = k * len(CLASSES) + 1
+            ticks = ",".join(str(first + i) for i in range(len(CLASSES)))
+            left = k * (block_width + BLOCK_GAP)
+            lines.append(
+                "\\begin{axis}[statepanel,at={(" + str(left) + "pt," + str(bottom) + "pt)},"
+                "xmin=" + str(first - .5) + ",xmax=" + str(first + len(CLASSES) - .5)
+                + ",xtick={" + ticks + "},point meta min=-" + format(clip, "g")
+                + ",point meta max=" + format(clip, "g") + ","
+                + ("ytick={" + ",".join(map(str, range(1, rows + 1))) + "},yticklabels={" + labels
+                   + "}," if k == 0 else "ytick=\\empty,")
+                + "]")
+            lines.append("\\addplot[matrix plot*,mesh/cols=" + str(len(STATE_COLUMNS))
+                         + ",point meta=explicit,draw=black!25,line width=.2pt]\n"
+                         "table[x=x,y=y,meta=meta]{figures/journal/data/whole_states_" + metric
+                         + ".dat};")
+            for (row, col), cell in grids[metric].items():
+                if not first <= col < first + len(CLASSES):
+                    continue
+                options = "statecell" + (",directedcell" if cell["directed"] else "")
+                if cell["mean"] is not None and dark_fill(cell["mean"], clip):
+                    options += ",lightlabel"
+                lines.append("\\node[" + options + "] at (axis cs:" + f"{col},{row}) {{"
+                             + state_label(cell, metric) + "};")
+            lines.append("\\end{axis}")
+            lines.append("\\node[anchor=base,font=\\fontsize{7.5}{8.5}\\selectfont] at ("
+                         + format(left + block_width / 2, "g") + "pt," + str(bottom + height + 6)
+                         + "pt) {\\textbf{" + operation.capitalize() + "}};")
+        lines += scale_bar(width + 12, bottom + height / 2, clip, metric)
+        lines.append("\\node[anchor=base,font=\\fontsize{8}{9}\\selectfont] at ("
+                     + format(width / 2, "g") + "pt," + str(bottom + height + 22) + "pt) {\\textbf{"
+                     + title + "}};")
+    keys = ("\\textbf{12} Interval excludes zero\\quad "
+            "\\tikz[baseline=-.4ex]\\draw[line width=.6pt] (0,0) rectangle (.3,.22);\\,"
+            " Efficiency-directed state\\quad "
+            "\\tikz[baseline=-.4ex]\\draw[draw=black!25,line width=.2pt,fill=gombackground] "
+            "(0,0) rectangle (.3,.22);\\, State not run")
+    lines.append("\\node[journallegend,anchor=north,yshift=-4pt,font=\\fontsize{7.5}{9}"
+                 "\\selectfont] at (" + format(width / 2, "g")
+                 + "pt,0pt |- current bounding box.south) {" + keys + "};")
+    lines.append("\\end{tikzpicture}")
+    out.write_text("\n".join(lines) + "\n")
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     parser.add_argument("--effects", type=Path, default=DEFAULT_EFFECTS,
@@ -484,6 +740,7 @@ def main():
         cells_table(effects, record, source, base, cells, prereg))
     (tables / "whole_occupancy.tex").write_text(
         occupancy_table(effects, record, source, base, cells))
+    (tables / "whole_levels.tex").write_text(levels_table(effects, record, source))
 
     import pandas as pd
     continuations = pd.read_parquet(args.effects.parent / "continuations.parquet",
@@ -509,6 +766,13 @@ def main():
     (data / "whole_dose.dat").write_text(" ".join(columns) + "\n" + "\n".join(rows) + "\n")
     dose_figure(series, panels, args.out / "figures/journal/whole_dose.tex")
 
+    models = [m for m in MODELS if m in cells]
+    grids = {metric: state_grid(effects, record, base, cells, prereg, models, metric)
+             for metric, _ in STATE_PANELS}
+    for metric, _ in STATE_PANELS:
+        (data / f"whole_states_{metric}.dat").write_text(state_data(grids[metric], models, metric))
+    states_figure(grids, models, args.out / "figures/journal/whole_states.tex")
+
     summary = {
         "receipt": {"path": source, "file_sha256": sha(args.effects),
                     "seal_sha256": effects["sha256"], "bootstrap_draws": effects["bootstrap_draws"],
@@ -520,11 +784,16 @@ def main():
                   "cap_rate": ("percent of completed targeted continuations of the efficiency-"
                                "directed cells at the length limit, from continuations.parquet"),
                   "margin": "larger one-sided distance from the mean to the interval ends"},
+        "states": {"rows": models, "columns": [list(c) for c in STATE_COLUMNS],
+                   "color_clip": STATE_CLIP,
+                   "significant": "the simultaneous interval (bound_simultaneous when present) "
+                                  "excludes zero",
+                   "directed": "efficiency-directed under the frozen preregistered signs"},
     }
     (data / "whole_results.json").write_text(
         json.dumps({**summary, "values": record}, indent=1, default=float) + "\n")
-    print(json.dumps({"models": len(effects["models"]), "values": len(record), "tables": 3,
-                      "figure": 1, "out": str(args.out)}))
+    print(json.dumps({"models": len(effects["models"]), "values": len(record), "tables": 4,
+                      "figures": 2, "out": str(args.out)}))
 
 
 if __name__ == "__main__":
