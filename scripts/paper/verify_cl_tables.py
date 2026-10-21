@@ -1,8 +1,8 @@
 """Check ordered manuscript table cells and rank marks against saved evidence.
 
 This bounded, read-only check performs no fitting, resampling or inference.
-Real estimates, single engineering fixtures, unavailable intervals and the
-explicitly authorized mock preview have separate metadata. --self-test also
+Real estimates, single engineering fixtures and unavailable intervals have
+separate metadata. --self-test also
 rejects in-memory row swaps, changed intervals and wrong rank marks, and proves
 that the exporter default cannot overwrite author-formatted tables or their
 manifest. No source/data files are written by either check.
@@ -11,6 +11,7 @@ import argparse
 import contextlib
 import csv
 from decimal import Decimal
+import hashlib
 import importlib.util
 import io
 import json
@@ -326,6 +327,124 @@ def verify_numeric_prose(paper, inline_texts=None):
             "asymmetric_signed": sum(displayed_ci_shape(match[0]) == "asymmetric_signed" for match in all_matches)}
 
 
+ROUTING_STATES = ("activate:occupancy", "deactivate:occupancy", "activate:first", "deactivate:first")
+ROUTING_ACCURACY = ("activate:correct:vs_native", "random_activate:correct:vs_native",
+                    "deactivate:correct:vs_native", "random_deactivate:correct:vs_native")
+ROUTING_TOKENS = ("activate:log_tokens:vs_native", "random_activate:log_tokens:vs_native",
+                  "deactivate:log_tokens:vs_native", "random_deactivate:log_tokens:vs_native")
+ROUTING_ARMS = (("native", "Native"), ("target_activate", "Targeted activation"),
+                ("random_activate", "Random activation"), ("target_deactivate", "Targeted deactivation"),
+                ("random_deactivate", "Random deactivation"))
+STRONG_MODELS = ("gpt", "nemotron", "qwen330b", "gemma")
+STATE_ORDER = ("Read", "Analyze", "Explore", "Plan", "Implement", "Verify", "Monitor")
+PREREG = REPO / "report/final-routing-20261015-r1/driver/EFFICIENCY_LINK_PREREG.json"
+
+
+def symmetric_cell(text, mean, margin, digits, context):
+    """A routing cell prints the saved mean and its one symmetric margin, both rounded once."""
+    shown = decimal(f"{mean:.{digits}f}"), decimal(f"{margin:.{digits}f}")
+    require(ci_cells(text) == [("cid", (shown[0], shown[1], shown[1]))], context + ": routing estimate or margin differs from routing_results.json")
+
+
+def verify_routing(paper, texts):
+    """Check the live routing tables and figure coordinates against routing_results.json."""
+    data = paper / "figures/journal/data"
+    record = json.loads((data / "routing_results.json").read_text())
+    require(all(model in record for model in DISPLAY_MODELS) and "all" in record, "routing_results.json model roster differs")
+    source = "figures/journal/data/routing_results.json"
+    cells = ((ROUTING_STATES[0], 2), (ROUTING_STATES[1], 2), (ROUTING_STATES[2], 2), (ROUTING_STATES[3], 2),
+             ("activate:correct", 2), ("activate:log_tokens", 1),
+             ("activate:correct:vs_native", 2), ("activate:log_tokens:vs_native", 1))
+
+    seen = []
+    for model, columns in model_rows(texts["routing.tex"]):
+        seen.append(model)
+        require(len(columns) == 9, model + ": routing columns differ")
+        for cell, (key, digits) in zip(columns[1:], cells):
+            symmetric_cell(cell, record[model][key]["mean"], record[model][key]["margin"], digits, model + "/" + key)
+    require(tuple(seen) == DISPLAY_MODELS, "routing model coverage or order differs")
+    pooled = [line for line in texts["routing.tex"].splitlines() if line.startswith("All models & ")]
+    require(len(pooled) == 1, "routing pooled row missing or duplicated")
+    columns = pooled[0].split(" & ")
+    require(len(columns) == 9, "routing pooled columns differ")
+    for cell, (key, digits) in zip(columns[1:], cells):
+        symmetric_cell(cell, record["all"][key]["mean"], record["all"][key]["margin"], digits, "all/" + key)
+    require("LFM2.5 (112)" in texts["routing.tex"], "routing caption lost the LFM2.5 family count")
+    require("Dashes" not in texts["routing.tex"] and r"\textemdash" not in texts["routing.tex"], "routing table contains pending cells")
+    checked = [("routing.tex", (len(seen) + 1) * len(cells), source, {"rank_scope": "none; paired contrasts with model-specific simultaneous intervals"})]
+
+    levels = {}
+    model = None
+    arms = iter(())
+    for line in texts["routing_levels.tex"].splitlines():
+        if line.startswith(r"\multicolumn{5}{l}{\modelname"):
+            match = MODEL.search(line)
+            require(match is not None and model_label(match) in LABELS, "routing-level model identity differs")
+            model = LABELS[model_label(match)]
+            require(model not in levels, "duplicated routing-level model " + model)
+            levels[model] = []
+            arms = iter(ROUTING_ARMS)
+        elif model and " & " in line and not line.startswith("Arm & "):
+            arm, label = next(arms, (None, None))
+            columns = line.split(" & ")
+            require(arm is not None and columns[0] == label and len(columns) == 5, model + ": routing-level arm identity or columns differ")
+            levels[model].append(arm)
+            values = record[model]["levels"][arm]
+            for cell, (key, digits) in zip(columns[1:], (("accuracy", 2), ("generated_tokens", 0), ("reasoning_tokens", 0), ("natural_stop", 1))):
+                symmetric_cell(cell, values[key][0], values[key][1], digits, model + "/" + arm + "/" + key)
+    require(tuple(levels) == DISPLAY_MODELS and all(tuple(v) == tuple(a for a, _ in ROUTING_ARMS) for v in levels.values()), "routing-level coverage differs")
+    checked.append(("routing_levels.tex", len(levels) * len(ROUTING_ARMS) * 4, source, {"rank_scope": "none; arm levels within model"}))
+
+    strong = []
+    for model, columns in model_rows(texts["routing_strong.tex"]):
+        strong.append(model)
+        require(len(columns) == 7, model + ": strong-dose columns differ")
+        for cell, key in zip(columns[1:3], ("occupancy", "first")):
+            symmetric_cell(cell, *record["strong"][model][key], 2, model + "/strong/" + key)
+        pending_cells(columns[3:], model + "/strong efficiency")
+    require(tuple(strong) == STRONG_MODELS, "strong-dose model coverage or order differs")
+    pooled = [line for line in texts["routing_strong.tex"].splitlines() if line.startswith("All four models & ")]
+    require(len(pooled) == 1, "strong-dose pooled row missing or duplicated")
+    columns = pooled[0].split(" & ")
+    require(len(columns) == 7, "strong-dose pooled columns differ")
+    for cell, (key, digits) in zip(columns[1:], (("occupancy", 2), ("first", 2), ("accuracy_vs_random", 2), ("tokens_vs_random", 1),
+                                                 ("accuracy_vs_native", 2), ("random_accuracy_vs_native", 2))):
+        symmetric_cell(cell, *record["strong"]["all"][key], digits, "strong/all/" + key)
+    checked.append(("routing_strong.tex", len(strong) * 2 + 6, source, {"rank_scope": "none; exploratory, pooled efficiency only"}))
+
+    prereg = json.loads(PREREG.read_text())
+    seal = prereg.pop("sha256")
+    payload = json.dumps(prereg, sort_keys=True, separators=(",", ":"), ensure_ascii=False, allow_nan=False)
+    require(hashlib.sha256(payload.encode()).hexdigest() == seal, "efficiency-link receipt seal differs")
+    link = {(c["model"], c["class"]): c["tok_reason"] for c in prereg["cells"]}
+    link.update({("pooled", c["class"]): c["tok_reason"] for c in prereg["pooled"]})
+    rows = {model: columns for model, columns in model_rows(texts["efficiency_link.tex"])}
+    pooled = [line for line in texts["efficiency_link.tex"].splitlines() if line.startswith("Seven-model mean & ")]
+    require(len(pooled) == 1 and tuple(rows) == tuple(prereg["models"]), "efficiency-link model coverage differs")
+    rows["pooled"] = pooled[0].split(" & ")
+    for model, columns in rows.items():
+        require(len(columns) == 8, model + ": efficiency-link columns differ")
+        for state, cell in zip(STATE_ORDER, columns[1:]):
+            value = link[model, state]
+            mean, low, high = (100 * value[k] for k in ("beta", "ci_low", "ci_high"))
+            require(ci_cells(cell) == [("cid", tuple(decimal(f"{x:.2f}") for x in (mean, mean - low, high - mean)))],
+                    model + "/" + state + ": efficiency-link estimate or interval differs from the sealed receipt")
+    checked.append(("efficiency_link.tex", len(rows) * len(STATE_ORDER), str(PREREG.relative_to(REPO)), {"rank_scope": "none; native association coefficients"}))
+
+    # The routing figure plots the same saved values; routing.dat keeps six significant digits.
+    table = [line.split() for line in (data / "routing.dat").read_text().splitlines()]
+    heading, body = table[0], table[1:]
+    require(len(body) == len(DISPLAY_MODELS) + 1, "routing.dat row count differs")
+    plotted = ROUTING_STATES + ROUTING_ACCURACY + ROUTING_TOKENS
+    require(heading == ["x"] + [name for key in plotted for name in (key.replace(":", "_"), key.replace(":", "_") + "_pm")], "routing.dat columns differ")
+    for row, model in zip(body, (*DISPLAY_MODELS, "all")):
+        for i, key in enumerate(plotted):
+            for offset, field in enumerate(("mean", "margin")):
+                saved, shown = record[model][key][field], float(row[1 + 2 * i + offset])
+                require(abs(saved - shown) <= 1e-5 * max(1.0, abs(saved)), model + "/" + key + ": routing.dat differs from routing_results.json")
+    return checked
+
+
 def verify(paper, texts=None, inline_texts=None):
     style = re.sub(r"\s+", "", (paper / "journal/style.tex").read_text())
     require(r"\fp_compare:nTF{#1>#2}{\pm#1}{\pm#2}" in style,
@@ -520,62 +639,8 @@ def verify(paper, texts=None, inline_texts=None):
     require(seen == set(historical), "historical policy coverage differs")
     record("interventions.tex", len(seen) * 2, "guiding_weighting_table.tex", rank_scope="declared-final supplied means within model and weighting; execution profiles differ")
 
-    mock = json.loads((data / "routing_mock.json").read_text())
-    require(mock["type"] == "illustrative_mock" and mock["requires_replacement"] and not mock["experimental_measurements"], "mock dataset is not explicitly segregated from measurements")
-    mock_rows = {(r["model"], r["policy_label"]): r for r in mock["rows"]}
-    keys = ("accuracy_pct", "reasoning_tokens", "latency_s", "residence_GiB")
-    seen = set()
-    model = None
-    for line in texts["routing_mock.tex"].splitlines():
-        match = MODEL.search(line)
-        if match:
-            model = LABELS[model_label(match)]
-        elif model and " & " in line and (model, line.split(" & ")[0]) in mock_rows:
-            columns = line.split(" & ")
-            identity = (model, columns[0])
-            require(identity not in seen and len(columns) == 5, "duplicate mock row or wrong column count")
-            seen.add(identity)
-            for key, cell in zip(keys, columns[1:]):
-                metric = mock_rows[identity]["metrics"][key]
-                values = [r["metrics"][key]["mean"] for (m, p), r in mock_rows.items() if m == model]
-                rank = rank_mark(metric["mean"], values, higher=key == "accuracy_pct")
-                check_ci(cell, [metric["mean"], *metric["interval"]], 0 if key == "reasoning_tokens" else 1, str(identity) + "/" + key, rank)
-    require(seen == set(mock_rows) and len(seen) == 28, "mock policy/model coverage differs")
-    require("MOCK" in texts["routing_mock.tex"] and "TODO:" in texts["routing_mock.tex"] and "fabricated layout examples" in texts["routing_mock.tex"], "mock heading or caption disclosure absent")
-    record("routing_mock.tex", len(seen) * 4, "figures/journal/data/routing_mock.json", "authorized_illustrative_mock", measured_results=False, requires_replacement=True, rank_scope="illustrative policy means within model; ties share rank")
-    # Pending additions cannot acquire invented measurements even in the mock
-    # preview. The seven original illustrative groups retain their own source.
-    policies = ("Native", "Random pulse", "Global bias", "Conditioned pulse")
-    planned_policies = set()
-    model = None
-    for line in texts["routing_mock.tex"].splitlines():
-        match = MODEL.search(line)
-        if match:
-            model = LABELS[model_label(match)]
-        elif model == PLANNED_MODEL and " & " in line:
-            columns = line.split(" & ")
-            require(columns[0] in policies and columns[0] not in planned_policies and len(columns) == 5, "planned mock row identity differs")
-            planned_policies.add(columns[0])
-            pending_cells(columns[1:], "planned mock values")
-    require(planned_policies == set(policies), "planned model missing from mock layout")
-    pending_metadata["routing_mock.tex"] = {"model": PLANNED_MODEL, "rows": 4, "cells": 16, "measured_results": False}
-    require("Dashes denote pending results" in texts["routing_pending.tex"] and "TODO:" in texts["routing_pending.tex"], "pending routing caption absent")
-    require(r"\newcommand{\routingpending}{\textemdash}" in texts["routing_pending.tex"], "pending routing cells must be visible dashes")
-    require(texts["routing_pending.tex"].count(" & \\routingpending") == 128, "pending routing replacement cells differ")
-    blank_rows = set()
-    model = None
-    for line in texts["routing_pending.tex"].splitlines():
-        match = MODEL.search(line)
-        if match:
-            model = LABELS[model_label(match)]
-        elif model and " & " in line:
-            columns = line.split(" & ")
-            identity = (model, columns[0])
-            require(model in DISPLAY_MODELS and columns[0] in policies and identity not in blank_rows and len(columns) == 5, "pending routing row identity differs")
-            require(all(clean_cell(cell) == r"\routingpending" for cell in columns[1:]), "pending routing row filled or concealed")
-            blank_rows.add(identity)
-    require(blank_rows == {(m, policy) for m in DISPLAY_MODELS for policy in policies}, "pending routing model/policy enrollment differs")
-    record("routing_pending.tex", 128, "journal/tables/routing_mock.tex (structure only)", "editable_blank_counterpart", measured_results=False)
+    for name, count, source, extra in verify_routing(paper, texts):
+        record(name, count, source, **extra)
     require(set(texts) == set(metadata), "unregistered table sources: " + str(sorted(set(texts) - set(metadata))))
     for name, text in texts.items():
         require(not re.search(r"(?<!\\)\$?\[[+-]?\d", text), name + ": bracketed numeric interval returned")
@@ -591,9 +656,8 @@ def verify(paper, texts=None, inline_texts=None):
             "historical_table_ci_precision": "35 prefix-probe/global-steering cells retain supplied rounded-source precision",
 "status": "pass", "tables": metadata,
             "inline_tables": inline,
-            "ordered_populated_cells": inline["prefix_probes"]["ordered_cells"] + inline["model_roster"]["ordered_fixture_cells"] + sum(v["ordered_cells"] for v in metadata.values() if v["evidence_kind"] != "editable_blank_counterpart"),
-            "real_and_diagnostic_cells": inline["prefix_probes"]["ordered_cells"] + inline["model_roster"]["ordered_fixture_cells"] + sum(v["ordered_cells"] for v in metadata.values() if v["evidence_kind"] not in ("authorized_illustrative_mock", "editable_blank_counterpart")),
-            "mock_cells": metadata["routing_mock.tex"]["ordered_cells"],
+            "ordered_populated_cells": inline["prefix_probes"]["ordered_cells"] + inline["model_roster"]["ordered_fixture_cells"] + sum(v["ordered_cells"] for v in metadata.values()),
+            "real_and_diagnostic_cells": inline["prefix_probes"]["ordered_cells"] + inline["model_roster"]["ordered_fixture_cells"] + sum(v["ordered_cells"] for v in metadata.values()),
             "new_fitting": False, "new_resampling": False, "new_inference": False}
 
 
@@ -645,16 +709,26 @@ def self_test(paper):
         "wrong_best_mark_rejected": {**texts, "benchmarks.tex": texts["benchmarks.tex"].replace("\\bestcid", "\\cid", 1)},
         "invented_missing_ci_rejected": {**texts, "state_transitions.tex": filled_gap},
     }
+    routing_first = CI.search(texts["routing.tex"])
+    require(routing_first is not None, "no routing CI for the regression check")
+    routing_changed = texts["routing.tex"][:routing_first.start(2)] + str(decimal(routing_first[2]) + Decimal("0.01")) + texts["routing.tex"][routing_first.end(2):]
+    routing_lines = texts["routing.tex"].splitlines()
+    routing_rows = [i for i, line in enumerate(routing_lines) if line.startswith("\\modelname")]
+    routing_lines[routing_rows[0]], routing_lines[routing_rows[1]] = routing_lines[routing_rows[1]], routing_lines[routing_rows[0]]
+    routing_swapped = "\n".join(routing_lines)
+    level_first = CI.search(texts["routing_levels.tex"])
+    require(level_first is not None, "no routing-level CI for the regression check")
+    levels_changed = texts["routing_levels.tex"][:level_first.start(3)] + str(decimal(level_first[3]) + Decimal("0.01")) + texts["routing_levels.tex"][level_first.end(3):]
     pending_line = next(line for line in texts["benchmarks.tex"].splitlines() if line.startswith(r"\modelname{liquid}"))
     filled_pending = pending_line.replace(PENDING, r"\cid{80.0}{1.0}{1.0}", 1)
-    mock_pending = r"Native & \textemdash & \textemdash & \textemdash & \textemdash"
     mutations.update({
         "invented_planned_benchmark_rejected": {**texts, "benchmarks.tex": texts["benchmarks.tex"].replace(pending_line, filled_pending, 1)},
         "missing_planned_row_rejected": {**texts, "benchmarks.tex": texts["benchmarks.tex"].replace(pending_line, "", 1)},
-        "invented_planned_mock_rejected": {**texts, "routing_mock.tex": texts["routing_mock.tex"].replace(mock_pending, mock_pending.replace(PENDING, "80.0", 1), 1)},
         "table_sublegend_rejected": {**texts, "readout.tex": texts["readout.tex"].replace(r"\end{adjustbox}", r"\end{adjustbox}\par Small sub-legend.", 1)},
         "wrapped_nemotron_benchmark_rejected": {**texts, "benchmarks.tex": texts["benchmarks.tex"].replace(r"\modelname{nvidia}{Nemotron-3.5-Lightning-30B-A3B}", r"\modelname{nvidia}{\shortstack[l]{Nemotron-3.5-Lightning\\30B-A3B}}", 1)},
-        "invisible_pending_counterpart_rejected": {**texts, "routing_pending.tex": texts["routing_pending.tex"].replace(r"\newcommand{\routingpending}{\textemdash}", r"\newcommand{\routingpending}{\phantom{00.0}}", 1)},
+        "changed_routing_estimate_rejected": {**texts, "routing.tex": routing_changed},
+        "routing_row_swap_rejected": {**texts, "routing.tex": routing_swapped},
+        "changed_routing_level_rejected": {**texts, "routing_levels.tex": levels_changed},
     })
     for name, candidate in mutations.items():
         require(candidate != texts, "self-test mutation did not apply: " + name)

@@ -65,7 +65,6 @@ def main():
     files += [PAPER / 'writing_brief.md', PAPER / 'paper-rules.md']
     files += list((PAPER / 'journal').glob('*.md'))
     files += list((PAPER / 'journal').glob('*.json'))
-    files += [PAPER / 'journal/tables/routing_pending.tex']
     files += [p for p in (PAPER / 'submission').glob('*') if p.is_file()]
     if (PAPER / 'bib-accepted.txt').exists(): files += [PAPER / 'bib-accepted.txt']
     files += [p for p in (PAPER / 'figures/journal').rglob('*') if p.is_file()]
