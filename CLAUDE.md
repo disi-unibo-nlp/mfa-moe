@@ -181,15 +181,23 @@ a new versioned file or module with its own binding, never an in-place edit.
 ## Paper
 
 `paper/6a510c6db0d9b08aa438c142/` holds the Computational Linguistics journal manuscript
-(`main.tex`). It is also a separate Overleaf checkout, mirrored here as plain files. Push nothing
-to Overleaf or any remote without approval. Author rules are in `paper-rules.md` (paper-writer
-skill) and `writing_brief.md`.
+(`main.tex`) and nothing else: sections, style, the tables they input, figure PDFs, model icons,
+class, bibliography style and `references.bib`. It is also a separate Overleaf checkout. Push
+nothing to Overleaf or any remote without approval, and never put code, data, notes or build
+output in this folder.
 
-- Results tables and figure data come from `scripts/paper/export_routing_results.py`, which reads
-  the sealed `EFFECTS.json`, and from `scripts/paper/export_cl_exhibits.py`. Don't hand-edit
-  their outputs.
-- Build with `scripts/paper/build_cl_manuscript.py` (verified offline tectonic, bounded 45 s
-  passes). `pw build` falls back to the system latexmk here and renders a stale PDF.
+Everything around the manuscript lives in `paper/manuscript-support/` (locations named once in
+`scripts/paper/cl_paths.py`): `figures/` (figure sources, build stamps, `data/`), `notes/` (author
+rules `paper-rules.md`, `writing_brief.md`, audits), `legacy/` (earlier report sources, scripts,
+generated data), `submission/`, and `build/` (ignored build output).
+
+- Results tables and figure data come from `scripts/paper/export_routing_results.py` and
+  `export_whole_results.py --effects <EFFECTS_WHOLE.json>`, which read sealed receipts, and from
+  `scripts/paper/export_cl_exhibits.py`. Don't hand-edit their outputs.
+- Build figures with `scripts/paper/build_cl_figures.py [NAME...]` and the manuscript with
+  `scripts/paper/build_cl_manuscript.py --bounded-passes` (verified offline tectonic, bounded 45 s
+  passes; use the paper-writer venv Python). `pw build` falls back to the system latexmk here and
+  renders a stale PDF. Check writing rules with `scripts/paper/check_cl_rules.sh`.
 - `report/main.tex` is the older technical report.
 
 ## Docs to read before changing a stage
