@@ -15,9 +15,16 @@
 - [x] F-0004.3 Budget-prefix rows (cut native reasoning, forced closing suffix, answer-only allowance) in runtime/driver/extraction; tests in tests/study/test_whole.py; evidence: tests/outcome_steering/test_manifest.py budget-prefix tests pass.
 - [x] F-0004.4 Manifest builder and release (OUTCOME.json sweep release reusing base natives); tests in tests/outcome_steering/test_manifest.py; evidence: local dry run built 1161/1152/1152 rows (gpt 12 budget rows source_unavailable); allocated job 61796625 ran 99 whole tests, one message assertion updated.
 - [x] F-0004.5 Analysis: bounded contrasts, budget-curve comparison, manipulation check; tests in tests/outcome_steering/test_analysis.py; evidence: tests/outcome_steering/test_analysis.py passes.
-- [ ] F-0004.6 READMEs for src/moe_exp/outcome_steering and scripts/outcome_steering; launch, supervise to terminal accounting, report per-model results.
+- [x] F-0004.6 READMEs for src/moe_exp/outcome_steering and scripts/outcome_steering; launch, supervise to terminal accounting, report per-model results; evidence: release r1 shards all COMPLETED, report/outcome-steering-20261022-r1/analysis/EFFECTS_OUTCOME.json and DECISION.json (extend: false).
 
 ## Results
 
 | Metric | Dataset | Baseline | Result | Evidence |
 |---|---|---|---|---|
+| Nudge vs matched random, accuracy (pp) | 129/128/128 families | random experts | no interval excludes 0 (gpt -6.9..+2.8, nemotron -2.5..+2.5, qwen330b -2.5..+2.5) | EFFECTS_OUTCOME.json target_random |
+| Nudge vs matched random, tokens | same | random experts | no interval excludes 0; largest nemotron delta 1.6 -12.8% [+5.9, -28.1] | same |
+| Nudge vs unedited, accuracy (pp) | same | native | -5.0..+1.7, all intervals include 0 | target_native |
+| Stop-thinking-early baseline, accuracy (pp) | same | native | -6 to -47 (qwen330b answers often hit the 2048-token answer cap) | budget_native |
+| Nudge vs length-limit curve at matched length (pp) | same | budget curve | +7.4 [+0.5, +14.3] nemotron delta 0.8; others include 0 | target_budget |
+| Manipulation: nudged experts' top-k slots kept | same | native | 0.24-0.34 at 0.4, 0.07-0.18 at 0.8, 0.00-0.05 at 1.6 | models.manipulation |
+
