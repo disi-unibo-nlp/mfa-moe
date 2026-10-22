@@ -23,6 +23,7 @@ DELTAS = (0.4, 0.8, 1.6)       # logit shifts (user decision, D-0003)
 FRACTIONS = (0.5, 0.7, 0.85)   # where the length-limit baseline stops the native reasoning
 ANSWER_TOKENS = 2048           # answer allowance of a length-limit row
 TEMPLATE = 'whole-reasoning-20261021-r7'
+RUN_PATHS = ('src/moe_exp', 'tests/study', 'tests/outcome_steering', 'scripts/study', 'scripts/outcome_steering')
 
 
 def whole_usage() -> dict:
@@ -41,7 +42,7 @@ def whole_usage() -> dict:
     return used
 
 
-def release(name: str, models: list[str], shards: int, local_tests: int) -> dict:
+def release(name: str, models: list[str], shards: dict[str, int], local_tests: int) -> dict:
     """Write every receipt of a new release and materialize its code snapshot.
 
     Args:
@@ -51,7 +52,8 @@ def release(name: str, models: list[str], shards: int, local_tests: int) -> dict
         local_tests: Tests that passed locally on this commit (the allocated validation reruns all).
     """
     repo = REPORTS.parent
-    require(not subprocess.run(['git', 'status', '--porcelain', '--', 'src', 'tests', 'scripts'], cwd=repo,
+    # Only the code a release runs must be committed; unrelated work elsewhere in the tree may be open.
+    require(not subprocess.run(['git', 'status', '--porcelain', '--', *RUN_PATHS], cwd=repo,
                                capture_output=True, text=True, check=True).stdout, 'commit the code first')
     root = REPORTS/name
     require(not root.exists(), f'{root} exists')
@@ -59,7 +61,7 @@ def release(name: str, models: list[str], shards: int, local_tests: int) -> dict
     template = verified(REPORTS/TEMPLATE/'RELEASE.json')
     commit = subprocess.run(['git', 'rev-parse', 'HEAD'], cwd=repo, capture_output=True, text=True,
                             check=True).stdout.strip()
-    gpu_ceiling, cpu_ceiling = 8.*shards*len(models)+10, 60.
+    gpu_ceiling, cpu_ceiling = 8.*sum(shards[m] for m in models)+10, 60.
 
     publish(root/'PRIOR_USAGE.json', {'earlier_whole_usage_snapshot': whole_usage(), 'snapshot_time': time.time(),
                                       'budget_reset': False,
@@ -67,7 +69,7 @@ def release(name: str, models: list[str], shards: int, local_tests: int) -> dict
     publish(root/'LOCAL_VALIDATION.json', {'passed': True, 'tests': local_tests, 'commit': commit,
                                            'scope': 'tests/outcome_steering plus tests/study/test_stream_batch.py; '
                                                     'the allocated validation runs both suites in full'})
-    publish(root/'RESOURCE_PLAN.json', {'models': models, 'shards': {m: shards for m in models},
+    publish(root/'RESOURCE_PLAN.json', {'models': models, 'shards': {m: shards[m] for m in models},
                                         'new_gpu_hour_ceiling': gpu_ceiling, 'cpu_core_hour_ceiling': cpu_ceiling,
                                         'cutoff': float(CUTOFF), 'no_budget_reset': True})
     publish(root/'PREFLIGHT.json', {
@@ -107,7 +109,7 @@ def release(name: str, models: list[str], shards: int, local_tests: int) -> dict
         require(file_sha(Path(path)) == expected, 'input mismatch: '+path)
     value = publish(root/'RELEASE.json', {
         'commit': commit, 'release_root': str(snapshot), 'models': models,
-        'sweep': {m: 'main' for m in models}, 'shards': {m: shards for m in models}, 'cutoff': float(CUTOFF),
+        'sweep': {m: 'main' for m in models}, 'shards': {m: shards[m] for m in models}, 'cutoff': float(CUTOFF),
         'outcome_sha256': verified(root/'OUTCOME.json')['sha256'],
         'source_archive': {'path': str(archive), 'sha256_file': file_sha(archive)},
         'code_files': files, 'inputs': inputs, 'classifier': template['classifier'],
@@ -119,6 +121,6 @@ def release(name: str, models: list[str], shards: int, local_tests: int) -> dict
         'cpu_core_hour_ceiling': cpu_ceiling, 'engineering_only': False, 'template_release_sha256': template['sha256']})
     (root/'launch.env').write_text(
         f"MODELS={','.join(models)}\nSWEEP={','.join(m+':main' for m in models)}\n"
-        f"SHARDS={','.join(f'{m}:{shards}' for m in models)}\nGPU_CEILING={gpu_ceiling}\nCPU_CEILING={cpu_ceiling}\n"
+        f"SHARDS={','.join(f'{m}:{shards[m]}' for m in models)}\nGPU_CEILING={gpu_ceiling}\nCPU_CEILING={cpu_ceiling}\n"
         f"CUTOFF={CUTOFF}\nCOMMIT={commit}\n")
     return {'release': name, 'commit': commit, 'sha256': value['sha256'], 'snapshot': str(snapshot)}

@@ -10,3 +10,13 @@
 - evidence: User answers 2026-10-22 (3 models first, length-limit baseline, three strengths 0.4/0.8/1.6, top-10% execution protection, reuse natives); analysis in /leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/r/claude-review/why-steering-20261022/; chen2026beyond ("Beyond the Trace") reports shorter and more accurate GPT-OSS-20B output with five outcome-selected experts at a -0.8 logit shift.
 - keywords: outcome, nudge, steering, budget, early-exit, routing
 - paths: src/moe_exp/outcome_steering, scripts/outcome_steering, src/moe_exp/final_routing/operator.py, src/moe_exp/study
+
+## Extension rule (declared 2026-10-22, before any nudge outcome)
+
+The user asked to extend to every model if the three-model result is good, and to schedule every
+step automatically. A CPU job after the r1 analysis applies `moe_exp.outcome_steering.decide`: extend
+when some first-wave model and delta is shorter than matched random experts (bounded simultaneous
+token interval above zero) with accuracy against unedited routing not below -1 point, or more
+accurate than random experts (accuracy interval above zero). If met, it launches
+outcome-steering-20261022-r2 for gemma, glm, qwen35 and qwen36 (LFM2.5 has no cohort-B captures),
+GLM with more shards because it decodes about four times slower.
