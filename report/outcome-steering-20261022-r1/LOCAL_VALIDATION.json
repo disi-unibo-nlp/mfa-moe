@@ -1,0 +1,1 @@
+{"commit":"e224cd10d775571614101c3be6201da6aebc1f72","passed":true,"scope":"tests/outcome_steering plus tests/study/test_stream_batch.py; the allocated validation runs both suites in full","sha256":"88f0c00b244306fa83e38e492a5a96042ee7bb96a7dc242bc37a8283cde2794c","tests":125}
