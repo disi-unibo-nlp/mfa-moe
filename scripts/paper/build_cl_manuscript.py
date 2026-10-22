@@ -2,7 +2,7 @@
 
 No installations, scientific computation or agent-runtime changes. Each TeX
 invocation is bounded to 45 seconds on the login node. Review artifacts remain
-inside the manuscript's ignored .paper-review directory.
+inside paper/manuscript-support/build (ignored).
 """
 from pathlib import Path
 import argparse
@@ -17,8 +17,7 @@ import sys
 import time
 import pymupdf
 
-REPO = Path(__file__).resolve().parents[2]
-PAPER = REPO / "paper/6a510c6db0d9b08aa438c142"
+from cl_paths import BUILD, PAPER, REPO  # noqa: E402
 SKILL = Path("/leonardo/home/userexternal/lmolfett/.paper-writer-skill/skills/paper-writer")
 PYTHON = Path("/leonardo/home/userexternal/lmolfett/.cache/paper-writer/venv/bin/python")
 TOOLS = Path("/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/verification-paper-tectonic-0.17.0")
@@ -69,8 +68,8 @@ def main(allow_cache_fill=False, bounded_passes=False):
     engine = Path(toolchain["binary_path"])
     if sha(engine) != EXPECTED or toolchain["binary_sha256"] != EXPECTED:
         raise ValueError("existing compiler does not match its verified receipt")
-    review = PAPER / ".paper-review"
-    review.mkdir(exist_ok=True)
+    review = BUILD
+    review.mkdir(parents=True, exist_ok=True)
     (review / ".gitignore").write_text("*\n")
     adapter = review / "offline-toolchain"
     (adapter / "bin").mkdir(parents=True, exist_ok=True)

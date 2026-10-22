@@ -16,10 +16,8 @@ import hashlib
 import json
 import shutil
 
-REPO = Path(__file__).resolve().parents[2]
-PAPER = REPO / "paper/6a510c6db0d9b08aa438c142"
-ROOT = PAPER / "figures/journal"
-DATA = ROOT / "data"
+from cl_paths import DATA, FIGURES as ROOT, LEGACY, NOTES, PAPER, REPO  # noqa: E402
+
 TABLES = PAPER / "journal/tables"
 MODELS = ("gpt", "nemotron", "qwen35", "qwen36", "gemma", "glm", "qwen330b", "lfm25")
 CLASSES = ("Read", "Analyze", "Explore", "Plan", "Implement", "Verify", "Monitor")
@@ -44,7 +42,7 @@ def label(model):
 def capture():
     DATA.mkdir(parents=True, exist_ok=True)
     sources = {}
-    older = PAPER / "generated/best_results_20261009"
+    older = LEGACY / "generated/best_results_20261009"
     for name in ("routing_readout.csv", "selection_coverage.csv", "anticipation.csv"):
         origin = older / name
         shutil.copyfile(origin, DATA / name)
@@ -386,11 +384,11 @@ def export_main_data(*, legacy_table_format=False, refresh_manifest=False):
     if refresh_manifest:
         files = [p for folder in (DATA, TABLES) for p in folder.glob("*") if p.is_file()]
         (ROOT / "EXHIBITS.json").write_text(json.dumps({"exporter_sha256": sha(Path(__file__)),
-            "files": {str(p.relative_to(PAPER)): sha(p) for p in files},
+            "files": {str(p.relative_to(REPO)): sha(p) for p in files},
             "new_inference": False,
             "observed_models": list(MODELS),
             "planned_models": [],
-            "planned_model_source_sha256": sha(PAPER / "journal/PLANNED_MODEL.json"),
+            "planned_model_source_sha256": sha(NOTES / "journal/PLANNED_MODEL.json"),
             "table_mode": "historical_renderer" if legacy_table_format else "author_formatted_preserved",
             "uncertainty": "original confidence endpoints copied; saved selection folds have no estimated CI"},
             indent=2) + "\n")

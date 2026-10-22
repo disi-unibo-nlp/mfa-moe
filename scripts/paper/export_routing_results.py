@@ -2,8 +2,8 @@
 
 Reads the sealed effects receipts of the reduced final-routing study (no fitting or
 resampling here) and writes:
-  figures/journal/data/routing.dat           coordinates of the routing figure
-  figures/journal/data/routing_results.json  every displayed number and its source receipt
+  manuscript-support/figures/data/routing.dat           coordinates of the routing figure
+  manuscript-support/figures/data/routing_results.json  every displayed number and its source receipt
   journal/tables/routing.tex                 main paired contrasts (8 models and the pooled row)
   journal/tables/routing_levels.tex          per-arm accuracy and token levels (appendix)
   journal/tables/routing_strong.tex          exploratory strong-dose arm (appendix)
@@ -17,9 +17,8 @@ import hashlib
 import json
 import math
 
-REPO = Path(__file__).resolve().parents[2]
-PAPER = REPO / "paper/6a510c6db0d9b08aa438c142"
-DATA = PAPER / "figures/journal/data"
+from cl_paths import DATA, FIGURES, PAPER, REPO  # noqa: E402
+
 TABLES = PAPER / "journal/tables"
 DRIVER = REPO / "report/final-routing-20261015-r1/driver"
 MAIN = DRIVER / "analysis-final/EFFECTS.json"
@@ -115,7 +114,7 @@ def figure(coords, panels):
                "(b, c) & \\statekey{gomblueone}{Targeted act.} & \\statekey{gombluetwo}{Random act.} & "
                "\\statekey{gomorangeone}{Targeted deact.} & \\statekey{gomorangetwo}{Random deact.}\\end{tabular}};")
     out.append("\\end{tikzpicture}")
-    (PAPER / "figures/journal/routing.tex").write_text("\n".join(out) + "\n")
+    (FIGURES / "routing.tex").write_text("\n".join(out) + "\n")
 
 
 HEADINGS = []

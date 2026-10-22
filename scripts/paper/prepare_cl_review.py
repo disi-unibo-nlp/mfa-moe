@@ -9,31 +9,32 @@ import json
 import pymupdf
 
 from build_cl_manuscript import PAPER
+from cl_paths import BUILD, DATA, FIGURES, LEGACY, NOTES
 
 
 def main():
-    review = PAPER / '.paper-review'
+    review = BUILD
     build = json.loads((review / 'BUILD.json').read_text())
     pages = Path(build['page_renders'])
     with pymupdf.open(review / 'build/main.pdf') as document:
         text = '\n\n'.join(f'## page-{i + 1:02d}.png\n' + p.get_text()
                            for i, p in enumerate(document))
     (review / 'pdf-text.md').write_text(text)
-    extra = list((PAPER / 'figures/journal').glob('*.tex'))
-    extra += list((PAPER / 'figures/journal').glob('*.json'))
-    extra += [p for p in (PAPER / 'figures/journal/data').glob('*') if p.is_file()]
-    extra += list((PAPER / 'journal').glob('*.md'))
-    extra += list((PAPER / 'journal').glob('*.json'))
+    extra = list(FIGURES.glob('*.tex'))
+    extra += list(FIGURES.glob('*.json'))
+    extra += [p for p in DATA.glob('*') if p.is_file()]
+    extra += list((NOTES / 'journal').glob('*.md'))
+    extra += list((NOTES / 'journal').glob('*.json'))
     extra += [review / 'author-revision-20261014/PRIMARY_RECORDS.json',
               review / 'bib/OFFLINE_VERIFICATION.json',
               review / 'bib/report.md', review / 'bib-verify.log']
     extra += [review / 'delivery/PACKAGE.json',
               review / 'BUILD.json', review / 'pdf-text.md',
-              PAPER / 'archive/20261014-pre-journal/SOURCE_SNAPSHOT.json',
-              PAPER / 'guiding_weighting_table.tex', PAPER / 'probe_grouped_summary_table.tex',
-              PAPER / 'expert_selection_audit.tex',
-              PAPER / 'generated/seven_model_evidence.tex',
-              PAPER / 'generated/verification_status.tex']
+              LEGACY / 'archive/20261014-pre-journal/SOURCE_SNAPSHOT.json',
+              LEGACY / 'guiding_weighting_table.tex', LEGACY / 'probe_grouped_summary_table.tex',
+              LEGACY / 'expert_selection_audit.tex',
+              LEGACY / 'generated/seven_model_evidence.tex',
+              LEGACY / 'generated/verification_status.tex']
     metadata = json.loads((review / 'packet.json').read_text())
     metadata['files'] = list(dict.fromkeys(metadata['files'] + [str(p) for p in extra]))
     metadata['review_pages'] = str(pages)
