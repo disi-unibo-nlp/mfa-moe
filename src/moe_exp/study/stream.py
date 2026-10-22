@@ -260,8 +260,9 @@ class StreamCapture:
         """Cache every hooked layer's role masks for the current scheduler request order.
 
         Returns:
-            Request identity, layer-to-index map and a [layers, requests, 2, experts] mask,
-            copied to the device once per change of batch membership.
+            Request identity, layer-to-index map, a [layers, requests, 2, experts] activate/deactivate
+            mask and, only when some request nudges, a [layers, requests, experts] float shift (else
+            None), copied to the device once per change of batch membership.
         """
         import torch
         identity = tuple(uid for uid, _ in work)
@@ -269,13 +270,18 @@ class StreamCapture:
         if cached is None or cached[0] != identity:
             layers = list(self.contract['hook_layers'])
             roles = torch.zeros((len(layers), len(work), 2, self.contract['experts']), dtype=torch.bool)
+            shifts = torch.zeros((len(layers), len(work), self.contract['experts']), dtype=torch.float32)
             for index, (uid, _) in enumerate(work):
                 for position, layer in enumerate(layers):
                     action = self.requests[uid]['actions'].get(layer)
                     if action:
                         roles[position, index, 0, action.get('activate', [])] = True
                         roles[position, index, 1, action.get('deactivate', [])] = True
-            cached = self.whole_role_cache['all'] = (identity, {l: i for i, l in enumerate(layers)}, roles.to(device))
+                        shifts[position, index, action.get('shift', [])] = action.get('delta', 0.)
+            nudging = bool(shifts.any())
+            require(not (nudging and roles.any()), 'a batch cannot mix nudged and forced whole rows')
+            cached = self.whole_role_cache['all'] = (identity, {l: i for i, l in enumerate(layers)}, roles.to(device),
+                                                     shifts.to(device) if nudging else None)
         return cached
 
     def _whole_rows(self, work, device):
@@ -309,18 +315,26 @@ class StreamCapture:
         Eager kernels only: both tensor-parallel ranks must reproduce identical routing and counters.
         """
         import torch
-        from moe_exp.final_routing.operator import score_override_dual_masked
+        from moe_exp.final_routing.operator import score_override_dual_masked, score_shift_masked
         step = self._whole_rows(work, logits.device)
-        _, positions, all_roles = self._whole_roles(work, logits.device)
+        _, positions, all_roles, all_shifts = self._whole_roles(work, logits.device)
         layer_roles = all_roles[positions[layer]]
-        # Rows of requests without targets at this layer keep their exact native bits.
-        active = step['base'] & layer_roles.flatten(1).any(-1)[step['groups']]
         roles, take = layer_roles[step['groups']], step['take']
-        aw, ai = score_override_dual_masked(logits[take], nw[take], ni[take], roles[:, 0], roles[:, 1],
-                                            active, **native_policy)
+        if all_shifts is None:
+            # Forced (dual) rows. Rows of requests without targets at this layer keep their exact native bits.
+            active = step['base'] & layer_roles.flatten(1).any(-1)[step['groups']]
+            aw, ai = score_override_dual_masked(logits[take], nw[take], ni[take], roles[:, 0], roles[:, 1],
+                                                active, **native_policy)
+            nudged = None
+        else:
+            # Nudged rows: lower the chosen experts' logits and let the router select as usual.
+            shift = all_shifts[positions[layer]][step['groups']]
+            active = step['base'] & (shift != 0).any(-1)
+            aw, ai = score_shift_masked(logits[take], nw[take], ni[take], shift, active, **native_policy)
+            nudged = shift != 0
         weights, ids = nw.clone(), ni.clone()
         weights[take], ids[take] = aw, ai
-        values = batched_dose(nw[take], ni[take], aw, ai, active, step['prompt'], roles, step['lengths'])
+        values = batched_dose(nw[take], ni[take], aw, ai, active, step['prompt'], roles, step['lengths'], nudged)
         totals = self._whole_buffer(layer, logits.device)
         totals.index_add_(0, step['slots'], values)
         for uid, _ in work:
@@ -369,6 +383,7 @@ class StreamCapture:
         import torch
         request = self.requests[uid]
         action = request['actions'].get(layer, {})
+        require(not action.get('shift'), 'nudged whole rows run only on the batched path')
         activate, deactivate = action.get('activate', []), action.get('deactivate', [])
         active = [bool((activate or deactivate) and c['reasoning'] and
                        (not c['prompt'] or request['prompt_scope'])) for _, c in rows]
@@ -421,6 +436,15 @@ class StreamCapture:
                     require(not positive & negative and len(positive) < self.contract['native_k'] and
                             self.contract['experts']-len(negative) >= self.contract['native_k'],
                             'whole dual roles cannot preserve native k')
+                    operator = action.get('operator', 'score_override_dual')
+                    require(operator in ('score_override_dual', 'score_shift'), 'unknown whole operator: '+operator)
+                    if operator == 'score_shift':
+                        # A nudge only lowers logits: no forced roles, a positive delta, valid distinct experts.
+                        nudged = action.get('shift', [])
+                        require(not positive and not negative and nudged and float(action.get('delta', 0)) > 0 and
+                                len(set(nudged)) == len(nudged) and
+                                all(type(e) is int and 0 <= e < self.contract['experts'] for e in nudged),
+                                'invalid whole nudge action')
                 self.whole_slots[uid] = self.next_whole_slot
                 self.next_whole_slot += 1
             require(len({a['layer'] for a in actions}) == len(actions), 'at most one action per layer')
@@ -475,11 +499,16 @@ class StreamCapture:
 DOSE_KEYS = ('active_positions', 'active_prompt_positions', 'active_generated_positions', 'changed_membership',
              'native_target_weight', 'executed_target_weight', 'native_activate_weight', 'executed_activate_weight',
              'native_deactivate_weight', 'executed_deactivate_weight', 'native_activate_share', 'executed_activate_share',
-             'l1', 'finite', 'membership_failures', 'observations')
+             'l1', 'finite', 'membership_failures', 'observations',
+             'native_shift_weight', 'executed_shift_weight', 'native_shift_members', 'executed_shift_members')
 
 
-def batched_dose(native_weights, native_ids, weights, ids, active, prompt, roles, lengths):
-    """Reduce contiguous request segments deterministically, preserving exact rank agreement."""
+def batched_dose(native_weights, native_ids, weights, ids, active, prompt, roles, lengths, nudged=None):
+    """Reduce contiguous request segments deterministically, preserving exact rank agreement.
+
+    `nudged` marks the experts a gentle nudge lowers (rows x experts); its counters record how much
+    routing weight and how many top-k slots those experts hold before and after the nudge.
+    """
     import torch
     experts = roles.shape[-1]
     native = torch.zeros((len(ids), experts), device=weights.device, dtype=torch.float32)
@@ -497,7 +526,8 @@ def batched_dose(native_weights, native_ids, weights, ids, active, prompt, roles
         na/native_weights.sum(-1).clamp_min(1e-30)*active,
         ea/weights.sum(-1).clamp_min(1e-30)*active,
         (native-executed).abs().sum(-1)*active, (~torch.isfinite(weights).all(-1)).float(),
-        failed, torch.zeros_like(active)), -1).float()
+        failed, torch.zeros_like(active),
+        *shift_counters(native, executed, native_ids, members, nudged, active)), -1).float()
     # Atomic floating sums can differ between tensor-parallel ranks. Each
     # request owns a contiguous segment, so one fixed-order segment sum suffices.
     totals = (values.clone() if len(values) == len(lengths) else
@@ -505,6 +535,17 @@ def batched_dose(native_weights, native_ids, weights, ids, active, prompt, roles
     totals[:, 13] = (totals[:, 13] == 0).float()
     totals[:, 15] = 1
     return totals
+
+
+def shift_counters(native, executed, native_ids, members, nudged, active):
+    """Weight and top-k slots held by nudged experts, natively and after the nudge (zeros if none)."""
+    import torch
+    if nudged is None:
+        zero = torch.zeros(len(native), device=native.device)
+        return zero, zero, zero, zero
+    native_members = torch.zeros_like(members).scatter_(1, native_ids.long(), True)
+    return ((native*nudged).sum(-1)*active, (executed*nudged).sum(-1)*active,
+            (native_members & nudged).sum(-1)*active, (members & nudged).sum(-1)*active)
 
 
 def dose_totals(native_weights, native_ids, weights, ids, active, prompt, activate, deactivate, experts):
@@ -552,6 +593,8 @@ def dose_totals(native_weights, native_ids, weights, ids, active, prompt, activa
         'finite': torch.isfinite(weights).all().long(),
         'membership_failures': (flags & ~member).sum(),
         'observations': torch.ones((), device=weights.device, dtype=torch.long),
+        # The per-request path never nudges; these keep its counters aligned with DOSE_KEYS.
+        **{key: torch.zeros((), device=weights.device) for key in DOSE_KEYS[16:]},
     }
 
 

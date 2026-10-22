@@ -45,7 +45,19 @@ def prompt_prefix(binding, model, row, tokenizer):
     n = row['source']['prefix_tokens']
     require(0 <= n <= len(completion), 'frozen prefix token boundary differs')
     require(n > 0 or row.get('original_prompt'), 'empty prefix requires an original-prompt assignment')
+    if row.get('budget_prefix'):
+        return list(prompt), budget_tokens(row['budget_prefix']), trace
     return list(prompt), list(completion[:n]), trace
+
+
+def budget_tokens(spec):
+    """Prefix of a length-limit row: the first `cut` generated tokens of a finished native run, then the
+    model's closing suffix, so the model only writes its answer (outcome_steering budget arm)."""
+    from .common import file_sha
+    require(file_sha(spec['path']) == spec['sha256_file'], 'budget source output changed')
+    tokens = load(spec['path'])['token_ids']
+    require(0 < spec['cut'] <= len(tokens), 'budget cut outside the source output')
+    return list(tokens[:spec['cut']])+list(spec['suffix'])
 
 
 def sampling_parameters(profile, row, prefix, cap):

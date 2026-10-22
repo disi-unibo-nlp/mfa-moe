@@ -15,6 +15,12 @@ def main() -> None:
     usage.add_argument('--workers', type=int, default=4)
     select = commands.add_parser('select', help='print each model\'s expert sets; writes nothing')
     select.add_argument('--models', default=MODELS)
+    release = commands.add_parser('release', help='seal a release: receipts, code snapshot, launch.env')
+    release.add_argument('--name', required=True)
+    release.add_argument('--models', default=MODELS)
+    release.add_argument('--shards', type=int, default=3)
+    release.add_argument('--local-tests', type=int, required=True)
+    commands.add_parser('analyze', help='write EFFECTS_OUTCOME.json (allocated CPU job, from the release)')
     args = parser.parse_args()
 
     if args.command == 'usage':
@@ -30,6 +36,12 @@ def main() -> None:
             summary = {name: {k: s[k] for k in ('mass', 'control_mass', 'unstable_fill', 'stable_positive', 'questions')}
                        | {'pairs': len(s['targets'])} for name, s in value['sets'].items()}
             print(json.dumps({'model': model, 'protected': value['protected'], 'sets': summary}, indent=1))
+    elif args.command == 'release':
+        from .release import release as seal
+        print(json.dumps(seal(args.name, args.models.split(','), args.shards, args.local_tests)))
+    elif args.command == 'analyze':
+        from .analysis import analyze
+        print(json.dumps({'sha256': analyze()['sha256']}))
 
 
 if __name__ == '__main__':

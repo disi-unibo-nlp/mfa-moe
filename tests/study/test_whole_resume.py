@@ -285,7 +285,7 @@ class ResumeManifestTests(unittest.TestCase):
             result = whole.prepare_model({}, 'gemma', True)
             self.assertEqual(result['gemma:main']['planned'], 1)
             publish(root/'TOPUP.json', {'models': {}})
-            with self.assertRaisesRegex(ValueError, 'either a top-up or a resume'):
+            with self.assertRaisesRegex(ValueError, 'either a top-up, a resume or an outcome-steering release'):
                 whole.prepare_model({}, 'gemma', True)
 
 

@@ -27,13 +27,15 @@ from pathlib import Path
 
 import numpy as np
 
-from moe_exp.final_routing.common import FAST, REPO, digest, file_sha, load, publish, require
+from moe_exp.final_routing.common import FAST, digest, file_sha, load, publish, require
+
+from . import REPORTS
 
 CAPTURES = Path('/leonardo_scratch/fast/IscrC_MIOSR/lmolfett/mfa-moe/campaign-v3')
 OUTCOMES = Path('/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/'
                 'campaign-v3/outcomes/outcomes_v3-99bf8d59506e2893.parquet')
 BULK = FAST/'outcome-steering'
-NOMINATIONS = REPO/'report/whole-reasoning-20261021-r7/{model}/WHOLE_NOMINATIONS.json'
+NOMINATIONS = REPORTS/'whole-reasoning-20261021-r7/{model}/WHOLE_NOMINATIONS.json'
 
 COMMITTEE_SHARE = .05            # top share of experts per layer by native use = shared core
 EXECUTION_SHARE = .10            # top share of positive Implement/Analyze candidates per fold

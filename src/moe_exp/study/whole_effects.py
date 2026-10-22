@@ -70,10 +70,12 @@ def _extract_one(row: dict, *, b: dict, model: str, tokenizer, close, store, inp
                 'whole output assignment/allowance join differs')
         require(raw['profile_sha256'] == row['profile_sha256'] and raw['segments'][0]['seed'] == row['seed'],
                 'whole output profile/seed join differs')
-        rec = record(b, model, row, raw, tokenizer, close, frozen_input=inputs[row['family']])
+        # A length-limit row has its own prefix (cut native tokens + closing suffix): read it from the row.
+        rec = record(b, model, row, raw, tokenizer, close,
+                     frozen_input=None if row.get('budget_prefix') else inputs[row['family']])
         capped = raw['finish_reason'] == 'length'
         strict = False if capped else rec['strict_correct']
-        outcome = {**{k: v for k, v in row.items() if k not in ('actions', 'source')},
+        outcome = {**{k: v for k, v in row.items() if k not in ('actions', 'source', 'budget_prefix')},
                    **{k: rec[k] for k in ('generated_tokens', 'prefix_tokens', 'reasoning_tokens',
                       'reasoning_end', 'finish_reason', 'answer_present', 'reasoning_fallback')},
                    'total_allowance': raw['total_allowance'], 'strict_correct': strict,
@@ -117,7 +119,9 @@ def extract(model: str) -> dict:
     first = {}
     for row in rows:
         first.setdefault(row['family'], row)
-    inputs = {family: prompt_prefix(b, model, row, tokenizer) for family, row in first.items()}
+    # The family prompt never includes a length-limit row's own prefix.
+    inputs = {family: prompt_prefix(b, model, {k: v for k, v in row.items() if k != 'budget_prefix'}, tokenizer)
+              for family, row in first.items()}
 
     outcomes, sentences, failures = [], [], []
     # Calling score_completion_detailed from these threads selects its process helper.

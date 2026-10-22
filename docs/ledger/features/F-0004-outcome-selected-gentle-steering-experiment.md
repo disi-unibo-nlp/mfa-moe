@@ -10,11 +10,11 @@
 
 ## Tasks
 
-- [ ] F-0004.1 Outcome selection: per-attempt expert usage on campaign-v3 cohort B, within-question wrong-minus-right score, leave-one-question-out stability, shared-core and execution exclusions, mass truncation, holdout sets and matched random controls; tests in tests/outcome_steering/test_select.py.
-- [ ] F-0004.2 Shift operator in final_routing/operator.py and stream dispatch with shift counters; existing dual path unchanged; tests in tests/study/test_stream_batch.py.
-- [ ] F-0004.3 Budget-prefix rows (cut native reasoning, forced closing suffix, answer-only allowance) in runtime/driver/extraction; tests in tests/study/test_whole.py.
-- [ ] F-0004.4 Manifest builder and release (OUTCOME.json sweep release reusing base natives); tests in tests/outcome_steering/test_manifest.py.
-- [ ] F-0004.5 Analysis: bounded contrasts, budget-curve comparison, manipulation check; tests in tests/outcome_steering/test_analysis.py.
+- [x] F-0004.1 Outcome selection: per-attempt expert usage on campaign-v3 cohort B, within-question wrong-minus-right score, leave-one-question-out stability, shared-core and execution exclusions, mass truncation, holdout sets and matched random controls; tests in tests/outcome_steering/test_select.py; evidence: usage job 61764186 (gpt 276x24x32, qwen330b 219x48x128, nemotron 96x23x128); preview sets gpt 20 pairs 1.21% mass, nemotron 40 pairs 1.07%, qwen330b 40 pairs 0.39% (cap), no unstable fill.
+- [x] F-0004.2 Shift operator in final_routing/operator.py and stream dispatch with shift counters; existing dual path unchanged; tests in tests/study/test_stream_batch.py; evidence: 9 tests in tests/study/test_stream_batch.py pass (5 new NudgeTests).
+- [x] F-0004.3 Budget-prefix rows (cut native reasoning, forced closing suffix, answer-only allowance) in runtime/driver/extraction; tests in tests/study/test_whole.py; evidence: tests/outcome_steering/test_manifest.py budget-prefix tests pass.
+- [x] F-0004.4 Manifest builder and release (OUTCOME.json sweep release reusing base natives); tests in tests/outcome_steering/test_manifest.py; evidence: local dry run built 1161/1152/1152 rows (gpt 12 budget rows source_unavailable); allocated job 61796625 ran 99 whole tests, one message assertion updated.
+- [x] F-0004.5 Analysis: bounded contrasts, budget-curve comparison, manipulation check; tests in tests/outcome_steering/test_analysis.py; evidence: tests/outcome_steering/test_analysis.py passes.
 - [ ] F-0004.6 READMEs for src/moe_exp/outcome_steering and scripts/outcome_steering; launch, supervise to terminal accounting, report per-model results.
 
 ## Results
