@@ -13,6 +13,7 @@ import zipfile
 import pymupdf
 
 from build_cl_manuscript import PAPER, SKILL, TOOLS, EXPECTED, sha
+from cl_paths import BUILD
 
 
 def page_proofs(path):
@@ -47,7 +48,7 @@ def link_proofs(path):
 
 
 def main():
-    review = PAPER / '.paper-review'
+    review = BUILD
     record = json.loads((review / 'BUILD.json').read_text())
     current_pdf = review / 'build/main.pdf'
     if record['exit_code'] or sha(current_pdf) != record['pdf_sha256']:
@@ -62,11 +63,9 @@ def main():
     rules = importlib.util.module_from_spec(spec); spec.loader.exec_module(rules)
     files = rules.active_files(PAPER / 'main.tex')
     files += [PAPER / 'clv2025.cls', PAPER / 'compling.bst']
-    files += [PAPER / 'writing_brief.md', PAPER / 'paper-rules.md']
-    files += list((PAPER / 'journal').glob('*.md'))
-    files += list((PAPER / 'journal').glob('*.json'))
-    files += [p for p in (PAPER / 'submission').glob('*') if p.is_file()]
-    if (PAPER / 'bib-accepted.txt').exists(): files += [PAPER / 'bib-accepted.txt']
+    # The source package is the manuscript folder: sections, tables, figure PDFs, icons, class,
+    # bibliography style and references.
+    files += [PAPER / 'references.bib']
     files += [p for p in (PAPER / 'figures/journal').rglob('*') if p.is_file()]
     bindings = {}
     for origin in dict.fromkeys(files):

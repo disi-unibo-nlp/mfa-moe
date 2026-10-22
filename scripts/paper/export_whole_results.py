@@ -29,6 +29,7 @@ import re
 import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+from cl_paths import DATA, FIGURES  # noqa: E402
 from export_routing_results import (  # noqa: E402
     DRIVER, MODELS, PAPER, REPO, TABLE_NAMES, TICKS, cid, sha, verified)
 
@@ -752,7 +753,11 @@ def main():
         source = str(args.effects.resolve().relative_to(REPO))
     except ValueError:
         source = str(args.effects.resolve())
-    tables, data = args.out / "journal/tables", args.out / "figures/journal/data"
+    # The paper keeps its tables; figure sources and data live in the support folder. A test --out
+    # root holds all of them in the manuscript layout.
+    tables = args.out / "journal/tables"
+    data, figures = ((DATA, FIGURES) if args.out == PAPER else
+                     (args.out / "figures/journal/data", args.out / "figures/journal"))
     for folder in (tables, data):
         folder.mkdir(parents=True, exist_ok=True)
 
@@ -790,14 +795,14 @@ def main():
                 row += [mean, *cut] if has_error else [mean]
         rows.append(" ".join(format(v, ".6g") for v in row))
     (data / "whole_dose.dat").write_text(" ".join(columns) + "\n" + "\n".join(rows) + "\n")
-    dose_figure(series, panels, args.out / "figures/journal/whole_dose.tex")
+    dose_figure(series, panels, figures / "whole_dose.tex")
 
     models = [m for m in MODELS if m in cells]
     grids = {metric: state_grid(effects, record, base, cells, prereg, models, metric)
              for metric, _ in STATE_PANELS}
     for metric, _ in STATE_PANELS:
         (data / f"whole_states_{metric}.dat").write_text(state_data(grids[metric], models, metric))
-    states_figure(grids, models, args.out / "figures/journal/whole_states.tex")
+    states_figure(grids, models, figures / "whole_states.tex")
 
     summary = {
         "receipt": {"path": source, "file_sha256": sha(args.effects),

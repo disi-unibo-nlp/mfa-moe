@@ -749,3 +749,11 @@ report/final-routing-20261015-r1/study/**
 !report/final-routing-20261015-r1/study/*/stages/*/attempts/
 !report/final-routing-20261015-r1/study/*/stages/*/attempts/*/
 !report/final-routing-20261015-r1/study/*/stages/*/attempts/*/*.json
+# Manuscript tooling beside the paper folder: figure sources and data and notes are tracked; build
+# output stays local.
+!paper/manuscript-support/
+paper/manuscript-support/*
+!paper/manuscript-support/figures/
+!paper/manuscript-support/figures/**
+!paper/manuscript-support/notes/
+!paper/manuscript-support/notes/**

@@ -21,7 +21,17 @@ import sys
 from unittest.mock import patch
 
 REPO = Path(__file__).resolve().parents[2]
-DEFAULT_PAPER = REPO / "paper/6a510c6db0d9b08aa438c142"
+from cl_paths import DATA as SUPPORT_DATA, FIGURES as SUPPORT_FIGURES, NOTES, PAPER as DEFAULT_PAPER  # noqa: E402
+
+
+def figure_root(paper):
+    """Figure sources and data: the support folder for the manuscript, else the root's own copy."""
+    return SUPPORT_FIGURES if paper == DEFAULT_PAPER else paper / "figures/journal"
+
+
+def notes_root(paper):
+    """Notes such as PLANNED_MODEL.json: the support folder for the manuscript."""
+    return NOTES if paper == DEFAULT_PAPER else paper
 MODELS = ("gpt", "nemotron", "qwen35", "qwen36", "gemma", "glm", "qwen330b")
 PLANNED_MODEL = "lfm25"
 DISPLAY_MODELS = (*MODELS, PLANNED_MODEL)
@@ -202,8 +212,8 @@ def verify_inline(paper, inline_texts=None):
             require(match[1] not in geometry, "duplicate captured model geometry in source catalogue")
             geometry[match[1]] = tuple(int(match[i]) for i in (2, 3, 4))
     require(set(geometry) == set(MODELS), "source catalogue geometry roster differs")
-    fixtures = {r["model"]: r for r in json.loads((paper / "figures/journal/data/native_fixtures.json").read_text())}
-    planned_source = json.loads((paper / "journal/PLANNED_MODEL.json").read_text())
+    fixtures = {r["model"]: r for r in json.loads((figure_root(paper) / "data/native_fixtures.json").read_text())}
+    planned_source = json.loads((notes_root(paper) / "journal/PLANNED_MODEL.json").read_text())
     require(planned_source["model_id"] == "LiquidAI/LFM2.5-24B-A2B" and planned_source["measured_fixture"] is None and not planned_source["scientific_campaign_roster_modified"], "planned model source claims unperformed measurement or changed scientific enrollment")
     planned_config = planned_source["config"]
     planned_geometry = (planned_config["num_hidden_layers"] - planned_config["num_dense_layers"], planned_config["num_experts"], planned_config["num_experts_per_tok"])
@@ -285,7 +295,7 @@ def verify_numeric_prose(paper, inline_texts=None):
     Historical engagement/semantic prose was supplied only at printed precision;
     those four displays retain that documented boundary, without invented digits.
     """
-    data = paper / "figures/journal/data"
+    data = figure_root(paper) / "data"
     supplied = inline_texts or {}
     results = supplied.get("results", (paper / "journal/results.tex").read_text())
     appendix = supplied.get("appendices", (paper / "journal/appendices.tex").read_text())
@@ -348,7 +358,7 @@ def symmetric_cell(text, mean, margin, digits, context):
 
 def verify_routing(paper, texts):
     """Check the live routing tables and figure coordinates against routing_results.json."""
-    data = paper / "figures/journal/data"
+    data = figure_root(paper) / "data"
     record = json.loads((data / "routing_results.json").read_text())
     require(all(model in record for model in DISPLAY_MODELS) and "all" in record, "routing_results.json model roster differs")
     source = "figures/journal/data/routing_results.json"
@@ -450,7 +460,7 @@ def verify(paper, texts=None, inline_texts=None):
     require(r"\fp_compare:nTF{#1>#2}{\pm#1}{\pm#2}" in style,
             "CI printer no longer uses the larger saved margin on both sides")
     tables = paper / "journal/tables"
-    data = paper / "figures/journal/data"
+    data = figure_root(paper) / "data"
     if texts is None:
         texts = {path.name: path.read_text() for path in tables.glob("*.tex")}
     metadata = {}
@@ -788,7 +798,7 @@ def self_test(paper):
     exporter = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(exporter)
     exporter.PAPER = paper
-    exporter.ROOT = paper / "figures/journal"
+    exporter.ROOT = figure_root(paper)
     exporter.DATA = exporter.ROOT / "data"
     exporter.TABLES = paper / "journal/tables"
     writes = []

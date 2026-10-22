@@ -13,6 +13,7 @@ import re
 import pymupdf
 
 from build_cl_manuscript import PAPER
+from cl_paths import BUILD, FIGURES
 
 
 LABEL = re.compile(r'[\u2212-]?\d+(?:\.\d+)?')
@@ -47,7 +48,7 @@ def expected_labels(root):
 def main():
     root = PAPER / 'figures/journal'
     pdf = root / 'routing.pdf'
-    expected = Counter(expected_labels(root))
+    expected = Counter(expected_labels(FIGURES))
     labels, bars, strokes = [], [], []
     with pymupdf.open(pdf) as document:
         page = document[0]
@@ -96,7 +97,7 @@ def main():
               'minimum_number_to_bar_clearance_pt': clearance,
               'nonhorizontal_x_label_declarations': len(rotated),
               'visual_inspection_still_required': True}
-    receipt = PAPER / '.paper-review/figure-labels-routing/LABEL_GEOMETRY.json'
+    receipt = BUILD / 'figure-labels-routing/LABEL_GEOMETRY.json'
     receipt.parent.mkdir(parents=True, exist_ok=True)
     receipt.write_text(json.dumps(result, indent=2) + '\n')
     print(json.dumps(result))

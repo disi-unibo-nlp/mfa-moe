@@ -1,11 +1,11 @@
 {
-  "figure": "whole_states",
-  "pdf_sha256": "55d46585fdeaf51d0ac49475322c67f17d2d449bd1574b3e6c76a322a0bd97af",
+  "figure": "selection",
+  "pdf_sha256": "7dcd4c2195c9458b1661ce85a699ea4ce8fb19cab97c917bee802615c3b0a757",
   "dimensions_pt": [
-    371.94000244140625,
-    399.8500061035156
+    388.5899963378906,
+    231.8300018310547
   ],
-  "source_sha256": "66ecd3409bfe4ca9ec1b5517f64825d83542aab824e680058f4c92dfe713ba76",
+  "source_sha256": "2be23132917ad673b1ab3aa410b89e44c9b8e6ac06fdb70c74d680beba57e76f",
   "style_sha256": "a9f467dd5269cf36bc016b1e0d2c0659dec27ef0a7491581bbd3aecd64f999af",
   "data_files": {
     "state_transitions_summary.dat": "adcf54b610f867beb42ffc7a2f567355fb4a9ce6aca010ea691b3057c2c25db3",
@@ -44,8 +44,8 @@
     "next_state.dat": "40d1b592e9c34d6baf93727d7ce90027c93600a0786071d2e793ac0e4df66300",
     "state_transitions_qwen35.dat": "922e99c4aaa2c4a14ff1d8256cdacf74105f98bc82ae5d6478f8260dda5db2d9"
   },
-  "elapsed_seconds": 5.681747408118099,
+  "elapsed_seconds": 5.64940962404944,
   "offline": true,
   "new_inference": false,
-  "source_snapshot": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/paper/6a510c6db0d9b08aa438c142/.paper-review/figure-builds/whole_states/source-1792655566764039636"
+  "source_snapshot": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/paper/manuscript-support/build/figure-builds/selection/source-1792656747116172995"
 }

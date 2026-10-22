@@ -10,13 +10,12 @@ import importlib.util
 import json
 import sys
 
-REPO = Path(__file__).resolve().parents[2]
-PAPER = REPO / 'paper/6a510c6db0d9b08aa438c142'
+from cl_paths import BUILD, PAPER, REPO  # noqa: E402
 SKILL = Path('/leonardo/home/userexternal/lmolfett/.paper-writer-skill/skills/paper-writer')
 
 
 def main():
-    evidence = PAPER / '.paper-review/author-revision-20261014/PRIMARY_RECORDS.json'
+    evidence = BUILD / 'author-revision-20261014/PRIMARY_RECORDS.json'
     data = json.loads(evidence.read_text())['records']
     spec = importlib.util.spec_from_file_location('paper_bib_offline', SKILL / 'scripts/bib.py')
     bib = importlib.util.module_from_spec(spec)
@@ -45,7 +44,7 @@ def main():
     if keys - set(data):
         raise ValueError('Unverified active keys: ' + ', '.join(sorted(keys - set(data))))
     # Force comparison against current independent evidence, never a stale API cache.
-    cache = PAPER / '.paper-review/bib/cache.json'
+    cache = BUILD / 'bib/cache.json'
     preserved = None
     if cache.exists():
         preserved = cache.with_name('cache-before-offline.json')
@@ -66,7 +65,7 @@ def main():
         'unresolved_metadata': 0,
         'approval_review': 'bulk external API lookup rejected; no retry or external-disclosure workaround',
     }
-    (PAPER / '.paper-review/bib/OFFLINE_VERIFICATION.json').write_text(json.dumps(receipt, indent=2) + '\n')
+    (BUILD / 'bib/OFFLINE_VERIFICATION.json').write_text(json.dumps(receipt, indent=2) + '\n')
     print(json.dumps(receipt, indent=2))
 
 
