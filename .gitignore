@@ -723,6 +723,10 @@ report/final-routing-20261015-r1/ops_r1/*
 !tests/study/
 !tests/study/*.py
 !tests/study/README.md
+# Outcome-selected gentle steering (F-0004): tests mirror src/moe_exp/outcome_steering.
+!tests/outcome_steering/
+!tests/outcome_steering/*.py
+!tests/outcome_steering/README.md
 !report/final-routing-20261015-r1/study/
 report/final-routing-20261015-r1/study/**
 !report/final-routing-20261015-r1/study/*/
