@@ -1,20 +1,22 @@
 #!/bin/bash
 # Seal an outcome-steering release from the committed code, submit its whole-reasoning job graph
 # (allocated validation -> shards -> extraction, plus the monitor) and queue its analysis.
-#   scripts/outcome_steering/launch.sh NAME SHARDS LOCAL_TESTS
-#   e.g. scripts/outcome_steering/launch.sh outcome-steering-20261022-r1 3 26
+#   scripts/outcome_steering/launch.sh NAME SHARDS LOCAL_TESTS [MODELS]
+#   SHARDS is N per model or model:N,...; MODELS defaults to gpt,qwen330b,nemotron.
+#   e.g. scripts/outcome_steering/launch.sh outcome-steering-20261022-r1 3 125
 # Needs the usage job's output (scripts/outcome_steering/usage.sh) and a clean src/tests/scripts tree.
 set -euo pipefail
 cd "$(dirname "$0")/../.."
 REPO=$PWD
 name="${1:?release name}"; shards="${2:?shards per model}"; tests="${3:?locally passed tests}"
+models="${4:-gpt,qwen330b,nemotron}"
 PY=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/envs/vllm-cu129/bin/python
 TMP=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/r/outcome-steering/tmp
 mkdir -p "$TMP"
 
 # 1. Seal: receipts, OUTCOME.json, the code snapshot under mfa-moe/releases/<commit> and launch.env.
 TMPDIR="$TMP" PYTHONPATH=src:scripts/experimental_resume PYTHONDONTWRITEBYTECODE=1 \
-  "$PY" -B -m moe_exp.outcome_steering release --name "$name" --shards "$shards" --local-tests "$tests"
+  "$PY" -B -m moe_exp.outcome_steering release --name "$name" --models "$models" --shards "$shards" --local-tests "$tests"
 set -a; source "report/$name/launch.env"; set +a
 REL=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/releases/$COMMIT
 export PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=$REL/src:$REL/scripts/experimental_resume TMPDIR="$TMP" \

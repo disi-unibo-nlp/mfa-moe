@@ -18,9 +18,15 @@ def main() -> None:
     release = commands.add_parser('release', help='seal a release: receipts, code snapshot, launch.env')
     release.add_argument('--name', required=True)
     release.add_argument('--models', default=MODELS)
-    release.add_argument('--shards', type=int, default=3)
+    release.add_argument('--shards', default='3', help='shards per model: N, or model:N,...')
     release.add_argument('--local-tests', type=int, required=True)
     commands.add_parser('analyze', help='write EFFECTS_OUTCOME.json (allocated CPU job, from the release)')
+    decide = commands.add_parser('decide', help='apply the declared extension rule; launch the other models if met')
+    decide.add_argument('--effects', required=True)
+    decide.add_argument('--name', required=True)
+    decide.add_argument('--models', required=True)
+    decide.add_argument('--shards', required=True)
+    decide.add_argument('--local-tests', required=True)
     args = parser.parse_args()
 
     if args.command == 'usage':
@@ -38,7 +44,13 @@ def main() -> None:
             print(json.dumps({'model': model, 'protected': value['protected'], 'sets': summary}, indent=1))
     elif args.command == 'release':
         from .release import release as seal
-        print(json.dumps(seal(args.name, args.models.split(','), args.shards, args.local_tests)))
+        models = args.models.split(',')
+        shards = ({m: int(args.shards) for m in models} if args.shards.isdigit() else
+                  {m: int(n) for m, n in (item.split(':') for item in args.shards.split(','))})
+        print(json.dumps(seal(args.name, models, shards, args.local_tests)))
+    elif args.command == 'decide':
+        from .decide import decide as rule
+        print(json.dumps(rule(args.effects, args.name, args.models, args.shards, args.local_tests)))
     elif args.command == 'analyze':
         from .analysis import analyze
         print(json.dumps({'sha256': analyze()['sha256']}))

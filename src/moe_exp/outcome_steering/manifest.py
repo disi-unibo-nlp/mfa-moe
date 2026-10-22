@@ -38,12 +38,13 @@ def base_natives(model: str, spec: dict | None = None) -> list[dict]:
 
 
 def default_spec(model: str) -> dict:
-    """Where each model's base natives ran (base release plus the top-ups/resumes that finished them)."""
+    """Where each model's base natives ran: its base release, at the dose that release selected, plus
+    the top-ups and resumes that finished them. GPT-OSS's base release is r8; every other model's is r7."""
     from . import REPORTS
     release = {name: str(REPORTS/f'whole-reasoning-20261021-{name}') for name in ('r7', 'r8', 'r11', 'r15')}
-    if model == 'gpt':
-        return {'base': release['r8'], 'base_dose': 'half', 'stores': [release['r8'], release['r11'], release['r15']]}
-    return {'base': release['r7'], 'base_dose': 'main', 'stores': [release['r7'], release['r11'], release['r15']]}
+    base = release['r8'] if model == 'gpt' else release['r7']
+    dose = load(Path(base)/model/'SELECTED.json')['dose']
+    return {'base': base, 'base_dose': dose, 'stores': [base, release['r11'], release['r15']]}
 
 
 def nudge_actions(pairs: list[dict], delta: float) -> list[dict]:
