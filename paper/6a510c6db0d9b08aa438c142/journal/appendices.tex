@@ -77,7 +77,7 @@ All transforms are fitted anew on each training split.
 %
 The saved intervals condition on these fitted readouts.
 %
-The routing-augmented penalty is 0.01 in every outer fold for all seven models.
+The routing-augmented penalty is 0.01 in every outer fold for the seven original models and 0.001 for LFM2.5.
 %
 The text penalty is 0.001 throughout for GPT-OSS, Nemotron, Qwen3.5, Qwen3.6 and Qwen3-30B, and 0.01 throughout for Gemma.
 %
@@ -125,7 +125,7 @@ The seven scores in Equation~\ref{eq:next-features} are standardized on the trai
 
 The sensitivity uses a restricted source-length population and is not an independent replication.
 %
-Five models have no completed next-state estimate.
+Six models have no completed next-state estimate.
 
 % Necessary local flush: the next-state table belongs to Appendix A.2.
 \FloatBarrier
@@ -569,6 +569,30 @@ Both forced arms lower mean accuracy relative to native routing, with simultaneo
 %
 Sustained routing edits therefore leave the state unchanged even when they persist across the whole window.
 %
+
+\journalappendix{Whole-Reasoning Steering}{app:whole}
+
+This appendix details the whole-reasoning steering of Section~\ref{sec:whole-steering}.
+%
+Table~\ref{tab:whole-cells} gives the token and accuracy effect of every steered cell at each model's base strength, against matched random edits and against native routing.
+%
+Table~\ref{tab:whole-occupancy} gives the response $\rho$ of the steered state's occupancy, signed so that positive values move the state in the intended direction.
+%
+Table~\ref{tab:whole-levels} gives, for every model, strength and arm, the completed continuations, the share that reaches the length limit, the share of repeated 16-token windows, the mean generated tokens and the share of router positions at which the edit changed the selected experts.
+%
+
+Three design choices were fixed before any production outcome.
+%
+The pre-production check stopped a model only for breakdown, after its length-ratio criterion was removed, and GPT-OSS-20B and GLM-4.7-Flash ran their base continuations at half strength (Section~\ref{sec:whole-setup}).
+%
+The random experts are drawn separately at each strength, so the strength comparison varies the matched control together with the targeted set.
+%
+
+\input{journal/tables/whole_cells}
+
+\input{journal/tables/whole_occupancy}
+
+\input{journal/tables/whole_levels}
 
 \journalappendix{Historical Routing Interventions}{app:interventions}
 

@@ -1,5 +1,5 @@
 % Multipage longtable: retained outside adjustbox so page breaks remain available.
-% Source: report/whole-reasoning-20261021-r11/analysis-combined/EFFECTS_WHOLE.json (levels) via scripts/paper/export_whole_results.py.
+% Source: report/whole-reasoning-20261021-r14/analysis-combined/EFFECTS_WHOLE.json (levels) via scripts/paper/export_whole_results.py.
 \begingroup\small
 \setlength{\tabcolsep}{2pt}
 \begin{longtable}{lccccc}
@@ -7,17 +7,17 @@
 %
 Quarter, half and full give the strength of the routing edit, and the native arms of a model belong to its base strength.
 %
-Completed and planned count the continuations that finished and that were scheduled.
+Done counts the continuations that finished out of those scheduled.
 %
-Limit is the share of completed continuations that reach the length limit, repetition is the share of 16-token windows that repeat an earlier window of the same continuation, and generated tokens are the mean tokens after the frozen prefix.
+Limit is the share of finished continuations that reach the length limit, Repeat is the share of 16-token windows that repeat an earlier window of the same continuation, and Tokens is the mean number of generated tokens.
 %
 Changed is the share of active router positions at which the edit changed the selected experts, and native arms have none.}\label{tab:whole-levels}\\
 \toprule
-Arm & Completed/planned & Limit (\%) & Repetition (\%) & Generated tokens & Changed (\%) \\
+Arm & Done & Limit (\%) & Repeat (\%) & Tokens & Changed (\%) \\
 \midrule\endfirsthead
 \multicolumn{6}{l}{\textit{Continued}}\\
 \toprule
-Arm & Completed/planned & Limit (\%) & Repetition (\%) & Generated tokens & Changed (\%) \\
+Arm & Done & Limit (\%) & Repeat (\%) & Tokens & Changed (\%) \\
 \midrule\endhead
 \bottomrule\endfoot
 \multicolumn{6}{l}{\modelname{openai}{GPT-OSS-20B}} \\*
@@ -72,8 +72,8 @@ Arm & Completed/planned & Limit (\%) & Repetition (\%) & Generated tokens & Chan
 \multicolumn{6}{l}{\quad\textit{Full strength}} \\*
 \qquad Native & 117/129 & 0.0 & 3.6 & 13746 & \textemdash \\*
 \qquad Native repeat & 120/129 & 0.0 & 3.6 & 13583 & \textemdash \\*
-\qquad Targeted promote & 740/903 & 0.0 & 3.5 & 12665 & 88.4 \\*
-\qquad Random promote & 739/903 & 0.0 & 3.5 & 12850 & 92.1 \\*
+\qquad Targeted promote & 789/903 & 0.0 & 3.6 & 12929 & 88.4 \\*
+\qquad Random promote & 777/903 & 0.0 & 3.6 & 13076 & 92.1 \\*
 \qquad Targeted suppress & 317/387 & 0.0 & 3.3 & 15788 & 50.3 \\*
 \qquad Random suppress & 297/387 & 0.0 & 3.7 & 13414 & 53.7 \\
 \midrule
@@ -91,8 +91,8 @@ Arm & Completed/planned & Limit (\%) & Repetition (\%) & Generated tokens & Chan
 \multicolumn{6}{l}{\quad\textit{Full strength}} \\*
 \qquad Native & 126/129 & 0.0 & 3.9 & 15288 & \textemdash \\*
 \qquad Native repeat & 127/129 & 0.0 & 3.9 & 15425 & \textemdash \\*
-\qquad Targeted promote & 731/903 & 0.0 & 4.0 & 11360 & 86.7 \\*
-\qquad Random promote & 744/903 & 0.0 & 4.1 & 11574 & 91.4 \\*
+\qquad Targeted promote & 786/903 & 0.0 & 4.0 & 12228 & 86.8 \\*
+\qquad Random promote & 790/903 & 0.0 & 4.1 & 12393 & 91.4 \\*
 \qquad Targeted suppress & 270/387 & 0.0 & 4.7 & 14777 & 57.5 \\*
 \qquad Random suppress & 375/387 & 0.0 & 4.1 & 15366 & 57.1 \\
 \midrule
@@ -124,8 +124,8 @@ Arm & Completed/planned & Limit (\%) & Repetition (\%) & Generated tokens & Chan
 \multicolumn{6}{l}{\quad\textit{Half strength}} \\*
 \qquad Native & 117/129 & 0.0 & 1.6 & 7349 & \textemdash \\*
 \qquad Native repeat & 118/129 & 0.0 & 1.4 & 8354 & \textemdash \\*
-\qquad Targeted promote & 722/903 & 0.0 & 1.6 & 6617 & 89.6 \\*
-\qquad Random promote & 733/903 & 0.0 & 1.7 & 6561 & 89.0 \\*
+\qquad Targeted promote & 755/903 & 0.0 & 1.6 & 6882 & 89.7 \\*
+\qquad Random promote & 756/903 & 0.0 & 1.6 & 6405 & 89.0 \\*
 \qquad Targeted suppress & 247/387 & 0.0 & 2.1 & 11638 & 26.2 \\*
 \qquad Random suppress & 350/387 & 0.0 & 1.7 & 8672 & 23.8 \\
 \multicolumn{6}{l}{\quad\textit{Full strength}} \\*
@@ -148,28 +148,28 @@ Arm & Completed/planned & Limit (\%) & Repetition (\%) & Generated tokens & Chan
 \multicolumn{6}{l}{\quad\textit{Full strength}} \\*
 \qquad Native & 123/128 & 0.0 & 3.1 & 8249 & \textemdash \\*
 \qquad Native repeat & 123/128 & 0.8 & 3.0 & 8238 & \textemdash \\*
-\qquad Targeted promote & 737/896 & 0.5 & 3.6 & 7363 & 75.4 \\*
-\qquad Random promote & 742/896 & 0.3 & 3.3 & 7404 & 80.1 \\*
+\qquad Targeted promote & 823/896 & 0.5 & 3.6 & 7715 & 74.7 \\*
+\qquad Random promote & 821/896 & 0.5 & 3.4 & 7777 & 80.3 \\*
 \qquad Targeted suppress & 602/640 & 14.6 & 20.7 & 12412 & 63.3 \\*
 \qquad Random suppress & 613/640 & 2.1 & 6.1 & 9400 & 76.0 \\
 \midrule
 \multicolumn{6}{l}{\modelname{liquid}{LFM2.5-24B-A2B}} \\*
 \multicolumn{6}{l}{\quad\textit{Quarter strength}} \\*
-\qquad Targeted promote & 145/224 & 0.0 & 2.3 & 6380 & 84.4 \\*
-\qquad Random promote & 150/224 & 0.0 & 2.4 & 7614 & 85.3 \\*
-\qquad Targeted suppress & 299/560 & 0.0 & 2.6 & 5445 & 20.5 \\*
-\qquad Random suppress & 355/560 & 0.0 & 2.4 & 6039 & 17.7 \\
+\qquad Targeted promote & 199/224 & 0.0 & 2.5 & 6701 & 84.5 \\*
+\qquad Random promote & 205/224 & 0.0 & 2.4 & 7538 & 85.4 \\*
+\qquad Targeted suppress & 425/560 & 1.2 & 4.0 & 7843 & 27.5 \\*
+\qquad Random suppress & 484/560 & 0.2 & 2.7 & 6906 & 17.3 \\
 \multicolumn{6}{l}{\quad\textit{Half strength}} \\*
-\qquad Targeted promote & 137/224 & 0.0 & 2.4 & 6259 & 86.3 \\*
-\qquad Random promote & 144/224 & 0.0 & 2.5 & 6841 & 88.1 \\*
-\qquad Targeted suppress & 285/560 & 0.0 & 3.9 & 7183 & 27.7 \\*
-\qquad Random suppress & 349/560 & 0.0 & 2.7 & 7502 & 25.1 \\
+\qquad Targeted promote & 199/224 & 0.0 & 2.5 & 6682 & 86.3 \\*
+\qquad Random promote & 206/224 & 0.0 & 2.4 & 7448 & 87.4 \\*
+\qquad Targeted suppress & 421/560 & 0.0 & 4.1 & 8022 & 28.3 \\*
+\qquad Random suppress & 503/560 & 0.0 & 2.7 & 7630 & 24.9 \\
 \multicolumn{6}{l}{\quad\textit{Full strength}} \\*
-\qquad Native & 91/112 & 0.0 & 3.1 & 8358 & \textemdash \\*
-\qquad Native repeat & 87/112 & 0.0 & 2.6 & 6961 & \textemdash \\*
-\qquad Targeted promote & 250/784 & 0.0 & 2.7 & 6059 & 88.7 \\*
-\qquad Random promote & 262/784 & 0.0 & 2.8 & 7369 & 89.0 \\*
-\qquad Targeted suppress & 326/560 & 0.3 & 5.9 & 8061 & 42.5 \\*
-\qquad Random suppress & 423/560 & 0.0 & 3.2 & 7821 & 41.0 \\
+\qquad Native & 107/112 & 0.0 & 3.0 & 8737 & \textemdash \\*
+\qquad Native repeat & 103/112 & 0.0 & 2.7 & 9414 & \textemdash \\*
+\qquad Targeted promote & 716/784 & 0.1 & 3.0 & 8441 & 86.9 \\*
+\qquad Random promote & 726/784 & 0.1 & 3.1 & 9250 & 88.3 \\*
+\qquad Targeted suppress & 403/560 & 1.2 & 7.1 & 10227 & 44.6 \\*
+\qquad Random suppress & 508/560 & 0.2 & 3.5 & 10001 & 41.1 \\
 \end{longtable}
 \endgroup

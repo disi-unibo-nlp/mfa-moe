@@ -379,8 +379,7 @@ def level_values(record, model, level):
 def levels_table(effects, record, source):
     """Appendix longtable: descriptive levels of every arm at every strength a model ran."""
     by_key = {(lv["model"], lv["dose"], lv["arm"]): lv for lv in effects["levels"]}
-    columns = (r"Arm & Completed/planned & Limit (\%) & Repetition (\%) & Generated tokens"
-               r" & Changed (\%) \\")
+    columns = r"Arm & Done & Limit (\%) & Repeat (\%) & Tokens & Changed (\%) \\"
     blocks = []
     for model in MODELS:
         parts = []
@@ -402,10 +401,10 @@ def levels_table(effects, record, source):
         "Descriptive levels of every arm at each strength it ran, without intervals.",
         "Quarter, half and full give the strength of the routing edit, and the native arms of a "
         "model belong to its base strength.",
-        "Completed and planned count the continuations that finished and that were scheduled.",
-        "Limit is the share of completed continuations that reach the length limit, repetition "
-        "is the share of 16-token windows that repeat an earlier window of the same continuation, "
-        "and generated tokens are the mean tokens after the frozen prefix.",
+        "Done counts the continuations that finished out of those scheduled.",
+        "Limit is the share of finished continuations that reach the length limit, Repeat is the "
+        "share of 16-token windows that repeat an earlier window of the same continuation, and "
+        "Tokens is the mean number of generated tokens.",
         "Changed is the share of active router positions at which the edit changed the selected "
         "experts, and native arms have none.")
     return rf"""% Multipage longtable: retained outside adjustbox so page breaks remain available.
@@ -469,7 +468,8 @@ def axis_options(p, panel, height, gap, panels, series):
     name, title, digits, _ = panel
     entries = [v for dose in DOSES for v in series[name][dose] if v is not None]
     limits, ticks = nice_axis(entries, height, digits, CAPS[name])
-    return ("\\begin{axis}[journalaxis,scale only axis,width=352pt,height=" + str(height) + "pt,"
+    return tuple(map(float, limits)), (
+        "\\begin{axis}[journalaxis,scale only axis,width=352pt,height=" + str(height) + "pt,"
             "anchor=south west,at={(0pt," + str((panels - 1 - p) * (height + gap)) + "pt)},"
             "ybar=0pt,bar width=7pt,xmin=.5,xmax=9.5,enlarge x limits=false,"
             "ymin=" + limits[0] + ",ymax=" + limits[1] + ",ytick={" + ticks + "},"
@@ -495,7 +495,9 @@ def dose_figure(series, panels, out):
              "\\begin{tikzpicture}"]
     for p, panel in enumerate(panels):
         name, _, digits, has_error = panel
-        lines.append(axis_options(p, panel, 72, 32, len(panels), series))
+        limits, options = axis_options(p, panel, 72, 32, len(panels), series)
+        lines.append(options)
+        per_point = (limits[1] - limits[0]) / 72  # data units per pt of panel height
         for k, dose in enumerate(DOSES):
             column = f"{name}_{dose}"
             options = ("fill=" + COLORS[k] + ",draw=black,line width=.35pt,bar shift="
@@ -510,12 +512,15 @@ def dose_figure(series, panels, out):
                 mean, margin = value
                 raw = mean + margin if mean >= 0 else mean - margin
                 end = clamp(raw, CAPS[name])
+                text = f"{round(mean, digits) + 0.:.{digits}f}"
                 # Beyond the whisker end, or just inside the panel edge on a background patch when
-                # the interval is cut at the cap.
-                cut = end != raw
+                # the interval is cut at the cap or the label would cross the edge.
+                reach = (2.9 * len(text) + 3) * per_point
+                tip = end + (reach if mean >= 0 else -reach)
+                cut = end != raw or not limits[0] <= tip <= limits[1]
+                end = clamp(end, limits)
                 outward = "west" if mean >= 0 else "east"
                 anchor = {"west": "east", "east": "west"}[outward] if cut else outward
-                text = f"{round(mean, digits) + 0.:.{digits}f}"
                 lines.append("\\node[rotate=90,anchor=" + anchor + ",inner sep=1pt,"
                              + ("fill=journalplotbackground," if cut else "")
                              + "font=\\fontsize{5.6}{6}\\selectfont] at ([xshift=" + str(SHIFTS[k])
