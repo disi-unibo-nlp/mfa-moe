@@ -1,0 +1,1 @@
+{"approved_maximum_minutes":240,"committed_gpu_hours":96.0,"gpu_ceiling":162.0,"minutes":240,"model":"nemotron","other_future_maximum_gpu_hours":48.0,"reason":"full allocation maxima plus all charged predecessor costs stay within the GPU ceiling","sha256":"d46b0c407eaf226537b92da575e8653762d2ab7dddd87a6d8e54b3f4efc94a3c","shards":1}
