@@ -231,6 +231,29 @@ def score_override_dual_masked(logits, native_weights, native_ids, activate, dea
             torch.where(active[:, None], ids.to(native_ids.dtype), native_ids))
 
 
+def score_shift_masked(logits, native_weights, native_ids, shift, active, **native_policy):
+    """Gentle nudge: subtract a per-row, per-expert amount from the router logits, then route natively.
+
+    Nothing is forced in or out: the router still takes its own top-k and renormalizes. For a softmax
+    router a logit shift equals a log-probability shift; for a sigmoid router the shifted logit goes
+    through the sigmoid and the selection-correction bias exactly as a native logit would.
+
+    Args:
+        logits, native_weights, native_ids: Same-state router tensors.
+        shift: Float [rows, experts] amounts (delta on nudged experts, zero elsewhere).
+        active: Boolean row mask; inactive rows keep their exact native bits.
+        native_policy: Native scoring, renormalization, correction bias and scales.
+
+    Returns:
+        Executed weights and expert identities.
+    """
+    import torch
+    require(shift.shape == logits.shape, 'nudge shift shape differs')
+    unforced = torch.zeros(logits.shape, dtype=torch.bool, device=logits.device)
+    return score_override_dual_masked(logits.float()-shift, native_weights, native_ids, unforced, unforced,
+                                      active, **native_policy)
+
+
 def policy(router, parent):
     name = type(router).__name__
     require(getattr(router, 'eplb_state', None) is None, 'EPLB is outside the qualified profile')

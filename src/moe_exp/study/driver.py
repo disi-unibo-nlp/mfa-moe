@@ -41,7 +41,8 @@ def binding():
 # Additive float telemetry; every routing decision and integer counter must still agree exactly.
 FLOAT_DOSE_KEYS = ('native_target_weight', 'executed_target_weight', 'native_activate_weight',
                    'executed_activate_weight', 'native_deactivate_weight', 'executed_deactivate_weight',
-                   'native_activate_share', 'executed_activate_share', 'l1')
+                   'native_activate_share', 'executed_activate_share', 'l1',
+                   'native_shift_weight', 'executed_shift_weight')
 
 
 def ranks_agree(first, second, rtol=1e-6):
@@ -472,13 +473,14 @@ def intervention_builder(b, model, tokenizer, closure, *, greedy=False, limit=No
     cache = {}
 
     def build(row, history, segment):
-        key = (row['source']['attempt_id'], row['source']['prefix_tokens'])
+        # A length-limit (budget) row continues a cut copy of a native run, so its prefix is its own.
+        key = (row['source']['attempt_id'], row['source']['prefix_tokens'], digest(row.get('budget_prefix')))
         if key not in cache:
             cache.clear()
             cache[key] = prompt_prefix(b, model, row, tokenizer)[:2]
         prompt, prefix = cache[key]
         total = remaining(p, prompt, prefix)
-        if str(row.get('dose', '')).startswith('rescue-'):
+        if str(row.get('dose', '')).startswith('rescue-') or row.get('budget_prefix'):
             total = min(total, int(row['horizon']))
         if limit is not None:
             total = min(total, limit)

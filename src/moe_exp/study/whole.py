@@ -318,9 +318,10 @@ def prepare_model(b: dict, model: str, scope: bool) -> dict:
     dose and selects it (no canary). A top-up or resume release (TOPUP.json / RESUME.json) publishes
     the rows it takes over from its parent, with the parent's dose and no canary.
     """
-    builders = {'TOPUP.json': topup_manifest, 'RESUME.json': resume_manifest}
+    from moe_exp.outcome_steering.manifest import outcome_manifest
+    builders = {'TOPUP.json': topup_manifest, 'RESUME.json': resume_manifest, 'OUTCOME.json': outcome_manifest}
     present = [name for name in builders if (ROOT/name).exists()]
-    require(len(present) <= 1, 'a release is either a top-up or a resume')
+    require(len(present) <= 1, 'a release is either a top-up, a resume or an outcome-steering release')
     if present:
         spec = verified(ROOT/present[0])['models'][model]
         return {model+':'+SWEEP[model]: builders[present[0]](model, spec)}
@@ -1284,12 +1285,17 @@ def validate_stage() -> None:
     settings = ('WHOLE_MODELS', 'WHOLE_GPU_CEILING', 'WHOLE_CPU_CEILING', 'WHOLE_CUTOFF', 'WHOLE_SWEEP',
                 'WHOLE_SHARDS')
     env = {k: v for k, v in os.environ.items() if k not in settings}
-    suite = subprocess.run([sys.executable, '-B', '-m', 'unittest', 'discover', '-v', '-s', str(REPO/'tests/study'),
-                            '-t', str(REPO/'tests/study')], env=env, capture_output=True, text=True)
-    sys.stderr.write(suite.stderr)
-    ran = re.search(r'^Ran (\d+) tests?', suite.stderr, re.MULTILINE)
-    tests = int(ran.group(1)) if ran else 0
-    if suite.returncode != 0 or not tests:
+    tests, failed = 0, False
+    for folder in ('tests/study', 'tests/outcome_steering'):
+        if not (REPO/folder).is_dir():
+            continue
+        suite = subprocess.run([sys.executable, '-B', '-m', 'unittest', 'discover', '-v', '-s', str(REPO/folder),
+                                '-t', str(REPO/folder)], env=env, capture_output=True, text=True)
+        sys.stderr.write(suite.stderr)
+        ran = re.search(r'^Ran (\d+) tests?', suite.stderr, re.MULTILINE)
+        tests += int(ran.group(1)) if ran else 0
+        failed |= suite.returncode != 0 or not ran
+    if failed or not tests:
         publish(ROOT/'CPU_VALIDATION.json', {'passed': False, 'tests': tests, 'job': os.environ['SLURM_JOB_ID']})
         raise ValueError('allocated whole study suite failed')
     publish(ROOT/'CPU_VALIDATION.json', {'passed': True, 'tests': tests,

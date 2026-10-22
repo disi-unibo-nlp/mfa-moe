@@ -3,7 +3,7 @@ import unittest
 
 import torch
 
-from moe_exp.final_routing.operator import score_override_dual, score_override_dual_masked
+from moe_exp.final_routing.operator import score_override_dual, score_override_dual_masked, score_shift_masked
 from moe_exp.study.stream import DOSE_KEYS, StreamCapture, batched_dose
 
 
@@ -115,6 +115,87 @@ class WholeBatchTests(unittest.TestCase):
         self.assertEqual(capture.counts['a']['dose']['0']['active_positions'], 7)
         grown[0, 0] += 1
         self.assertEqual(capture.counts['a']['dose']['0']['active_positions'], 8)
+
+
+class NudgeTests(unittest.TestCase):
+    """The gentle nudge lowers chosen logits and lets the router select natively."""
+
+    def native(self, logits, k, scoring='softmax', bias=None):
+        affinity = logits.softmax(-1) if scoring == 'softmax' else logits.sigmoid()
+        priority = affinity if bias is None else affinity+bias
+        ids = priority.topk(k, -1, sorted=True).indices
+        weights = affinity.gather(1, ids)
+        return weights/weights.sum(-1, keepdim=True), ids
+
+    def test_shift_equals_native_routing_of_shifted_logits(self):
+        torch.manual_seed(51)
+        logits = torch.randn(16, 32)
+        bias = torch.randn(32)*.1
+        shift = torch.zeros(16, 32)
+        shift[:, [2, 7]] = .8
+        active = torch.arange(16) % 3 != 0
+        for scoring, correction in (('softmax', None), ('sigmoid', bias)):
+            nw, ni = self.native(logits, 4, scoring, correction)
+            ew, ei = self.native(logits-shift, 4, scoring, correction)
+            weights, ids = score_shift_masked(logits, nw, ni, shift, active, scoring=scoring,
+                                              renormalize=True, correction_bias=correction)
+            self.assertTrue(torch.equal(ids[active], ei[active]))
+            torch.testing.assert_close(weights[active], ew[active], rtol=1e-5, atol=1e-6)
+            self.assertTrue(torch.equal(weights[~active], nw[~active]) and torch.equal(ids[~active], ni[~active]))
+
+    def test_zero_shift_keeps_native_selection(self):
+        torch.manual_seed(52)
+        logits = torch.randn(8, 32)
+        nw, ni = self.native(logits, 4)
+        weights, ids = score_shift_masked(logits, nw, ni, torch.zeros(8, 32), torch.ones(8, dtype=torch.bool))
+        self.assertTrue(torch.equal(ids, ni))
+        torch.testing.assert_close(weights, nw)
+
+    def test_shift_counters_record_weight_and_slots_of_nudged_experts(self):
+        torch.manual_seed(53)
+        logits = torch.randn(6, 32)
+        logits[:, 5] += 4.                                   # expert 5 is natively always selected
+        nw, ni = self.native(logits, 4)
+        shift = torch.zeros(6, 32)
+        shift[:, 5] = 50.                                    # a huge nudge removes it
+        active, prompt = torch.ones(6, dtype=torch.bool), torch.zeros(6, dtype=torch.bool)
+        weights, ids = score_shift_masked(logits, nw, ni, shift, active)
+        roles = torch.zeros((6, 2, 32), dtype=torch.bool)
+        totals = batched_dose(nw, ni, weights, ids, active, prompt, roles, torch.tensor([6]), shift != 0)[0]
+        values = dict(zip(DOSE_KEYS, totals.tolist()))
+        self.assertEqual(values['native_shift_members'], 6)
+        self.assertEqual(values['executed_shift_members'], 0)
+        self.assertEqual(values['membership_failures'], 0)
+        self.assertGreater(values['native_shift_weight'], 0)
+        self.assertEqual(values['executed_shift_weight'], 0)
+
+    def nudge_capture(self, actions):
+        capture = WholeBatchTests.capture(self)
+        capture.requests = {'a': {'actions': actions, 'prompt_scope': True, 'audit_capture': False}}
+        capture.whole_slots, capture.next_whole_slot = {'a': 0}, 1
+        capture.records, capture.counts = {'a': {}}, {'a': {'dose': {}}}
+        return capture
+
+    def test_batched_nudge_row_matches_operator_and_untargeted_layer_is_native(self):
+        torch.manual_seed(54)
+        capture = self.nudge_capture({0: {'activate': [], 'deactivate': [], 'shift': [1, 2], 'delta': .8}})
+        work = [('a', [(0, {'reasoning': True, 'prompt': True, 'generated_position': -1}),
+                       (1, {'reasoning': True, 'prompt': False, 'generated_position': 0})])]
+        logits = torch.randn(2, 32)
+        nw, ni = self.native(logits, 4)
+        shift = torch.zeros(2, 32)
+        shift[:, [1, 2]] = .8
+        expected = score_shift_masked(logits, nw, ni, shift, torch.ones(2, dtype=torch.bool))
+        weights, ids = capture._whole_batch(0, work, logits, nw, ni, {})
+        self.assertTrue(torch.equal(ids, expected[1]))
+        torch.testing.assert_close(weights, expected[0])
+        weights, ids = capture._whole_batch(1, work, logits, nw, ni, {})
+        self.assertTrue(torch.equal(ids, ni) and torch.equal(weights, nw))
+
+    def test_a_batch_cannot_mix_nudged_and_forced_rows(self):
+        capture = self.nudge_capture({0: {'activate': [0], 'deactivate': [], 'shift': [1], 'delta': .8}})
+        with self.assertRaises(ValueError):
+            capture._whole_roles([('a', [])], 'cpu')
 
 
 if __name__ == '__main__':
