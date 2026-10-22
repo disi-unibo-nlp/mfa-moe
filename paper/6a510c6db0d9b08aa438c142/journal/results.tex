@@ -4,7 +4,7 @@
 \subsection{Routing reveals reasoning-state information beyond text}
 \label{sec:readout-results}
 
-Routing information gain (RIG) is positive in all seven evaluated models, improving held-out present-state prediction beyond the retrospective text baseline (Figure~\ref{fig:readout}).
+Routing information gain (RIG) is positive in all eight evaluated models, improving held-out present-state prediction beyond the retrospective text baseline (Figure~\ref{fig:readout}).
 %
 RIG ranges from 0.079 to 0.149 nats per sentence on the common 522-question, 509-family population.
 %
@@ -24,9 +24,7 @@ Positive bars favor observed routing.
 %
 Horizontal labels give the mean gains.
 %
-Whiskers show the model-specific seven-comparison 95\% family-bootstrap intervals after reversing the loss-contrast sign.
-%
-LFM2.5 results are pending.}
+Whiskers show the model-specific seven-comparison 95\% family-bootstrap intervals after reversing the loss-contrast sign.}
 \label{fig:readout}
 \end{figure}
 
@@ -335,6 +333,83 @@ Both forced arms lower mean accuracy relative to native routing, by \cid{1.52}{2
 %
 We specified this arm after inspecting the primary contrasts, so it qualifies the central result without replacing it.
 %
+
+\subsection{Sustained steering changes the computation, not the reasoning state}
+\label{sec:whole-results}
+
+Steering the efficiency-directed states throughout the reasoning makes no model reason more efficiently than matched random edits (Table~\ref{tab:whole}).
+%
+At full strength, the targeted composite lengthens the reasoning of GPT-OSS-20B by \cid{40.9}{31.8}{31.8}\% and lowers the accuracy of Nemotron by \cid{-10.43}{6.56}{6.56} pp and of Qwen3-30B by \cid{-14.28}{14.10}{14.10} pp, and the intervals of the other models contain zero.
+%
+Across all models, the composite changes reasoning tokens by \cid{-9.9}{375.6}{375.6}\% and accuracy by \cid{-8.87}{15.67}{15.67} pp, so no model meets the efficiency criterion of Section~\ref{sec:whole-steering}.
+%
+Relative to native routing, mean accuracy falls by 14.34 pp after targeted edits and by 5.47 pp after matched random edits.
+%
+
+The composite averages states whose effects differ in direction and size (Figure~\ref{fig:whole-states}).
+%
+At base strength, 8.0\% of the targeted-minus-random contrasts have simultaneous intervals that exclude zero, and each of them lengthens the reasoning or lowers accuracy.
+%
+Suppressing Implement lowers accuracy by \cid{-48.59}{24.96}{24.96} pp in Nemotron and by \cid{-42.88}{21.19}{21.19} pp in Qwen3-30B.
+%
+Suppressing Analyze lowers accuracy by \cid{-26.81}{19.89}{19.89} pp in Qwen3.6 and by \cid{-15.23}{10.92}{10.92} pp in Nemotron, whose reasoning it also lengthens by \cid{80.2}{52.8}{52.8}\%.
+%
+In GPT-OSS-20B at half strength, promoting Read, Analyze, Explore or Plan multiplies the reasoning length by 3.8 to 6.2 and lowers accuracy by 45.6 to 60.6 pp, in the direction of the native association of these states with longer remaining reasoning (Appendix~\ref{app:efficiency-link}).
+%
+
+The edits change the computation more than the reasoning state.
+%
+Against matched random edits, the occupancy of the steered state changes by a median of $-0.03$ pp of the generation allowance, and the intervals of 4.6\% of the steered cells exclude zero (Table~\ref{tab:whole-occupancy}).
+%
+Promoting Explore and Plan in GPT-OSS-20B raises their occupancy by 1.93 and 0.75 pp, whereas suppressing Implement in Nemotron raises the occupancy of Implement itself by 36.72 pp of the allowance.
+%
+
+Varying the number of edited pairs reveals no efficient strength (Figure~\ref{fig:whole-dose}).
+%
+Across all models, the composite changes reasoning tokens by \cid{-12.7}{172.3}{172.3}\%, \cid{-9.5}{250.9}{250.9}\% and \cid{-9.9}{392.9}{392.9}\% at quarter, half and full strength, while the mean accuracy change falls from $-3.40$ pp to $-6.70$ pp and $-8.87$ pp at the same strengths.
+%
+The pooled slope of Equation~\eqref{eq:whole-slope} is \cid{-2.73}{12.55}{12.55} accuracy points per doubling of the edited pairs, and its token slope is centered on zero.
+%
+Breakdown remains rare and concentrates in two models.
+%
+No native continuation reaches the length limit, while the share of targeted continuations that reach it rises from 0.7\% at quarter strength to 5.7\% at full strength in Nemotron and lies between 8.9\% and 10.6\% in Qwen3-30B, against at most 0.8\% in the other models.
+%
+
+\input{journal/tables/whole}
+
+\begin{figure}[tb]
+\centering
+\includegraphics[width=\linewidth]{figures/journal/whole_states.pdf}
+\caption{Per-state effects of steering the whole reasoning at each model's base strength, targeted against matched random edits.
+%
+Panel (a) gives the percent change in reasoning tokens, with negative values meaning fewer tokens, and panel (b) gives the change in strict accuracy in percentage points.
+%
+Rows are models, and in each panel the left block promotes a state while the right block suppresses it.
+%
+Re, An, Ex, Pl, Im, Ve and Mo abbreviate Read, Analyze, Explore, Plan, Implement, Verify and Monitor.
+%
+Blue marks a decrease and red an increase, with the color scale clipped at $\pm$100\% in (a) and $\pm$30 pp in (b), while printed values are not clipped.
+%
+Bold numbers have a family-bootstrap simultaneous 95\% interval, over the outcome bounds of unfinished continuations, that excludes zero.
+%
+Outlined cells are efficiency-directed states, and empty cells are states the model does not suppress.
+%
+The base strength is full except for GPT-OSS-20B and GLM-4.7-Flash, which use half strength.}
+\label{fig:whole-states}
+\end{figure}
+
+\begin{figure}[tb]
+\centering
+\includegraphics[width=\linewidth]{figures/journal/whole_dose.pdf}
+\caption{Efficiency of steering the whole reasoning at quarter, half and full strength.
+%
+Panels (a) and (b) give the reasoning-token and accuracy change of targeted against matched random edits, averaged over each model's efficiency-directed states, and panel (c) gives the share of targeted continuations of these states that reach the length limit.
+%
+Labels give the means, and whiskers show family-bootstrap simultaneous 95\% intervals over all strengths, models and outcome bounds, cut at the panel edge when they extend beyond it.
+%
+The pooled group averages the models within each family before weighting benchmarks equally.}
+\label{fig:whole-dose}
+\end{figure}
 
 \subsection{Promotion changes engagement without establishing control}
 \label{sec:utility-results}

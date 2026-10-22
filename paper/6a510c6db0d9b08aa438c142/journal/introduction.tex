@@ -59,7 +59,7 @@ Second, how do these states recur and transition, and does routing anticipate th
 %
 Third, can a state-aware allocation preserve less frequent activities under a limited expert budget?
 %
-Finally, does activating or deactivating the experts nominated for a state move the reasoning toward or away from that state, and does it shorten the solution at retained accuracy?
+Finally, does activating or deactivating the experts nominated for a state, briefly at a sentence boundary or throughout the reasoning, move the reasoning toward or away from that state, and does it shorten the solution at retained accuracy?
 %
 We use mathematical reasoning as the evaluation setting and analyze eight MoE LLMs with separate controls for these questions.
 %
@@ -82,13 +82,15 @@ The next-state readouts in GPT-OSS and Qwen3.6 test whether routing anticipates 
 %
 \item We compare expert retention under a fixed budget, where state balancing improves minimum native coverage in six models and reduces it in two.
 %
-\item We test state-conditioned routing edits in 29,377 paired continuations from frozen prefixes, with matched random controls and a pre-registered link to native solution length.
+\item We test state-conditioned routing edits in 29,377 paired continuations from frozen prefixes, with matched random controls and a pre-registered link to native solution length, and we steer expert selection throughout the reasoning of all eight models at three strengths.
 %
-Activation and deactivation change neither the subsequent reasoning state nor the generated tokens and accuracy beyond matched random edits, although native states such as verification precede shorter remaining reasoning.
+Brief edits change neither the subsequent reasoning state nor the generated tokens and accuracy beyond matched random edits, although native states such as verification precede shorter remaining reasoning.
+%
+Sustained steering changes length and accuracy beyond matched random edits in a state-specific way, mostly toward longer reasoning or lower accuracy, and shortens no solution at retained accuracy.
 %
 \end{enumerate}
 
 Routing offers an intervention point within the computation of an LLM.
 %
-Our results show that it records which reasoning activity is under way, while brief edits to the experts associated with an activity leave the reasoning and its cost unchanged.
+Our results show that it records which reasoning activity is under way, that brief edits to the experts associated with an activity leave the reasoning and its cost unchanged, and that sustained edits change the solution without steering it toward the intended activity.
 %

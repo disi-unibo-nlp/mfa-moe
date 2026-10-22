@@ -31,9 +31,11 @@ Routing improves held-out reasoning-state prediction beyond a text baseline, and
 %
 Class-balanced retention increases coverage of the least-covered state in most evaluated architectures, with reversals under the same budget.
 %
-Activating or deactivating the experts nominated for a state at a frozen prefix changes neither the following state nor the generated tokens relative to matched random edits, and state effects larger than half a percentage point are excluded.
+Activating or deactivating the experts nominated for a state during a short pulse at a frozen prefix changes neither the following state nor the generated tokens relative to matched random edits, and state effects larger than half a percentage point are excluded.
 %
-Routing therefore encodes reasoning states, but steering their associated experts does not by itself redirect reasoning or make it more efficient.
+Steering the same experts throughout the reasoning has larger and state-specific effects, chiefly longer reasoning or lower accuracy, while the steered state barely moves and no solution becomes shorter at retained accuracy.
+%
+Routing therefore encodes reasoning states, and the nominated experts take part in the computation of a state, but steering them neither redirects reasoning nor makes it more efficient.
 \end{abstract}
 
 \input{journal/introduction}

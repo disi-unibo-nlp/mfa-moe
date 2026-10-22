@@ -275,7 +275,7 @@ The random experts are drawn separately at each strength to match its targets.
 %
 Every continuation receives the full completion allowance of the model card, and continuations still running at the end of the generation period are kept as unknown outcomes.
 %
-Continuations left unstarted by a failed or time-limited compute job ran later in separate jobs with the same prompt, seed and edit, whereas a continuation interrupted during generation is never restarted and remains an unknown outcome.
+A continuation still running at the end of a compute allocation resumes from its saved tokens, which pass through the same hooks so that every position keeps its steering, and no continuation is redrawn.
 %
 
 Before production, a check of 48 continuations from eight families per model compared steered with native continuations under a 32,768-token limit.
