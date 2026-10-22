@@ -1,3 +1,12 @@
+**Resume releases r15-r17 — 2026-10-22 09:45 Rome (user-approved; Claude supervises):**
+- About 3,850 continuations were interrupted at job walltimes or crashes and stayed unknown, so the r14
+  combined intervals were uninformative for most models. r15 (base strengths, 2,307 rows), r16 (quarter,
+  743) and r17 (half/full, 800) continue them from their saved tokens through the same hooks (commit 288efb1,
+  whole.resume_manifest/seed_resume/check_saved_state; parent stores are only read). A row interrupted again
+  stays unknown.
+- FINAL combined analysis: r17 whole-combine 61741779 -> `report/whole-reasoning-20261021-r17/analysis-combined/EFFECTS_WHOLE.json`.
+  The paper currently shows the r14 numbers (labelled intermediate); rerun the exporter on the r17 receipt.
+
 **Second-round top-ups r12-r14 — 2026-10-22 00:20 Rome (Claude supervises):**
 - Every r7-r11 production job had ended. r12 (base strengths: LFM2.5 1,219 rows in 9 shards, Qwen3-30B 165,
   Qwen3.6 102, Qwen3.5 87, GLM 59), r13 (LFM2.5 quarter, 404 rows) and r14 (LFM2.5 half, 448 rows) run the
