@@ -16,7 +16,7 @@ import os
 from pathlib import Path
 import subprocess
 
-from moe_exp.final_routing.common import publish, verified
+from moe_exp.io import publish, verified
 
 from . import REPORTS
 

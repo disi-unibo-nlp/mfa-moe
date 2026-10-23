@@ -9,7 +9,7 @@ from __future__ import annotations
 import os
 import time
 from pathlib import Path
-from .common import digest, publish, require
+from moe_exp.io import digest, publish, require
 from .driver import (DRIVER, Engine, ROOT, Store, binding, bulk, contract_for, hooked_llm,
                      intervention_builder, log, code_hashes)
 
@@ -18,7 +18,7 @@ def penalty_parity():
     import torch
     from vllm.v1.sample.logits_processor import BatchUpdate, MoveDirectionality
     from vllm import SamplingParams
-    from moe_exp.research_campaign_v3_r6.penalties import processor_class as original_class
+    from moe_exp.study.penalties import processor_class as original_class
     from .fast_penalties import processor_class as fast_class
     device = 'cuda'
     torch.manual_seed(0)
@@ -57,7 +57,7 @@ def penalty_parity():
 
 
 def smoke_rows(b):
-    from moe_exp.final_routing.common import load
+    from moe_exp.io import load
     rows = load(ROOT/'gpt/ASSIGNMENTS-full.json')['records']
     usable = [r for r in rows if r['dose'] in ('low', 'high') and r['source'] and r['action']
               and r['prefix_status'] == 'enrolled']

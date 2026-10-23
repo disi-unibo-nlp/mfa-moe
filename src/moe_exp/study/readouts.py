@@ -1,7 +1,7 @@
 """Bind and reuse the historical five-fold present-state readout implementation."""
 from pathlib import Path
 import sys
-from .common import CLASSES, check_files, digest, file_sha, load, publish, require, verified
+from moe_exp.io import CLASSES, check_files, digest, file_sha, load, publish, require, verified
 
 HISTORICAL = Path('/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/forum/tests/r3_context')
 

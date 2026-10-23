@@ -1,5 +1,5 @@
 """Hard expert inclusion/exclusion and reference-style router-score override."""
-from .common import require
+from moe_exp.io import require
 
 
 def hard_select(logits, native_weights, native_ids, targets, direction, *, scoring='softmax',

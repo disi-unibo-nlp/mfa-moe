@@ -1,9 +1,12 @@
-"""Restorable request-aware hooks for the pinned synchronous vLLM runtime."""
+"""Restorable request-aware hooks for the pinned synchronous vLLM runtime.
+
+`PredictionClock` is vendored verbatim from `verification_study.adapters`.
+"""
 from __future__ import annotations
 import inspect
 import re
-from .common import digest, require
-from moe_exp.final_routing.operator import hard_select, policy
+from moe_exp.io import digest, require
+from moe_exp.study.operators import hard_select, policy
 
 ROUTER = re.compile(r'(?:^|\.)layers\.(\d+)\.(?:mlp|moe|mixer|block_sparse_moe|feed_forward)\.experts$')
 
@@ -22,9 +25,46 @@ def discover(model):
     return found
 
 
+class PredictionClock:
+    def __init__(self, prompt, prefix, closure):
+        require(prompt and closure and all(s for s in closure), "prompt and native closure sequences required")
+        self.prompt, self.prefix = list(prompt), list(prefix)
+        self.saved = self.prompt + self.prefix
+        self.closure = [tuple(s) for s in closure]
+        self.tail, self.closed, self.last = [], False, -1
+        self.contexts = []
+
+    def observe(self, ids, positions):
+        # Qwen3.5/3.6 text M-RoPE emits identical temporal/height/width
+        # coordinates. Normalize only verified text axes; unequal multimodal
+        # coordinates cannot define this study's absolute prediction clock.
+        if positions and isinstance(positions[0], (list, tuple)):
+            require(len(positions) in (3,4) and
+                    all(isinstance(axis,(list,tuple)) and len(axis)==len(ids) and
+                        all(type(p) is int and p>=0 for p in axis) for axis in positions) and
+                    all(list(axis)==list(positions[0]) for axis in positions),
+                    "non-text or malformed multi-axis token positions")
+            positions=list(positions[0])
+        require(len(ids) == len(positions), "token/position shape differs")
+        require(all(type(p) is int and p>=0 for p in positions), "invalid absolute token positions")
+        contexts = []
+        for token, position in zip(ids, positions):
+            require(position == self.last + 1, "noncontiguous request: padding/cache/neighboring request")
+            self.last = position
+            require(position >= len(self.saved) or token == self.saved[position], "runtime changed frozen input")
+            if position >= len(self.prompt):
+                self.tail.append(token)
+                self.tail = self.tail[-max(map(len, self.closure)):]
+                if any(tuple(self.tail[-len(s):]) == s for s in self.closure):
+                    self.closed = True
+            contexts.append({"output_position": position - len(self.prompt) + 1,
+                             "reasoning": not self.closed})
+        self.contexts = contexts
+        return contexts
+
+
 class RequestCapture:
     def __init__(self, runner, contract, requests):
-        from moe_exp.verification_study.adapters import PredictionClock
         self.runner, self.contract = runner, contract
         self.model = runner.get_model()
         self.aliases = None

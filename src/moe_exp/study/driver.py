@@ -16,7 +16,6 @@ Commands (python -m moe_exp.study.driver ...):
   lfm-materialize | lfm-derive  CPU: reuse study.lfm / final_routing.importer
   lfm-readout | lfm-dynamics    CPU: LFM native readout (study.readouts) and native-dynamics panel
   lfm-replay --shard I/N        GPU: reuse study.lfm.replay (Backend.capture_trace)
-  smoke                         GPU: GPT engineering gate
   status                        login: dispositions per model
 """
 from __future__ import annotations
@@ -27,7 +26,7 @@ import sys
 import tempfile
 import time
 from pathlib import Path
-from .common import CLASSES, MODELS, REPO, digest, file_sha, load, private, publish, require, verified
+from moe_exp.io import CLASSES, MODELS, REPO, digest, file_sha, load, private, publish, require, verified
 
 ROOT = Path(os.environ.get('STUDY_DATA_ROOT', REPO/'report/final-routing-20261015-r1'))
 DRIVER = ROOT/'driver'
@@ -145,13 +144,13 @@ def plan(models=None):
     return out
 
 
-MANIFESTS = {'main': 'ASSIGNMENTS.json', 'strong': 'STRONG.json', 'rescue': 'RESCUE.json', 'whole': 'WHOLE.json'}
-STORES = {'main': 'units', 'strong': 'strong/units', 'rescue': 'rescue/units', 'whole': 'whole/units'}
+MANIFESTS = {'main': 'ASSIGNMENTS.json', 'strong': 'STRONG.json', 'whole': 'WHOLE.json'}
+STORES = {'main': 'units', 'strong': 'strong/units', 'whole': 'whole/units'}
 
 
 def plan_whole(models=('gpt', 'qwen36')):
     """Build the predeclared main and half-dose original-prompt family blocks."""
-    from .whole import prepare
+    from moe_exp.study.whole import prepare
     return prepare(models)
 
 
@@ -196,17 +195,11 @@ def plan_strong(models, seed_tag='strong-dose-v1'):
     return out
 
 
-def plan_rescue(models=None):
-    """Build the separate score-override rescue manifests from frozen nominations."""
-    from .rescue import RESCUE_MODELS, plan
-    return plan(models or RESCUE_MODELS)
-
-
 def shard_rows(model, shard, design='main', sub=None):
     """Families with rank % count == index; each `sub` (j, m) in turn keeps that subset's ranks with rank % m == j."""
     index, count = shard
     if design == 'whole':
-        from .whole import manifest
+        from moe_exp.study.whole import manifest
         rows = manifest(model)['records']
     else:
         rows = verified(DRIVER/model/MANIFESTS[design])['records']
@@ -429,8 +422,8 @@ def contract_for(b, model, rows):
 
 def hooked_llm(b, model, max_num_seqs, *, batched_tokens=8192, memory=.88):
     from vllm import LLM
-    from moe_exp.verification_study.registry import engine_kwargs
-    from .common import check_files
+    from moe_exp.models.engine import engine_kwargs
+    from moe_exp.io import check_files
     p = b['models'][model]
     check_files(p['config_files'])
     require((Path(p['local_path'])/'config.json').is_file(), 'pinned checkpoint is unavailable')
@@ -468,7 +461,7 @@ def sampling(profile, seed, history, cap, *, greedy=False, logprobs=None):
 
 
 def intervention_builder(b, model, tokenizer, closure, *, greedy=False, limit=None, logprobs=None):
-    from .runtime import prompt_prefix, remaining
+    from moe_exp.study.runtime import prompt_prefix, remaining
     p = b['models'][model]
     cache = {}
 
@@ -514,7 +507,7 @@ def compress_audit_capture(folder: Path, capture: dict) -> dict:
             dtype = (np.uint8 if key.endswith('_ids') else np.float32 if key.endswith('_weights')
                      else np.bool_ if key == 'active' else np.int32)
             arrays['layer_'+layer+'_'+key] = np.asarray(values, dtype=dtype)
-    from .whole import work_remaining_bytes
+    from moe_exp.study.whole import work_remaining_bytes
     require(work_remaining_bytes() > 13*2**30+sum(array.nbytes for array in arrays.values()),
             'full audit would breach the existing WORK reserve and concurrent-write margin')
     folder.mkdir(parents=True, exist_ok=True)
@@ -574,42 +567,10 @@ def recover_outputs(store, rows):
     return recovered
 
 
-def rescue_completion(store: Store, rows: list[dict]) -> dict:
-    """Count assigned states independently of whether the engine drained its queue.
-
-    Args:
-        store: Exact source-bound rescue unit store.
-        rows: Every assignment in this dispatched shard.
-
-    Returns:
-        Complete only when every assignment has a committed complete RESULT.
-    """
-    from collections import Counter
-
-    counts = Counter()
-    complete_results = 0
-    for row in rows:
-        state = store.state(row['uid'])
-        status = state['status'] if state is not None else 'untouched'
-        counts[status] += 1
-        if status == 'complete' and (store.folder(row['uid'])/'RESULT.json').is_file():
-            complete_results += 1
-    return {
-        'status': 'complete' if complete_results == len(rows) else 'incomplete',
-        'rows': len(rows),
-        'state_counts': dict(sorted(counts.items())),
-    }
-
-
-def run_model(model, shard, deadline, *, max_inflight=64, design='main', sub=None, source_receipt=None, cohort=None):
+def run_model(model, shard, deadline, *, max_inflight=64, design='main', sub=None):
     if design == 'whole':
-        from .whole import run
+        from moe_exp.study.whole import run
         return run(model, shard, deadline, max_inflight=max_inflight)
-    if design == 'rescue':
-        require(cohort is not None, 'rescue generation requires --cohort')
-        require(shard == (0, 1) and sub is None, 'cohort generation uses its exact frozen roster')
-        from .rescue import generate
-        return generate(Path(cohort), model, deadline, max_inflight=max_inflight, source_receipt=source_receipt)
     b = binding()
     rows = shard_rows(model, shard, design, sub)
     store = Store(bulk(b)/model/STORES[design])
@@ -617,50 +578,28 @@ def run_model(model, shard, deadline, *, max_inflight=64, design='main', sub=Non
                         design=design, shard=shard)
 
 
-def _empty_generation_receipt(b, model, shard, execution, store, rows) -> dict:
-    """Persist assigned unknowns even when no engine work remains."""
-    receipt = {
-        'model': model,
-        'shard': list(shard),
-        'job': os.environ.get('SLURM_JOB_ID'),
-        'execution_sha256': digest(execution),
-        'engine_loaded': False,
-        'code': code_hashes(),
-        **rescue_completion(store, rows),
-    }
-    publish(bulk(b)/model/'jobs'/('rescue-'+os.environ.get('SLURM_JOB_ID', 'local')+'.json'), receipt)
-    log({'event': 'end', **receipt})
-    return receipt
-
-
-def execute_rows(b, model, rows, store, deadline, *, max_inflight, design, shard=(0, 1), execution=None,
-                 pending_uids=None):
+def execute_rows(b, model, rows, store, deadline, *, max_inflight, design, shard=(0, 1)):
     """Execute a caller-owned roster with the maintained engine and publication path.
 
     Args:
         b: Verified study binding.
         model: Loaded scientific model.
         rows: Full assigned store roster.
-        store: Already exclusively owned store for a cohort execution.
+        store: Store holding the roster's durable state.
         deadline: Absolute engine deadline.
         max_inflight: Maximum concurrent requests.
-        design: Main, strong or rescue.
+        design: Main or strong.
         shard: Historical shard identity.
-        execution: Optional stable cohort execution identity.
-        pending_uids: Explicit untouched cohort UIDs, excluding all partial draws.
 
     Returns:
-        Terminal job receipt, with incomplete disposition for unsuccessful work.
+        Terminal job receipt.
     """
-    from .runtime import closure
+    from moe_exp.study.runtime import closure
     recovered = recover_outputs(store, rows)
-    pending = [r for r in rows if (r['uid'] in pending_uids if pending_uids is not None else
-               (store.state(r['uid']) or {'status': 'partial'})['status'] == 'partial')]
+    pending = [r for r in rows if (store.state(r['uid']) or {'status': 'partial'})['status'] == 'partial']
     log({'event': 'start', 'model': model, 'design': design, 'shard': shard, 'rows': len(rows), 'pending': len(pending),
          'recovered_outputs': recovered})
     if not pending:
-        if design == 'rescue':
-            return _empty_generation_receipt(b, model, shard, execution, store, rows)
         return {'status': 'complete', 'rows': len(rows)}
     require(time.time()+900 < deadline, 'insufficient time for model loading before deadline')
     llm, kwargs, load_seconds = hooked_llm(b, model, max_inflight)
@@ -681,9 +620,6 @@ def execute_rows(b, model, rows, store, deadline, *, max_inflight, design, shard
     receipt = {'model': model, 'shard': list(shard), 'job': os.environ.get('SLURM_JOB_ID'), 'load_seconds': load_seconds,
                'engine': {k: v for k, v in kwargs.items() if k != 'logits_processors'}, 'metrics': metrics,
                'native_validation': validation[0], 'code': code_hashes()}
-    if execution is not None:
-        receipt['execution_sha256'] = digest(execution)
-        receipt.update(rescue_completion(store, rows))
     publish(bulk(b)/model/'jobs'/(design+'-'+os.environ.get('SLURM_JOB_ID', 'local')+'.json'), receipt)
     log({'event': 'end', **receipt})
     return receipt
@@ -700,8 +636,8 @@ def plain_llm(kwargs):
 
 def native_kwargs(b, model, max_num_seqs=128):
     """The model's study engine profile with CUDA graphs; no hooks, so no intervention state exists."""
-    from moe_exp.verification_study.registry import engine_kwargs
-    from .common import check_files
+    from moe_exp.models.engine import engine_kwargs
+    from moe_exp.io import check_files
     p = b['models'][model]
     check_files(p['config_files'])
     kwargs = engine_kwargs(p, context=p['card']['max_model_len'])
@@ -724,9 +660,9 @@ def reader_kwargs(a, max_num_seqs=128):
 def lfm_native(shard, deadline):
     from vllm import SamplingParams
     from vllm.sampling_params import RequestOutputKind
-    from .lfm import population
-    from .runtime import prompt_prefix, remaining
-    from .common import Units
+    from moe_exp.study.lfm import population
+    from moe_exp.study.runtime import prompt_prefix, remaining
+    from moe_exp.io import Units
     b = binding()
     rows = population(b)['records']
     rows = [r for i, r in enumerate(sorted(rows, key=lambda r: r['uid'])) if i % shard[1] == shard[0]]
@@ -778,10 +714,10 @@ def lfm_annotate(shard, deadline):
     """Discovery judge labels with the original renderer, prompt tokens, decoding and parser."""
     from vllm import SamplingParams
     from vllm.sampling_params import RequestOutputKind
-    from moe_exp.final_routing.renderer import Renderer
-    from moe_exp.research_campaign_v3_r6.reader_contract import token_ids
-    from .reader import Reader
-    from .common import Units
+    from moe_exp.study.renderer import Renderer
+    from moe_exp.study.renderer import token_ids
+    from moe_exp.study.reader import Reader
+    from moe_exp.io import Units
     b = binding()
     parent = load(Path(b['source_campaign'])/'CAMPAIGN.json')
     a = parent['annotator']
@@ -841,7 +777,7 @@ def lfm_annotate(shard, deadline):
 
 
 def lfm_replay(shard, deadline):
-    from .lfm import replay
+    from moe_exp.study.lfm import replay
     b = binding()
     sources = verified(ROOT/'lfm25/SOURCES.json')['records']
     rows = [s for i, s in enumerate(sources) if i % shard[1] == shard[0]]
@@ -850,10 +786,10 @@ def lfm_replay(shard, deadline):
     if not rows:
         return {'status': 'complete'}
     done = []
-    from .runtime import Backend
+    from moe_exp.study.runtime import Backend
     backend = Backend(b, 'lfm25', 1, deadline, replay=True)
     try:
-        from moe_exp.research_campaign_v3_r6.inputs import read_source
+        from moe_exp.io import read_source
         for row in rows:
             if time.time()+600 > deadline:
                 break
@@ -909,16 +845,13 @@ def parse_shard(text):
 def main(argv=None):
     ap = argparse.ArgumentParser(prog='moe_exp.study.driver')
     ap.add_argument('command', choices=['plan', 'run', 'native', 'annotate', 'lfm-materialize', 'lfm-replay',
-                                        'lfm-derive', 'smoke', 'status', 'plan-strong', 'plan-rescue',
+                                        'lfm-derive', 'status', 'plan-strong',
                                         'lfm-repair-contexts',
                                         'lfm-readout', 'lfm-dynamics', 'plan-whole'])
     ap.add_argument('--model')
     ap.add_argument('--shard', default='0/1', type=parse_shard)
     ap.add_argument('--max-inflight', type=int, default=64)
     ap.add_argument('--design', choices=sorted(MANIFESTS), default='main')
-    ap.add_argument('--source-receipt', type=Path,
-                    help='explicit source receipt for a new rescue release; historical stores remain read-only')
-    ap.add_argument('--cohort', type=Path)
     ap.add_argument('--sub', type=parse_shard, action='append', default=None)
     args = ap.parse_args(argv)
     if args.command == 'plan-whole':
@@ -930,24 +863,21 @@ def main(argv=None):
     if args.command == 'plan-strong':
         log({'event': 'plan-strong', 'models': plan_strong(args.model.split(','))})
         return
-    if args.command == 'plan-rescue':
-        log({'event': 'plan-rescue', 'models': plan_rescue(args.model.split(',') if args.model else None)})
-        return
     if args.command == 'status':
         print(json.dumps(status(), indent=1))
         return
     if args.command == 'lfm-materialize':
-        from .lfm import materialize
+        from moe_exp.study.lfm import materialize
         log({'event': 'materialize', **materialize(binding())})
         return
     if args.command == 'lfm-repair-contexts':
-        from .lfm import repair_annotation_inputs
+        from moe_exp.study.lfm import repair_annotation_inputs
         value = repair_annotation_inputs(binding())
         log({'event': 'repaired', 'contexts': len(value['records']), 'sha256': value['sha256']})
         return
     if args.command == 'lfm-derive':
-        from .lfm import derive
-        from moe_exp.final_routing.importer import derive_model
+        from moe_exp.study.lfm import derive
+        from moe_exp.study.nominations import derive_model
         b = binding()
         if not (ROOT/'lfm25/DISCOVERY_INPUTS.json').exists():
             derive(b)
@@ -955,32 +885,27 @@ def main(argv=None):
         log({'event': 'derived', 'plan': plan(['lfm25'])})
         return
     if args.command == 'lfm-readout':
-        from .readouts import lfm
+        from moe_exp.study.readouts import lfm
         value = lfm(binding())
         log({'event': 'readout', 'sha256': value['sha256'],
              **{mode: {k: r[k] for k in ('routing', 'routing_excess_over_lexical_null')}
                 for mode, r in value['models']['lfm25'].items()}})
         return
     if args.command == 'lfm-dynamics':
-        from .lfm import dynamics_summary
+        from moe_exp.study.lfm import dynamics_summary
         log({'event': 'dynamics', 'sha256': dynamics_summary(binding())['sha256']})
         return
     require(os.environ.get('SLURM_JOB_ID') and os.environ.get('SLURM_JOB_GPUS'), 'GPU commands require a Slurm GPU allocation')
     deadline = deadline_from_slurm()
     if args.command == 'run':
-        result = run_model(args.model, args.shard, deadline, max_inflight=args.max_inflight, design=args.design,
-                           sub=args.sub, source_receipt=args.source_receipt, cohort=args.cohort)
-        if args.design == 'rescue' and result.get('status') != 'complete':
-            raise SystemExit(2)
+        run_model(args.model, args.shard, deadline, max_inflight=args.max_inflight, design=args.design,
+                  sub=args.sub)
     elif args.command == 'native':
         lfm_native(args.shard, deadline)
     elif args.command == 'annotate':
         lfm_annotate(args.shard, deadline)
     elif args.command == 'lfm-replay':
         lfm_replay(args.shard, deadline)
-    elif args.command == 'smoke':
-        from .smoke import smoke
-        smoke(deadline)
 
 
 if __name__ == '__main__':

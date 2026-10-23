@@ -13,15 +13,15 @@ import numpy as np
 import pandas as pd
 import torch
 
-from moe_exp.final_routing.operator import score_override_dual
-from moe_exp.final_routing.selection import global_pairs, layer_matched_controls
-from moe_exp.study.common import BENCHMARKS, CLASSES, WORK
+from moe_exp.study.operators import score_override_dual
+from moe_exp.study.selection import global_pairs, layer_matched_controls
+from moe_exp.io import BENCHMARKS, CLASSES, WORK
 from moe_exp.study.effects import Bootstrap, bounded_summary
 from moe_exp.study.stream import Clock, StreamCapture, dose_totals
 from moe_exp.study.whole import build_manifest, select_pairs
 from moe_exp.study.whole_effects import unit_bounds, contrast, primary_frame
 from moe_exp.study import whole
-from moe_exp.study.common import publish
+from moe_exp.io import publish
 
 
 class NominationTests(unittest.TestCase):
@@ -187,11 +187,11 @@ class PromptScopeTests(unittest.TestCase):
         self.assertEqual(capture.records['uid']['0']['positions'], [0])
 
     def test_original_prompt_runtime_allows_empty_prefix_only_when_flagged(self):
-        from moe_exp.final_routing.runtime import prompt_prefix
+        from moe_exp.study.runtime import prompt_prefix
         trace = {'metadata': {'token_replay': {'prompt_token_ids': [1, 2, 3], 'completion_token_ids': [4, 5]}}}
         binding = {'source_campaign': '/saved', 'root': '/saved'}
         row = {'source': {'attempt_id': 'source', 'prefix_tokens': 0}, 'original_prompt': True}
-        with patch('moe_exp.final_routing.runtime.load', return_value={'records': [
+        with patch('moe_exp.study.runtime.load', return_value={'records': [
                     {'attempt_id': 'source', 'source_location': 'saved'}]}), \
              patch('moe_exp.research_campaign_v3_r6.inputs.read_source', return_value=trace):
             self.assertEqual(prompt_prefix(binding, 'gpt', row, None)[:2], ([1, 2, 3], []))

@@ -9,7 +9,7 @@ from __future__ import annotations
 
 from collections import Counter
 from pathlib import Path
-from .common import CLASSES, HOME, WORK, check_files, digest, file_sha, publish, require, verified
+from moe_exp.io import CLASSES, HOME, WORK, check_files, digest, file_sha, publish, require, verified
 
 MODELS = ('gpt', 'qwen36')
 WINDOW = 512

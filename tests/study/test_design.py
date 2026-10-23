@@ -1,7 +1,7 @@
 import unittest
 from collections import Counter
-from moe_exp.study.common import BENCHMARKS, CLASSES
-from moe_exp.final_routing.design import allocate, assignments, strengths
+from moe_exp.io import BENCHMARKS, CLASSES
+from moe_exp.study.allocation import allocate, assignments, strengths
 
 
 def slots():

@@ -10,7 +10,7 @@ CPU allocation, then ``run`` in an approved GPU allocation.
 from __future__ import annotations
 
 from pathlib import Path
-from .common import REPO, check_files, digest, file_sha, load, publish, require, verified
+from moe_exp.io import REPO, check_files, digest, file_sha, load, publish, require, verified
 from .driver import DRIVER, STORES, binding, bulk
 
 
@@ -165,7 +165,7 @@ class RescueContexts:
     def _sentence_context(self, row: dict, raw: dict, inventory: dict) -> dict:
         """Keep the first complete new sentence, with its original context identity."""
         from .outcomes import record
-        from moe_exp.research_campaign_v3_r6.annotation import context_id
+        from moe_exp.study.contexts import context_id
 
         try:
             rebuilt = record(self.study, self.model, row, raw, self.tokenizer, self.closure)
@@ -244,7 +244,7 @@ def validate_inventory(receipt: dict, manifest: dict, annotator: dict, model: st
     Returns:
         None; raises on an incomplete or inconsistent join.
     """
-    from moe_exp.research_campaign_v3_r6.annotation import context_id
+    from moe_exp.study.contexts import context_id
 
     assigned = [row['uid'] for row in manifest['records']]
     inventoried = [row['uid'] for row in receipt['inventory']]
@@ -283,7 +283,7 @@ def _model_inventory(value: dict, index: dict, model: str, tasks: dict) -> tuple
     import pandas as pd
     from .cohort import assignments
     from .measurement import audit_frame
-    from moe_exp.research_campaign_v3_r6.annotation import context_id
+    from moe_exp.study.contexts import context_id
     references = {row['uid']: row for row in index['records']}
     inventory, occurrences, files = [], [], {}
     folder = Path(value['paths']['extraction'])/model
@@ -333,7 +333,7 @@ def cohort_tasks(path: Path) -> dict:
     from .cohort import generation_index, read
     from .lexical import predict
     from .measurement import sample_occurrences
-    from moe_exp.research_campaign_v3_r6.annotation import context_id
+    from moe_exp.study.contexts import context_id
     value = read(path)
     index = generation_index(value)
     tasks, inventory, occurrences, files = {}, [], [], {}
@@ -382,7 +382,7 @@ def verified_tasks(value: dict) -> dict:
         Immutable reader-task receipt; unavailable generations remain permitted.
     """
     from .cohort import assignments, generation_index
-    from moe_exp.research_campaign_v3_r6.annotation import context_id
+    from moe_exp.study.contexts import context_id
     receipt = verified(Path(value['paths']['control'])/'READER_TASKS.json')
     require(receipt['cohort_sha256'] == value['sha256']
             and receipt['generation_index_sha256'] == generation_index(value)['sha256'], 'reader cohort/index differs')
@@ -432,7 +432,7 @@ def freeze_reuse(value: dict, tasks: dict) -> dict:
         Immutable exact-context label snapshot; later lookups use this receipt.
     """
     import sqlite3
-    from moe_exp.research_campaign_v3_r6.annotation import context_id
+    from moe_exp.study.contexts import context_id
     from .rescue_source import load_study_binding
     study = load_study_binding(Path(value['study_binding_path']))
     parent = Path(study['source_campaign'])
@@ -458,7 +458,7 @@ def freeze_reuse(value: dict, tasks: dict) -> dict:
                 require((label is None or row['label'] == label) and row['inputs'] == task['inputs']
                         and context_id(row['inputs'], value['annotator']) == task['uid'],
                         'annotation index/source row/context join differs')
-                from .common import CLASSES
+                from moe_exp.io import CLASSES
                 require(label is None or label in CLASSES, 'invalid reused annotation class')
                 records.append({
                     'uid': task['uid'], 'label': label, 'inputs_sha256': digest(task['inputs']),
@@ -483,8 +483,8 @@ def freeze_waves(value: dict, tasks: dict) -> dict:
         Longest-input pilot, representative contexts and disjoint remaining order.
     """
     from transformers import AutoTokenizer
-    from moe_exp.final_routing.renderer import Renderer
-    from moe_exp.research_campaign_v3_r6.reader_contract import token_ids
+    from moe_exp.study.renderer import Renderer
+    from moe_exp.study.renderer import token_ids
     from .rescue_source import load_study_binding
     study = load_study_binding(Path(value['study_binding_path']))
     campaign = frozen_campaign(study)
@@ -570,7 +570,7 @@ def context_labels(value: dict, receipt: dict) -> dict:
     Returns:
         Context labels with unavailable annotations omitted for unknown handling.
     """
-    from .common import CLASSES
+    from moe_exp.io import CLASSES
     units = Path(value['paths']['reader'])/'annotations'
     snapshot = verified(Path(value['paths']['control'])/'REUSED_LABELS.json')
     require(snapshot['cohort_sha256'] == value['sha256'] and snapshot['tasks_sha256'] == receipt['sha256'],
@@ -646,7 +646,7 @@ def run_cohort(path: Path, wave: str, deadline: float) -> dict:
         operation = owner['shape'].get('operation', owner['shape']['stage'])
         require(operation == wave, 'accepted reader owner belongs to another frozen wave')
         import os
-        from .common import Units
+        from moe_exp.io import Units
         units = Units(root/'annotations')
         terminal = root/'waves'/wave/'jobs'/(os.environ['SLURM_JOB_ID']+'.json')
         existing = [units.state(row['uid']) for row in rows]

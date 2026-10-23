@@ -16,7 +16,7 @@ import pandas as pd
 import torch
 
 from moe_exp.study import driver, whole, whole_effects
-from moe_exp.study.common import WORK, digest, file_sha, load, publish
+from moe_exp.io import WORK, digest, file_sha, load, publish
 from moe_exp.study.stream import Clock, StreamCapture
 
 TMP = WORK/'tools/tmp'

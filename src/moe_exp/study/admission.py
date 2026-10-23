@@ -2,7 +2,7 @@
 from collections import Counter,defaultdict
 from pathlib import Path
 import math
-from .common import MODELS, digest, load, publish, require, verified, control_root
+from moe_exp.io import MODELS, digest, load, publish, require, verified, control_root
 
 
 def pack(rows,cost,load_seconds,*,capacity=1):

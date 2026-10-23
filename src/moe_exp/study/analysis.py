@@ -2,7 +2,7 @@
 from collections import defaultdict
 from pathlib import Path
 import numpy as np
-from .common import BENCHMARKS, CLASSES, MODELS, Units, digest, load, publish, require
+from moe_exp.io import BENCHMARKS, CLASSES, MODELS, Units, digest, load, publish, require
 from moe_exp.final_routing.endpoints import difference
 
 CONTRASTS = ('activate:first', 'activate:occupancy', 'deactivate:first', 'deactivate:occupancy')
@@ -129,7 +129,7 @@ def assemble(binding, mode):
 
 def paired_summaries(binding, data):
     """Paired within-prefix differences with frozen model/class/depth weighting."""
-    from moe_exp.research_campaign_v3_r6.statistics import bootstrap_panel
+    from moe_exp.stats import bootstrap_panel
     rows, outcomes = data['assignments'], data['outcomes']
     lookup = {(r['model'],r['benchmark'],r['family'],r['class'],r['depth_third'],r['dose'],r['arm']):r for r in rows}
     pairs = []

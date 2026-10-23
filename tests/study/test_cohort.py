@@ -10,7 +10,7 @@ from unittest.mock import patch
 import numpy as np
 import pandas as pd
 from moe_exp.study import cohort, effects, lexical, ownership, rescue_reader
-from moe_exp.study.common import CLASSES, WORK, digest, file_sha, publish, verified
+from moe_exp.io import CLASSES, WORK, digest, file_sha, publish, verified
 
 
 class ConstantFeatures:
@@ -83,7 +83,7 @@ class CohortContracts(unittest.TestCase):
                 ownership.task_staging()
 
     def test_admitted_without_intent_or_output_stays_unknown(self):
-        from moe_exp.study.common import Units
+        from moe_exp.io import Units
         units = Units(self.root/'annotations')
         uid = 'a'*64
         publish(units.folder(uid)/'ADMITTED.json', {'uid': uid})

@@ -2,7 +2,17 @@
 from pathlib import Path
 import re
 import time
-from .common import submission_paths, reservation_paths, control_root, digest, file_sha, locked, publish, require, verified
+from moe_exp.io import (
+    submission_paths,
+    reservation_paths,
+    control_root,
+    digest,
+    file_sha,
+    locked,
+    publish,
+    require,
+    verified,
+)
 
 TERMINAL = {'COMPLETED', 'FAILED', 'CANCELLED', 'TIMEOUT', 'OUT_OF_MEMORY',
             'NODE_FAIL', 'PREEMPTED', 'BOOT_FAIL', 'DEADLINE'}
@@ -232,7 +242,7 @@ class CohortSchedule:
                 completed = all(store.state(uid) is not None for uid in self.value['generation_uids'])
             else:
                 plan = verified(self.root/'READER_WAVES.json')
-                from .common import Units
+                from moe_exp.io import Units
                 units = Units(Path(self.value['paths']['reader'])/'annotations')
                 completed = all(units.state(uid) is not None and units.state(uid)['status'] != 'output'
                                 for uid in plan[stage])

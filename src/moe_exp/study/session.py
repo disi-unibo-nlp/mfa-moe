@@ -1,6 +1,6 @@
 """One request lifecycle for generation, replay and reader batches."""
 from contextlib import contextmanager
-from .common import digest, require
+from moe_exp.io import digest, require
 
 
 class Session:

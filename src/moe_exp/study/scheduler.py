@@ -4,7 +4,7 @@ from pathlib import Path
 import re
 import subprocess
 import time
-from .common import REPO, digest, load, locked, publish, require, verified
+from moe_exp.io import REPO, digest, load, locked, publish, require, verified
 from moe_exp.final_routing.scheduler import command, job_fields, duration_minutes
 
 

@@ -18,7 +18,7 @@ from pathlib import Path
 import numpy as np
 from scipy import optimize, sparse
 from . import readout_text as RT
-from .common import CLASSES, check_files, file_sha, publish, require, verified
+from moe_exp.io import CLASSES, check_files, file_sha, publish, require, verified
 
 CIDX = {c: i for i, c in enumerate(CLASSES)}
 MAXC = 600

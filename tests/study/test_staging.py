@@ -9,7 +9,7 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-from moe_exp.study.common import WORK
+from moe_exp.io import WORK
 from moe_exp.study.ownership import task_staging, worker
 
 

@@ -4,7 +4,7 @@ import subprocess
 import tempfile
 import unittest
 from unittest.mock import patch
-from moe_exp.study.common import WORK, publish, verified
+from moe_exp.io import WORK, publish, verified
 from moe_exp.study.reservations import CohortSchedule, freeze_predecessor
 
 

@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from pathlib import Path
 import time
-from .common import BENCHMARKS, CLASSES, digest, publish, require, verified
+from moe_exp.io import BENCHMARKS, CLASSES, digest, publish, require, verified
 from .cohort import assignments, identity, read
 
 

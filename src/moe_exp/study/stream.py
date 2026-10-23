@@ -11,9 +11,9 @@ are rebuilt under the intervention instead of under native routing.
 """
 from __future__ import annotations
 import inspect
-from .common import digest, require
+from moe_exp.io import digest, require
 from .observer import discover
-from moe_exp.final_routing.operator import hard_select, policy, score_override_select, score_override_dual
+from moe_exp.study.operators import hard_select, policy, score_override_select, score_override_dual
 
 
 class Clock:
@@ -315,7 +315,7 @@ class StreamCapture:
         Eager kernels only: both tensor-parallel ranks must reproduce identical routing and counters.
         """
         import torch
-        from moe_exp.final_routing.operator import score_override_dual_masked, score_shift_masked
+        from moe_exp.study.operators import score_override_dual_masked, score_shift_masked
         step = self._whole_rows(work, logits.device)
         _, positions, all_roles, all_shifts = self._whole_roles(work, logits.device)
         layer_roles = all_roles[positions[layer]]

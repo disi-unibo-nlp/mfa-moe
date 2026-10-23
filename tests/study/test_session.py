@@ -2,7 +2,7 @@ import ast
 from pathlib import Path
 from types import SimpleNamespace
 import unittest
-from moe_exp.study.common import digest
+from moe_exp.io import digest
 from moe_exp.study.session import request_session
 
 

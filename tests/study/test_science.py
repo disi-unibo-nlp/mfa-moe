@@ -1,8 +1,8 @@
 import unittest
 import numpy as np
-from moe_exp.study.common import CLASSES
+from moe_exp.io import CLASSES
 from moe_exp.final_routing.endpoints import occupancy, first_sentence, difference
-from moe_exp.final_routing.selection import matched_controls, count_set
+from moe_exp.study.selection import matched_controls, count_set
 
 
 class ScienceTests(unittest.TestCase):
@@ -27,7 +27,7 @@ class ScienceTests(unittest.TestCase):
 
     def test_simultaneous_interval_preserves_all_eight_bound_components(self):
         from moe_exp.study.analysis import joint_intervals
-        from moe_exp.study.common import BENCHMARKS
+        from moe_exp.io import BENCHMARKS
         slots=[{'benchmark':b,'family':b+str(i)} for b in BENCHMARKS for i in range(20)]
         values=np.broadcast_to(np.array([-.2,.4]),(120,4,2)).copy()
         result=joint_intervals(values,slots,draws=10000,seed=17)
@@ -52,7 +52,7 @@ class ScienceTests(unittest.TestCase):
 
     def test_hard_selection_noop_returns_original_tensors(self):
         import torch
-        from moe_exp.final_routing.operator import hard_select
+        from moe_exp.study.operators import hard_select
         logits = torch.tensor([[0., 1., 2., 3., 4., 5.]])
         ids = torch.tensor([[5, 4, 3, 2]], dtype=torch.int32)
         weights = logits.softmax(-1).gather(1, ids.long())
@@ -64,7 +64,7 @@ class ScienceTests(unittest.TestCase):
 
     def test_score_override_sets_extreme_log_probs_and_preserves_inactive_rows(self):
         import torch
-        from moe_exp.final_routing.operator import score_override
+        from moe_exp.study.operators import score_override
         logits = torch.tensor([[0., 1., 2., 3., 4., 5.], [0., 1., 2., 3., 4., 5.]])
         out, changed = score_override(logits, [0, 1], 'activate', active=[True, False])
         self.assertEqual(changed.tolist(), [True, False])
@@ -80,7 +80,7 @@ class ScienceTests(unittest.TestCase):
 
     def test_score_override_is_invariant_to_a_constant_logit_shift(self):
         import torch
-        from moe_exp.final_routing.operator import score_override
+        from moe_exp.study.operators import score_override
         logits = torch.tensor([[0., 1., 2., 3., 4., 5.]])
         for direction in ('activate', 'deactivate'):
             original, _ = score_override(logits, [0, 1], direction)
@@ -89,7 +89,7 @@ class ScienceTests(unittest.TestCase):
 
     def test_executed_score_override_matches_reference_selection_and_weighting(self):
         import torch
-        from moe_exp.final_routing.operator import score_override_select
+        from moe_exp.study.operators import score_override_select
         logits = torch.tensor([[0., 1., 2., 3., 4., 5.], [-.4, .3, .1, .8, -.1, .6]])
         native_ids = logits.topk(4, dim=-1).indices.to(torch.int32)
         targets, active = [0, 2], torch.tensor([True, False])
@@ -124,7 +124,7 @@ class ScienceTests(unittest.TestCase):
 
     def test_executed_score_override_with_no_active_rows_preserves_native_tensors(self):
         import torch
-        from moe_exp.final_routing.operator import score_override_select
+        from moe_exp.study.operators import score_override_select
         logits = torch.tensor([[0., 1., 2., 3., 4., 5.]])
         native_ids = logits.topk(4, dim=-1).indices.to(torch.int32)
         native_weights = torch.tensor([[.4, .3, .2, .1]])
@@ -143,7 +143,7 @@ class ScienceTests(unittest.TestCase):
 
     def test_bias_selects_but_original_affinities_weight_with_scaling(self):
         import torch
-        from moe_exp.final_routing.operator import hard_select
+        from moe_exp.study.operators import hard_select
         logits = torch.tensor([[0., 1., 2., 3., 4., 5.]])
         ids = torch.tensor([[5, 4, 3]], dtype=torch.int32)
         native = torch.tensor([[.6, .3, .1]])

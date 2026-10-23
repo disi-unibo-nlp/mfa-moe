@@ -1,42 +1,15 @@
-"""Reference existing science and derive new COUNT nominations on allocated CPUs."""
+"""Derive COUNT nominations and whole-reasoning candidates from the frozen discovery inputs."""
 from collections import defaultdict
 from pathlib import Path
-from .common import MODELS, check_files, digest, file_sha, load, publish, require
-from .design import allocate, assignments
-
-
-def inventory(config):
-    root, source = Path(config['root']), Path(config['source_campaign'])
-    parent = load(source/'CAMPAIGN.json')
-    require(file_sha(source/'CAMPAIGN.json'), 'missing source campaign')
-    references, rosters = [], {}
-    for model in MODELS[:-1]:
-        for name in ('PREFIXES.json', 'SOURCES.json', 'NOMINATIONS.json', 'DERIVED.json', 'DYNAMICS.json'):
-            path = source/model/name
-            require(path.is_file(), f'missing required existing evidence: {path}')
-            references.append({'model': model, 'artifact': name, 'path': str(path), 'sha256_file': file_sha(path)})
-        roster = load(source/model/'PREFIXES.json')
-        require(len(roster['records']) == 129, 'original prefix roster differs')
-        rosters[model] = roster['records']
-        publish(root/model/'PREFIXES.json', {'records': roster['records'], 'source_path': str(source/model/'PREFIXES.json'),
-                                           'source_sha256': roster['sha256']})
-    common = [{'benchmark': r['benchmark'], 'family': r['family'], 'fold': r['fold']} for r in rosters['gpt']]
-    for model, rows in rosters.items():
-        require({(r['benchmark'], r['family'], r['fold']) for r in rows} ==
-                {(r['benchmark'], r['family'], r['fold']) for r in common}, 'models disagree on frozen slots')
-    allocation = publish(root/'ALLOCATION.json', allocate(common, config['seed']))
-    return publish(root/'IMPORT.json', {'status': 'complete', 'references': references,
-        'prefix_slots': {m: len(rows) for m, rows in rosters.items()},
-        'available_prefixes': {m: sum(r['status'] == 'enrolled' for r in rows) for m, rows in rosters.items()},
-        'allocation_sha256': allocation['sha256'], 'native_reused': True,
-        'lfm_native_status': 'unmeasured', 'historical_failures_preserved': True})
+from moe_exp.io import MODELS, check_files, digest, file_sha, load, publish, require
+from moe_exp.study.allocation import allocate, assignments
 
 
 def derive_model(binding, model):
     import numpy as np
     import pandas as pd
-    from .selection import nominate
-    from moe_exp.research_campaign_v3_r6.inputs import counts_for
+    from moe_exp.study.selection import nominate
+    from moe_exp.routing.selection import counts_for
     config = binding['config']
     root, source = Path(config['root']), Path(config['source_campaign'])
     if (root/model/'COUNT_NOMINATIONS.json').exists():
@@ -63,7 +36,7 @@ def derive_model(binding, model):
                       'fold': folds['folds'][qf[r.question]], 'n_tokens': int(r.n_tokens)} for r in df.itertuples()]
     profile = binding['models'][model]
     result = nominate(model, counts, tokens, sources, profile['layers'], profile['native_k'], sentences, config['seed'])
-    from .selection import confirmation
+    from moe_exp.study.selection import confirmation
     publish(root/model/'COUNT_CONFIRMATION.json',confirmation(result,counts,tokens,sources,profile['layers'],profile['native_k']))
     publish(root/model/'DISCOVERY_CONTEXT_COUNTS.json', {'records': context_inventory(binding, model, sources),
                                                        'outcomes_used': False})
@@ -97,8 +70,8 @@ def discovery_inputs(binding, model):
     import pandas as pd
     config = binding['config']
     if model == 'lfm25':
-        from moe_exp.expert_memory_study.selection import validate_counts
-        from .common import CLASSES
+        from moe_exp.routing.selection import validate_counts
+        from moe_exp.io import CLASSES
         data = load(Path(config['root'])/'lfm25/DISCOVERY_INPUTS.json')
         sources = data['sources']
         # The same archive checks as research_campaign_v3_r6.inputs.counts_for.
@@ -111,7 +84,7 @@ def discovery_inputs(binding, model):
         validate_counts(counts, tokens, binding['models'][model]['native_k'])
         return sources, counts, tokens, {'discovery_inputs_sha256': data['sha256'],
                                          'counts_sha256_file': file_sha(data['counts'])}
-    from moe_exp.research_campaign_v3_r6.inputs import counts_for
+    from moe_exp.routing.selection import counts_for
     source = Path(config['source_campaign'])
     parent = load(source/'CAMPAIGN.json')
     folds = load(source/'FOLDS.json')
@@ -133,7 +106,7 @@ def derive_whole(binding, model, destination):
     Returns:
         WHOLE_NOMINATIONS receipt; no main-family outcome is read.
     """
-    from .selection import global_pairs
+    from moe_exp.study.selection import global_pairs
     sources, counts, tokens, provenance = discovery_inputs(binding, model)
     profile = binding['models'][model]
     # The capped selection stored here is a preview; manifests apply each model's own dose to the candidates.
@@ -149,10 +122,10 @@ def derive_whole(binding, model, destination):
 
 def context_inventory(binding, model, sources):
     """Discovery-only native context density; no primary continuation is read."""
-    from moe_exp.research_campaign_v3_r6.inputs import read_source
+    from moe_exp.io import read_source
     from moe_exp.schemas import TraceRecord
     from moe_exp.correlation_pipeline.dynamics.classes import saved_layout
-    from .common import digest
+    from moe_exp.io import digest
     root = Path(binding['root'])
     excluded = {r['family'] for r in load(root/'ALLOCATION.json')['records']}
     result=[]
@@ -167,14 +140,3 @@ def context_inventory(binding, model, sources):
             'ends':[max(p)+1 for p in owned],'completion_tokens':source['completion_tokens'],
             'source_identity':source['attempt_id']})
     return result
-
-
-def prepare(binding, deadline):
-    import time
-    root = Path(binding['root'])
-    if not (root/'IMPORT.json').exists():
-        inventory(binding['config'])
-    for model in MODELS[:-1]:
-        require(time.time()+180 < deadline, 'bounded CPU preparation deadline; resume untouched models')
-        derive_model(binding, model)
-    return {'status': 'complete', 'models': list(MODELS[:-1]), 'lfm_discovery_pending': True}

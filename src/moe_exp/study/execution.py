@@ -1,7 +1,7 @@
 """Allocated scientific workers; no controller process performs inference."""
 from pathlib import Path
 import time
-from .common import MODELS, Units, digest, file_sha, load, publish, require, verified
+from moe_exp.io import MODELS, Units, digest, file_sha, load, publish, require, verified
 
 
 def task_rows(card):
@@ -55,8 +55,8 @@ def generate(binding,card,deadline):
 def annotation_inventory(binding,phase):
     """Verify every input profile on CPUs before any annotation GPU is loaded."""
     from transformers import AutoTokenizer
-    from moe_exp.final_routing.renderer import Renderer
-    from moe_exp.research_campaign_v3_r6.reader_contract import token_ids
+    from moe_exp.study.renderer import Renderer
+    from moe_exp.study.renderer import token_ids
     root,bulk=Path(binding['root']),Path(binding['config']['bulk_root'])
     target=root/('ANNOTATION_INVENTORY-'+phase+'.json')
     if target.exists():return verified(target)
@@ -146,7 +146,7 @@ def handler(binding,card,deadline):
         return replay(binding,task_rows(card),deadline)
     if stage=='lfm_derive':
         from .lfm import derive
-        from moe_exp.final_routing.importer import derive_model
+        from moe_exp.study.nominations import derive_model
         if not (root/'lfm25/DISCOVERY_INPUTS.json').exists():derive(binding)
         derive_model(binding,'lfm25')
         return {'status':'complete'}

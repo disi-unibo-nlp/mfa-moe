@@ -2,7 +2,7 @@
 from __future__ import annotations
 from pathlib import Path
 import time
-from .common import Units, check_files, digest, load, publish, require
+from moe_exp.io import Units, check_files, digest, load, publish, require
 
 
 def remaining(profile, prompt, prefix):
@@ -16,7 +16,7 @@ def remaining(profile, prompt, prefix):
 
 def closure(tokenizer, model):
     if model != 'lfm25':
-        from moe_exp.verification_study.backend import closure_sequences
+        from moe_exp.models.engine import closure_sequences
         return closure_sequences(tokenizer, model)
     ids = tokenizer.encode('</think>', add_special_tokens=False)
     require(ids and tokenizer.decode(ids).strip() == '</think>', 'LFM reasoning closure is not qualified')
@@ -33,7 +33,7 @@ def prompt_prefix(binding, model, row, tokenizer):
                                                return_dict=False, **binding['models'][model]['template_kwargs'])
         require(isinstance(tokens, list) and all(type(t) is int for t in tokens), 'native prompt tokenization differs')
         return tokens, [], {**example, 'metadata': example.get('metadata', {})}
-    from moe_exp.research_campaign_v3_r6.inputs import read_source
+    from moe_exp.io import read_source
     root = Path(binding['source_campaign']) if model != 'lfm25' else Path(binding['root'])
     table = load(root/model/'SOURCES.json')['records']
     require(row['source'] is not None, 'unavailable frozen prefix')
@@ -53,7 +53,7 @@ def prompt_prefix(binding, model, row, tokenizer):
 def budget_tokens(spec):
     """Prefix of a length-limit row: the first `cut` generated tokens of a finished native run, then the
     model's closing suffix, so the model only writes its answer (outcome_steering budget arm)."""
-    from .common import file_sha
+    from moe_exp.io import file_sha
     require(file_sha(spec['path']) == spec['sha256_file'], 'budget source output changed')
     tokens = load(spec['path'])['token_ids']
     require(0 < spec['cut'] <= len(tokens), 'budget cut outside the source output')
@@ -81,18 +81,18 @@ class Backend:
         import os
         require(os.environ.get('SLURM_JOB_ID') and os.environ.get('SLURM_JOB_GPUS'), 'GPU inference requires Slurm GPUs')
         from vllm import LLM
-        from moe_exp.verification_study.registry import engine_kwargs
+        from moe_exp.models.engine import engine_kwargs
         self.binding, self.model, self.profile, self.deadline = binding, model, binding['models'][model], deadline
         check_files(self.profile['config_files'])
         if model == 'lfm25':
-            from .common import verified
+            from moe_exp.io import verified
             proof = verified(Path(binding['root'])/'LFM_CHECKPOINT_VERIFIED.json')
             require(proof['status'] == 'complete', 'LFM checksum validation is incomplete')
         require((Path(self.profile['local_path'])/'config.json').is_file(), 'pinned checkpoint is unavailable')
         kwargs = engine_kwargs(self.profile, context=self.profile['card']['max_model_len'])
         kwargs.update(max_num_seqs=capacity, enable_chunked_prefill=True,
                       worker_extension_cls='moe_exp.study.observer.RoutingWorkerExtension',
-                      logits_processors=['moe_exp.research_campaign_v3_r6.penalties:PrefixPenalties'])
+                      logits_processors=['moe_exp.study.penalties:PrefixPenalties'])
         if self.model == 'lfm25':
             kwargs['kv_cache_memory_bytes'] = self.profile['kv_cache_memory_bytes']
         self.kwargs = kwargs
@@ -108,7 +108,7 @@ class Backend:
     def capture_trace(self, trace, destination):
         import numpy as np
         from vllm import SamplingParams
-        from .common import file_sha, verified
+        from moe_exp.io import file_sha, verified
         destination = Path(destination)
         receipt = destination.with_suffix('.json')
         if receipt.exists():
@@ -260,7 +260,7 @@ class Backend:
 
 
 def recover_outputs(units, rows):
-    from .common import file_sha, verified
+    from moe_exp.io import file_sha, verified
     for row in rows:
         state = units.state(row['uid'])
         if not state or state['status'] != 'output':

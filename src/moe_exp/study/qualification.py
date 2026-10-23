@@ -1,12 +1,12 @@
 """Discovery-only native fidelity, request-isolation and measured routing prices."""
 from pathlib import Path
 import time
-from .common import CLASSES, Units, digest, load, publish, require, control_root, engineering_namespace
-from moe_exp.final_routing.design import seed_for, strengths
+from moe_exp.io import CLASSES, Units, digest, load, publish, require, control_root, engineering_namespace
+from moe_exp.study.allocation import seed_for, strengths
 
 
 def fixtures(binding, model):
-    from moe_exp.research_campaign_v3_r6.inputs import read_source
+    from moe_exp.io import read_source
     from moe_exp.correlation_pipeline.dynamics.classes import saved_layout
     from moe_exp.schemas import TraceRecord
     root, source = Path(binding['root']), Path(binding['source_campaign'])
@@ -20,7 +20,7 @@ def fixtures(binding, model):
     candidates = [r for r in sources if r['family'] not in excluded]
     candidates.sort(key=lambda r: (r['completion_tokens'], r['attempt_id']))
     chosen = []
-    from .common import BENCHMARKS
+    from moe_exp.io import BENCHMARKS
     for benchmark in BENCHMARKS:
         part=[r for r in candidates if r['benchmark']==benchmark]
         require(part,'pricing benchmark lacks a non-primary discovery family')
@@ -97,7 +97,7 @@ def qualify(binding, model, deadline, attempt=0):
     if target.exists():
         return load(target)
     if model == 'lfm25':
-        from .common import verified
+        from moe_exp.io import verified
         require(verified(root/'LFM_CHECKPOINT_VERIFIED.json')['status'] == 'complete', 'LFM validation absent')
     measured, profiles = [], []
     for capacity in (1, 2, 4, 8):

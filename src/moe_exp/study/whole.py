@@ -22,9 +22,9 @@ import time
 
 import numpy as np
 
-from .common import CLASSES, REPO, check_files, digest, file_sha, load, locked, publish, require, verified
+from moe_exp.io import CLASSES, REPO, check_files, digest, file_sha, load, locked, publish, require, verified
 from . import driver
-from moe_exp.final_routing.selection import select_pairs
+from moe_exp.study.selection import select_pairs
 
 # Per-model run plan: production shards x walltime, canary walltime and the shared canary token cap.
 # Sized from main-study throughput at ~70% speed with a margin, so shards finish their rows instead of
@@ -178,7 +178,7 @@ def _layer_actions(roles: dict, profile: dict) -> list[dict]:
 
 def cell_actions(nomination: dict, profile: dict, model: str, dose: str, operation: str) -> dict:
     """Build one cell and its role/layer/frequency matched random control."""
-    from moe_exp.final_routing.selection import layer_matched_controls
+    from moe_exp.study.selection import layer_matched_controls
     layers = profile['layers']
     act_count, deact_count = dose_counts(model, profile, dose, operation)
     positive, negative = nomination['candidates']['positive'], nomination['candidates']['negative']
@@ -241,7 +241,7 @@ def build_manifest(model: str, dose: str, nominations: dict, b: dict, natives: l
     Returns:
         Manifest with planned row counts, actual cell counts and unique UIDs.
     """
-    from moe_exp.final_routing.runtime import remaining
+    from moe_exp.study.runtime import remaining
     profile = b['models'][model]
     suppressed = directions(model)['suppress']
     promoted = directions(model)['promote'] if sweep else CLASSES
@@ -333,7 +333,7 @@ def prepare_model(b: dict, model: str, scope: bool) -> dict:
     if present:
         spec = verified(ROOT/present[0])['models'][model]
         return {model+':'+SWEEP[model]: builders[present[0]](model, spec)}
-    from moe_exp.final_routing.importer import derive_whole
+    from moe_exp.study.nominations import derive_whole
     from .runtime import prompt_prefix
     folder = ROOT/model
     nomination_path = folder/'WHOLE_NOMINATIONS.json'

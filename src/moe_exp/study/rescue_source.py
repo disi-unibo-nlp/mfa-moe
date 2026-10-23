@@ -6,7 +6,7 @@ module never adopts or migrates the existing unbound rescue outputs.
 """
 from __future__ import annotations
 from pathlib import Path
-from .common import HOME, REPO, WORK, digest, file_sha, publish, require, verified
+from moe_exp.io import HOME, REPO, WORK, digest, file_sha, publish, require, verified
 
 REPORT = REPO/'report'/'final-routing-rescue-20261019-r1'
 RECEIPT = REPORT/'SOURCE_BINDING-r8.json'

@@ -12,7 +12,7 @@ import fcntl
 import os
 from pathlib import Path
 import time
-from .common import digest, publish, require, verified
+from moe_exp.io import digest, publish, require, verified
 from .cohort import writable
 from moe_exp.final_routing.scheduler import job_fields, command, duration_minutes
 

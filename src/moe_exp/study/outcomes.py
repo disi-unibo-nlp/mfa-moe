@@ -10,8 +10,8 @@ import argparse
 import json
 import time
 from pathlib import Path
-from .common import require
-from .driver import DRIVER, STORES, Store, binding, bulk, log, shard_rows
+from moe_exp.io import require
+from moe_exp.study.driver import DRIVER, STORES, Store, binding, bulk, log, shard_rows
 
 START, END = '<START OF RESPONSE>', '<END OF RESPONSE>'
 
@@ -52,9 +52,9 @@ def record(b, model, row, raw, tokenizer, close, *, frozen_input=None):
     from types import SimpleNamespace
     from moe_exp.models.token_replay import make_token_replay
     from moe_exp.correlation_pipeline.scoring import score_completion_detailed
-    from moe_exp.research_campaign_v3_r6.scoring import unknown_bounds
-    from .contexts import parts
-    from .runtime import prompt_prefix
+    from moe_exp.stats import unknown_bounds
+    from moe_exp.study.contexts import parts
+    from moe_exp.study.runtime import prompt_prefix
     profile = b['models'][model]
     prompt, prefix, original = frozen_input or prompt_prefix(b, model, row, tokenizer)
     tokens = prefix+raw['token_ids']
@@ -94,15 +94,11 @@ def record(b, model, row, raw, tokenizer, close, *, frozen_input=None):
             'strict_correct': strict, 'accuracy_bounds': [lo, hi]}
 
 
-def extract(model, shard, design='main', *, cohort=None):
-    if design == 'rescue':
-        require(cohort is not None, 'rescue extraction requires --cohort')
-        from .cohort import extract_terminal
-        return extract_terminal(Path(cohort), model)
+def extract(model, shard, design='main'):
     import pandas as pd
     from transformers import AutoTokenizer
-    from .common import load
-    from .runtime import closure
+    from moe_exp.io import load
+    from moe_exp.study.runtime import closure
     b = binding()
     rows = shard_rows(model, shard, design)
     store = Store(bulk(b)/model/STORES[design])
@@ -153,26 +149,15 @@ def extract(model, shard, design='main', *, cohort=None):
 
 
 def main(argv=None):
-    """Extract saved continuations inside the accepted cohort preparation allocation."""
-    from .driver import parse_shard
+    """Extract the saved continuations of one model shard."""
+    from moe_exp.study.driver import parse_shard
     ap = argparse.ArgumentParser(prog='moe_exp.study.outcomes')
     ap.add_argument('--model', required=True)
     ap.add_argument('--shard', default='0/1', type=parse_shard)
     ap.add_argument('--design', choices=sorted(STORES), default='main')
-    ap.add_argument('--cohort', type=Path)
     args = ap.parse_args(argv)
     require(args.model in [p.name for p in DRIVER.iterdir() if p.is_dir()], 'unknown model manifest')
-    if args.design == 'rescue':
-        from .cohort import assignments, identity, read
-        from .ownership import worker
-        require(args.cohort is not None, 'rescue extraction requires --cohort')
-        value = read(args.cohort)
-        execution = identity(value, 'cpu', 'extraction', [row['uid'] for row in assignments(value)])
-        with worker(Path(value['paths']['extraction']), execution) as owner:
-            require(owner['shape']['stage'] == 'prepare', 'extraction requires its accepted preparation job')
-            extract(args.model, args.shard, args.design, cohort=args.cohort)
-    else:
-        extract(args.model, args.shard, args.design)
+    extract(args.model, args.shard, args.design)
 
 
 if __name__ == '__main__':

@@ -2,7 +2,20 @@
 from pathlib import Path
 import os
 import subprocess
-from .common import REPO, MODELS, CLASSES, check_files, digest, file_sha, load, locked, private, publish, require, verified
+from moe_exp.io import (
+    REPO,
+    MODELS,
+    CLASSES,
+    check_files,
+    digest,
+    file_sha,
+    load,
+    locked,
+    private,
+    publish,
+    require,
+    verified,
+)
 
 
 def read_config(path):

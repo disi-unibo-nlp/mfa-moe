@@ -6,7 +6,7 @@ import json
 import os
 import socket
 import time
-from .common import MODELS, REPO, check_files, control_root, digest, file_sha, publish, require, verified
+from moe_exp.io import MODELS, REPO, check_files, control_root, digest, file_sha, publish, require, verified
 from .config import active, initialize, read_config
 from .scheduler import Slurm, command, duration_minutes, job_fields
 

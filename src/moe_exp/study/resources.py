@@ -4,7 +4,7 @@ import re
 import socket
 import time
 from pathlib import Path
-from .common import REPO, submission_paths, reservation_paths, digest, load, publish, require, verified
+from moe_exp.io import REPO, submission_paths, reservation_paths, digest, load, publish, require, verified
 from .scheduler import command, duration_minutes, job_fields
 
 

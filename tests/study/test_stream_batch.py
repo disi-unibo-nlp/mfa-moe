@@ -3,7 +3,7 @@ import unittest
 
 import torch
 
-from moe_exp.final_routing.operator import score_override_dual, score_override_dual_masked, score_shift_masked
+from moe_exp.study.operators import score_override_dual, score_override_dual_masked, score_shift_masked
 from moe_exp.study.stream import DOSE_KEYS, StreamCapture, batched_dose
 
 

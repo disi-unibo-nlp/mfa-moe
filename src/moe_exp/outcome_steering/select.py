@@ -27,7 +27,7 @@ from pathlib import Path
 
 import numpy as np
 
-from moe_exp.final_routing.common import FAST, digest, file_sha, load, publish, require
+from moe_exp.io import FAST, digest, file_sha, load, publish, require
 
 from . import REPORTS
 
@@ -174,7 +174,7 @@ def protected_pairs(nominations: dict) -> tuple[np.ndarray, set, set]:
 
 def choose(score, stable, frequency, layers, k, protected, identity) -> dict:
     """Best stable pairs until MASS_TARGET of routing, each with a feasible matched control."""
-    from moe_exp.final_routing.selection import layer_matched_controls
+    from moe_exp.study.selection import layer_matched_controls
 
     def mass(pairs):
         return float(sum(frequency[layers.index(p['layer'])][p['expert']] for p in pairs))/(len(layers)*k)
