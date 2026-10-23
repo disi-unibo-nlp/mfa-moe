@@ -1,65 +1,26 @@
-"""Select judge-labelling sentences stratified by correctness and reasoning length.
+"""Pick the 100,000 sentences the judge labels for one source model, stratified by correctness and reasoning length.
 
-The sampler reads completed benchmark generations from
-``<generation-dir>/<model-slug>/<dataset>/traces.jsonl`` and writes exactly
-``--total`` sentence identities (default 100,000) in a layout that the existing
-production labelling harness (``annotation_batch.py``) already understands.
+Input: the finished benchmark generations `GENERATION_DIR/<model-slug>/<dataset>/traces.jsonl` (+ `manifest.json`).
+Output in OUT: `sampling_manifest.json` (the plan, with its SHA-256), `generation/<slug>/<dataset>/traces.jsonl` (the
+100k selection: one row per chosen completion, with `metadata.sentence_selection`) and four self-contained part roots
+`parts/part-0X/generation/<slug>/...` of exactly 25,000 sentences each, which `labeling.annotation_batch` labels.
 
-Selection policy
-----------------
+    python -m labeling.sample_stratified --generation-model openai/gpt-oss-20b --output-dir OUT [--dry-run]
+        --generation-dir results/correlation_pipeline/gpt-oss-20b/generation
 
-* Only scored traces (``is_correct is not None``) with a
-  ``metadata.usage.completion_tokens_details.reasoning_tokens`` value are
-  eligible. Truncated/unscored traces are dropped and counted in the manifest.
-* ``reasoning_tokens`` is split into four equal-count quartiles *per dataset*
-  (ties broken by the stable trace digest), producing the strata
-  ``dataset x correct|incorrect x Q1..Q4``.
-* Exactly one completion is chosen per source problem (``source_problem_id``,
-  falling back to ``problem_id``). Problems with a single eligible attempt are
-  fixed; problems with several attempts are assigned by a deterministic greedy
-  plus local-swap pass that minimises the maximum deviation between the chosen
-  universe's within-dataset cell sentence shares and the full eligible corpus
-  shares.
-* Cell quotas are proportional to the chosen universe's sentence supply
-  (``quota = total * cell_sentences / chosen_sentences``, largest-remainder
-  rounding). Inside a cell the quota is spread across problems with an integer
-  max-min fair water-filling allocation, so every problem receives the same
-  share until its completion's sentences run out. Sentence indices inside a
-  completion are drawn uniformly without replacement with a per-stratum seeded
-  RNG; because the quota never exceeds the chosen universe's supply, no problem
-  needs a second completion.
-* Each cell quota is split evenly across ``--parts`` parts (default four) and a
-  balancing pass guarantees every part holds exactly ``--part-size`` identities
-  (default 25,000). Boundary traces are duplicated across adjacent part roots
-  with their part-specific indices.
+How the sentences are chosen (seed 42, CPU only):
+* Only scored traces with a reasoning length are eligible. The length is the server's `reasoning_tokens`, or, where the
+  server reports 0 (gpt-oss), the count derived from the saved token replay. A dataset whose traces all have the same
+  length is refused, since its quartiles would mean nothing.
+* Each dataset's traces are split into four equal-count length quartiles, giving the cells
+  dataset x correct|incorrect x Q1..Q4.
+* One completion is chosen per source problem, by a deterministic greedy pass plus local swaps that keeps each
+  dataset's cell shares of sentences as close as possible to the full corpus.
+* A cell's quota is proportional to the chosen completions' sentences in it. Inside a cell the quota is spread over
+  problems as evenly as their sentence counts allow, and the sentences are drawn uniformly without replacement.
+* Each cell's quota is split evenly over the four parts, and a balancing pass makes every part exactly 25,000.
 
-Outputs
--------
-
-* ``<output-dir>/generation/<model-slug>/<dataset>/traces.jsonl``: combined
-  100k selection, one row per chosen completion with
-  ``metadata.sentence_selection = {schema_version, manifest_sha256, stratum,
-  indices}`` and a per-dataset ``manifest.json``.
-* ``<output-dir>/parts/part-XX/generation/<model-slug>/<dataset>/traces.jsonl``:
-  self-contained, internally stratified 25k part roots. Point the labelling
-  harness at one root per part, e.g. ``annotation_batch.py --trace-root
-  <output-dir>/parts/part-00/generation/<model-slug> --part 0 --parts 1
-  --part-size 25000 --total 25000 ... --plan-only``.
-* ``<output-dir>/sampling_manifest.json``: full audit record (config, seed,
-  source manifest hashes, per-cell supplies/quotas, per-problem chosen attempt,
-  deviations, part counts, plan SHA-256).
-
-The module is CPU-only and needs no GPU::
-
-    PYTHONPATH=src python -m labeling.sample_stratified \
-        --generation-dir results/correlation_pipeline/nemotron-nvfp4-dspark/generation \
-        --generation-model nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4 \
-        --output-dir results/correlation_pipeline/nemotron-nvfp4-dspark/reasoning-vllm-v1/sampling-100k-stratified \
-        --dry-run
-
-Remove ``--dry-run`` to write the sampled roots. Re-running with the same
-options and seed is idempotent; re-running with a different plan into the same
-output directory is refused.
+The same plan into the same OUT is idempotent; a different plan into an existing OUT is refused.
 """
 
 from __future__ import annotations
@@ -75,18 +36,16 @@ from fractions import Fraction
 from pathlib import Path
 from typing import Any
 
-from labeling.annotation_partition import capped_quotas
 from generation.generate import _model_slug, _write_json_atomic
+from labeling.annotation_batch import DATASETS
 from labeling.spans import digest, sentence_spans, trace_digest
-from store import iter_jsonl
 from schemas import TraceRecord
+from store import iter_jsonl
 
-DEFAULT_DATASETS = ["math500", "aime24", "aime25", "olympiad", "amc23", "minerva"]
-DEFAULT_GENERATION_MODEL = "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4"
-DEFAULT_TOTAL = 100_000
-DEFAULT_PARTS = 4
-DEFAULT_PART_SIZE = 25_000
-DEFAULT_SEED = 42
+TOTAL = 100_000
+PARTS = 4
+PART_SIZE = 25_000
+SEED = 42
 SCHEMA_VERSION = 1
 
 
@@ -236,6 +195,22 @@ def waterfill(caps: dict[str, int], quota: int, order: list[str]) -> dict[str, i
     if remaining:
         raise RuntimeError("waterfill failed to allocate the remaining quota")
     return allocation
+
+
+def proportional_quotas(supply: dict[str, int], total: int) -> dict[str, int]:
+    """Split `total` over the cells in proportion to their sentence supply (largest remainders first, ties by name).
+
+    No cell gets more than its own supply: a share is at most the supply, and a rounded-up share stays within it.
+    """
+    all_supply = sum(supply.values())
+    if total <= 0 or total > all_supply:
+        raise ValueError(f"cannot select {total} sentences from a supply of {all_supply}")
+    shares = {cell: Fraction(total * count, all_supply) for cell, count in supply.items()}
+    quotas = {cell: int(share) for cell, share in shares.items()}
+    left = total - sum(quotas.values())
+    for cell in sorted(shares, key=lambda cell: (-(shares[cell] - quotas[cell]), cell))[:left]:
+        quotas[cell] += 1
+    return quotas
 
 
 def _read_manifest(path: Path) -> dict[str, Any]:
@@ -498,46 +473,19 @@ def _sample_indices(problem: str, sentences: int, count: int, seed: int, salt: s
     return rng.sample(range(sentences), count)
 
 
-def _dataset_manifest(
-    source: dict[str, Any],
+def build_plan(
+    generation_dir: Path,
+    generation_model: str,
+    datasets: list[str] = list(DATASETS),
     *,
-    trace_path: Path,
-    source_manifest: Path,
-    plan_hash: str,
-    traces: int,
-    scored: int,
-    correct: int,
-    selected_sentences: int,
-) -> dict[str, Any]:
-    return {
-        **source,
-        "status": "complete",
-        "problems": traces,
-        "traces": traces,
-        "scored_traces": scored,
-        "correct_traces": correct,
-        "accuracy": correct / scored if scored else None,
-        "samples_per_problem": 1,
-        "source_samples_per_problem": source.get("samples_per_problem"),
-        "trace_path": str(trace_path),
-        "sampling_manifest_sha256": plan_hash,
-        "source_manifest": str(source_manifest),
-        "sampling": "stratified-accuracy-reasoning-length",
-        "selected_sentences": selected_sentences,
-    }
-
-
-def _select(args: argparse.Namespace) -> tuple[dict[str, Any], dict[tuple[str, str], SelectedTrace], dict[str, Any]]:
-    """Build the plan, its selected traces and auxiliary per-dataset details."""
-    if args.total != args.parts * args.part_size:
-        raise ValueError("--total must equal --parts * --part-size")
-    if args.total < 1 or args.parts < 1 or args.part_size < 1:
-        raise ValueError("--total, --parts and --part-size must be positive")
-    slug = _model_slug(args.generation_model)
-    generation_root = args.generation_dir / slug
-    datasets = list(args.datasets)
-    if len(set(datasets)) != len(datasets):
-        raise ValueError("--datasets contains duplicates")
+    total: int = TOTAL,
+    parts: int = PARTS,
+    part_size: int = PART_SIZE,
+    seed: int = SEED,
+) -> tuple[dict[str, Any], dict[tuple[str, str], SelectedTrace]]:
+    """Build the plan and the selected traces."""
+    slug = _model_slug(generation_model)
+    generation_root = generation_dir / slug
 
     infos_by_dataset: dict[str, list[TraceInfo]] = {}
     source_manifests: dict[str, dict[str, Any]] = {}
@@ -569,7 +517,7 @@ def _select(args: argparse.Namespace) -> tuple[dict[str, Any], dict[tuple[str, s
     details_by_dataset: dict[str, dict[str, Any]] = {}
     for dataset in datasets:
         chosen, _masses, details = _choose_completions(
-            infos_by_dataset[dataset], quartiles[dataset], dataset=dataset, seed=args.seed
+            infos_by_dataset[dataset], quartiles[dataset], dataset=dataset, seed=seed
         )
         chosen_by_dataset[dataset] = chosen
         details_by_dataset[dataset] = details
@@ -582,16 +530,14 @@ def _select(args: argparse.Namespace) -> tuple[dict[str, Any], dict[tuple[str, s
             cell_of[(dataset, problem)] = cell
             cell_supply[cell] = cell_supply.get(cell, 0) + info.sentences
     chosen_total = sum(cell_supply.values())
-    if chosen_total < args.total:
+    if chosen_total < total:
         raise ValueError(
-            f"Chosen one-completion universe has {chosen_total} sentences, fewer than --total {args.total}"
+            f"Chosen one-completion universe has {chosen_total} sentences, fewer than the {total} to select"
         )
-    quotas, _rounds = capped_quotas(
-        dict(cell_supply), {cell: cell_supply[cell] for cell in cell_supply}, args.total
-    )
+    quotas = proportional_quotas(cell_supply, total)
     cells = sorted(cell_supply)
     part_quotas = _split_part_quotas(
-        quotas, cells, parts=args.parts, part_size=args.part_size, seed=args.seed
+        quotas, cells, parts=parts, part_size=part_size, seed=seed
     )
 
     selected: dict[tuple[str, str], SelectedTrace] = {}
@@ -604,7 +550,7 @@ def _select(args: argparse.Namespace) -> tuple[dict[str, Any], dict[tuple[str, s
         for problem in chosen:
             by_cell[cell_of[(dataset, problem)]].append(problem)
         for cell in sorted(by_cell):
-            order = sorted(by_cell[cell], key=lambda problem: _priority(args.seed, "cell", cell, problem))
+            order = sorted(by_cell[cell], key=lambda problem: _priority(seed, "cell", cell, problem))
             caps = {problem: chosen[problem].sentences for problem in order}
             allocation = waterfill(caps, quotas[cell], order)
             if sum(allocation.values()) != quotas[cell]:
@@ -632,12 +578,12 @@ def _select(args: argparse.Namespace) -> tuple[dict[str, Any], dict[tuple[str, s
                 )
                 if count <= 0:
                     continue
-                picked = _sample_indices(problem, info.sentences, count, args.seed, f"sentences:{cell}")
-                part_lists: list[list[int]] = [[] for _ in range(args.parts)]
+                picked = _sample_indices(problem, info.sentences, count, seed, f"sentences:{cell}")
+                part_lists: list[list[int]] = [[] for _ in range(parts)]
                 for index in picked:
-                    while part_index < args.parts and part_remaining[part_index] == 0:
+                    while part_index < parts and part_remaining[part_index] == 0:
                         part_index += 1
-                    if part_index >= args.parts:
+                    if part_index >= parts:
                         raise RuntimeError("Sentence assignment ran past the last part")
                     part_lists[part_index].append(index)
                     part_remaining[part_index] -= 1
@@ -651,17 +597,17 @@ def _select(args: argparse.Namespace) -> tuple[dict[str, Any], dict[tuple[str, s
             if any(part_remaining):
                 raise RuntimeError(f"Cell {cell} did not fill its part quotas")
 
-    part_dataset: list[Counter[str]] = [Counter() for _ in range(args.parts)]
-    part_cells: list[Counter[str]] = [Counter() for _ in range(args.parts)]
-    part_totals: list[int] = [0] * args.parts
+    part_dataset: list[Counter[str]] = [Counter() for _ in range(parts)]
+    part_cells: list[Counter[str]] = [Counter() for _ in range(parts)]
+    part_totals: list[int] = [0] * parts
     for (dataset, _problem), item in selected.items():
         for part, indices in enumerate(item.parts):
             if indices:
                 part_dataset[part][dataset] += 1
                 part_cells[part][item.cell] += len(indices)
                 part_totals[part] += len(indices)
-    if part_totals != [args.part_size] * args.parts:
-        raise RuntimeError(f"Part totals {part_totals} do not match {args.part_size}")
+    if part_totals != [part_size] * parts:
+        raise RuntimeError(f"Part totals {part_totals} do not match {part_size}")
 
     cell_report = {}
     for cell in cells:
@@ -680,14 +626,14 @@ def _select(args: argparse.Namespace) -> tuple[dict[str, Any], dict[tuple[str, s
     plan: dict[str, Any] = {
         "schema_version": SCHEMA_VERSION,
         "selection": "stratified-accuracy-reasoning-length",
-        "generation_dir": str(args.generation_dir),
-        "generation_model": args.generation_model,
+        "generation_dir": str(generation_dir),
+        "generation_model": generation_model,
         "generation_slug": slug,
         "datasets": datasets,
-        "seed": args.seed,
-        "total_sentences": args.total,
-        "parts": args.parts,
-        "part_size": args.part_size,
+        "seed": seed,
+        "total_sentences": total,
+        "parts": parts,
+        "part_size": part_size,
         "eligibility": {
             "correctness": "traces with is_correct is not None only",
             "length_metric": "metadata.usage.completion_tokens_details.reasoning_tokens",
@@ -731,9 +677,9 @@ def _select(args: argparse.Namespace) -> tuple[dict[str, Any], dict[tuple[str, s
                 "datasets": dict(sorted(part_dataset[part].items())),
                 "cells": dict(sorted(part_cells[part].items())),
             }
-            for part in range(args.parts)
+            for part in range(parts)
         ],
-        "selected_sentences": args.total,
+        "selected_sentences": total,
         "chosen_problems": sum(len(chosen_by_dataset[dataset]) for dataset in datasets),
         "selected_traces": len(selected),
         "completions_per_problem": {
@@ -741,13 +687,7 @@ def _select(args: argparse.Namespace) -> tuple[dict[str, Any], dict[tuple[str, s
             "1": len(selected),
         },
     }
-    plan_hash = digest(plan)
-    manifest = {**plan, "manifest_sha256": plan_hash}
-    aux = {
-        "quartiles": quartiles,
-        "source_manifests": source_manifests,
-    }
-    return manifest, selected, aux
+    return {**plan, "manifest_sha256": digest(plan)}, selected
 
 
 def _summary(manifest: dict[str, Any]) -> dict[str, Any]:
@@ -774,21 +714,21 @@ def _summary(manifest: dict[str, Any]) -> dict[str, Any]:
 
 
 def _write_outputs(
-    args: argparse.Namespace,
+    generation_dir: Path,
+    output_dir: Path,
     manifest: dict[str, Any],
     selected: dict[tuple[str, str], SelectedTrace],
-    aux: dict[str, Any],
 ) -> None:
     """Second streaming pass: write combined and per-part sampled trace roots."""
     slug = manifest["generation_slug"]
     plan_hash = manifest["manifest_sha256"]
-    generation_root = args.generation_dir / slug
-    roots: list[tuple[str, Path]] = [("combined", args.output_dir / "generation")]
+    generation_root = generation_dir / slug
+    roots: list[tuple[str, Path]] = [("combined", output_dir / "generation")]
     roots.extend(
-        (f"part-{part:02d}", args.output_dir / "parts" / f"part-{part:02d}" / "generation")
+        (f"part-{part:02d}", output_dir / "parts" / f"part-{part:02d}" / "generation")
         for part in range(manifest["parts"])
     )
-    source_manifests = aux["source_manifests"]
+    source_manifests = manifest["source_manifests"]
     for dataset in manifest["datasets"]:
         dataset_selected = {
             (item.info.problem_id, item.info.sample_id): item
@@ -854,17 +794,24 @@ def _write_outputs(
                 len(item.combined) if part is None else len(item.parts[part])
                 for item in items
             )
+            correct = sum(item.info.is_correct for item in items)
             _write_json_atomic(
-                _dataset_manifest(
-                    source,
-                    trace_path=root / slug / dataset / "traces.jsonl",
-                    source_manifest=source_manifest_path,
-                    plan_hash=plan_hash,
-                    traces=len(items),
-                    scored=len(items),
-                    correct=sum(item.info.is_correct for item in items),
-                    selected_sentences=selected_sentences,
-                ),
+                {
+                    **source,
+                    "status": "complete",
+                    "problems": len(items),
+                    "traces": len(items),
+                    "scored_traces": len(items),
+                    "correct_traces": correct,
+                    "accuracy": correct / len(items) if items else None,
+                    "samples_per_problem": 1,
+                    "source_samples_per_problem": source.get("samples_per_problem"),
+                    "trace_path": str(root / slug / dataset / "traces.jsonl"),
+                    "sampling_manifest_sha256": plan_hash,
+                    "source_manifest": str(source_manifest_path),
+                    "sampling": "stratified-accuracy-reasoning-length",
+                    "selected_sentences": selected_sentences,
+                },
                 root / slug / dataset / "manifest.json",
             )
     for row in manifest["part_breakdown"]:
@@ -877,58 +824,38 @@ def _write_outputs(
                 "datasets": row["datasets"],
                 "cells": row["cells"],
                 "sampling_manifest_sha256": plan_hash,
-                "trace_root": str(args.output_dir / "parts" / f"part-{part:02d}" / "generation" / slug),
+                "trace_root": str(output_dir / "parts" / f"part-{part:02d}" / "generation" / slug),
             },
-            args.output_dir / "parts" / f"part-{part:02d}" / "part_manifest.json",
+            output_dir / "parts" / f"part-{part:02d}" / "part_manifest.json",
         )
-    _write_json_atomic(manifest, args.output_dir / "sampling_manifest.json")
+    _write_json_atomic(manifest, output_dir / "sampling_manifest.json")
 
 
-def sample(args: argparse.Namespace) -> dict[str, Any]:
-    """Build (and unless ``--dry-run`` is set, write) one stratified plan."""
-    manifest, selected, aux = _select(args)
-    if args.dry_run:
+def sample(
+    generation_dir: Path, generation_model: str, output_dir: Path, *, dry_run: bool = False, **plan_options: Any
+) -> dict[str, Any]:
+    """Build (and unless `dry_run`, write) one stratified plan. `plan_options` are those of `build_plan`."""
+    manifest, selected = build_plan(generation_dir, generation_model, **plan_options)
+    if dry_run:
         return _summary(manifest)
-    manifest_path = args.output_dir / "sampling_manifest.json"
+    manifest_path = output_dir / "sampling_manifest.json"
     if manifest_path.exists() and json.loads(manifest_path.read_text(encoding="utf-8")) != manifest:
         raise ValueError("Output contains a different sampling plan; choose a new output directory")
-    _write_outputs(args, manifest, selected, aux)
+    _write_outputs(generation_dir, output_dir, manifest, selected)
     return _summary(manifest)
 
 
 def main(argv: list[str] | None = None) -> None:
-    parser = argparse.ArgumentParser(
-        description=__doc__,
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-    )
-    parser.add_argument(
-        "--generation-dir",
-        type=Path,
-        default=Path("results/correlation_pipeline/nemotron-nvfp4-dspark/generation"),
-        help="Root containing <model-slug>/<dataset>/traces.jsonl",
-    )
-    parser.add_argument(
-        "--generation-model",
-        default=DEFAULT_GENERATION_MODEL,
-        help="Model identifier whose slug names the generation subtree",
-    )
-    parser.add_argument(
-        "--datasets",
-        nargs="+",
-        default=DEFAULT_DATASETS,
-        help="Benchmarks to sample (default: the six SPIRAL math sets)",
-    )
+    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser.add_argument("--generation-dir", type=Path, required=True,
+                        help="Root containing <model-slug>/<dataset>/traces.jsonl")
+    parser.add_argument("--generation-model", required=True,
+                        help="Model identifier whose slug names the generation subtree")
     parser.add_argument("--output-dir", type=Path, required=True)
-    parser.add_argument("--total", type=int, default=DEFAULT_TOTAL)
-    parser.add_argument("--parts", type=int, default=DEFAULT_PARTS)
-    parser.add_argument("--part-size", type=int, default=DEFAULT_PART_SIZE)
-    parser.add_argument("--seed", type=int, default=DEFAULT_SEED)
-    parser.add_argument(
-        "--dry-run",
-        action="store_true",
-        help="Compute and print the plan without writing any output",
-    )
-    print(json.dumps(sample(parser.parse_args(argv)), indent=2, sort_keys=True))
+    parser.add_argument("--dry-run", action="store_true", help="Compute and print the plan, write nothing")
+    args = parser.parse_args(argv)
+    print(json.dumps(sample(args.generation_dir, args.generation_model, args.output_dir, dry_run=args.dry_run),
+                     indent=2, sort_keys=True))
 
 
 if __name__ == "__main__":
