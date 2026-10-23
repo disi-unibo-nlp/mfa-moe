@@ -1,6 +1,9 @@
 """Read-only source aggregation for the CL evidence review; no scientific refits.
 
-Writes only its new report directory and the dedicated generated TeX directory.
+    python -m moe_exp.routing.benchmark_inventory OUT_DIR
+
+Writes the CSV tables, receipts and the TeX table into OUT_DIR only (the published copy is
+report/model-analysis-review-20261008).
 Saved question-bootstrap intervals are copied, never recomputed. No inference,
 raw routing tensors, Slurm, or checkpoint weight payloads are read.
 """
@@ -9,12 +12,13 @@ import csv
 import hashlib
 import json
 import math
+import sys
 
 import pandas as pd
 
-ROOT = Path(__file__).resolve().parents[2]
-OUT = Path(__file__).resolve().parent
-TEX = ROOT / 'paper/6a510c6db0d9b08aa438c142/generated/model_analysis_review'
+ROOT = Path(__file__).resolve().parents[3]
+OUT = Path(sys.argv[1]) if __name__ == '__main__' else None
+TEX = OUT
 BASE = Path('/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24')
 ANALYSIS = BASE / 'v3_analysis/results-r2'
 OUTCOMES = BASE / 'campaign-v3/outcomes/outcomes_v3-99bf8d59506e2893.parquet'
@@ -61,7 +65,7 @@ def main():
     source(BASE / 'campaign-v3/acceptance/j1.json')
     source(OUTCOMES.with_suffix('.manifest.json'))
     source(SAVED / 'provenance.json')
-    source(ROOT / 'src/moe_exp/correlation_pipeline/model_profiles.py')
+    source(ROOT / 'src/moe_exp/generation/model_profiles.py')
     table = pd.read_parquet(source(OUTCOMES))
     assert SOURCES[str(OUTCOMES)]['sha256'] == '99bf8d59506e2893218fd070d264d1fca4a1e4330052c11c347b727b3802e9ee'
     table['model'] = table['model'].replace({'qwen35gptq': 'qwen35'})

@@ -45,7 +45,7 @@ r7 WHOLE_NOMINATIONS.json ──────────> selection()           
 | `__main__.py` | Command line: `usage`, `select` (preview, writes nothing), `release`, `analyze`. |
 
 The routing operator itself lives with the other operators. It is
-`moe_exp.final_routing.operator.score_shift_masked`, applied by `moe_exp.steering.stream`. The
+`moe_exp.steering.operators.score_shift_masked`, applied by `moe_exp.steering.stream`. The
 length-limit prefix lives in `moe_exp.steering.runtime.budget_tokens`.
 
 ## Running it

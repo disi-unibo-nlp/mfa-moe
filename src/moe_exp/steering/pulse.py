@@ -13,9 +13,9 @@ Commands (python -m moe_exp.steering.pulse ...):
   run --model M --shard I/N     GPU: assigned continuations of one shard
   native --shard I/N            GPU: LFM native population (unhooked engine)
   annotate --shard I/N          GPU: LFM discovery judge labels (unhooked engine)
-  lfm-materialize | lfm-derive  CPU: reuse study.lfm / study.nominations
-  lfm-readout | lfm-dynamics    CPU: LFM native readout (study.readouts) and native-dynamics panel
-  lfm-replay --shard I/N        GPU: reuse study.lfm.replay (Backend.capture_trace)
+  lfm-materialize | lfm-derive  CPU: labeling.lfm_inputs / steering.nominations
+  lfm-readout | lfm-dynamics    CPU: LFM native readout (routing.lfm_readout) and native-dynamics panel
+  lfm-replay --shard I/N        GPU: capture.lfm_replay (Backend.capture_trace)
   status                        login: dispositions per model
 """
 from __future__ import annotations
@@ -565,6 +565,28 @@ def recover_outputs(store, rows):
             'segments': len(raw['segments']), 'stochastic_redraw': False, 'recovered_after_crash': True})
         recovered += 1
     return recovered
+
+
+def shard_completion(store: Store, rows: list[dict]) -> dict:
+    """Count each assignment's state, whether or not the engine drained its queue.
+
+    Complete only when every assignment in the shard has a committed complete RESULT.
+    """
+    from collections import Counter
+
+    counts = Counter()
+    complete_results = 0
+    for row in rows:
+        state = store.state(row['uid'])
+        status = state['status'] if state is not None else 'untouched'
+        counts[status] += 1
+        if status == 'complete' and (store.folder(row['uid'])/'RESULT.json').is_file():
+            complete_results += 1
+    return {
+        'status': 'complete' if complete_results == len(rows) else 'incomplete',
+        'rows': len(rows),
+        'state_counts': dict(sorted(counts.items())),
+    }
 
 
 def run_model(model, shard, deadline, *, max_inflight=64, design='main', sub=None):

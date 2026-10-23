@@ -63,12 +63,14 @@ srun envs/vllm-cu129/bin/python -B -u -m measurement_study.campaign_v3_capture \
     SOURCE --manifest MANIFEST --bundle BUNDLE [--verify-only]
 ```
 
-The equivalent now is `python -m moe_exp.capture.campaign_v3_capture SOURCE --manifest MANIFEST --bundle BUNDLE`.
+The ported module does not run yet: `main()` calls `bundle.worker_init`, which refuses any `moe_exp` module loaded
+from outside a frozen bundle, and the old bundles hold `measurement_study/*.py`, not `moe_exp/capture/*.py`.
+Step 6 replaces the bundle check with the release snapshot (`scripts/slurm/release.sh`).
 
 ## Known leftovers (not touched in the port)
 
-- `bundle.py` verifies loaded modules against a bundle's `SHA256.json`; it is inert for modules loaded from the
-  repository and is replaced by the release script in step 5.
+- `bundle.py` verifies loaded modules against a bundle's `SHA256.json` and so blocks running from the repository
+  (see above); it goes away when the release script takes its place.
 - `join_collection.join_cohort` appends the bundle's `scripts/` to `sys.path` and imports
   `analyze_available_metrics` from it. That helper (a pilot analysis script) is not ported; the function is only
   used when planning cohorts, never by capture or the gate.
