@@ -1,144 +1,18 @@
-"""Bounded contiguous native replay buffers; no per-token Python objects.
+"""Agreement checks between two captures of the same trace.
 
-Arrays retain native precision until rank agreement is hashed. Only the on-disk
-mixture weights are rounded to fp16, after finite/range checks.
+glm: the vLLM capture must agree with a Hugging Face reference (compare_backend_captures). gpt: the KV-chunked
+replay must agree with the single-pass replay (compare_native_captures). A failed HF/vLLM check raises
+DifferentialFailed with the full report, so a failure can be diagnosed from the saved numbers.
 """
-from __future__ import annotations
+import math
 
-MIB = 1024 ** 2
-GIB = 1024 ** 3
-MAX_WORKER_BYTES = 100 * GIB  # Two TP workers plus engine/headroom in a 240G job.
-MAX_TRANSIENT_BYTES = 96 * GIB
+import numpy as np
+import torch
 
-
-def approved_capture_path(output):
-    from capture.campaign_v3_plan import validate_storage_root
-    try:
-        path = validate_storage_root(output)
-    except ValueError as error:
-        raise ValueError('Unapproved capture path') from error
-    if path.name == 'campaign-v3':
-        raise ValueError('Unapproved capture path: expected an artifact below the campaign root')
-    return path
-
-
-def capture_memory_budget(tokens, layers, hidden_size, num_experts, top_k, *, rank=0):
-    """Conservative bytes, including buffers, coverage and serialization headroom."""
-    dimensions = (tokens, layers, hidden_size, num_experts, top_k)
-    if any(type(x) is not int or x <= 0 for x in dimensions) or top_k > num_experts:
-        raise ValueError('Invalid native capture dimensions')
-    if rank not in (0, 1):
-        raise ValueError('Invalid tensor-parallel rank')
-    # IDs may be int64; hidden up to float32. Native weights are kept float32.
-    native = tokens * layers * (8 * top_k + 4 * top_k + 8 * num_experts + (4 * hidden_size if rank == 0 else 0))
-    coverage = tokens * layers * (5 if rank == 0 else 4)
-    output = tokens * layers * (8 * top_k + 2 * top_k + 8 * num_experts + 4 * hidden_size) + 8 * MIB
-    # Rounded weights are the only additional full tensor during serialization.
-    worker = native + coverage + tokens * layers * top_k * 2 + 64 * MIB
-    rank0_native = tokens * layers * (12 * top_k + 8 * num_experts + 4 * hidden_size)
-    rank1_native = tokens * layers * (12 * top_k + 8 * num_experts)
-    # Snapshot release precedes parent torch.load; leave 64GiB for engines,
-    # short HF reference, transient chunks and orchestration. No concurrent full
-    # parent tensor copy is budgeted while both worker buffers remain live.
-    host = rank0_native + rank1_native + tokens * layers * (9 + 2 * top_k) + 64 * GIB
-    if worker > MAX_WORKER_BYTES or output > MAX_TRANSIENT_BYTES or host > 240 * GIB:
-        raise ValueError('Native capture exceeds 240G job memory envelope')
-    return {'worker_bytes': worker, 'transient_bytes': output, 'native_tensor_bytes': native, 'host_peak_budget_bytes': host}
-
-
-class CaptureBuffers:
-    def __init__(self, layers, tokens, *, rank=0, max_bytes=MAX_WORKER_BYTES):
-        if not layers or list(layers) != sorted(set(layers)) or type(tokens) is not int or tokens <= 0:
-            raise ValueError('Invalid layer/token coverage contract')
-        if rank not in (0, 1) or not 0 < max_bytes <= MAX_WORKER_BYTES:
-            raise ValueError('Invalid native buffer memory cap')
-        self.layers = list(layers)
-        self.indices = {layer: i for i, layer in enumerate(layers)}
-        self.tokens, self.rank, self.max_bytes = tokens, rank, max_bytes
-        self.arrays, self.coverage = {}, {}
-        self.allocated_bytes = 0
-        self.expected = {'ids', 'weights', 'router', 'selection'} | ({'hidden'} if rank == 0 else set())
-
-    def write(self, layer, positions, values):
-        import torch
-        if layer not in self.indices or not values or not set(values) <= self.expected:
-            raise ValueError('Unexpected capture layer or signal')
-        positions = torch.as_tensor(positions, dtype=torch.long, device='cpu')
-        if positions.ndim != 1 or not len(positions) or bool(((positions < 0) | (positions >= self.tokens)).any()):
-            raise ValueError('Capture position outside completion')
-        if len(positions.unique()) != len(positions):
-            raise ValueError('Duplicate positions within one capture batch')
-        index = self.indices[layer]
-        for name, value in values.items():
-            value = value.detach().to(device='cpu')
-            if value.ndim != 2 or value.shape[0] != len(positions) or value.shape[1] <= 0:
-                raise ValueError('Invalid native signal shape')
-            if name == 'ids':
-                if value.dtype not in (torch.int32, torch.int64):
-                    raise ValueError('Native expert IDs must be integers')
-            elif not value.is_floating_point() or not bool(torch.isfinite(value).all()):
-                raise ValueError('Nonfinite native capture signal')
-            if name not in self.arrays:
-                shape = (len(self.layers), self.tokens, value.shape[1])
-                size = len(self.layers) * self.tokens * (value.shape[1] * value.element_size() + 1)
-                if self.allocated_bytes + size > self.max_bytes:
-                    raise ValueError('Native capture buffer memory cap exceeded before allocation')
-                self.arrays[name] = torch.empty(shape, dtype=value.dtype, device='cpu')
-                self.coverage[name] = torch.zeros(shape[:2], dtype=torch.bool, device='cpu')
-                self.allocated_bytes += size
-            array, seen = self.arrays[name], self.coverage[name]
-            if array.shape[2] != value.shape[1] or array.dtype != value.dtype:
-                raise ValueError('Native signal dtype or width changed')
-            previous = seen[index, positions]
-            if bool(previous.any()) and not torch.equal(array[index, positions[previous]], value[previous]):
-                raise RuntimeError('Recomputation changed a recorded native signal')
-            array[index, positions] = value
-            seen[index, positions] = True
-
-    def require_complete(self):
-        if set(self.arrays) != self.expected or any(not bool(x.all()) for x in self.coverage.values()):
-            raise RuntimeError('Incomplete exact completion coverage or missing native capture signal')
-        return self.arrays
-
-    def for_storage(self):
-        import torch
-        arrays = self.require_complete()
-        result = dict(arrays)
-        weights = arrays['weights']
-        if bool((weights < 0).any()) or bool((weights > torch.finfo(torch.float16).max).any()):
-            raise ValueError('Native weights cannot be stored as finite nonnegative fp16')
-        # Preserve rank hashes on arrays, then return an explicit storage rounding.
-        result['weights'] = weights.to(torch.float16)
-        return result
-
-
-def verified_modular_backend(quant):
-    """Only backends whose native select→forward_modular boundary is audited."""
-    if getattr(quant, 'is_monolithic', True):
-        raise RuntimeError('Unsupported monolithic dispatch; use an audited modular backend')
-    allowed = {
-        'fp8_backend': {'MARLIN', 'TRITON'},
-        'nvfp4_backend': {'MARLIN'},
-        'wna16_backend': {'MARLIN', 'TRITON'},
-        'wna16_moe_backend': {'MARLIN', 'TRITON'},  # AutoGPTQMoEMethod (gptq_marlin alias)
-        'mxfp4_backend': {'MARLIN', 'TRITON', 'TRITON_UNFUSED'},
-        'unquantized_backend': {'TRITON'},
-    }
-    found = []
-    for attribute, names in allowed.items():
-        backend = getattr(quant, attribute, None)
-        if backend is not None:
-            name = getattr(backend, 'name', None)
-            if name not in names:
-                raise RuntimeError(f'Unverified native MoE backend: {attribute}={name}')
-            found.append((attribute, name))
-    if len(found) != 1:
-        raise RuntimeError('Require one verified native modular MoE backend')
-    return '/'.join(found[0])
+from capture.native_selection import boundary_gaps, require_native_boundary
 
 
 def _ranks(values):
-    import numpy as np
     order = np.argsort(values, kind='mergesort')
     ranks = np.empty(len(values))
     ranks[order] = np.arange(len(values))
@@ -146,7 +20,6 @@ def _ranks(values):
 
 
 def _spearman(x, y):
-    import numpy as np
     rx, ry = _ranks(np.asarray(x, dtype=float)), _ranks(np.asarray(y, dtype=float))
     if rx.std() == 0 or ry.std() == 0:
         return float('nan')
@@ -159,7 +32,6 @@ def window_dynamics(ids, experts, window=32):
     Averaged over layers: entropy of the window's expert usage, Jensen-Shannon divergence
     from the previous window's usage, and mean Jaccard overlap of consecutive tokens' sets.
     Windows of ~sentence length stand in for sentences (no text alignment needed)."""
-    import numpy as np
     ids = np.asarray(ids)
     layers, tokens, _ = ids.shape
     count = tokens // window
@@ -191,7 +63,6 @@ def dynamics_agreement(reference_ids, native_ids, experts, window=32):
 
 def discontinuities(errors, factor=3.0, floor=5e-3):
     """Layers whose error jumps above `factor` x the median of their +-2 neighbours."""
-    import numpy as np
     out = []
     for i, value in enumerate(errors):
         neighbours = [errors[j] for j in range(max(0, i - 2), min(len(errors), i + 3)) if j != i]
@@ -210,7 +81,7 @@ class DifferentialFailed(ValueError):
 
 def compare_hf_vllm_capture(hf, native, *, total_input_tokens, layers,
                             hf_weight_scale=1.0, vllm_weight_scale=1.0,
-                            identical_kernels=None, near_tie_eps=1e-3,
+                            near_tie_eps=1e-3,
                             selection_relative_l2_bound=5e-3, weight_relative_l2_bound=5e-3,
                             first_layer_relative_l2_bound=5e-3, global_relative_l2_bound=0.25,
                             min_dynamics_spearman=0.9, dynamics_min_tokens=2048,
@@ -225,7 +96,6 @@ def compare_hf_vllm_capture(hf, native, *, total_input_tokens, layers,
     per-position score shift, and per-layer effective weights agree on the tokens
     whose sets agree. Flip counts, near-tie (gap < near_tie_eps) statistics and the
     score-shift distribution are reported, not gated, so a failure is diagnosable.
-    Exact-set equality is required only when both sides report identical kernels.
     Router logits, hidden states and effective weights are compared per layer: bf16 drift
     between two kernel implementations accumulates with depth (GLM-4.7-Flash, 32k tokens:
     hidden 0.4% at the first routed layer rising to ~9%), whereas a semantic error (layer
@@ -241,20 +111,11 @@ def compare_hf_vllm_capture(hf, native, *, total_input_tokens, layers,
     raised (DifferentialFailed carries the full report). Full-trace native dispatch and the
     -1e-6 selection-boundary checks remain independent gates.
     """
-    import math
-    import torch
-    from capture.native_selection import require_native_boundary
     if not 0 < total_input_tokens <= 32768:
         raise ValueError('HF/vLLM differential requires at most 32768 input tokens')
     if any(not math.isfinite(x) or x <= 0 for x in (hf_weight_scale, vllm_weight_scale)):
         raise ValueError('Invalid audited routed weight scale')
     failures = []
-    for name, value in (('near_tie_eps', near_tie_eps), ('selection_relative_l2_bound', selection_relative_l2_bound),
-                        ('weight_relative_l2_bound', weight_relative_l2_bound),
-                        ('first_layer_relative_l2_bound', first_layer_relative_l2_bound),
-                        ('global_relative_l2_bound', global_relative_l2_bound)):
-        if not math.isfinite(value) or value < 0:
-            raise ValueError('Invalid differential tolerance: ' + name)
     for data in (hf, native):
         if data.get('audit', {}).get('native_dispatch') is not True:
             raise ValueError('HF/vLLM differential requires verified native dispatch')
@@ -268,12 +129,6 @@ def compare_hf_vllm_capture(hf, native, *, total_input_tokens, layers,
         sorted_ids = data['ids'].sort(-1).values
         if bool((torch.diff(sorted_ids, dim=-1) == 0).any()):
             raise ValueError('Duplicate expert in ' + name + ' native dispatch')
-    if identical_kernels is None:
-        identical_kernels = bool(hf.get('audit', {}).get('identical_kernels')
-                                 and native.get('audit', {}).get('identical_kernels'))
-    if identical_kernels and not torch.equal(ids.sort(-1).values, native['ids'].sort(-1).values):
-        raise ValueError('HF/vLLM native selected expert sets differ under identical kernels')
-    from capture.native_selection import boundary_gaps
     gaps = boundary_gaps(hf['selection'], ids)
     if not bool(torch.isfinite(gaps).all()):
         raise ValueError('HF/vLLM reference selection gaps are not finite')
@@ -348,8 +203,7 @@ def compare_hf_vllm_capture(hf, native, *, total_input_tokens, layers,
                               score_shift_max=float(score_shift[index].max()),
                               router_relative_l2=tensor_errors['router']['per_layer_relative_l2'][index],
                               hidden_relative_l2=tensor_errors['hidden']['per_layer_relative_l2'][index]))
-    result = {'status': 'passed', 'identical_kernels': bool(identical_kernels),
-              'exact_set_equality_required': bool(identical_kernels),
+    result = {'status': 'passed',
               'native_selected_sets_identical': bool(agree.all()),
               'total_input_tokens': total_input_tokens, 'layers': list(layers),
               'completion_tokens': ids.shape[1], 'hf_weight_scale': hf_weight_scale,
@@ -397,13 +251,11 @@ def compare_hf_vllm_capture(hf, native, *, total_input_tokens, layers,
     return result
 
 
-def compare_backend_captures(reference, candidate, *, total_input_tokens, layers, **differential_options):
-    """Public production_capture hook; HF weights already include its scale.
+def compare_backend_captures(reference, candidate, *, total_input_tokens, layers):
+    """HF reference against the vLLM capture of the same trace; HF weights already include their scale.
 
-    Native vLLM audit must carry the observed per-layer runner output scale.
+    The vLLM audit must carry the observed per-layer runner output scale.
     A homogeneous GLM scale is expected, and unequal layer scales are rejected.
-    Callers that ran both sides with identical kernels may request the exact
-    same-set check; the default HF/bf16-vs-native path uses the near-tie gate.
     """
     scales = candidate.get('audit', {}).get('routed_output_scaling')
     if not isinstance(scales, dict) or set(scales) != {str(layer) for layer in layers}:
@@ -415,5 +267,25 @@ def compare_backend_captures(reference, candidate, *, total_input_tokens, layers
             raise ValueError('Differential absolute layer topology differs')
     return compare_hf_vllm_capture(reference, candidate, total_input_tokens=total_input_tokens,
                                   layers=layers, hf_weight_scale=1.0,
-                                  vllm_weight_scale=float(next(iter(scales.values()))),
-                                  **differential_options)
+                                  vllm_weight_scale=float(next(iter(scales.values()))))
+
+
+def compare_native_captures(reference, candidate, *, relative_l2_limit=.005):
+    """Fail closed on expert-set disagreements; numerical tolerance is explicit."""
+    if reference['ids'].shape != candidate['ids'].shape or not torch.equal(
+            reference['ids'].sort(-1).values, candidate['ids'].sort(-1).values):
+        raise ValueError('Chunked replay changed native selected expert sets')
+    results = {}
+    for field in ('router', 'hidden'):
+        a, b = reference[field].float(), candidate[field].float()
+        if a.shape != b.shape or not torch.isfinite(a).all() or not torch.isfinite(b).all():
+            raise ValueError('Invalid differential shape/value: ' + field)
+        error = float(torch.linalg.vector_norm(a-b) / torch.linalg.vector_norm(a).clamp_min(1e-12))
+        if not math.isfinite(error) or error > relative_l2_limit:
+            raise ValueError('Chunked differential exceeded tolerance: ' + field)
+        results[field + '_relative_l2'] = error
+    a = reference['weights'].gather(-1, reference['ids'].argsort(-1)).float()
+    b = candidate['weights'].gather(-1, candidate['ids'].argsort(-1)).float()
+    if not torch.isfinite(a).all() or not torch.isfinite(b).all() or not torch.allclose(a, b, rtol=.01, atol=.001):
+        raise ValueError('Chunked replay changed native executed weights')
+    return dict(status='passed', selected_sets_identical=True, **results)

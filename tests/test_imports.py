@@ -27,7 +27,7 @@ ENTRY_POINTS = [
     'generation.generate', 'labeling.sample_cohorts',
     'labeling.annotation_batch', 'generation.answer_equivalence',
     'generation.model_profiles', 'labeling.gepa.run',
-    'capture.campaign_v3_capture', 'capture.capture_gate', 'capture.vllm_capture',
+    'capture.run', 'capture.gate', 'capture.vllm_capture',
     'routing.readout', 'routing.anticipation', 'routing.next_state', 'routing.selection',
     'routing.dynamics', 'routing.benchmark_accuracy', 'routing.benchmark_inventory',
     'routing.efficiency_link_prereg',
