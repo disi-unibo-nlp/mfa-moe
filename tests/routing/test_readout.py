@@ -5,11 +5,11 @@ from pathlib import Path
 import tempfile
 from types import SimpleNamespace
 import unittest
+from unittest import mock
 import numpy as np
-from routing import readout_fit as new
-from routing.readout_analysis import check_first_run, family_folds
-from store import WORK
-from routing.lfm_readout import HISTORICAL
+from routing import readout_analysis, readout_fit as new
+from routing.readout_analysis import HISTORICAL, code_hashes, family_folds, freeze
+from store import WORK, file_sha
 
 MODELS = ('gemma', 'glm', 'gpt', 'nemotron', 'qwen330b', 'qwen35', 'qwen36', 'lfm25', 'lfm25-engineering')
 
@@ -70,10 +70,25 @@ class ReadoutTests(unittest.TestCase):
     def test_a_rerun_may_change_the_code_hashes_but_not_the_inputs(self):
         first = {'ids': {'gpt': ['a', 'b']}, 'inputs': {'/x': 'h1'}, 'code': {'/old.py': 'c1'}, 'sha256': 's1'}
         with tempfile.TemporaryDirectory(dir=WORK/'tools/tmp') as tmp:
-            path = Path(tmp)/'FROZEN.json'
-            check_first_run(path, first)  # no first run recorded: nothing to compare
-            path.write_text(json.dumps(first))
-            check_first_run(path, {**first, 'code': {'/new.py': 'c2'}, 'sha256': 's2'})
-            with self.assertRaises(ValueError):
-                check_first_run(path, {**first, 'inputs': {'/x': 'changed'}})
+            tmp = Path(tmp)
+            (tmp/'first').mkdir()
+            with mock.patch.object(readout_analysis, 'HISTORICAL', tmp/'first'):
+                freeze(tmp/'a', 'FROZEN.json', first)  # no first run recorded yet: nothing to compare
+                (tmp/'first'/'FROZEN.json').write_text(json.dumps(first))
+                rerun = {**first, 'code': {'/new.py': 'c2'}, 'sha256': 's2'}
+                freeze(tmp/'b', 'FROZEN.json', rerun)
+                freeze(tmp/'b', 'FROZEN.json', rerun)  # a resumed run writes the same spec again
+                with self.assertRaises(ValueError):
+                    freeze(tmp/'b', 'FROZEN.json', {**rerun, 'sha256': 's3'})
+                with self.assertRaises(ValueError):
+                    freeze(tmp/'c', 'FROZEN.json', {**first, 'inputs': {'/x': 'changed'}})
 
+    def test_code_hashes_cover_files_and_the_python_files_of_folders(self):
+        with tempfile.TemporaryDirectory(dir=WORK/'tools/tmp') as tmp:
+            tmp = Path(tmp)
+            (tmp/'pkg').mkdir()
+            (tmp/'pkg/a.py').write_text('a = 1\n')
+            (tmp/'pkg/notes.txt').write_text('skip')
+            (tmp/'driver.py').write_text('b = 2\n')
+            self.assertEqual(code_hashes(tmp/'driver.py', tmp/'pkg'),
+                             {str(tmp/'driver.py'): file_sha(tmp/'driver.py'), str(tmp/'pkg/a.py'): file_sha(tmp/'pkg/a.py')})

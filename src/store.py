@@ -27,6 +27,7 @@ FAST = Path('/leonardo_scratch/fast/IscrC_MIOSR/lmolfett/mfa-moe/campaign-runs')
 # Saved analyses outside the repo that the seven-model readout, next-state and benchmark code read.
 ANALYSIS = WORK/'tools/tmp/claude-analysis-2026-09-24'
 STUDY = Path(os.environ.get('STUDY_DATA_ROOT', REPO/'report/final-routing-20261015-r1'))
+DRIVER = STUDY/'driver'
 SEED = 20261008
 CLASSES = ('Read', 'Analyze', 'Plan', 'Implement', 'Explore', 'Verify', 'Monitor')
 BENCHMARKS = ('aime24', 'aime25', 'amc23', 'math500', 'minerva', 'olympiad')
@@ -136,6 +137,27 @@ def publish(path, value):
     finally:
         Path(tmp).unlink(missing_ok=True)
     return payload
+
+
+def write_once(path, write):
+    """Write a data file atomically through `write(stream)`; a file already there must have the same bytes.
+
+    Returns {'path', 'sha256'} of the file."""
+    path = private(path)
+    path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+    fd, tmp = tempfile.mkstemp(prefix='.pending-', dir=path.parent)
+    try:
+        with os.fdopen(fd, 'wb') as stream:
+            write(stream)
+            stream.flush()
+            os.fsync(stream.fileno())
+        try:
+            os.link(tmp, path)
+        except FileExistsError:
+            require(file_sha(tmp) == file_sha(path), f'conflicting immutable data file: {path}')
+    finally:
+        Path(tmp).unlink(missing_ok=True)
+    return {'path': str(path), 'sha256': file_sha(path)}
 
 
 def verified(path):

@@ -15,14 +15,13 @@ Repeated attempts are never treated as independent: CIs resample questions.
     python -m routing.benchmark_accuracy OUT_DIR [--outcomes campaign-v3/outcomes/outcomes_v3.latest.json]
 """
 import argparse
-import hashlib
 import json
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
 
-from store import ANALYSIS
+from store import ANALYSIS, file_sha
 
 OUTCOMES = ANALYSIS / "campaign-v3/outcomes/outcomes_v3.latest.json"
 PAIRED = ("aime24", "aime25", "amc23")
@@ -33,7 +32,7 @@ def load(path):
     if path.suffix == ".json":
         pointer = json.loads(path.read_text())
         path = Path(pointer["path"])
-        if hashlib.sha256(path.read_bytes()).hexdigest() != pointer["sha256"]:
+        if file_sha(path) != pointer["sha256"]:
             raise ValueError("outcome sidecar does not match its pointer")
     table = pd.read_parquet(path)
     table["model"] = table["model"].replace({"qwen35gptq": "qwen35"})
@@ -41,7 +40,7 @@ def load(path):
         table[column] = table[column].astype("float")
     table["capped"] = table["termination"].eq("length")
     table["question"] = table["dataset"] + "|" + table["source_problem_id"].fillna(table["problem_id"])
-    return table, dict(path=str(path), sha256=hashlib.sha256(path.read_bytes()).hexdigest())
+    return table, dict(path=str(path), sha256=file_sha(path))
 
 
 def clustered_ci(frame, column, reps=1000, seed=0):

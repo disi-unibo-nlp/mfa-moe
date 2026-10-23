@@ -30,11 +30,9 @@ import types
 import pandas as pd
 
 import store
-from store import REPO, STUDY, clean, file_sha, load, publish, require, verified
+from store import DRIVER, MODELS, REPO, STUDY, clean, file_sha, load, publish, require, verified
 
 FROZEN_SCRIPT = REPO/'src/routing/efficiency_link_prereg.py'
-MODELS = ('gpt', 'nemotron', 'qwen35', 'qwen36', 'gemma', 'glm', 'qwen330b', 'lfm25')
-DRIVER = STUDY/'driver'
 PREREG = DRIVER/'EFFICIENCY_LINK_PREREG.json'
 LINK = DRIVER/'EFFICIENCY_LINK_V2.json'
 DRIVER_TEST = DRIVER/'analysis-final-link-v2/EFFICIENCY_LINK_TEST.json'

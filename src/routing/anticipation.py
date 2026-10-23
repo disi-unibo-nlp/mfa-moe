@@ -18,13 +18,9 @@ import os
 from pathlib import Path
 import time
 
-from routing.readout_analysis import check_first_run, family_folds
-from store import ANALYSIS, WORK, file_sha, require, seal, verified
-
-HISTORICAL = ANALYSIS / 'forum/tests/r3_context'
-FAMILY_FREEZE = WORK / 'mfa-moe/repo/report/experimental-resume-v1/family-freeze.json'
-SEED = 20260929
-STATE = {}
+import store
+from routing.readout_analysis import FAMILY_FREEZE, SEED, code_hashes, family_folds, freeze, question_families
+from store import ANALYSIS, file_sha, require, seal
 
 
 def augment_baseline(model, pairs, cohort, P, T):
@@ -244,8 +240,7 @@ def run(workers, out):
     K.DATA = RK.DATA
     K.K2DATA = RK.DATA / 'k2'
     K.OUTER = 5
-    family = verified(FAMILY_FREEZE)
-    qf = {q:f for f, qs in family['new_parent_pools']['families'].items() for q in qs}
+    _, qf = question_families()
     split = D.load_split()
     folds = lambda qs, n, seed: family_folds(qs, n, seed if seed>=SEED else SEED*1000+seed, qf)
     C.question_folds = folds
@@ -269,7 +264,7 @@ def run(workers, out):
     here = Path(__file__).parent
     frozen = seal({'schema':'r3d-anticipation-v1','inputs':{str(p):file_sha(p) for p in inputs if p.is_file()},
         'canonical_ids':populations,
-        'code':{str(p):file_sha(p) for p in [Path(__file__),*(here/'rkin').glob('*.py'),*(here/'dynrt').glob('*.py')]},
+        'code':code_hashes(__file__,here/'rkin',here/'dynrt',here/'readout_analysis.py',store.__file__),
         'split':'exact dev+tune before learned transforms; reserved B excluded',
         'outer':5,'inner':3,'repeats':5,'seeds':list(range(SEED,SEED+5)),
         'fold_group':'frozen duplicate family','current_class':'training-only text classifier; grouped OOF training predictions; fixed lambda=1',
@@ -279,12 +274,7 @@ def run(workers, out):
         'bootstraps':5000,'CPU_core_hour_ceiling':8.,'no_new_tensor_producer':True,
         'responses':['A1 next class','K2 switch','K2 destination'],
         'contained_sensitivity':'source n_tokens >=32 for both 16 and32 windows; reported exclusions'})
-    check_first_run(HISTORICAL/'FROZEN.anticipation.json', frozen)
-    out.mkdir(parents=True, exist_ok=True)
-    path = out/'FROZEN.anticipation.json'
-    if path.exists():
-        require(json.loads(path.read_text()) == frozen, 'anticipation inputs/code changed')
-    path.write_text(json.dumps(frozen,indent=1)+'\n')
+    freeze(out, 'FROZEN.anticipation.json', frozen)
     results = {}
     for model in ('gpt','qwen36'):
         pairs_all = pd.read_parquet(K.K2DATA/model/'pairs.parquet')
@@ -364,7 +354,7 @@ def run(workers, out):
 
 
 if __name__=='__main__':
-    parser=argparse.ArgumentParser(description='Seven-model anticipation of the next reasoning state.')
+    parser=argparse.ArgumentParser(description='Anticipation of the next reasoning state (GPT-OSS and Qwen3.6).')
     parser.add_argument('--out',required=True,help='new directory for the spec, checkpoints and results')
     parser.add_argument('--workers',type=int,default=4)
     args=parser.parse_args()

@@ -2,15 +2,43 @@
 from pathlib import Path
 import json
 import time
-from store import digest, require, seal
+from store import ANALYSIS, WORK, digest, file_sha, require, seal, verified
+
+# The first seven-model run: its frozen specs fix the inputs a rerun must reproduce, and the LFM readout binds its files.
+HISTORICAL = ANALYSIS / 'forum/tests/r3_context'
+# Reports are untracked and live in the main checkout only.
+FAMILY_FREEZE = WORK / 'mfa-moe/repo/report/experimental-resume-v1/family-freeze.json'
 SEED = 20260929
 
 
-def check_first_run(path, spec):
-    """A rerun must start from the first run's inputs; only the code hashes (and so the seal) may differ."""
-    if path.exists():
+def question_families():
+    """The family freeze receipt and the map question -> duplicate family."""
+    freeze = verified(FAMILY_FREEZE)
+    return freeze, {q: f for f, qs in freeze['new_parent_pools']['families'].items() for q in qs}
+
+
+def code_hashes(*paths):
+    """sha256 of each file given and of every .py file of each folder given: the code a run spec records."""
+    files = []
+    for path in map(Path, paths):
+        files += sorted(path.glob('*.py')) if path.is_dir() else [path]
+    return {str(path): file_sha(path) for path in sorted(files)}
+
+
+def freeze(out, name, spec):
+    """Write the run spec `name` into the new folder `out`.
+
+    Its inputs must equal those of the first run (HISTORICAL/name); only the code hashes, and so the seal, may
+    differ. A spec already in `out` must be identical, so a resumed run keeps its checkpoints."""
+    first = HISTORICAL / name
+    if first.exists():
         inputs = lambda value: {k: v for k, v in value.items() if k not in ('code', 'sha256')}
-        require(inputs(json.loads(path.read_text())) == inputs(spec), f'inputs differ from the first run: {path}')
+        require(inputs(json.loads(first.read_text())) == inputs(spec), f'inputs differ from the first run: {first}')
+    out.mkdir(parents=True, exist_ok=True)
+    path = out / name
+    if path.exists():
+        require(json.loads(path.read_text()) == spec, f'{path} differs from this run')
+    path.write_text(json.dumps(spec, indent=1) + '\n')
 
 
 def family_folds(questions, n, seed, question_family):
