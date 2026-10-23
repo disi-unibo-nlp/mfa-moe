@@ -14,7 +14,7 @@ import zipfile
 
 import pymupdf
 
-from paper.build_cl_manuscript import compile_bounded, compile_env, source_files, tectonic
+from paper.build_cl_manuscript import compile_bounded, compile_env, copy_sources, source_files, tectonic
 from paper.cl_paths import BUILD, PAPER, TECTONIC_SHA256
 from store import file_sha
 
@@ -23,11 +23,7 @@ def page_proofs(path):
     """Text and a hash of the pixels of every page."""
     with pymupdf.open(path) as doc:
         texts = [p.get_text() for p in doc]
-    renders = []
-    for i in range(len(texts)):
-        with pymupdf.open(path) as doc:
-            pixels = doc[i].get_pixmap(matrix=pymupdf.Matrix(2, 2)).samples
-            renders.append(hashlib.sha256(pixels).hexdigest())
+        renders = [hashlib.sha256(p.get_pixmap(matrix=pymupdf.Matrix(2, 2)).samples).hexdigest() for p in doc]
     return texts, renders
 
 
@@ -64,12 +60,7 @@ def main():
     source = root / ('source-' + nonce)
     source.mkdir()
     # The original figure PDFs and the review notes travel with the sources but are not used to compile.
-    bindings = {}
-    for origin in source_files(PAPER / 'figures'):
-        name = str(origin.relative_to(PAPER))
-        (source / name).parent.mkdir(parents=True, exist_ok=True)
-        shutil.copyfile(origin, source / name)
-        bindings[name] = file_sha(origin)
+    bindings = copy_sources(source_files(PAPER / 'figures'), source)
     manifest = {'entry': 'main.tex', 'files': bindings, 'build_pdf_sha256': record['pdf_sha256'],
                 'compiler': 'Tectonic 0.17.0', 'compiler_sha256': TECTONIC_SHA256,
                 'science_recomputed': False, 'remote_publication': False}

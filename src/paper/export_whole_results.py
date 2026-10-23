@@ -1,6 +1,7 @@
 """Write the whole-reasoning tables and figure data of the paper from the sealed EFFECTS_WHOLE.json receipt.
 
-Reads one receipt (made by steering.whole_effects; no fitting or resampling here). Command:
+Reads one receipt (made by steering.whole_effects; no fitting or resampling here), the efficiency-link receipt it names
+and continuations.parquet beside it (needs pandas). Command:
 python -m paper.export_whole_results [--effects EFFECTS_WHOLE.json] [--out DIR]. It writes, below --out (default: the
 paper folder):
   journal/tables/whole.tex                 primary contrasts at full strength (8 models, pooled row)
@@ -769,9 +770,10 @@ def main():
     if not set(effects["models"]) <= set(MODELS):
         raise ValueError("whole receipt has a model outside the study roster")
     # The signs the analysis used (receipts before r19 record none: the preregistration).
-    link_path = REPO / effects["efficiency_link"]["path"] if "efficiency_link" in effects else PREREG
+    link = effects.get("efficiency_link")
+    link_path = REPO / link["path"] if link else PREREG
     prereg = verified(link_path)
-    if "efficiency_link" in effects and prereg["sha256"] != effects["efficiency_link"]["sha256"]:
+    if link and prereg["sha256"] != link["sha256"]:
         raise ValueError("efficiency-link receipt differs from the one the analysis used")
     base = base_doses(effects)
     cells = cell_keys(effects, base, prereg, run_signs)

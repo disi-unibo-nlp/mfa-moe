@@ -2,7 +2,8 @@
 
 The expected labels are the numeric nodes of figures/journal/routing.tex, each checked against the routing.dat
 value it annotates. The typeset PDF (BUILD/figure-builds/routing/routing.pdf, made by build_cl_figures) must show
-exactly those labels, none touching a bar or a whisker. Writes BUILD/figure-labels-routing/LABEL_GEOMETRY.json.
+exactly those labels, none touching a bar or a whisker. It also refuses rotated x-tick labels in any figure source.
+Writes BUILD/figure-labels-routing/LABEL_GEOMETRY.json.
 
   python -m paper.verify_cl_figure_labels
 """

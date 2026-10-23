@@ -1,6 +1,6 @@
 #!/bin/bash
 # Write the paper tables and figure data from the sealed receipts (never edit the outputs by hand):
-#   scripts/paper/export.sh [EFFECTS_WHOLE.json]     default: the final whole-reasoning receipt (r20)
+#   scripts/paper/export.sh [EFFECTS_WHOLE.json]     default: the final whole-reasoning receipt
 set -euo pipefail
 module load python/3.11.7
 export PYTHONPATH=src PYTHONDONTWRITEBYTECODE=1

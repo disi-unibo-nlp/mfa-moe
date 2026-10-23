@@ -4,6 +4,8 @@ Nothing is fitted, resampled or run here. The bundled copies live in figures/jou
 anticipation CSVs, native dynamics, benchmark cells). A plain run turns them into the plotting files readout.dat,
 selection.dat, selection_summary.json, next_state.dat, occupancy.dat and state_transitions_*.dat. The tables of the
 manuscript are edited by hand and are never written here; `verify_cl_tables` checks them against the same copies.
+Before writing it also checks that the native-memory fixtures add up over workers and that every model has 4,647
+benchmark attempts.
 
   python -m paper.export_cl_exhibits                 plotting files from the bundled copies
   python -m paper.export_cl_exhibits --capture-lfm   first add the LFM2.5 rows from final-routing-20261015-r1
@@ -15,10 +17,8 @@ import json
 import shutil
 
 from paper.cl_paths import DATA, LEGACY, REPO
-from store import FAST, file_sha, verified
-
-MODELS = ("gpt", "nemotron", "qwen35", "qwen36", "gemma", "glm", "qwen330b", "lfm25")
-CLASSES = ("Read", "Analyze", "Explore", "Plan", "Implement", "Verify", "Monitor")
+from paper.export_routing_results import CLASSES
+from store import BENCHMARKS, FAST, MODELS, file_sha, verified
 
 
 def read_csv(name):
@@ -26,18 +26,19 @@ def read_csv(name):
         return list(csv.DictReader(stream))
 
 
+def source(path):
+    """How SOURCES.json names a file: its path below the repository and its hash."""
+    return {"path": str(path.relative_to(REPO)), "sha256": file_sha(path)}
+
+
 def capture():
     DATA.mkdir(parents=True, exist_ok=True)
     sources = {}
-    older = LEGACY / "generated/best_results_20261009"
-    for name in ("routing_readout.csv", "selection_coverage.csv", "anticipation.csv"):
-        origin = older / name
-        shutil.copyfile(origin, DATA / name)
-        sources[name] = {"path": str(origin.relative_to(REPO)), "sha256": file_sha(origin)}
-    for name in ("benchmark_cells.csv", "expert_usage_correctness_mean_all.csv"):
-        origin = REPO / "report/model-analysis-review-20261008" / name
-        shutil.copyfile(origin, DATA / name)
-        sources[name] = {"path": str(origin.relative_to(REPO)), "sha256": file_sha(origin)}
+    older, review = LEGACY / "generated/best_results_20261009", REPO / "report/model-analysis-review-20261008"
+    for origin in [older / name for name in ("routing_readout.csv", "selection_coverage.csv", "anticipation.csv")] + [
+            review / name for name in ("benchmark_cells.csv", "expert_usage_correctness_mean_all.csv")]:
+        shutil.copyfile(origin, DATA / origin.name)
+        sources[origin.name] = source(origin)
     imported = REPO / "report/research-campaign-v3-20261014-r6/EVIDENCE_IMPORT.json"
     bindings = {r["path"]: r["sha256"] for r in json.loads(imported.read_text())["references"]}
     summaries = {}
@@ -46,17 +47,16 @@ def capture():
         if bindings[str(path)] != file_sha(path):
             raise ValueError("imported dynamics changed: " + model)
         summaries[model] = json.loads(path.read_text())
-        sources[model + ":dynamics"] = {"path": str(path.relative_to(REPO)), "sha256": file_sha(path)}
+        sources[model + ":dynamics"] = source(path)
     (DATA / "native_dynamics.json").write_text(json.dumps(summaries, indent=2) + "\n")
     fixture = REPO / "report/research-campaign-v3-20261014-r6/PARTIAL_VALIDATION_EVIDENCE.json"
     records = json.loads(fixture.read_text())["models"]
     if {r["model"] for r in records} != set(MODELS[:7]):
         raise ValueError("native fixture roster changed")
     (DATA / "native_fixtures.json").write_text(json.dumps(records, indent=2) + "\n")
-    sources["native_fixtures"] = {"path": str(fixture.relative_to(REPO)), "sha256": file_sha(fixture)}
-    (DATA / "SOURCES.json").write_text(json.dumps({"sources": sources,
-        "import_binding": {"path": str(imported.relative_to(REPO)), "sha256": file_sha(imported)},
-        "new_measurement": False}, indent=2) + "\n")
+    sources["native_fixtures"] = source(fixture)
+    (DATA / "SOURCES.json").write_text(json.dumps({"sources": sources, "import_binding": source(imported),
+                                                   "new_measurement": False}, indent=2) + "\n")
 
 
 LFM_ROOT = REPO / "report/final-routing-20261015-r1/lfm25"
@@ -80,7 +80,7 @@ def lfm_benchmark_cells():
         raise ValueError("J1 verdicts incomplete for LFM2.5")
     generation = LFM_BULK / "generation/LiquidAI--LFM2.5-24B-A2B"
     cells, sources = [], {}
-    for dataset in ("aime24", "aime25", "amc23", "math500", "minerva", "olympiad"):
+    for dataset in BENCHMARKS:
         path = generation / dataset / "traces.jsonl"
         sources["lfm25:generation:" + dataset] = {"path": str(path), "sha256": file_sha(path)}
         rows = []
@@ -110,12 +110,13 @@ def lfm_benchmark_cells():
         draw = np.random.default_rng(0).integers(0, len(questions), size=(1000, len(questions)))
         low, high = np.quantile(sums[draw].sum(1) / counts[draw].sum(1), [.025, .975])
         tokens = np.array([r["tokens"] for r in rows])
+        strict_correct = sum(r["strict"] for r in rows)
         cells.append({"model": "lfm25", "dataset": dataset, "corpus": "card-v3", "attempts": len(rows),
             "questions": len(questions), "capped": int(sum(r["capped"] for r in rows)),
             "completion_tokens_sum": int(tokens.sum()), "completion_tokens_median": float(np.median(tokens)),
             "completion_tokens_mean": float(tokens.mean()), "strict_scored": len(rows),
-            "strict_correct": int(sum(r["strict"] for r in rows)), "strict_unknown": 0,
-            "strict_accuracy": sum(r["strict"] for r in rows) / len(rows),
+            "strict_correct": int(strict_correct), "strict_unknown": 0,
+            "strict_accuracy": strict_correct / len(rows),
             "adjudicated_scored": int(scored.sum()), "adjudicated_correct": int(adjudicated[scored].sum()),
             "adjudicated_unknown": int((~scored).sum()), "adjudicated_accuracy": float(adjudicated[scored].mean()),
             "adjudicated_ci_low": float(low), "adjudicated_ci_high": float(high)})
@@ -167,7 +168,7 @@ def capture_lfm():
         writer.writerows(kept + [{k: c.get(k, "") for k in fields} for c in cells])
     for name, path in (("lfm25:readout", readout), ("lfm25:selection", LFM_ROOT / "SELECTION_COVERAGE.json"),
                        ("lfm25:dynamics", dynamics)):
-        sources["sources"][name] = {"path": str(path.relative_to(REPO)), "sha256": file_sha(path)}
+        sources["sources"][name] = source(path)
     sources["sources"].update(generation_sources)
     (DATA / "SOURCES.json").write_text(json.dumps(sources, indent=2) + "\n")
 
@@ -178,8 +179,9 @@ def dat(name, headings, rows):
         for row in rows) + "\n")
 
 
-def readout_data(routing):
+def readout_data():
     """Present-state cross-entropy change relative to the text baseline, and its change over the lexical null."""
+    routing = {r["model"]: r for r in read_csv("routing_readout.csv")}
     if set(routing) != set(MODELS):
         raise ValueError("readout roster mismatch")
     coords = []
@@ -225,9 +227,7 @@ def selection_data():
 
 def next_state_data():
     """Next-state cross-entropy change (adjacent and contained windows) for the two models that have it."""
-    adjacent = [r for r in read_csv("anticipation.csv")
-                if r["feature"] == "composition16" and r["mode"] in ("next", "next-contained")]
-    lookup = {(r["model"], r["mode"]): r for r in adjacent}
+    lookup = {(r["model"], r["mode"]): r for r in read_csv("anticipation.csv") if r["feature"] == "composition16"}
     coords = []
     for i, m in enumerate(("gpt", "qwen36")):
         vals = []
@@ -247,36 +247,31 @@ def dynamics_data():
     for model in MODELS:
         matrix, absent = [], []
         for y, state in enumerate(CLASSES, 1):
-            row_total, defined = 0.0, 0
-            for x, destination in enumerate(CLASSES, 1):
-                result = dynamics[model]["results"][state + ":next:" + destination]
-                mean = result["estimate"]
-                missing = int(result["interval"] is None)
-                if mean is None:
-                    # An undefined estimate stays missing (nan), never zero, and is not summed.
-                    mean = float("nan")
-                else:
-                    row_total += mean
-                    defined += 1
-                matrix.append((x, y, mean, missing))
-                if missing:
-                    absent.append((x + .32, y - .32))
-            if defined == len(CLASSES) and abs(row_total - 1) > 1e-10:
+            row = [dynamics[model]["results"][state + ":next:" + destination] for destination in CLASSES]
+            # An undefined estimate stays missing (nan), never zero, and is not summed.
+            defined = [r["estimate"] for r in row if r["estimate"] is not None]
+            if len(defined) == len(CLASSES) and abs(sum(defined) - 1) > 1e-10:
                 raise ValueError("transition row does not sum to one")
-            if row_total > 1 + 1e-10:
+            if sum(defined) > 1 + 1e-10:
                 raise ValueError("transition row exceeds one")
+            for x, r in enumerate(row, 1):
+                matrix.append((x, y, float("nan") if r["estimate"] is None else r["estimate"], int(r["interval"] is None)))
+                if r["interval"] is None:
+                    absent.append((x + .32, y - .32))
         dat("state_transitions_" + model + ".dat", ("to", "from", "probability", "missing"), matrix)
         if absent:
             dat("state_transitions_missing_" + model + ".dat", ("to", "from"), absent)
+    order = ("Analyze", "Implement", "Verify", "Monitor", "Read", "Explore", "Plan")
     coords = []
     for i, m in enumerate(MODELS):
         vals = []
-        for c in ("Analyze", "Implement", "Verify", "Monitor", "Read", "Explore", "Plan"):
+        for c in order:
             r = dynamics[m]["results"][c + ":occupancy"]
             mu, low, high = r["estimate"], *r["interval"]
             vals.extend((100 * mu, 100 * (mu - low), 100 * (high - mu)))
         coords.append((i + 1, *vals))
-    dat("occupancy.dat", ("x", "analyze", "aminus", "aplus", "implement", "iminus", "iplus", "verify", "vminus", "vplus", "monitor", "mminus", "mplus", "read", "rminus", "rplus", "explore", "eminus", "eplus", "plan", "pminus", "pplus"), coords)
+    headings = [h for c in order for h in (c.lower(), c[0].lower() + "minus", c[0].lower() + "plus")]
+    dat("occupancy.dat", ("x", *headings), coords)
 
 
 def check_inputs():
@@ -286,7 +281,7 @@ def check_inputs():
             raise ValueError("worker aggregation differs")
     cells = {(r["model"], r["dataset"]): r for r in read_csv("benchmark_cells.csv") if r["corpus"] == "card-v3"}
     for m in MODELS:
-        if sum(int(cells[m, b]["attempts"]) for b in ("aime24", "aime25", "amc23", "math500", "minerva", "olympiad")) != 4647:
+        if sum(int(cells[m, b]["attempts"]) for b in BENCHMARKS) != 4647:
             raise ValueError("benchmark attempt population differs")
 
 
@@ -299,7 +294,7 @@ if __name__ == "__main__":
         capture()
     if args.capture_lfm:
         capture_lfm()
-    readout_data({r["model"]: r for r in read_csv("routing_readout.csv")})
+    readout_data()
     selection_data()
     next_state_data()
     dynamics_data()

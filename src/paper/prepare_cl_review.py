@@ -1,7 +1,8 @@
 """Add the journal's figure sources, data, notes and old evidence files to a paper-writer review packet.
 
-Run `pw packet` first; this only extends BUILD/packet.json and BUILD/packet.md with the files below and the
-page images of the current build (BUILD/BUILD.json). It changes no tool and no rule.
+Run `pw packet` first; this only extends BUILD/packet.json and BUILD/packet.md with those files and points the
+packet at the page images of the current build (BUILD/BUILD.json). It also writes the PDF text to BUILD/pdf-text.md.
+It changes no tool and no rule.
 
   python -m paper.prepare_cl_review
 """

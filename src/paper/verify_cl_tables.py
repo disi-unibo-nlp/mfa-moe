@@ -13,13 +13,13 @@ import json
 from pathlib import Path
 import re
 
-from paper.cl_paths import FIGURES as SUPPORT_FIGURES, NOTES, PAPER as DEFAULT_PAPER, REPO
+from paper.cl_paths import NOTES, PAPER as DEFAULT_PAPER, REPO
 from store import verified
 
 
 def figure_root(paper):
     """Canonical figure sources and data in the selected manuscript checkout."""
-    return SUPPORT_FIGURES if paper == DEFAULT_PAPER else paper / "figures/journal"
+    return paper / "figures/journal"
 
 
 def notes_root(paper):

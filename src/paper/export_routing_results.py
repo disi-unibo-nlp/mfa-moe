@@ -1,7 +1,8 @@
 """Write the routing-intervention tables and figure data of the paper from the sealed effects receipts.
 
 No fitting or resampling happens here. Inputs (report/final-routing-20261015-r1/driver): analysis-final/EFFECTS.json,
-analysis-strong/EFFECTS.json, EFFICIENCY_LINK_V2.json and its driver test. Command: python -m paper.export_routing_results
+analysis-strong/EFFECTS.json, EFFICIENCY_LINK_PREREG.json, EFFICIENCY_LINK_V2.json and the driver link test.
+Command: python -m paper.export_routing_results
 Outputs:
   figures/journal/data/routing.dat           coordinates of the routing figure
   figures/journal/data/routing_results.json  every displayed number and its source receipt
@@ -71,7 +72,14 @@ ACCURACY = ("activate:correct:vs_native", "random_activate:correct:vs_native",
             "deactivate:correct:vs_native", "random_deactivate:correct:vs_native")
 TOKENS = ("activate:log_tokens:vs_native", "random_activate:log_tokens:vs_native",
           "deactivate:log_tokens:vs_native", "random_deactivate:log_tokens:vs_native")
-HEADINGS = [k.replace(":", "_") for k in STATE + ACCURACY + TOKENS]  # columns of routing.dat
+
+
+def column(key):
+    """Name of a plotted value in routing.dat."""
+    return key.replace(":", "_")
+
+
+HEADINGS = [column(k) for k in STATE + ACCURACY + TOKENS]  # columns of routing.dat
 
 
 def figure(coords, panels):
@@ -132,12 +140,11 @@ def routing_table(effects, record):
     heading = " ".join(f"{k} {k}_pm" for k in HEADINGS)
     (DATA / "routing.dat").write_text("x " + heading + "\n" + "\n".join(
         " ".join(format(v, ".6g") for v in row) for row in coords) + "\n")
-    columns = lambda keys: [k.replace(":", "_") for k in keys]
-    figure(coords, [("(a) Target-state effect, targeted $-$ matched random (pp)", columns(
-                         ("activate:occupancy", "activate:first", "deactivate:occupancy", "deactivate:first")),
+    figure(coords, [("(a) Target-state effect, targeted $-$ matched random (pp)", [column(k) for k in (
+                         "activate:occupancy", "activate:first", "deactivate:occupancy", "deactivate:first")],
                      (-6.5, 6), "-6,-4,-2,0,2,4,6", 2),
-                    ("(b) Accuracy change from native routing (pp)", columns(ACCURACY), (-17, 10), "-15,-10,-5,0,5", 1),
-                    ("(c) Generated-token change from native routing (\\%)", columns(TOKENS), (-42, 33), "-30,-15,0,15,30", 1)])
+                    ("(b) Accuracy change from native routing (pp)", [column(k) for k in ACCURACY], (-17, 10), "-15,-10,-5,0,5", 1),
+                    ("(c) Generated-token change from native routing (\\%)", [column(k) for k in TOKENS], (-42, 33), "-30,-15,0,15,30", 1)])
 
     table = r"""% Source: report/final-routing-20261015-r1/driver/analysis-final/EFFECTS.json via scripts/paper/export_routing_results.py.
 \begin{table}[tb]
@@ -175,7 +182,7 @@ def levels_table(effects, record):
     for model in MODELS:
         level = effects["levels_by_model"][model]
         lines.append("\\multicolumn{5}{l}{" + TABLE_NAMES[model] + "}\\\\*")
-        record[model]["levels"] = {}
+        record.setdefault(model, {})["levels"] = {}
         for j, (arm, label) in enumerate(ARMS):
             acc, gen, rea, stop = (points(level[arm + ":correct"]), points(level[arm + ":generated_tokens"], 1.),
                                    points(level[arm + ":reasoning_tokens"], 1.), points(level[arm + ":stopped"]))
@@ -230,12 +237,10 @@ def strong_table(strong, record):
                       points(e["activate:correct:vs_native"]), points(e["random_activate:correct:vs_native"])]
             record["strong"][model].update(accuracy_vs_random=cells[2], tokens_vs_random=cells[3],
                                            accuracy_vs_native=cells[4], random_accuracy_vs_native=cells[5])
-            values = [cid(*cells[0], 2), cid(*cells[1], 2), cid(*cells[2], 2), cid(*cells[3], 1), cid(*cells[4], 2),
-                      cid(*cells[5], 2)]
+            values = [cid(*c, digits) for c, digits in zip(cells, (2, 2, 2, 1, 2, 2))]
             srows.append("\\midrule\nAll four models & " + " & ".join(values) + " \\\\")
         else:
-            srows.append(TABLE_NAMES[model] + " & " + cid(*cells[0], 2) + " & " + cid(*cells[1], 2)
-                         + " & \\textemdash & \\textemdash & \\textemdash & \\textemdash \\\\")
+            srows.append(" & ".join([TABLE_NAMES[model], *(cid(*c, 2) for c in cells), *["\\textemdash"] * 4]) + " \\\\")
     (TABLES / "routing_strong.tex").write_text(r"""% Source: report/final-routing-20261015-r1/driver/analysis-strong/EFFECTS.json via scripts/paper/export_routing_results.py.
 \begin{table}[tb]
 \centering\small
@@ -331,7 +336,7 @@ def main():
                          for p in (MAIN, STRONG)}
     (DATA / "routing_results.json").write_text(json.dumps(record, indent=1, default=float) + "\n")
     print(json.dumps({"models": len(MODELS), "continuations": effects["continuations"], "pairs": effects["pairs"],
-                      "strong_models": len(strong["models"]), "tables": 3}))
+                      "strong_models": len(strong["models"]), "tables": 4}))
 
 
 if __name__ == "__main__":
