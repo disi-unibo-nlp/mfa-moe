@@ -1,7 +1,7 @@
-"""Bounded worker child for the exact original DSPy program, renderer and parser.
+"""The child process of `labeling.renderer.Renderer`: the exact original DSPy program, prompt renderer and parser.
 
-Run as `python -m labeling.renderer_child PROGRAM` by `OriginalRenderer`; moved unchanged from
-`scripts/research_campaign_v3_r6/renderer.py` except the repository depth of `__file__`.
+Run as `python -m labeling.renderer_child PROGRAM`. It reads one JSON request per line on stdin (`render` an input into
+a conversation, `parse` a completion into a label) and answers on stdout.
 """
 import json
 import sys
@@ -18,7 +18,7 @@ def main():
         parse_completion,
         parse_failure_types,
     )
-    program,predict,adapter=load_program_and_adapter(sys.argv[1])
+    predict,adapter=load_program_and_adapter(sys.argv[1])
     for line in sys.stdin:
         item=json.loads(line)
         try:
