@@ -66,6 +66,9 @@ class StreamCapture:
         self.whole_slots, self.whole_totals, self.whole_role_cache = {}, {}, {}
         self.next_whole_slot = 0
         self.whole_step, self.whole_row_cache, self.whole_audit_pending = 0, None, []
+        # Native-id captures (capture_mode 'native_ids'): per layer, the native top-k ids and weights of
+        # every generated reasoning token, kept as numpy chunks instead of per-token Python lists.
+        self.whole_ids_pending = []
         self.boundaries, self.req_ids, self.contexts, self.plan = [], [], [], {}
         self.handle = None
         self.original_prepare = runner._prepare_inputs
@@ -289,10 +292,12 @@ class StreamCapture:
         import torch
         identity = (self.whole_step, tuple((uid, len(rows)) for uid, rows in work))
         if self.whole_row_cache is None or self.whole_row_cache[0] != identity:
-            indices, groups, base, prompts, audit = [], [], [], [], []
+            indices, groups, base, prompts, audit, native_ids = [], [], [], [], [], []
             for group, (uid, rows) in enumerate(work):
                 request = self.requests[uid]
+                slim = request.get('capture_mode') == 'native_ids'
                 for index, context in rows:
+                    native_ids.append(slim and not context['prompt'])
                     indices.append(index)
                     groups.append(group)
                     prompts.append(context['prompt'])
@@ -302,11 +307,16 @@ class StreamCapture:
             group_values = torch.tensor([[len(rows) for _, rows in work],
                                          [self.whole_slots[uid] for uid, _ in work]], dtype=torch.long).to(device)
             audit_rows = [i for i, flag in enumerate(audit) if flag]
+            id_rows = [i for i, flag in enumerate(native_ids) if flag]
+            id_owners = [(uid, [(i, c) for i, c in rows if not c['prompt']]) for uid, rows in work
+                         if self.requests[uid].get('capture_mode') == 'native_ids']
             self.whole_row_cache = (identity, {
                 'take': row_values[0], 'groups': row_values[1], 'base': row_values[2].bool(),
                 'prompt': row_values[3].bool(), 'lengths': group_values[0], 'slots': group_values[1],
                 'audit': torch.tensor(audit_rows, dtype=torch.long).to(device) if audit_rows else None,
-                'audit_owners': [(uid, rows) for uid, rows in work if self.requests[uid].get('audit_capture')]})
+                'audit_owners': [(uid, rows) for uid, rows in work if self.requests[uid].get('audit_capture')],
+                'ids': torch.tensor(id_rows, dtype=torch.long).to(device) if id_rows else None,
+                'id_owners': [(uid, rows) for uid, rows in id_owners if rows]})
         return self.whole_row_cache[1]
 
     def _whole_batch(self, layer, work, logits, nw, ni, native_policy):
@@ -345,10 +355,15 @@ class StreamCapture:
             packed = torch.cat((ni[rows].float(), nw[rows].float(), ai[step['audit']].float(),
                                 aw[step['audit']].float(), active[step['audit'], None].float()), -1)
             self.whole_audit_pending.append((layer, step['audit_owners'], packed))
+        if step['ids'] is not None:
+            rows = take[step['ids']]
+            self.whole_ids_pending.append((layer, step['id_owners'], ni[rows].to(torch.uint8),
+                                           nw[rows].to(torch.float16)))
         return weights, ids
 
     def _flush_whole_audit(self):
         """Move the finished step's audit slices to the host in one transfer."""
+        self._flush_native_ids()
         if not self.whole_audit_pending:
             return
         import torch
@@ -358,6 +373,31 @@ class StreamCapture:
         for layer, owners, packed in pending:
             self._whole_audit(layer, owners, host[offset:offset+len(packed)])
             offset += len(packed)
+
+    def _flush_native_ids(self):
+        """Move the finished step's native-id slices to the host (one transfer for ids, one for weights)."""
+        if not self.whole_ids_pending:
+            return
+        import torch
+        pending, self.whole_ids_pending = self.whole_ids_pending, []
+        ids = torch.cat([chunk for _, _, chunk, _ in pending]).cpu().numpy()
+        weights = torch.cat([chunk for _, _, _, chunk in pending]).cpu().numpy()
+        offset = 0
+        for layer, owners, chunk, _ in pending:
+            for uid, rows in owners:
+                record = self.records[uid].setdefault(str(layer), {'tokens': 0, 'native_ids': [], 'native_weights': []})
+                positions = [c['generated_position'] for _, c in rows]
+                keep = [j for j, position in enumerate(positions) if position >= record['tokens']]
+                if keep:
+                    # Rows of one request are contiguous positions; a recomputed pass resets the record.
+                    require(positions[keep[0]] == record['tokens'] and keep == list(range(keep[0], len(rows))) and
+                            positions[-1]-positions[keep[0]] == len(keep)-1, 'native-id capture gap')
+                    start = offset+keep[0]
+                    record['native_ids'].append(ids[start:offset+len(rows)])
+                    record['native_weights'].append(weights[start:offset+len(rows)])
+                    record['tokens'] += len(keep)
+                offset += len(rows)
+        require(offset == len(ids), 'native-id capture ownership differs')
 
     def _whole_audit(self, layer, owners, packed):
         """Split one layer's audit rows into the unchanged per-request audit records."""
@@ -465,7 +505,7 @@ class StreamCapture:
     def release(self, uid):
         require(uid in self.requests, 'unknown released request')
         self._flush_whole_audit()
-        self.requests.pop(uid)
+        mode = self.requests.pop(uid).get('capture_mode')
         clock = self.clocks.pop(uid)
         for internal in [k for k, v in self.aliases.items() if v == uid]:
             del self.aliases[internal]
@@ -482,9 +522,20 @@ class StreamCapture:
         stats = {**stats, 'active_positions': sorted(stats['active_positions']),
                  'changed_positions': sorted(stats['changed_positions'])}
         records = self.records.pop(uid)
+        arrays = None
+        if mode == 'native_ids':
+            # The arrays travel beside the receipt; the receipt (and the rank-agreement digest) holds their hashes.
+            import hashlib
+            import numpy as np
+            arrays = {layer: (np.concatenate(r['native_ids']), np.concatenate(r['native_weights']))
+                      for layer, r in records.items() if r['tokens']}
+            records = {layer: {'tokens': len(ids), 'native_ids_sha256': hashlib.sha256(ids.tobytes()).hexdigest(),
+                               'native_weights_sha256': hashlib.sha256(weights.tobytes()).hexdigest()}
+                       for layer, (ids, weights) in arrays.items()}
         value = {'capture': records, 'stats': stats, 'closed': clock.closed, 'passes': clock.passes,
                  'observed_tokens': len(clock.history)}
-        return {**value, 'sha256': digest(value)}
+        result = {**value, 'sha256': digest(value)}
+        return result if arrays is None else {**result, 'native_id_arrays': arrays}
 
     def restore(self):
         self.runner._prepare_inputs = self.original_prepare

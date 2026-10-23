@@ -66,6 +66,9 @@ SHARDS.update({model: int(count) for model, count in
 RUN_MINUTES = {model: plan['run_minutes'] for model, plan in PLAN.items()}
 CANARY_MINUTES = {model: plan['canary_minutes'] for model, plan in PLAN.items()}
 ROOT = Path(os.environ.get('WHOLE_ROOT', REPO/'report/whole-reasoning-20261020'))
+# Slurm job names start with this prefix; other releases (oc = outcome captures, os = outcome steering)
+# use their own so that scripts counting or waiting on live whole-* jobs never see them.
+JOB_PREFIX = os.environ.get('WHOLE_JOB_PREFIX', 'whole')
 # Bootstrap draws and seed shared by every whole-reasoning interval.
 DRAWS, SEED = 10000, 20261015
 
@@ -324,12 +327,14 @@ def prepare_model(b: dict, model: str, scope: bool) -> dict:
     dose and selects it (no canary). A top-up or resume release (TOPUP.json / RESUME.json) publishes
     the rows it takes over from its parent, with the parent's dose and no canary.
     """
-    from moe_exp.outcome_steering.manifest import outcome_manifest
+    from moe_exp.outcome_steering.capture import capture_manifest
+    from moe_exp.outcome_steering.manifest import outcome_manifest, sweep_manifest
     builders = {'TOPUP.json': topup_manifest, 'RESUME.json': resume_manifest, 'OUTCOME.json': outcome_manifest,
-                'COMPLEMENT.json': complement_manifest}
+                'COMPLEMENT.json': complement_manifest, 'CAPTURE.json': capture_manifest,
+                'OUTCOME_SWEEP.json': sweep_manifest}
     present = [name for name in builders if (ROOT/name).exists()]
     require(len(present) <= 1,
-            'a release is either a top-up, a resume or an outcome-steering release (or a complement)')
+            'a release is either a top-up, a resume, a capture or an outcome-steering release (or a complement)')
     if present:
         spec = verified(ROOT/present[0])['models'][model]
         return {model+':'+SWEEP[model]: builders[present[0]](model, spec)}
@@ -509,12 +514,14 @@ def bound_store(model: str, dose: str, canary: bool = False) -> driver.Store:
     require(Path(release['release_root']).resolve() == REPO, 'whole code is outside its immutable materialized release')
     folder = ROOT/'stores'/model/dose/('canary' if canary else 'units')
     identity = {'manifest_sha256': value['sha256'], 'release_sha256': release['sha256'], 'canary': canary}
-    if (folder/'EXECUTION.json').exists():
-        require({k: v for k, v in verified(folder/'EXECUTION.json').items() if k != 'sha256'} == identity,
-                'whole store belongs to a different release')
-    else:
-        require(not folder.exists() or not any(folder.iterdir()), 'nonempty unbound whole store')
-        publish(folder/'EXECUTION.json', identity)
+    # Shards of one store start together; the lock (beside the store, never inside it) makes binding atomic.
+    with locked(folder.parent, 'bind-'+folder.name):
+        if (folder/'EXECUTION.json').exists():
+            require({k: v for k, v in verified(folder/'EXECUTION.json').items() if k != 'sha256'} == identity,
+                    'whole store belongs to a different release')
+        else:
+            require(not folder.exists() or not any(folder.iterdir()), 'nonempty unbound whole store')
+            publish(folder/'EXECUTION.json', identity)
     return driver.Store(folder)
 
 
@@ -924,10 +931,11 @@ def submit_stage(command: str, *, model=None, dose=None, shard=None, dependency=
                'WHOLE_CPU_CEILING': str(CPU_CEILING), 'WHOLE_CUTOFF': str(CUTOFF),
                'WHOLE_SWEEP': ','.join(m+':'+d for m, d in SWEEP.items()),
                'WHOLE_SHARDS': ','.join(f'{m}:{SHARDS[m]}' for m in MODELS), 'WHOLE_LINK': str(LINK),
+               'WHOLE_JOB_PREFIX': JOB_PREFIX,
                'MOE_EXP_SCORING_PROCESSES': '8' if command == 'extract' else '2'}
     cmd = ['sbatch', '--parsable', '--account=iscrc_miosr', '--partition=boost_usr_prod', '--qos=normal',
            '--nodes=1', '--ntasks=1', f'--cpus-per-task={cpus}', f'--mem={memory}G', f'--time={minutes}',
-           '--job-name=whole-'+command+('-'+model if model else '')+('-'+dose if dose else ''),
+           f'--job-name={JOB_PREFIX}-'+command+('-'+model if model else '')+('-'+dose if dose else ''),
            '--chdir='+release['release_root'], '--output='+str(ROOT/'logs/%x-%j.out'),
            '--error='+str(ROOT/'logs/%x-%j.err'),
            # Stage exports travel in the scrubbed environment (submission_environment); a comma-separated
