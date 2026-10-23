@@ -1,3 +1,7 @@
+"""Score a generated answer against the gold answer: math_verify first, then a normalized exact/numeric match.
+
+math_verify uses signal timeouts, so a call from a worker thread runs in a helper process instead.
+"""
 from __future__ import annotations
 
 import multiprocessing
@@ -122,13 +126,3 @@ def score_completion_detailed(
                     math_verify_status=status)
     return dict(model_answer=model_answer, is_correct=answers_match(model_answer, gold),
                 method="normalized_exact_numeric_fallback", math_verify_status=status)
-
-
-def score_completion(
-    example: dict[str, Any],
-    *,
-    answer_type: str,
-    model_text: str,
-) -> tuple[str, bool | None, str]:
-    result = score_completion_detailed(example, answer_type=answer_type, model_text=model_text)
-    return result["model_answer"], result["is_correct"], result["method"]
