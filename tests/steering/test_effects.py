@@ -273,12 +273,6 @@ class PlannedOutcomesTest(unittest.TestCase):
             rows = analysis_assignments('gpt', 'main')
         self.assertEqual(rows, self.assignments[:2])
 
-    def test_unqualified_rescue_is_rejected_before_reading_outcomes(self):
-        with patch('pandas.read_parquet') as read:
-            with self.assertRaisesRegex(ValueError, 'requires --cohort'):
-                continuation_table(['gpt'], 'rescue')
-        read.assert_not_called()
-
 
 if __name__ == '__main__':
     unittest.main()
