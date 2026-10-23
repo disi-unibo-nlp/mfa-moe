@@ -1,3 +1,8 @@
+**Outcome-steering r1 review — 2026-10-23:** the outcome metric is sound and finds the reference
+paper's GPT-OSS experts, but r1 nudged far more experts over all layers from too little data, so it
+tested a broad edit rather than the paper's. Checks, causes and next steps:
+[OUTCOME_STEERING_REVIEW.md](OUTCOME_STEERING_REVIEW.md).
+
 **Current design discussion — 2026-10-15:** the author requests direct expert
 (de)activation for the final eight-model study, replacing physical-compaction
 requirements. Accepted choices and the remaining scientific/resource decisions
