@@ -11,7 +11,7 @@
 ## Tasks
 
 - [x] F-0010.1 Tag the last commit with all historical code and branch the work; evidence: tag archive/pre-cleanup-20261023 -> 978f011; branch polish/simple-repo
-- [ ] F-0010.2 Golden baseline: rerun every CPU analysis and the paper exporters with the current code; record pre-existing differences against sealed receipts; comparator script
+- [x] F-0010.2 Golden baseline: rerun every CPU analysis and the paper exporters with the current code; record pre-existing differences against sealed receipts; comparator script; evidence: mfa-moe/r/polish-golden/GOLDEN.md and GOLDEN.json (11 jobs, 27.2 core-hours; 7-model r3d readout/anticipation not rerun: boost CPU queue and 84 core-hours)
 - [x] F-0010.3 Bring the external code that produced paper numbers into the repo unchanged (router capture, readout helpers dp/dynrt/rkin, benchmark table builder, release sealers); evidence: 1b2c8ab
 - [x] F-0010.4 Copy the few functions live code takes from old campaigns into live modules, then remove old campaign code and dead code from the tree; evidence: a1a7438, 317f743, 9bf27e3; full suite job 61960382 334 passed (3 errors also on the tag)
 - [x] F-0010.5 Reorganize live code into topic packages (generation, labeling, capture, routing, steering, paper) with matching scripts/ folders and tests/; evidence: e6b924e..66f0741, merge 12854a8 (F-0011 next_state), review fixes 477fad3
@@ -43,3 +43,7 @@
 ## Ports pending from analysis/routing-dynamics (peer session repo-a1, F-0012)
 
 From 54591f8 on: AGENTS.md entry and F-0012 record; a new `study/` module for the Fig. 6 next-sentence labels and the Qwen3.6 sentence-table rebuild; a top-up path for r18's unfinished rows; strong-dose roster edits (8 models) in `scripts/paper/export_routing_results.py` and `verify_cl_tables.py`. Port into the new layout at merge (study/* -> routing/ or steering/, scripts/paper/*.py -> src/paper/).
+
+## Golden finding to raise with the user (pre-existing, not a cleanup change)
+
+Rerunning pulse outcomes with the tag code differs from the stored outcome tables used by `whole-reasoning-20261021-r7/corrected-main`: the current extractor takes a `reasoning_fallback` path for 2 GPT target_deactivate continuations (reasoning tokens 1348 vs 10087, 583 vs 4484; 38 GPT sentence rows fewer; qwen35 -1, lfm25 -3 rows), so 999 GPT/pooled values of the main effects differ from that receipt. The cleanup keeps today's behaviour; whether the receipt or the extractor is right is a science question.
