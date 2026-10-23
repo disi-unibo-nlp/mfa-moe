@@ -1,8 +1,8 @@
 #!/bin/bash
 # Seal a whole-reasoning relink release (the final combine rerun under the eight-model efficiency link,
 # no steering) and submit its graph: allocated tests -> combine, after the parent's combine.
-#   scripts/study/whole_relink.sh NAME LOCAL_TESTS PARENT_COMBINE_JOB
-#   e.g. scripts/study/whole_relink.sh whole-reasoning-20261021-r19 120 61927867
+#   scripts/steering/whole_relink.sh NAME LOCAL_TESTS PARENT_COMBINE_JOB
+#   e.g. scripts/steering/whole_relink.sh whole-reasoning-20261021-r19 120 61927867
 # Needs a clean src/tests/scripts tree (commit first) and driver/EFFICIENCY_LINK_V2.json.
 set -euo pipefail
 cd "$(dirname "$0")/../.."

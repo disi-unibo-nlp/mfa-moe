@@ -4,7 +4,7 @@ The frozen manifest owns family order, original prompts, doses and seeds. Plain
 receipts bind fresh stores and report canary/production gates; no historical
 continuation is reused, except that a resume release (RESUME.json) continues rows
 a base release left partial, from seeded copies of their saved tokens. Run through
-scripts/study/driver.sh with STUDY_MODULE set to moe_exp.steering.whole and
+scripts/steering/gpu.sh with STUDY_MODULE set to moe_exp.steering.whole and
 RELEASE_ROOT set to a materialized commit.
 """
 from __future__ import annotations
@@ -937,7 +937,7 @@ def submit_stage(command: str, *, model=None, dose=None, shard=None, dependency=
         cmd += ['--gres=gpu:2']
     if held:
         cmd += ['--hold']
-    cmd += [str(Path(release['release_root'])/'scripts/study/driver.sh'), *args]
+    cmd += [str(Path(release['release_root'])/'scripts/steering/gpu.sh'), *args]
     folder = ROOT/'submissions'/digest([command, model, dose, shard])
     if (folder/'ACCEPTED.json').exists():
         return verified(folder/'ACCEPTED.json')

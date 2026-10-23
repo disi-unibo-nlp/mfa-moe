@@ -15,8 +15,7 @@ family-cluster intervals, with the next state as the target. Every sentence of a
 whatever its length, and relative progress is left out because it needs the completed trace length.
 The population is the 522 questions of the present-state readout, for all eight models.
 
-    scripts/study/cpu.sh moe_exp.routing.next_state run --model gpt      (one CPU job per model)
-    scripts/study/cpu.sh moe_exp.routing.next_state collect              (after all eight)
+    scripts/routing/next_state.sh                                    (one CPU job per model, then the collection)
 """
 from __future__ import annotations
 

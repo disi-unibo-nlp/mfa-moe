@@ -23,7 +23,7 @@ DELTAS = (0.4, 0.8, 1.6)       # logit shifts (user decision, D-0003)
 FRACTIONS = (0.5, 0.7, 0.85)   # where the length-limit baseline stops the native reasoning
 ANSWER_TOKENS = 2048           # answer allowance of a length-limit row
 TEMPLATE = 'whole-reasoning-20261021-r7'
-RUN_PATHS = ('src/moe_exp', 'tests/steering', 'tests/routing', 'scripts/study', 'scripts/outcome_steering')
+RUN_PATHS = ('src/moe_exp', 'tests/steering', 'tests/routing', 'scripts/slurm', 'scripts/steering')
 
 
 def whole_usage() -> dict:

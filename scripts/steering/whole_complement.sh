@@ -2,8 +2,8 @@
 # Seal a whole-reasoning complement release (the suppress cells the base releases left out), submit
 # its job graph (allocated validation -> shards -> extraction, monitor, combined analysis of r7-r17
 # plus this release) and queue the paper export of the combined receipt into a staging folder.
-#   scripts/study/whole_complement.sh NAME LOCAL_TESTS
-#   e.g. scripts/study/whole_complement.sh whole-reasoning-20261021-r18 107
+#   scripts/steering/whole_complement.sh NAME LOCAL_TESTS
+#   e.g. scripts/steering/whole_complement.sh whole-reasoning-20261021-r18 107
 # Needs a clean src/tests/scripts tree (commit first).
 set -euo pipefail
 cd "$(dirname "$0")/../.."

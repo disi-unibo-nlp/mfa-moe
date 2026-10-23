@@ -51,9 +51,9 @@ length-limit prefix lives in `moe_exp.steering.runtime.budget_tokens`.
 ## Running it
 
 ```bash
-scripts/outcome_steering/usage.sh                 # 1. CPU job, ~5 min: expert use per cohort-B attempt
+scripts/steering/outcome_usage.sh                # 1. CPU job, ~5 min: expert use per cohort-B attempt
 PYTHONPATH=src python -m moe_exp.steering.outcome select    # 2. look at the expert sets (no files)
-scripts/outcome_steering/launch.sh outcome-steering-20261022-r1 3 <passed tests>   # 3. release + jobs
+scripts/steering/outcome.sh outcome-steering-20261022-r1 3 <passed tests>   # 3. release + jobs
 ```
 
 Outputs:
