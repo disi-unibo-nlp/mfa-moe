@@ -1,53 +1,49 @@
-"""Register the journal's canonical editable exhibits and source evidence.
+"""Add the journal's figure sources, data, notes and old evidence files to a paper-writer review packet.
 
-Run paper-writer packet first. This only augments that native packet with the
-standalone TikZ sources, copied data, current build and fresh per-page renders.
-It never changes installed review tools or judgment rules.
+Run `pw packet` first; this only extends BUILD/packet.json and BUILD/packet.md with those files and points the
+packet at the page images of the current build (BUILD/BUILD.json). It also writes the PDF text to BUILD/pdf-text.md.
+It changes no tool and no rule.
+
+  python -m paper.prepare_cl_review
 """
 from pathlib import Path
 import json
 import os
+
 import pymupdf
 
-from paper.build_cl_manuscript import PAPER
-from paper.cl_paths import BUILD, DATA, FIGURES, LEGACY, NOTES
+from paper.cl_paths import BUILD, DATA, FIGURES, LEGACY, NOTES, PAPER
+
+OLD_EVIDENCE = (
+    'archive/20261014-pre-journal/SOURCE_SNAPSHOT.json', 'guiding_weighting_table.tex',
+    'probe_grouped_summary_table.tex', 'expert_selection_audit.tex', 'generated/seven_model_evidence.tex',
+    'generated/verification_status.tex')
 
 
 def main():
-    review = BUILD
-    build = json.loads((review / 'BUILD.json').read_text())
+    build = json.loads((BUILD / 'BUILD.json').read_text())
     pages = Path(build['page_renders'])
-    with pymupdf.open(review / 'build/main.pdf') as document:
-        text = '\n\n'.join(f'## page-{i + 1:02d}.png\n' + p.get_text()
-                           for i, p in enumerate(document))
-    (review / 'pdf-text.md').write_text(text)
-    extra = list(FIGURES.glob('*.tex'))
-    extra += list(FIGURES.glob('*.json'))
+    with pymupdf.open(BUILD / 'build/main.pdf') as document:
+        text = '\n\n'.join(f'## page-{i + 1:02d}.png\n' + p.get_text() for i, p in enumerate(document))
+    (BUILD / 'pdf-text.md').write_text(text)
+    extra = list(FIGURES.glob('*.tex')) + list(FIGURES.glob('*.json'))
     extra += [p for p in DATA.glob('*') if p.is_file()]
-    extra += list((NOTES / 'journal').glob('*.md'))
-    extra += list((NOTES / 'journal').glob('*.json'))
+    extra += list((NOTES / 'journal').glob('*.md')) + list((NOTES / 'journal').glob('*.json'))
     extra += list(PAPER.glob('*.md'))
-    extra += [review / 'author-revision-20261014/PRIMARY_RECORDS.json',
-              review / 'bib/OFFLINE_VERIFICATION.json',
-              review / 'bib/report.md', review / 'bib-verify.log']
-    extra += [review / 'delivery/PACKAGE.json',
-              review / 'BUILD.json', review / 'pdf-text.md',
-              LEGACY / 'archive/20261014-pre-journal/SOURCE_SNAPSHOT.json',
-              LEGACY / 'guiding_weighting_table.tex', LEGACY / 'probe_grouped_summary_table.tex',
-              LEGACY / 'expert_selection_audit.tex',
-              LEGACY / 'generated/seven_model_evidence.tex',
-              LEGACY / 'generated/verification_status.tex']
-    metadata = json.loads((review / 'packet.json').read_text())
+    extra += [BUILD / 'author-revision-20261014/PRIMARY_RECORDS.json', BUILD / 'bib/OFFLINE_VERIFICATION.json',
+              BUILD / 'bib/report.md', BUILD / 'bib-verify.log', BUILD / 'delivery/PACKAGE.json',
+              BUILD / 'BUILD.json', BUILD / 'pdf-text.md']
+    extra += [LEGACY / name for name in OLD_EVIDENCE]
+    metadata = json.loads((BUILD / 'packet.json').read_text())
     metadata['files'] = list(dict.fromkeys(metadata['files'] + [str(p) for p in extra]))
     metadata['review_pages'] = str(pages)
-    (review / 'packet.json').write_text(json.dumps(metadata, indent=1) + '\n')
-    packet = (review / 'packet.md').read_text()
-    packet = packet.replace('Pages: .paper-review/pages/',
-                            'Pages: ' + os.path.relpath(pages, PAPER) + '/')
+    (BUILD / 'packet.json').write_text(json.dumps(metadata, indent=1) + '\n')
+    packet = (BUILD / 'packet.md').read_text()
+    packet = packet.replace('Pages: .paper-review/pages/', 'Pages: ' + os.path.relpath(pages, PAPER) + '/')
     packet += '\n\n## Additional registered artifacts\n'
     packet += '\n'.join('- ' + os.path.relpath(p, PAPER) for p in extra)
     packet += '\n\nUse the unique current page directory above, not an older cached image.\n'
-    (review / 'packet.md').write_text(packet)
+    (BUILD / 'packet.md').write_text(packet)
     print(json.dumps({'judge_items': len(metadata['rules']), 'page_directory': str(pages),
                       'page_count': build['page_count'], 'registered_text_files': len(metadata['files'])}))
 
