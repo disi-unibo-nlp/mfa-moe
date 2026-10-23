@@ -1,12 +1,12 @@
 """Frozen unstarted reader inventory and complete whole-batch timing evidence."""
 from pathlib import Path
-from .common import MODELS, Units, digest, load, publish, require, verified, engineering_namespace
+from moe_exp.io import MODELS, Units, digest, load, publish, require, verified, engineering_namespace
 
 
 def select(binding):
     from transformers import AutoTokenizer
-    from moe_exp.final_routing.renderer import Renderer
-    from moe_exp.research_campaign_v3_r6.reader_contract import token_ids
+    from moe_exp.study.renderer import Renderer
+    from moe_exp.study.renderer import token_ids
     from .contexts import build
     root = Path(binding['root'])
     destination = root/'READER_PILOT_TASKS.json'

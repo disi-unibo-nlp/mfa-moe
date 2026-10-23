@@ -22,7 +22,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from moe_exp.final_routing.common import file_sha, publish, require, verified
+from moe_exp.io import file_sha, publish, require, verified
 
 from . import REPORTS
 

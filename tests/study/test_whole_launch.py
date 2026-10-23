@@ -12,9 +12,9 @@ import numpy as np
 import pandas as pd
 
 from moe_exp.study import driver, whole, whole_effects
-from moe_exp.study.common import BENCHMARKS, REPO, WORK, load, publish
+from moe_exp.io import BENCHMARKS, REPO, WORK, load, publish
 from moe_exp.study.effects import Bootstrap
-from moe_exp.final_routing.selection import select_pairs
+from moe_exp.study.selection import select_pairs
 from test_driver import FakeEngine
 
 

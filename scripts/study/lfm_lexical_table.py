@@ -8,7 +8,7 @@ from collections import Counter
 from pathlib import Path
 import numpy as np
 import pandas as pd
-from moe_exp.study.common import CLASSES, Units, file_sha, publish, verified
+from moe_exp.io import CLASSES, Units, file_sha, publish, verified
 from moe_exp.study.driver import ROOT, binding
 from moe_exp.study.lexical import LEXICAL, predict
 

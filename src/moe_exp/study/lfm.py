@@ -4,12 +4,23 @@ from pathlib import Path
 import hashlib
 import time
 from types import SimpleNamespace
-from .common import BENCHMARKS, CLASSES, Units, canonical, digest, file_sha, load, publish, require, verified
+from moe_exp.io import (
+    BENCHMARKS,
+    CLASSES,
+    Units,
+    canonical,
+    digest,
+    file_sha,
+    load,
+    publish,
+    require,
+    verified,
+)
 
 
 def population(binding):
-    from moe_exp.research_campaign_v3_r6.inputs import read_source
-    from moe_exp.final_routing.design import seed_for
+    from moe_exp.io import read_source
+    from moe_exp.study.allocation import seed_for
     root = Path(binding['root'])
     destination = root/'lfm25/NATIVE_TASKS.json'
     if destination.exists():
@@ -78,8 +89,8 @@ def judge_inputs(value, units, index):
 def repair_annotation_inputs(binding):
     """Rebuild the LFM judge tasks of the frozen 100k sample with source-parity inputs (2026-10-17 audit A7:
     the first build used the bare question and empty edges). Same sentences; new context identities."""
-    from moe_exp.research_campaign_v3_r6.inputs import read_source
-    from moe_exp.research_campaign_v3_r6.annotation import context_id
+    from moe_exp.io import read_source
+    from moe_exp.study.contexts import context_id
     from moe_exp.correlation_pipeline.dynamics.classes import saved_layout
     from moe_exp.schemas import TraceRecord
     root, bulk = Path(binding['root']), Path(binding['config']['bulk_root'])
@@ -118,7 +129,7 @@ def materialize(binding):
     from moe_exp.correlation_pipeline.sample_stratified import _select
     from moe_exp.correlation_pipeline.dynamics.classes import saved_layout
     from moe_exp.correlation_pipeline.spans import trace_digest
-    from moe_exp.research_campaign_v3_r6.annotation import sentence_contexts, context_id
+    from moe_exp.study.contexts import sentence_contexts, context_id
     from moe_exp.schemas import TraceRecord
     root, bulk = Path(binding['root']), Path(binding['config']['bulk_root'])
     target = root/'lfm25/DISCOVERY_SELECTION.json'
@@ -159,8 +170,8 @@ def materialize(binding):
             'file_sha256': file_sha(path), 'population_terminal': True, 'unknowns_preserved': True})
     native=[]
     by_uid={row['uid']:value for pairs in grouped.values() for row,value in pairs}
-    from moe_exp.research_campaign_v3_r6.scoring import unknown_bounds
-    from moe_exp.research_campaign_v3_r6.statistics import bootstrap_panel
+    from moe_exp.stats import unknown_bounds
+    from moe_exp.stats import bootstrap_panel
     for row in tasks:
         value=by_uid.get(row['uid'])
         correct=value.get('is_correct') if value and value['metadata'].get('answer_present') else None
@@ -228,7 +239,7 @@ def materialize(binding):
 
 def replay(binding, rows, deadline):
     from .runtime import Backend
-    from moe_exp.research_campaign_v3_r6.inputs import read_source
+    from moe_exp.io import read_source
     bulk = Path(binding['config']['bulk_root'])
     backend = Backend(binding, 'lfm25', 1, deadline, replay=True)
     try:
@@ -245,11 +256,11 @@ def derive(binding):
     import numpy as np
     import pandas as pd
     from moe_exp.schemas import TraceRecord
-    from moe_exp.research_campaign_v3_r6.inputs import read_source
+    from moe_exp.io import read_source
     from moe_exp.correlation_pipeline.dynamics.classes import saved_layout
-    from moe_exp.research_campaign_v3_r6.design import prefix_roster
-    from moe_exp.research_campaign_v3_r6.statistics import trajectories
-    from moe_exp.expert_memory_study.selection import analyze, validate_counts
+    from moe_exp.routing.selection import prefix_roster
+    from moe_exp.routing.dynamics import trajectories
+    from moe_exp.routing.selection import analyze, validate_counts
     root, bulk = Path(binding['root']), Path(binding['config']['bulk_root'])
     sources = verified(root/'lfm25/SOURCES.json')['records']
     sampled = verified(bulk/'lfm25/SAMPLED_SENTENCES.json')['records']
@@ -330,7 +341,7 @@ def derive(binding):
     coverage = analyze(counts[:,:7], [s['family'] for s in sources], keep=48, groups=1,
         layers=list(range(2,40)), model='lfm25', classes=CLASSES, folds=folds)
     publish(root/'lfm25/SELECTION_COVERAGE.json', coverage)
-    from moe_exp.research_campaign_v3_r6.statistics import bootstrap_panel
+    from moe_exp.stats import bootstrap_panel
     routing_columns=[name+':'+str(layer) for name in ('entropy','dominant_switch','topk_turnover') for layer in range(2,40)]
     routing_summary=bootstrap_panel(routing_rows,routing_columns,panel='lfm25:native-routing-dynamics',draws=10000,
         resample_key='native-family')
@@ -353,7 +364,8 @@ def dynamics_summary(binding):
     10,000-draw family bootstrap with simultaneous intervals."""
     import numpy as np
     import pandas as pd
-    from moe_exp.research_campaign_v3_r6.statistics import bootstrap_panel, trajectories
+    from moe_exp.stats import bootstrap_panel
+    from moe_exp.routing.dynamics import trajectories
     root = Path(binding['root'])
     inputs = verified(root/'lfm25/DISCOVERY_INPUTS.json')
     require(file_sha(Path(inputs['sentences'])) == inputs['sentences_sha256'], 'LFM derived sentences changed')

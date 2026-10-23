@@ -2,7 +2,7 @@
 from pathlib import Path
 import json
 import time
-from .common import digest
+from moe_exp.io import digest
 SEED = 20260929
 
 

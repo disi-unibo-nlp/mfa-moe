@@ -5,7 +5,7 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
 from moe_exp.study import driver
-from moe_exp.study.common import WORK, verified
+from moe_exp.io import WORK, verified
 from moe_exp.study.stream import Clock
 
 
@@ -132,7 +132,7 @@ class EngineTest(unittest.TestCase):
             self.assertEqual(log.call_args.args[0]['error'], 'secondary cleanup failure')
 
     def test_rank_disagreement_is_retained_and_drain_does_not_release_twice(self):
-        from moe_exp.study.common import digest
+        from moe_exp.io import digest
         uid = '%064x' % 413
         calls = []
         record = {'positions': [0], 'native_ids': [[1, 2]], 'executed_ids': [[1, 2]],
@@ -256,7 +256,7 @@ class ReviewFixes(unittest.TestCase):
             self.assertEqual(len(store.state(uid)['tokens']), 9)
 
     def test_output_without_result_is_finalized_not_readmitted(self):
-        from moe_exp.study.common import publish
+        from moe_exp.io import publish
         uid = '%064x' % 9
         row = {'uid': uid}
         with tempfile.TemporaryDirectory(dir=WORK/'tools/tmp') as tmp:

@@ -1,7 +1,7 @@
 import unittest
 from pathlib import Path
 
-from moe_exp.study.common import BENCHMARKS, load
+from moe_exp.io import BENCHMARKS, load
 from moe_exp.study.rescue import DRIVER, RESCUE_COUNT, select_families
 
 

@@ -3,7 +3,7 @@ from pathlib import Path
 import os
 import time
 import traceback
-from .common import digest, load, publish, require, verified, control_root
+from moe_exp.io import digest, load, publish, require, verified, control_root
 
 
 def stage_directory(root, card):

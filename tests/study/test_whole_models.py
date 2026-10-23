@@ -8,9 +8,9 @@ from unittest.mock import patch
 
 import torch
 
-from moe_exp.final_routing.operator import score_override_dual_masked
+from moe_exp.study.operators import score_override_dual_masked
 from moe_exp.study import driver, whole
-from moe_exp.study.common import CLASSES, WORK, digest, publish, verified
+from moe_exp.io import CLASSES, WORK, digest, publish, verified
 from moe_exp.study.whole import build_manifest, dose_counts, directions
 
 
@@ -204,7 +204,7 @@ class StrengthSweepTests(unittest.TestCase):
 
 class TopUpTests(unittest.TestCase):
     def test_topup_keeps_only_never_started_rows_of_the_failed_shards(self):
-        from moe_exp.study.common import publish
+        from moe_exp.io import publish
         with tempfile.TemporaryDirectory(dir=WORK) as directory:
             parent, child = Path(directory)/'parent', Path(directory)/'child'
             rows = [{'uid': digest([family, arm]), 'family': family, 'arm': arm, 'nomination_status': 'nominated'}
@@ -227,7 +227,7 @@ class TopUpTests(unittest.TestCase):
         self.assertEqual((selected['sweep'], selected['manifest_sha256']), (True, value['sha256']))
 
     def test_second_topup_covers_all_shards_and_leaves_rows_started_by_the_first(self):
-        from moe_exp.study.common import publish
+        from moe_exp.io import publish
         with tempfile.TemporaryDirectory(dir=WORK) as directory:
             parent, first, second = (Path(directory)/name for name in ('parent', 'first', 'second'))
             rows = [{'uid': digest([family, arm]), 'family': family, 'arm': arm, 'nomination_status': 'nominated'}
@@ -249,7 +249,7 @@ class TopUpTests(unittest.TestCase):
 class CanaryDeadlineTests(unittest.TestCase):
     def test_rows_running_at_the_deadline_count_as_reaching_the_length_limit(self):
         from moe_exp.study import driver
-        from moe_exp.study.common import digest, publish
+        from moe_exp.io import digest, publish
         with tempfile.TemporaryDirectory(dir=WORK) as directory:
             store = driver.Store(Path(directory))
             rows = []
@@ -282,7 +282,7 @@ class CanaryDeadlineTests(unittest.TestCase):
 
 class CanaryDecisionTests(unittest.TestCase):
     def test_decision_must_name_this_manifest_and_unchanged_evidence(self):
-        from moe_exp.study.common import file_sha, publish
+        from moe_exp.io import file_sha, publish
         with tempfile.TemporaryDirectory(dir=WORK) as directory, patch.object(whole, 'ROOT', Path(directory)):
             evidence = publish(Path(directory)/'evidence/CANARY_HALF.json', {'gate': {'passed': False}})
             path = Path(directory)/'evidence/CANARY_HALF.json'

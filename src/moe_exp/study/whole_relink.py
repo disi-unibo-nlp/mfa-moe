@@ -17,7 +17,7 @@ from pathlib import Path
 import subprocess
 import time
 
-from moe_exp.final_routing.common import file_sha, publish, require, verified
+from moe_exp.io import file_sha, publish, require, verified
 
 REPO = Path(__file__).resolve().parents[3]
 REPORTS = REPO/'report'

@@ -7,7 +7,7 @@ from pathlib import Path
 from unittest.mock import patch
 
 from moe_exp.study import rescue_source
-from moe_exp.study.common import FAST, WORK, publish, verified
+from moe_exp.io import FAST, WORK, publish, verified
 
 
 class RescueExecutionTest(unittest.TestCase):

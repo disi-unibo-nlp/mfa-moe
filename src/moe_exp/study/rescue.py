@@ -9,7 +9,7 @@ three depth-region winners.  No row or threshold is selected from outcomes.
 from __future__ import annotations
 from collections import defaultdict
 from pathlib import Path
-from .common import BENCHMARKS, CLASSES, MODELS, digest, load, publish, require, verified
+from moe_exp.io import BENCHMARKS, CLASSES, MODELS, digest, load, publish, require, verified
 
 ROOT = Path('/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/final-routing-20261015-r1')
 DRIVER = ROOT/'driver'

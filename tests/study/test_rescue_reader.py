@@ -5,7 +5,7 @@ import unittest
 from pathlib import Path
 from unittest.mock import patch
 
-from moe_exp.study.common import WORK, digest, file_sha, publish
+from moe_exp.io import WORK, digest, file_sha, publish
 from moe_exp.study import rescue_reader
 from moe_exp.study.rescue_reader import RescueContexts, frozen_campaign, generation_matches, validate_inventory
 

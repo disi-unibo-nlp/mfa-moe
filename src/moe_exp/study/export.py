@@ -1,6 +1,6 @@
 """Measured artifacts and honest collection/results/integration completion states."""
 from pathlib import Path
-from .common import MODELS, digest, file_sha, load, publish
+from moe_exp.io import MODELS, digest, file_sha, load, publish
 
 ARTIFACTS = (
     ('native_profiles', 'Eight pinned native profiles and actual context/geometry qualifications', 'all8'),
@@ -27,7 +27,7 @@ def _response_figures(folder: Path, result: dict) -> None:
     import matplotlib.pyplot as plt
     import numpy as np
     import pandas as pd
-    from .common import CLASSES
+    from moe_exp.io import CLASSES
     for direction, matrix in result.get('directional_response_matrices', {}).items():
         values = np.array([[matrix[target].get(f'{direction}:response:{observed}', {}).get('estimate', np.nan)
                             for observed in CLASSES] for target in CLASSES], float)
@@ -61,7 +61,7 @@ def causal_exhibits(folder: Path, result: dict) -> dict:
     import matplotlib.pyplot as plt
     import numpy as np
     import pandas as pd
-    from .common import CLASSES
+    from moe_exp.io import CLASSES
     contrasts = result.get('joint_six_contrasts', result['primary_pooled'])
     rows = []
     for name, value in contrasts.items():
@@ -157,13 +157,13 @@ def export(binding, mode):
         for source in reference['sources']:
             expected=source.get('sha256_file',source.get('sha256'))
             if expected:
-                from .common import require
+                from moe_exp.io import require
                 require(file_sha(source['path'])==expected,'export provenance differs: '+source['path'])
     return {'path': str(folder), 'manifest_sha256': manifest['sha256'], **states}
 
 
 def completion(binding, mode, data, references):
-    from .common import Units, TERMINAL
+    from moe_exp.io import Units, TERMINAL
     from .delivery import lfm_complete
     root, bulk = Path(binding['root']), Path(binding['config']['bulk_root'])
     pending = 0

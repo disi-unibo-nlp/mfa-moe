@@ -7,7 +7,7 @@ import unittest
 
 from moe_exp.outcome_steering import manifest
 from moe_exp.study.runtime import budget_tokens
-from moe_exp.study.common import file_sha
+from moe_exp.io import file_sha
 
 
 class ManifestPartsTests(unittest.TestCase):

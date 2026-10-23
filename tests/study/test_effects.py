@@ -2,7 +2,7 @@ import json
 import unittest
 from unittest.mock import MagicMock, patch
 import numpy as np
-from moe_exp.study.common import CLASSES
+from moe_exp.io import CLASSES
 from moe_exp.study.effects import (
     Bootstrap, analysis_assignments, bounded_summary, continuation_table,
     dynamics_metrics, endpoints, paired, restore_outcomes, summarize,

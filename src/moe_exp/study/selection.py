@@ -2,8 +2,8 @@
 from collections import Counter
 import math
 import numpy as np
-from .common import CLASSES, digest, require
-from .design import strengths
+from moe_exp.io import CLASSES, digest, require
+from moe_exp.study.allocation import strengths
 
 
 def count_set(excess, n):
@@ -38,7 +38,7 @@ def matched_controls(sets, frequency, identity, seed):
 
 
 def nominate(model, counts, tokens, sources, layers, k, sentence_rows, seed):
-    from moe_exp.research_campaign_v3_r6.design import inclusion_statistics, family_weights, weighted_quantile
+    from moe_exp.routing.selection import inclusion_statistics, family_weights, weighted_quantile
     folds = np.array([r['fold'] for r in sources])
     require(set(folds) <= set(range(5)), 'invalid discovery fold')
     sizes = strengths(k)
@@ -106,7 +106,7 @@ def nominate(model, counts, tokens, sources, layers, k, sentence_rows, seed):
 
 
 def confirmation(nominations,counts,tokens,sources,layers,k):
-    from moe_exp.research_campaign_v3_r6.design import inclusion_statistics
+    from moe_exp.routing.selection import inclusion_statistics
     records=[]
     folds=np.asarray([r['fold'] for r in sources])
     other_counts=counts[:,:7].sum(1)[:,None]-counts[:,:7]
@@ -133,7 +133,7 @@ def confirmation(nominations,counts,tokens,sources,layers,k):
 
 def _global_differences(counts, tokens, other_counts, other_tokens, sources, mask):
     """Compute benchmark-balanced inclusion differences with family support on both sides."""
-    from moe_exp.research_campaign_v3_r6.design import inclusion_statistics
+    from moe_exp.routing.selection import inclusion_statistics
     rate, support = inclusion_statistics(counts, tokens, sources, mask)
     other, other_support = inclusion_statistics(other_counts, other_tokens, sources, mask)
     delta = rate[:7]-other

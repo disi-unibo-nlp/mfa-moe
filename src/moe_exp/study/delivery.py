@@ -2,7 +2,7 @@
 from collections import defaultdict
 from pathlib import Path
 import numpy as np
-from .common import CLASSES, MODELS, Units, digest, file_sha, load, publish, require, verified
+from moe_exp.io import CLASSES, MODELS, Units, digest, file_sha, load, publish, require, verified
 
 
 def reference(path,models):

@@ -3,7 +3,7 @@ from pathlib import Path
 import os
 import shutil
 import sys
-from .common import publish,require,verified
+from moe_exp.io import publish, require, verified
 
 
 def cleanup(binding,job_id):

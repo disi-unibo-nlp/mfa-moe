@@ -8,7 +8,7 @@ every decode step.
 """
 from __future__ import annotations
 
-from moe_exp.research_campaign_v3_r6.penalties import validate
+from moe_exp.study.penalties import validate
 
 
 def processor_class():

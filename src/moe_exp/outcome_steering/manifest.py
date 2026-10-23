@@ -15,7 +15,7 @@ from __future__ import annotations
 import math
 from pathlib import Path
 
-from moe_exp.final_routing.common import digest, file_sha, load, publish, require, verified
+from moe_exp.io import digest, file_sha, load, publish, require, verified
 
 # GPT-OSS closes its analysis channel with this full harmony transition; the runtime closure only
 # matches its last three tokens (<|channel|>final<|message|>).

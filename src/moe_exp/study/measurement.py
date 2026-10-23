@@ -8,7 +8,7 @@ from __future__ import annotations
 
 from collections import Counter, defaultdict
 import math
-from .common import BENCHMARKS, CLASSES, digest, require
+from moe_exp.io import BENCHMARKS, CLASSES, digest, require
 
 
 def audit_frame(value: dict, assignment: dict, replay: dict) -> list[dict]:

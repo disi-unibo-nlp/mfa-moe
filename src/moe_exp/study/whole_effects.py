@@ -18,7 +18,7 @@ from threading import local
 import numpy as np
 import pandas as pd
 
-from .common import CLASSES, digest, load, publish, require, verified
+from moe_exp.io import CLASSES, digest, load, publish, require, verified
 from . import driver
 from .whole import (DOSES, DRAWS, LINK, MODELS, PLAN, ROOT, SEED, bound_store, directions, efficiency_directed, manifest,
                     manifest_path, repetition_rate)

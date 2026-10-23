@@ -28,11 +28,12 @@ import tempfile
 
 import pandas as pd
 
-from moe_exp.final_routing.common import clean
-from .common import REPO, file_sha, load, publish, require, verified
+from moe_exp import io
+from moe_exp.io import clean
+from moe_exp.io import REPO, file_sha, load, publish, require, verified
 from . import driver
 
-FROZEN_SCRIPT = REPO/'scripts/study/efficiency_link.py'
+FROZEN_SCRIPT = REPO/'src/moe_exp/routing/efficiency_link_prereg.py'
 MODELS = ('gpt', 'nemotron', 'qwen35', 'qwen36', 'gemma', 'glm', 'qwen330b', 'lfm25')
 PREREG = driver.DRIVER/'EFFICIENCY_LINK_PREREG.json'
 LINK = driver.DRIVER/'EFFICIENCY_LINK_V2.json'
@@ -41,6 +42,9 @@ DRIVER_TEST = driver.DRIVER/'analysis-final-link-v2/EFFICIENCY_LINK_TEST.json'
 
 def frozen():
     """The pre-registration script, loaded by path so that it stays byte-identical."""
+    # The script keeps its original line `from moe_exp.final_routing.common import ...` because its bytes are bound
+    # by the pre-registration hash; that module is now moe_exp.io.
+    sys.modules.setdefault('moe_exp.final_routing.common', io)
     spec = importlib.util.spec_from_file_location('efficiency_link_v1', FROZEN_SCRIPT)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)

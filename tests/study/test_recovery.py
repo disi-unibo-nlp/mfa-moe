@@ -4,7 +4,7 @@ import tempfile
 from pathlib import Path
 from unittest.mock import Mock, patch
 import unittest
-from moe_exp.study.common import WORK, Units, digest, publish, verified
+from moe_exp.io import WORK, Units, digest, publish, verified
 from moe_exp.study.config import read_config
 from moe_exp.study.journal import run_stage
 from moe_exp.study.runtime import recover_outputs
@@ -315,7 +315,7 @@ class RecoveryTests(unittest.TestCase):
 
     def test_inherited_scientific_checks_do_not_patch_the_old_scheduler(self):
         from moe_exp.study.inherited import parent_campaign
-        from moe_exp.study.common import load
+        from moe_exp.io import load
         from moe_exp.study.driver import binding as study_binding
         from moe_exp.research_campaign_v3_r6 import scheduler as historical
         original = (historical.card, historical.Slurm.verify)

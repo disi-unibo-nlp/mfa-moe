@@ -14,8 +14,8 @@ import argparse
 import json
 from pathlib import Path
 import numpy as np
-from .common import BENCHMARKS, CLASSES, MODELS, digest, load, publish, require, verified
-from .driver import DRIVER, ROOT, binding, bulk, log
+from moe_exp.io import BENCHMARKS, CLASSES, MODELS, digest, load, publish, require, verified
+from moe_exp.study.driver import DRIVER, ROOT, binding, bulk, log
 
 PRIMARY = ('activate:first', 'activate:occupancy', 'deactivate:first', 'deactivate:occupancy')
 SEMANTIC_PREFIXES = {
@@ -192,14 +192,14 @@ def analysis_assignments(model: str, design: str) -> list[dict]:
 
     Args:
         model: Model owning the frozen assignments.
-        design: Main, exploratory strong-dose, or rescue design.
+        design: Main, exploratory strong-dose, or whole-reasoning design.
 
     Returns:
         Original assignments; no new continuation or random draw is created.
     """
-    from .driver import MANIFESTS
+    from moe_exp.study.driver import MANIFESTS
     if design == 'whole':
-        from .whole import manifest
+        from moe_exp.study.whole import manifest
         return manifest(model)['records']
     manifest = verified(DRIVER/model/MANIFESTS[design])
     rows = list(manifest['records'])
@@ -276,10 +276,7 @@ def restore_outcomes(outcomes, assignments: list[dict]):
 def _read_outcome_table(folder: Path, kind: str, design: str):
     """Read one design's shards, retaining its original native comparison."""
     import pandas as pd
-    pattern = kind+'-[0-9]*.parquet' if design != 'rescue' else kind+'-rescue-*.parquet'
-    frames = [pd.read_parquet(path) for path in sorted(folder.glob(pattern))]
-    if design == 'rescue':
-        require(frames, f'{folder}: rescue {kind} table is absent')
+    frames = [pd.read_parquet(path) for path in sorted(folder.glob(kind+'-[0-9]*.parquet'))]
     main = pd.concat(frames, ignore_index=True) if frames else pd.DataFrame()
     if design != 'strong':
         return main
@@ -292,39 +289,21 @@ def _read_outcome_table(folder: Path, kind: str, design: str):
     return pd.concat([main, strong], ignore_index=True)
 
 
-def continuation_table(models, design='main', *, cohort=None, classifier=None, closeout=False):
+def continuation_table(models, design='main', *, classifier=None):
     """design 'strong': post-hoc strong-dose arms (renamed to target/random_activate) plus the main-design native rows."""
     import pandas as pd
     frames = []
-    cohort_value, semantic, cohort_tables = None, {}, {}
-    if design == 'rescue':
-        require(cohort is not None, 'rescue analysis requires --cohort')
-        from .cohort import read
-        from .rescue_reader import semantic_labels, verified_tasks
-        cohort_value = read(Path(cohort))
-        task_path = Path(cohort_value['paths']['control'])/'READER_TASKS.json'
-        if task_path.exists() or not closeout:
-            semantic = semantic_labels(cohort_value, verified_tasks(cohort_value))
-        extraction_ready = all((Path(cohort_value['paths']['extraction'])/model/'EXTRACTION.json').exists() for model in models)
-        cohort_tables = (_cohort_tables(cohort_value, models) if extraction_ready or not closeout else
-                         {model: (pd.DataFrame(columns=['uid']), pd.DataFrame()) for model in models})
+    semantic = {}
     for model in models:
-        if cohort_value is not None:
-            from .cohort import assignments as cohort_assignments
-            assignments = cohort_assignments(cohort_value, model)
-        else:
-            assignments = analysis_assignments(model, design)
+        assignments = analysis_assignments(model, design)
         folder = bulk()/model/'outcomes'
-        outcomes, sentences = (cohort_tables[model] if cohort_value is not None else
-                              (_read_outcome_table(folder, 'outcomes', design),
-                               _read_outcome_table(folder, 'sentences', design)))
+        outcomes, sentences = (_read_outcome_table(folder, 'outcomes', design),
+                               _read_outcome_table(folder, 'sentences', design))
         if design == 'strong':  # routing forced over the whole window: measure [0, H) for strong and native rows
             outcomes = outcomes.assign(pulse_tokens=0)
         outcomes = restore_outcomes(outcomes, assignments)
-        if 'total_allowance' not in outcomes and design == 'rescue':
-            outcomes['total_allowance'] = outcomes.horizon
         if 'total_allowance' not in outcomes:
-            from .runtime import prompt_prefix, remaining
+            from moe_exp.study.runtime import prompt_prefix, remaining
             study_binding = binding()
             profile = binding()['models'][model]
             card = profile['card']
@@ -342,9 +321,8 @@ def continuation_table(models, design='main', *, cohort=None, classifier=None, c
             outcomes['total_allowance'] = outcomes.uid.map(by_uid)
             outcomes['allowance_role'] = 'actual original request allowance; unavailable prompts use a conservative card bound'
         if not sentences.empty:
-            from .lexical import LEXICAL, predict
-            readout = cohort_value['classifier'] if cohort_value is not None else classifier
-            sentences = predict(sentences, Path(readout['root']) if readout else LEXICAL/'readout-v1', frozen=readout)
+            from moe_exp.study.lexical import LEXICAL, predict
+            sentences = predict(sentences, Path(classifier['root']) if classifier else LEXICAL/'readout-v1', frozen=classifier)
         groups = {u: g.to_dict('records') for u, g in sentences.groupby('uid')} if not sentences.empty else {}
         rows = []
         for o in outcomes.to_dict('records'):
@@ -410,45 +388,6 @@ def semantic_endpoint(annotation: dict) -> tuple:
         observed = np.eye(7)[CLASSES.index(annotation['label'])]
         return observed, observed
     return np.zeros(7), np.ones(7)
-
-
-def _cohort_tables(value: dict, models: list[str]) -> dict:
-    """Adapt verified terminal replays to the maintained effect-table interface."""
-    import pandas as pd
-    from .cohort import assignments, generation_index
-    from .common import check_files
-    index = generation_index(value)
-    tables = {}
-    for model in models:
-        folder = Path(value['paths']['extraction'])/model
-        receipt = verified(folder/'EXTRACTION.json')
-        require(receipt['cohort_sha256'] == value['sha256']
-                and index['extraction_sha256'][model] == receipt['sha256'], 'analysis extraction differs')
-        check_files(receipt['files'])
-        roster = {row['uid']: row for row in assignments(value, model)}
-        outcomes, sentences = [], []
-        for replay in pd.read_parquet(folder/'terminal-replay.parquet').to_dict('records'):
-            row = roster[replay['uid']]
-            record = json.loads(replay['replay_json'])
-            action = (row.get('actions') or [row.get('action')])[0] or {}
-            outcomes.append({
-                **row, 'layer': action.get('layer'), 'operator': action.get('operator', 'native'),
-                **{key: record[key] for key in ('generated_tokens', 'prefix_tokens', 'reasoning_tokens',
-                   'reasoning_end', 'finish_reason', 'strict_correct')},
-                'accuracy_lower': record['accuracy_bounds'][0], 'accuracy_upper': record['accuracy_bounds'][1],
-                'segments': 1, 'nonreasoning': json.dumps(record['nonreasoning']),
-            })
-            for sentence in record['sentences']:
-                sentences.append({
-                    **{key: row[key] for key in ('uid', 'model', 'arm', 'class', 'family', 'fold')},
-                    **{key: sentence[key] for key in ('sentence_index', 'token_start', 'token_end', 'complete',
-                                                     'first_complete', 'straddles_prefix')},
-                    'sentence_text': sentence['inputs']['sentence'],
-                    'prev_sentence': sentence['inputs']['previous_sentence'] or '<START OF RESPONSE>',
-                    'next_sentence': sentence['inputs']['next_sentence'] or '<END OF RESPONSE>',
-                })
-        tables[model] = (pd.DataFrame(outcomes, columns=list(outcomes[0]) if outcomes else ['uid']), pd.DataFrame(sentences))
-    return tables
 
 
 def paired(table):
@@ -770,63 +709,20 @@ def _qualified_efficiency_link(prereg: Path, pairs, boot) -> dict:
     return result
 
 
-def _rescue_summary(cohort_path: Path, primary_columns: list[str], pairs, boot, *, closeout=False) -> dict:
-    """Join semantic evidence, audit diagnostics and the frozen six-contrast family."""
-    result = {}
-    from .cohort import read
-    from .rescue_reader import verified_tasks, context_labels
-    from .measurement import disagreement
-    value = read(cohort_path)
-    if closeout and not (Path(value['paths']['control'])/'READER_TASKS.json').exists():
-        names = primary_columns+['activate:semantic_first', 'deactivate:semantic_first']
-        return {
-            'cohort_sha256': value['sha256'],
-            'joint_six_contrasts': bounded_summary(boot, pairs, names, 'joint-6'),
-            'reader_disagreement': {'status': 'unavailable', 'reason': 'reader task preparation did not complete'},
-            'conclusion': {'category': 'bounded_null_or_inconclusive', 'equivalence_established': False,
-                           'reason': 'unqualified or unavailable evidence remains unknown in the planned population'},
-        }
-    tasks = verified_tasks(value)
-    semantic_columns = ['activate:semantic_first', 'deactivate:semantic_first']
-    result['joint_six_contrasts'] = bounded_summary(boot, pairs, primary_columns+semantic_columns, 'joint-6')
-    result['cohort_sha256'] = value['sha256']
-    result['semantic_endpoint_frozen'] = tasks['semantic_endpoint_frozen']
-    result['readout'] = 'frozen C10 lexical trajectories and exact-context semantic first-complete labels'
-    result['reader_disagreement'] = disagreement(tasks['audit'], context_labels(value, tasks), boot)
-    result['null_diagnostic'] = null_diagnostic()
-    semantic_support = [name for name in semantic_columns
-                        if (result['joint_six_contrasts'].get(name, {}).get('bound_simultaneous', [-1, 1])[0] > 0
-                            or result['joint_six_contrasts'].get(name, {}).get('bound_simultaneous', [-1, 1])[1] < 0)]
-    result['conclusion'] = {
-        'category': 'reader_defined_steering' if semantic_support else 'bounded_null_or_inconclusive',
-        'supported_semantic_contrasts': semantic_support,
-        'semantic_directions': {name: ('intended' if result['joint_six_contrasts'][name]['bound_simultaneous'][0] > 0
-                                        else 'opposite') for name in semantic_support},
-        'equivalence_established': False,
-        'measurement_disagreement': 'see probability-sampled HT estimates and their separate uncertainty components',
-        'delivered_intervention_and_generic_disruption': 'assess online dose diagnostics with native/random accuracy and token costs',
-    }
-    return result
-
-
-def analyze(models, out, design='main', *, cohort=None, classifier=None, closeout=False):
+def analyze(models, out, design='main', *, classifier=None):
     """Write fresh effect artifacts while retaining planned unknown outcomes."""
     import pandas as pd
     require(not any((out/name).exists() for name in ('EFFECTS.json', 'continuations.parquet', 'pairs.parquet')),
             'corrected analysis requires a fresh output directory; preserve historical results')
     allocation = load(ROOT/'ALLOCATION.json')['records']
     benchmarks = {r['family']: r['benchmark'] for r in allocation}
-    table = continuation_table(models, design, cohort=cohort, classifier=classifier, closeout=closeout)
+    table = continuation_table(models, design, classifier=classifier)
     pairs = paired(table)
     boot = Bootstrap(sorted(table.family.unique()), benchmarks)
-    primary_columns = (list(PRIMARY) if design != 'rescue' else
-                       ['activate:full_occupancy', 'deactivate:full_occupancy',
-                        'activate:first_overlap', 'deactivate:first_overlap'])
+    primary_columns = list(PRIMARY)
     result = _analysis_metadata(models, design, table, pairs)
     result['primary_columns'] = primary_columns
     result['primary_pooled'] = bounded_summary(boot, pairs, primary_columns, 'primary-4')
-    if design == 'rescue':
-        result.update(_rescue_summary(Path(cohort), primary_columns, pairs, boot, closeout=closeout))
     result['primary_by_model'] = {m: bounded_summary(boot, pairs[pairs.model == m], primary_columns, f'primary-4:{m}')
                                   for m in models}
     result['primary_by_class'] = {c: bounded_summary(boot, pairs[pairs['class'] == c], primary_columns, f'primary-4:{c}')
@@ -976,32 +872,19 @@ def efficiency_link(prereg, pairs, boot):
 
 
 def main(argv=None):
-    """Run a fresh analysis, requiring accepted cohort ownership for rescue output."""
+    """Run a fresh analysis of the main, strong-dose or whole-reasoning design."""
     ap = argparse.ArgumentParser(prog='moe_exp.study.effects')
     ap.add_argument('--models', default=','.join(MODELS))
     ap.add_argument('--out', type=Path)
-    ap.add_argument('--design', choices=['main', 'strong', 'rescue', 'whole'], default='main')
-    ap.add_argument('--cohort', type=Path)
+    ap.add_argument('--design', choices=['main', 'strong', 'whole'], default='main')
     args = ap.parse_args(argv)
     if args.design == 'whole':
-        from .whole_effects import analyze
+        from moe_exp.study.whole_effects import analyze
         analyze()
         return
     models = args.models.split(',')
     require(models and len(set(models)) == len(models), 'analysis model roster is empty or duplicated')
-    if args.design == 'rescue':
-        from .cohort import assignments, identity, read
-        from .ownership import worker
-        require(args.cohort is not None, 'rescue analysis requires --cohort')
-        cohort_value = read(args.cohort)
-        root = Path(cohort_value['paths']['analysis'])
-        out = args.out or root/'rescue'
-        require(out.resolve() == root/'rescue', 'rescue analysis destination differs from the cohort binding')
-        execution = identity(cohort_value, 'cpu', 'analysis', [row['uid'] for row in assignments(cohort_value)])
-        with worker(root, execution):
-            value = analyze(models, out, args.design, cohort=args.cohort)
-    else:
-        value = analyze(models, args.out or DRIVER/'analysis-corrected-v1', args.design)
+    value = analyze(models, args.out or DRIVER/'analysis-corrected-v1', args.design)
     log({'event': 'effects', 'primary': value['primary_pooled']})
 
 

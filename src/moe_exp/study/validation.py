@@ -5,15 +5,27 @@ import os
 import tempfile
 import time
 import unittest
-from .common import REPO, WORK, Units, check_files, control_root, digest, engineering_namespace, load, publish, require, verified
+from moe_exp.io import (
+    REPO,
+    WORK,
+    Units,
+    check_files,
+    control_root,
+    digest,
+    engineering_namespace,
+    load,
+    publish,
+    require,
+    verified,
+)
 
 
 def fixture(binding):
     from transformers import AutoTokenizer
-    from moe_exp.final_routing.renderer import Renderer
+    from moe_exp.study.renderer import Renderer
     from .lfm import trace_record
     from .contexts import build,measured
-    from moe_exp.final_routing.design import allocate
+    from moe_exp.study.allocation import allocate
     from .export import export
     with tempfile.TemporaryDirectory(prefix='final-routing-fixture-',dir=WORK/'tools/tmp') as temporary:
         root=Path(temporary);bulk=root/'bulk'

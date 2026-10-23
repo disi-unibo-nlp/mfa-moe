@@ -5,7 +5,7 @@ import unittest
 from unittest.mock import patch
 
 from moe_exp.study import driver, whole, whole_effects
-from moe_exp.study.common import CLASSES, WORK, load, publish
+from moe_exp.io import CLASSES, WORK, load, publish
 
 TMP = WORK/'tools/tmp'
 SUPPRESSED = ('Plan', 'Implement')  # classes the synthetic base release already suppresses

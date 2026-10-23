@@ -1,7 +1,7 @@
 """Outcome-blind family/dose allocations and explicit continuation identities."""
 from collections import defaultdict
 import math
-from .common import ARMS, BENCHMARKS, CLASSES, digest, require
+from moe_exp.io import ARMS, BENCHMARKS, CLASSES, digest, require
 
 
 def seed_for(seed, *parts):
