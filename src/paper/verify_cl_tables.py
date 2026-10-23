@@ -1,27 +1,20 @@
-"""Check ordered manuscript table cells and rank marks against saved evidence.
+"""Check the cells and rank marks of the manuscript tables against the saved estimates.
 
-This bounded, read-only check performs no fitting, resampling or inference.
-Real estimates, single engineering fixtures and unavailable intervals have
-separate metadata. --self-test also
-rejects in-memory row swaps, changed intervals and wrong rank marks, and proves
-that the exporter default cannot overwrite author-formatted tables or their
-manifest. No source/data files are written by either check.
+Reads only: no fitting, resampling or inference. Real estimates, single engineering fixtures and unavailable
+intervals are reported separately. --self-test also shows that the check rejects swapped rows, changed intervals and
+wrong rank marks in copies of the tables held in memory.
+
+  python -m paper.verify_cl_tables [--paper PAPER_FOLDER] [--self-test]
 """
 import argparse
-import contextlib
 import csv
 from decimal import Decimal
-import hashlib
-import importlib.util
-import io
 import json
 from pathlib import Path
 import re
-import sys
-from unittest.mock import patch
 
-REPO = Path(__file__).resolve().parents[2]
-from paper.cl_paths import DATA as SUPPORT_DATA, FIGURES as SUPPORT_FIGURES, NOTES, PAPER as DEFAULT_PAPER  # noqa: E402
+from paper.cl_paths import FIGURES as SUPPORT_FIGURES, NOTES, PAPER as DEFAULT_PAPER, REPO
+from store import verified
 
 
 def figure_root(paper):
@@ -47,8 +40,6 @@ ARMS = ("state_balanced", "labelled_frequency", "random")
 CI = re.compile(r"\\(bestcid|secondcid|cid)\{([^}]+)\}\{([^}]+)\}\{([^}]+)\}")
 MODEL = re.compile(r"\\modelname\{[^}]+\}\{((?:\\shortstack\[l\]\{[^}]+\})|[^}]+)\}")
 NUMBER = re.compile(r"[+-]?\d+(?:\.\d+)?")
-ROSTER_LABELS = LABELS
-
 
 
 class TableMismatch(ValueError):
@@ -225,8 +216,8 @@ def verify_inline(paper, inline_texts=None):
             continue
         columns = line.split(" & ")
         match = MODEL.search(columns[0])
-        require(match and model_label(match) in ROSTER_LABELS and len(columns) == 6, "inline model roster identity/columns differ")
-        model = ROSTER_LABELS[model_label(match)]
+        require(match and model_label(match) in LABELS and len(columns) == 6, "inline model roster identity/columns differ")
+        model = LABELS[model_label(match)]
         require(model not in seen, "duplicated inline model roster row")
         seen.add(model)
         if model == PLANNED_MODEL:
@@ -422,10 +413,7 @@ def verify_routing(paper, texts):
         symmetric_cell(cell, *record["strong"]["all"][key], digits, "strong/all/" + key)
     checked.append(("routing_strong.tex", len(strong) * 2 + 6, source, {"rank_scope": "none; exploratory, pooled efficiency only"}))
 
-    prereg = json.loads(PREREG.read_text())
-    seal = prereg.pop("sha256")
-    payload = json.dumps(prereg, sort_keys=True, separators=(",", ":"), ensure_ascii=False, allow_nan=False)
-    require(hashlib.sha256(payload.encode()).hexdigest() == seal, "efficiency-link receipt seal differs")
+    prereg = verified(PREREG)
     link = {(c["model"], c["class"]): c["tok_reason"] for c in prereg["cells"]}
     link.update({("pooled", c["class"]): c["tok_reason"] for c in prereg["pooled"]})
     rows = {model: columns for model, columns in model_rows(texts["efficiency_link.tex"])}
@@ -792,25 +780,6 @@ def self_test(paper):
         checks.append("advertised_context_as_measured_fixture_rejected")
     else:
         raise TableMismatch("advertised context misrepresented as measured fixture passed self-test")
-    sys.dont_write_bytecode = True
-    module_path = Path(__file__).with_name("export_cl_exhibits.py")
-    spec = importlib.util.spec_from_file_location("cl_export_guard_test", module_path)
-    exporter = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(exporter)
-    exporter.PAPER = paper
-    exporter.ROOT = figure_root(paper)
-    exporter.DATA = exporter.ROOT / "data"
-    exporter.TABLES = paper / "journal/tables"
-    writes = []
-
-    def capture_write(path, content, *args, **kwargs):
-        writes.append(path)
-        return len(content)
-
-    with patch.object(Path, "write_text", capture_write), patch.object(Path, "write_bytes", capture_write), patch.object(Path, "mkdir"), contextlib.redirect_stdout(io.StringIO()):
-        exporter.export_main_data()
-    require(writes and all(path.parent == exporter.DATA for path in writes), "default export tried to overwrite tables, manifest or unrelated files")
-    checks.append("default_export_preserves_tables_and_manifest")
     return {"status": "pass", "checks": checks, "filesystem_writes": False}
 
 

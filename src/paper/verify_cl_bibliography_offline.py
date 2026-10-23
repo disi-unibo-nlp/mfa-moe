@@ -1,23 +1,22 @@
-"""Compare CL citations with independently inspected public records, offline.
+"""Compare the manuscript's citations with independently inspected public records, offline.
 
-The network-enabled bulk lookup was rejected by automatic approval review.
-This adapter performs only local comparison with source-transcribed metadata;
-it does not retry that lookup, normalize references, or alter installed tools.
+The paper-writer bibliography checker runs with its network lookup replaced by the records in
+BUILD/author-revision-20261014/PRIMARY_RECORDS.json. It does not normalise the references. Writes
+BUILD/bib/OFFLINE_VERIFICATION.json.
+
+  python -m paper.verify_cl_bibliography_offline
 """
-from pathlib import Path
-import hashlib
 import importlib.util
 import json
-import sys
 
-from paper.cl_paths import BUILD, PAPER, REPO  # noqa: E402
-SKILL = Path('/leonardo/home/userexternal/lmolfett/.paper-writer-skill/skills/paper-writer')
+from paper.cl_paths import BUILD, PAPER, PAPER_WRITER
+from store import file_sha
 
 
 def main():
     evidence = BUILD / 'author-revision-20261014/PRIMARY_RECORDS.json'
     data = json.loads(evidence.read_text())['records']
-    spec = importlib.util.spec_from_file_location('paper_bib_offline', SKILL / 'scripts/bib.py')
+    spec = importlib.util.spec_from_file_location('paper_bib_offline', PAPER_WRITER / 'scripts/bib.py')
     bib = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(bib)
 
@@ -59,9 +58,9 @@ def main():
         'mode': 'existing skill comparator with network disabled and independent local primary records',
         'active_keys': len(keys), 'all_active_keys_covered': True,
         'external_lookup_performed': False, 'normalization_performed': False,
-        'primary_records_sha256': hashlib.sha256(evidence.read_bytes()).hexdigest(),
-        'bibliography_sha256': hashlib.sha256((PAPER / 'references.bib').read_bytes()).hexdigest(),
-        'skill_bib_sha256': hashlib.sha256((SKILL / 'scripts/bib.py').read_bytes()).hexdigest(),
+        'primary_records_sha256': file_sha(evidence),
+        'bibliography_sha256': file_sha(PAPER / 'references.bib'),
+        'skill_bib_sha256': file_sha(PAPER_WRITER / 'scripts/bib.py'),
         'unresolved_metadata': 0,
         'approval_review': 'bulk external API lookup rejected; no retry or external-disclosure workaround',
     }
