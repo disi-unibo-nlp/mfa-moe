@@ -37,7 +37,8 @@ TABLE_NAMES = {
     "qwen330b": r"\modelname{qwen}{Qwen3-30B-A3B}",
     "lfm25": r"\modelname{liquid}{LFM2.5-24B-A2B}",
 }
-CLASSES = ("Read", "Analyze", "Explore", "Plan", "Implement", "Verify", "Monitor")
+# The class order of the paper's tables and figures. It is not store.CLASSES, the order of the analysis code.
+PAPER_CLASSES = ("Read", "Analyze", "Explore", "Plan", "Implement", "Verify", "Monitor")
 ARMS = (("native", "Native"), ("target_activate", "Targeted activation"), ("random_activate", "Random activation"),
         ("target_deactivate", "Targeted deactivation"), ("random_deactivate", "Random deactivation"))
 
@@ -99,11 +100,11 @@ def figure(coords, panels):
                    + ("" if last else "xticklabels=\\empty,") +
                    "extra y ticks={0},extra y tick style={grid=major,major grid style={draw=gomaxis,line width=.45pt}},"
                    "title={\\textbf{" + title + "}},title style={font=\\fontsize{8}{9}\\selectfont}]")
-        for k, column in enumerate(columns):
+        for k, field in enumerate(columns):
             out.append("\\addplot[fill=" + COLORS[k] + ",draw=black,line width=.35pt,bar shift=" + str(SHIFTS[k])
-                       + "pt,journalerror] table[x=x,y=" + column + ",y error=" + column + "_pm]"
+                       + "pt,journalerror] table[x=x,y=" + field + ",y error=" + field + "_pm]"
                        "{figures/journal/data/routing.dat};")
-            index = 1 + 2 * HEADINGS.index(column)
+            index = 1 + 2 * HEADINGS.index(field)
             for row in coords:
                 mean, margin = row[index], row[index + 1]
                 end = mean + margin if mean >= 0 else mean - margin
@@ -282,7 +283,7 @@ def link_table(effects):
     link_rows = []
     for model in link["models"] + ["pooled"]:
         entries = []
-        for c in CLASSES:
+        for c in PAPER_CLASSES:
             v = pooled_link[c] if model == "pooled" else cells[model, c]
             mean, low, high = (100 * v[k] for k in ("beta", "ci_low", "ci_high"))
             entries.append(cid(mean, mean - low, 2, high - mean))

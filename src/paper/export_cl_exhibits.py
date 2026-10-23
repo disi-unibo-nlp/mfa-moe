@@ -17,8 +17,10 @@ import json
 import shutil
 
 from paper.cl_paths import DATA, LEGACY, REPO
-from paper.export_routing_results import CLASSES
+from paper.export_routing_results import PAPER_CLASSES
 from store import BENCHMARKS, FAST, MODELS, file_sha, verified
+
+ORIGINAL_MODELS = MODELS[:7]  # the seven models of the first capture; native-memory fixtures exist for these only
 
 
 def read_csv(name):
@@ -42,7 +44,7 @@ def capture():
     imported = REPO / "report/research-campaign-v3-20261014-r6/EVIDENCE_IMPORT.json"
     bindings = {r["path"]: r["sha256"] for r in json.loads(imported.read_text())["references"]}
     summaries = {}
-    for model in MODELS[:7]:
+    for model in ORIGINAL_MODELS:
         path = REPO / "report/research-campaign-v3-20261014-r5-r2" / model / "NATIVE_DYNAMICS_SUMMARY.json"
         if bindings[str(path)] != file_sha(path):
             raise ValueError("imported dynamics changed: " + model)
@@ -51,7 +53,7 @@ def capture():
     (DATA / "native_dynamics.json").write_text(json.dumps(summaries, indent=2) + "\n")
     fixture = REPO / "report/research-campaign-v3-20261014-r6/PARTIAL_VALIDATION_EVIDENCE.json"
     records = json.loads(fixture.read_text())["models"]
-    if {r["model"] for r in records} != set(MODELS[:7]):
+    if {r["model"] for r in records} != set(ORIGINAL_MODELS):
         raise ValueError("native fixture roster changed")
     (DATA / "native_fixtures.json").write_text(json.dumps(records, indent=2) + "\n")
     sources["native_fixtures"] = source(fixture)
@@ -133,7 +135,7 @@ def replace_lfm_rows(path, rows):
     path.write_bytes((newline.join(lines + rows) + newline).encode())
 
 
-def capture_lfm():
+def capture_lfm_rows():
     """Append the LFM2.5 rows to the bundled copies; the seven-model rows stay byte-identical."""
     sources = json.loads((DATA / "SOURCES.json").read_text())
     readout = LFM_ROOT / "READOUT_RESULTS.json"
@@ -246,11 +248,11 @@ def dynamics_data():
     # Matrix coordinates are copied by named state, never relabeled in place.
     for model in MODELS:
         matrix, absent = [], []
-        for y, state in enumerate(CLASSES, 1):
-            row = [dynamics[model]["results"][state + ":next:" + destination] for destination in CLASSES]
+        for y, state in enumerate(PAPER_CLASSES, 1):
+            row = [dynamics[model]["results"][state + ":next:" + destination] for destination in PAPER_CLASSES]
             # An undefined estimate stays missing (nan), never zero, and is not summed.
             defined = [r["estimate"] for r in row if r["estimate"] is not None]
-            if len(defined) == len(CLASSES) and abs(sum(defined) - 1) > 1e-10:
+            if len(defined) == len(PAPER_CLASSES) and abs(sum(defined) - 1) > 1e-10:
                 raise ValueError("transition row does not sum to one")
             if sum(defined) > 1 + 1e-10:
                 raise ValueError("transition row exceeds one")
@@ -275,9 +277,10 @@ def dynamics_data():
 
 
 def check_inputs():
-    """Native-memory fixtures (seven original models) add up over workers; every model has 4,647 benchmark attempts."""
-    for r in json.loads((DATA / "native_fixtures.json").read_text()):
-        if sum(r["native_resident_bytes_by_worker"]) != r["native_resident_bytes_aggregate"]:
+    """The original models each have a native-memory fixture that adds up over workers; every model has 4,647 attempts."""
+    fixtures = {r["model"]: r for r in json.loads((DATA / "native_fixtures.json").read_text())}
+    for m in ORIGINAL_MODELS:
+        if sum(fixtures[m]["native_resident_bytes_by_worker"]) != fixtures[m]["native_resident_bytes_aggregate"]:
             raise ValueError("worker aggregation differs")
     cells = {(r["model"], r["dataset"]): r for r in read_csv("benchmark_cells.csv") if r["corpus"] == "card-v3"}
     for m in MODELS:
@@ -285,19 +288,23 @@ def check_inputs():
             raise ValueError("benchmark attempt population differs")
 
 
+def main(capture_existing=False, capture_lfm=False):
+    if capture_existing:
+        capture()
+    if capture_lfm:
+        capture_lfm_rows()
+    check_inputs()
+    readout_data()
+    selection_data()
+    next_state_data()
+    dynamics_data()
+    print(json.dumps({"models": len(MODELS), "selection_cells": len(MODELS) * 15, "native_dynamics_models": len(MODELS),
+                      "next_state_models": 2, "new_inference": False}))
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     parser.add_argument("--capture-existing", action="store_true")
     parser.add_argument("--capture-lfm", action="store_true", help="append the LFM2.5 rows to the bundled copies")
     args = parser.parse_args()
-    if args.capture_existing:
-        capture()
-    if args.capture_lfm:
-        capture_lfm()
-    readout_data()
-    selection_data()
-    next_state_data()
-    dynamics_data()
-    check_inputs()
-    print(json.dumps({"models": len(MODELS), "selection_cells": len(MODELS) * 15, "native_dynamics_models": len(MODELS),
-                      "next_state_models": 2, "new_inference": False}))
+    main(args.capture_existing, args.capture_lfm)
