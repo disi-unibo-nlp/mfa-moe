@@ -21,6 +21,7 @@ The population is the 522 questions of the present-state readout, for all eight 
 from __future__ import annotations
 
 import argparse
+import os
 from pathlib import Path
 import sys
 
@@ -37,7 +38,6 @@ from .readouts import HISTORICAL
 FROZEN = HISTORICAL/'FROZEN.readout.v3.json'
 TOKEN_CACHE = Path('/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/depth-paths/results/s3/_tok')
 LAYERS_EXPERTS_LFM = (38, 64)
-WORKERS = 8
 CODE = ('next_state.py', 'readout_fit.py', 'readout_analysis.py')
 
 
@@ -165,7 +165,8 @@ def run(model: str) -> dict:
     family_ids = np.asarray([question_family[q] for q in pairs.groups])
     from threadpoolctl import threadpool_limits
     with threadpool_limits(limits=1):
-        result = readout_analysis.analyse(sr, pairs, None, 'token_identity', WORKERS, family, family_ids,
+        workers = int(os.environ.get('SLURM_CPUS_PER_TASK', '1'))
+        result = readout_analysis.analyse(sr, pairs, None, 'token_identity', workers, family, family_ids,
                                           bulk/model/'next-state')
     with np.load(bulk/model/'next-state/readout'/model/'token_identity/losses.npz') as z:
         text, routing = z['base'], z['aug']
