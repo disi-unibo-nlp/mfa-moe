@@ -10,7 +10,8 @@ pulse is re-applied at its original positions. Nothing is redrawn.
 
 Commands (python -m steering.pulse ...):
   plan                          CPU: selection + reduced manifests for prepared models
-  run --model M --shard I/N     GPU: assigned continuations of one shard
+  plan-strong --model M,M       CPU: the post-hoc strong-dose manifests
+  run --model M --shard I/N     GPU: assigned continuations of one shard (--design main|strong)
   native --shard I/N            GPU: LFM native population (unhooked engine)
   annotate --shard I/N          GPU: LFM discovery judge labels (unhooked engine)
   lfm-materialize | lfm-derive  CPU: labeling.lfm_inputs / steering.nominations
@@ -22,10 +23,10 @@ from __future__ import annotations
 import argparse
 import json
 import os
-import sys
 import tempfile
 import time
 from pathlib import Path
+from provenance import code_provenance
 from store import CLASSES, MODELS, REPO, digest, file_sha, load, private, publish, require, verified
 
 ROOT = Path(os.environ.get('STUDY_DATA_ROOT', REPO/'report/final-routing-20261015-r1'))
@@ -144,14 +145,8 @@ def plan(models=None):
     return out
 
 
-MANIFESTS = {'main': 'ASSIGNMENTS.json', 'strong': 'STRONG.json', 'whole': 'WHOLE.json'}
-STORES = {'main': 'units', 'strong': 'strong/units', 'whole': 'whole/units'}
-
-
-def plan_whole(models=('gpt', 'qwen36')):
-    """Build the predeclared main and half-dose original-prompt family blocks."""
-    from steering.whole import prepare
-    return prepare(models)
+MANIFESTS = {'main': 'ASSIGNMENTS.json', 'strong': 'STRONG.json'}
+STORES = {'main': 'units', 'strong': 'strong/units'}
 
 
 def plan_strong(models, seed_tag='strong-dose-v1'):
@@ -195,20 +190,17 @@ def plan_strong(models, seed_tag='strong-dose-v1'):
     return out
 
 
-def shard_rows(model, shard, design='main', sub=None):
-    """Families with rank % count == index; each `sub` (j, m) in turn keeps that subset's ranks with rank % m == j."""
+def shard_rows(rows, shard):
+    """The rows of the families with rank % count == index, families ranked by name."""
     index, count = shard
-    if design == 'whole':
-        from steering.whole import manifest
-        rows = manifest(model)['records']
-    else:
-        rows = verified(DRIVER/model/MANIFESTS[design])['records']
     families = sorted({r['family'] for r in rows})
-    mine = [f for i, f in enumerate(families) if i % count == index]
-    for j, m in ([sub] if isinstance(sub, tuple) else (sub or [])):
-        mine = [f for i, f in enumerate(mine) if i % m == j]
-    mine = set(mine)
+    mine = {f for i, f in enumerate(families) if i % count == index}
     return [r for r in rows if r['family'] in mine]
+
+
+def design_rows(model, design, shard):
+    """One shard of a model's rows in the main or strong design."""
+    return shard_rows(verified(DRIVER/model/MANIFESTS[design])['records'], shard)
 
 
 # ----------------------------------------------------------------------------- engine
@@ -473,7 +465,7 @@ def intervention_builder(b, model, tokenizer, closure, *, greedy=False, limit=No
             cache[key] = prompt_prefix(b, model, row, tokenizer)[:2]
         prompt, prefix = cache[key]
         total = remaining(p, prompt, prefix)
-        if str(row.get('dose', '')).startswith('rescue-') or row.get('budget_prefix'):
+        if row.get('budget_prefix'):
             total = min(total, int(row['horizon']))
         if limit is not None:
             total = min(total, limit)
@@ -488,6 +480,18 @@ def intervention_builder(b, model, tokenizer, closure, *, greedy=False, limit=No
             request.update(whole=True, prompt_scope=row['prompt_scope'], audit_capture=row['audit_capture'])
         return {'prompt_ids': prompt+prefix+history, 'params': params, 'request': request, 'total': total}
     return build
+
+
+def work_remaining_bytes() -> int:
+    """Room left under the WORK project quota (the smaller of its soft and hard limits)."""
+    import subprocess
+    result = subprocess.run(['lfs', 'quota', '-p', '20149688', '/leonardo_work'],
+                            capture_output=True, text=True, check=True)
+    fields = next(line.split() for line in result.stdout.splitlines() if line.strip().startswith('/leonardo_work '))
+    used, soft, hard = (int(value.rstrip('*')) for value in fields[1:4])
+    limits = [value for value in (soft, hard) if value]
+    require(limits, 'native WORK project quota limit is unavailable')
+    return (min(limits)-used)*1024
 
 
 def compress_audit_capture(folder: Path, capture: dict) -> dict:
@@ -507,7 +511,6 @@ def compress_audit_capture(folder: Path, capture: dict) -> dict:
             dtype = (np.uint8 if key.endswith('_ids') else np.float32 if key.endswith('_weights')
                      else np.bool_ if key == 'active' else np.int32)
             arrays['layer_'+layer+'_'+key] = np.asarray(values, dtype=dtype)
-    from steering.whole import work_remaining_bytes
     require(work_remaining_bytes() > 13*2**30+sum(array.nbytes for array in arrays.values()),
             'full audit would breach the existing WORK reserve and concurrent-write margin')
     folder.mkdir(parents=True, exist_ok=True)
@@ -589,12 +592,9 @@ def shard_completion(store: Store, rows: list[dict]) -> dict:
     }
 
 
-def run_model(model, shard, deadline, *, max_inflight=64, design='main', sub=None):
-    if design == 'whole':
-        from steering.whole import run
-        return run(model, shard, deadline, max_inflight=max_inflight)
+def run_model(model, shard, deadline, *, max_inflight=64, design='main'):
     b = binding()
-    rows = shard_rows(model, shard, design, sub)
+    rows = design_rows(model, design, shard)
     store = Store(bulk(b)/model/STORES[design])
     return execute_rows(b, model, rows, store, deadline, max_inflight=max_inflight,
                         design=design, shard=shard)
@@ -641,7 +641,7 @@ def execute_rows(b, model, rows, store, deadline, *, max_inflight, design, shard
         llm.llm_engine.engine_core.shutdown()
     receipt = {'model': model, 'shard': list(shard), 'job': os.environ.get('SLURM_JOB_ID'), 'load_seconds': load_seconds,
                'engine': {k: v for k, v in kwargs.items() if k != 'logits_processors'}, 'metrics': metrics,
-               'native_validation': validation[0], 'code': code_hashes()}
+               'native_validation': validation[0], 'code': code_provenance()}
     publish(bulk(b)/model/'jobs'/(design+'-'+os.environ.get('SLURM_JOB_ID', 'local')+'.json'), receipt)
     log({'event': 'end', **receipt})
     return receipt
@@ -726,7 +726,7 @@ def lfm_native(shard, deadline):
     finally:
         llm.llm_engine.engine_core.shutdown()
     receipt = {'stage': 'lfm-native', 'shard': list(shard), 'job': os.environ.get('SLURM_JOB_ID'),
-               'load_seconds': load_seconds, 'metrics': metrics, 'code': code_hashes()}
+               'load_seconds': load_seconds, 'metrics': metrics, 'code': code_provenance()}
     publish(bulk(b)/'lfm25/jobs'/('native-'+os.environ.get('SLURM_JOB_ID', 'local')+'.json'), receipt)
     log({'event': 'end', **receipt})
     return receipt
@@ -792,7 +792,7 @@ def lfm_annotate(shard, deadline):
         finally:
             renderer.close()
     receipt = {'stage': 'lfm-annotate', 'shard': list(shard), 'job': os.environ.get('SLURM_JOB_ID'),
-               'load_seconds': load_seconds, 'metrics': metrics, 'code': code_hashes()}
+               'load_seconds': load_seconds, 'metrics': metrics, 'code': code_provenance()}
     publish(bulk(b)/'lfm25/jobs'/('annotate-'+os.environ.get('SLURM_JOB_ID', 'local')+'.json'), receipt)
     log({'event': 'end', **receipt})
     return receipt
@@ -824,12 +824,6 @@ def lfm_replay(shard, deadline):
 
 
 # ----------------------------------------------------------------------------- bookkeeping
-
-def code_hashes():
-    files = sorted((REPO/'src').rglob('*.py'))
-    return {'files': {str(f.relative_to(REPO)): file_sha(f) for f in files},
-            'python': sys.version.split()[0]}
-
 
 def log(value):
     print(json.dumps({'time': time.strftime('%Y-%m-%dT%H:%M:%S'), **value}, default=str), flush=True)
@@ -867,16 +861,12 @@ def main(argv=None):
     ap.add_argument('command', choices=['plan', 'run', 'native', 'annotate', 'lfm-materialize', 'lfm-replay',
                                         'lfm-derive', 'status', 'plan-strong',
                                         'lfm-repair-contexts',
-                                        'lfm-readout', 'lfm-dynamics', 'plan-whole'])
+                                        'lfm-readout', 'lfm-dynamics'])
     ap.add_argument('--model')
     ap.add_argument('--shard', default='0/1', type=parse_shard)
     ap.add_argument('--max-inflight', type=int, default=64)
     ap.add_argument('--design', choices=sorted(MANIFESTS), default='main')
-    ap.add_argument('--sub', type=parse_shard, action='append', default=None)
     args = ap.parse_args(argv)
-    if args.command == 'plan-whole':
-        log({'event': 'plan-whole', 'models': plan_whole(args.model.split(',') if args.model else ('gpt', 'qwen36'))})
-        return
     if args.command == 'plan':
         log({'event': 'plan', 'models': plan([args.model] if args.model else None)})
         return
@@ -918,8 +908,7 @@ def main(argv=None):
     require(os.environ.get('SLURM_JOB_ID') and os.environ.get('SLURM_JOB_GPUS'), 'GPU commands require a Slurm GPU allocation')
     deadline = deadline_from_slurm()
     if args.command == 'run':
-        run_model(args.model, args.shard, deadline, max_inflight=args.max_inflight, design=args.design,
-                  sub=args.sub)
+        run_model(args.model, args.shard, deadline, max_inflight=args.max_inflight, design=args.design)
     elif args.command == 'native':
         lfm_native(args.shard, deadline)
     elif args.command == 'annotate':
