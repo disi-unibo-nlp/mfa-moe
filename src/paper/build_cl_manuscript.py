@@ -3,9 +3,8 @@
 Copies every source file into a fresh folder BUILD/source-round-NN, compiles it in up to four passes until the
 references stop changing, and writes BUILD/build/main.pdf, one image per page (BUILD/pages) and the receipt
 BUILD/BUILD.json. The manuscript folder is only read, and the build stops if a source changes while it runs.
-Needs BUILD/bib-verify.log (the bibliography check log) and the rule notes in NOTES.
 
-  python -m paper.build_cl_manuscript [--timeout-seconds 180]
+  python -m paper.build_cl_manuscript [--timeout-seconds 300]
 """
 from pathlib import Path
 import argparse
@@ -19,13 +18,21 @@ import time
 
 import pymupdf
 
-from paper.cl_paths import BUILD, FIGURES, NOTES, PAPER, PAPER_WRITER, TECTONIC, TECTONIC_SHA256
+from paper.cl_paths import BUILD, FIGURES, PAPER, PAPER_WRITER, TECTONIC, TECTONIC_SHA256
 from store import file_sha
 
-PASS_SECONDS = 180  # time limit of one compiler pass; the first pass of the full manuscript takes 70 to 175 s
+PASS_SECONDS = 300  # time limit of one compiler pass; the first pass of the full manuscript takes 70 to 175 s
 AUXILIARY = ("aux", "bbl", "out", "toc")  # files that carry references and the bibliography from one pass to the next
 UNSETTLED = re.compile(r"Rerun to get cross-references right|Label\(s\) may have changed|"
                        r"There were undefined (?:references|citations)|Citation .+ undefined")
+
+
+def seconds(text):
+    """argparse type of --timeout-seconds: a whole number from 1 to 600."""
+    value = int(text)
+    if not 0 < value <= 600:
+        raise argparse.ArgumentTypeError("must be between 1 and 600")
+    return value
 
 
 def tectonic():
@@ -150,11 +157,6 @@ def main(timeout):
     snapshot = BUILD / f"source-round-{index:02d}"
     snapshot.mkdir()
     bindings = copy_sources(source_files(), snapshot)
-    # paper-writer looks for the rules beside main.tex; they live outside the Overleaf folder.
-    for name in ("paper-rules.md", "writing_brief.md"):
-        shutil.copyfile(NOTES / name, snapshot / name)
-    (snapshot / ".paper-review").mkdir()
-    shutil.copyfile(BUILD / "bib-verify.log", snapshot / ".paper-review/bib-verify.log")
     started = time.monotonic()
     seed = seed_from_last_build(snapshot, bindings)
     run, passes = compile_bounded(snapshot, engine, compile_env(BUILD / "tmp"), timeout)
@@ -182,8 +184,6 @@ def main(timeout):
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
-    parser.add_argument("--timeout-seconds", type=int, default=PASS_SECONDS, help="time limit of each compiler pass")
+    parser.add_argument("--timeout-seconds", type=seconds, default=PASS_SECONDS, help="time limit of each compiler pass")
     args = parser.parse_args()
-    if not 0 < args.timeout_seconds <= 600:
-        parser.error("--timeout-seconds must be between 1 and 600")
     raise SystemExit(main(args.timeout_seconds))

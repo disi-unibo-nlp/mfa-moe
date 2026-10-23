@@ -13,7 +13,7 @@ import time
 
 import pymupdf
 
-from paper.build_cl_manuscript import compile_env, tectonic
+from paper.build_cl_manuscript import compile_env, seconds, tectonic
 from paper.cl_paths import BUILD, DATA, FIGURES, PAPER
 from store import file_sha
 
@@ -78,10 +78,8 @@ def build(name, engine, timeout):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__.split('\n\n')[0])
     parser.add_argument('names', nargs='*', metavar='NAME', help='figures to build (default: ' + ', '.join(NAMES) + ')')
-    parser.add_argument('--timeout-seconds', type=int, default=120, help='time limit of each figure (the slowest takes about 65 s)')
+    parser.add_argument('--timeout-seconds', type=seconds, default=120, help='time limit of each figure (the slowest takes about 65 s)')
     args = parser.parse_args()
-    if not 0 < args.timeout_seconds <= 600:
-        parser.error('--timeout-seconds must be between 1 and 600')
     unknown = [name for name in args.names if name not in NAMES]
     if unknown:
         parser.error('unknown figure(s): ' + ', '.join(unknown) + '; choose from ' + ', '.join(NAMES))
