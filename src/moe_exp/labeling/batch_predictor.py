@@ -19,7 +19,7 @@ from __future__ import annotations
 import urllib.error
 from typing import Any
 
-from moe_exp.correlation_pipeline.batch_judge import (
+from moe_exp.labeling.batch_judge import (
     build_batch_payload,
     map_batch_choices,
     map_batch_response,
@@ -39,7 +39,7 @@ def load_program_and_adapter(judge_program: str) -> tuple[Any, Any, Any]:
     import dspy
     from dspy.adapters.chat_adapter import ChatAdapter
 
-    from moe_exp.gepaLLMAsJudge.run import EpisodeJudge
+    from moe_exp.labeling.gepa.run import EpisodeJudge
 
     program = EpisodeJudge()
     program.load(judge_program)
@@ -57,7 +57,7 @@ def render_conversation(adapter: Any, predict: Any, inputs: dict[str, Any]) -> l
 
 def parse_completion(adapter: Any, predict: Any, completion: str) -> str:
     """Parse a completion with DSPy's parser, then the project's label normaliser."""
-    from moe_exp.gepaLLMAsJudge.metrics import parse_sentence_label
+    from moe_exp.labeling.gepa.metrics import parse_sentence_label
 
     parsed = adapter.parse(predict.signature, completion)
     return parse_sentence_label(parsed)

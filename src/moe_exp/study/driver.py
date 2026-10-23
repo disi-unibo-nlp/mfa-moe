@@ -660,7 +660,7 @@ def reader_kwargs(a, max_num_seqs=128):
 def lfm_native(shard, deadline):
     from vllm import SamplingParams
     from vllm.sampling_params import RequestOutputKind
-    from moe_exp.study.lfm import population
+    from moe_exp.labeling.lfm_inputs import population
     from moe_exp.study.runtime import prompt_prefix, remaining
     from moe_exp.io import Units
     b = binding()
@@ -714,9 +714,9 @@ def lfm_annotate(shard, deadline):
     """Discovery judge labels with the original renderer, prompt tokens, decoding and parser."""
     from vllm import SamplingParams
     from vllm.sampling_params import RequestOutputKind
-    from moe_exp.study.renderer import Renderer
-    from moe_exp.study.renderer import token_ids
-    from moe_exp.study.reader import Reader
+    from moe_exp.labeling.renderer import Renderer
+    from moe_exp.labeling.renderer import token_ids
+    from moe_exp.labeling.reader import Reader
     from moe_exp.io import Units
     b = binding()
     parent = load(Path(b['source_campaign'])/'CAMPAIGN.json')
@@ -867,11 +867,11 @@ def main(argv=None):
         print(json.dumps(status(), indent=1))
         return
     if args.command == 'lfm-materialize':
-        from moe_exp.study.lfm import materialize
+        from moe_exp.labeling.lfm_inputs import materialize
         log({'event': 'materialize', **materialize(binding())})
         return
     if args.command == 'lfm-repair-contexts':
-        from moe_exp.study.lfm import repair_annotation_inputs
+        from moe_exp.labeling.lfm_inputs import repair_annotation_inputs
         value = repair_annotation_inputs(binding())
         log({'event': 'repaired', 'contexts': len(value['records']), 'sha256': value['sha256']})
         return

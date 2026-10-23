@@ -2,7 +2,7 @@
 from __future__ import annotations
 from collections import Counter, defaultdict
 import math
-from moe_exp.correlation_pipeline.spans import reasoning_ranges, sentence_spans, trace_digest
+from moe_exp.labeling.spans import reasoning_ranges, sentence_spans, trace_digest
 from .common import CLASSES, keys, termination
 
 

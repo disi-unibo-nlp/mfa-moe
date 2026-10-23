@@ -7,7 +7,7 @@ import math
 from pathlib import Path
 from typing import Any
 
-from moe_exp.correlation_pipeline.spans import (
+from moe_exp.labeling.spans import (
     digest,
     map_selection_to_v2,
     selected_sentence_indices,

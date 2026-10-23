@@ -85,7 +85,7 @@ def joined_accuracy(outcomes, metadata, qf):
 def native_accuracy(campaign, model):
     import pandas as pd
     from moe_exp.schemas import TraceRecord
-    from moe_exp.correlation_pipeline.spans import trace_digest
+    from moe_exp.labeling.spans import trace_digest
     from moe_exp.generation.scoring import extract_answer
     root = Path(campaign["root"])
     if (root/model/"NATIVE_ESTIMANDS.json").exists() and (root/model/"NATIVE_ACCURACY.json").exists():

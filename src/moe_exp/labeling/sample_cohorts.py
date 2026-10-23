@@ -22,7 +22,7 @@ import random
 from collections import defaultdict
 from pathlib import Path
 
-from moe_exp.correlation_pipeline.spans import sentence_spans, trace_digest
+from moe_exp.labeling.spans import sentence_spans, trace_digest
 from moe_exp.schemas import TraceRecord
 
 DATASETS = ("math500", "aime24", "aime25", "olympiad", "amc23", "minerva")

@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections.abc import Sequence
 from dataclasses import dataclass
 
-from .data import SENTENCE_LABELS, EpisodeDocument
+from moe_exp.labeling.gepa.data import SENTENCE_LABELS, EpisodeDocument
 
 SEED_INSTRUCTIONS = r"""You are an expert reviewer of mathematical reasoning traces. Classify
 the CURRENT UNIT by its primary local function in the adapted Schoenfeld Episode Theory.

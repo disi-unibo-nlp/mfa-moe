@@ -9,7 +9,7 @@ from pathlib import Path
 import tempfile
 from typing import Any
 
-from moe_exp.correlation_pipeline.annotation_partition import (
+from moe_exp.labeling.annotation_partition import (
     DATASETS,
     PARTS,
     PART_SIZE,
@@ -19,10 +19,7 @@ from moe_exp.correlation_pipeline.annotation_partition import (
     plan,
     trace_key,
 )
-from moe_exp.correlation_pipeline.batch_predictor import (
-    classify_batch_outcomes,
-    load_program_and_adapter,
-)
+from moe_exp.labeling.batch_predictor import classify_batch_outcomes, load_program_and_adapter
 
 BATCH_SIZE = 64
 LABELS = frozenset(("Read", "Analyze", "Plan", "Implement", "Explore", "Verify", "Monitor"))

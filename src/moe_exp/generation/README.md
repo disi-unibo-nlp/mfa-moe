@@ -200,7 +200,7 @@ Run it from the repository root (CPU only; any Python with pydantic works, a
 2-5 GB corpus takes one to three minutes):
 
 ```bash
-PYTHONPATH=src python -m moe_exp.correlation_pipeline.sample_stratified \
+PYTHONPATH=src python -m moe_exp.labeling.sample_stratified \
   --generation-dir results/correlation_pipeline/gpt-oss-20b/generation \
   --generation-model openai/gpt-oss-20b \
   --output-dir results/correlation_pipeline/gpt-oss-20b/reasoning-vllm-v1/sampling-100k-stratified \
@@ -269,7 +269,7 @@ Each part is internally stratified, so a single part is representative of the
 global mix. The plan-only form of the client is still available for inspection:
 
 ```bash
-<judge-env>/bin/python -m moe_exp.correlation_pipeline.annotation_batch \
+<judge-env>/bin/python -m moe_exp.labeling.annotation_batch \
   --trace-root <sampling root>/parts/part-00/generation/<model-slug> \
   --output-dir <scratch-part-00> \
   --part 0 --parts 1 --part-size 25000 --total 25000 \

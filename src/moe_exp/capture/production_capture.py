@@ -167,7 +167,7 @@ def marker_counts(trace,ids,experts):
 def reduce_capture(row,data,backend,manifest):
     import torch
     from moe_exp.schemas import TraceRecord
-    from moe_exp.correlation_pipeline.spans import trace_digest,validate_annotation
+    from moe_exp.labeling.spans import trace_digest, validate_annotation
     from moe_exp.correlation_pipeline.features import compute_layer_features,json_safe_features,FEATURE_SCHEMA_VERSION
     from moe_exp.correlation_pipeline.views import compute_views
     from moe_exp.correlation_pipeline.dynamics.classes import saved_layout

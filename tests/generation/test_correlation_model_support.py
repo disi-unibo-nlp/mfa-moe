@@ -10,7 +10,7 @@ from tokenizers import Tokenizer, decoders, models, pre_tokenizers
 from transformers import PreTrainedTokenizerFast
 
 from moe_exp.correlation_pipeline.features import compute_layer_features
-from moe_exp.correlation_pipeline.spans import sentence_spans, token_layout, trace_digest
+from moe_exp.labeling.spans import sentence_spans, token_layout, trace_digest
 from moe_exp.models.inference import extract_logs_single_pass
 from moe_exp.models.router_adapters import (
     SIGMOID_ROUTERS,

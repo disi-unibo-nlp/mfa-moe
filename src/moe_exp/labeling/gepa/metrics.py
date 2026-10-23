@@ -10,7 +10,7 @@ from typing import Any
 
 from scipy.stats import kendalltau
 
-from .data import SENTENCE_LABELS
+from moe_exp.labeling.gepa.data import SENTENCE_LABELS
 
 
 class LabelParseError(ValueError):

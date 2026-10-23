@@ -27,7 +27,7 @@ def fixture(root, reverse=False, duplicate=False, legacy=False):
 
 
 def api():
-    return importlib.import_module('moe_exp.correlation_pipeline.annotation_partition')
+    return importlib.import_module('moe_exp.labeling.annotation_partition')
 
 
 class PopulationTests(unittest.TestCase):

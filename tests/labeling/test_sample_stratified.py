@@ -8,8 +8,8 @@ from types import SimpleNamespace
 
 import pytest
 
-from moe_exp.correlation_pipeline.annotation_partition import enumerate_items
-from moe_exp.correlation_pipeline.sample_stratified import (
+from moe_exp.labeling.annotation_partition import enumerate_items
+from moe_exp.labeling.sample_stratified import (
     quartile_groups,
     reasoning_tokens,
     replay_reasoning_tokens,

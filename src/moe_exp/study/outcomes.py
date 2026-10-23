@@ -21,7 +21,7 @@ def continuation_sentences(trace, replay, prefix, window, finish_reason):
     prefix boundary (the continuation does not open a new sentence) is kept, clipped to its continuation
     tokens and flagged, instead of aborting: it counts toward occupancy but is never the first sentence."""
     from moe_exp.correlation_pipeline.dynamics.classes import saved_layout
-    from moe_exp.correlation_pipeline.spans import reasoning_ranges
+    from moe_exp.labeling.spans import reasoning_ranges
     layout = saved_layout(trace)
     units, ranges = layout['units'], reasoning_ranges(trace)
     generated = []
@@ -53,7 +53,7 @@ def record(b, model, row, raw, tokenizer, close, *, frozen_input=None):
     from moe_exp.models.token_replay import make_token_replay
     from moe_exp.generation.scoring import score_completion_detailed
     from moe_exp.stats import unknown_bounds
-    from moe_exp.study.contexts import parts
+    from moe_exp.labeling.contexts import parts
     from moe_exp.study.runtime import prompt_prefix
     profile = b['models'][model]
     prompt, prefix, original = frozen_input or prompt_prefix(b, model, row, tokenizer)

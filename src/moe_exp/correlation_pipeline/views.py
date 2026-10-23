@@ -7,7 +7,7 @@ from pathlib import Path
 from typing import Any
 
 from moe_exp.correlation_pipeline.features import compute_layer_features, json_safe_features
-from moe_exp.correlation_pipeline.spans import (
+from moe_exp.labeling.spans import (
     SENTENCE_LABELS,
     SPAN_SCHEMA_VERSION,
     digest,
