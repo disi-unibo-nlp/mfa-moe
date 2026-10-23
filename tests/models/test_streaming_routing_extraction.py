@@ -5,7 +5,7 @@ from types import SimpleNamespace
 import pytest
 import torch
 
-from moe_exp.models.inference import _generated_tokens_to_cpu, extract_logs_single_pass
+from models.inference import _generated_tokens_to_cpu, extract_logs_single_pass
 
 
 class CharacterTokenizer:

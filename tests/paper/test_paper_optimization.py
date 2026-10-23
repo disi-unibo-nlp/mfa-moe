@@ -7,7 +7,7 @@ These tests require no network, credentials or generated manuscript edits.
 import json
 import unittest
 
-from moe_exp.paper.optimize_sections import _complete_response, protected_changes, select_candidate
+from paper.optimize_sections import _complete_response, protected_changes, select_candidate
 
 
 def review(scores_a: float, scores_b: float, choice: str, regression: str = '') -> dict:

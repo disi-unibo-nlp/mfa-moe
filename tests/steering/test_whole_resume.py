@@ -15,9 +15,9 @@ import numpy as np
 import pandas as pd
 import torch
 
-from moe_exp.steering import pulse as driver, whole, whole_effects
-from moe_exp.io import WORK, digest, file_sha, load, publish
-from moe_exp.steering.stream import Clock, StreamCapture
+from steering import pulse as driver, whole, whole_effects
+from store import WORK, digest, file_sha, load, publish
+from steering.stream import Clock, StreamCapture
 
 TMP = WORK/'tools/tmp'
 # Step counters differ legitimately between chunkings; every other counter must match.
@@ -105,8 +105,8 @@ def attach(prompt, prompt_scope, closure=((9, 9),)):
     runner = SimpleNamespace(get_model=lambda: model, _prepare_inputs=lambda: None,
                              input_batch=SimpleNamespace(req_ids=['internal']),
                              query_start_loc=SimpleNamespace(np=np.array([0, 0])))
-    with patch('moe_exp.steering.stream.discover', return_value={0: ('router', router, None)}), \
-         patch('moe_exp.steering.stream.policy', return_value={'scoring': 'softmax', 'renormalize': True}):
+    with patch('steering.stream.discover', return_value={0: ('router', router, None)}), \
+         patch('steering.stream.policy', return_value={'scoring': 'softmax', 'renormalize': True}):
         capture = StreamCapture(runner, {'layers': [0], 'hook_layers': [0], 'native_k': 4, 'experts': 32})
     capture.add([{'uid': 'uid', 'prompt': prompt, 'prefix': [], 'closure': [list(s) for s in closure],
                   'actions': [{'layer': 0, 'activate': [0], 'deactivate': [31], 'pulse_tokens': 0}],

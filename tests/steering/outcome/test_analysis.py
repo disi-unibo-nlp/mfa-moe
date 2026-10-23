@@ -4,7 +4,7 @@ import unittest
 
 import pandas as pd
 
-from moe_exp.steering.outcome import analysis
+from steering.outcome import analysis
 
 
 def unit(arm, tokens, correct, cls=None, family='f1', unknown=False):

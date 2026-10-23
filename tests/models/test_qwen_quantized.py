@@ -9,11 +9,11 @@ from transformers import (
     PreTrainedTokenizerFast, Qwen3_5MoeConfig, Qwen3_5MoeForCausalLM, Qwen3_5MoeTextConfig,
 )
 
-from moe_exp.models.loader import load_model_and_tokenizer
-from moe_exp.models.qwen_quantized import (
+from models.loader import load_model_and_tokenizer
+from models.qwen_quantized import (
     QwenForQuantizedReplay, SplitExperts, load_qwen_quantized, validate_quantized_experts,
 )
-from moe_exp.models.router_adapters import stream_router_signals
+from models.router_adapters import stream_router_signals
 
 
 @pytest.fixture

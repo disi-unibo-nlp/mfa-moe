@@ -2,8 +2,8 @@ import ast
 from pathlib import Path
 from types import SimpleNamespace
 import unittest
-from moe_exp.io import digest
-from moe_exp.steering.session import request_session
+from store import digest
+from steering.session import request_session
 
 
 class FakeEngine:
@@ -164,7 +164,7 @@ class SessionTests(unittest.TestCase):
         self.assertFalse(llm.attached); self.assertFalse(llm.llm_engine.live)
 
     def test_observer_binding_rejects_alias_collisions_and_unregistered_assignments(self):
-        from moe_exp.steering.observer import RequestCapture
+        from steering.observer import RequestCapture
         capture = RequestCapture.__new__(RequestCapture)
         capture.aliases = None; capture.requests = {'a': {}, 'b': {}}
         with self.assertRaisesRegex(ValueError, 'one-to-one'):capture.bind({'x': 'a', 'y': 'a'})

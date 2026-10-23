@@ -4,9 +4,9 @@ import unittest
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
-from moe_exp.steering import pulse as driver
-from moe_exp.io import WORK, verified
-from moe_exp.steering.stream import Clock
+from steering import pulse as driver
+from store import WORK, verified
+from steering.stream import Clock
 
 
 class Selection(unittest.TestCase):
@@ -132,7 +132,7 @@ class EngineTest(unittest.TestCase):
             self.assertEqual(log.call_args.args[0]['error'], 'secondary cleanup failure')
 
     def test_rank_disagreement_is_retained_and_drain_does_not_release_twice(self):
-        from moe_exp.io import digest
+        from store import digest
         uid = '%064x' % 413
         calls = []
         record = {'positions': [0], 'native_ids': [[1, 2]], 'executed_ids': [[1, 2]],
@@ -155,7 +155,7 @@ class EngineTest(unittest.TestCase):
             engine = driver.Engine(SimpleNamespace(llm_engine=fake, collective_rpc=rpc), store,
                                    time.time()+30, hooked=True, max_inflight=2)
             engine.inflight[uid] = {'progress': {'tokens': [1], 'segments': [{}]}, 'new': 1}
-            with patch('moe_exp.steering.whole.work_remaining_bytes', return_value=100*2**30):
+            with patch('steering.whole.work_remaining_bytes', return_value=100*2**30):
                 with self.assertRaisesRegex(ValueError, 'tensor-parallel captures disagree'):
                     engine.release([uid])
             for rank, expected in enumerate((.5, .50000006)):
@@ -256,7 +256,7 @@ class ReviewFixes(unittest.TestCase):
             self.assertEqual(len(store.state(uid)['tokens']), 9)
 
     def test_output_without_result_is_finalized_not_readmitted(self):
-        from moe_exp.io import publish
+        from store import publish
         uid = '%064x' % 9
         row = {'uid': uid}
         with tempfile.TemporaryDirectory(dir=WORK/'tools/tmp') as tmp:

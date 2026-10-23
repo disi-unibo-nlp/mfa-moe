@@ -3,8 +3,8 @@ import unittest
 
 import torch
 
-from moe_exp.steering.operators import score_override_dual, score_override_dual_masked, score_shift_masked
-from moe_exp.steering.stream import DOSE_KEYS, StreamCapture, batched_dose
+from steering.operators import score_override_dual, score_override_dual_masked, score_shift_masked
+from steering.stream import DOSE_KEYS, StreamCapture, batched_dose
 
 
 class WholeBatchTests(unittest.TestCase):

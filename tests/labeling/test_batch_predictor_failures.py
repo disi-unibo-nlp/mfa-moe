@@ -11,8 +11,8 @@ from types import SimpleNamespace
 
 import pytest
 
-from moe_exp.labeling import batch_predictor
-from moe_exp.labeling.batch_predictor import classify_batch, classify_batch_outcomes
+from labeling import batch_predictor
+from labeling.batch_predictor import classify_batch, classify_batch_outcomes
 
 ITEM = {
     "problem_statement": "problem",

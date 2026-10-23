@@ -1,7 +1,7 @@
 """The declared extension rule on hand-made effect summaries."""
 import unittest
 
-from moe_exp.steering.outcome.decide import qualifying
+from steering.outcome.decide import qualifying
 
 
 def cell(estimate, low, high, status='qualified'):

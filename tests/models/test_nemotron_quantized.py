@@ -8,15 +8,15 @@ from safetensors.torch import save_file
 from tokenizers import Tokenizer, models
 from transformers import NemotronHConfig, NemotronHForCausalLM, PreTrainedTokenizerFast
 
-from moe_exp.models.loader import load_model_and_tokenizer
-from moe_exp.models.nemotron_quantized import (
+from models.loader import load_model_and_tokenizer
+from models.nemotron_quantized import (
     EXPERT_KEY_MAPPING,
     NemotronHForQuantizedReplay,
     NemotronLinearExperts,
     load_nemotron_4bit,
     validate_quantized_experts,
 )
-from moe_exp.models.router_adapters import stream_router_signals
+from models.router_adapters import stream_router_signals
 
 
 @pytest.fixture

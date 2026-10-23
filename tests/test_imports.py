@@ -1,10 +1,12 @@
 """Static import check: every module the live entry points reach resolves (stdlib only, nothing is imported).
 
-For each module under src/moe_exp and each test, every `import` and `from ... import` that names a repo module
-must name a module that exists, and every imported name must be defined there or be a submodule. So must every
-attribute read through a module alias (`driver.binding()` after `from . import pulse as driver`). Strings that name
-a `moe_exp` module (worker extensions, `python -m` commands, mock patches) are checked the same way. The modules
-reachable from ENTRY_POINTS must also cover all of src/moe_exp, so dead code cannot linger.
+For each module under src/ and each test, every `import` and `from ... import` that names a repo module (one whose
+first component is a top-level folder or module of src/) must name a module that exists, and every imported name must
+be defined there or be a submodule. So must every attribute read through a module alias (`driver.binding()` after
+`from . import pulse as driver`). Strings that name a repo module (worker extensions, `python -m` commands, mock
+patches) are checked the same way. The old package name `moe_exp` counts as a repo name too, so a reference left over
+from before the package folder was dropped fails. The modules reachable from ENTRY_POINTS must also cover all of
+src/, so dead code cannot linger.
 """
 import ast
 from pathlib import Path
@@ -16,38 +18,41 @@ SRC = REPO / 'src'
 
 # Modules started by `python -m`, by a job script, by a vLLM engine string or loaded by file path.
 ENTRY_POINTS = [
-    'moe_exp.steering.pulse', 'moe_exp.steering.pulse_outcomes', 'moe_exp.steering.pulse_effects', 'moe_exp.steering.whole',
-    'moe_exp.steering.whole_effects', 'moe_exp.steering.whole_complement', 'moe_exp.steering.whole_relink',
-    'moe_exp.routing.efficiency_link', 'moe_exp.routing.lexical', 'moe_exp.routing.lfm_readout',
-    'moe_exp.steering.stream', 'moe_exp.steering.observer', 'moe_exp.steering.fast_penalties', 'moe_exp.steering.penalties',
-    'moe_exp.labeling.renderer_child',
-    'moe_exp.steering.outcome.__main__',
-    'moe_exp.generation.generate', 'moe_exp.labeling.sample_cohorts',
-    'moe_exp.labeling.annotation_batch', 'moe_exp.generation.answer_equivalence',
-    'moe_exp.generation.model_profiles', 'moe_exp.labeling.gepa.run',
-    'moe_exp.capture.campaign_v3_capture', 'moe_exp.capture.capture_gate', 'moe_exp.capture.vllm_capture',
-    'moe_exp.routing.readout', 'moe_exp.routing.anticipation', 'moe_exp.routing.next_state', 'moe_exp.routing.selection',
-    'moe_exp.routing.dynamics', 'moe_exp.routing.benchmark_accuracy', 'moe_exp.routing.benchmark_inventory',
-    'moe_exp.routing.efficiency_link_prereg',
-    'moe_exp.routing.lexical_data.build_native', 'moe_exp.routing.lexical_data.build_extras',
-    'moe_exp.routing.lexical_data.build_steered', 'moe_exp.routing.lexical_data.make_readme',
-    'moe_exp.routing.lexical_data.validate', 'moe_exp.routing.lexical_data.lfm_table',
-    'moe_exp.paper.build_cl_figures', 'moe_exp.paper.build_cl_manuscript', 'moe_exp.paper.cl_paths', 'moe_exp.paper.export_cl_exhibits',
-    'moe_exp.paper.export_routing_results', 'moe_exp.paper.export_whole_results', 'moe_exp.paper.format_cl_sentences', 'moe_exp.paper.optimize_sections', 'moe_exp.paper.package_cl_manuscript',
-    'moe_exp.paper.prepare_cl_review', 'moe_exp.paper.verify_cl_author_style', 'moe_exp.paper.verify_cl_bibliography_offline', 'moe_exp.paper.verify_cl_figure_labels', 'moe_exp.paper.verify_cl_tables',
+    'steering.pulse', 'steering.pulse_outcomes', 'steering.pulse_effects', 'steering.whole',
+    'steering.whole_effects', 'steering.whole_complement', 'steering.whole_relink',
+    'routing.efficiency_link', 'routing.lexical', 'routing.lfm_readout',
+    'steering.stream', 'steering.observer', 'steering.fast_penalties', 'steering.penalties',
+    'labeling.renderer_child',
+    'steering.outcome.__main__',
+    'generation.generate', 'labeling.sample_cohorts',
+    'labeling.annotation_batch', 'generation.answer_equivalence',
+    'generation.model_profiles', 'labeling.gepa.run',
+    'capture.campaign_v3_capture', 'capture.capture_gate', 'capture.vllm_capture',
+    'routing.readout', 'routing.anticipation', 'routing.next_state', 'routing.selection',
+    'routing.dynamics', 'routing.benchmark_accuracy', 'routing.benchmark_inventory',
+    'routing.efficiency_link_prereg',
+    'routing.lexical_data.build_native', 'routing.lexical_data.build_extras',
+    'routing.lexical_data.build_steered', 'routing.lexical_data.make_readme',
+    'routing.lexical_data.validate', 'routing.lexical_data.lfm_table',
+    'paper.build_cl_figures', 'paper.build_cl_manuscript', 'paper.cl_paths', 'paper.export_cl_exhibits',
+    'paper.export_routing_results', 'paper.export_whole_results', 'paper.format_cl_sentences', 'paper.optimize_sections', 'paper.package_cl_manuscript',
+    'paper.prepare_cl_review', 'paper.verify_cl_author_style', 'paper.verify_cl_bibliography_offline', 'paper.verify_cl_figure_labels', 'paper.verify_cl_tables',
 ]
 
 # (importer, imported) pairs that are known not to resolve.
 EXEMPT = {
-    # Byte-frozen by the efficiency-link pre-registration hash; routing.efficiency_link aliases the module at load.
-    ('moe_exp.routing.efficiency_link_prereg', 'moe_exp.final_routing.common'),
-    ('moe_exp.routing.efficiency_link', 'moe_exp.final_routing.common'),
+    # Byte-frozen by the efficiency-link pre-registration hash; routing.efficiency_link registers the old dotted
+    # names (moe_exp, moe_exp.final_routing, moe_exp.final_routing.common) for it at load.
+    ('routing.efficiency_link_prereg', 'moe_exp.final_routing.common'),
+    ('routing.efficiency_link', 'moe_exp.final_routing'),
+    ('routing.efficiency_link', 'moe_exp.final_routing.common'),
 }
 
-DOTTED = re.compile(r'\bmoe_exp(?:\.[A-Za-z_][A-Za-z0-9_]*)+')
+OLD_PACKAGE = 'moe_exp'
 
 
 def module_table():
+    """Dotted name -> file of every module under src/ (src/ itself is not a package)."""
     table = {}
     for path in sorted(SRC.rglob('*.py')):
         if '__pycache__' in path.parts:
@@ -62,7 +67,18 @@ def module_table():
 
 
 MODULES = module_table()
+REPO_NAMES = {module.split('.')[0] for module in MODULES} | {OLD_PACKAGE}
+# A string names a module when it starts with a repo name (`steering.stream.StreamWorkerExtension`,
+# `steering.fast_penalties:FastPrefixPenalties`) or when the repo name follows `-m` in a command. File names such as
+# `stats.csv` and prose that mentions `receipts.row_index` are not module references.
+DOTTED = re.compile(r'(?:^|(?<=-m ))(?:' + '|'.join(sorted(REPO_NAMES)) + r')(?:\.[A-Za-z_][A-Za-z0-9_]*)+')
+FILE_SUFFIXES = {'csv', 'dat', 'gz', 'json', 'log', 'md', 'npz', 'parquet', 'pkl', 'py', 'sbatch', 'sh', 'tex', 'txt', 'yaml'}
 DEFINED = {}
+
+
+def module_strings(text):
+    """Dotted module paths that a string names."""
+    return [match for match in DOTTED.findall(text) if match.rpartition('.')[2] not in FILE_SUFFIXES]
 
 
 def parse(path):
@@ -110,13 +126,13 @@ def resolve_from(importer, node):
     if not node.level:
         return node.module or ''
     package = importer if MODULES[importer].name == '__init__.py' else importer.rpartition('.')[0]
-    base = package.split('.')
+    base = package.split('.') if package else []
     base = base[:len(base) - (node.level - 1)]
     return '.'.join(base + ([node.module] if node.module else []))
 
 
 def references(importer, tree):
-    """Yield (module, name or None) for every repo import and every moe_exp string in a module."""
+    """Yield (module, name or None) for every repo import and every repo module string in a module."""
     docstrings = set()
     for node in ast.walk(tree):
         if isinstance(node, (ast.Module, ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)) and node.body \
@@ -125,15 +141,15 @@ def references(importer, tree):
     for node in ast.walk(tree):
         if isinstance(node, ast.Import):
             for alias in node.names:
-                if alias.name.split('.')[0] == 'moe_exp':
+                if alias.name.split('.')[0] in REPO_NAMES:
                     yield alias.name, None
         elif isinstance(node, ast.ImportFrom):
             full = resolve_from(importer, node)
-            if full.split('.')[0] == 'moe_exp':
+            if full.split('.')[0] in REPO_NAMES:
                 for alias in node.names:
                     yield full, alias.name
         elif isinstance(node, ast.Constant) and isinstance(node.value, str) and id(node) not in docstrings:
-            for match in DOTTED.findall(node.value):
+            for match in module_strings(node.value):
                 yield match, 'string'
 
 
@@ -226,13 +242,13 @@ class ImportsResolve(unittest.TestCase):
         for node in ast.walk(tree):
             if isinstance(node, ast.Import):
                 for alias in node.names:
-                    if alias.name.split('.')[0] == 'moe_exp':
+                    if alias.name.split('.')[0] in REPO_NAMES:
                         yield alias.name, None
-            elif isinstance(node, ast.ImportFrom) and not node.level and (node.module or '').split('.')[0] == 'moe_exp':
+            elif isinstance(node, ast.ImportFrom) and not node.level and (node.module or '').split('.')[0] in REPO_NAMES:
                 for alias in node.names:
                     yield node.module, alias.name
             elif isinstance(node, ast.Constant) and isinstance(node.value, str):
-                for match in DOTTED.findall(node.value):
+                for match in module_strings(node.value):
                     yield match, 'string'
 
     def test_entry_points_cover_the_package(self):

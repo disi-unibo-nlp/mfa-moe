@@ -6,11 +6,11 @@ from safetensors.torch import load_file, save_file
 from tokenizers import Tokenizer, models
 from transformers import Gemma4Config, Gemma4ForCausalLM, Gemma4TextConfig, PreTrainedTokenizerFast
 
-from moe_exp.models.gemma_quantized import (
+from models.gemma_quantized import (
     Gemma4ForQuantizedReplay, load_gemma_4bit, validate_quantized_experts,
 )
-from moe_exp.models.loader import load_model_and_tokenizer
-from moe_exp.models.router_adapters import stream_router_signals
+from models.loader import load_model_and_tokenizer
+from models.router_adapters import stream_router_signals
 
 
 @pytest.fixture
