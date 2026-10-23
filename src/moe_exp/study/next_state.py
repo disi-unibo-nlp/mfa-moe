@@ -62,7 +62,7 @@ def campaign_model(model: str) -> sr.ModelData:
         cm.load_attempts = original_load
     require(set(md.groups) == set(load(FROZEN)['ids'][model]), f'{model}: readout population differs')
     return sr.ModelData(md.model, md.L, md.E, md.sent, md.y, md.groups, md.w, md.base, md.bag, md.top1,
-                        md.tsent, md.tokid, md.tok_abs, md.adj, md.n_before_filter)
+                        md.tok_sent, md.tokid, md.tok_abs, md.adj, md.n_before_filter)
 
 
 def lfm_model(questions: set) -> sr.ModelData:
@@ -115,7 +115,7 @@ def adjacent_pairs(md: sr.ModelData, question_family: dict, seed_index: int) -> 
     successor = source+1
     new_row = np.full(md.n, -1)
     new_row[source] = np.arange(len(source))
-    tokens = new_row[md.tsent] >= 0
+    tokens = new_row[md.tok_sent] >= 0
     position = md.base[:, :sr.N_ABS]
     log_length = md.base[:, -1:]
     current = np.eye(len(CLASSES))[md.y]
@@ -123,7 +123,7 @@ def adjacent_pairs(md: sr.ModelData, question_family: dict, seed_index: int) -> 
     pairs = sent.iloc[source].reset_index(drop=True).assign(next_cls=md.y[successor])
     groups = md.groups[source]
     return sr.ModelData(md.model, md.L, md.E, pairs, md.y[successor], groups, sr.question_weights(groups), base,
-                        md.bag[source], md.top1[:, tokens], new_row[md.tsent[tokens]], md.tokid[tokens],
+                        md.bag[source], md.top1[:, tokens], new_row[md.tok_sent[tokens]], md.tokid[tokens],
                         md.tok_abs[tokens], md.adj[tokens], md.n, seed_index=seed_index,
                         question_family=question_family)
 
