@@ -50,7 +50,7 @@ def trace_record(binding, row, raw, tokenizer):
     from .runtime import prompt_prefix
     from .contexts import parts
     from moe_exp.models.token_replay import make_token_replay
-    from moe_exp.correlation_pipeline.scoring import score_completion_detailed
+    from moe_exp.generation.scoring import score_completion_detailed
     from moe_exp.schemas import TraceRecord
     prompt, prefix, example = prompt_prefix(binding, 'lfm25', row, tokenizer)
     require(not prefix, 'native population contains a continuation prefix')
@@ -125,7 +125,7 @@ def repair_annotation_inputs(binding):
 def materialize(binding):
     """Commit exact native lines and run the unchanged 100k stratified sampler."""
     from transformers import AutoTokenizer
-    from moe_exp.correlation_pipeline.generate import _model_slug
+    from moe_exp.generation.generate import _model_slug
     from moe_exp.correlation_pipeline.sample_stratified import _select
     from moe_exp.correlation_pipeline.dynamics.classes import saved_layout
     from moe_exp.correlation_pipeline.spans import trace_digest

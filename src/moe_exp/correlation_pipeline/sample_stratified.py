@@ -76,7 +76,7 @@ from pathlib import Path
 from typing import Any
 
 from moe_exp.correlation_pipeline.annotation_partition import capped_quotas
-from moe_exp.correlation_pipeline.generate import _model_slug, _write_json_atomic
+from moe_exp.generation.generate import _model_slug, _write_json_atomic
 from moe_exp.correlation_pipeline.spans import digest, sentence_spans, trace_digest
 from moe_exp.io import iter_jsonl
 from moe_exp.schemas import TraceRecord

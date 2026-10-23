@@ -14,22 +14,13 @@ from typing import Any
 
 from tqdm import tqdm
 
-from moe_exp.analysis.classifier import classify_trace
-from moe_exp.analysis.step_splitter import split_steps
-from moe_exp.correlation_pipeline.benchmarks import (
-    BENCHMARKS,
-    DEFAULT_BENCHMARKS,
-    generation_messages,
-    sample_variant,
-)
-from moe_exp.correlation_pipeline.client import generate_completion
-from moe_exp.correlation_pipeline.defaults import (
-    DEFAULT_FORWARD_MODEL,
-    DEFAULT_GENERATION_MODEL,
-    DEFAULT_MTP_MODEL,
-)
-from moe_exp.correlation_pipeline.scoring import score_completion_detailed
-from moe_exp.correlation_pipeline.model_profiles import CARD_PROFILES, model_profile
+from moe_exp.generation.classifier import classify_trace
+from moe_exp.generation.step_splitter import split_steps
+from moe_exp.generation.benchmarks import BENCHMARKS, DEFAULT_BENCHMARKS, generation_messages, sample_variant
+from moe_exp.generation.client import generate_completion
+from moe_exp.generation.defaults import DEFAULT_FORWARD_MODEL, DEFAULT_GENERATION_MODEL, DEFAULT_MTP_MODEL
+from moe_exp.generation.scoring import score_completion_detailed
+from moe_exp.generation.model_profiles import CARD_PROFILES, model_profile
 from moe_exp.schemas import TraceRecord
 from moe_exp.models.token_replay import TOKEN_REPLAY_VERSION, make_token_replay
 from moe_exp.io import write_jsonl

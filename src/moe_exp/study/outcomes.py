@@ -51,7 +51,7 @@ def record(b, model, row, raw, tokenizer, close, *, frozen_input=None):
     """One continuation: exact text, sentence windows, closure, strict score (contexts.build semantics)."""
     from types import SimpleNamespace
     from moe_exp.models.token_replay import make_token_replay
-    from moe_exp.correlation_pipeline.scoring import score_completion_detailed
+    from moe_exp.generation.scoring import score_completion_detailed
     from moe_exp.stats import unknown_bounds
     from moe_exp.study.contexts import parts
     from moe_exp.study.runtime import prompt_prefix

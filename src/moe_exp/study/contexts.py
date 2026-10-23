@@ -14,7 +14,7 @@ def parts(tokenizer, profile, text):
         # vLLM 0.29's GptOssReasoningParser no longer extracts text; split Harmony channels directly
         # (analysis bodies joined as vLLM did, final channel up to <|return|>/<|end|>).
         import re
-        from moe_exp.correlation_pipeline.continuation import final_answer
+        from moe_exp.generation.continuation import final_answer
         bodies = re.findall(r'<\|channel\|>analysis<\|message\|>(.*?)(?=<\|end\|>|<\|return\|>|<\|call\|>|\Z)',
                             text, flags=re.DOTALL)
         return ('\n'.join(bodies).strip() or None), final_answer(text, 'openai_gptoss')
