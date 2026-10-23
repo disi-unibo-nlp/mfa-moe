@@ -1,6 +1,6 @@
-"""The judge's seed prompt: the instructions for the seven episode labels, and the bank of 21 hand-written contrastive
-examples (three per label) that can be appended to them. The examples are synthetic, so validation and test
-annotations cannot leak into the prompt."""
+"""The judge's seed prompt: the instructions for the seven episode labels, and the bank of 21
+hand-written contrastive examples (three per label) that can be appended to them. The examples are
+synthetic, so validation and test annotations cannot leak into the prompt."""
 from __future__ import annotations
 
 from collections.abc import Sequence
@@ -249,7 +249,8 @@ CURATED_CONTRASTIVE_EXAMPLES = (
 def select_few_shot_sentences(*, count: int = 21) -> tuple[FewShotSentence, ...]:
     """Return a balanced prefix of the audited, synthetic contrastive bank.
 
-    The bank is fixed and hand-written, so no validation or test annotation can leak into the prompt.
+    The bank is fixed and hand-written, so no validation or test annotation can leak into the
+    prompt.
     """
     if count <= 0:
         raise ValueError("Few-shot example count must be positive")

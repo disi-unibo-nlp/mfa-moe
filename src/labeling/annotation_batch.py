@@ -1,16 +1,21 @@
-"""Label the sentences of one trace root with the judge, 64 at a time, resuming after every finished batch.
+"""Label the sentences of one trace root with the judge, 64 at a time, resuming after every finished
+batch.
 
 Input: a trace root `ROOT/<dataset>/traces.jsonl` whose rows name the sentences to label in
-`metadata.sentence_selection` (written by `labeling.sample_stratified` and `labeling.sample_cohorts`), and a vLLM
-server that serves the judge (`scripts/serve/judge.sh`).
+`metadata.sentence_selection` (written by `labeling.sample_stratified` and
+`labeling.sample_cohorts`), and a vLLM server that serves the judge (`scripts/serve/judge.sh`).
 Output in OUT: `annotations.json` (one record per sentence, in file order), `summary.json` and
 `checkpoints/batch-NNNNNN.json`. A rerun with the same inputs skips the finished batches.
 
-    python -m labeling.annotation_batch --trace-root ROOT --output-dir OUT --base-url http://127.0.0.1:PORT/v1
+    python -m labeling.annotation_batch --trace-root ROOT --output-dir OUT
+        --base-url http://127.0.0.1:PORT/v1
 
-With `--include-traces LIST.json` only the listed traces are labelled, and their stored selection is mapped from the
-frozen version 1 sentence splitter to the current one (the targeted relabel of the traces the splitter fix changed).
+With `--include-traces LIST.json` only the listed traces are labelled, and their stored selection is
+mapped from the frozen version 1 sentence splitter to the current one (the targeted relabel of the
+traces the splitter fix changed).
 `--plan-only` prints what would be labelled and stops.
+Runs of the superseded 4-part label sets (`--parts 4` on a combined root) cannot be resumed with
+this one-part plan.
 """
 from __future__ import annotations
 
@@ -23,23 +28,23 @@ from pathlib import Path
 from typing import Any
 
 from labeling.batch_predictor import (
-    CHAT_TEMPLATE_KWARGS, JUDGE_MODEL, JUDGE_PROGRAM, MAX_TOKENS, SAMPLING, check_unknown, classify_batch_outcomes,
+    CHAT_TEMPLATE_KWARGS, JUDGE_MODEL, JUDGE_PROGRAM, MAX_TOKENS, SAMPLING, classify_batch_outcomes,
     judge_inputs, load_program_and_adapter, question_of,
 )
 from labeling.spans import (
-    digest, map_selection_to_v2, selected_sentence_indices, sentence_spans, sentence_spans_v1, trace_digest,
+    check_unknown, digest, map_selection_to_v2, selected_sentence_indices, sentence_spans,
+    sentence_spans_v1, trace_digest,
 )
 from schemas import TraceRecord
-from store import CLASSES, iter_jsonl
+from store import CLASSES, DATASETS, iter_jsonl
 
-# The order is part of every sampling plan and labelling key (it is not store.BENCHMARKS' alphabetical order).
-DATASETS = ("math500", "aime24", "aime25", "olympiad", "amc23", "minerva")
 BATCH_SIZE = 64
 UNKNOWN_FIELDS = frozenset(("status", "raw_completion", "failure"))
 
 
 def _publish(path: Path, value: Any) -> None:
-    """Write `value` as JSON; fails if `path` exists, and a killed writer never leaves a partial file."""
+    """Write `value` as JSON; fails if `path` exists, and a killed writer never leaves a partial
+    file."""
     path.parent.mkdir(parents=True, exist_ok=True)
     fd, name = tempfile.mkstemp(prefix=".pending-", dir=path.parent)
     try:
@@ -60,8 +65,8 @@ def _unknown_record(row: dict[str, Any], outcome: dict[str, Any]) -> dict[str, A
 
 
 def validate_record(row: dict[str, Any], record: Any) -> None:
-    """Check one checkpoint record against its source row. Records written before `unknown` outcomes existed
-    (a `label` and nothing else) are valid too, so old checkpoints still resume."""
+    """Check one checkpoint record against its source row. Records written before `unknown` outcomes
+    existed (a `label` and nothing else) are valid too, so old checkpoints still resume."""
     if not isinstance(record, dict) or any(record.get(key) != value for key, value in row.items()):
         raise ValueError("invalid checkpoint record")
     added = set(record) - set(row)
@@ -74,8 +79,9 @@ def validate_record(row: dict[str, Any], record: Any) -> None:
 
 
 def outcome_record(row: dict[str, Any], outcome: dict[str, Any]) -> dict[str, Any]:
-    """The record to checkpoint for one classifier outcome: the row plus its label, or plus the raw completion and
-    failure of an `unknown` outcome, so that a bad answer is saved work instead of a lost batch."""
+    """The record to checkpoint for one classifier outcome: the row plus its label, or plus the raw
+    completion and failure of an `unknown` outcome, so that a bad answer is saved work instead of a
+    lost batch."""
     if outcome.get("status") == "unknown":
         return _unknown_record(row, outcome)
     label = outcome.get("label")
@@ -85,7 +91,8 @@ def outcome_record(row: dict[str, Any], outcome: dict[str, Any]) -> dict[str, An
 
 
 def _without_server(value: dict) -> dict:
-    """A binding or summary written when the server address was still part of the key, as it is written now."""
+    """A binding or summary written when the server address was still part of the key, as it is
+    written now."""
     value = dict(value or {})
     if "base_url" in value.get("config", {}):
         value["config"] = {k: v for k, v in value["config"].items() if k != "base_url"}
@@ -93,8 +100,9 @@ def _without_server(value: dict) -> dict:
 
 
 def run_part(rows, config, *, output_dir, classify):
-    """Label every row (`{identity, unit, inputs}`), checkpointing each batch. Returns the summary."""
-    binding = dict(schema_version=1, config=config, items_sha256=digest(rows), expected_count=len(rows))
+    """Label every row (identity, unit, inputs), checkpointing each batch; returns the summary."""
+    binding = dict(schema_version=1, config=config, items_sha256=digest(rows),
+                   expected_count=len(rows))
     root = Path(output_dir)
     checkpoints = root / "checkpoints"
     saved = []
@@ -142,8 +150,8 @@ def run_part(rows, config, *, output_dir, classify):
 def load_include_traces(path: Path, source: str | None = None) -> set[tuple[str, str, int]]:
     """Read the committed list of affected traces used for a targeted relabel.
 
-    `source` keeps only the entries that belong to the corpus being labelled, because the same problem id can exist
-    in two corpora.
+    `source` keeps only the entries that belong to the corpus being labelled, because the same
+    problem id can exist in two corpora.
     """
     document = json.loads(path.read_text(encoding="utf-8"))
     if document.get("schema_version") != 1:
@@ -164,10 +172,11 @@ def load_include_traces(path: Path, source: str | None = None) -> set[tuple[str,
 
 
 def checkpoint_config(source_plan: dict, program_bytes: bytes) -> dict:
-    """What a checkpoint is bound to: the traces, the judge program, the model and the decoding settings.
+    """What a checkpoint is bound to: the traces, the judge program, the model and the decoding
+    settings.
 
-    The server address is not part of it (every Slurm job serves on its own port), so a rerun on another node or
-    port resumes the same checkpoints.
+    The server address is not part of it (every Slurm job serves on its own port), so a rerun on
+    another node or port resumes the same checkpoints.
     """
     return {
         "source_plan_sha256": digest(source_plan),
@@ -186,10 +195,13 @@ def enumerate_items(
     *,
     include: set[tuple[str, str, int]] | None = None,
 ) -> list[dict[str, Any]]:
-    """The sentences to label, in file order and without padding or deduplication, as `{identity, unit, inputs}`.
+    """The sentences to label, in file order and without padding or deduplication.
 
-    `include` restricts the enumeration to those (dataset, problem id, sample id) traces and stops as soon as every
-    one has been seen; a key that is missing from the source is an error rather than a silently smaller part.
+    Each comes as `{identity, unit, inputs}`.
+
+    `include` restricts the enumeration to those (dataset, problem id, sample id) traces and stops
+    as soon as every one has been seen; a key that is missing from the source is an error rather
+    than a silently smaller part.
     """
     remaining = set(include) if include is not None else None
     rows = []
@@ -206,8 +218,8 @@ def enumerate_items(
             if remaining is None:
                 indices = selected_sentence_indices(trace, units)
             else:
-                # A stored sentence_selection always indexes the frozen version 1 units, so a targeted relabel maps
-                # it onto the current splitter's sub-units.
+                # A stored sentence_selection always indexes the frozen version 1 units, so a
+                # targeted relabel maps it onto the current splitter's sub-units.
                 stored = selected_sentence_indices(trace, sentence_spans_v1(trace))
                 indices = map_selection_to_v2(trace, stored)
             question = question_of(trace.generation_messages, trace.prompt)
@@ -223,7 +235,8 @@ def enumerate_items(
                     "end": units[index]["end"],
                     "trace_sha256": sha,
                 }
-                rows.append(dict(identity=identity, unit=units[index], inputs=judge_inputs(question, units, index)))
+                rows.append(dict(identity=identity, unit=units[index],
+                                 inputs=judge_inputs(question, units, index)))
             if remaining is not None:
                 remaining.discard(key)
                 if not remaining:
@@ -238,7 +251,8 @@ def enumerate_items(
 
 
 def main(argv: list[str] | None = None) -> None:
-    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser = argparse.ArgumentParser(description=__doc__,
+                                     formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--trace-root", type=Path, required=True)
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--judge-program", type=Path, default=JUDGE_PROGRAM)
@@ -248,12 +262,15 @@ def main(argv: list[str] | None = None) -> None:
                         help="keep only the include entries attributed to this source")
     parser.add_argument("--plan-only", action="store_true")
     args = parser.parse_args(argv)
-    include = load_include_traces(args.include_traces, args.include_source) if args.include_traces else None
+    include = None
+    if args.include_traces:
+        include = load_include_traces(args.include_traces, args.include_source)
     rows = enumerate_items(args.trace_root, include=include)
     if not rows:
         raise ValueError(f"no sentences to label under {args.trace_root}")
-    # The part fields below describe one part holding every sentence. They are redundant, but the plan's hash is part
-    # of every checkpoint key, so they stay as they were when runs were launched with --part 0 --parts 1.
+    # The part fields below describe one part holding every sentence. They are redundant, but the
+    # plan's hash is part of every checkpoint key, so they stay as they were when runs were launched
+    # with --part 0 --parts 1.
     source_plan = {
         "schema_version": 1,
         "trace_root": str(args.trace_root),
@@ -264,21 +281,29 @@ def main(argv: list[str] | None = None) -> None:
         "part_size": len(rows),
         "parts": 1,
         "part_counts": [len(rows)],
-        "selected_sha256": hashlib.sha256("\n".join(digest(row["identity"]) for row in rows).encode()).hexdigest(),
+        "selected_sha256": hashlib.sha256(
+            "\n".join(digest(row["identity"]) for row in rows).encode()).hexdigest(),
         "first_identity": rows[0]["identity"],
         "last_identity": rows[-1]["identity"],
     }
     print(json.dumps({"source_plan": source_plan}, sort_keys=True), flush=True)
     if args.plan_only:
         return
+    if include is not None and args.include_source:
+        listed = json.loads(args.include_traces.read_text(encoding="utf-8"))
+        expected = listed["expected_units"][args.include_source]
+        if len(rows) != expected:
+            raise ValueError(
+                f"include-traces selection has {len(rows)} units, expected exactly {expected}")
     config = checkpoint_config(source_plan, args.judge_program.read_bytes())
     predict, adapter = load_program_and_adapter(str(args.judge_program))
 
     def classify(batch):
-        return classify_batch_outcomes(batch, adapter=adapter, predict=predict, base_url=args.base_url)
+        return classify_batch_outcomes(batch, adapter=adapter, predict=predict,
+                                       base_url=args.base_url)
 
-    print(json.dumps(run_part(rows, config, output_dir=args.output_dir, classify=classify), sort_keys=True),
-          flush=True)
+    summary = run_part(rows, config, output_dir=args.output_dir, classify=classify)
+    print(json.dumps(summary, sort_keys=True), flush=True)
 
 
 if __name__ == "__main__":
