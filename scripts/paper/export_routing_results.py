@@ -22,6 +22,7 @@ from cl_paths import DATA, FIGURES, PAPER, REPO  # noqa: E402
 TABLES = PAPER / "journal/tables"
 DRIVER = REPO / "report/final-routing-20261015-r1/driver"
 MAIN = DRIVER / "analysis-final/EFFECTS.json"
+LINK_TEST = DRIVER / "analysis-final-link-v2/EFFICIENCY_LINK_TEST.json"
 STRONG = DRIVER / "analysis-strong/EFFECTS.json"
 MODELS = ("gpt", "nemotron", "qwen35", "qwen36", "gemma", "glm", "qwen330b", "lfm25")
 TABLE_NAMES = {
@@ -270,9 +271,14 @@ Model & Occupancy & First & Acc.\ (pp) & Tokens (\%) & Targeted & Random \\
 \end{table}
 """)
 
+    # The eight-model link (LFM2.5 estimated after its runs) and the driver test rerun on its cells.
     prereg = verified(DRIVER / "EFFICIENCY_LINK_PREREG.json")
     if effects["efficiency_link"]["prereg_sha256"] != prereg["sha256"]:
         raise ValueError("efficiency-link test used a different pre-registration")
+    link, link_test = verified(DRIVER / "EFFICIENCY_LINK_V2.json"), verified(LINK_TEST)
+    if link["predecessor"]["sha256"] != prereg["sha256"] or link_test["prereg_sha256"] != link["sha256"]:
+        raise ValueError("eight-model efficiency link does not extend the pre-registration")
+    prereg = link
     order = ("Read", "Analyze", "Explore", "Plan", "Implement", "Verify", "Monitor")
     cells = {(c["model"], c["class"]): c["tok_reason"] for c in prereg["cells"]}
     pooled_link = {c["class"]: c["tok_reason"] for c in prereg["pooled"]}
@@ -284,9 +290,9 @@ Model & Occupancy & First & Acc.\ (pp) & Tokens (\%) & Targeted & Random \\
             mean, low, high = (100 * v[k] for k in ("beta", "ci_low", "ci_high"))
             entries.append(cid(mean, mean - low, 2).replace("}{" + f"{mean - low:.2f}" + "}{" + f"{mean - low:.2f}" + "}",
                            "}{" + f"{mean - low:.2f}" + "}{" + f"{high - mean:.2f}" + "}"))
-        name = "Seven-model mean" if model == "pooled" else TABLE_NAMES[model]
+        name = "Eight-model mean" if model == "pooled" else TABLE_NAMES[model]
         link_rows.append(("\\midrule\n" if model == "pooled" else "") + name + " & " + " & ".join(entries) + " \\\\")
-    (TABLES / "efficiency_link.tex").write_text(r"""% Source: report/final-routing-20261015-r1/driver/EFFICIENCY_LINK_PREREG.json via scripts/paper/export_routing_results.py.
+    (TABLES / "efficiency_link.tex").write_text(r"""% Source: report/final-routing-20261015-r1/driver/EFFICIENCY_LINK_V2.json via scripts/paper/export_routing_results.py.
 \begin{table}[tb]
 \centering\small
 \caption{Pre-registered native association between the current reasoning state and the remaining reasoning length, with 95\% family-bootstrap confidence intervals as subscripts.
@@ -295,7 +301,7 @@ Entries are 100 times the regression coefficient of a class indicator on the log
 %
 Negative values mark states followed by shorter remaining reasoning.
 %
-The coefficients were frozen before any intervention outcome existed.}
+The coefficients of the seven other models were frozen before any intervention outcome existed; those of LFM2.5, whose native labels came later, were estimated afterwards with the same estimator.}
 \label{tab:efficiency-link}
 \setlength{\tabcolsep}{2pt}
 \begin{adjustbox}{max width=\linewidth}
@@ -313,7 +319,8 @@ Model & \textrm{Re} & \textrm{An} & \textrm{Ex} & \textrm{Pl} & \textrm{Im} & \t
     pooled = effects["efficiency_pooled"]
     record["pooled_secondary"] = {k: {"estimate": v["estimate"], "simultaneous": v["simultaneous"], "ci": v["ci"]}
                                   for k, v in {**pooled, **effects["secondary_pooled"]}.items()}
-    record["efficiency_link"] = {k: effects["efficiency_link"][k] for k in ("tokens", "accuracy")}
+    record["efficiency_link"] = {k: link_test[k] for k in ("tokens", "accuracy")}
+    record["efficiency_link_preregistered"] = {k: effects["efficiency_link"][k] for k in ("tokens", "accuracy")}
     record["rogan_gladen"] = effects["rogan_gladen_sensitivity"]
     record["response_matrix"] = effects["response_matrix"]
     record["counts"] = {"continuations": effects["continuations"], "pairs": effects["pairs"],

@@ -10,7 +10,7 @@ import torch
 
 from moe_exp.final_routing.operator import score_override_dual_masked
 from moe_exp.study import driver, whole
-from moe_exp.study.common import CLASSES, WORK, digest
+from moe_exp.study.common import CLASSES, WORK, digest, publish, verified
 from moe_exp.study.whole import build_manifest, dose_counts, directions
 
 
@@ -50,6 +50,24 @@ class DirectionTests(unittest.TestCase):
         self.assertEqual(lfm['source'], 'pooled')
         self.assertEqual(lfm['promote'], ('Verify', 'Monitor'))
         self.assertEqual(set(lfm['suppress']), {'Read', 'Analyze', 'Plan', 'Implement', 'Explore'})
+
+    def test_eight_model_link_gives_lfm_its_own_signs(self):
+        prereg = verified(whole.LINK)
+        own = dict(zip(CLASSES, '0++0+--'))
+        cells = prereg['cells']+[{'model': 'lfm25', 'class': c, 'tok_reason': {'sign': s}} for c, s in own.items()]
+        with tempfile.TemporaryDirectory(dir=WORK) as tmp:
+            link = Path(tmp)/'EFFICIENCY_LINK_V2.json'
+            publish(link, {**prereg, 'models': prereg['models']+['lfm25'], 'cells': cells})
+            whole.directions.cache_clear()
+            try:
+                with patch.object(whole, 'LINK', link):
+                    lfm, gpt = directions('lfm25'), directions('gpt')
+            finally:
+                whole.directions.cache_clear()
+        self.assertEqual(lfm['source'], 'model')
+        self.assertEqual(lfm['promote'], ('Verify', 'Monitor'))
+        self.assertEqual(lfm['suppress'], ('Analyze', 'Plan', 'Explore'))
+        self.assertEqual(gpt['suppress'], ('Read', 'Analyze', 'Plan', 'Explore'))
 
     def test_efficiency_directed_cells(self):
         self.assertTrue(whole.efficiency_directed('gemma', 'promote', 'Implement'))
