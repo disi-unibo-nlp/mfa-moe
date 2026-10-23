@@ -30,13 +30,9 @@ EXPLORE, VERIFY = CLASSES.index("Explore"), CLASSES.index("Verify")
 # Frozen analysis constants
 ALPHA = 0.5                                   # add-alpha smoothing of the depth bigram (F1)
 WIN_EDGES = (1024, 2048, 4096, 8192, 16384)   # windows 0-1k, 1-2k, 2-4k, 4-8k, 8-16k (+ rest >= 16k)
-N_WIN = len(WIN_EDGES) + 1                    # window index N_WIN-1 is the rest (excluded from variants)
-N_WIN_FIXED = len(WIN_EDGES)
 P1_ATTEMPTS = 200
 P1_TOKENS = 4096
 P1_SEED = 0
-CLASS_MIN_TOKENS = 32                         # per-class F1: minimum class tokens in an attempt
-CLASS_MIN_SENTENCES = 3                       # per-class F1: minimum labelled sentences of the class
 
 # Columns of the v3an attempts table that carry no outcome information.
 OUTCOME_FREE_COLUMNS = ("attempt_id", "question", "dataset", "problem_id", "source_problem_id",
@@ -143,12 +139,3 @@ def load_sentence_table(model: str, cohort: str) -> pd.DataFrame:
     cols = ["attempt_id", "sentence_index", "cls", "tok_start", "tok_end", "n_tokens", "n_reasoning",
             "abs_bin"]
     return pd.read_parquet(DYN_RESULTS / model / cohort / "sentences.parquet", columns=cols)
-
-
-def class_of_rank(sent_rows: pd.DataFrame, n_reasoning: int) -> np.ndarray:
-    """Class index per reasoning rank for one attempt (-1 = unlabelled); spans are contiguous."""
-    out = np.full(n_reasoning, -1, np.int8)
-    for s, e, c in zip(sent_rows["tok_start"].to_numpy(), sent_rows["tok_end"].to_numpy(),
-                       sent_rows["cls"].to_numpy()):
-        out[int(s):int(e)] = int(c)
-    return out

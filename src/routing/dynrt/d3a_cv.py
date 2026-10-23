@@ -22,7 +22,6 @@ from .common import RESULTS
 from .cv import GRID, Scaler, question_folds
 from .d3a_softmax import fit_softmax, predict_log_proba, weighted_nll
 from .d3a_text import TextTransform
-from .data import load_cohort
 
 OUT = RESULTS / "A1"
 K = 7
@@ -83,52 +82,10 @@ def baseline_matrix(df: pd.DataFrame) -> tuple[np.ndarray, list]:
     return np.column_stack(cols), names
 
 
-def within_class_permutation(a: np.ndarray, seed: int) -> np.ndarray:
-    """Row permutation shuffling rows among pairs of the same current class (breaks every other link)."""
-    rng = np.random.default_rng(seed)
-    perm = np.arange(len(a))
-    for c in range(K):
-        idx = np.flatnonzero(a == c)
-        perm[idx] = rng.permutation(idx)
-    return perm
-
-
 def question_weights(groups: np.ndarray) -> np.ndarray:
     """1 / (pairs of the question): every question weighs 1, a question value is its mean over pairs."""
     _, inv, cnt = np.unique(groups, return_inverse=True, return_counts=True)
     return 1.0 / cnt[inv]
-
-
-def load_data(*, antic_dir=None, text_scale: float = TEXT_SCALE) -> Data:
-    pairs = pd.read_parquet(OUT / "pairs.parquet")
-    counts = sparse.load_npz(OUT / "text_counts.npz").tocsr()
-    if counts.shape[0] != len(pairs):
-        raise ValueError("text counts are not aligned to the pair table")
-    coh = load_cohort("gpt", "A")
-    att_q = coh.attempts["question"].to_numpy()
-    if len(set(att_q)) != len(att_q):
-        raise ValueError("cohort A must have one attempt per question for the C8 fold reuse")
-    hist = coh.hist
-    src = pairs["src"].to_numpy()
-    pos = np.searchsorted(hist["last16_rows"], src)
-    if not (hist["last16_rows"][np.minimum(pos, len(hist["last16_rows"]) - 1)] == src).all():
-        raise ValueError("last16 histogram missing for a pair source")
-    h_last = hist["last16"][pos].reshape(len(pairs), -1).astype(np.float32)
-    h_ant = has_ant = None
-    if antic_dir is not None:
-        z = np.load(antic_dir / "antic_hist.npz")
-        if not z["computed"].all():
-            raise ValueError("anticipation table incomplete")
-        h_ant = z["h"].reshape(len(pairs), -1).astype(np.float32)
-        has_ant = z["has"].astype(bool)
-    base, names = baseline_matrix(pairs)
-    att_idx = pairs["attempt"].to_numpy(np.int64)
-    folds = np.stack([question_folds(att_q, OUTER, r)[att_idx] for r in range(REPEATS)])
-    groups = pairs["question"].to_numpy()
-    return Data(y=pairs["b"].to_numpy(np.int64), a=pairs["a"].to_numpy(np.int64), groups=groups,
-                w=question_weights(groups), attempt=att_idx, base=base, base_names=names, counts=counts,
-                h_last=h_last, h_ant=h_ant, has_ant=has_ant, table=coh.table, outer_folds=folds,
-                text_scale=text_scale)
 
 
 class FoldBlocks:

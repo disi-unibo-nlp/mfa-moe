@@ -34,7 +34,6 @@ REPEATS, OUTER, INNER = 5, 4, 3
 SCALES = (1.0, 3.0, 10.0)
 N_NULL = 20
 NULL_SEED = 20261001
-GAIN_MIN = 0.005
 KIN_NAMES = [f"{f}_{t}" for f in ("v_mean", "u_mean", "half_jsd", "accel", "v_end") for t in ("d1", "d2", "d3")]
 NON_GATE = [i for i, n in enumerate(KIN_NAMES) if not n.startswith("u_mean")]
 MODELS = {"base": ["base"], "aug16": ["base", "k16"], "aug32": ["base", "k32"]}

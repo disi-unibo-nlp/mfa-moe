@@ -26,18 +26,7 @@ NC = len(CLASSES)
 EXPLORE, VERIFY, MONITOR = CLASSES.index("Explore"), CLASSES.index("Verify"), CLASSES.index("Monitor")
 ABS_EDGES = (1024, 2048, 4096, 8192, 16384)
 N_ABS = len(ABS_EDGES) + 1
-OFF = 256                   # event-locked half range (tokens)
-BIN = 32                    # event-locked bin width
-N_BIN = 2 * OFF // BIN      # 16 bins over [-256, 256)
-WIN = 64                    # window-velocity window
 GRID = 32                   # window-velocity / acceleration grid step
-V_LAGS = tuple(range(-OFF, OFF + 1, GRID))   # 17 centres of V around a boundary
-K1_WIN = 64                 # K1 scalar: offsets [0, 64)
-EDGE = 32                   # KL / onset windows and the lexical window
-K2_WINDOWS = (16, 32)
-N_RANDOM = 20
-SEED_RANDOM = 20261003
-GROUPS = ("->Explore", "Explore->", "->Verify", "->Monitor", "other")
 
 
 def digest(value) -> str:
@@ -78,22 +67,6 @@ def dep_hashes() -> dict:
 
 def abs_bin(position) -> np.ndarray:
     return np.searchsorted(np.asarray(ABS_EDGES), np.asarray(position), side="right").astype(np.int64)
-
-
-def depth_thirds(n_layers: int) -> list[np.ndarray]:
-    return [np.asarray(a, np.int64) for a in np.array_split(np.arange(n_layers), 3)]
-
-
-def transition_group(a: np.ndarray, b: np.ndarray) -> np.ndarray:
-    """Group index per switch (precedence ->Explore, Explore->, ->Verify, ->Monitor, other); -1 for a == b."""
-    a, b = np.asarray(a), np.asarray(b)
-    g = np.full(len(a), 4, np.int64)
-    g[b == MONITOR] = 3
-    g[b == VERIFY] = 2
-    g[a == EXPLORE] = 1
-    g[b == EXPLORE] = 0
-    g[a == b] = -1
-    return g
 
 
 def log(msg: str) -> None:
