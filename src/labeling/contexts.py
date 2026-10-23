@@ -62,10 +62,11 @@ def sentence_contexts(trace, replay, row, result):
         complete = i<len(units)-1 or result["finish_reason"]=="stop" or u["text"].rstrip().endswith((".","!","?"))
         generated.append((i,u,min(owned),end,complete))
     first = next((i for i,u,a,b,complete in generated if complete),None)
+    ranges=reasoning_ranges(trace)
     for i,u,start,end,complete in generated:
         if start-prefix>=row["window"] and i!=first:
             continue
-        segment=next(j for j,(a,b) in enumerate(reasoning_ranges(trace)) if a<=u["start"]<b)
+        segment=next(j for j,(a,b) in enumerate(ranges) if a<=u["start"]<b)
         selected.append({"sentence_index":i,"segment":segment,"token_start":start-prefix,"token_end":end-prefix,
             "n_tokens":end-start,"complete":complete,"first_complete":i==first,
             "inputs":{"problem_statement":trace.prompt,

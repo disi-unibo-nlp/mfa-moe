@@ -10,9 +10,9 @@ from collections.abc import Sequence
 from dataclasses import asdict, dataclass
 from typing import Any
 
-from scipy.stats import kendalltau
+from store import CLASSES
 
-from labeling.gepa.data import SENTENCE_LABELS
+KAPPA_WEIGHT = 0.5  # weight of scaled Cohen kappa against scaled Kendall tau-b in the reported composite
 
 
 class LabelParseError(ValueError):
@@ -57,10 +57,10 @@ def parse_sentence_label(value: Any) -> str:
         raise LabelParseError("label must be a string or a JSON object with a label key")
 
     normalized = re.sub(r"^label\s*:\s*", "", decoded.strip(), flags=re.IGNORECASE).casefold()
-    mapping = {label.casefold(): label for label in SENTENCE_LABELS}
+    mapping = {label.casefold(): label for label in CLASSES}
     if normalized not in mapping:
         raise LabelParseError(
-            f"invalid label {decoded!r}; expected one of {', '.join(SENTENCE_LABELS)}"
+            f"invalid label {decoded!r}; expected one of {', '.join(CLASSES)}"
         )
     return mapping[normalized]
 
@@ -83,7 +83,9 @@ def _safe_kappa(gold: Sequence[str], predicted: Sequence[str]) -> float:
 def _safe_kendall(gold: Sequence[str], predicted: Sequence[str]) -> float:
     if list(gold) == list(predicted):
         return 1.0
-    rank = {label: index for index, label in enumerate(SENTENCE_LABELS)}
+    from scipy.stats import kendalltau  # imported here: only the optimiser's scoring needs scipy
+
+    rank = {label: index for index, label in enumerate(CLASSES)}
     value = float(
         kendalltau(
             [rank[label] for label in gold],
@@ -98,13 +100,13 @@ def compute_sentence_agreement(
     gold: Sequence[str],
     predicted: Sequence[str],
     *,
-    kappa_weight: float = 0.5,
+    kappa_weight: float = KAPPA_WEIGHT,
 ) -> SentenceAgreement:
     if len(gold) != len(predicted) or not gold:
         raise ValueError("gold and predicted must be non-empty and have equal length")
     if not 0.0 <= kappa_weight <= 1.0:
         raise ValueError("kappa_weight must be in [0, 1]")
-    unknown = (set(gold) | set(predicted)) - set(SENTENCE_LABELS)
+    unknown = (set(gold) | set(predicted)) - set(CLASSES)
     if unknown:
         raise ValueError(f"unknown sentence labels: {sorted(unknown)}")
 
@@ -127,15 +129,15 @@ def compute_classification_metrics(
     """Compute strict nominal metrics, treating invalid predictions as incorrect."""
     if len(gold) != len(predicted) or not gold:
         raise ValueError("gold and predicted must be non-empty and have equal length")
-    unknown_gold = set(gold) - set(SENTENCE_LABELS)
-    unknown_predicted = {label for label in predicted if label is not None} - set(SENTENCE_LABELS)
+    unknown_gold = set(gold) - set(CLASSES)
+    unknown_predicted = {label for label in predicted if label is not None} - set(CLASSES)
     if unknown_gold or unknown_predicted:
         raise ValueError(f"unknown sentence labels: {sorted(unknown_gold | unknown_predicted)}")
 
     per_class: dict[str, dict[str, float | int]] = {}
     recalls: list[float] = []
     f1_scores: list[float] = []
-    for label in SENTENCE_LABELS:
+    for label in CLASSES:
         support = sum(item == label for item in gold)
         predicted_count = sum(item == label for item in predicted)
         true_positive = sum(

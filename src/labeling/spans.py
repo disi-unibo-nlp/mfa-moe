@@ -13,6 +13,7 @@ import math
 import re
 from typing import Any, Iterable
 
+from labeling.batch_predictor import check_unknown
 from store import CLASSES as SENTENCE_LABELS
 
 SPAN_SCHEMA_VERSION = 1
@@ -333,8 +334,7 @@ def validate_annotation(trace: Any, annotation: dict[str, Any]) -> None:
         if labeled.get("status") == "unknown":
             if "label" in labeled:
                 raise ValueError("Unknown outcomes cannot carry a class label")
-            from labeling.annotation_batch import _unknown_record
-            _unknown_record({}, labeled)
+            check_unknown(labeled)
         elif labeled.get("label") not in SENTENCE_LABELS:
             raise ValueError("Invalid reasoning class")
 

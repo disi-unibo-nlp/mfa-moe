@@ -23,7 +23,6 @@ from typing import Any
 import dspy
 
 from labeling.gepa.data import (
-    SENTENCE_LABELS,
     EpisodeDocument,
     annotation_audit,
     documents_to_dspy_examples,
@@ -32,6 +31,7 @@ from labeling.gepa.data import (
     split_documents,
 )
 from labeling.gepa.metrics import (
+    KAPPA_WEIGHT,
     LabelParseError,
     compute_classification_metrics,
     compute_sentence_agreement,
@@ -42,10 +42,12 @@ from labeling.gepa.prompts import (
     build_few_shot_instructions,
     select_few_shot_sentences,
 )
+from store import CLASSES
 
+# Of the 38 labelled responses, 26 train, 6 validate and the remaining 6 are the locked test (the same 6 that
+# --locked-test-documents sets aside in cross-validation).
 TRAIN_DOCUMENTS = 26
 VAL_DOCUMENTS = 6
-KAPPA_WEIGHT = 0.5  # weight of scaled Cohen kappa against scaled Kendall tau-b in the reported composite
 
 JUDGE_SCORE_WEIGHTS = {
     "gold_agreement": 0.40,
@@ -136,13 +138,6 @@ class EpisodeJudge(dspy.Module):
 
 def parse_llm_judge_response(response: str) -> dict[str, Any]:
     """Strictly parse the multi-dimensional LLM-judge response."""
-
-    patterns = {
-        "gold_agreement": r"(?im)^\s*GOLD_AGREEMENT\s*:\s*([1-5])\s*$",
-        "functional_fit": r"(?im)^\s*FUNCTIONAL_FIT\s*:\s*([1-5])\s*$",
-        "contextual_coherence": r"(?im)^\s*CONTEXTUAL_COHERENCE\s*:\s*([1-5])\s*$",
-        "boundary_precision": r"(?im)^\s*BOUNDARY_PRECISION\s*:\s*([1-5])\s*$",
-    }
     reasoning_match = re.search(
         r"(?is)REASONING\s*:\s*(.+?)\s*(?=GOLD_AGREEMENT\s*:)",
         response,
@@ -151,8 +146,8 @@ def parse_llm_judge_response(response: str) -> dict[str, Any]:
         raise ValueError("judge response is missing REASONING")
 
     parsed: dict[str, Any] = {"reasoning": reasoning_match.group(1).strip()}
-    for field, pattern in patterns.items():
-        match = re.search(pattern, response)
+    for field in JUDGE_SCORE_WEIGHTS:
+        match = re.search(rf"(?im)^\s*{field.upper()}\s*:\s*([1-5])\s*$", response)
         if match is None:
             raise ValueError(f"judge response is missing a valid {field.upper()} score")
         parsed[field] = int(match.group(1))
@@ -409,7 +404,7 @@ def _evaluate_and_collect(
 
 def _append_stats(path: Path, row: dict[str, Any]) -> None:
     new_file = not path.exists()
-    with path.open("a" if not new_file else "w", newline="", encoding="utf-8") as handle:
+    with path.open("w" if new_file else "a", newline="", encoding="utf-8") as handle:
         writer = csv.DictWriter(handle, fieldnames=list(row))
         if new_file:
             writer.writeheader()
@@ -423,32 +418,31 @@ def _write_jsonl(path: Path, rows: Sequence[dict[str, Any]]) -> None:
 
 
 def _selection_value(report: dict[str, Any], metric: str) -> float:
-    return float(report.get("strict_classification", {}).get(metric, 0.0))
+    return float(report["strict_classification"][metric])
 
 
-def _select_program(
-    seed_program: Any,
-    optimized_program: Any,
+def _selection_decision(
     seed_report: dict[str, Any],
     optimized_report: dict[str, Any],
     *,
     selection_metric: str,
     max_class_recall_drop: float,
-) -> tuple[Any, str, dict[str, Any]]:
+) -> dict[str, Any]:
+    """The safety gate: keep the seed prompt unless GEPA improved the selection metric without hurting any class."""
     seed_score = _selection_value(seed_report, selection_metric)
     optimized_score = _selection_value(optimized_report, selection_metric)
     seed_classes = seed_report["strict_classification"]["per_class"]
     optimized_classes = optimized_report["strict_classification"]["per_class"]
     recall_drops = {
         label: float(seed_classes[label]["recall"]) - float(optimized_classes[label]["recall"])
-        for label in SENTENCE_LABELS
+        for label in CLASSES
         if int(seed_classes[label]["support"]) > 0
     }
     excessive_drops = {
         label: drop for label, drop in recall_drops.items() if drop > max_class_recall_drop
     }
     use_optimized = optimized_score > seed_score and not excessive_drops
-    decision = {
+    return {
         "metric": selection_metric,
         "seed_score": seed_score,
         "gepa_optimized_score": optimized_score,
@@ -466,11 +460,6 @@ def _select_program(
             )
         ),
     }
-    return (
-        (optimized_program, "gepa_optimized", decision)
-        if use_optimized
-        else (seed_program, "seed", decision)
-    )
 
 
 def _optimize_and_select(
@@ -504,14 +493,13 @@ def _optimize_and_select(
         gepa_kwargs["max_metric_calls"] = args.max_metric_calls
     optimized_program = dspy.GEPA(**gepa_kwargs).compile(seed_program, trainset=trainset, valset=valset)
     optimized_report, optimized_predictions = _evaluate_and_collect(optimized_program, valset)
-    selected_program, selected_name, decision = _select_program(
-        seed_program,
-        optimized_program,
+    decision = _selection_decision(
         seed_report,
         optimized_report,
         selection_metric=args.selection_metric,
         max_class_recall_drop=args.max_class_recall_drop,
     )
+    use_optimized = decision["selected"] == "gepa_optimized"
     return {
         "seed_program": seed_program,
         "seed_report": seed_report,
@@ -519,8 +507,10 @@ def _optimize_and_select(
         "optimized_program": optimized_program,
         "optimized_report": optimized_report,
         "optimized_predictions": optimized_predictions,
-        "selected_program": selected_program,
-        "selected_name": selected_name,
+        "selected_program": optimized_program if use_optimized else seed_program,
+        "selected_name": decision["selected"],
+        "selected_report": optimized_report if use_optimized else seed_report,
+        "selected_predictions": optimized_predictions if use_optimized else seed_predictions,
         "selection": decision,
     }
 
@@ -670,6 +660,7 @@ def _common_result_metadata(
     timestamp: str,
     few_shot_examples: Sequence[Any],
 ) -> dict[str, Any]:
+    judge = args.gepa_reward == "llm-judge"
     return {
         "timestamp": timestamp,
         "model": args.model,
@@ -694,36 +685,17 @@ def _common_result_metadata(
             "selected_examples": [example.metadata() for example in few_shot_examples],
         },
         "metric_definition": {
-            "gepa_reward": (
-                (
-                    "same-model LLM judge with brief free-text reasoning and four 1-5 "
-                    "diagnostic scores"
-                )
-                if args.gepa_reward == "llm-judge"
-                else (
-                    "inverse-frequency weighted exact match; split mean equals balanced accuracy"
-                    if args.gepa_reward == "balanced"
-                    else "per-unit exact match"
-                )
-            ),
+            "gepa_reward": {
+                "llm-judge": "same-model LLM judge with brief free-text reasoning and four 1-5 diagnostic scores",
+                "balanced": "inverse-frequency weighted exact match; split mean equals balanced accuracy",
+                "exact": "per-unit exact match",
+            }[args.gepa_reward],
             "judge_reasoning_enabled": args.enable_thinking,
             "reasoning_effort": args.reasoning_effort if args.enable_thinking else None,
-            "judge_score_weights": (
-                JUDGE_SCORE_WEIGHTS if args.gepa_reward == "llm-judge" else None
-            ),
-            "judge_dimensions": (
-                list(JUDGE_SCORE_WEIGHTS) if args.gepa_reward == "llm-judge" else None
-            ),
-            "judge_score_normalization": (
-                "weighted mean of per-dimension (score - 1) / 4"
-                if args.gepa_reward == "llm-judge"
-                else None
-            ),
-            "judge_feedback_file": (
-                f"judge_feedback_{timestamp}.jsonl"
-                if args.gepa_reward == "llm-judge"
-                else None
-            ),
+            "judge_score_weights": JUDGE_SCORE_WEIGHTS if judge else None,
+            "judge_dimensions": list(JUDGE_SCORE_WEIGHTS) if judge else None,
+            "judge_score_normalization": "weighted mean of per-dimension (score - 1) / 4" if judge else None,
+            "judge_feedback_file": f"judge_feedback_{timestamp}.jsonl" if judge else None,
             "selection_metric": args.selection_metric,
             "max_class_recall_drop": args.max_class_recall_drop,
             "reporting": (
@@ -732,7 +704,7 @@ def _common_result_metadata(
             ),
             "kappa_weight": KAPPA_WEIGHT,
             "kendall_tau_b_weight": 1.0 - KAPPA_WEIGHT,
-            "kendall_label_order": list(SENTENCE_LABELS),
+            "kendall_label_order": list(CLASSES),
         },
     }
 
@@ -930,16 +902,7 @@ def main() -> None:
         log_dir=args.output_dir / "gepa_logs",
         seed=args.seed,
     )
-    selected_report = (
-        outcome["optimized_report"]
-        if outcome["selected_name"] == "gepa_optimized"
-        else outcome["seed_report"]
-    )
-    selected_predictions = (
-        outcome["optimized_predictions"]
-        if outcome["selected_name"] == "gepa_optimized"
-        else outcome["seed_predictions"]
-    )
+    selected_report, selected_predictions = outcome["selected_report"], outcome["selected_predictions"]
 
     test_report = None
     test_predictions: list[dict[str, Any]] = []

@@ -15,7 +15,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from store import CLASSES as SENTENCE_LABELS
+from store import CLASSES
 
 
 @dataclass(frozen=True)
@@ -119,7 +119,7 @@ def load_documents(dataset_dir: Path) -> list[EpisodeDocument]:
             sentence_label = str(row.get("gt-class-2", "")).strip()
             if not text:
                 raise ValueError(f"Empty text in {path}, unit {index}")
-            if sentence_label not in SENTENCE_LABELS:
+            if sentence_label not in CLASSES:
                 raise ValueError(
                     f"Unknown sentence label {sentence_label!r} in {path}, unit {index}"
                 )

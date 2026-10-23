@@ -31,6 +31,7 @@ import json
 import os
 import random
 from collections import Counter, defaultdict
+from collections.abc import Sequence
 from dataclasses import dataclass
 from fractions import Fraction
 from pathlib import Path
@@ -40,9 +41,8 @@ from generation.generate import _model_slug, _write_json_atomic
 from labeling.annotation_batch import DATASETS
 from labeling.spans import digest, sentence_spans, trace_digest
 from schemas import TraceRecord
-from store import iter_jsonl
+from store import file_sha, iter_jsonl
 
-TOTAL = 100_000
 PARTS = 4
 PART_SIZE = 25_000
 SEED = 42
@@ -80,6 +80,10 @@ class SelectedTrace:
     quartile: int
     combined: tuple[int, ...]
     parts: tuple[tuple[int, ...], ...]
+
+    def outputs(self) -> dict[int | None, tuple[int, ...]]:
+        """The sentence indices of each output file: None is the combined one, then every part that has any."""
+        return {None: self.combined, **{part: indices for part, indices in enumerate(self.parts) if indices}}
 
 
 def _priority(seed: int, *parts: Any) -> str:
@@ -167,14 +171,10 @@ def quartile_groups(ordered_keys: list[str]) -> dict[str, int]:
     }
 
 
-def waterfill(caps: dict[str, int], quota: int, order: list[str]) -> dict[str, int]:
-    """Integer max-min fair allocation of ``quota`` under per-problem caps."""
-    if quota < 0 or set(caps) != set(order):
-        raise ValueError("waterfill requires a non-negative quota and matching caps/order")
-    if any(type(cap) is not int or cap < 0 for cap in caps.values()):
-        raise ValueError("waterfill caps must be non-negative integers")
-    if quota > sum(caps.values()):
-        raise ValueError(f"waterfill quota {quota} exceeds supply {sum(caps.values())}")
+def waterfill(caps: dict[str, int], quota: int) -> dict[str, int]:
+    """Integer max-min fair allocation of ``quota`` under per-problem caps (spare units go to the first problems)."""
+    if quota < 0 or quota > sum(caps.values()):
+        raise ValueError(f"waterfill quota {quota} must be between 0 and the supply {sum(caps.values())}")
     if not caps:
         return {}
     low, high = 0, max(caps.values())
@@ -184,16 +184,14 @@ def waterfill(caps: dict[str, int], quota: int, order: list[str]) -> dict[str, i
             low = middle
         else:
             high = middle - 1
-    allocation = {key: min(caps[key], low) for key in order}
+    allocation = {key: min(cap, low) for key, cap in caps.items()}
     remaining = quota - sum(allocation.values())
-    for key in order:
+    for key, cap in caps.items():
         if remaining == 0:
             break
-        if allocation[key] < caps[key]:
+        if allocation[key] < cap:
             allocation[key] += 1
             remaining -= 1
-    if remaining:
-        raise RuntimeError("waterfill failed to allocate the remaining quota")
     return allocation
 
 
@@ -293,18 +291,12 @@ def _quartile_assignment(infos: list[TraceInfo]) -> dict[tuple[str, int], int]:
     }
 
 
-def _deviation(
-    masses: dict[str, int],
-    total: int,
-    targets: dict[str, Fraction],
-    cells: list[str],
-) -> tuple[Fraction, Fraction]:
+def _deviation(masses: dict[str, int], targets: dict[str, Fraction]) -> tuple[Fraction, Fraction]:
+    """Largest and total absolute gap between the chosen cell shares and the corpus shares."""
+    total = sum(masses.values())
     if total <= 0:
         return Fraction(1), Fraction(1)
-    deviations = [
-        abs(Fraction(masses.get(cell, 0), total) - targets[cell])
-        for cell in cells
-    ]
+    deviations = [abs(Fraction(masses.get(cell, 0), total) - targets[cell]) for cell in targets]
     return max(deviations), sum(deviations)
 
 
@@ -314,121 +306,80 @@ def _choose_completions(
     *,
     dataset: str,
     seed: int,
-) -> tuple[dict[str, TraceInfo], dict[str, int], dict[str, Any]]:
+) -> tuple[dict[str, TraceInfo], dict[str, Any]]:
     """Pick exactly one eligible attempt per source problem.
 
     The objective is the maximum absolute deviation between the chosen
     universe's cell sentence shares and the full eligible corpus shares within
     the dataset. A greedy first pass is followed by deterministic local swaps.
     """
-    problems: dict[str, list[tuple[TraceInfo, str]]] = defaultdict(list)
+    problems: dict[str, list[TraceInfo]] = defaultdict(list)
+    cell_of = {info.identity: _cell_id(dataset, info.is_correct, quartiles[info.identity]) for info in infos}
     supplies: Counter[str] = Counter()
     for info in infos:
-        cell = _cell_id(dataset, info.is_correct, quartiles[info.identity])
-        problems[info.problem].append((info, cell))
-        supplies[cell] += info.sentences
+        problems[info.problem].append(info)
+        supplies[cell_of[info.identity]] += info.sentences
     corpus_total = sum(supplies.values())
-    cells = sorted(supplies)
-    targets = {cell: Fraction(supplies[cell], corpus_total) for cell in cells}
+    targets = {cell: Fraction(supplies[cell], corpus_total) for cell in sorted(supplies)}
 
     chosen: dict[str, TraceInfo] = {}
     masses: Counter[str] = Counter()
-    total = 0
     flexible: list[str] = []
     for problem in sorted(problems):
-        options = problems[problem]
-        if len(options) == 1:
-            info, cell = options[0]
-            chosen[problem] = info
-            masses[cell] += info.sentences
-            total += info.sentences
+        if len(problems[problem]) == 1:
+            chosen[problem] = problems[problem][0]
+            masses[cell_of[chosen[problem].identity]] += chosen[problem].sentences
         else:
             flexible.append(problem)
     flexible.sort(key=lambda problem: _priority(seed, "flexible", problem))
 
+    def score(problem: str, info: TraceInfo, replacing: TraceInfo | None = None) -> tuple:
+        """The objective if `info` were chosen for `problem` (in place of `replacing`); ties go to the tie hash."""
+        trial = Counter(masses)
+        if replacing is not None:
+            trial[cell_of[replacing.identity]] -= replacing.sentences
+        trial[cell_of[info.identity]] += info.sentences
+        return (*_deviation(trial, targets), _priority(seed, "tie", problem, info.sample_id))
+
     for problem in flexible:
-        best_score: tuple[Fraction, Fraction, str] | None = None
-        best_info: TraceInfo | None = None
-        for info, cell in problems[problem]:
-            trial = Counter(masses)
-            trial[cell] += info.sentences
-            score = _deviation(trial, total + info.sentences, targets, cells)
-            tie = _priority(seed, "tie", problem, info.sample_id)
-            candidate = (score[0], score[1], tie)
-            if best_score is None or candidate < best_score:
-                best_score, best_info = candidate, info
-        if best_info is None:
-            raise RuntimeError(f"No candidate attempt for problem {problem}")
-        cell = _cell_id(dataset, best_info.is_correct, quartiles[best_info.identity])
-        chosen[problem] = best_info
-        masses[cell] += best_info.sentences
-        total += best_info.sentences
+        info = min(problems[problem], key=lambda option: score(problem, option))
+        chosen[problem] = info
+        masses[cell_of[info.identity]] += info.sentences
 
     for _ in range(3):
         changed = False
         for problem in flexible:
             current = chosen[problem]
-            current_cell = _cell_id(dataset, current.is_correct, quartiles[current.identity])
-            current_score = _deviation(masses, total, targets, cells)
-            best_score = (
-                current_score[0],
-                current_score[1],
-                _priority(seed, "tie", problem, current.sample_id),
-            )
-            best_info: TraceInfo | None = None
-            best_cell = current_cell
-            for info, cell in problems[problem]:
-                if info is current:
-                    continue
-                candidate_masses = Counter(masses)
-                candidate_masses[current_cell] -= current.sentences
-                candidate_masses[cell] += info.sentences
-                score = _deviation(
-                    candidate_masses,
-                    total - current.sentences + info.sentences,
-                    targets,
-                    cells,
-                )
-                tie = _priority(seed, "tie", problem, info.sample_id)
-                candidate = (score[0], score[1], tie)
-                if candidate < best_score:
-                    best_score, best_info, best_cell = candidate, info, cell
-            if best_info is not None:
-                masses[current_cell] -= current.sentences
-                masses[best_cell] += best_info.sentences
-                total += best_info.sentences - current.sentences
-                chosen[problem] = best_info
+            best, best_score = current, score(problem, current, current)
+            for info in problems[problem]:
+                if info is not current and (candidate := score(problem, info, current)) < best_score:
+                    best, best_score = info, candidate
+            if best is not current:
+                masses[cell_of[current.identity]] -= current.sentences
+                masses[cell_of[best.identity]] += best.sentences
+                chosen[problem] = best
                 changed = True
         if not changed:
             break
 
+    total = sum(masses.values())
     deviations = {
         cell: float(abs(Fraction(masses.get(cell, 0), total) - targets[cell]))
-        for cell in cells
+        for cell in targets
     }
     details = {
-        "cells": cells,
         "supplies": dict(supplies),
-        "targets": {cell: float(targets[cell]) for cell in cells},
-        "chosen_sentences": dict(masses),
-        "chosen_total": total,
         "max_share_deviation": max(deviations.values()),
         "share_deviations": deviations,
-        "forced_problems": sum(len(problems[problem]) == 1 for problem in problems),
+        "forced_problems": sum(len(options) == 1 for options in problems.values()),
         "flexible_problems": len(flexible),
     }
-    return chosen, dict(masses), details
+    return chosen, details
 
 
-def _split_part_quotas(
-    quotas: dict[str, int],
-    cells: list[str],
-    *,
-    parts: int,
-    part_size: int,
-    seed: int,
-) -> dict[str, list[int]]:
-    """Split every cell quota across parts, then balance exact part totals."""
+def _split_part_quotas(quotas: dict[str, int], *, parts: int, part_size: int, seed: int) -> dict[str, list[int]]:
+    """Split every cell quota across parts, then move units between parts until each holds exactly `part_size`."""
+    cells = sorted(quotas)
     split: dict[str, list[int]] = {}
     for index, cell in enumerate(cells):
         base, remainder = divmod(quotas[cell], parts)
@@ -437,16 +388,11 @@ def _split_part_quotas(
             for part in range(parts)
         ]
     totals = [sum(split[cell][part] for cell in cells) for part in range(parts)]
-    moves = 0
-    limit = 4 * part_size * parts
     while max(totals) > part_size:
         over = max(range(parts), key=lambda part: (totals[part], -part))
         under = min(range(parts), key=lambda part: (totals[part], part))
-        candidates = [cell for cell in cells if split[cell][over] > 0]
-        if not candidates:
-            raise RuntimeError("Unable to balance part quotas")
         cell = max(
-            candidates,
+            (cell for cell in cells if split[cell][over] > 0),
             key=lambda name: (
                 split[name][over] - split[name][under],
                 _priority(seed, "balance", name),
@@ -456,11 +402,6 @@ def _split_part_quotas(
         split[cell][under] += 1
         totals[over] -= 1
         totals[under] += 1
-        moves += 1
-        if moves > limit:
-            raise RuntimeError("Part quota balancing did not converge")
-    if any(total != part_size for total in totals):
-        raise RuntimeError("Part quotas do not sum to the requested part size")
     return split
 
 
@@ -476,14 +417,15 @@ def _sample_indices(problem: str, sentences: int, count: int, seed: int, salt: s
 def build_plan(
     generation_dir: Path,
     generation_model: str,
-    datasets: list[str] = list(DATASETS),
+    datasets: Sequence[str] = DATASETS,
     *,
-    total: int = TOTAL,
     parts: int = PARTS,
     part_size: int = PART_SIZE,
     seed: int = SEED,
 ) -> tuple[dict[str, Any], dict[tuple[str, str], SelectedTrace]]:
-    """Build the plan and the selected traces."""
+    """Build the plan and the selected traces: `parts` parts of `part_size` sentences each."""
+    datasets = list(datasets)  # a list, so that the plan equals itself after a round trip through JSON
+    total = parts * part_size
     slug = _model_slug(generation_model)
     generation_root = generation_dir / slug
 
@@ -502,7 +444,7 @@ def build_plan(
         infos_by_dataset[dataset] = infos
         source_manifests[dataset] = {
             "path": str(manifest_path),
-            "sha256": hashlib.sha256(manifest_path.read_bytes()).hexdigest(),
+            "sha256": file_sha(manifest_path),
             "status": manifest.get("status"),
         }
         eligible_report[dataset] = {
@@ -516,7 +458,7 @@ def build_plan(
     chosen_by_dataset: dict[str, dict[str, TraceInfo]] = {}
     details_by_dataset: dict[str, dict[str, Any]] = {}
     for dataset in datasets:
-        chosen, _masses, details = _choose_completions(
+        chosen, details = _choose_completions(
             infos_by_dataset[dataset], quartiles[dataset], dataset=dataset, seed=seed
         )
         chosen_by_dataset[dataset] = chosen
@@ -536,9 +478,7 @@ def build_plan(
         )
     quotas = proportional_quotas(cell_supply, total)
     cells = sorted(cell_supply)
-    part_quotas = _split_part_quotas(
-        quotas, cells, parts=parts, part_size=part_size, seed=seed
-    )
+    part_quotas = _split_part_quotas(quotas, parts=parts, part_size=part_size, seed=seed)
 
     selected: dict[tuple[str, str], SelectedTrace] = {}
     completions: list[dict[str, Any]] = []
@@ -552,9 +492,7 @@ def build_plan(
         for cell in sorted(by_cell):
             order = sorted(by_cell[cell], key=lambda problem: _priority(seed, "cell", cell, problem))
             caps = {problem: chosen[problem].sentences for problem in order}
-            allocation = waterfill(caps, quotas[cell], order)
-            if sum(allocation.values()) != quotas[cell]:
-                raise RuntimeError(f"Cell {cell} allocation does not match its quota")
+            allocation = waterfill(caps, quotas[cell])
             part_remaining = list(part_quotas[cell])
             part_index = 0
             for problem in order:
@@ -594,8 +532,6 @@ def build_plan(
                     combined=tuple(sorted(picked)),
                     parts=tuple(tuple(sorted(indices)) for indices in part_lists),
                 )
-            if any(part_remaining):
-                raise RuntimeError(f"Cell {cell} did not fill its part quotas")
 
     part_dataset: list[Counter[str]] = [Counter() for _ in range(parts)]
     part_cells: list[Counter[str]] = [Counter() for _ in range(parts)]
@@ -719,15 +655,13 @@ def _write_outputs(
     manifest: dict[str, Any],
     selected: dict[tuple[str, str], SelectedTrace],
 ) -> None:
-    """Second streaming pass: write combined and per-part sampled trace roots."""
+    """Second streaming pass: write the combined and the per-part sampled trace roots."""
     slug = manifest["generation_slug"]
     plan_hash = manifest["manifest_sha256"]
     generation_root = generation_dir / slug
-    roots: list[tuple[str, Path]] = [("combined", output_dir / "generation")]
-    roots.extend(
-        (f"part-{part:02d}", output_dir / "parts" / f"part-{part:02d}" / "generation")
-        for part in range(manifest["parts"])
-    )
+    # None is the combined 100k root, 0.. are the part roots
+    roots: dict[int | None, Path] = {None: output_dir / "generation"}
+    roots.update({part: output_dir / "parts" / f"part-{part:02d}" / "generation" for part in range(manifest["parts"])})
     source_manifests = manifest["source_manifests"]
     for dataset in manifest["datasets"]:
         dataset_selected = {
@@ -735,21 +669,20 @@ def _write_outputs(
             for (name, _problem), item in selected.items()
             if name == dataset
         }
-        writers: dict[str, Any] = {}
-        temporaries: dict[str, tuple[Path, Path]] = {}
-        for name, root in roots:
+        writers: dict[int | None, Any] = {}
+        temporaries: dict[int | None, tuple[Path, Path]] = {}
+        for out, root in roots.items():
             path = root / slug / dataset / "traces.jsonl"
             path.parent.mkdir(parents=True, exist_ok=True)
             temporary = path.with_name(f".{path.name}.tmp")
-            writers[name] = temporary.open("w", encoding="utf-8")
-            temporaries[name] = (temporary, path)
+            writers[out] = temporary.open("w", encoding="utf-8")
+            temporaries[out] = (temporary, path)
         try:
             for row in iter_jsonl(generation_root / dataset / "traces.jsonl"):
-                key = (row.get("problem_id"), row.get("sample_id", 0))
-                item = dataset_selected.get(key)
+                item = dataset_selected.get((row.get("problem_id"), row.get("sample_id", 0)))
                 if item is None:
                     continue
-                base = {
+                selection = {
                     "schema_version": SCHEMA_VERSION,
                     "manifest_sha256": plan_hash,
                     "selection": manifest["selection"],
@@ -760,20 +693,10 @@ def _write_outputs(
                         "reasoning_tokens": item.info.reasoning_tokens,
                     },
                 }
-                combined_row = {**row, "metadata": {**(row.get("metadata") or {})}}
-                combined_row["metadata"]["sentence_selection"] = {
-                    **base,
-                    "indices": list(item.combined),
-                }
-                writers["combined"].write(json.dumps(combined_row, ensure_ascii=False) + "\n")
-                for part, indices in enumerate(item.parts):
-                    if not indices:
-                        continue
-                    part_row = {**row, "metadata": {**(row.get("metadata") or {})}}
-                    part_row["metadata"]["sentence_selection"] = {**base, "indices": list(indices)}
-                    writers[f"part-{part:02d}"].write(
-                        json.dumps(part_row, ensure_ascii=False) + "\n"
-                    )
+                for out, indices in item.outputs().items():
+                    metadata = {**(row.get("metadata") or {}),
+                                "sentence_selection": {**selection, "indices": list(indices)}}
+                    writers[out].write(json.dumps({**row, "metadata": metadata}, ensure_ascii=False) + "\n")
         finally:
             for handle in writers.values():
                 handle.flush()
@@ -784,16 +707,9 @@ def _write_outputs(
 
         source_manifest_path = Path(source_manifests[dataset]["path"])
         source = json.loads(source_manifest_path.read_text(encoding="utf-8"))
-        for name, root in roots:
-            part = None if name == "combined" else int(name.split("-")[1])
-            items = [
-                item for item in dataset_selected.values()
-                if part is None or item.parts[part]
-            ]
-            selected_sentences = sum(
-                len(item.combined) if part is None else len(item.parts[part])
-                for item in items
-            )
+        for out, root in roots.items():
+            items = [item for item in dataset_selected.values() if out in item.outputs()]
+            selected_sentences = sum(len(item.outputs()[out]) for item in items)
             correct = sum(item.info.is_correct for item in items)
             _write_json_atomic(
                 {

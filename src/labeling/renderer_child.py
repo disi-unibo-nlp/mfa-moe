@@ -18,7 +18,7 @@ def main():
         parse_completion,
         parse_failure_types,
     )
-    program,predict,adapter=load_program_and_adapter(sys.argv[1])
+    predict,adapter=load_program_and_adapter(sys.argv[1])
     for line in sys.stdin:
         item=json.loads(line)
         try:
