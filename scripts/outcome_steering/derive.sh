@@ -1,7 +1,7 @@
 #!/bin/bash
 # CPU chain for one model of a capture release (labels, class usage, r2 selection, signal table,
 # attempt selection), run from a frozen code snapshot. Receipts go to <release>/<model>/.
-#   sbatch -A iscrc_miosr -p lrd_all_serial --qos=normal -N1 --ntasks=1 --cpus-per-task=4 --mem=30G \
+#   sbatch -A iscrc_miosr -p boost_usr_prod --qos=normal -N1 --ntasks=1 --cpus-per-task=4 --mem=30G \
 #          -t 04:00:00 -J oc-derive-gpt -o LOG scripts/outcome_steering/derive.sh SNAPSHOT RELEASE gpt
 set -euo pipefail
 umask 077

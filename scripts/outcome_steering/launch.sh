@@ -49,7 +49,7 @@ echo "$analysis" | tee "$WHOLE_ROOT/ANALYSIS_JOB"
 [ "$kind" = sweep-A ] || exit 0
 
 # 4. Half A: the pick job applies the frozen rule and launches half B from this checkout.
-pick=$(unslurm sbatch --parsable -A iscrc_miosr -p lrd_all_serial --qos=normal -N1 --ntasks=1 --cpus-per-task=4 \
+pick=$(unslurm sbatch --parsable -A iscrc_miosr -p boost_usr_prod --qos=normal -N1 --ntasks=1 --cpus-per-task=4 \
   --mem=30G -t 02:00:00 -J os-pick --dependency="afterok:$analysis" \
   -o "$WHOLE_ROOT/logs/%x-%j.out" -e "$WHOLE_ROOT/logs/%x-%j.err" \
   "$PWD/scripts/outcome_steering/pick.sh" "$WHOLE_ROOT/analysis/EFFECTS_OUTCOME.json" "$MODELS" \
