@@ -72,6 +72,17 @@ class WindowTests(unittest.TestCase):
         for draw in chosen['controls']:
             self.assertEqual(quintiles(draw), quintiles(chosen['targets']))   # same layer and usage quintile
 
+    def test_set_size_is_the_window_gate_weight_share(self):
+        usage, arrays = synthetic()
+        frequency = select.class_rates(arrays['counts'], arrays['tokens'], 7)[0].mean(0)
+        gate = np.full(frequency.shape, .01)
+        score = np.zeros(frequency.shape)
+        score[12, :8] = np.arange(8, 0, -1)
+        chosen = select.choose_window(score, frequency, LAYERS, [12, 16, 20], K, set(), ['m', 'g', 'all'], gate=gate)
+        self.assertEqual(len(chosen['targets']), select.R2_MIN_PAIRS)          # 5 x 1/96 already exceeds 1.2%
+        self.assertAlmostEqual(chosen['mass'], 5/(3*EXPERTS))
+        self.assertIn('slot_share', chosen)
+
     def test_fixed_set_is_kept_with_its_controls(self):
         usage, arrays = synthetic()
         frequency = select.class_rates(arrays['counts'], arrays['tokens'], 7)[0].mean(0)

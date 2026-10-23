@@ -61,8 +61,8 @@ fewer questions, and behaved like a random edit. r2 keeps the outcome idea and c
 3. **Selection** (`select.py`, r2 section). For each class, an expert scores high when the model uses it
    more on that class's tokens in wrong attempts than in right attempts of the same question. Only the
    three layers at depth 1/2, 2/3 and 5/6 are candidates (layers 12/16/20 of GPT-OSS, where "Beyond the
-   Trace" found its five experts). The best pairs are taken until they carry the same share of those
-   layers' routing as the paper's five (5.35%), at most 10. Each set gets two disjoint random sets
+   Trace" found its five experts). The best pairs are taken until they carry 1.2% of those layers' gate
+   weight, the paper's own definition, at most 10. Each set gets two disjoint random sets
    matched by layer and usage. On GPT-OSS the class-blind set is the paper's five.
 4. **Evidence** (`evidence.py`). Per class: the real score against 200 label shuffles, replication on
    held-out questions, and how much the score just tracks attempt length.

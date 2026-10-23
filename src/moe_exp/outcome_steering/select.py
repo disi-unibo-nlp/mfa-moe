@@ -240,14 +240,15 @@ def selection(model: str, holdouts: list[str]) -> dict:
 # Every class c gets its own score: the same within-question wrong-minus-right z-difference as r1,
 # computed on the usage of the tokens labelled c. Candidates come only from the three routed layers at
 # relative depth 1/2, 2/3 and 5/6 (layers 12/16/20 of GPT-OSS, where Beyond the Trace chose its five
-# experts). Pairs are added until they carry the footprint of the paper's five on GPT-OSS, measured
-# in the same units (FOOTPRINT of those layers' native top-k slots), at most R2_MAX_PAIRS. Two disjoint
+# experts). Pairs are added until they carry MASS_SHARE of those layers' native gate weight per
+# reasoning token, the paper's definition (its five carry "1.2% of the gated mass across the three
+# recorded layers"; ELM grounding check 2026-10-23), at most R2_MAX_PAIRS. Two disjoint
 # matched random sets are drawn per expert set. The leave-one-question-out stability filter of r1 is
 # dropped: it passed as many pairs under shuffled labels as under real ones (review of 2026-10-23).
 
 CLASS_NAMES = ('Read', 'Analyze', 'Plan', 'Implement', 'Explore', 'Verify', 'Monitor')
 BLIND = 'blind'                   # the class-blind set: all reasoning tokens (index ALL_REASONING)
-FOOTPRINT = .0535                 # the paper's five on GPT-OSS (cohort B): share of window top-k slots
+MASS_SHARE = .012                 # share of the window layers' native gate weight (Beyond the Trace, App. A.6)
 R2_MIN_PAIRS, R2_MAX_PAIRS = 5, 10
 DRAWS = 2                         # matched random sets per expert set
 PAPER_FIVE = ((12, 23), (12, 12), (12, 24), (16, 11), (20, 0))    # Beyond the Trace, GPT-OSS-20B
@@ -300,20 +301,29 @@ def holdout_scores(differences: np.ndarray, used: list[str], holdouts: list[str]
 
 
 def choose_window(score: np.ndarray, frequency: np.ndarray, layers: list[int], window: list[int], k: int,
-                  protected: set, identity: list, fixed: list[tuple[int, int]] | None = None) -> dict:
-    """Best positive window pairs until FOOTPRINT of the window's slots, plus DRAWS matched random sets.
+                  protected: set, identity: list, fixed: list[tuple[int, int]] | None = None,
+                  gate: np.ndarray | None = None) -> dict:
+    """Best positive window pairs until MASS_SHARE of the window's gate weight, plus DRAWS matched random sets.
 
     Args:
         score: (layers, experts) score of this set (ignored for a fixed set).
-        frequency: (layers, experts) native top-k selections per reasoning token (sums to k per layer).
+        frequency: (layers, experts) native top-k selections per reasoning token (sums to k per layer);
+            controls are matched on it.
         layers, window, k: Routed layers, the three candidate layers and native top-k.
         protected: (layer, expert) pairs never nudged and never drawn as controls.
         identity: Deterministic identity of the set (model, set name, holdout).
         fixed: A given set (Beyond the Trace's five) instead of ranked candidates.
+        gate: (layers, experts) native gate weight per reasoning token; the set size is its window share
+            (defaults to `frequency`, i.e. the slot share, for callers without weights).
     """
     from moe_exp.final_routing.selection import layer_matched_controls
+    gate = frequency if gate is None else gate
+    window_gate = float(sum(gate[layers.index(layer)].sum() for layer in window))
 
     def mass(pairs):
+        return float(sum(gate[layers.index(p['layer'])][p['expert']] for p in pairs))/window_gate
+
+    def slots(pairs):
         return float(sum(frequency[layers.index(p['layer'])][p['expert']] for p in pairs))/(len(window)*k)
 
     window_frequency = [frequency[layers.index(layer)].tolist() for layer in window]   # rows in window order
@@ -335,7 +345,7 @@ def choose_window(score: np.ndarray, frequency: np.ndarray, layers: list[int], w
                             key=lambda c: (-c[0], c[1], c[2]))
         chosen = []
         for value, layer, expert in candidates:
-            if len(chosen) >= R2_MAX_PAIRS or (len(chosen) >= R2_MIN_PAIRS and mass(chosen) >= FOOTPRINT):
+            if len(chosen) >= R2_MAX_PAIRS or (len(chosen) >= R2_MIN_PAIRS and mass(chosen) >= MASS_SHARE):
                 break
             pair = {'layer': layer, 'expert': expert, 'score': value}
             try:
@@ -345,7 +355,7 @@ def choose_window(score: np.ndarray, frequency: np.ndarray, layers: list[int], w
             chosen.append(pair)
     require(chosen, f'no nudgeable pair: {identity}')
     controls = draws(chosen)
-    return {'targets': chosen, 'controls': controls, 'mass': mass(chosen),
+    return {'targets': chosen, 'controls': controls, 'mass': mass(chosen), 'slot_share': slots(chosen),
             'control_mass': [mass(c) for c in controls], 'short': len(chosen) < R2_MIN_PAIRS}
 
 
@@ -354,6 +364,14 @@ def class_rates(counts: np.ndarray, tokens: np.ndarray, index: int) -> tuple[np.
     n = tokens[:, index].astype(np.float64)
     rates = np.divide(counts[:, index], n[:, None, None], out=np.zeros(counts[:, index].shape), where=n[:, None, None] > 0)
     return rates, n > 0
+
+
+def gate_rate(usage: dict, arrays: dict) -> np.ndarray:
+    """(layers, experts) native gate weight per reasoning token, averaged over usable attempts."""
+    usable = np.array([r['usable'] for r in usage['attempts']])
+    tokens = arrays['tokens'][usable, 7].astype(np.float64)
+    weights = arrays['weights'][usable].astype(np.float64)
+    return np.divide(weights, tokens[:, None, None], out=np.zeros(weights.shape), where=tokens[:, None, None] > 0).mean(0)
 
 
 def r2_protected(usage: dict, arrays: dict, nominations: dict) -> tuple[np.ndarray, int, set, set]:
@@ -389,6 +407,7 @@ def r2_selection(usage: dict, arrays: dict, nominations: dict, holdouts: list[st
     strict = [r['strict'] for r in records]
     usable = np.array([r['usable'] for r in records])
     frequency, k, committee, execution = r2_protected(usage, arrays, nominations)
+    gate = gate_rate(usage, arrays)
     protected = committee | execution
     window = window_layers(layers)
     sets = {}
@@ -402,12 +421,13 @@ def r2_selection(usage: dict, arrays: dict, nominations: dict, holdouts: list[st
         fixed = list(PAPER_FIVE) if model == 'gpt' and name == BLIND else None
         sets[name] = {'questions': len(used), 'fixed': fixed is not None, 'sets': {
             holdout: choose_window(score, frequency, layers, window, k, protected,
-                                   [model, 'outcome-r2', name, holdout], fixed)
+                                   [model, 'outcome-r2', name, holdout], fixed, gate)
             for holdout, score in scores.items()}}
     return {'model': model, 'selector': 'class-outcome-window-v2', 'layers': layers, 'window': window,
             'native_k': k, 'experts': usage['experts'], 'usage_sha256': usage['sha256'],
             'nominations_sha256': nominations['sha256'],
-            'rules': {'footprint': FOOTPRINT, 'pairs': [R2_MIN_PAIRS, R2_MAX_PAIRS], 'draws': DRAWS,
+            'rules': {'mass_share': MASS_SHARE, 'mass_definition': 'native gate weight per reasoning token, share of the '
+                      'three window layers (Beyond the Trace App. A.6)', 'pairs': [R2_MIN_PAIRS, R2_MAX_PAIRS], 'draws': DRAWS,
                       'committee_share': COMMITTEE_SHARE, 'execution_share': EXECUTION_SHARE,
                       'committee_source': 'capture native frequency', 'execution_source': 'r7 nominations',
                       'paper_five': [list(p) for p in PAPER_FIVE] if model == 'gpt' else None},
