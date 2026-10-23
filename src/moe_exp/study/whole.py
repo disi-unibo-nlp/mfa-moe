@@ -319,9 +319,11 @@ def prepare_model(b: dict, model: str, scope: bool) -> dict:
     the rows it takes over from its parent, with the parent's dose and no canary.
     """
     from moe_exp.outcome_steering.manifest import outcome_manifest
-    builders = {'TOPUP.json': topup_manifest, 'RESUME.json': resume_manifest, 'OUTCOME.json': outcome_manifest}
+    builders = {'TOPUP.json': topup_manifest, 'RESUME.json': resume_manifest, 'OUTCOME.json': outcome_manifest,
+                'COMPLEMENT.json': complement_manifest}
     present = [name for name in builders if (ROOT/name).exists()]
-    require(len(present) <= 1, 'a release is either a top-up, a resume or an outcome-steering release')
+    require(len(present) <= 1,
+            'a release is either a top-up, a resume or an outcome-steering release (or a complement)')
     if present:
         spec = verified(ROOT/present[0])['models'][model]
         return {model+':'+SWEEP[model]: builders[present[0]](model, spec)}
@@ -384,6 +386,55 @@ def topup_manifest(model: str, spec: dict) -> dict:
         'siblings': spec.get('siblings', [])})
     publish(ROOT/model/'SELECTED.json', {'dose': dose, 'manifest_sha256': value['sha256'], 'canary_job': None,
                                          'sweep': True, 'topup': True})
+    return {key: value[key] for key in ('sha256', 'planned', 'executable', 'scope')}
+
+
+def complement_manifest(model: str, spec: dict) -> dict:
+    """Publish the suppress cells a base release left out, so every state has both operations.
+
+    A base release suppresses only the classes tied to longer reasoning (directions). This release
+    suppresses the other classes at the parent's dose, for the per-cell effects only: the cells are not
+    efficiency-directed, so they never enter the primary or the dose response. Each row copies its
+    family's native row of the parent (seed, prompt, allowance) and is compared with it by family, like
+    a sweep cell; the experts come from the parent's nominations through the same cell_actions.
+
+    Args:
+        model: Model whose base release lacks the cells.
+        spec: {'parent': root holding the base manifest of this model and dose and its nominations}.
+    """
+    dose, parent = SWEEP[model], Path(spec['parent'])
+    base = verified(manifest_path(model, dose, parent))
+    nominations = verified(parent/model/'WHOLE_NOMINATIONS.json')
+    require(nominations['sha256'] == base['nominations_sha256'], 'parent nominations differ from its manifest')
+    profile = driver.binding()['models'][model]
+    classes = tuple(c for c in CLASSES if c not in directions(model)['suppress'])
+    cells = [cell_actions(n, profile, model, dose, 'suppress') for n in nominations['records']
+             if n['class'] in classes]
+    by_cell = {(c['fold'], c['class']): c for c in cells}
+    natives = [row for row in base['records'] if row['arm'] == 'native']
+    rows = []
+    for native in sorted(natives, key=lambda row: row['family']):
+        common = {k: v for k, v in native.items() if k not in ('uid', 'audit_capture')}
+        for class_name in classes:
+            cell = by_cell[native['fold'], class_name]
+            for role in ('target', 'random'):
+                rows.append({**common, 'arm': role+'_suppress', 'class': class_name, 'operation': 'suppress',
+                             'actions': cell[role],
+                             'steered_native_frequency': cell.get('mean_native_frequency', {}).get(role),
+                             'nomination_status': 'nominated' if cell['qualified'] else 'dropped_availability',
+                             'audit_capture': False, 'complement': True})
+    for row in rows:
+        row['uid'] = digest(['whole-complement-v1', nominations['sha256'], row])
+    expected = 2*len(natives)*len(classes)
+    require(len(rows) == expected and len({r['uid'] for r in rows}) == expected, 'complement row count/UID differs')
+    kept = {k: v for k, v in base.items() if k not in ('sha256', 'records', 'planned', 'executable', 'cells')}
+    value = publish(manifest_path(model, dose), {
+        **kept, 'cells': cells, 'records': rows, 'planned': expected,
+        'executable': sum(row['nomination_status'] == 'nominated' for row in rows), 'audit_units': 0,
+        'design': 'complement', 'complement_classes': list(classes), 'parent_root': str(parent),
+        'parent_manifest_sha256': base['sha256']})
+    publish(ROOT/model/'SELECTED.json', {'dose': dose, 'manifest_sha256': value['sha256'], 'canary_job': None,
+                                         'sweep': True, 'complement': True})
     return {key: value[key] for key in ('sha256', 'planned', 'executable', 'scope')}
 
 
@@ -1131,7 +1182,7 @@ def source_extractions(schedule: dict) -> list[str]:
     """Extraction job IDs of every release named in SOURCES.json, for the combined analysis."""
     ids = set()
     for source in verified(ROOT/'SOURCES.json')['sources']:
-        for root in map(Path, [source['root'], *source.get('topups', [])]):
+        for root in map(Path, [source['root'], *source.get('topups', []), *source.get('complements', [])]):
             jobs = schedule if root == ROOT else load(root/'JOBS.json')
             require(source['model'] in jobs['extraction'], f'{root.name} has no {source["model"]} extraction yet')
             ids.add(jobs['extraction'][source['model']]['id'])
