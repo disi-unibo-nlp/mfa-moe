@@ -2,10 +2,11 @@
 
 Needs a finished build (python -m paper.build_cl_manuscript). Writes BUILD/delivery/cl-submission-source.zip, the
 current PDF as cl-submission-draft.pdf and PACKAGE.json. The unpacked sources are compiled offline in passes of
-at most 180 seconds; their page texts, page images and link targets must equal those of the current build.
+at most --timeout-seconds; their page texts, page images and link targets must equal those of the current build.
 
-  python -m paper.package_cl_manuscript
+  python -m paper.package_cl_manuscript [--timeout-seconds 300]
 """
+import argparse
 import hashlib
 import json
 import shutil
@@ -14,7 +15,7 @@ import zipfile
 
 import pymupdf
 
-from paper.build_cl_manuscript import compile_bounded, compile_env, copy_sources, source_files, tectonic
+from paper.build_cl_manuscript import PASS_SECONDS, compile_bounded, compile_env, copy_sources, seconds, source_files, tectonic
 from paper.cl_paths import BUILD, PAPER, TECTONIC_SHA256
 from store import file_sha
 
@@ -46,7 +47,7 @@ def link_proofs(path):
     return names, links
 
 
-def main():
+def main(timeout):
     record = json.loads((BUILD / 'BUILD.json').read_text())
     current_pdf = BUILD / 'build/main.pdf'
     if record['exit_code'] or file_sha(current_pdf) != record['pdf_sha256']:
@@ -79,7 +80,7 @@ def main():
             raise ValueError('archive readback differs: ' + name)
     (unpacked / 'tmp').mkdir()
     start = time.monotonic()
-    run, passes = compile_bounded(unpacked, tectonic(), compile_env(unpacked / 'tmp'))
+    run, passes = compile_bounded(unpacked, tectonic(), compile_env(unpacked / 'tmp'), timeout)
     if run.returncode:
         raise ValueError('unpacked sources did not build in four bounded passes: ' + str(passes))
     rebuilt = unpacked / '.paper-review/build/main.pdf'
@@ -102,4 +103,6 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser(description=__doc__.split('\n\n')[0])
+    parser.add_argument('--timeout-seconds', type=seconds, default=PASS_SECONDS, help='time limit of each compiler pass')
+    main(parser.parse_args().timeout_seconds)

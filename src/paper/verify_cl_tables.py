@@ -2,17 +2,26 @@
 
 Reads only: no fitting, resampling or inference. Real estimates, single engineering fixtures and unavailable
 intervals are reported separately. --self-test also shows that the check rejects swapped rows, changed intervals and
-wrong rank marks in copies of the tables held in memory.
+wrong rank marks in copies of the tables held in memory, and that export_cl_exhibits, run on a temporary copy of the
+manuscript, writes only below figures/journal/data and never a table.
 
   python -m paper.verify_cl_tables [--paper PAPER_FOLDER] [--self-test]
 """
 import argparse
+import contextlib
 import csv
 from decimal import Decimal
+import importlib.util
+import io
 import json
+import os
 from pathlib import Path
 import re
+import shutil
+import tempfile
+from unittest.mock import patch
 
+from paper import cl_paths
 from paper.cl_paths import NOTES, PAPER as DEFAULT_PAPER, REPO
 from store import verified
 
@@ -659,6 +668,28 @@ def verify(paper, texts=None, inline_texts=None):
             "new_fitting": False, "new_resampling": False, "new_inference": False}
 
 
+def exporter_writes_only_data(paper):
+    """Run export_cl_exhibits on a temporary copy of the tables and data; only files below figures/journal/data may change."""
+    with tempfile.TemporaryDirectory() as temporary:
+        root = Path(temporary)
+        figures = root / "figures/journal"
+        shutil.copytree(paper / "journal/tables", root / "journal/tables")
+        shutil.copytree(figure_root(paper) / "data", figures / "data")
+        for path in root.rglob("*"):
+            if path.is_file():
+                os.utime(path, ns=(0, 0))  # a file the exporter writes gets a later time
+        spec = importlib.util.spec_from_file_location("export_cl_exhibits_under_test",
+                                                      Path(__file__).with_name("export_cl_exhibits.py"))
+        exporter = importlib.util.module_from_spec(spec)
+        with patch.multiple(cl_paths, PAPER=root, FIGURES=figures, DATA=figures / "data"):
+            spec.loader.exec_module(exporter)  # binds the temporary folders
+        with contextlib.redirect_stdout(io.StringIO()):
+            exporter.main()
+        written = {str(p.relative_to(root)) for p in root.rglob("*") if p.is_file() and p.stat().st_mtime_ns != 0}
+    elsewhere = sorted(name for name in written if not name.startswith("figures/journal/data/"))
+    require(written and not elsewhere, "the exporter wrote outside figures/journal/data: " + ", ".join(elsewhere))
+
+
 def self_test(paper):
     texts = {path.name: path.read_text() for path in (paper / "journal/tables").glob("*.tex")}
     checks = []
@@ -780,6 +811,8 @@ def self_test(paper):
         checks.append("advertised_context_as_measured_fixture_rejected")
     else:
         raise TableMismatch("advertised context misrepresented as measured fixture passed self-test")
+    exporter_writes_only_data(paper)
+    checks.append("export_writes_only_figure_data")
     return {"status": "pass", "checks": checks, "filesystem_writes": False}
 
 

@@ -30,12 +30,12 @@ import math
 import re
 
 from paper.cl_paths import PAPER, REPO
-from paper.export_routing_results import CLASSES, DRIVER, TABLE_NAMES, TICKS, cid
+from paper.export_routing_results import PAPER_CLASSES, DRIVER, TABLE_NAMES, TICKS, cid
 from store import MODELS, file_sha, verified
 
 DEFAULT_EFFECTS = REPO / "report/whole-reasoning-20261021-r20/analysis-combined/EFFECTS_WHOLE.json"  # the final receipt
 PREREG = DRIVER / "EFFICIENCY_LINK_PREREG.json"
-STATE = dict(zip(CLASSES, ("Re", "An", "Ex", "Pl", "Im", "Ve", "Mo")))
+STATE = dict(zip(PAPER_CLASSES, ("Re", "An", "Ex", "Pl", "Im", "Ve", "Mo")))
 OPERATIONS = ("promote", "suppress")
 DOSES = ("quarter", "half", "main")  # figure order, weakest first
 DOSE_LABELS = {"quarter": "Quarter", "half": "Half", "main": "Full"}
@@ -61,7 +61,7 @@ LEVEL_ARMS = (("native", "Native"), ("native_repeat", "Native repeat"),
               ("target_promote", "Targeted promote"), ("random_promote", "Random promote"),
               ("target_suppress", "Targeted suppress"), ("random_suppress", "Random suppress"))
 # Heatmap columns: the promote block, then the suppress block, each in the paper's state order.
-STATE_COLUMNS = tuple((o, c) for o in OPERATIONS for c in CLASSES)
+STATE_COLUMNS = tuple((o, c) for o in OPERATIONS for c in PAPER_CLASSES)
 STATE_CLIP = {"tokens": 100., "accuracy": 30.}  # symmetric color limits, in display units
 STATE_DIGITS = {"tokens": 0, "accuracy": 1}
 STATE_PANELS = (("tokens", r"(a) Reasoning-token change, targeted $-$ random (\%)"),
@@ -160,7 +160,7 @@ def cell_keys(effects, base, prereg, run_signs):
             cells.setdefault(model, []).append((operation, class_name))
         elif not directed(model, operation, class_name, run_signs):
             raise ValueError("sweep cell is not efficiency-directed under the frozen signs: " + key)
-    return {m: sorted(c, key=lambda cell: (OPERATIONS.index(cell[0]), CLASSES.index(cell[1])))
+    return {m: sorted(c, key=lambda cell: (OPERATIONS.index(cell[0]), PAPER_CLASSES.index(cell[1])))
             for m, c in cells.items()}
 
 
@@ -318,7 +318,7 @@ def occupancy_table(effects, record, source, base, cells):
         for operation in OPERATIONS:
             present = {c for o, c in cells[model] if o == operation}
             values = []
-            for class_name in CLASSES:
+            for class_name in PAPER_CLASSES:
                 key = f"{model}|{dose}|{operation}|{class_name}"
                 column = "target_random:response:" + class_name
                 v = effects["mechanism"].get(key, {}).get(column)
@@ -326,7 +326,7 @@ def occupancy_table(effects, record, source, base, cells):
                               if class_name in present else DASH)
             lines.append(operation.capitalize() + " & " + " & ".join(values))
         blocks.append(block(lines))
-    states = " & ".join("\\textrm{" + STATE[c] + "}" for c in CLASSES)
+    states = " & ".join("\\textrm{" + STATE[c] + "}" for c in PAPER_CLASSES)
     body = "\n\\midrule\n".join(blocks)
     cap = caption(
         "Response of the steered state's own occupancy to targeted edits relative to matched "
@@ -671,10 +671,10 @@ def states_figure(grids, models, out):
     beige carrier, so cells a model did not run stay empty; numbers are set as one node per cell.
     """
     rows = len(models)
-    height, block_width = rows * CELL_H, len(CLASSES) * CELL_W
+    height, block_width = rows * CELL_H, len(PAPER_CLASSES) * CELL_W
     width = 2 * block_width + BLOCK_GAP
     labels = ",".join(PLOT_LABELS[MODELS.index(m)] for m in models)
-    states = ",".join(STATE[c] for c in CLASSES)
+    states = ",".join(STATE[c] for c in PAPER_CLASSES)
     lines = ["% Native PORTS temperature-heatmap cell grid (plot-ports-temperature-heatmap.tex), "
              "adapted as in state_transitions.tex:",
              "% matrix plot* cells, blue/white/red scale centered at zero, beige carrier.",
@@ -698,12 +698,12 @@ def states_figure(grids, models, out):
     for p, (metric, title) in enumerate(STATE_PANELS):
         clip, bottom = STATE_CLIP[metric], (len(STATE_PANELS) - 1 - p) * (height + PANEL_GAP)
         for k, operation in enumerate(OPERATIONS):
-            first = k * len(CLASSES) + 1
-            ticks = ",".join(str(first + i) for i in range(len(CLASSES)))
+            first = k * len(PAPER_CLASSES) + 1
+            ticks = ",".join(str(first + i) for i in range(len(PAPER_CLASSES)))
             left = k * (block_width + BLOCK_GAP)
             lines.append(
                 "\\begin{axis}[statepanel,at={(" + str(left) + "pt," + str(bottom) + "pt)},"
-                "xmin=" + str(first - .5) + ",xmax=" + str(first + len(CLASSES) - .5)
+                "xmin=" + str(first - .5) + ",xmax=" + str(first + len(PAPER_CLASSES) - .5)
                 + ",xtick={" + ticks + "},point meta min=-" + format(clip, "g")
                 + ",point meta max=" + format(clip, "g") + ","
                 + ("ytick={" + ",".join(map(str, range(1, rows + 1))) + "},yticklabels={" + labels
@@ -714,7 +714,7 @@ def states_figure(grids, models, out):
                          "table[x=x,y=y,meta=meta]{figures/journal/data/whole_states_" + metric
                          + ".dat};")
             for (row, col), cell in grids[metric].items():
-                if not first <= col < first + len(CLASSES):
+                if not first <= col < first + len(PAPER_CLASSES):
                     continue
                 options = "statecell" + (",directedcell" if cell["directed"] else "")
                 if cell["mean"] is not None and dark_fill(cell["mean"], clip):
