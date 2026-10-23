@@ -192,6 +192,30 @@ def load_include_traces(
     return keys
 
 
+def checkpoint_config(args, source_plan, program_bytes) -> dict:
+    """What a checkpoint is bound to: the traces, the judge program, the model and the sampling settings.
+
+    The server address is not part of it (every Slurm job serves on its own port), so a rerun on another
+    node or port resumes the same checkpoints.
+    """
+    return {
+        "source_plan_sha256": digest(source_plan),
+        "program_sha256": hashlib.sha256(program_bytes).hexdigest(),
+        "judge_model": args.model,
+        "batch_size": BATCH_SIZE,
+        "max_tokens": args.max_tokens,
+        "temperature": args.temperature,
+        "top_p": args.top_p,
+        "top_k": args.top_k,
+        "min_p": args.min_p,
+        "presence_penalty": args.presence_penalty,
+        "repetition_penalty": args.repetition_penalty,
+        "reasoning_effort": args.reasoning_effort,
+        "enable_thinking": True,
+        "preserve_thinking": False,
+    }
+
+
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--trace-root", type=Path, required=True)
@@ -270,24 +294,7 @@ def main(argv: list[str] | None = None) -> None:
     print(json.dumps({"source_plan": source_plan, "part": args.part, "part_count": len(parts[args.part])}, sort_keys=True), flush=True)
     if args.plan_only:
         return
-    program_bytes = args.judge_program.read_bytes()
-    config = {
-        "source_plan_sha256": digest(source_plan),
-        "program_sha256": hashlib.sha256(program_bytes).hexdigest(),
-        "judge_model": args.model,
-        "base_url": args.base_url,
-        "batch_size": BATCH_SIZE,
-        "max_tokens": args.max_tokens,
-        "temperature": args.temperature,
-        "top_p": args.top_p,
-        "top_k": args.top_k,
-        "min_p": args.min_p,
-        "presence_penalty": args.presence_penalty,
-        "repetition_penalty": args.repetition_penalty,
-        "reasoning_effort": args.reasoning_effort,
-        "enable_thinking": True,
-        "preserve_thinking": False,
-    }
+    config = checkpoint_config(args, source_plan, args.judge_program.read_bytes())
     _program, predict, adapter = load_program_and_adapter(str(args.judge_program))
     def classify(batch):
         return classify_batch_outcomes(batch, adapter=adapter, predict=predict, model=args.model, base_url=args.base_url, api_key=args.api_key, max_tokens=args.max_tokens, temperature=args.temperature, reasoning_effort=args.reasoning_effort, top_p=args.top_p, top_k=args.top_k, min_p=args.min_p, presence_penalty=args.presence_penalty, repetition_penalty=args.repetition_penalty)

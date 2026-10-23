@@ -108,6 +108,33 @@ def test_all_valid_run_keeps_the_legacy_record_and_summary_shape(tmp_path):
     assert 'unknown_count' not in summary
 
 
+def test_server_address_is_not_part_of_the_checkpoint_key(tmp_path):
+    module = importlib.import_module('moe_exp.labeling.annotation_batch')
+    settings = dict(model='judge', max_tokens=16384, temperature=1.0, top_p=0.95, top_k=20, min_p=0.0,
+                    presence_penalty=0.0, repetition_penalty=1.0, reasoning_effort='low')
+
+    def config(**changes):
+        args = SimpleNamespace(**{**settings, 'base_url': 'http://127.0.0.1:20001/v1', **changes})
+        return module.checkpoint_config(args, {'traces': 'plan'}, b'program')
+
+    first = config()
+    assert 'base_url' not in first
+    assert config(base_url='http://127.0.0.1:39999/v1') == first
+    assert config(model='other') != first and config(temperature=0.6) != first
+    assert module.checkpoint_config(SimpleNamespace(**settings), {'traces': 'plan'}, b'other program') != first
+
+    # A job on another port resumes the checkpoints of the first one without a single request.
+    root = tmp_path / 'part'
+    result = module.run_part(items(3), first, output_dir=root, classify=lambda batch: ['Analyze'] * len(batch),
+                             expected_count=3)
+
+    def never_called(batch):
+        raise AssertionError('a new port must not trigger a new request')
+
+    again = config(base_url='http://127.0.0.1:39999/v1')
+    assert module.run_part(items(3), again, output_dir=root, classify=never_called, expected_count=3) == result
+
+
 if __name__ == '__main__':
     root = Path('/leonardo_scratch/large/userexternal/lmolfett/mfa-moe/gpt-oss-20b-qwen38-b64-mtp3-100k-all-attempts-v2/runtime')
     root.mkdir(parents=True, exist_ok=True)
