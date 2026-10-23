@@ -25,7 +25,7 @@ ENTRY_POINTS = [
     'moe_exp.labeling.annotation_batch', 'moe_exp.generation.answer_equivalence',
     'moe_exp.generation.model_profiles', 'moe_exp.labeling.gepa.run',
     'moe_exp.capture.campaign_v3_capture', 'moe_exp.capture.capture_gate', 'moe_exp.capture.vllm_capture',
-    'moe_exp.routing.readout', 'moe_exp.routing.next_state', 'moe_exp.routing.selection',
+    'moe_exp.routing.readout', 'moe_exp.routing.anticipation', 'moe_exp.routing.next_state', 'moe_exp.routing.selection',
     'moe_exp.routing.dynamics', 'moe_exp.routing.benchmark_accuracy', 'moe_exp.routing.benchmark_inventory',
     'moe_exp.routing.efficiency_link_prereg',
     'moe_exp.routing.lexical_data.build_native', 'moe_exp.routing.lexical_data.build_extras',
