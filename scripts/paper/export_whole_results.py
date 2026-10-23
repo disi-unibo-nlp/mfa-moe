@@ -469,10 +469,16 @@ def axis_options(p, panel, height, gap, panels, series):
     name, title, digits, _ = panel
     entries = [v for dose in DOSES for v in series[name][dose] if v is not None]
     limits, ticks = nice_axis(entries, height, digits, CAPS[name])
+    # The printed endpoint can differ slightly from a cap after data rounding.
+    # Padding also keeps the physical error-bar cap clear of the panel stroke.
+    panel_padding = {"tok": ("-120", "220"), "acc": ("-45", "45")}
+    if name in panel_padding:
+        limits = panel_padding[name]
     return tuple(map(float, limits)), (
         "\\begin{axis}[journalaxis,scale only axis,width=352pt,height=" + str(height) + "pt,"
             "anchor=south west,at={(0pt," + str((panels - 1 - p) * (height + gap)) + "pt)},"
             "ybar=0pt,bar width=7pt,xmin=.5,xmax=9.5,enlarge x limits=false,"
+            "clip=true,clip marker paths=true,"
             "ymin=" + limits[0] + ",ymax=" + limits[1] + ",ytick={" + ticks + "},"
             "xtick={1,2,3,4,5,6,7,8,9},xticklabels={" + TICKS + "},"
             "xticklabel style={rotate=0,anchor=north,align=center,"
@@ -753,7 +759,7 @@ def main():
         source = str(args.effects.resolve().relative_to(REPO))
     except ValueError:
         source = str(args.effects.resolve())
-    # The paper keeps its tables; figure sources and data live in the support folder. A test --out
+    # Tables, canonical figure sources and data live in the paper checkout. A test --out
     # root holds all of them in the manuscript layout.
     tables = args.out / "journal/tables"
     data, figures = ((DATA, FIGURES) if args.out == PAPER else

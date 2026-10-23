@@ -63,10 +63,11 @@ def main():
     rules = importlib.util.module_from_spec(spec); spec.loader.exec_module(rules)
     files = rules.active_files(PAPER / 'main.tex')
     files += [PAPER / 'clv2025.cls', PAPER / 'compling.bst']
-    # The source package is the manuscript folder: sections, tables, figure PDFs, icons, class,
-    # bibliography style and references.
+    # Native figure sources and data are self-contained. Include the original PDF backups
+    # and editing/review notes in delivery packages without using them to compile the paper.
     files += [PAPER / 'references.bib']
-    files += [p for p in (PAPER / 'figures/journal').rglob('*') if p.is_file()]
+    files += [p for p in (PAPER / 'figures').rglob('*') if p.is_file()]
+    files += [p for p in PAPER.glob('*.md') if p.is_file()]
     bindings = {}
     for origin in dict.fromkeys(files):
         name = str(origin.relative_to(PAPER))

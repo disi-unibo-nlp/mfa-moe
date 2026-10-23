@@ -1,7 +1,7 @@
 """Run paper-writer's build command with the existing verified offline compiler.
 
 No installations, scientific computation or agent-runtime changes. Each TeX
-invocation is bounded to 45 seconds on the login node. Review artifacts remain
+invocation has an explicit walltime bound (45 seconds by default). Review artifacts remain
 inside paper/manuscript-support/build (ignored).
 """
 from pathlib import Path
@@ -28,7 +28,20 @@ def sha(path):
     return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
-def compile_bounded(snapshot, engine, env, allow_cache_fill):
+def compile_bounded(snapshot: Path, engine: Path, env: dict, allow_cache_fill: bool,
+                    timeout_seconds: int = 45) -> tuple[subprocess.CompletedProcess, list[dict]]:
+    """Converge the manuscript's bibliography and references within bounded compiler passes.
+
+    Args:
+        snapshot: Self-contained manuscript build directory.
+        engine: Verified compiler executable.
+        env: Compiler environment with private cache and temporary paths.
+        allow_cache_fill: Whether the compiler may fetch uncached TeX resources.
+        timeout_seconds: Walltime bound for each compiler process.
+
+    Returns:
+        The final process result and evidence for every attempted pass.
+    """
     built = snapshot / '.paper-review'
     output = built / 'build'
     output.mkdir(parents=True, exist_ok=True)
@@ -46,7 +59,7 @@ def compile_bounded(snapshot, engine, env, allow_cache_fill):
         with (built / f'compiler-pass-{number}.log').open('w') as stream:
             try:
                 run = subprocess.run(command, cwd=snapshot, env=env,
-                                     stdout=stream, stderr=subprocess.STDOUT, timeout=45)
+                                     stdout=stream, stderr=subprocess.STDOUT, timeout=timeout_seconds)
             except subprocess.TimeoutExpired:
                 run = subprocess.CompletedProcess(command, 124)
         text = (output / 'main.log').read_text(errors='replace') if (output / 'main.log').exists() else ''
@@ -63,7 +76,18 @@ def compile_bounded(snapshot, engine, env, allow_cache_fill):
     return run, passes
 
 
-def main(allow_cache_fill=False, bounded_passes=False):
+def main(allow_cache_fill: bool = False, bounded_passes: bool = False,
+         timeout_seconds: int = 45) -> int:
+    """Snapshot and build the canonical manuscript without altering its sources.
+
+    Args:
+        allow_cache_fill: Whether the existing compiler cache may fetch missing resources.
+        bounded_passes: Whether to converge references in at most four separate passes.
+        timeout_seconds: Walltime bound for each compiler invocation.
+
+    Returns:
+        The compiler exit status; zero also produces current page renders and a build receipt.
+    """
     toolchain = json.loads((TOOLS / "TOOLCHAIN.json").read_text())
     engine = Path(toolchain["binary_path"])
     if sha(engine) != EXPECTED or toolchain["binary_sha256"] != EXPECTED:
@@ -75,7 +99,7 @@ def main(allow_cache_fill=False, bounded_passes=False):
     (adapter / "bin").mkdir(parents=True, exist_ok=True)
     (review / "tmp").mkdir(exist_ok=True)
     shim = adapter / "bin/tectonic"
-    shim.write_text("#!/bin/sh\nexec timeout 45s " + str(engine) +
+    shim.write_text("#!/bin/sh\nexec timeout " + str(timeout_seconds) + "s " + str(engine) +
                     ' --untrusted ' + ('' if allow_cache_fill else '--only-cached ') + '"$@"\n')
     shim.chmod(0o700)
     # The source folder retains historical AUX/BBL outputs from another class.
@@ -89,12 +113,20 @@ def main(allow_cache_fill=False, bounded_passes=False):
     origins = rules.active_files(PAPER / 'main.tex')
     origins += [PAPER / 'clv2025.cls', PAPER / 'compling.bst']
     origins += [p for p in (PAPER / 'figures/journal').rglob('*') if p.is_file()]
+    origins += list(PAPER.glob('*.md'))
     bindings = {}
     for origin in dict.fromkeys(origins):
         target = snapshot / origin.relative_to(PAPER)
         target.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(origin, target)
         bindings[str(origin.relative_to(PAPER))] = sha(origin)
+    # Paper-writer discovers local rules beside main.tex. Keep the canonical notes outside
+    # Overleaf, but include them in the review snapshot so those rules are actually checked.
+    for name in ('paper-rules.md', 'writing_brief.md'):
+        shutil.copyfile(REPO / 'paper/manuscript-support/notes' / name, snapshot / name)
+    # The bibliography is unchanged; retain its existing verification evidence in the snapshot.
+    (snapshot / '.paper-review').mkdir()
+    shutil.copyfile(review / 'bib-verify.log', snapshot / '.paper-review/bib-verify.log')
     fonts = TOOLS / "FONT_ASSETS.json"
     for name, record in json.loads(fonts.read_text()).get("files", {}).items():
         origin = Path(record["path"])
@@ -130,10 +162,10 @@ def main(allow_cache_fill=False, bounded_passes=False):
                     if source.exists():
                         shutil.copyfile(source, snapshot / source.name)
                         auxiliary_seed[str(source)] = sha(source)
-        run, passes = compile_bounded(snapshot, engine, env, allow_cache_fill)
+        run, passes = compile_bounded(snapshot, engine, env, allow_cache_fill, timeout_seconds)
         command = run.args
     else:
-        run = subprocess.run(command, cwd=snapshot, env=env, timeout=60)
+        run = subprocess.run(command, cwd=snapshot, env=env, timeout=timeout_seconds + 15)
     built = snapshot / '.paper-review'
     if run.returncode == 0:
         (review / 'build').mkdir(exist_ok=True)
@@ -161,6 +193,7 @@ def main(allow_cache_fill=False, bounded_passes=False):
     evidence = {"compiler_sha256": EXPECTED, "command": command,
                 "source_snapshot": str(snapshot), "source_hashes": bindings,
                 "elapsed_seconds": time.monotonic() - started, "exit_code": run.returncode,
+                "compiler_timeout_seconds": timeout_seconds,
                 "offline": not allow_cache_fill, "scientific_computation": False,
                 "agent_runtime_modified": False}
     if passes:
@@ -185,6 +218,10 @@ if __name__ == "__main__":
     parser.add_argument('--allow-cache-fill', action='store_true',
                         help='Permit the verified compiler to fetch missing private TeX-cache resources.')
     parser.add_argument('--bounded-passes', action='store_true',
-                        help='Converge references in at most four separate 45-second compiler passes.')
+                        help='Converge references in at most four separately bounded compiler passes.')
+    parser.add_argument('--timeout-seconds', type=int, default=45,
+                        help='Per-compiler walltime bound; does not change host CPU limits.')
     args = parser.parse_args()
-    raise SystemExit(main(args.allow_cache_fill, args.bounded_passes))
+    if not 0 < args.timeout_seconds <= 600:
+        parser.error('--timeout-seconds must be between 1 and 600')
+    raise SystemExit(main(args.allow_cache_fill, args.bounded_passes, args.timeout_seconds))

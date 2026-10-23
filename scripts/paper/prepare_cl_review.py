@@ -1,4 +1,4 @@
-"""Register the journal's external editable exhibits and source evidence.
+"""Register the journal's canonical editable exhibits and source evidence.
 
 Run paper-writer packet first. This only augments that native packet with the
 standalone TikZ sources, copied data, current build and fresh per-page renders.
@@ -6,6 +6,7 @@ It never changes installed review tools or judgment rules.
 """
 from pathlib import Path
 import json
+import os
 import pymupdf
 
 from build_cl_manuscript import PAPER
@@ -25,6 +26,7 @@ def main():
     extra += [p for p in DATA.glob('*') if p.is_file()]
     extra += list((NOTES / 'journal').glob('*.md'))
     extra += list((NOTES / 'journal').glob('*.json'))
+    extra += list(PAPER.glob('*.md'))
     extra += [review / 'author-revision-20261014/PRIMARY_RECORDS.json',
               review / 'bib/OFFLINE_VERIFICATION.json',
               review / 'bib/report.md', review / 'bib-verify.log']
@@ -41,9 +43,9 @@ def main():
     (review / 'packet.json').write_text(json.dumps(metadata, indent=1) + '\n')
     packet = (review / 'packet.md').read_text()
     packet = packet.replace('Pages: .paper-review/pages/',
-                            'Pages: ' + str(pages.relative_to(PAPER)) + '/')
+                            'Pages: ' + os.path.relpath(pages, PAPER) + '/')
     packet += '\n\n## Additional registered artifacts\n'
-    packet += '\n'.join('- ' + str(p.relative_to(PAPER)) for p in extra)
+    packet += '\n'.join('- ' + os.path.relpath(p, PAPER) for p in extra)
     packet += '\n\nUse the unique current page directory above, not an older cached image.\n'
     (review / 'packet.md').write_text(packet)
     print(json.dumps({'judge_items': len(metadata['rules']), 'page_directory': str(pages),

@@ -1,14 +1,11 @@
-"""Compile editable native figures to standalone vector PDFs, 45 s per figure.
+"""Compile editable native figures to standalone vector PDFs with a bounded runtime.
 
-Names given on the command line are built; with none, every name is built. Figure sources and
-their data live in the support folder (cl_paths.FIGURES) and are compiled in a snapshot that places
-them beside the manuscript's figures and icons, under the figures/journal paths they reference; the
-PDF goes to the manuscript. A requested figure whose source is missing is an error before anything
-compiles.
+Names given on the command line are built; with none, every name is built. Sources, data and icons
+come from the Overleaf checkout. Generated PDFs, previews and build receipts stay in the support
+build folder; the original PDFs in figures/pdf-backup are never overwritten. A requested figure
+whose source is missing is an error before anything compiles.
 """
-from pathlib import Path
 import argparse
-import hashlib
 import json
 import os
 import shutil
@@ -21,7 +18,17 @@ from cl_paths import BUILD, DATA, FIGURES, PAPER
 NAMES = ('overview', 'conditioning', 'readout', 'selection', 'occupancy', 'next_state', 'state_transitions', 'transition_summary', 'routing', 'whole_dose', 'whole_states')
 
 
-def build(name, allow_cache_fill=False):
+def build(name: str, allow_cache_fill: bool = False, timeout_seconds: int = 45) -> dict:
+    """Compile one canonical figure and retain its independently inspectable preview.
+
+    Args:
+        name: Figure basename from NAMES.
+        allow_cache_fill: Whether the existing compiler may fetch uncached TeX resources.
+        timeout_seconds: Walltime bound for this compiler invocation; host CPU limits remain set.
+
+    Returns:
+        The source-bound build receipt, including the generated PDF path.
+    """
     if not (FIGURES / (name + '.tex')).is_file():
         raise FileNotFoundError('figure source missing: ' + str(FIGURES / (name + '.tex')))
     engine = TOOLS / 'tectonic'
@@ -34,8 +41,7 @@ def build(name, allow_cache_fill=False):
     snapshot.mkdir()
     (snapshot / 'journal').mkdir()
     shutil.copyfile(PAPER / 'journal/style.tex', snapshot / 'journal/style.tex')
-    shutil.copytree(PAPER / 'figures/journal', snapshot / 'figures/journal')
-    shutil.copytree(FIGURES, snapshot / 'figures/journal', dirs_exist_ok=True)
+    shutil.copytree(FIGURES, snapshot / 'figures/journal')
     source = snapshot / 'main.tex'
     source.write_text(r'''\documentclass[border=1pt]{standalone}
 \usepackage[T1]{fontenc}
@@ -61,10 +67,10 @@ def build(name, allow_cache_fill=False):
     started = time.monotonic()
     with (output / 'compiler.log').open('w') as stream:
         run = subprocess.run(cmd, cwd=snapshot, env=env, stdout=stream,
-                             stderr=subprocess.STDOUT, timeout=45)
+                             stderr=subprocess.STDOUT, timeout=timeout_seconds)
     if run.returncode:
         raise ValueError((output / 'compiler.log').read_text()[-3000:])
-    pdf = PAPER / 'figures/journal' / (name + '.pdf')
+    pdf = root / (name + '.pdf')
     shutil.copyfile(output / 'main.pdf', pdf)
     import pymupdf
     with pymupdf.open(pdf) as document:
@@ -72,14 +78,23 @@ def build(name, allow_cache_fill=False):
             raise ValueError('figure is not one page')
         document[0].get_pixmap(dpi=200).save(root / 'preview.png')
         dimensions = [document[0].rect.width, document[0].rect.height]
-    record = {'figure': name, 'pdf_sha256': sha(pdf), 'dimensions_pt': dimensions,
-              'source_sha256': sha(FIGURES / (name + '.tex')),
-              'style_sha256': sha(PAPER / 'journal/style.tex'),
-              'data_files': {p.name: sha(p) for p in DATA.glob('*') if p.is_file()},
-              'elapsed_seconds': time.monotonic() - started, 'offline': not allow_cache_fill,
-              'new_inference': False, 'source_snapshot': str(snapshot)}
-    (FIGURES / (name + '.build.json')).write_text(json.dumps(record, indent=2) + '\n')
+    record = {
+        'figure': name,
+        'pdf_path': str(pdf),
+        'pdf_sha256': sha(pdf),
+        'dimensions_pt': dimensions,
+        'source_sha256': sha(FIGURES / (name + '.tex')),
+        'style_sha256': sha(PAPER / 'journal/style.tex'),
+        'data_files': {p.name: sha(p) for p in DATA.glob('*') if p.is_file()},
+        'elapsed_seconds': time.monotonic() - started,
+        'timeout_seconds': timeout_seconds,
+        'offline': not allow_cache_fill,
+        'new_inference': False,
+        'source_snapshot': str(snapshot),
+    }
+    (root / 'BUILD.json').write_text(json.dumps(record, indent=2) + '\n')
     print(json.dumps({k: record[k] for k in ('figure', 'elapsed_seconds', 'dimensions_pt')}), flush=True)
+    return record
 
 
 if __name__ == '__main__':
@@ -87,7 +102,11 @@ if __name__ == '__main__':
     parser.add_argument('names', nargs='*', metavar='NAME', help='figures to build (default: all of ' + ', '.join(NAMES) + ')')
     parser.add_argument('--figure', action='append', default=[], metavar='NAME', help='same as a positional NAME')
     parser.add_argument('--allow-cache-fill', action='store_true')
+    parser.add_argument('--timeout-seconds', type=int, default=45,
+                        help='Per-figure compiler walltime bound; does not change host CPU limits.')
     args = parser.parse_args()
+    if not 0 < args.timeout_seconds <= 600:
+        parser.error('--timeout-seconds must be between 1 and 600')
     requested = args.figure + args.names
     unknown = [name for name in requested if name not in NAMES]
     if unknown:
@@ -97,4 +116,4 @@ if __name__ == '__main__':
     if missing:
         parser.error('figure source missing for requested figure(s): ' + ', '.join(missing))
     for name in todo:
-        build(name, args.allow_cache_fill)
+        build(name, args.allow_cache_fill, args.timeout_seconds)
