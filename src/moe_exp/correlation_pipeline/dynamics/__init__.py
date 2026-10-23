@@ -1,7 +1,2 @@
-"""Versioned reasoning and native routing dynamics."""
+"""Versioned reasoning and native routing dynamics (sentence tables and per-layer routing reducers)."""
 SCHEMA_VERSION = 1
-
-
-def main():
-    from .cli import main as run
-    run()

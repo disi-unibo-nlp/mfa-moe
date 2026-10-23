@@ -15,7 +15,7 @@ trap 'rm -rf "$RUN"' EXIT
 export TMPDIR="$RUN" MPLCONFIGDIR="$RUN/mpl" HF_HOME=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/cache/hf
 export HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 PYTHONDONTWRITEBYTECODE=1
 export TIKTOKEN_ENCODINGS_BASE=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/cache/tiktoken TIKTOKEN_RS_CACHE_DIR="$RUN/tiktoken"
-export PYTHONPATH="$PWD/src:$PWD/scripts/experimental_resume"
+export PYTHONPATH="$PWD/src"
 export OMP_NUM_THREADS="${SLURM_CPUS_PER_TASK:-1}" OPENBLAS_NUM_THREADS="${SLURM_CPUS_PER_TASK:-1}" MKL_NUM_THREADS="${SLURM_CPUS_PER_TASK:-1}"
 module="$1"; shift
 echo "job ${SLURM_JOB_ID} on $(hostname): $module $*"

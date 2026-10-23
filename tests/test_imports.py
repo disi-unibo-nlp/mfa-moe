@@ -34,6 +34,7 @@ ENTRY_POINTS = [
 EXEMPT = {
     # Byte-frozen by the efficiency-link pre-registration hash; study.efficiency_link aliases the module at load.
     ('moe_exp.routing.efficiency_link_prereg', 'moe_exp.final_routing.common'),
+    ('moe_exp.study.efficiency_link', 'moe_exp.final_routing.common'),
 }
 
 DOTTED = re.compile(r'\bmoe_exp(?:\.[A-Za-z_][A-Za-z0-9_]*)+')
@@ -185,7 +186,7 @@ class ImportsResolve(unittest.TestCase):
     def test_every_test_resolves(self):
         failures = []
         for path in sorted((REPO / 'tests').rglob('*.py')):
-            if '__pycache__' in path.parts:
+            if '__pycache__' in path.parts or path == Path(__file__).resolve():
                 continue
             for target, name in self._test_references(parse(path)):
                 reason = problem('tests', target, name)
