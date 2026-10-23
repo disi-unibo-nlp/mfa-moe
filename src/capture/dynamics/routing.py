@@ -58,10 +58,6 @@ class RoutingReducer:
         self.buffers = {}
         self.availability = None
 
-    @property
-    def retained_tokens(self):
-        return len(self.buffers.get("ids", []))
-
     def push(self, ids, *, weights=None, full_probabilities=None, selection_scores=None):
         ids = np.asarray(ids)
         if ids.ndim != 2 or ids.shape[1] != self.k or not np.issubdtype(ids.dtype, np.integer):
@@ -180,17 +176,16 @@ def reduce_arrays(selected, *, layers, model, probabilities_array=None, weights=
         if not segments or token != segments[-1][-1] + 1:
             segments.append([])
         segments[-1].append(token)
+    # num_experts must come from explicit model metadata when full signals are absent.
+    if probabilities_array is None and selection_scores is None:
+        experts = semantics["num_experts"]
+    else:
+        experts = (probabilities_array if probabilities_array is not None else selection_scores).shape[-1]
     outputs = []
     for layer_index, layer in enumerate(layers):
         for segment in segments:
-            reducer = RoutingReducer(selected.shape[-1] if probabilities_array is None and selection_scores is None
-                                     else (probabilities_array if probabilities_array is not None else selection_scores).shape[-1],
-                                     selected.shape[-1], layer=layer, model=model, config=config,
+            reducer = RoutingReducer(experts, selected.shape[-1], layer=layer, model=model, config=config,
                                      semantics=semantics, start_token=segment[0])
-            # num_experts must come from explicit model metadata when full signals are absent.
-            if probabilities_array is None and selection_scores is None:
-                reducer = RoutingReducer(semantics["num_experts"], selected.shape[-1], layer=layer,
-                    model=model, config=config, semantics=semantics, start_token=segment[0])
             for start in range(segment[0], segment[-1] + 1, config["stride"]):
                 stop = min(start + config["stride"], segment[-1] + 1)
                 native = selected[layer_index, start:stop]
@@ -200,32 +195,3 @@ def reduce_arrays(selected, *, layers, model, probabilities_array=None, weights=
                     full_probabilities=numpy(probabilities_array[layer_index, start:stop]) if probabilities_array is not None else None,
                     selection_scores=numpy(selection_scores[layer_index, start:stop]) if selection_scores is not None else None))
     return outputs
-
-
-def reduce_trace(trace, router, selected, weights, layers, semantics, *, config=None):
-    """Extraction callback: router contains logits/log-affinities, never scalar summaries."""
-    from capture.dynamics import SCHEMA_VERSION
-    from capture.dynamics.classes import saved_layout
-    from capture.dynamics.common import digest
-    from labeling.spans import trace_digest
-    from provenance import code_provenance
-    layout = saved_layout(trace)
-    if layout["token_count"] != router.shape[1]:
-        raise ValueError("Dynamics requires exact saved token alignment")
-    # Tensor softmax would materialize a second corpus-sized array. Convert each chunk instead.
-    class ProbabilitySlices:
-        shape = router.shape
-        def __getitem__(self, index):
-            x = router[index]
-            if hasattr(x, "detach"):
-                x = x.detach().float().cpu().numpy()
-            return probabilities(x)
-    semantics = {**semantics, "num_experts": router.shape[-1]}
-    rows = reduce_arrays(selected, layers=layers, model=trace.model_id,
-        probabilities_array=ProbabilitySlices(), weights=weights,
-        selection_scores=router if semantics.get("selection_scores") == "router_signal" else None,
-        semantics=semantics, config=config, token_indices=layout["reasoning_tokens"])
-    return {"schema_version": SCHEMA_VERSION, "config": {**DEFAULT_CONFIG, **(config or {})},
-            "trace_sha256": trace_digest(trace), "annotation_sha256": digest(trace.metadata.get("reasoning_annotation")),
-            "forward_provenance": trace.metadata.get("forward_provenance"),
-            "code": code_provenance(), "semantics": semantics, "windows": rows}

@@ -1,7 +1,11 @@
+"""Per-trace router and hidden-state features (entropy, margin, overlap, geometry ...) of every routed layer.
+
+The input are the whole-trace router, hidden and selected-expert tensors of one capture; the output is a flat dict
+of scalars named `<metric>_l<layer>` plus layer means. `FEATURE_SCHEMA_VERSION` is stored in every capture packet.
+"""
 from __future__ import annotations
 
 import math
-from typing import Any
 
 import numpy as np
 import torch
@@ -204,13 +208,3 @@ def json_safe_features(features: dict[str, float]) -> dict[str, float | None]:
         for name, value in features.items()
     }
 
-
-def restore_features(features: dict[str, Any]) -> dict[str, float]:
-    """Restore JSON feature values, mapping null back to NaN for pandas."""
-    restored: dict[str, float] = {}
-    for name, value in features.items():
-        if value is None:
-            restored[name] = float("nan")
-        elif isinstance(value, (int, float)):
-            restored[name] = float(value)
-    return restored
