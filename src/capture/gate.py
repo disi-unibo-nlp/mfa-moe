@@ -6,7 +6,10 @@ For the manifest folder of one model and cohort (`ready.json` plus one `SHARD.js
   - every trace of every shard has its two files (sizes and hashes match the marker), no trace is missing or twice;
   - the shard `result.json` agrees with the markers, and the token and trace totals equal the planned ones.
 
-    python -m capture.gate MANIFEST_DIR OUTPUT.json        (a CPU job: it hashes every captured file)
+    python -m capture.gate MANIFEST_DIR OUTPUT.json [--captures ROOT]     (a CPU job: it hashes every captured file)
+
+The captures are where the manifests say (`capture_dir`). With `--captures ROOT` they are in a repeat tree instead:
+`ROOT/<shard number>` for the shards and `ROOT/verify` for the verification.
 
 A second run on unchanged captures must give the same acceptance (the `code` field aside).
 """
@@ -15,7 +18,7 @@ import json
 import os
 from pathlib import Path
 
-from capture.manifest import atomic, load_manifest, resume_records, validate_verification
+from capture.manifest import atomic, capture_folders, load_manifest, resume_records, validate_verification
 from provenance import code_provenance
 from store import file_sha
 
@@ -23,7 +26,7 @@ SHARED_KEYS = ('source', 'cohort', 'spec', 'validation_binding', 'code_binding',
                'cohort_manifest_path', 'maximum_input_tokens', 'storage_root')
 
 
-def gate(manifest_dir):
+def gate(manifest_dir, captures=None):
     root = Path(manifest_dir)
     ready = json.loads((root / 'ready.json').read_text())
     if ready.get('status') != 'ready' or not ready.get('shards'):
@@ -46,8 +49,8 @@ def gate(manifest_dir):
     total_tokens = 0
     inputs = {}
     for manifest in manifests:
-        validate_verification(manifest, json.loads(Path(manifest['verification_path']).read_text()))
-        out = Path(manifest['capture_dir'])
+        out, receipt = capture_folders(manifest, captures)
+        validate_verification(manifest, json.loads(receipt.read_text()))
         records, missing, used = resume_records(manifest, out)
         result_path = out / 'result.json'
         result = json.loads(result_path.read_text())
@@ -71,10 +74,11 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('manifest_dir', type=Path)
     parser.add_argument('output', type=Path)
+    parser.add_argument('--captures', type=Path)
     args = parser.parse_args()
     if not os.environ.get('SLURM_JOB_ID'):
         raise RuntimeError('Production capture gate requires a Slurm CPU allocation')
-    result = gate(args.manifest_dir)
+    result = gate(args.manifest_dir, args.captures)
     if args.output.exists():
         saved = json.loads(args.output.read_text())
         if {k: v for k, v in saved.items() if k != 'code'} != result:

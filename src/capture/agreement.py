@@ -116,6 +116,12 @@ def compare_hf_vllm_capture(hf, native, *, total_input_tokens, layers,
     if any(not math.isfinite(x) or x <= 0 for x in (hf_weight_scale, vllm_weight_scale)):
         raise ValueError('Invalid audited routed weight scale')
     failures = []
+    for name, value in (('near_tie_eps', near_tie_eps), ('selection_relative_l2_bound', selection_relative_l2_bound),
+                        ('weight_relative_l2_bound', weight_relative_l2_bound),
+                        ('first_layer_relative_l2_bound', first_layer_relative_l2_bound),
+                        ('global_relative_l2_bound', global_relative_l2_bound)):
+        if not math.isfinite(value) or value < 0:
+            raise ValueError('Invalid differential tolerance: ' + name)
     for data in (hf, native):
         if data.get('audit', {}).get('native_dispatch') is not True:
             raise ValueError('HF/vLLM differential requires verified native dispatch')

@@ -6,16 +6,19 @@ weights. Each trace is reduced (features, routing windows, class views, expert c
 `<id>.pt.gz` (tensors) and `<id>.json.gz` (packet), followed by the marker `<id>.complete.json`. A rerun skips the
 traces that have a marker and checks that their files are intact.
 
-    python -m capture.run MODEL MANIFEST OUTPUT_DIR [--verify-only]
+    python -m capture.run MODEL MANIFEST OUTPUT_DIR [--verify-only] [--deadline-epoch EPOCH]
 
 `--verify-only` runs the 2-trace verification (longest and a short trace) that must pass before the shards are run:
 gpt compares its query-chunked attention with the native one, glm compares the vLLM capture with a Hugging Face
-reference; the others only check that every routed layer and every token is covered. Its receipt
-`OUTPUT_DIR/verification.json` is what `manifest["verification_path"]` of the shard manifests names.
+reference; the others only check that every routed layer and every token is covered. Its receipt is
+`OUTPUT_DIR/verification.json`. With `--deadline-epoch` (the end of the Slurm job) no new trace is started in the last
+30 minutes: the run writes `drained.json` and exits with 75, and the same command resumes.
 
-OUTPUT_DIR is normally `capture_dir` of the manifest, the folder the gate and the analyses read. Any other new folder
-repeats a capture without touching the paper's. The folder must be empty or already written by this manifest; the
-first run marks it with `run-binding.json`.
+A repeat capture goes to a new tree: `ROOT/verify` for the verification (run first), then `ROOT/0`, `ROOT/1` ... for the
+shards. A shard run there needs the receipt `ROOT/verify/verification.json`, written by the same code. The paper's
+folders (`capture_dir` of the manifests) are only read, by the gate and the analyses: `run-binding.json` and
+`differential.json` bind a folder to the manifest and the hash of the running code, so a folder is only resumed by
+the code that started it, and a finished receipt is never overwritten.
 """
 import argparse
 import gzip
@@ -30,25 +33,58 @@ import socket
 import time
 
 from capture.buffers import approved_capture_path
-from capture.manifest import DIFFERENTIAL_MODELS, atomic, load_manifest, read_location, resume_records, validate_verification
+from capture.manifest import (
+    DIFFERENTIAL_MODELS, atomic, capture_folders, load_manifest, read_location, resume_records, validate_verification,
+    write_new,
+)
 from provenance import code_provenance
 from store import file_sha
 
 
-def claim_capture_output(manifest, out):
-    """Mark an empty folder as the output of this manifest; refuse a folder that belongs to another one.
+DRAIN_SECONDS = 30 * 60  # no new trace is started when less than this remains of the Slurm job
 
-    `code_binding` is the hash of the frozen bundle the manifest was planned for; it stays in the marker so that
-    folders written before the bundles were dropped still match."""
-    binding = {'manifest_binding': manifest['binding'], 'code_binding': manifest['code_binding']}
+
+def must_stop(deadline_epoch):
+    """True when less than DRAIN_SECONDS of the Slurm job remain (no deadline given: never)."""
+    return bool(deadline_epoch) and time.time() > deadline_epoch - DRAIN_SECONDS
+
+
+def claim_capture_output(manifest, out, code):
+    """Mark an empty folder as the output of this manifest and this code; refuse any other folder."""
+    binding = {'manifest_binding': manifest['binding'], 'source_sha256': code['source_sha256']}
     marker = Path(out) / 'run-binding.json'
     if marker.exists():
         if json.loads(marker.read_text()) != binding:
-            raise ValueError('Capture inputs/code changed; choose a fresh output root')
+            raise ValueError('The folder was written for other inputs or by other code; choose a new folder')
     elif any(Path(out).iterdir()):
-        raise ValueError('Unbound existing capture output; choose a fresh output root')
+        raise ValueError('Unbound existing capture output; choose a new folder')
     else:
         atomic(marker, binding)
+
+
+def prepare_output(manifest, output, code):
+    """The folder a run writes to: an approved path, claimed by this manifest and this code, not yet finished.
+
+    Returns (folder, repeat); `repeat` is True outside the manifest's own `capture_dir` (the paper's folder)."""
+    out = approved_capture_path(output)
+    repeat = out != Path(manifest['capture_dir']).resolve()
+    if repeat and out.name != str(manifest['shard']):
+        raise ValueError(f"A repeat capture goes to ROOT/{manifest['shard']} (shards: ROOT/<shard number>, check: ROOT/verify)")
+    out.mkdir(parents=True, exist_ok=True)
+    claim_capture_output(manifest, out, code)
+    for name in ('verification.json', 'result.json'):
+        if (out / name).exists():
+            raise ValueError(f'{out} already holds {name}; a finished capture is not run again')
+    return out, repeat
+
+
+def check_verification(manifest, out, repeat, code):
+    """A shard needs the passed 2-trace verification of its model; in a repeat tree one written by this code."""
+    path = capture_folders(manifest, out.parent if repeat else None)[1]
+    receipt = json.loads(path.read_text())
+    validate_verification(manifest, receipt)
+    if repeat and receipt.get('code', {}).get('source_sha256') != code['source_sha256']:
+        raise ValueError(f'{path} was written by other code; verify again with this code')
 
 
 def pack_bytes(path, raw, limit):
@@ -195,6 +231,7 @@ def main(argv=None):
     parser.add_argument('manifest', type=Path)
     parser.add_argument('output', type=Path)
     parser.add_argument('--verify-only', action='store_true')
+    parser.add_argument('--deadline-epoch', type=float)
     args = parser.parse_args(argv)
     source = args.source
     if not os.environ.get('SLURM_JOB_ID') or not socket.gethostname().startswith('lrdn'):
@@ -202,16 +239,14 @@ def main(argv=None):
     manifest = load_manifest(args.manifest)
     if manifest['source'] != source:
         raise ValueError('Wrong manifest source')
+    code = code_provenance()
+    out, repeat = prepare_output(manifest, args.output, code)
     import torch
     if torch.cuda.device_count() != 2:
         raise RuntimeError('Exactly two allocated GPUs required')
     from capture.backends import HFBackend, VLLMBackend
     from capture.sentence_schema import install
     install()
-    code = code_provenance()
-    out = approved_capture_path(args.output)
-    out.mkdir(parents=True, exist_ok=True)
-    claim_capture_output(manifest, out)
     rows = manifest['attempts']
     if args.verify_only:
         longest = max(rows, key=lambda r: r['total_input_tokens'])
@@ -221,13 +256,13 @@ def main(argv=None):
         if short['total_input_tokens'] > 32768 or short['id'] == longest['id']:
             raise ValueError('Distinct short differential fixture <=32768 required')
     else:
-        validate_verification(manifest, json.loads(Path(manifest['verification_path']).read_text()))
+        check_verification(manifest, out, repeat, code)
     completed, remaining, used = resume_records(manifest, out)
     needs_differential = args.verify_only and source in DIFFERENTIAL_MODELS
     differential_binding = differential = None
     if args.verify_only:
         differential_binding = dict(validation_binding=manifest.get('validation_binding'),
-                                    code_binding=manifest['code_binding'],
+                                    source_sha256=code['source_sha256'],
                                     short_trace_sha256=short['trace_sha256'], short_id=short['id'])
     if needs_differential:
         differential = saved_differential(out / 'differential.json', differential_binding)
@@ -256,6 +291,10 @@ def main(argv=None):
                                        job=os.environ['SLURM_JOB_ID'], provenance=backend.provenance, code=code))
         # Longest input first: it shows the real memory need before the rest is spent.
         for row in sorted(remaining, key=lambda r: (-r['total_input_tokens'], r['id'])):
+            if must_stop(args.deadline_epoch):
+                atomic(out / 'drained.json', dict(status='drained', manifest_binding=manifest['binding'],
+                                                  completed=len(completed)))
+                return 75
             record = capture_one(row, backend, manifest, out, used, code)
             completed.append(record)
             used += sum(f['bytes'] for f in record['files'])
@@ -269,14 +308,14 @@ def main(argv=None):
     if args.verify_only:
         if needs_differential and (not differential or differential.get('status') != 'passed'):
             raise ValueError('Required differential acceptance missing')
-        atomic(out / 'verification.json', dict(
+        write_new(out / 'verification.json', dict(
             status='passed', manifest_binding=manifest['binding'], validation_binding=manifest.get('validation_binding'),
             verified_ids=[r['id'] for r in rows], maximum_input_tokens=manifest['maximum_input_tokens'],
             all_routed_layers=manifest['spec']['layers'], exact_saved_token_coverage=True,
             unchanged_resume_verified=True, differential=differential,
             parent_peak_rss_kib=resource.getrusage(resource.RUSAGE_SELF).ru_maxrss, code=code))
     else:
-        atomic(out / 'result.json', dict(
+        write_new(out / 'result.json', dict(
             status='complete_native_collection', source=source, cohort=manifest['cohort'], shard=manifest['shard'],
             manifest_binding=manifest['binding'], attempts=len(reread), tokens=sum(r['tokens'] for r in reread),
             artifact_bytes=checked_bytes, records=reread))

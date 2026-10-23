@@ -30,6 +30,13 @@ def atomic(path, value):
     tmp.replace(path)
 
 
+def write_new(path, value):
+    """Write a receipt that must not exist yet: a finished capture or verification is never overwritten."""
+    if path.exists():
+        raise ValueError('Refusing to overwrite an existing receipt: ' + str(path))
+    atomic(path, value)
+
+
 def read_location(info):
     """One saved trace line, read from its byte position and checked against the frozen size, time and hash."""
     path = Path(info['path'])
@@ -127,6 +134,16 @@ def resume_records(manifest, output):
             used += artifact['bytes']
         completed.append(record)
     return completed, remaining, used
+
+
+def capture_folders(manifest, captures=None):
+    """(folder of this shard, verification receipt) in the paper's layout or in a repeat tree.
+
+    The paper's are the two paths the manifest names. A repeat tree `captures` holds one folder per shard number and
+    one folder `verify`."""
+    if captures is None:
+        return Path(manifest['capture_dir']), Path(manifest['verification_path'])
+    return Path(captures) / str(manifest['shard']), Path(captures) / 'verify' / 'verification.json'
 
 
 def validate_verification(manifest, receipt):

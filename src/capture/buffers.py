@@ -8,20 +8,25 @@ from __future__ import annotations
 
 from pathlib import Path
 
-from store import HOME, WORK
+from store import WORK
 
 MIB = 1024 ** 2
 GIB = 1024 ** 3
 MAX_WORKER_BYTES = 100 * GIB  # Two TP workers plus engine/headroom in a 240G job.
 MAX_TRANSIENT_BYTES = 96 * GIB
-SCRATCH = Path('/leonardo_scratch/fast/IscrC_MIOSR/lmolfett')
+# Where captures may be written: the scratch campaign root, the job folders and the campaign folder of the project.
+# store.private is not used: it accepts all of WORK and HOME, far wider than a capture should be allowed to write.
+CAPTURE_ROOTS = (Path('/leonardo_scratch/fast/IscrC_MIOSR/lmolfett/mfa-moe/campaign-v3'),
+                 WORK / 'mfa-moe' / 'r', WORK / 'mfa-moe' / 'campaign-v3')
 
 
 def approved_capture_path(output):
-    """Captures are written only to the user's own WORK, HOME or fast scratch storage."""
+    """The resolved folder, if it is under a capture root and not inside a git checkout (captures are never committed)."""
     path = Path(output).resolve()
-    if not any(path.is_relative_to(root) for root in (WORK, HOME, SCRATCH)):
+    if not any(path.is_relative_to(root) for root in CAPTURE_ROOTS):
         raise ValueError('Unapproved capture path: ' + str(path))
+    if any((folder / '.git').exists() for folder in (path, *path.parents)):
+        raise ValueError('Capture path inside a git checkout: ' + str(path))
     return path
 
 
