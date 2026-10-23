@@ -1,0 +1,4 @@
+#!/bin/bash
+# Fit the lexical state readout that labels the steered continuations (about 2 hours):
+#   scripts/routing/lexical.sh
+sbatch -J lexical scripts/slurm/cpu.sh moe_exp.routing.lexical fit --budget 2400
