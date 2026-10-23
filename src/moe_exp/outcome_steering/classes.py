@@ -106,7 +106,7 @@ def usage(release: Path, model: str, workers: int = 8) -> dict:
             'uid': row['uid'], 'question': row['question'], 'attempt': row['attempt'], 'family': row['family'],
             'benchmark': row['benchmark'], 'fold': row['fold'], 'usable': usable, 'finish_reason': finish,
             # A capped attempt has no known outcome: it never enters a right/wrong comparison.
-            'strict': None if not usable or finish != 'stop' or outcome['strict_correct'] is None
+            'strict': None if not usable or finish != 'stop' or pd.isna(outcome['strict_correct'])
                       else bool(outcome['strict_correct']),
             'reasoning_tokens': int(outcome['reasoning_tokens']) if usable else None,
             'model_answer': outcome.get('model_answer') if usable else None,

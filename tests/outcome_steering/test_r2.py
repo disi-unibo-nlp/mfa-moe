@@ -63,8 +63,14 @@ class WindowTests(unittest.TestCase):
         first, second = ({(p['layer'], p['expert']) for p in d} for d in chosen['controls'])
         self.assertEqual(len(first), len(targets))
         self.assertFalse(first & second or first & targets or second & targets or (first | second) & protected)
+        def quintiles(pairs):
+            result = []
+            for p in pairs:
+                ranks = sorted(range(EXPERTS), key=lambda e: (float(frequency[p['layer'], e]), e))
+                result.append((p['layer'], ranks.index(p['expert'])*5//EXPERTS))
+            return sorted(result)
         for draw in chosen['controls']:
-            self.assertEqual(sorted(p['layer'] for p in draw), sorted(p['layer'] for p in chosen['targets']))
+            self.assertEqual(quintiles(draw), quintiles(chosen['targets']))   # same layer and usage quintile
 
     def test_fixed_set_is_kept_with_its_controls(self):
         usage, arrays = synthetic()

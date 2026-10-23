@@ -316,10 +316,12 @@ def choose_window(score: np.ndarray, frequency: np.ndarray, layers: list[int], w
     def mass(pairs):
         return float(sum(frequency[layers.index(p['layer'])][p['expert']] for p in pairs))/(len(window)*k)
 
+    window_frequency = [frequency[layers.index(layer)].tolist() for layer in window]   # rows in window order
+
     def draws(pairs):
         result, taken = [], set(protected) | {(p['layer'], p['expert']) for p in pairs}
         for draw in range(DRAWS):
-            controls = layer_matched_controls([], pairs, frequency.tolist(), window, taken, identity+['draw', draw])
+            controls = layer_matched_controls([], pairs, window_frequency, window, taken, identity+['draw', draw])
             result.append(controls['deactivate'])
             taken |= {(p['layer'], p['expert']) for p in controls['deactivate']}
         return result
