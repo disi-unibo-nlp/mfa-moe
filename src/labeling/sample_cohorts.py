@@ -1,8 +1,9 @@
 """Pick the sentences to label for one model of the card corpus: cohorts A and B.
 
-Input: `--gen-root`, the model's finished generations `<dataset>/traces.jsonl`. Output in `--out`: `cohorts.json`,
-`parts.json` and four label part roots `labels/part-0X/generation/<slug>/<dataset>/traces.jsonl` that
-`labeling.annotation_batch` labels (`scripts/labeling/sample.sh MODEL` runs this).
+Input: `--gen-root`, the model's finished generations `<dataset>/traces.jsonl`. Output in `--out`:
+`cohorts.json`, `parts.json` and four label part roots
+`labels/part-0X/generation/<slug>/<dataset>/traces.jsonl` that `labeling.annotation_batch` labels
+(`scripts/labeling/sample.sh MODEL` runs this).
 
 Cohort A: one attempt per question, drawn uniformly at random (inclusion probability
 1/attempts-for-that-question), labeled with a shared budget of sentences (every unit of
@@ -24,13 +25,14 @@ import random
 from collections import defaultdict
 from pathlib import Path
 
-from labeling.annotation_batch import DATASETS
 from labeling.spans import sentence_spans, trace_digest
 from schemas import TraceRecord
+from store import DATASETS
 
 PAIRED = ("aime24", "aime25", "amc23")
 SCHEMA_VERSION = 1
-LABEL_TOTAL = 100_000  # sentences labelled per model (cohort A's shared budget plus cohort B's fixed shares)
+# sentences labelled per model (cohort A's shared budget plus cohort B's fixed shares)
+LABEL_TOTAL = 100_000
 PER_B = 60  # labelled sentences per cohort-B attempt
 FLOOR = 10  # labelled sentences per cohort-A attempt at least
 PARTS = 4
@@ -72,11 +74,13 @@ def scan(gen_root: Path) -> tuple[list[dict], list[dict], list[str]]:
                     rows.append(dict(
                         dataset=dataset, problem_id=row["problem_id"],
                         source_problem_id=row.get("source_problem_id") or row["problem_id"],
-                        sample_id=row.get("sample_id", 0), trace_path=str(path), line_index=line_index,
-                        byte_offset=offset, line_sha256=line_sha,
+                        sample_id=row.get("sample_id", 0), trace_path=str(path),
+                        line_index=line_index, byte_offset=offset, line_sha256=line_sha,
                         trace_sha256=trace_digest(trace), units=len(units),
-                        completion_tokens=len((row["metadata"].get("token_replay") or {}).get("completion_token_ids") or []),
-                        termination=(row["metadata"].get("termination") or row["metadata"].get("finish_reason")),
+                        completion_tokens=len((row["metadata"].get("token_replay") or {})
+                                              .get("completion_token_ids") or []),
+                        termination=(row["metadata"].get("termination")
+                                     or row["metadata"].get("finish_reason")),
                         state=outcome_state(row)))
                 offset += len(raw)
     total = len(rows) + len(excluded)
@@ -111,7 +115,8 @@ def select(rows: list[dict]) -> dict:
     selection = defaultdict(set)
     for r in cohort_b:
         rng = random.Random(f"{SEED}:Bsent:{r['problem_id']}")
-        selection[(r["dataset"], r["problem_id"])].update(rng.sample(range(r["units"]), min(PER_B, r["units"])))
+        picked = rng.sample(range(r["units"]), min(PER_B, r["units"]))
+        selection[(r["dataset"], r["problem_id"])].update(picked)
     # cohort A: per-attempt floor, then uniform over remaining units of all cohort-A traces
     pool = []
     for r in cohort_a:
@@ -192,17 +197,20 @@ def write(model: str, gen_root: Path, out: Path, chosen, excluded, line_hashes) 
                 sink.close()
         for temporary, target in zip(temporaries, targets):
             os.replace(temporary, target)
-    part_totals = [dict(part=index, trace_root=str(root), total=load[index], traces=len(parts[index]))
-                   for index, root in enumerate(roots)]
-    (out / "parts.json").write_text(json.dumps(dict(manifest_sha256=manifest_sha, parts=part_totals), indent=1))
+    part_totals = [dict(part=index, trace_root=str(root), total=load[index],
+                        traces=len(parts[index])) for index, root in enumerate(roots)]
+    (out / "parts.json").write_text(
+        json.dumps(dict(manifest_sha256=manifest_sha, parts=part_totals), indent=1))
     print(json.dumps(dict(model=model, A=len(chosen["cohort_a"]), B=len(chosen["cohort_b"]),
                           labeled=sum(load), parts=load)))
 
 
 def main(argv=None) -> None:
-    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap = argparse.ArgumentParser(description=__doc__,
+                                 formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--model", required=True)
-    ap.add_argument("--gen-root", type=Path, required=True, help=".../card-v3/<model>/generation/<slug>")
+    ap.add_argument("--gen-root", type=Path, required=True,
+                    help=".../card-v3/<model>/generation/<slug>")
     ap.add_argument("--out", type=Path, required=True)
     args = ap.parse_args(argv)
     rows, excluded, line_hashes = scan(args.gen_root)

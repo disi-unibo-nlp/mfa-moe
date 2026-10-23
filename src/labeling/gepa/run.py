@@ -1,11 +1,15 @@
-"""Optimise the judge prompt with GEPA against a running OpenAI-compatible server (the workstation's llama.cpp).
+"""Optimise the judge prompt with GEPA against a running OpenAI-compatible server (the workstation's
+llama.cpp).
 
-Input: the labelled Schoenfeld responses (`--dataset-dir`), a server, and a GEPA budget. The responses are split
-26 / 6 / 6 into train / validation / locked test by seed, whole responses only. The locked test is touched only with
-`--evaluate-locked-test`, and never in cross-validation (`--cv-folds`).
-Output in `--output-dir`: `selected_program_<time>.json` (the judge program that `labeling.batch_predictor` loads),
-the seed and GEPA-optimised prompts and programs, validation predictions, `results_<time>.json`, the judge feedback
-log and `stats.csv`. `scripts/labeling/optimize_judge.sh` is the command that produced the frozen judge.
+Input: the labelled Schoenfeld responses (`--dataset-dir`), a server, and a GEPA budget. The
+responses are split 26 / 6 / 6 into train / validation / locked test by seed, whole responses only.
+The locked test is touched only with `--evaluate-locked-test`, and never in cross-validation
+(`--cv-folds`).
+
+Output in `--output-dir`: `selected_program_<time>.json` (the judge program that
+`labeling.batch_predictor` loads), the seed and GEPA-optimised prompts and programs, validation
+predictions, `results_<time>.json`, the judge feedback log and `stats.csv`.
+`scripts/labeling/optimize_judge.sh` is the command that produced the frozen judge.
 """
 from __future__ import annotations
 
@@ -44,8 +48,8 @@ from labeling.gepa.prompts import (
 )
 from store import CLASSES
 
-# Of the 38 labelled responses, 26 train, 6 validate and the remaining 6 are the locked test (the same 6 that
-# --locked-test-documents sets aside in cross-validation).
+# Of the 38 labelled responses, 26 train, 6 validate and the remaining 6 are the locked test (the
+# same 6 that --locked-test-documents sets aside in cross-validation).
 TRAIN_DOCUMENTS = 26
 VAL_DOCUMENTS = 6
 
@@ -403,12 +407,34 @@ def _evaluate_and_collect(
 
 
 def _append_stats(path: Path, row: dict[str, Any]) -> None:
-    new_file = not path.exists()
-    with path.open("w" if new_file else "a", newline="", encoding="utf-8") as handle:
-        writer = csv.DictWriter(handle, fieldnames=list(row))
-        if new_file:
+    if not path.exists():
+        with path.open("w", newline="", encoding="utf-8") as handle:
+            writer = csv.DictWriter(handle, fieldnames=list(row))
             writer.writeheader()
-        writer.writerow(row)
+            writer.writerow(row)
+        return
+
+    with path.open(newline="", encoding="utf-8") as handle:
+        reader = csv.DictReader(handle)
+        old_fields = reader.fieldnames or []
+        old_rows = list(reader)
+    fields = old_fields + [field for field in row if field not in old_fields]
+    if fields != old_fields:
+        with path.open("w", newline="", encoding="utf-8") as handle:
+            writer = csv.DictWriter(handle, fieldnames=fields)
+            writer.writeheader()
+            writer.writerows(old_rows)
+            writer.writerow(row)
+    else:
+        with path.open("a", newline="", encoding="utf-8") as handle:
+            csv.DictWriter(handle, fieldnames=fields).writerow(row)
+
+
+def _save_program(program: Any, path: Path) -> None:
+    try:
+        program.save(path)
+    except Exception as exc:  # noqa: BLE001 - serialization support varies by DSPy version
+        print(f"Warning: DSPy could not serialize {path.name}: {exc}")
 
 
 def _write_jsonl(path: Path, rows: Sequence[dict[str, Any]]) -> None:
@@ -428,7 +454,8 @@ def _selection_decision(
     selection_metric: str,
     max_class_recall_drop: float,
 ) -> dict[str, Any]:
-    """The safety gate: keep the seed prompt unless GEPA improved the selection metric without hurting any class."""
+    """The safety gate: keep the seed prompt unless GEPA improved the selection metric without
+    hurting any class."""
     seed_score = _selection_value(seed_report, selection_metric)
     optimized_score = _selection_value(optimized_report, selection_metric)
     seed_classes = seed_report["strict_classification"]["per_class"]
@@ -473,7 +500,8 @@ def _optimize_and_select(
     log_dir: Path,
     seed: int,
 ) -> dict[str, Any]:
-    """GEPA from the seed prompt, then the safety gate that decides between the seed and the optimised prompt."""
+    """GEPA from the seed prompt, then the safety gate that decides between the seed and the
+    optimised prompt."""
     seed_program = EpisodeJudge(seed_instructions)
     seed_report, seed_predictions = _evaluate_and_collect(seed_program, valset)
     gepa_kwargs: dict[str, Any] = {
@@ -491,7 +519,8 @@ def _optimize_and_select(
         gepa_kwargs["max_full_evals"] = args.max_full_evals
     else:
         gepa_kwargs["max_metric_calls"] = args.max_metric_calls
-    optimized_program = dspy.GEPA(**gepa_kwargs).compile(seed_program, trainset=trainset, valset=valset)
+    gepa = dspy.GEPA(**gepa_kwargs)
+    optimized_program = gepa.compile(seed_program, trainset=trainset, valset=valset)
     optimized_report, optimized_predictions = _evaluate_and_collect(optimized_program, valset)
     decision = _selection_decision(
         seed_report,
@@ -633,8 +662,8 @@ def parse_args() -> argparse.Namespace:
 
 
 def _seed_configuration(args: argparse.Namespace) -> tuple[tuple[Any, ...], str]:
-    """The few-shot examples and instructions GEPA starts from: an external prompt file, or the base prompt, or the
-    base prompt plus curated demonstrations."""
+    """The few-shot examples and instructions GEPA starts from: an external prompt file, or the base
+    prompt, or the base prompt plus curated demonstrations."""
     if args.seed_prompt_file is not None:
         seed_prompt_file = Path(args.seed_prompt_file)
         if not seed_prompt_file.is_file():
@@ -686,15 +715,18 @@ def _common_result_metadata(
         },
         "metric_definition": {
             "gepa_reward": {
-                "llm-judge": "same-model LLM judge with brief free-text reasoning and four 1-5 diagnostic scores",
-                "balanced": "inverse-frequency weighted exact match; split mean equals balanced accuracy",
+                "llm-judge": ("same-model LLM judge with brief free-text reasoning and four 1-5 "
+                              "diagnostic scores"),
+                "balanced": ("inverse-frequency weighted exact match; split mean equals balanced "
+                             "accuracy"),
                 "exact": "per-unit exact match",
             }[args.gepa_reward],
             "judge_reasoning_enabled": args.enable_thinking,
             "reasoning_effort": args.reasoning_effort if args.enable_thinking else None,
             "judge_score_weights": JUDGE_SCORE_WEIGHTS if judge else None,
             "judge_dimensions": list(JUDGE_SCORE_WEIGHTS) if judge else None,
-            "judge_score_normalization": "weighted mean of per-dimension (score - 1) / 4" if judge else None,
+            "judge_score_normalization": (
+                "weighted mean of per-dimension (score - 1) / 4" if judge else None),
             "judge_feedback_file": f"judge_feedback_{timestamp}.jsonl" if judge else None,
             "selection_metric": args.selection_metric,
             "max_class_recall_drop": args.max_class_recall_drop,
@@ -720,7 +752,8 @@ def _run_cross_validation(
     metric: Callable[..., dspy.Prediction],
     reflection_lm: dspy.LM,
 ) -> dict[str, Any]:
-    """Nested response-grouped cross-validation: GEPA on each fold's inner split, scored on its untouched outer fold."""
+    """Nested response-grouped cross-validation: GEPA on each fold's inner split, scored on its
+    untouched outer fold."""
     folds, locked_test = make_nested_group_folds(
         documents,
         folds=args.cv_folds,
@@ -752,7 +785,8 @@ def _run_cross_validation(
             log_dir=args.output_dir / "gepa_logs" / f"fold_{fold_number}",
             seed=args.seed + fold_index,
         )
-        outer_report, outer_predictions = _evaluate_and_collect(outcome["selected_program"], outer_testset)
+        outer_report, outer_predictions = _evaluate_and_collect(
+            outcome["selected_program"], outer_testset)
         for row in outer_predictions:
             row["outer_fold"] = fold_number
         all_outer_predictions.extend(outer_predictions)
@@ -761,7 +795,8 @@ def _run_cross_validation(
             _extract_instructions(outcome["selected_program"]),
             encoding="utf-8",
         )
-        outcome["selected_program"].save(prompts_dir / f"fold_{fold_number}_selected_program.json")
+        _save_program(outcome["selected_program"],
+                      prompts_dir / f"fold_{fold_number}_selected_program.json")
         fold_reports.append(
             {
                 "fold": fold_number,
@@ -902,7 +937,8 @@ def main() -> None:
         log_dir=args.output_dir / "gepa_logs",
         seed=args.seed,
     )
-    selected_report, selected_predictions = outcome["selected_report"], outcome["selected_predictions"]
+    selected_report = outcome["selected_report"]
+    selected_predictions = outcome["selected_predictions"]
 
     test_report = None
     test_predictions: list[dict[str, Any]] = []
@@ -974,8 +1010,10 @@ def main() -> None:
         selected_instructions,
         encoding="utf-8",
     )
-    outcome["optimized_program"].save(args.output_dir / f"gepa_optimized_program_{timestamp}.json")
-    outcome["selected_program"].save(args.output_dir / f"selected_program_{timestamp}.json")
+    _save_program(outcome["optimized_program"],
+                  args.output_dir / f"gepa_optimized_program_{timestamp}.json")
+    _save_program(outcome["selected_program"],
+                  args.output_dir / f"selected_program_{timestamp}.json")
 
     selected_nominal = selected_report["strict_classification"]
     test_agreement = (

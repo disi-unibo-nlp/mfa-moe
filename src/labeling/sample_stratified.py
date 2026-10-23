@@ -1,24 +1,30 @@
-"""Pick the 100,000 sentences the judge labels for one source model, stratified by correctness and reasoning length.
+"""Pick the 100,000 sentences the judge labels for one source model, stratified by correctness and
+reasoning length.
 
-Input: the finished benchmark generations `GENERATION_DIR/<model-slug>/<dataset>/traces.jsonl` (+ `manifest.json`).
-Output in OUT: `sampling_manifest.json` (the plan, with its SHA-256), `generation/<slug>/<dataset>/traces.jsonl` (the
-100k selection: one row per chosen completion, with `metadata.sentence_selection`) and four self-contained part roots
-`parts/part-0X/generation/<slug>/...` of exactly 25,000 sentences each, which `labeling.annotation_batch` labels.
+Input: the finished benchmark generations `GENERATION_DIR/<model-slug>/<dataset>/traces.jsonl` (+
+`manifest.json`). Output in OUT: `sampling_manifest.json` (the plan, with its SHA-256),
+`generation/<slug>/<dataset>/traces.jsonl` (the 100k selection: one row per chosen completion, with
+`metadata.sentence_selection`) and four self-contained part roots
+`parts/part-0X/generation/<slug>/...` of exactly 25,000 sentences each, which
+`labeling.annotation_batch` labels.
 
-    python -m labeling.sample_stratified --generation-model openai/gpt-oss-20b --output-dir OUT [--dry-run]
-        --generation-dir results/correlation_pipeline/gpt-oss-20b/generation
+    python -m labeling.sample_stratified --output-dir OUT --generation-model openai/gpt-oss-20b
+        --generation-dir results/correlation_pipeline/gpt-oss-20b/generation [--dry-run]
 
 How the sentences are chosen (seed 42, CPU only):
-* Only scored traces with a reasoning length are eligible. The length is the server's `reasoning_tokens`, or, where the
-  server reports 0 (gpt-oss), the count derived from the saved token replay. A dataset whose traces all have the same
-  length is refused, since its quartiles would mean nothing.
+* Only scored traces with a reasoning length are eligible. The length is the server's
+  `reasoning_tokens`, or, where the server reports 0 (gpt-oss), the count derived from the saved
+  token replay. A dataset whose traces all have the same length is refused, since its quartiles
+  would mean nothing.
 * Each dataset's traces are split into four equal-count length quartiles, giving the cells
   dataset x correct|incorrect x Q1..Q4.
-* One completion is chosen per source problem, by a deterministic greedy pass plus local swaps that keeps each
-  dataset's cell shares of sentences as close as possible to the full corpus.
-* A cell's quota is proportional to the chosen completions' sentences in it. Inside a cell the quota is spread over
-  problems as evenly as their sentence counts allow, and the sentences are drawn uniformly without replacement.
-* Each cell's quota is split evenly over the four parts, and a balancing pass makes every part exactly 25,000.
+* One completion is chosen per source problem, by a deterministic greedy pass plus local swaps that
+  keeps each dataset's cell shares of sentences as close as possible to the full corpus.
+* A cell's quota is proportional to the chosen completions' sentences in it. Inside a cell the quota
+  is spread over problems as evenly as their sentence counts allow, and the sentences are drawn
+  uniformly without replacement.
+* Each cell's quota is split evenly over the four parts, and a balancing pass makes every part
+  exactly 25,000.
 
 The same plan into the same OUT is idempotent; a different plan into an existing OUT is refused.
 """
@@ -38,10 +44,9 @@ from pathlib import Path
 from typing import Any
 
 from generation.generate import _model_slug, _write_json_atomic
-from labeling.annotation_batch import DATASETS
 from labeling.spans import digest, sentence_spans, trace_digest
 from schemas import TraceRecord
-from store import file_sha, iter_jsonl
+from store import DATASETS, file_sha, iter_jsonl
 
 PARTS = 4
 PART_SIZE = 25_000
@@ -82,8 +87,10 @@ class SelectedTrace:
     parts: tuple[tuple[int, ...], ...]
 
     def outputs(self) -> dict[int | None, tuple[int, ...]]:
-        """The sentence indices of each output file: None is the combined one, then every part that has any."""
-        return {None: self.combined, **{part: indices for part, indices in enumerate(self.parts) if indices}}
+        """The sentence indices of each output file: None is the combined one, then every part that
+        has any."""
+        parts = {part: indices for part, indices in enumerate(self.parts) if indices}
+        return {None: self.combined, **parts}
 
 
 def _priority(seed: int, *parts: Any) -> str:
@@ -172,9 +179,11 @@ def quartile_groups(ordered_keys: list[str]) -> dict[str, int]:
 
 
 def waterfill(caps: dict[str, int], quota: int) -> dict[str, int]:
-    """Integer max-min fair allocation of ``quota`` under per-problem caps (spare units go to the first problems)."""
+    """Integer max-min fair allocation of ``quota`` under per-problem caps (spare units go to the
+    first problems)."""
     if quota < 0 or quota > sum(caps.values()):
-        raise ValueError(f"waterfill quota {quota} must be between 0 and the supply {sum(caps.values())}")
+        raise ValueError(
+            f"waterfill quota {quota} must be between 0 and the supply {sum(caps.values())}")
     if not caps:
         return {}
     low, high = 0, max(caps.values())
@@ -196,9 +205,11 @@ def waterfill(caps: dict[str, int], quota: int) -> dict[str, int]:
 
 
 def proportional_quotas(supply: dict[str, int], total: int) -> dict[str, int]:
-    """Split `total` over the cells in proportion to their sentence supply (largest remainders first, ties by name).
+    """Split `total` over the cells in proportion to their sentence supply (largest remainders
+    first, ties by name).
 
-    No cell gets more than its own supply: a share is at most the supply, and a rounded-up share stays within it.
+    No cell gets more than its own supply: a share is at most the supply, and a rounded-up share
+    stays within it.
     """
     all_supply = sum(supply.values())
     if total <= 0 or total > all_supply:
@@ -314,7 +325,8 @@ def _choose_completions(
     the dataset. A greedy first pass is followed by deterministic local swaps.
     """
     problems: dict[str, list[TraceInfo]] = defaultdict(list)
-    cell_of = {info.identity: _cell_id(dataset, info.is_correct, quartiles[info.identity]) for info in infos}
+    cell_of = {info.identity: _cell_id(dataset, info.is_correct, quartiles[info.identity])
+               for info in infos}
     supplies: Counter[str] = Counter()
     for info in infos:
         problems[info.problem].append(info)
@@ -334,7 +346,8 @@ def _choose_completions(
     flexible.sort(key=lambda problem: _priority(seed, "flexible", problem))
 
     def score(problem: str, info: TraceInfo, replacing: TraceInfo | None = None) -> tuple:
-        """The objective if `info` were chosen for `problem` (in place of `replacing`); ties go to the tie hash."""
+        """The objective if `info` were chosen for `problem` (in place of `replacing`); ties go to
+        the tie hash."""
         trial = Counter(masses)
         if replacing is not None:
             trial[cell_of[replacing.identity]] -= replacing.sentences
@@ -352,7 +365,10 @@ def _choose_completions(
             current = chosen[problem]
             best, best_score = current, score(problem, current, current)
             for info in problems[problem]:
-                if info is not current and (candidate := score(problem, info, current)) < best_score:
+                if info is current:
+                    continue
+                candidate = score(problem, info, current)
+                if candidate < best_score:
                     best, best_score = info, candidate
             if best is not current:
                 masses[cell_of[current.identity]] -= current.sentences
@@ -377,8 +393,11 @@ def _choose_completions(
     return chosen, details
 
 
-def _split_part_quotas(quotas: dict[str, int], *, parts: int, part_size: int, seed: int) -> dict[str, list[int]]:
-    """Split every cell quota across parts, then move units between parts until each holds exactly `part_size`."""
+def _split_part_quotas(
+    quotas: dict[str, int], *, parts: int, part_size: int, seed: int
+) -> dict[str, list[int]]:
+    """Split every cell quota across parts, then move units between parts until each holds exactly
+    `part_size`."""
     cells = sorted(quotas)
     split: dict[str, list[int]] = {}
     for index, cell in enumerate(cells):
@@ -424,7 +443,7 @@ def build_plan(
     seed: int = SEED,
 ) -> tuple[dict[str, Any], dict[tuple[str, str], SelectedTrace]]:
     """Build the plan and the selected traces: `parts` parts of `part_size` sentences each."""
-    datasets = list(datasets)  # a list, so that the plan equals itself after a round trip through JSON
+    datasets = list(datasets)  # a list: the plan must equal itself after a round trip through JSON
     total = parts * part_size
     slug = _model_slug(generation_model)
     generation_root = generation_dir / slug
@@ -474,7 +493,8 @@ def build_plan(
     chosen_total = sum(cell_supply.values())
     if chosen_total < total:
         raise ValueError(
-            f"Chosen one-completion universe has {chosen_total} sentences, fewer than the {total} to select"
+            f"Chosen one-completion universe has {chosen_total} sentences, "
+            f"fewer than the {total} to select"
         )
     quotas = proportional_quotas(cell_supply, total)
     cells = sorted(cell_supply)
@@ -490,7 +510,8 @@ def build_plan(
         for problem in chosen:
             by_cell[cell_of[(dataset, problem)]].append(problem)
         for cell in sorted(by_cell):
-            order = sorted(by_cell[cell], key=lambda problem: _priority(seed, "cell", cell, problem))
+            order = sorted(by_cell[cell],
+                           key=lambda problem: _priority(seed, "cell", cell, problem))
             caps = {problem: chosen[problem].sentences for problem in order}
             allocation = waterfill(caps, quotas[cell])
             part_remaining = list(part_quotas[cell])
@@ -661,7 +682,8 @@ def _write_outputs(
     generation_root = generation_dir / slug
     # None is the combined 100k root, 0.. are the part roots
     roots: dict[int | None, Path] = {None: output_dir / "generation"}
-    roots.update({part: output_dir / "parts" / f"part-{part:02d}" / "generation" for part in range(manifest["parts"])})
+    for part in range(manifest["parts"]):
+        roots[part] = output_dir / "parts" / f"part-{part:02d}" / "generation"
     source_manifests = manifest["source_manifests"]
     for dataset in manifest["datasets"]:
         dataset_selected = {
@@ -696,7 +718,8 @@ def _write_outputs(
                 for out, indices in item.outputs().items():
                     metadata = {**(row.get("metadata") or {}),
                                 "sentence_selection": {**selection, "indices": list(indices)}}
-                    writers[out].write(json.dumps({**row, "metadata": metadata}, ensure_ascii=False) + "\n")
+                    line = json.dumps({**row, "metadata": metadata}, ensure_ascii=False)
+                    writers[out].write(line + "\n")
         finally:
             for handle in writers.values():
                 handle.flush()
@@ -748,9 +771,15 @@ def _write_outputs(
 
 
 def sample(
-    generation_dir: Path, generation_model: str, output_dir: Path, *, dry_run: bool = False, **plan_options: Any
+    generation_dir: Path,
+    generation_model: str,
+    output_dir: Path,
+    *,
+    dry_run: bool = False,
+    **plan_options: Any,
 ) -> dict[str, Any]:
-    """Build (and unless `dry_run`, write) one stratified plan. `plan_options` are those of `build_plan`."""
+    """Build (and unless `dry_run`, write) one stratified plan. `plan_options` are those of
+    `build_plan`."""
     manifest, selected = build_plan(generation_dir, generation_model, **plan_options)
     if dry_run:
         return _summary(manifest)
@@ -762,16 +791,19 @@ def sample(
 
 
 def main(argv: list[str] | None = None) -> None:
-    parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    parser = argparse.ArgumentParser(description=__doc__,
+                                     formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--generation-dir", type=Path, required=True,
                         help="Root containing <model-slug>/<dataset>/traces.jsonl")
     parser.add_argument("--generation-model", required=True,
                         help="Model identifier whose slug names the generation subtree")
     parser.add_argument("--output-dir", type=Path, required=True)
-    parser.add_argument("--dry-run", action="store_true", help="Compute and print the plan, write nothing")
+    parser.add_argument("--dry-run", action="store_true",
+                        help="Compute and print the plan, write nothing")
     args = parser.parse_args(argv)
-    print(json.dumps(sample(args.generation_dir, args.generation_model, args.output_dir, dry_run=args.dry_run),
-                     indent=2, sort_keys=True))
+    summary = sample(args.generation_dir, args.generation_model, args.output_dir,
+                     dry_run=args.dry_run)
+    print(json.dumps(summary, indent=2, sort_keys=True))
 
 
 if __name__ == "__main__":

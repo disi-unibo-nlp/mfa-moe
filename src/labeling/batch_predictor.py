@@ -1,9 +1,10 @@
 """The judge client: label a batch of sentences with Qwen3.8-27B served by vLLM.
 
-Each sentence becomes a chat prompt built by the saved DSPy program (the frozen GEPA judge). All prompts of a batch
-go to the server in one request to vLLM's `/v1/chat/completions/batch` route, and each answer is read with DSPy's own
-parser, so the labels equal what DSPy's one-request-at-a-time path would give. An answer that cannot be read comes back
-as an `unknown` outcome that keeps the raw text; one bad answer never discards its siblings.
+Each sentence becomes a chat prompt built by the saved DSPy program (the frozen GEPA judge). All
+prompts of a batch go to the server in one request to vLLM's `/v1/chat/completions/batch` route, and
+each answer is read with DSPy's own parser, so the labels equal what DSPy's one-request-at-a-time
+path would give. An answer that cannot be read comes back as an `unknown` outcome that keeps the raw
+text; one bad answer never discards its siblings.
 """
 
 from __future__ import annotations
@@ -22,7 +23,8 @@ REASONING_EFFORT = "low"
 SAMPLING = {"temperature": 1.0, "top_p": 0.95, "top_k": 20, "min_p": 0.0,
             "presence_penalty": 0.0, "repetition_penalty": 1.0}
 # The same settings as the request's chat template and the checkpoint key use.
-CHAT_TEMPLATE_KWARGS = {"enable_thinking": True, "reasoning_effort": REASONING_EFFORT, "preserve_thinking": False}
+CHAT_TEMPLATE_KWARGS = {"enable_thinking": True, "reasoning_effort": REASONING_EFFORT,
+                        "preserve_thinking": False}
 API_KEY = "local-vllm-key"  # the key scripts/serve/args.sh starts the server with
 # The frozen judge: the GEPA program every label set was made with.
 JUDGE_PROGRAM = (WORK / "mfa-moe/repo/results/gepaLLMAsJudge/qwen3.8-27b-medium-final-s42-v3"
@@ -32,17 +34,21 @@ JUDGE_INPUT_FIELDS = ("problem_statement", "previous_sentence", "sentence", "nex
 
 
 def question_of(messages: list[dict[str, Any]] | None, prompt: str) -> str:
-    """The question the judge sees: the user message(s) of the generation prompt, or else the bare prompt."""
-    return "\n\n".join(str(m["content"]) for m in (messages or []) if m.get("role") == "user") or prompt
+    """The question the judge sees: the user message(s) of the generation prompt, or else the bare
+    prompt."""
+    users = [str(m["content"]) for m in (messages or []) if m.get("role") == "user"]
+    return "\n\n".join(users) or prompt
 
 
 def judge_inputs(question: str, units: list[dict[str, Any]], index: int) -> dict[str, str]:
-    """What the judge sees for sentence `index`: the question, one neighbouring sentence each side, edge markers."""
+    """What the judge sees for sentence `index`: the question, one neighbouring sentence each side,
+    edge markers."""
     return {
         "problem_statement": question,
         "previous_sentence": units[index - 1]["text"] if index else "<START OF RESPONSE>",
         "sentence": units[index]["text"],
-        "next_sentence": units[index + 1]["text"] if index + 1 < len(units) else "<END OF RESPONSE>",
+        "next_sentence": (units[index + 1]["text"] if index + 1 < len(units)
+                          else "<END OF RESPONSE>"),
     }
 
 
@@ -75,9 +81,9 @@ def parse_completion(adapter: Any, predict: Any, completion: str) -> str:
 def parse_failure_types() -> tuple[type[BaseException], ...]:
     """Exceptions that mean "this one completion cannot be turned into a label".
 
-    The label normaliser raises `LabelParseError` (a `ValueError`); DSPy's adapters raise `AdapterParseError`, which
-    is not a `ValueError`, so it is added when DSPy is importable. Transport and programming errors are deliberately
-    not included.
+    The label normaliser raises `LabelParseError` (a `ValueError`); DSPy's adapters raise
+    `AdapterParseError`, which is not a `ValueError`, so it is added when DSPy is importable.
+    Transport and programming errors are deliberately not included.
     """
     try:
         from dspy.utils.exceptions import AdapterParseError
@@ -87,7 +93,8 @@ def parse_failure_types() -> tuple[type[BaseException], ...]:
 
 
 def batch_payload(conversations: list[list[dict[str, Any]]]) -> dict[str, Any]:
-    """One batch request carrying every conversation. The route supports neither streaming, tools nor `n` > 1."""
+    """One batch request carrying every conversation. The route supports neither streaming, tools
+    nor `n` > 1."""
     return {
         "model": JUDGE_MODEL,
         "n": 1,
@@ -114,8 +121,9 @@ def post_batch(payload: dict[str, Any], *, base_url: str, timeout: float = 600.0
 def map_batch_choices(response: dict[str, Any], *, expected: int) -> dict[int, dict[str, Any]]:
     """Map the raw `choices` back to conversation positions without judging their content.
 
-    A structural problem (missing, repeated or out-of-range index, wrong count) stays fatal because such a response
-    cannot be attributed to the input rows. Per-choice problems are left to the caller.
+    A structural problem (missing, repeated or out-of-range index, wrong count) stays fatal because
+    such a response cannot be attributed to the input rows. Per-choice problems are left to the
+    caller.
     """
     choices = response.get("choices")
     if not isinstance(choices, list):
@@ -137,30 +145,13 @@ def map_batch_choices(response: dict[str, Any], *, expected: int) -> dict[int, d
     return mapped
 
 
-def check_unknown(outcome: dict[str, Any]) -> tuple[str | None, dict[str, Any]]:
-    """The raw completion and failure of an `unknown` outcome, rejecting metadata that could not be read back."""
-    raw = outcome.get("raw_completion")
-    if raw is not None and not isinstance(raw, str):
-        raise ValueError("unknown outcome raw_completion must be a string or null")
-    failure = outcome.get("failure")
-    if not isinstance(failure, dict):
-        raise ValueError("unknown outcome is missing failure metadata")
-    missing = [key for key in ("kind", "error_type", "message") if not isinstance(failure.get(key), str)]
-    if missing:
-        raise ValueError(f"unknown outcome failure is missing {missing}")
-    finish_reason = failure.get("finish_reason")
-    if finish_reason is not None and not isinstance(finish_reason, str):
-        raise ValueError("unknown outcome finish_reason must be a string or null")
-    return raw, {"kind": failure["kind"], "error_type": failure["error_type"], "message": failure["message"],
-                 "finish_reason": finish_reason}
-
-
 def _unknown_outcome(kind: str, *, error_type: str, message: str, finish_reason: Any,
                      raw_completion: str | None) -> dict[str, Any]:
     return {
         "status": "unknown",
         "raw_completion": raw_completion,
-        "failure": {"kind": kind, "error_type": error_type, "message": message, "finish_reason": finish_reason},
+        "failure": {"kind": kind, "error_type": error_type, "message": message,
+                    "finish_reason": finish_reason},
     }
 
 
@@ -169,11 +160,12 @@ def classify_batch_outcomes(
 ) -> list[dict[str, Any]]:
     """Classify `items`, returning one outcome per input row, in input order.
 
-    A clean choice gives exactly `{"label": <label>}`. A choice that did not stop normally, has no text or cannot be
-    parsed gives an `unknown` outcome holding the raw completion, even when the text happens to contain a valid label
-    (a truncated answer is not an annotation). Transport failures and structural batch failures raise. An HTTP 400
-    rejects the whole batch when one conversation does not fit the judge context (a degenerate, unpunctuated
-    "sentence" of a looping trace); the batch is bisected so that only the rejected conversation becomes `unknown`.
+    A clean choice gives exactly `{"label": <label>}`. A choice that did not stop normally, has no
+    text or cannot be parsed gives an `unknown` outcome holding the raw completion, even when the
+    text happens to contain a valid label (a truncated answer is not an annotation). Transport
+    failures and structural batch failures raise. An HTTP 400 rejects the whole batch when one
+    conversation does not fit the judge context (a degenerate, unpunctuated "sentence" of a looping
+    trace); the batch is bisected so that only the rejected conversation becomes `unknown`.
     """
     conversations = [render_conversation(adapter, predict, item) for item in items]
     try:
@@ -183,11 +175,14 @@ def classify_batch_outcomes(
             raise
         if len(items) > 1:
             middle = len(items) // 2
-            return (classify_batch_outcomes(items[:middle], adapter=adapter, predict=predict, base_url=base_url)
-                    + classify_batch_outcomes(items[middle:], adapter=adapter, predict=predict, base_url=base_url))
+            first = classify_batch_outcomes(items[:middle], adapter=adapter, predict=predict,
+                                            base_url=base_url)
+            return first + classify_batch_outcomes(items[middle:], adapter=adapter, predict=predict,
+                                                   base_url=base_url)
         body = error.read().decode("utf-8", "replace") if error.fp is not None else ""
-        return [_unknown_outcome("request_rejected", error_type="HTTPError", message=f"HTTP 400: {body[:300]}",
-                                 finish_reason=None, raw_completion=None)]
+        return [_unknown_outcome("request_rejected", error_type="HTTPError",
+                                 message=f"HTTP 400: {body[:300]}", finish_reason=None,
+                                 raw_completion=None)]
     choices = map_batch_choices(response, expected=len(items))
     failure_types = parse_failure_types()
     outcomes = []
@@ -199,11 +194,13 @@ def classify_batch_outcomes(
         raw_completion = content if isinstance(content, str) else None
         if finish_reason not in (None, "stop"):
             outcomes.append(_unknown_outcome(
-                "non_stop", error_type="ValueError", message=f"finish_reason={finish_reason!r} is not a normal stop",
+                "non_stop", error_type="ValueError",
+                message=f"finish_reason={finish_reason!r} is not a normal stop",
                 finish_reason=finish_reason, raw_completion=raw_completion))
         elif raw_completion is None:
             outcomes.append(_unknown_outcome(
-                "missing_content", error_type="ValueError", message="choice has no string message content",
+                "missing_content", error_type="ValueError",
+                message="choice has no string message content",
                 finish_reason=finish_reason, raw_completion=None))
         else:
             try:
