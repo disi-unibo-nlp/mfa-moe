@@ -9,10 +9,10 @@ import torch
 from tokenizers import Tokenizer, decoders, models, pre_tokenizers
 from transformers import PreTrainedTokenizerFast
 
-from moe_exp.capture.features import compute_layer_features
-from moe_exp.labeling.spans import sentence_spans, token_layout, trace_digest
-from moe_exp.models.inference import extract_logs_single_pass
-from moe_exp.models.router_adapters import (
+from capture.features import compute_layer_features
+from labeling.spans import sentence_spans, token_layout, trace_digest
+from models.inference import extract_logs_single_pass
+from models.router_adapters import (
     SIGMOID_ROUTERS,
     available_router_layers,
     configured_top_k,
@@ -20,8 +20,8 @@ from moe_exp.models.router_adapters import (
     model_family,
     router_module,
 )
-from moe_exp.models.token_replay import make_token_replay, validate_token_replay
-from moe_exp.schemas import TraceRecord
+from models.token_replay import make_token_replay, validate_token_replay
+from schemas import TraceRecord
 
 
 @pytest.fixture
@@ -259,10 +259,10 @@ def test_confidence_features_use_actual_selected_set_even_with_selection_bias():
 
 
 def test_generation_persists_exact_ids_and_reuses_them_on_resume(byte_tokenizer, monkeypatch, tmp_path):
-    from moe_exp.generation import generate
-    from moe_exp.generation.benchmarks import BenchmarkSpec
-    from moe_exp.generation.client import Completion
-    from moe_exp.io import iter_jsonl
+    from generation import generate
+    from generation.benchmarks import BenchmarkSpec
+    from generation.client import Completion
+    from store import iter_jsonl
 
     spec = BenchmarkSpec(
         name="synthetic", source="test", split="test", default_samples=1,
@@ -305,7 +305,7 @@ def test_generation_persists_exact_ids_and_reuses_them_on_resume(byte_tokenizer,
 
 
 def test_client_requests_and_preserves_vllm_token_ids(monkeypatch):
-    from moe_exp.generation.client import generate_completion
+    from generation.client import generate_completion
 
     def response(url, key, payload, timeout):
         assert payload["return_token_ids"] is True
@@ -314,7 +314,7 @@ def test_client_requests_and_preserves_vllm_token_ids(monkeypatch):
             "token_ids": [12, 13], "finish_reason": "stop",
         }]}
 
-    monkeypatch.setattr("moe_exp.generation.client._post_json", response)
+    monkeypatch.setattr("generation.client._post_json", response)
     result = generate_completion(
         base_url="http://localhost/v1", api_key="test", model="test", messages=[],
         max_tokens=20, temperature=.6, top_p=.95, top_k=0, seed=1, return_token_ids=True,
@@ -330,7 +330,7 @@ def test_missing_or_invalid_server_token_ids_are_rejected(byte_tokenizer, prompt
 
 
 def test_mxfp4_native_routing_inverse_preserves_ties_and_weights():
-    from moe_exp.models.router_adapters import unpack_mxfp4_routes
+    from models.router_adapters import unpack_mxfp4_routes
     # Token-slot order: [2,0], [1,2], [0,1]; expert-sorted order below.
     routing = SimpleNamespace(expt_hist=torch.tensor([2, 2, 2]), n_expts_tot=3,
                               n_expts_act=2, gate_scal=torch.tensor([.5, .7, .8, .3, .5, .2]))
@@ -344,7 +344,7 @@ def test_mxfp4_native_routing_inverse_preserves_ties_and_weights():
 
 
 def test_mxfp4_streaming_captures_bypassed_router():
-    from moe_exp.models.router_adapters import stream_router_signals
+    from models.router_adapters import stream_router_signals
 
     class Mxfp4GptOssExperts(torch.nn.Module):
         def forward(self, hidden_states, routing_data, gather_idx):

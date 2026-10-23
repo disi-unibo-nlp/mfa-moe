@@ -5,6 +5,6 @@ set -euo pipefail
 module load python/3.11.7
 export PYTHONPATH=src PYTHONDONTWRITEBYTECODE=1
 PY=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/envs/correlation-client-3.11/bin/python
-$PY -m moe_exp.paper.export_routing_results
-$PY -m moe_exp.paper.export_whole_results --effects ${1:-report/whole-reasoning-20261021-r20/analysis-combined/EFFECTS_WHOLE.json}
-$PY -m moe_exp.paper.export_cl_exhibits
+$PY -m paper.export_routing_results
+$PY -m paper.export_whole_results --effects ${1:-report/whole-reasoning-20261021-r20/analysis-combined/EFFECTS_WHOLE.json}
+$PY -m paper.export_cl_exhibits

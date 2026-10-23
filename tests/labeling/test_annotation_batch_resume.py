@@ -7,7 +7,7 @@ from types import SimpleNamespace
 
 
 def items(n):
-    from moe_exp.labeling.annotation_batch import digest
+    from labeling.annotation_batch import digest
     result = []
     for i in range(n):
         trace = SimpleNamespace(dataset='a' if i % 2 else 'b', problem_id='same', sample_id=i,
@@ -24,7 +24,7 @@ def items(n):
 
 
 def test_genuine_cross_trace_batches_and_zero_request_resume(tmp_path):
-    module = importlib.import_module('moe_exp.labeling.annotation_batch')
+    module = importlib.import_module('labeling.annotation_batch')
     calls = []
     def classify(batch):
         calls.append(len(batch))
@@ -51,7 +51,7 @@ UNKNOWN_OUTCOME = {
 
 
 def test_unknown_outcome_is_persisted_and_resumes_without_requests(tmp_path):
-    module = importlib.import_module('moe_exp.labeling.annotation_batch')
+    module = importlib.import_module('labeling.annotation_batch')
     calls = []
 
     def classify(batch):
@@ -87,7 +87,7 @@ def test_unknown_outcome_is_persisted_and_resumes_without_requests(tmp_path):
 
 
 def test_all_valid_run_keeps_the_legacy_record_and_summary_shape(tmp_path):
-    module = importlib.import_module('moe_exp.labeling.annotation_batch')
+    module = importlib.import_module('labeling.annotation_batch')
     calls = []
 
     def classify(batch):
@@ -109,7 +109,7 @@ def test_all_valid_run_keeps_the_legacy_record_and_summary_shape(tmp_path):
 
 
 def test_server_address_is_not_part_of_the_checkpoint_key(tmp_path):
-    module = importlib.import_module('moe_exp.labeling.annotation_batch')
+    module = importlib.import_module('labeling.annotation_batch')
     settings = dict(model='judge', max_tokens=16384, temperature=1.0, top_p=0.95, top_k=20, min_p=0.0,
                     presence_penalty=0.0, repetition_penalty=1.0, reasoning_effort='low')
 
@@ -150,7 +150,7 @@ if __name__ == '__main__':
 
 
 def test_checkpoints_written_with_a_server_address_still_resume(tmp_path):
-    module = importlib.import_module('moe_exp.labeling.annotation_batch')
+    module = importlib.import_module('labeling.annotation_batch')
     calls = []
     def classify(batch):
         calls.append(len(batch))

@@ -5,9 +5,9 @@ from pathlib import Path
 import tempfile
 import unittest
 
-from moe_exp.steering.outcome import manifest
-from moe_exp.steering.runtime import budget_tokens
-from moe_exp.io import file_sha
+from steering.outcome import manifest
+from steering.runtime import budget_tokens
+from store import file_sha
 
 
 class ManifestPartsTests(unittest.TestCase):

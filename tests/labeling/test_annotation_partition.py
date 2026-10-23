@@ -3,7 +3,7 @@ import unittest
 import json
 import tempfile
 from pathlib import Path
-from moe_exp.schemas import TraceRecord
+from schemas import TraceRecord
 
 
 def fixture(root, reverse=False, duplicate=False, legacy=False):
@@ -27,7 +27,7 @@ def fixture(root, reverse=False, duplicate=False, legacy=False):
 
 
 def api():
-    return importlib.import_module('moe_exp.labeling.annotation_partition')
+    return importlib.import_module('labeling.annotation_partition')
 
 
 class PopulationTests(unittest.TestCase):

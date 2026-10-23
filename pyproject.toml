@@ -30,8 +30,8 @@ dependencies = [
 ]
 
 [project.scripts]
-gepa-llm-as-judge = "moe_exp.labeling.gepa.run:main"
-correlation-generate = "moe_exp.generation.generate:main"
+gepa-llm-as-judge = "labeling.gepa.run:main"
+correlation-generate = "generation.generate:main"
 
 [project.optional-dependencies]
 dev = [
@@ -47,7 +47,8 @@ unsloth = [
 ]
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/moe_exp"]
+only-include = ["src"]
+sources = ["src"]
 
 [tool.ruff]
 line-length = 100

@@ -15,7 +15,7 @@ mkdir -p "$TMP"
 
 # 1. Seal: receipts, COMPLEMENT.json, SOURCES.json, the code snapshot and launch.env.
 TMPDIR="$TMP" PYTHONPATH=src PYTHONDONTWRITEBYTECODE=1 \
-  "$PY" -B -m moe_exp.steering.whole_complement --name "$name" --local-tests "$tests"
+  "$PY" -B -m steering.whole_complement --name "$name" --local-tests "$tests"
 set -a; source "report/$name/launch.env"; set +a
 REL=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/releases/$COMMIT
 export PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=$REL/src TMPDIR="$TMP" \
@@ -24,7 +24,7 @@ export PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=$REL/src TMPDIR="$TMP" \
        WHOLE_GPU_CEILING=$GPU_CEILING WHOLE_CPU_CEILING=$CPU_CEILING OMP_NUM_THREADS=1
 
 # 2. The ordinary whole-reasoning graph runs it; SOURCES.json makes it queue the combined analysis.
-(cd "$REL" && "$PY" -B -m moe_exp.steering.whole launch)
+(cd "$REL" && "$PY" -B -m steering.whole launch)
 
 # 3. Paper tables and figure data from the combined receipt, staged outside the manuscript folder.
 combine=$("$PY" -c "import json; print(json.load(open('$WHOLE_ROOT/JOBS.json'))['analysis']['id'])")
@@ -34,5 +34,5 @@ env -u SLURM_JOB_ID sbatch --parsable --account=iscrc_miosr --partition=lrd_all_
   --dependency="afterok:$combine" --output="$WHOLE_ROOT/logs/%x-%j.out" --error="$WHOLE_ROOT/logs/%x-%j.err" \
   --wrap "cd $REPO && module load python/3.11.7 && mkdir -p $out && PYTHONPATH=src \
 PYTHONDONTWRITEBYTECODE=1 /leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/envs/correlation-client-3.11/bin/python -B \
--m moe_exp.paper.export_whole_results --effects $WHOLE_ROOT/analysis-combined/EFFECTS_WHOLE.json --out $out" \
+-m paper.export_whole_results --effects $WHOLE_ROOT/analysis-combined/EFFECTS_WHOLE.json --out $out" \
   | tee "$WHOLE_ROOT/EXPORT_JOB"

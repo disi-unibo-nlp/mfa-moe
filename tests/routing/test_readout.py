@@ -3,9 +3,9 @@ from pathlib import Path
 from types import SimpleNamespace
 import unittest
 import numpy as np
-from moe_exp.routing import readout_fit as new
-from moe_exp.routing.readout_analysis import family_folds
-from moe_exp.routing.lfm_readout import HISTORICAL
+from routing import readout_fit as new
+from routing.readout_analysis import family_folds
+from routing.lfm_readout import HISTORICAL
 
 MODELS = ('gemma', 'glm', 'gpt', 'nemotron', 'qwen330b', 'qwen35', 'qwen36', 'lfm25', 'lfm25-engineering')
 
@@ -42,7 +42,7 @@ class ReadoutTests(unittest.TestCase):
             self.assertEqual(ast.dump(originals[name], include_attributes=False), ast.dump(currents[name], include_attributes=False), name)
 
     def test_analysis_references_only_available_numerical_helpers(self):
-        from moe_exp.routing import readout_analysis
+        from routing import readout_analysis
         tree = ast.parse(Path(readout_analysis.__file__).read_text())
         names = {node.attr for node in ast.walk(tree)
                  if isinstance(node, ast.Attribute) and isinstance(node.value, ast.Name) and node.value.id == 'sr'}

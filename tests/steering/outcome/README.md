@@ -1,6 +1,6 @@
 # Outcome-steering tests
 
-CPU-only unit tests of `src/moe_exp/outcome_steering`. They load no model and read no capture.
+CPU-only unit tests of `src/steering/outcome`. They load no model and read no capture.
 
 - `test_select.py`: synthetic routing with a planted wrong-heavy expert. Covers within-question
   z-scores, the mixed-outcome filter, leave-one-question-out stability, protection, the chosen set and

@@ -13,15 +13,15 @@ import numpy as np
 import pandas as pd
 import torch
 
-from moe_exp.steering.operators import score_override_dual
-from moe_exp.steering.selection import global_pairs, layer_matched_controls
-from moe_exp.io import BENCHMARKS, CLASSES, WORK
-from moe_exp.steering.pulse_effects import Bootstrap, bounded_summary
-from moe_exp.steering.stream import Clock, StreamCapture, dose_totals
-from moe_exp.steering.whole import build_manifest, select_pairs
-from moe_exp.steering.whole_effects import unit_bounds, contrast, primary_frame
-from moe_exp.steering import whole
-from moe_exp.io import publish
+from steering.operators import score_override_dual
+from steering.selection import global_pairs, layer_matched_controls
+from store import BENCHMARKS, CLASSES, WORK
+from steering.pulse_effects import Bootstrap, bounded_summary
+from steering.stream import Clock, StreamCapture, dose_totals
+from steering.whole import build_manifest, select_pairs
+from steering.whole_effects import unit_bounds, contrast, primary_frame
+from steering import whole
+from store import publish
 
 
 class NominationTests(unittest.TestCase):
@@ -141,8 +141,8 @@ class PromptScopeTests(unittest.TestCase):
         runner = SimpleNamespace(get_model=lambda: model, _prepare_inputs=lambda: None,
                                  input_batch=SimpleNamespace(req_ids=['internal']),
                                  query_start_loc=SimpleNamespace(np=np.array([0, 0])))
-        with patch('moe_exp.steering.stream.discover', return_value={0: ('router', router, None)}), \
-             patch('moe_exp.steering.stream.policy', return_value={'scoring': 'softmax', 'renormalize': True}):
+        with patch('steering.stream.discover', return_value={0: ('router', router, None)}), \
+             patch('steering.stream.policy', return_value={'scoring': 'softmax', 'renormalize': True}):
             capture = StreamCapture(runner, {'layers': [0], 'hook_layers': [0], 'native_k': 4, 'experts': 32})
         capture.add([{'uid': 'uid', 'prompt': prompt, 'prefix': [], 'closure': [[9, 9]],
                       'actions': [{'layer': 0, 'activate': [0], 'deactivate': [31], 'pulse_tokens': 0}],
@@ -187,13 +187,13 @@ class PromptScopeTests(unittest.TestCase):
         self.assertEqual(capture.records['uid']['0']['positions'], [0])
 
     def test_original_prompt_runtime_allows_empty_prefix_only_when_flagged(self):
-        from moe_exp.steering.runtime import prompt_prefix
+        from steering.runtime import prompt_prefix
         trace = {'metadata': {'token_replay': {'prompt_token_ids': [1, 2, 3], 'completion_token_ids': [4, 5]}}}
         binding = {'source_campaign': '/saved', 'root': '/saved'}
         row = {'source': {'attempt_id': 'source', 'prefix_tokens': 0}, 'original_prompt': True}
-        with patch('moe_exp.steering.runtime.load', return_value={'records': [
+        with patch('steering.runtime.load', return_value={'records': [
                     {'attempt_id': 'source', 'source_location': 'saved'}]}), \
-             patch('moe_exp.io.read_source', return_value=trace):
+             patch('store.read_source', return_value=trace):
             self.assertEqual(prompt_prefix(binding, 'gpt', row, None)[:2], ([1, 2, 3], []))
             with self.assertRaisesRegex(ValueError, 'original-prompt'):
                 prompt_prefix(binding, 'gpt', {**row, 'original_prompt': False}, None)
@@ -208,7 +208,7 @@ class PromptScopeTests(unittest.TestCase):
 
 class AnalysisTests(unittest.TestCase):
     def test_native_only_pooled_planning_retains_cross_model_family_covariance(self):
-        from moe_exp.steering.whole_effects import _pooled_native_planning
+        from steering.whole_effects import _pooled_native_planning
         residuals = {
             'gpt': pd.DataFrame({'log_reasoning': [1., -1.], 'correct': [.5, -.5]}, index=['a', 'b']),
             'qwen36': pd.DataFrame({'log_reasoning': [-1., 1.], 'correct': [-.5, .5]}, index=['a', 'b']),
@@ -219,7 +219,7 @@ class AnalysisTests(unittest.TestCase):
         self.assertEqual(result['transport_status'], 'SUSPECTED')
 
     def test_first_endpoints_reject_incomplete_overlap_and_out_of_horizon_sentences(self):
-        from moe_exp.steering.pulse_effects import endpoints
+        from steering.pulse_effects import endpoints
         outcome = {'pulse_tokens': 4, 'horizon': 8, 'reasoning_end': None, 'generated_tokens': 8,
                    'finish_reason': 'length', 'nonreasoning': []}
         spans = [{'token_start': 0, 'token_end': 3, 'complete': False},
@@ -262,7 +262,7 @@ class AnalysisTests(unittest.TestCase):
 
     def test_threaded_math_verify_uses_helper_process(self):
         from concurrent.futures import ThreadPoolExecutor
-        from moe_exp.generation.scoring import score_completion_detailed, shutdown_scoring_pool
+        from generation.scoring import score_completion_detailed, shutdown_scoring_pool
         self.addCleanup(shutdown_scoring_pool)
         with ThreadPoolExecutor(max_workers=1) as executor:
             result = executor.submit(score_completion_detailed, {'gold_answer': '2'}, answer_type='math',
@@ -271,15 +271,15 @@ class AnalysisTests(unittest.TestCase):
         self.assertTrue(result['is_correct'])
 
     def test_gpt_reasoning_count_comes_from_replay_even_when_usage_says_zero(self):
-        from moe_exp.steering.pulse_outcomes import record
+        from steering.pulse_outcomes import record
         text = ('<|channel|>analysis<|message|>Reason.<|end|><|start|>assistant'
                 '<|channel|>final<|message|>2<|return|>')
         replay = {'completion_token_ids': list(range(len(text))),
                   'completion_offsets': [[i, i+1] for i in range(len(text))]}
         raw = {'token_ids': replay['completion_token_ids'], 'finish_reason': 'stop', 'reasoning_tokens': 0}
         original = {'prompt': 'Question', 'gold_answer': '2', 'metadata': {}}
-        with patch('moe_exp.models.token_replay.make_token_replay', return_value=(text, replay)), \
-             patch('moe_exp.generation.scoring.score_completion_detailed',
+        with patch('models.token_replay.make_token_replay', return_value=(text, replay)), \
+             patch('generation.scoring.score_completion_detailed',
                    return_value={'is_correct': True, 'model_answer': '2'}):
             outcome = record({'models': {'gpt': {'key': 'gpt'}}}, 'gpt', {'horizon': 1000}, raw, None,
                              [[9000]], frozen_input=([1], [], original))
@@ -289,8 +289,8 @@ class AnalysisTests(unittest.TestCase):
         direct_replay = {'completion_token_ids': list(range(len(direct))),
                          'completion_offsets': [[i, i+1] for i in range(len(direct))]}
         raw = {**raw, 'token_ids': direct_replay['completion_token_ids']}
-        with patch('moe_exp.models.token_replay.make_token_replay', return_value=(direct, direct_replay)), \
-             patch('moe_exp.generation.scoring.score_completion_detailed',
+        with patch('models.token_replay.make_token_replay', return_value=(direct, direct_replay)), \
+             patch('generation.scoring.score_completion_detailed',
                    return_value={'is_correct': True, 'model_answer': '2'}):
             outcome = record({'models': {'gpt': {'key': 'gpt'}}}, 'gpt', {'horizon': 1000, 'whole': True},
                              raw, None, [list(range(len('<|channel|>final<|message|>')))],
@@ -311,7 +311,7 @@ class ManifestTests(unittest.TestCase):
             def cell(nomination, profile, model, dose, operation):
                 return {'fold': nomination['fold'], 'class': nomination['class'], 'operation': operation,
                         'target': [], 'random': [], 'qualified': True}
-            with patch('moe_exp.steering.whole.cell_actions', side_effect=cell):
+            with patch('steering.whole.cell_actions', side_effect=cell):
                 value = build_manifest(model, 'main', nominations, {'models': {model: profile}}, natives,
                                        {r['family']: [1, 2] for r in natives}, True)
             rows = value['records']
@@ -468,7 +468,7 @@ class ExecutionGateTests(unittest.TestCase):
 
 class ClosedAnalysisTests(unittest.TestCase):
     def test_completed_whole_output_replays_and_extracts_in_worker_scope(self):
-        from moe_exp.steering import whole_effects
+        from steering import whole_effects
         text = ('<|channel|>analysis<|message|>Reason.<|end|><|start|>assistant'
                 '<|channel|>final<|message|>2<|return|>')
         tokens = list(range(len(text)))
@@ -484,8 +484,8 @@ class ClosedAnalysisTests(unittest.TestCase):
                     'profile_sha256': 'profile', 'segments': [{'seed': 7}], 'token_ids': tokens,
                     'finish_reason': 'stop', 'reasoning_tokens': 0})
             publish(folder/'CAPTURE.json', {'stats': {'dose': {}}})
-            with patch('moe_exp.models.token_replay.make_token_replay', return_value=(text, replay)), \
-                 patch('moe_exp.generation.scoring.score_completion_detailed',
+            with patch('models.token_replay.make_token_replay', return_value=(text, replay)), \
+                 patch('generation.scoring.score_completion_detailed',
                        return_value={'is_correct': True, 'model_answer': '2'}):
                 outcome, sentences, failure = whole_effects._extract_one(
                     row, b={'models': {'gpt': {'key': 'gpt'}}}, model='gpt', tokenizer=None,
@@ -497,7 +497,7 @@ class ClosedAnalysisTests(unittest.TestCase):
         self.assertEqual(sentences[0]['sentence_text'], 'Reason.')
 
     def test_all_missing_production_still_exports_six_bounded_primary_contrasts(self):
-        from moe_exp.steering import whole_effects
+        from steering import whole_effects
         manifests, allocation = {}, []
         for i, benchmark in enumerate(BENCHMARKS):
             allocation.append({'family': str(i), 'benchmark': benchmark})

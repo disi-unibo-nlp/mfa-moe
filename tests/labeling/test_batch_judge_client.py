@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import pytest
 
-from moe_exp.labeling.batch_judge import (
+from labeling.batch_judge import (
     BATCH_ROUTE,
     build_batch_payload,
     map_batch_choices,

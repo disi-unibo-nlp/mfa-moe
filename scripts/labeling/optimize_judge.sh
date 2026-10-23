@@ -5,7 +5,7 @@
 MFA=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe
 DSPY=/leonardo_scratch/large/userexternal/lmolfett/mfa-moe/qwen-fp-fa-smoke/envs/qwen-fp-fa-dspy-88189c22f214ed65
 PYTHONPATH=src:$DSPY/lib/python3.11/site-packages:$MFA/envs/vllm-cu129/lib/python3.11/site-packages \
-$DSPY/bin/python -m moe_exp.labeling.gepa.run --dataset-dir data/Schoenfeld_Reasoning \
+$DSPY/bin/python -m labeling.gepa.run --dataset-dir data/Schoenfeld_Reasoning \
   --api-base "$1" --api-key local-llamacpp-key --model local-llamacpp --seed 42 --prompt-variant few-shot \
   --few-shot-examples 21 --gepa-reward llm-judge --selection-metric balanced_accuracy --gepa-auto heavy \
   --seed-prompt-file results/exp0a/context-llmjudge-20k-s42/gepa_optimized_prompt_20260811_135905.txt \

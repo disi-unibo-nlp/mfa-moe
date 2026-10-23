@@ -4,8 +4,8 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-from moe_exp.steering import pulse as driver, whole, whole_effects
-from moe_exp.io import CLASSES, WORK, load, publish
+from steering import pulse as driver, whole, whole_effects
+from store import CLASSES, WORK, load, publish
 
 TMP = WORK/'tools/tmp'
 SUPPRESSED = ('Plan', 'Implement')  # classes the synthetic base release already suppresses

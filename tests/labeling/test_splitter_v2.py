@@ -8,14 +8,14 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parents[2] / "src"))
 
-from moe_exp.labeling.spans import (
+from labeling.spans import (
     math_protection_spans,
     map_selection_to_v2,
     sentence_spans,
     sentence_spans_v1,
     splitter_delta,
 )
-from moe_exp.schemas import TraceRecord  # noqa: E402
+from schemas import TraceRecord  # noqa: E402
 
 LEGACY_PATTERN = re.compile(
     r"\$\$.*?\$\$|\\\[.*?\\\]|\\\(.*?\\\)"

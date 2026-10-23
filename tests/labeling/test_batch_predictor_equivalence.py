@@ -13,7 +13,7 @@ PROGRAM = (
 
 dspy = pytest.importorskip("dspy")
 
-from moe_exp.labeling.batch_predictor import load_program_and_adapter, render_conversation
+from labeling.batch_predictor import load_program_and_adapter, render_conversation
 
 SAMPLE = {
     "problem_statement": "What is 2+2?",

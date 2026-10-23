@@ -3,7 +3,7 @@ import unittest
 
 import numpy as np
 
-from moe_exp.steering.outcome import select
+from steering.outcome import select
 
 
 def toy_rates(questions=6, attempts=6, layers=4, experts=16, seed=0):

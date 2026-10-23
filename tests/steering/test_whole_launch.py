@@ -11,10 +11,10 @@ from unittest.mock import patch
 import numpy as np
 import pandas as pd
 
-from moe_exp.steering import pulse as driver, whole, whole_effects
-from moe_exp.io import BENCHMARKS, REPO, WORK, load, publish
-from moe_exp.steering.pulse_effects import Bootstrap
-from moe_exp.steering.selection import select_pairs
+from steering import pulse as driver, whole, whole_effects
+from store import BENCHMARKS, REPO, WORK, load, publish
+from steering.pulse_effects import Bootstrap
+from steering.selection import select_pairs
 from test_driver import FakeEngine
 
 
@@ -247,7 +247,7 @@ class DesignAndCoverageTests(unittest.TestCase):
             pd.DataFrame(spans).to_parquet(folder/'sentences.parquet')
             publish(root/'RELEASE.json', {'classifier': {}})
             publish(whole.manifest_path('gpt', 'main', root), {'records': records})
-            with patch('moe_exp.routing.lexical.predict', side_effect=lambda frame, *args, **kwargs: frame):
+            with patch('routing.lexical.predict', side_effect=lambda frame, *args, **kwargs: frame):
                 table = whole_effects.load_table([{'model': 'gpt', 'root': str(root), 'dose': 'main'}]).set_index('uid')
         self.assertEqual(table.loc['valid', 'outcome_status'], 'observed')
         self.assertEqual(table.loc['invalid', 'outcome_status'], 'unknown_sentence_coverage')
