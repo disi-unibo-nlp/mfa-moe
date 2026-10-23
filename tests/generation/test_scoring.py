@@ -4,7 +4,7 @@ from concurrent.futures import ThreadPoolExecutor
 import pytest
 
 from generation import scoring
-from generation.scoring import score_completion, score_completion_detailed
+from generation.scoring import score_completion_detailed
 from generation.answers import extract_model_answer, last_boxed
 
 
@@ -45,11 +45,13 @@ def test_main_thread_scoring_uses_math_verify(text, gold, expected):
 
 
 def test_threaded_scoring_matches_main_thread():
-    main = [score_completion({"gold_answer": g}, answer_type="math", model_text=t) for t, g, _ in CASES]
+    def score(case):
+        result = score_completion_detailed({"gold_answer": case[1]}, answer_type="math", model_text=case[0])
+        return result["model_answer"], result["is_correct"], result["method"]
+
+    main = [score(case) for case in CASES]
     with ThreadPoolExecutor(4) as pool:
-        threaded = list(pool.map(
-            lambda case: score_completion({"gold_answer": case[1]}, answer_type="math", model_text=case[0]),
-            CASES))
+        threaded = list(pool.map(score, CASES))
     assert threaded == main
     assert all(method == "math_verify" for _, _, method in threaded)
 
@@ -90,5 +92,5 @@ def test_outer_timeout_recovers(monkeypatch):
 
 
 def test_choice_scoring_unchanged():
-    assert score_completion({"gold_answer": "b"}, answer_type="choice", model_text=r"\boxed{B}") == (
-        "B", True, "exact_multiple_choice")
+    result = score_completion_detailed({"gold_answer": "b"}, answer_type="choice", model_text=r"\boxed{B}")
+    assert (result["model_answer"], result["is_correct"], result["method"]) == ("B", True, "exact_multiple_choice")

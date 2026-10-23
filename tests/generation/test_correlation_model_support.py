@@ -15,7 +15,6 @@ from models.inference import extract_logs_single_pass
 from models.router_adapters import (
     SIGMOID_ROUTERS,
     available_router_layers,
-    configured_top_k,
     decoder_layers,
     model_family,
     router_module,
@@ -103,15 +102,30 @@ def test_noncanonical_bpe_tokens_are_not_reencoded(byte_tokenizer):
     assert replay["completion_offsets"] == [[0, 1], [1, 2]]
     seen = {}
 
+    class Gate(torch.nn.Module):
+        def forward(self, hidden):
+            return torch.zeros(hidden.shape[1], 4)
+
+    class Layer(torch.nn.Module):
+        def __init__(self):
+            super().__init__()
+            self.mlp = torch.nn.Module()
+            self.mlp.gate = Gate()
+
+        def forward(self, hidden_states):
+            self.mlp.gate(hidden_states)
+            return hidden_states
+
     class Backbone(torch.nn.Module):
         def __init__(self):
             super().__init__()
             self.weight = torch.nn.Parameter(torch.zeros(()))
-            self.config = SimpleNamespace()
+            self.config = SimpleNamespace(model_type="qwen3_moe")
+            self.layers = torch.nn.ModuleList([Layer()])
 
         def forward(self, input_ids, **kwargs):
             seen["input_ids"] = input_ids.tolist()
-            return SimpleNamespace(router_logits=(torch.zeros(input_ids.shape[1], 4),))
+            self.layers[0](torch.zeros(1, input_ids.shape[1], 4))
 
     result = extract_logs_single_pass(Backbone(), byte_tokenizer, "ignored", text, token_replay=replay)
     assert seen["input_ids"] == [[0] + ids]
@@ -178,7 +192,6 @@ def tiny_model(family):
 def test_real_tiny_architectures_capture_native_routes_and_decoder_inputs(family, byte_tokenizer):
     model = tiny_model(family)
     assert model_family(model) == family
-    assert configured_top_k(model.config) == 2
     layers = decoder_layers(model)
     indices = available_router_layers(model)
     if family == "glm4_moe_lite":
@@ -265,14 +278,15 @@ def test_generation_persists_exact_ids_and_reuses_them_on_resume(byte_tokenizer,
     from store import iter_jsonl
 
     spec = BenchmarkSpec(
-        name="synthetic", source="test", split="test", default_samples=1,
+        source="test", split="test", default_samples=1,
         answer_type="choice", loader=lambda limit: [
             {"problem_id": "1", "prompt": "Choose.", "gold_answer": "B",
              "options": ["wrong", "right"]},
         ],
     )
     monkeypatch.setitem(generate.BENCHMARKS, "synthetic", spec)
-    monkeypatch.setattr(generate, "_replay_tokenizer", lambda *_: byte_tokenizer)
+    monkeypatch.setattr(generate, "load_tokenizer", lambda profile: byte_tokenizer)
+    monkeypatch.setattr(generate, "vllm_version", lambda: "0.29.0")
     raw = "<|channel|>analysis<|message|>Reason.<|end|>" \
           "<|start|>assistant<|channel|>final<|message|>\\boxed{B}<|return|>"
     ids = byte_tokenizer.encode(raw, add_special_tokens=False)
@@ -282,21 +296,19 @@ def test_generation_persists_exact_ids_and_reuses_them_on_resume(byte_tokenizer,
     def completion(**kwargs):
         calls.append(kwargs)
         return Completion(
-            text="<think>Reason.</think>\\boxed{B}", content="\\boxed{B}",
+            content="\\boxed{B}",
             reasoning_content="Reason.", finish_reason="stop", usage={},
             prompt_token_ids=prompt_ids, token_ids=ids,
         )
 
     monkeypatch.setattr(generate, "generate_completion", completion)
-    args = generate.build_parser().parse_args([
-        "--model", "openai/gpt-oss-20b", "--target-model-id", "openai/gpt-oss-20b",
-        "--draft-model-id", "", "--save-token-ids", "--output-dir", str(tmp_path),
-    ])
+    args = generate.build_parser().parse_args(["--profile", "gpt", "--output-dir", str(tmp_path)])
     for _ in range(2):
         summary = generate.generate_dataset("synthetic", args)
         assert summary["accuracy"] == 1.0
     assert len(calls) == 1
-    assert calls[0]["return_token_ids"] is True
+    assert calls[0]["model"] == "openai/gpt-oss-20b"
+    assert calls[0]["reasoning_effort"] == "medium"
     row = next(iter(iter_jsonl(tmp_path / "openai--gpt-oss-20b/synthetic/traces.jsonl")))
     assert row["cot_text"] == raw
     assert row["metadata"]["token_replay"]["completion_token_ids"] == ids
@@ -306,21 +318,39 @@ def test_generation_persists_exact_ids_and_reuses_them_on_resume(byte_tokenizer,
 
 def test_client_requests_and_preserves_vllm_token_ids(monkeypatch):
     from generation.client import generate_completion
+    from generation.model_profiles import CARD_PROFILES
 
-    def response(url, key, payload, timeout):
-        assert payload["return_token_ids"] is True
+    payloads = []
+
+    def response(url, payload, timeout):
+        payloads.append(payload)
         return {"prompt_token_ids": [10, 11], "choices": [{
             "message": {"content": "Answer", "reasoning": "Think"},
             "token_ids": [12, 13], "finish_reason": "stop",
         }]}
 
     monkeypatch.setattr("generation.client._post_json", response)
-    result = generate_completion(
-        base_url="http://localhost/v1", api_key="test", model="test", messages=[],
-        max_tokens=20, temperature=.6, top_p=.95, top_k=0, seed=1, return_token_ids=True,
-    )
-    assert result.prompt_token_ids == [10, 11]
-    assert result.token_ids == [12, 13]
+    for name in ("gemma", "gpt"):
+        card = CARD_PROFILES[name]
+        result = generate_completion(
+            base_url="http://localhost/v1", model=card["model"], messages=[], max_tokens=card["max_tokens"],
+            sampler=card["sampler"], reasoning_effort=card["reasoning_effort"], seed=1, timeout=1,
+            chat_template_kwargs=card["template_kwargs"],
+        )
+        assert result.prompt_token_ids == [10, 11]
+        assert result.token_ids == [12, 13]
+    # Gemma: every sampler field is sent and thinking is switched on; gpt-oss: top_k 0 means off (-1), unset
+    # fields are left out, and the medium reasoning level is sent.
+    assert payloads[0] == {
+        "model": "nvidia/Gemma-4-26B-A4B-NVFP4", "messages": [], "max_tokens": 131072, "temperature": 1.0,
+        "top_p": 0.95, "top_k": 64, "seed": 1, "stream": False, "return_token_ids": True,
+        "include_reasoning": True, "chat_template_kwargs": {"enable_thinking": True},
+    }
+    assert payloads[1] == {
+        "model": "openai/gpt-oss-20b", "messages": [], "max_tokens": None, "temperature": 1.0, "top_p": 1.0,
+        "top_k": -1, "seed": 1, "stream": False, "reasoning_effort": "medium", "return_token_ids": True,
+        "include_reasoning": True,
+    }
 
 
 @pytest.mark.parametrize("prompt,completion", [(None, [1]), ([1], None), ([True], [1]), ([1], [])])

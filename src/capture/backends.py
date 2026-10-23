@@ -22,7 +22,7 @@ class HFBackend:
         from provenance import forward_provenance
         self.spec = spec
         self.model, self.tokenizer = load_model_and_tokenizer(
-            spec['checkpoint'], quantization='none', revision=spec['revision'], local_files_only=True,
+            spec['checkpoint'], revision=spec['revision'], local_files_only=True,
             offload_folder=str(out / 'offload'))
         if 'disk' in getattr(self.model, 'hf_device_map', {}).values():
             raise ValueError('Unbudgeted disk weight offload')
