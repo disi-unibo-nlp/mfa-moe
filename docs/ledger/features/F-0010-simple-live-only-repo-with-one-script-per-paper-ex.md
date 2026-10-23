@@ -47,3 +47,4 @@ From 54591f8 on: AGENTS.md entry and F-0012 record; a new `study/` module for th
 ## Golden finding to raise with the user (pre-existing, not a cleanup change)
 
 Rerunning pulse outcomes with the tag code differs from the stored outcome tables used by `whole-reasoning-20261021-r7/corrected-main`: the current extractor takes a `reasoning_fallback` path for 2 GPT target_deactivate continuations (reasoning tokens 1348 vs 10087, 583 vs 4484; 38 GPT sentence rows fewer; qwen35 -1, lfm25 -3 rows), so 999 GPT/pooled values of the main effects differ from that receipt. The cleanup keeps today's behaviour; whether the receipt or the extractor is right is a science question.
+- Peer session outcome-steering-r2: branch outcome/r2 (from 54591f8, old layout) changes outcome_steering/*, scripts/outcome_steering/*, tests/outcome_steering/* and study/{stream,driver,whole}.py; records D-0006, F-0013, F-0014. Port into steering/outcome, steering/{stream,pulse,whole} at merge.
