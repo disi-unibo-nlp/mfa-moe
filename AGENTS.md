@@ -1,3 +1,17 @@
+**Complement release r18 for the per-state heatmap — 2026-10-23 10:00 Rome (user request; Claude supervises):**
+- The user asked for no not-run cells in the paper's per-state heatmap (Fig. 9, whole_states). The base releases
+  suppress only the states tied to longer reasoning, so 25 cells were never run. r18
+  (`report/whole-reasoning-20261021-r18`, commit b9c7dd3, ledger F-0008) suppresses the other states at each
+  model's base strength (GPT/GLM half, the others full): 6,372 rows on the parents' families and seeds, all
+  25 cells qualified. Not efficiency-directed, so the primary and dose response keep their definition.
+- Jobs: validation 61926922 passed (276 tests); 75 two-GPU shards of 4 h (ceiling 610 GPU-h, expected ~290);
+  8 extractions; monitor 61927869. GPU cutoff 2026-10-24 06:00 Rome.
+- FINAL combined analysis now: r18 whole-combine 61927867 -> `report/whole-reasoning-20261021-r18/analysis-combined/EFFECTS_WHOLE.json`
+  (r7-r17 plus r18; r17's combine stays the record without the complement). Staged paper export 61927901 ->
+  `mfa-moe/r/claude-review/final-export-r18/`; the manuscript is not touched by it.
+- Launch note: `whole launch` hit a transient scontrol error while submitting the combine; combine and monitor
+  were then submitted with the release's own submit_stage and recorded in JOBS.json.
+
 **Resume releases r15-r17 — 2026-10-22 09:45 Rome (user-approved; Claude supervises):**
 - About 3,850 continuations were interrupted at job walltimes or crashes and stayed unknown, so the r14
   combined intervals were uninformative for most models. r15 (base strengths, 2,307 rows), r16 (quarter,
