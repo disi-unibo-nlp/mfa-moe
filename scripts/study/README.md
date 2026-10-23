@@ -18,6 +18,11 @@ Read `report/final-routing-20261015-r1/RECAP.md` for the latest observed results
 Python lives in `src/moe_exp/study/`. Older Python and `.sbatch` launchers stay
 in place until their accepted jobs and frozen dependencies can be archived.
 
+`whole_complement.sh NAME LOCAL_TESTS` seals and launches a whole-reasoning complement release: the
+suppress cells the base releases left out (states tied to shorter reasoning), at each model's base
+strength, plus a new combined analysis of every whole-reasoning release and a staged paper export.
+Python: `src/moe_exp/study/whole_complement.py` and `whole.complement_manifest`.
+
 After an explicitly authorized code correction, `run.sh submit --replace-terminal` requires all prior allocations to be terminal and a source-matched release receipt in `study-reviews/`. It preserves the previous binding and journals. Ordinary `submit` and `resume` reuse the active release.
 
 <!-- ledger:begin -->

@@ -453,7 +453,9 @@ class ExecutionGateTests(unittest.TestCase):
         whole.driver.checkpoint(self.root/'JOBS.json', schedule)
         whole.driver.checkpoint(self.root/'ACCOUNTING.json', {'work_remaining_bytes': 20*2**30})
         usage = {'cpu': {'state': 'FAILED'}, 'g': {'state': 'CANCELLED'}, 'q': {'state': 'CANCELLED'}}
+        # A science cutoff in the past would stop the release for that reason instead.
         with patch.object(whole.driver, 'deadline_from_slurm', return_value=time.time()+300), \
+             patch.object(whole, 'CUTOFF', time.time()+1e6), \
              patch.object(whole, 'accounting_snapshot', return_value=(usage, 0.)), \
              patch.object(whole, 'native_accounting', return_value=usage), \
              patch.object(whole, 'cancel_jobs') as cancel, patch.object(whole, 'advance_extraction') as extraction:

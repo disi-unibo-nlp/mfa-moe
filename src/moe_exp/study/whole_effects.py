@@ -187,7 +187,8 @@ def _source_table(source: dict) -> pd.DataFrame:
     """Join one model and dose of one release (see load_table).
 
     A source may list top-up releases ('topups') that ran the never-started rows of its failed shards;
-    their outcomes join the source's manifest by UID.
+    their outcomes join the source's manifest by UID. It may also list complement releases
+    ('complements', whole.complement_manifest) whose new cells join the source's rows by family.
     """
     model, root = source['model'], Path(source['root'])
     value = verified(manifest_path(model, source['dose'], root))
@@ -196,6 +197,12 @@ def _source_table(source: dict) -> pd.DataFrame:
         planned = verified(manifest_path(model, source['dose'], topup))
         require(planned['parent_manifest_sha256'] == value['sha256'], 'top-up belongs to another manifest')
         parts.append(_extracted(topup, model, planned))
+    for complement in map(Path, source.get('complements', [])):
+        planned = verified(manifest_path(model, source['dose'], complement))
+        require(planned['design'] == 'complement' and planned['parent_manifest_sha256'] == value['sha256'],
+                'complement belongs to another manifest')
+        parts.append(_extracted(complement, model, planned))
+        value = {**value, 'records': value['records']+planned['records']}
     observed = pd.concat([part[0] for part in parts], ignore_index=True)
     sentences = pd.concat([part[1] for part in parts], ignore_index=True)
     by_uid = {r['uid']: r for r in observed.to_dict('records')}
@@ -554,6 +561,9 @@ def arm_summaries(boot, table: pd.DataFrame) -> tuple[list, dict]:
     from .effects import summarize
     levels_by_arm, dose_by_arm = [], {}
     table = table[table.get('nomination_status', pd.Series('nominated', index=table.index)) == 'nominated']
+    # Arm levels describe the base design; complement cells appear only in the per-cell effects.
+    if 'complement' in table:
+        table = table[~table.complement.eq(True)]
     for (model, dose, arm), group in table.groupby(['model', 'dose', 'arm']):
         observed = group[group.outcome_status == 'observed']
         levels = group[['family', 'outcome_status', 'total_allowance']].copy()
@@ -612,7 +622,7 @@ def failures(table: pd.DataFrame, sources: list[dict]) -> dict:
     """Extraction, sentence-coverage and design exclusions, each kept with its unit and reason."""
     extraction = []
     for source in sources:
-        for root in [source['root'], *source.get('topups', [])]:
+        for root in [source['root'], *source.get('topups', []), *source.get('complements', [])]:
             path = Path(root)/source['model']/'extraction/EXTRACTION.json'
             if path.exists():
                 extraction.extend({'model': source['model'], 'dose': source['dose'], **failure}

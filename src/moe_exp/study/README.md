@@ -10,6 +10,9 @@ Run new jobs from a materialized release via `RELEASE_ROOT`, `STUDY_DATA_ROOT`,
 `extract`, `analyze` and `monitor` are bounded Slurm stages; `launch` submits the
 single authorized graph. See report/whole-reasoning-20261020/README.md for gates,
 counts, endpoints and the 72 GPU-hour / 16 CPU-core-hour limits.
+A complement release (`whole_complement.py`, COMPLEMENT.json) adds the suppress cells a base
+release left out; `whole_effects.combine` joins them to the base rows by family through a
+source's `complements` list, and they enter only the per-cell effects.
 
 Python implementation for the final routing study. Run it with
 `python -m moe_exp.study`; use `--help` for commands.
