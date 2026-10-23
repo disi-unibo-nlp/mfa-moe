@@ -48,7 +48,47 @@ The routing operator itself lives with the other operators. It is
 `moe_exp.final_routing.operator.score_shift_masked`, applied by `moe_exp.study.stream`. The
 length-limit prefix lives in `moe_exp.study.runtime.budget_tokens`.
 
-## Running it
+## Second campaign (r2): experts chosen inside each reasoning class
+
+Ledger F-0013 and F-0014, decision D-0006. r1 nudged 20-40 experts over every layer, chosen from 37 or
+fewer questions, and behaved like a random edit. r2 keeps the outcome idea and changes the rest:
+
+1. **Fresh data** (`capture.py`). Every model answers the same 300 questions six times with unedited
+   routing. Every reasoning token keeps its native expert ids and weights at every routed layer.
+2. **Classes** (`classes.py`). Each reasoning sentence gets a class from the lexical readout (the
+   TF-IDF classifier used for every continuation in this study); each token inherits it. Expert use is
+   counted per class per attempt.
+3. **Selection** (`select.py`, r2 section). For each class, an expert scores high when the model uses it
+   more on that class's tokens in wrong attempts than in right attempts of the same question. Only the
+   three layers at depth 1/2, 2/3 and 5/6 are candidates (layers 12/16/20 of GPT-OSS, where "Beyond the
+   Trace" found its five experts). The best pairs are taken until they carry the same share of those
+   layers' routing as the paper's five (5.35%), at most 10. Each set gets two disjoint random sets
+   matched by layer and usage. On GPT-OSS the class-blind set is the paper's five.
+4. **Evidence** (`evidence.py`). Per class: the real score against 200 label shuffles, replication on
+   held-out questions, and how much the score just tracks attempt length.
+5. **Choosing among finished attempts** (`attempts.py`). Routing picks one of six attempts; it is compared
+   with majority vote, a random pick and the shortest and longest attempt.
+6. **Sweep** (`manifest.py`, `analysis.py`, `pick.py`). The questions are split into halves A and B. Half A
+   runs every set at shifts 0.4/0.8/1.2 against both random sets; the rule in `pick.py` (fixed before any
+   result) chooses the cell that half B confirms. The unedited arm is the six capture attempts.
+
+```
+capture release ──extract──> derive.py: classes -> select (SELECTION_R2) -> evidence (SIGNAL)
+                                                                         -> attempts (ATTEMPT_SELECTION)
+SELECTION_R2 ──> sweep half A (OUTCOME_SWEEP.json) ──analysis──> pick.py (PICK.json) ──> sweep half B
+```
+
+| File | What it does |
+| --- | --- |
+| `capture.py` | The 300-question roster and the six native rows per question with routing saved. |
+| `classes.py` | Lexical labels, per-token classes and per-class expert counts per attempt (`USAGE_CLASS`). |
+| `evidence.py` | The per-class signal table (`SIGNAL.json`). |
+| `attempts.py` | Routing-based choice among finished attempts (`ATTEMPT_SELECTION.json`). |
+| `derive.py` | Runs classes, selection, evidence and attempts for one model of a capture release. |
+| `pick.py` | The frozen pick rule; seals and launches half B. |
+
+## Running r1
+
 
 ```bash
 scripts/outcome_steering/usage.sh                 # 1. CPU job, ~5 min: expert use per cohort-B attempt
