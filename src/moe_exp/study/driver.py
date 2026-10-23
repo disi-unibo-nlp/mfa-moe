@@ -777,7 +777,7 @@ def lfm_annotate(shard, deadline):
 
 
 def lfm_replay(shard, deadline):
-    from moe_exp.study.lfm import replay
+    from moe_exp.capture.lfm_replay import replay
     b = binding()
     sources = verified(ROOT/'lfm25/SOURCES.json')['records']
     rows = [s for i, s in enumerate(sources) if i % shard[1] == shard[0]]

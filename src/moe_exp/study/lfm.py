@@ -1,23 +1,7 @@
 """LFM native population, original stratified sampling, and native analyses."""
 from collections import defaultdict
 from pathlib import Path
-import time
 from moe_exp.io import CLASSES, Units, canonical, digest, file_sha, load, publish, require, verified
-
-
-def replay(binding, rows, deadline):
-    from moe_exp.study.runtime import Backend
-    from moe_exp.io import read_source
-    bulk = Path(binding['config']['bulk_root'])
-    backend = Backend(binding, 'lfm25', 1, deadline, replay=True)
-    try:
-        receipts = []
-        for row in rows:
-            require(time.time()+60 < deadline, 'replay allocation reserve')
-            receipts.append(backend.capture_trace(read_source(row['source_location']), bulk/'lfm25/replay'/(row['attempt_id']+'.npz')))
-        return {'status': 'complete', 'receipts': receipts}
-    finally:
-        backend.close()
 
 
 def derive(binding):
@@ -25,7 +9,7 @@ def derive(binding):
     import pandas as pd
     from moe_exp.schemas import TraceRecord
     from moe_exp.io import read_source
-    from moe_exp.correlation_pipeline.dynamics.classes import saved_layout
+    from moe_exp.capture.dynamics.classes import saved_layout
     from moe_exp.routing.selection import prefix_roster
     from moe_exp.routing.dynamics import trajectories
     from moe_exp.routing.selection import analyze, validate_counts

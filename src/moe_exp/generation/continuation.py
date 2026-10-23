@@ -70,7 +70,7 @@ def exact_prefix(record: dict, completion_tokens: int) -> dict:
     Historical length-capped continuation functions below retain their separate
     131072-token extension contract. This function does not consult final outcome.
     """
-    from moe_exp.correlation_pipeline.dynamics.common import digest
+    from moe_exp.capture.dynamics.common import digest
     replay = record["metadata"].get("token_replay") or {}
     prompt = replay.get("prompt_token_ids")
     completion = replay.get("completion_token_ids")
@@ -96,8 +96,8 @@ def run_branches(manifest, output, generate):
     but cannot count a branch twice.
     """
     import fcntl
-    from moe_exp.correlation_pipeline.dynamics.contracts import load, save, seal, validate
-    from moe_exp.correlation_pipeline.dynamics.common import digest
+    from moe_exp.capture.dynamics.contracts import load, save, seal, validate
+    from moe_exp.capture.dynamics.common import digest
     from moe_exp.provenance import code_provenance
     validate(manifest, "branches")
     code = code_provenance()

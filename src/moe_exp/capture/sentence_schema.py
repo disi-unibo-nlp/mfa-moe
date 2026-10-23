@@ -11,7 +11,7 @@ def install():
     versioned._measurement_versioned=True
     spans.sentence_spans=versioned
     # Existing imports, if any, must use the same trace-specific segmentation.
-    for name in ('moe_exp.correlation_pipeline.dynamics.classes',):
+    for name in ('moe_exp.capture.dynamics.classes',):
         module=sys.modules.get(name)
         if module is not None:module.sentence_spans=versioned
 

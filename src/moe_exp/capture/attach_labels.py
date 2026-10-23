@@ -146,7 +146,7 @@ def attach_one(row, membership, done, manifest, records, annotation_inputs):
     install()
     from moe_exp.schemas import TraceRecord
     from moe_exp.labeling.spans import trace_digest, validate_annotation
-    from moe_exp.correlation_pipeline.dynamics.classes import sentence_table, saved_layout
+    from moe_exp.capture.dynamics.classes import sentence_table, saved_layout
     source = read_location(membership['locations'][0])
     trace = TraceRecord(**source)
     if trace_digest(trace) != row['trace_sha256']:

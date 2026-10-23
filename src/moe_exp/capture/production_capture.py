@@ -147,7 +147,7 @@ def counts_for_tokens(ids,indices,experts):
     return [torch.bincount(layer[indices].long().reshape(-1),minlength=experts).tolist() for layer in ids]
 
 def expert_class_counts(trace,annotation,ids,experts):
-    from moe_exp.correlation_pipeline.dynamics.classes import sentence_table,saved_layout
+    from moe_exp.capture.dynamics.classes import sentence_table, saved_layout
     from moe_exp.capture.contract import CLASSES
     sentences=sentence_table(trace,annotation,saved_layout(trace));groups={c:set() for c in CLASSES}
     for s in sentences:
@@ -168,12 +168,12 @@ def reduce_capture(row,data,backend,manifest):
     import torch
     from moe_exp.schemas import TraceRecord
     from moe_exp.labeling.spans import trace_digest, validate_annotation
-    from moe_exp.correlation_pipeline.features import compute_layer_features,json_safe_features,FEATURE_SCHEMA_VERSION
-    from moe_exp.correlation_pipeline.views import compute_views
-    from moe_exp.correlation_pipeline.dynamics.classes import saved_layout
-    from moe_exp.correlation_pipeline.dynamics.routing import reduce_arrays,probabilities
-    from moe_exp.correlation_pipeline.dynamics.common import DEFAULT_CONFIG
-    from moe_exp.correlation_pipeline.dynamics import SCHEMA_VERSION
+    from moe_exp.capture.features import compute_layer_features, json_safe_features, FEATURE_SCHEMA_VERSION
+    from moe_exp.capture.views import compute_views
+    from moe_exp.capture.dynamics.classes import saved_layout
+    from moe_exp.capture.dynamics.routing import reduce_arrays, probabilities
+    from moe_exp.capture.dynamics.common import DEFAULT_CONFIG
+    from moe_exp.capture.dynamics import SCHEMA_VERSION
     from moe_exp.capture.contract import LEGACY
     spec=manifest['spec'];layers=spec['layers'];router=data['router'];hidden=data['hidden'];ids=data['ids'];weights=data['weights'];scores=data['selection'];experts=router.shape[-1]
     if tuple(ids.shape)!=(len(layers),row['completion_tokens'],spec['top_k']):raise ValueError('Incomplete dispatched IDs')

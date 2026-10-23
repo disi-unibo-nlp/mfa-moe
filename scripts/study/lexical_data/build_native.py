@@ -16,7 +16,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from moe_exp.correlation_pipeline.dynamics.classes import saved_layout
+from moe_exp.capture.dynamics.classes import saved_layout
 from moe_exp.labeling.spans import trace_digest
 from moe_exp.io import iter_jsonl
 from moe_exp.schemas import TraceRecord

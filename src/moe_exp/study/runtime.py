@@ -123,7 +123,7 @@ class Backend:
         terminal_reasoning=0
         if len(prompt)+len(tokens)==self.profile['card']['max_model_len']:
             from moe_exp.schemas import TraceRecord
-            from moe_exp.correlation_pipeline.dynamics.classes import saved_layout
+            from moe_exp.capture.dynamics.classes import saved_layout
             reasoning=saved_layout(TraceRecord(**trace))['reasoning_tokens']
             # The final token of a trace that filled the context has no room for teacher forcing. Its
             # identity is preserved and its routing is recorded as unavailable (a capped trace ends inside

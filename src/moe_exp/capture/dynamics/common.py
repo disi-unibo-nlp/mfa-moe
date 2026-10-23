@@ -4,7 +4,7 @@ import hashlib
 import json
 import os
 from pathlib import Path
-from . import SCHEMA_VERSION
+from moe_exp.capture.dynamics import SCHEMA_VERSION
 
 CLASSES = ("Read", "Analyze", "Plan", "Implement", "Explore", "Verify", "Monitor")
 DEFAULT_CONFIG = {"windows": [64, 256], "stride": 64, "lags": [1, 4, 16, 64],

@@ -20,7 +20,7 @@ def continuation_sentences(trace, replay, prefix, window, finish_reason):
     """`research_campaign_v3_r6.annotation.sentence_contexts`, except that a reasoning unit straddling the
     prefix boundary (the continuation does not open a new sentence) is kept, clipped to its continuation
     tokens and flagged, instead of aborting: it counts toward occupancy but is never the first sentence."""
-    from moe_exp.correlation_pipeline.dynamics.classes import saved_layout
+    from moe_exp.capture.dynamics.classes import saved_layout
     from moe_exp.labeling.spans import reasoning_ranges
     layout = saved_layout(trace)
     units, ranges = layout['units'], reasoning_ranges(trace)
