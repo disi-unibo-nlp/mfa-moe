@@ -10,7 +10,7 @@ import json
 import math
 from pathlib import Path
 
-from .common import digest, write_json
+from moe_exp.capture.dynamics.common import digest, write_json
 from moe_exp.provenance import code_provenance, file_sha256
 
 VERSION = 1

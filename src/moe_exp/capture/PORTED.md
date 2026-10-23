@@ -74,3 +74,11 @@ The equivalent now is `python -m moe_exp.capture.campaign_v3_capture SOURCE --ma
   used when planning cohorts, never by capture or the gate.
 - `production_capture` hashes `vllm_capture.py` into `capture_code_sha256`; the value of a re-run differs from the
   historical receipts because the file text changed (imports).
+
+## Later additions in this package
+
+- `lfm_replay.py` is `replay` from the former `study/lfm.py`, unchanged.
+- `features.py`, `views.py` and `dynamics/` (sentence tables and per-layer routing reducers) came from
+  `correlation_pipeline/` and are imported by `production_capture`.
+- The import lines of the ported modules that named `correlation_pipeline.*`, `jsonl` or `provenance` now name
+  `capture.*`, `io` and `provenance`; nothing else in them changed.

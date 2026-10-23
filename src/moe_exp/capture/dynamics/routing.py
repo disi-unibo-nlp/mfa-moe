@@ -6,7 +6,7 @@ past, so no future token can alter a saved feature.
 """
 from __future__ import annotations
 import numpy as np
-from .common import DEFAULT_CONFIG
+from moe_exp.capture.dynamics.common import DEFAULT_CONFIG
 
 
 def entropy(p):
@@ -204,9 +204,9 @@ def reduce_arrays(selected, *, layers, model, probabilities_array=None, weights=
 
 def reduce_trace(trace, router, selected, weights, layers, semantics, *, config=None):
     """Extraction callback: router contains logits/log-affinities, never scalar summaries."""
-    from . import SCHEMA_VERSION
-    from .classes import saved_layout
-    from .common import digest
+    from moe_exp.capture.dynamics import SCHEMA_VERSION
+    from moe_exp.capture.dynamics.classes import saved_layout
+    from moe_exp.capture.dynamics.common import digest
     from moe_exp.labeling.spans import trace_digest
     from moe_exp.provenance import code_provenance
     layout = saved_layout(trace)

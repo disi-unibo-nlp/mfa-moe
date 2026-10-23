@@ -82,7 +82,7 @@ def repair_annotation_inputs(binding):
     the first build used the bare question and empty edges). Same sentences; new context identities."""
     from moe_exp.io import read_source
     from moe_exp.labeling.contexts import context_id
-    from moe_exp.correlation_pipeline.dynamics.classes import saved_layout
+    from moe_exp.capture.dynamics.classes import saved_layout
     from moe_exp.schemas import TraceRecord
     root, bulk = Path(binding['root']), Path(binding['config']['bulk_root'])
     parent = load(Path(binding['source_campaign'])/'CAMPAIGN.json')
@@ -118,7 +118,7 @@ def materialize(binding):
     from transformers import AutoTokenizer
     from moe_exp.generation.generate import _model_slug
     from moe_exp.labeling.sample_stratified import _select
-    from moe_exp.correlation_pipeline.dynamics.classes import saved_layout
+    from moe_exp.capture.dynamics.classes import saved_layout
     from moe_exp.labeling.spans import trace_digest
     from moe_exp.labeling.contexts import sentence_contexts, context_id
     from moe_exp.schemas import TraceRecord

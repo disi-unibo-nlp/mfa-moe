@@ -43,7 +43,7 @@ def parser_parts(tokenizer, contract, text):
 
 
 def sentence_contexts(trace, replay, row, result):
-    from moe_exp.correlation_pipeline.dynamics.classes import saved_layout
+    from moe_exp.capture.dynamics.classes import saved_layout
     layout=saved_layout(trace)
     units = layout["units"]
     offsets = replay["completion_offsets"]

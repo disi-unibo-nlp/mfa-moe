@@ -124,7 +124,7 @@ def context_inventory(binding, model, sources):
     """Discovery-only native context density; no primary continuation is read."""
     from moe_exp.io import read_source
     from moe_exp.schemas import TraceRecord
-    from moe_exp.correlation_pipeline.dynamics.classes import saved_layout
+    from moe_exp.capture.dynamics.classes import saved_layout
     from moe_exp.io import digest
     root = Path(binding['root'])
     excluded = {r['family'] for r in load(root/'ALLOCATION.json')['records']}

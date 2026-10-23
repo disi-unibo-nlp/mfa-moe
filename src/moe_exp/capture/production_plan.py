@@ -126,7 +126,7 @@ def main():
     install()
     from moe_exp.schemas import TraceRecord
     from moe_exp.labeling.spans import trace_digest, validate_annotation
-    from moe_exp.correlation_pipeline.dynamics.classes import saved_layout
+    from moe_exp.capture.dynamics.classes import saved_layout
     campaign=json.loads((a.bundle/'campaign.json').read_text());spec=campaign['sources'][a.source]
     for path,expected in campaign['runtime_code_hashes'].items():
         if sha(path)!=expected:raise ValueError('Reducer code changed: '+path)

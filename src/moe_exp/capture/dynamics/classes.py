@@ -3,7 +3,7 @@ from __future__ import annotations
 from collections import Counter, defaultdict
 import math
 from moe_exp.labeling.spans import reasoning_ranges, sentence_spans, trace_digest
-from .common import CLASSES, keys, termination
+from moe_exp.capture.dynamics.common import CLASSES, keys, termination
 
 
 def saved_layout(trace):

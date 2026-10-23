@@ -683,7 +683,7 @@ def build_manifests(*, cohort_path, spec, source, storage_root, code_binding,
         from moe_exp.capture.sentence_schema import install
         install()
         from moe_exp.schemas import TraceRecord
-        from moe_exp.correlation_pipeline.dynamics.classes import saved_layout
+        from moe_exp.capture.dynamics.classes import saved_layout
         def layout_fn(row):
             return saved_layout(TraceRecord(**read_location(row['source_location'])))
     corpus, layouts = [], {}
