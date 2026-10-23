@@ -147,3 +147,19 @@ if __name__ == '__main__':
             suite.addTest(unittest.FunctionTestCase(run, description=name))
     outcome = unittest.TextTestRunner(verbosity=2).run(suite)
     raise SystemExit(not outcome.wasSuccessful())
+
+
+def test_checkpoints_written_with_a_server_address_still_resume(tmp_path):
+    module = importlib.import_module('moe_exp.labeling.annotation_batch')
+    calls = []
+    def classify(batch):
+        calls.append(len(batch))
+        return ['Analyze'] * len(batch)
+    old = {'contract': 1, 'base_url': 'http://127.0.0.1:61003/v1'}
+    first = module.run_part(items(104), old, output_dir=tmp_path / 'part', classify=classify, expected_count=104)
+    (tmp_path / 'part/annotations.json').unlink()
+    (tmp_path / 'part/checkpoints/batch-000001.json').unlink()
+    calls.clear()
+    resumed = module.run_part(items(104), {'contract': 1}, output_dir=tmp_path / 'part', classify=classify, expected_count=104)
+    assert calls == [40]
+    assert resumed['annotations_sha256'] == first['annotations_sha256']

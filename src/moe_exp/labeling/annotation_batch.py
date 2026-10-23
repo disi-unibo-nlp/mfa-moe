@@ -120,6 +120,17 @@ def outcome_record(row: dict[str, Any], outcome: Any) -> dict[str, Any]:
     return record
 
 
+def _without_server(value: dict) -> dict:
+    """A binding or summary written before the server address left the key, as it would be written now.
+
+    Checkpoints from before carry config.base_url, and their summaries a binding_sha256 over it.
+    """
+    value = dict(value or {})
+    if "base_url" in value.get("config", {}):
+        value["config"] = {k: v for k, v in value["config"].items() if k != "base_url"}
+    return value
+
+
 def run_part(items, config, *, output_dir, classify, expected_count=PART_SIZE, dry_run=False):
     rows = [dict(identity=identity, unit=unit, inputs=inputs) for identity, _trace, unit, inputs in items]
     if len(rows) != expected_count:
@@ -130,7 +141,7 @@ def run_part(items, config, *, output_dir, classify, expected_count=PART_SIZE, d
     saved = []
     for index, path in enumerate(sorted(checkpoints.glob("*.json"))):
         value = json.loads(path.read_text(encoding="utf-8"))
-        if path.name != f"batch-{index:06d}.json" or value.get("binding") != binding:
+        if path.name != f"batch-{index:06d}.json" or _without_server(value.get("binding")) != binding:
             raise ValueError("stale checkpoint")
         records = value.get("records")
         if not isinstance(records, list) or not 1 <= len(records) <= BATCH_SIZE:
@@ -159,7 +170,12 @@ def run_part(items, config, *, output_dir, classify, expected_count=PART_SIZE, d
         summary["unknown_count"] = unknown_count
     for path, value in ((root / "annotations.json", saved), (root / "summary.json", summary)):
         if path.exists():
-            if json.loads(path.read_text(encoding="utf-8")) != value:
+            old = json.loads(path.read_text(encoding="utf-8"))
+            if path.name == "summary.json" and old.get("binding_sha256") != value["binding_sha256"]:
+                stored = json.loads(sorted(checkpoints.glob("*.json"))[0].read_text(encoding="utf-8"))["binding"]
+                if digest(stored) == old["binding_sha256"] and _without_server(stored) == binding:
+                    old["binding_sha256"] = value["binding_sha256"]
+            if old != value:
                 raise ValueError("stale completed output")
         else:
             _publish(path, value)

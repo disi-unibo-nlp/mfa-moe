@@ -65,7 +65,7 @@ srun envs/vllm-cu129/bin/python -B -u -m measurement_study.campaign_v3_capture \
 
 The ported module does not run yet: `main()` calls `bundle.worker_init`, which refuses any `moe_exp` module loaded
 from outside a frozen bundle, and the old bundles hold `measurement_study/*.py`, not `moe_exp/capture/*.py`.
-Step 6 replaces the bundle check with the release snapshot (`scripts/slurm/release.sh`).
+Step 6 replaces the bundle check with a release snapshot.
 
 ## Known leftovers (not touched in the port)
 

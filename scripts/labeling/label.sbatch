@@ -4,9 +4,9 @@
 #SBATCH --output=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/logs/%x-%j.out
 # Label the sentences of one set of traces with the judge. A rerun resumes from OUTPUT_DIR/checkpoints:
 #   sbatch scripts/labeling/label.sbatch TRACE_ROOT OUTPUT_DIR TOTAL     (TOTAL = number of sentences)
-source scripts/slurm/env.sh
+source scripts/slurm/env.sh || exit 1
 start_server judge
-export PYTHONPATH=$PYTHONPATH:$DSPY/lib/python3.11/site-packages:$MFA/envs/vllm-cu129/lib/python3.11/site-packages
+export MFA_FAULTHANDLER=1 PYTHONPATH=$PYTHONPATH:$DSPY/lib/python3.11/site-packages:$MFA/envs/vllm-cu129/lib/python3.11/site-packages
 $DSPY/bin/python -m moe_exp.labeling.annotation_batch --trace-root "$1" --output-dir "$2" \
   --part 0 --parts 1 --part-size $3 --total $3 --model Qwen/Qwen3.8-27B \
   --judge-program $MFA/repo/results/gepaLLMAsJudge/qwen3.8-27b-medium-final-s42-v3/selected_program_20260827_173300.json \
