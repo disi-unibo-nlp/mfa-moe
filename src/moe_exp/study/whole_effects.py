@@ -20,7 +20,7 @@ import pandas as pd
 
 from .common import CLASSES, digest, load, publish, require, verified
 from . import driver
-from .whole import (DOSES, DRAWS, MODELS, PLAN, ROOT, SEED, bound_store, directions, efficiency_directed, manifest,
+from .whole import (DOSES, DRAWS, LINK, MODELS, PLAN, ROOT, SEED, bound_store, directions, efficiency_directed, manifest,
                     manifest_path, repetition_rate)
 
 LINK_WORDING = ('The frozen preregistered test (activation arms, central strength, log total tokens, main design) '
@@ -480,7 +480,7 @@ def _total_bounds(unit: dict):
 def exploratory_link(cells: pd.DataFrame, table: pd.DataFrame, boot) -> dict:
     """Transfer frozen beta signs to promote cells with both declared token comparands."""
     from .effects import summarize
-    prereg = verified(driver.DRIVER/'EFFICIENCY_LINK_PREREG.json')
+    prereg = verified(LINK)
     frozen = {(r['model'], r['class']): r for r in prereg['cells'] if r['model'] in MODELS}
     details, link_cells = [], {'log_reasoning': [], 'log_total': []}
     table = table[table.get('nomination_status', pd.Series('nominated', index=table.index)) == 'nominated']
@@ -717,6 +717,8 @@ def combine(path: Path) -> dict:
     boot = bootstrap()
     models = [model for model in PLAN if model in set(table.model)]
     result = {'models': models, 'bootstrap_draws': DRAWS, 'seed': SEED,
+              # The receipt whose native signs decide which cells are efficiency-directed.
+              'efficiency_link': {'path': str(LINK), 'sha256': verified(LINK)['sha256']},
               'sources': [{**s, 'manifest_sha256': verified(manifest_path(s['model'], s['dose'], Path(s['root'])))['sha256'],
                            'release_sha256': verified(Path(s['root'])/'RELEASE.json')['sha256']} for s in sources],
               **failures(table, sources),

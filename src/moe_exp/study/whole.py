@@ -102,14 +102,20 @@ def dose_counts(model: str, profile: dict, dose: str, operation: str) -> tuple[i
     return tuple(math.ceil(count*DOSES[dose]) for count in counts)
 
 
+# The efficiency-link receipt whose native signs pick the efficiency-directed classes. Releases up to
+# r18 use the seven-model pre-registration; WHOLE_LINK names the eight-model receipt
+# (efficiency_link), in which LFM2.5 has its own signs.
+LINK = Path(os.environ.get('WHOLE_LINK', driver.DRIVER/'EFFICIENCY_LINK_PREREG.json'))
+
+
 @lru_cache(maxsize=None)
 def directions(model: str) -> dict:
     """Classes to promote (tied to shorter reasoning) and suppress (tied to longer reasoning).
 
-    Signs come from the pre-registered efficiency link on native reasoning only. LFM2.5 was not in
-    that receipt (no native lexical table then), so it uses the receipt's pooled cross-model signs.
+    Signs come from the efficiency link (LINK) on native reasoning only. A model outside that receipt
+    (LFM2.5 in the seven-model pre-registration) uses the receipt's pooled cross-model signs.
     """
-    prereg = verified(driver.DRIVER/'EFFICIENCY_LINK_PREREG.json')
+    prereg = verified(LINK)
     rows = ([cell for cell in prereg['cells'] if cell['model'] == model] if model in prereg['models']
             else prereg['pooled'])
     signs = {row['class']: row['tok_reason']['sign'] for row in rows}
@@ -917,7 +923,7 @@ def submit_stage(command: str, *, model=None, dose=None, shard=None, dependency=
                'WHOLE_MODELS': ','.join(MODELS), 'WHOLE_GPU_CEILING': str(GPU_CEILING),
                'WHOLE_CPU_CEILING': str(CPU_CEILING), 'WHOLE_CUTOFF': str(CUTOFF),
                'WHOLE_SWEEP': ','.join(m+':'+d for m, d in SWEEP.items()),
-               'WHOLE_SHARDS': ','.join(f'{m}:{SHARDS[m]}' for m in MODELS),
+               'WHOLE_SHARDS': ','.join(f'{m}:{SHARDS[m]}' for m in MODELS), 'WHOLE_LINK': str(LINK),
                'MOE_EXP_SCORING_PROCESSES': '8' if command == 'extract' else '2'}
     cmd = ['sbatch', '--parsable', '--account=iscrc_miosr', '--partition=boost_usr_prod', '--qos=normal',
            '--nodes=1', '--ntasks=1', f'--cpus-per-task={cpus}', f'--mem={memory}G', f'--time={minutes}',

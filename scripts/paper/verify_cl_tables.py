@@ -347,7 +347,7 @@ ROUTING_ARMS = (("native", "Native"), ("target_activate", "Targeted activation")
                 ("random_deactivate", "Random deactivation"))
 STRONG_MODELS = ("gpt", "nemotron", "qwen330b", "gemma")
 STATE_ORDER = ("Read", "Analyze", "Explore", "Plan", "Implement", "Verify", "Monitor")
-PREREG = REPO / "report/final-routing-20261015-r1/driver/EFFICIENCY_LINK_PREREG.json"
+PREREG = REPO / "report/final-routing-20261015-r1/driver/EFFICIENCY_LINK_V2.json"
 
 
 def symmetric_cell(text, mean, margin, digits, context):
@@ -429,7 +429,7 @@ def verify_routing(paper, texts):
     link = {(c["model"], c["class"]): c["tok_reason"] for c in prereg["cells"]}
     link.update({("pooled", c["class"]): c["tok_reason"] for c in prereg["pooled"]})
     rows = {model: columns for model, columns in model_rows(texts["efficiency_link.tex"])}
-    pooled = [line for line in texts["efficiency_link.tex"].splitlines() if line.startswith("Seven-model mean & ")]
+    pooled = [line for line in texts["efficiency_link.tex"].splitlines() if line.startswith("Eight-model mean & ")]
     require(len(pooled) == 1 and tuple(rows) == tuple(prereg["models"]), "efficiency-link model coverage differs")
     rows["pooled"] = pooled[0].split(" & ")
     for model, columns in rows.items():

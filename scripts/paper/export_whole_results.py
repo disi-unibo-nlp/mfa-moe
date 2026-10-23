@@ -140,25 +140,26 @@ def base_doses(effects):
 
 def directed(model, operation, class_name, prereg):
     """Replicates whole.directions: promote classes with a negative frozen beta, suppress with a
-    positive one (a model outside the preregistration uses its pooled signs)."""
+    positive one (a model outside the link receipt uses its pooled signs)."""
     rows = (prereg["pooled"] if model not in prereg["models"]
             else [c for c in prereg["cells"] if c["model"] == model])
     sign = {c["class"]: c["tok_reason"]["sign"] for c in rows}[class_name]
     return sign == ("-" if operation == "promote" else "+")
 
 
-def cell_keys(effects, base, prereg):
+def cell_keys(effects, base, prereg, run_signs):
     """Steered cells (operation, class) of each model at its base strength.
 
-    A sweep release runs only efficiency-directed cells, so every cell the receipt holds at
-    another strength must be directed under the frozen signs.
+    A sweep release runs only the cells directed under the signs it ran with (run_signs, the
+    seven-model preregistration), so every cell the receipt holds at another strength must be
+    directed under those; under the eight-model link LFM2.5's sweep holds a few more.
     """
     cells = {}
     for key in effects["cell_effects"]:
         model, dose, operation, class_name = key.split("|")
         if dose == base.get(model):
             cells.setdefault(model, []).append((operation, class_name))
-        elif not directed(model, operation, class_name, prereg):
+        elif not directed(model, operation, class_name, run_signs):
             raise ValueError("sweep cell is not efficiency-directed under the frozen signs: " + key)
     return {m: sorted(c, key=lambda cell: (OPERATIONS.index(cell[0]), CLASSES.index(cell[1])))
             for m, c in cells.items()}
@@ -748,11 +749,16 @@ def main():
     parser.add_argument("--out", type=Path, default=PAPER,
                         help="root to write under (default: the paper)")
     args = parser.parse_args()
-    effects, prereg = verified(args.effects), verified(PREREG)
+    effects, run_signs = verified(args.effects), verified(PREREG)
     if not set(effects["models"]) <= set(MODELS):
         raise ValueError("whole receipt has a model outside the study roster")
+    # The signs the analysis used (receipts before r19 record none: the preregistration).
+    link_path = REPO / effects["efficiency_link"]["path"] if "efficiency_link" in effects else PREREG
+    prereg = verified(link_path)
+    if "efficiency_link" in effects and prereg["sha256"] != effects["efficiency_link"]["sha256"]:
+        raise ValueError("efficiency-link receipt differs from the one the analysis used")
     base = base_doses(effects)
-    cells = cell_keys(effects, base, prereg)
+    cells = cell_keys(effects, base, prereg, run_signs)
     sweep_models = [m for m in MODELS if base.get(m, "main") != "main" and any(
         lv["model"] == m and lv["dose"] == "main" for lv in effects["levels"])]
     try:
@@ -814,7 +820,7 @@ def main():
         "receipt": {"path": source, "file_sha256": sha(args.effects),
                     "seal_sha256": effects["sha256"], "bootstrap_draws": effects["bootstrap_draws"],
                     "seed": effects["seed"], "models": effects["models"], "base_dose": base},
-        "prereg": {"path": str(PREREG.relative_to(REPO)), "seal_sha256": prereg["sha256"]},
+        "prereg": {"path": str(link_path.relative_to(REPO)), "seal_sha256": prereg["sha256"]},
         "units": {"tokens": "percent change in reasoning tokens, 100*expm1(-estimate)",
                   "accuracy": "percentage points, 100*estimate",
                   "mechanism": "percentage points of the generation allowance, 100*estimate",
@@ -825,7 +831,7 @@ def main():
                    "color_clip": STATE_CLIP,
                    "significant": "the simultaneous interval (bound_simultaneous when present) "
                                   "excludes zero",
-                   "directed": "efficiency-directed under the frozen preregistered signs"},
+                   "directed": "efficiency-directed under the efficiency-link signs (prereg)"},
     }
     (data / "whole_results.json").write_text(
         json.dumps({**summary, "values": record}, indent=1, default=float) + "\n")
