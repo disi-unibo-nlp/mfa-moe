@@ -1,3 +1,20 @@
+**LFM2.5 on its own efficiency-link signs, relink release r20 — 2026-10-23 12:30 Rome (user request; Claude supervises):**
+- The whole-reasoning releases r7-r18 gave LFM2.5 the pooled seven-model signs (the pre-registration had no LFM
+  native table). `moe_exp.study.efficiency_link` builds LFM's full native table
+  (FAST `final-routing-20261015-r1/lexical-link-r2/`) and publishes `driver/EFFICIENCY_LINK_V2.json`: frozen
+  estimator, the seven pre-registered models checked equal, LFM estimated after its runs. LFM signs: Read 0,
+  Analyze/Plan/Implement/Explore +, Verify/Monitor - (pooled: Read +). Its directed cells are a subset of the
+  pooled ones and all ran at full, half and quarter strength, so no GPU run is needed (ledger F-0009).
+- Driver link test on 56 cells: `driver/analysis-final-link-v2/EFFICIENCY_LINK_TEST.json` (tokens rho -0.10,
+  not supported, same as the 49-cell test).
+- r19 sealed but its launch failed before submitting anything (LAUNCH_FAILED.json). r20
+  (`report/whole-reasoning-20261021-r20`, commit 9d576da): allocated tests 61937253, combine 61937255
+  (afterok on the tests and on r18's combine 61927867) -> `analysis-combined/EFFECTS_WHOLE.json` with
+  WHOLE_LINK=EFFICIENCY_LINK_V2.json. This is now the FINAL whole receipt (supersedes r18's for the paper).
+  Staged export 61938212 -> `mfa-moe/r/claude-review/final-export-r20/`.
+- Pending: compare r20 with r18 (seven models must be unchanged), then the paper (efficiency_link.tex eight
+  rows, appendix/results sentences on LFM's after-the-fact signs).
+
 **Complement release r18 for the per-state heatmap — 2026-10-23 10:00 Rome (user request; Claude supervises):**
 - The user asked for no not-run cells in the paper's per-state heatmap (Fig. 9, whole_states). The base releases
   suppress only the states tied to longer reasoning, so 25 cells were never run. r18
