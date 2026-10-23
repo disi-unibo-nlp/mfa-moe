@@ -7,7 +7,7 @@ export MFA=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe
 # Scratch files go in a short per-job folder: vLLM sockets fail when their path passes 107 characters.
 RUN=$MFA/r/$SLURM_JOB_ID
 mkdir -p "$RUN" "$MFA/logs"
-trap 'kill $(jobs -p) 2>/dev/null || true; sleep 5; rm -rf "$RUN"' EXIT
+trap 'test -z "$(jobs -p)" || { kill $(jobs -p) 2>/dev/null; sleep 5; }; rm -rf "$RUN"' EXIT
 export PATH=$MFA/envs/vllm-cu129/bin:$PATH PYTHONPATH=$PWD/src PYTHONDONTWRITEBYTECODE=1
 export HF_HOME=$MFA/cache/hf HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1
 export TIKTOKEN_ENCODINGS_BASE=$MFA/cache/tiktoken TIKTOKEN_RS_CACHE_DIR=$RUN/tiktoken  # gpt-oss tokenizer file; compute nodes are offline
@@ -17,12 +17,15 @@ export VLLM_USE_FLASHINFER_SAMPLER=0 TORCH_CUDA_ARCH_LIST=8.0
 export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1  # fork pools oversubscribe the CPUs otherwise
 # One port per job: two 2-GPU jobs can land on the same node.
 export PORT=$((20000 + SLURM_JOB_ID % 20000))
+export URL=http://127.0.0.1:$PORT/v1
+# The judge client (DSPy) lives in its own environment.
+export DSPY=/leonardo_scratch/large/userexternal/lmolfett/mfa-moe/qwen-fp-fa-smoke/envs/qwen-fp-fa-dspy-88189c22f214ed65
 
-# Start scripts/serve/MODEL.sh in the background and wait until it answers.
+# Start scripts/serve/MODEL.sh in the background and wait until it answers (cold start takes ~16 min; give up at 45).
 start_server() {
     bash "scripts/serve/$1.sh" > "$MFA/logs/$SLURM_JOB_ID-$1-server.log" 2>&1 &
     until curl -sf "http://127.0.0.1:$PORT/health" > /dev/null; do
-        kill -0 $! || { tail -50 "$MFA/logs/$SLURM_JOB_ID-$1-server.log"; exit 1; }
+        kill -0 $! && ((SECONDS < 2700)) || { tail -50 "$MFA/logs/$SLURM_JOB_ID-$1-server.log"; exit 1; }
         sleep 5
     done
 }
