@@ -8,15 +8,14 @@ from collections import Counter
 from pathlib import Path
 import numpy as np
 import pandas as pd
-from store import CLASSES, Units, file_sha, publish, verified
-from steering.pulse import ROOT, binding
+from store import CLASSES, STUDY, Units, binding, file_sha, publish, verified
 from routing.lexical import LEXICAL, predict
 
 
 def main():
     b = binding()
     bulk = Path(b['config']['bulk_root'])
-    tasks = {t['uid']: t for t in verified(ROOT/'lfm25/ANNOTATION_TASKS.json')['records']}
+    tasks = {t['uid']: t for t in verified(STUDY/'lfm25/ANNOTATION_TASKS.json')['records']}
     sampled = verified(bulk/'lfm25/SAMPLED_SENTENCES.json')['records']
     labels = Units(bulk/'reader/annotations')
     duplicates = Counter(r['annotation_uid'] for r in sampled)

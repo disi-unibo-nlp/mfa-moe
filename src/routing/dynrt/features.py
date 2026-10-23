@@ -18,7 +18,6 @@ from .common import CELL_SHRINK, EPS, EXPLORE, KAPPA, N_ABS, N_REL
 
 NC = 7
 N_LEN = 3
-FEATURES = ("M_all", "M_explore", "margin")
 
 
 def group_sums(x: np.ndarray, keys: np.ndarray) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
@@ -150,16 +149,6 @@ class Fitted:
     resid: Residualizer
 
 
-def sentence_scores(fitted: Fitted, t: SentenceTable) -> dict[str, np.ndarray]:
-    """Residual own-class score and margin per sentence (plus the raw d matrix)."""
-    d = d_scores(t.h, fitted.profiles)
-    own = d[np.arange(len(d)), t.cls.astype(np.int64)]
-    margin = own - d.min(1)
-    x = np.stack([own, margin], 1)
-    r = fitted.resid.residual(x, t.cls, t.abs_bin, t.rel_bin, t.n_tokens)
-    return dict(d=d, own_raw=own, margin_raw=margin, own=r[:, 0], margin=r[:, 1])
-
-
 def fit(t: SentenceTable, train_attempts: np.ndarray, *, kappa: float = KAPPA) -> Fitted:
     """Fit profiles and residualiser on the sentences of the training attempts (boolean mask [A])."""
     rows = np.flatnonzero(np.asarray(train_attempts)[t.attempt])
@@ -188,30 +177,3 @@ def aggregate(scores: dict[str, np.ndarray], t: SentenceTable, *, min_explore: i
     m_all = np.where(cnt > 0, m_all, np.nan)
     margin = np.where(cnt > 0, margin, np.nan)
     return dict(M_all=m_all, M_explore=m_ex, margin=margin, n_sent=cnt, n_explore=n_ex)
-
-
-def attempt_features(t: SentenceTable, train_attempts: np.ndarray, *, kappa: float = KAPPA
-                     ) -> dict[str, np.ndarray]:
-    """Fit on the training attempts, return the attempt-level features of ALL attempts."""
-    fitted = fit(t, train_attempts, kappa=kappa)
-    return aggregate(sentence_scores(fitted, t), t)
-
-
-def apply_fitted(fitted: Fitted, t: SentenceTable) -> dict[str, np.ndarray]:
-    """Attempt features of another table (e.g. cohort B) with a fitted model."""
-    return aggregate(sentence_scores(fitted, t), t)
-
-
-class RoutingBlock:
-    """CV block: attempt features fit on the training attempts only (rows = attempts of `table`)."""
-
-    names = list(FEATURES)
-
-    def __init__(self, table: SentenceTable):
-        self.table = table
-
-    def fit_transform(self, train_idx: np.ndarray) -> np.ndarray:
-        mask = np.zeros(self.table.n_attempts, dtype=bool)
-        mask[np.asarray(train_idx)] = True
-        f = attempt_features(self.table, mask)
-        return np.column_stack([f[k] for k in FEATURES])

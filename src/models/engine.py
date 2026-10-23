@@ -4,7 +4,7 @@ Vendored verbatim from `verification_study.registry.engine_kwargs` and `verifica
 """
 from __future__ import annotations
 
-from receipts import require
+from store import require
 
 
 def engine_kwargs(contract, *, context=32768):

@@ -13,8 +13,7 @@ Commands (python -m steering.pulse ...):
   run --model M --shard I/N     GPU: assigned continuations of one shard
   native --shard I/N            GPU: LFM native population (unhooked engine)
   annotate --shard I/N          GPU: LFM discovery judge labels (unhooked engine)
-  lfm-materialize | lfm-derive  CPU: labeling.lfm_inputs / steering.nominations
-  lfm-readout | lfm-dynamics    CPU: LFM native readout (routing.lfm_readout) and native-dynamics panel
+  (the LFM CPU stages materialize | derive | readout | dynamics are `python -m routing.lfm`)
   lfm-replay --shard I/N        GPU: capture.lfm_replay (Backend.capture_trace)
   status                        login: dispositions per model
 """
@@ -864,10 +863,8 @@ def parse_shard(text):
 
 def main(argv=None):
     ap = argparse.ArgumentParser(prog='steering.pulse')
-    ap.add_argument('command', choices=['plan', 'run', 'native', 'annotate', 'lfm-materialize', 'lfm-replay',
-                                        'lfm-derive', 'status', 'plan-strong',
-                                        'lfm-repair-contexts',
-                                        'lfm-readout', 'lfm-dynamics', 'plan-whole'])
+    ap.add_argument('command', choices=['plan', 'run', 'native', 'annotate', 'lfm-replay', 'status', 'plan-strong',
+                                        'lfm-repair-contexts', 'plan-whole'])
     ap.add_argument('--model')
     ap.add_argument('--shard', default='0/1', type=parse_shard)
     ap.add_argument('--max-inflight', type=int, default=64)
@@ -886,34 +883,10 @@ def main(argv=None):
     if args.command == 'status':
         print(json.dumps(status(), indent=1))
         return
-    if args.command == 'lfm-materialize':
-        from labeling.lfm_inputs import materialize
-        log({'event': 'materialize', **materialize(binding())})
-        return
     if args.command == 'lfm-repair-contexts':
         from labeling.lfm_inputs import repair_annotation_inputs
         value = repair_annotation_inputs(binding())
         log({'event': 'repaired', 'contexts': len(value['records']), 'sha256': value['sha256']})
-        return
-    if args.command == 'lfm-derive':
-        from routing.selection import derive
-        from steering.nominations import derive_model
-        b = binding()
-        if not (ROOT/'lfm25/DISCOVERY_INPUTS.json').exists():
-            derive(b)
-        derive_model(b, 'lfm25')
-        log({'event': 'derived', 'plan': plan(['lfm25'])})
-        return
-    if args.command == 'lfm-readout':
-        from routing.lfm_readout import lfm
-        value = lfm(binding())
-        log({'event': 'readout', 'sha256': value['sha256'],
-             **{mode: {k: r[k] for k in ('routing', 'routing_excess_over_lexical_null')}
-                for mode, r in value['models']['lfm25'].items()}})
-        return
-    if args.command == 'lfm-dynamics':
-        from routing.dynamics import dynamics_summary
-        log({'event': 'dynamics', 'sha256': dynamics_summary(binding())['sha256']})
         return
     require(os.environ.get('SLURM_JOB_ID') and os.environ.get('SLURM_JOB_GPUS'), 'GPU commands require a Slurm GPU allocation')
     deadline = deadline_from_slurm()

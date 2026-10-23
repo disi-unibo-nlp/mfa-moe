@@ -6,7 +6,6 @@ import zlib
 import numpy as np
 import pandas as pd
 from scipy import optimize, sparse
-from store import CLASSES
 from routing.readout_text import TextTransform
 
 GRID = 10.0 ** np.arange(-3, 3)

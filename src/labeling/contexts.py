@@ -3,7 +3,7 @@
 `context_id`, `scientific_config`, `parser_parts` and `sentence_contexts` are vendored verbatim from
 `research_campaign_v3_r6.annotation`.
 """
-from receipts import digest, require
+from store import digest, require
 
 
 def parts(tokenizer, profile, text):

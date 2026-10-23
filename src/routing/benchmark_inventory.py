@@ -8,21 +8,18 @@ Saved question-bootstrap intervals are copied, never recomputed. No inference,
 raw routing tensors, Slurm, or checkpoint weight payloads are read.
 """
 from pathlib import Path
-import csv
-import hashlib
+import argparse
 import json
-import math
-import sys
 
 import pandas as pd
 
-ROOT = Path(__file__).resolve().parents[2]
-OUT = Path(sys.argv[1]) if __name__ == '__main__' else None
-TEX = OUT
-BASE = Path('/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24')
-ANALYSIS = BASE / 'v3_analysis/results-r2'
-OUTCOMES = BASE / 'campaign-v3/outcomes/outcomes_v3-99bf8d59506e2893.parquet'
-SAVED = BASE / 'results-v3/outcomes-99bf8d59506e2893'
+from store import ANALYSIS, REPO, WORK, file_sha
+
+RESULTS = ANALYSIS / 'v3_analysis/results-r2'
+OUTCOMES = ANALYSIS / 'campaign-v3/outcomes/outcomes_v3-99bf8d59506e2893.parquet'
+SAVED = ANALYSIS / 'results-v3/outcomes-99bf8d59506e2893'
+# Reports are untracked and live in the main checkout only.
+B4_PRECISION = WORK / 'mfa-moe/repo/report/experimental-resume-v1/R3E_B4_PRECISION_READOUT_v1.md'
 MODELS = ['gpt', 'nemotron', 'qwen35', 'qwen36', 'gemma', 'glm', 'qwen330b']
 LABELS = {'gpt': 'GPT-OSS', 'nemotron': 'Nemotron', 'qwen35': 'Qwen3.5',
           'qwen36': 'Qwen3.6', 'gemma': 'Gemma', 'glm': 'GLM', 'qwen330b': 'Qwen3-30B'}
@@ -32,13 +29,12 @@ SOURCES = {}
 
 def source(path):
     path = Path(path)
-    raw = path.read_bytes()
-    SOURCES[str(path)] = {'sha256': hashlib.sha256(raw).hexdigest(), 'bytes': len(raw)}
+    SOURCES[str(path)] = {'sha256': file_sha(path), 'bytes': path.stat().st_size}
     return path
 
 
-def dump(name, value):
-    (OUT / name).write_text(json.dumps(value, indent=2, allow_nan=False) + '\n')
+def dump(out, name, value):
+    (out / name).write_text(json.dumps(value, indent=2, allow_nan=False) + '\n')
 
 
 def basic(frame):
@@ -58,14 +54,14 @@ def basic(frame):
     return row
 
 
-def main():
-    TEX.mkdir(parents=True, exist_ok=True)
+def main(out):
+    out.mkdir(parents=True, exist_ok=True)
     source(__file__)
-    source(BASE / 'outcomes_analysis.py')
-    source(BASE / 'campaign-v3/acceptance/j1.json')
+    source(ANALYSIS / 'outcomes_analysis.py')
+    source(ANALYSIS / 'campaign-v3/acceptance/j1.json')
     source(OUTCOMES.with_suffix('.manifest.json'))
     source(SAVED / 'provenance.json')
-    source(ROOT / 'src/generation/model_profiles.py')
+    source(REPO / 'src/generation/model_profiles.py')
     table = pd.read_parquet(source(OUTCOMES))
     assert SOURCES[str(OUTCOMES)]['sha256'] == '99bf8d59506e2893218fd070d264d1fca4a1e4330052c11c347b727b3802e9ee'
     table['model'] = table['model'].replace({'qwen35gptq': 'qwen35'})
@@ -96,12 +92,12 @@ def main():
     assert len(set.intersection(*questions.values())) == 1547
     cells = pd.DataFrame(cells)
     model_table = pd.DataFrame(models)
-    cells.to_csv(OUT / 'benchmark_cells.csv', index=False)
-    model_table.to_csv(OUT / 'benchmark_models.csv', index=False)
+    cells.to_csv(out / 'benchmark_cells.csv', index=False)
+    model_table.to_csv(out / 'benchmark_models.csv', index=False)
     for name in ['budget', 'continuation', 'errors', 'length_gap']:
         source(SAVED / (name + '.csv'))
 
-    readout = json.loads(source(BASE / 'forum/tests/r3_context/readout-results.v3.json').read_text())
+    readout = json.loads(source(ANALYSIS / 'forum/tests/r3_context/readout-results.v3.json').read_text())
     readout_rows = []
     for model in MODELS:
         result = readout['models'][model]['judge_context']
@@ -112,9 +108,9 @@ def main():
                         key + '_simultaneous_ci7_low': result[key]['simultaneous_ci7'][0],
                         key + '_simultaneous_ci7_high': result[key]['simultaneous_ci7'][1]})
         readout_rows.append(row)
-    pd.DataFrame(readout_rows).to_csv(OUT / 'routing_readout.csv', index=False)
+    pd.DataFrame(readout_rows).to_csv(out / 'routing_readout.csv', index=False)
 
-    anticipation = json.loads(source(BASE / 'forum/tests/r3_context/anticipation-results.json').read_text())
+    anticipation = json.loads(source(ANALYSIS / 'forum/tests/r3_context/anticipation-results.json').read_text())
     anticipation_rows = []
     for model, modes in anticipation['models'].items():
         for mode, result in modes.items():
@@ -125,7 +121,7 @@ def main():
                     status=result.get('status'), questions=result.get('questions'), pairs=result.get('pairs'),
                     delta_logloss=metric['P'], simultaneous_ci6_low=metric['simultaneous_ci6'][0],
                     simultaneous_ci6_high=metric['simultaneous_ci6'][1]))
-    pd.DataFrame(anticipation_rows).to_csv(OUT / 'anticipation.csv', index=False)
+    pd.DataFrame(anticipation_rows).to_csv(out / 'anticipation.csv', index=False)
 
     cohort_rows = []
     expert_rows = []
@@ -133,7 +129,7 @@ def main():
     cohort_questions = {'A': [], 'B': []}
     for model in MODELS:
         for cohort in ['A', 'B']:
-            p = ANALYSIS / model / cohort
+            p = RESULTS / model / cohort
             columns = ['attempt_id','question','correct','capped','completion_tokens','n_reasoning']
             if cohort == 'A':
                 columns += ['labelled_units','labelled_tokens']
@@ -146,7 +142,7 @@ def main():
                 labelled_units_sum=int(frame.labelled_units.sum()) if cohort == 'A' else None,
                 labelled_tokens_sum=int(frame.labelled_tokens.sum()) if cohort == 'A' else None))
             cohort_questions[cohort].append(set(frame.question))
-        p = ANALYSIS / model / 'A'
+        p = RESULTS / model / 'A'
         provenance = json.loads(source(p / 'provenance.json').read_text())
         selected = pd.read_csv(source(p / 'E_class_experts.csv'))
         spec = provenance['spec']
@@ -158,12 +154,12 @@ def main():
         use = use[(use.scope == 'pooled') & (use.layer == 'mean') & (use.adjustment == 'lendiff_frac')].copy()
         use.insert(0, 'model', model)
         expert_associations.append(use)
-    pd.DataFrame(cohort_rows).to_csv(OUT / 'cohort_populations.csv', index=False)
-    pd.DataFrame(expert_rows).to_csv(OUT / 'expert_profile_inventory.csv', index=False)
-    pd.concat(expert_associations).to_csv(OUT / 'expert_usage_correctness_saved.csv', index=False)
-    source(ROOT / 'report/experimental-resume-v1/R3E_B4_PRECISION_READOUT_v1.md')
-    source(ANALYSIS / 'cross-4/F_A_across_meta.csv')
-    source(ANALYSIS / 'cross-4/F_summary.md')
+    pd.DataFrame(cohort_rows).to_csv(out / 'cohort_populations.csv', index=False)
+    pd.DataFrame(expert_rows).to_csv(out / 'expert_profile_inventory.csv', index=False)
+    pd.concat(expert_associations).to_csv(out / 'expert_usage_correctness_saved.csv', index=False)
+    source(B4_PRECISION)
+    source(RESULTS / 'cross-4/F_A_across_meta.csv')
+    source(RESULTS / 'cross-4/F_summary.md')
 
     card = cells[cells.corpus == 'card-v3'].set_index(['model', 'dataset'])
     card_models = model_table[model_table.corpus == 'card-v3'].set_index('model')
@@ -181,7 +177,7 @@ def main():
     lines += [r'\bottomrule', r'\end{tabular}}',
         r'\par\smallskip\parbox{\linewidth}{\footnotesize The source inventory retains strict scores, all denominators, completion-token costs, caps, and the original question-bootstrap 95\% intervals. Unresolved outcomes total ' + str(unknown_total) + r'; repeated samples are not independent questions. The historical 32k campaign is a separate 32,529-attempt population.}',
         r'\end{table}', '']
-    (TEX / 'benchmark_readout_tables.tex').write_text('\n'.join(lines))
+    (out / 'benchmark_readout_tables.tex').write_text('\n'.join(lines))
 
     inventory = dict(schema='model-analysis-review-v1', generated_utc_date='2026-10-08',
         source_sidecar_sha256=SOURCES[str(OUTCOMES)]['sha256'], source_rows=len(table),
@@ -200,12 +196,14 @@ def main():
             'Present-class readout and next-class anticipation are observational, automatically labelled visible-episode tasks; neither proves memory savings or useful intervention.',
             'Existing GPT B4 correctness-prediction and calibrated precision study are preserved and must not be proposed as missing all-model evidence.',
         ], outputs=['benchmark_cells.csv','benchmark_models.csv','routing_readout.csv','anticipation.csv','cohort_populations.csv','expert_profile_inventory.csv','expert_usage_correctness_saved.csv'],
-        latex=str(TEX / 'benchmark_readout_tables.tex'))
-    dump('INVENTORY.json', inventory)
-    dump('SOURCES.json', SOURCES)
+        latex=str(out / 'benchmark_readout_tables.tex'))
+    dump(out, 'INVENTORY.json', inventory)
+    dump(out, 'SOURCES.json', SOURCES)
     print(json.dumps({'card_models':card_models[['adjudicated_correct','adjudicated_scored','adjudicated_unknown','capped','completion_tokens_median']].reset_index().to_dict(orient='records'),
         'cohorts':inventory['cohorts'], 'outputs':inventory['outputs'], 'latex':inventory['latex']}, indent=2))
 
 
 if __name__ == '__main__':
-    main()
+    parser = argparse.ArgumentParser(description='Benchmark and routing inventory tables for the evidence review.')
+    parser.add_argument('out', type=Path)
+    main(parser.parse_args().out)
