@@ -7,7 +7,7 @@ a subset of the pooled ones and every one of them already ran at every strength.
 therefore runs no steering: an allocated test run, then the combined analysis of the same sources as
 the parent (its SOURCES.json) with WHOLE_LINK pointing at the new receipt.
 
-    scripts/study/whole_relink.sh whole-reasoning-20261021-r19 LOCAL_TESTS
+    scripts/steering/whole_relink.sh whole-reasoning-20261021-r19 LOCAL_TESTS
 """
 from __future__ import annotations
 
@@ -25,7 +25,7 @@ PARENT = 'whole-reasoning-20261021-r18'       # its SOURCES.json lists every rel
 LINK = REPO/'report/final-routing-20261015-r1/driver/EFFICIENCY_LINK_V2.json'
 MODELS = ('gpt', 'nemotron', 'qwen35', 'qwen36', 'gemma', 'glm', 'qwen330b', 'lfm25')
 CPU_CEILING = 24.  # one combine (~25 min x 8 CPUs) plus the 4-CPU test run, with retries
-RUN_PATHS = ('src/moe_exp', 'tests/steering', 'tests/routing', 'scripts/study')
+RUN_PATHS = ('src/moe_exp', 'tests/steering', 'tests/routing', 'scripts/slurm', 'scripts/steering')
 
 
 def materialize(root: Path, commit: str) -> tuple[Path, Path]:
@@ -101,7 +101,7 @@ def release(name: str, local_tests: int) -> dict:
 def launch(after: str) -> dict:
     """Submit the allocated tests and the combine (after the tests and the parent's combine).
 
-    Runs from the release snapshot with WHOLE_ROOT and WHOLE_LINK exported (scripts/study/whole_relink.sh).
+    Runs from the release snapshot with WHOLE_ROOT and WHOLE_LINK exported (scripts/steering/whole_relink.sh).
     """
     from moe_exp.steering import whole
     whole.verify_release()
@@ -119,7 +119,7 @@ def launch(after: str) -> dict:
            '--chdir='+release_root, '--output='+str(root/'logs/%x-%j.out'), '--error='+str(root/'logs/%x-%j.err'),
            '--export=ALL', '--wrap',
            f'set -e; for s in tests/steering tests/steering/outcome tests/routing; do STUDY_MODULE=unittest '
-           f'{release_root}/scripts/study/driver.sh discover -s $s -t $s; done']
+           f'{release_root}/scripts/steering/gpu.sh discover -s $s -t $s; done']
     env = whole.submission_environment({'RELEASE_ROOT': release_root, 'STUDY_DATA_ROOT': str(whole.driver.ROOT)})
     for key in ('WHOLE_MODELS', 'WHOLE_GPU_CEILING', 'WHOLE_CPU_CEILING', 'WHOLE_CUTOFF', 'WHOLE_SWEEP',
                 'WHOLE_SHARDS', 'WHOLE_ROOT', 'WHOLE_LINK'):

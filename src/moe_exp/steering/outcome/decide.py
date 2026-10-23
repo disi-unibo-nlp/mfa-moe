@@ -54,6 +54,6 @@ def decide(effects_path: str, name: str, models: str, shards: str, local_tests: 
     if cells:
         # A job must not pass its own Slurm identity to the jobs it submits.
         env = {k: v for k, v in os.environ.items() if not k.startswith('SLURM_')}
-        subprocess.run([str(REPORTS.parent/'scripts/outcome_steering/launch.sh'), name, shards, local_tests,
+        subprocess.run([str(REPORTS.parent/'scripts/steering/outcome.sh'), name, shards, local_tests,
                         models], env=env, check=True, cwd=REPORTS.parent)
     return receipt

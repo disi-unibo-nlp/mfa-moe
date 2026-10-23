@@ -4,7 +4,7 @@ The base releases (r7; GPT r8) suppress only the classes tied to longer reasonin
 heatmap of the paper has empty suppress cells. A complement release runs those cells at each model's
 base strength on the same families and seeds (whole.complement_manifest), with no native rows and no
 canary, and hosts a new combined analysis of r7-r17 plus itself. Run it through
-scripts/study/whole_complement.sh, which then submits the ordinary whole-reasoning job graph.
+scripts/steering/whole_complement.sh, which then submits the ordinary whole-reasoning job graph.
 
     python -m moe_exp.steering.whole_complement --name whole-reasoning-20261021-r18 --local-tests 107
 """
@@ -30,7 +30,7 @@ MODELS = ('gpt', 'nemotron', 'qwen35', 'qwen36', 'gemma', 'glm', 'qwen330b', 'lf
 # work is about half its walltime (a row still running at the walltime stays unknown).
 SHARDS = {'gpt': 3, 'nemotron': 4, 'qwen35': 12, 'qwen36': 12, 'gemma': 6, 'glm': 27, 'qwen330b': 3, 'lfm25': 8}
 CUTOFF = 1792814400  # 2026-10-24 06:00 Europe/Rome: no GPU work starts after it
-RUN_PATHS = ('src/moe_exp', 'tests/steering', 'tests/routing', 'scripts/study')
+RUN_PATHS = ('src/moe_exp', 'tests/steering', 'tests/routing', 'scripts/slurm', 'scripts/steering')
 
 
 def release(name: str, local_tests: int, models=MODELS, shards=SHARDS) -> dict:

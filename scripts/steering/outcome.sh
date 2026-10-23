@@ -1,10 +1,10 @@
 #!/bin/bash
 # Seal an outcome-steering release from the committed code, submit its whole-reasoning job graph
 # (allocated validation -> shards -> extraction, plus the monitor) and queue its analysis.
-#   scripts/outcome_steering/launch.sh NAME SHARDS LOCAL_TESTS [MODELS]
+#   scripts/steering/outcome.sh NAME SHARDS LOCAL_TESTS [MODELS]
 #   SHARDS is N per model or model:N,...; MODELS defaults to gpt,qwen330b,nemotron.
-#   e.g. scripts/outcome_steering/launch.sh outcome-steering-20261022-r1 3 125
-# Needs the usage job's output (scripts/outcome_steering/usage.sh) and a clean src/tests/scripts tree.
+#   e.g. scripts/steering/outcome.sh outcome-steering-20261022-r1 3 125
+# Needs the usage job's output (scripts/steering/outcome_usage.sh) and a clean src/tests/scripts tree.
 set -euo pipefail
 cd "$(dirname "$0")/../.."
 REPO=$PWD
@@ -37,4 +37,4 @@ env -u SLURM_JOB_ID STUDY_MODULE=moe_exp.steering.outcome RELEASE_ROOT=$REL \
   --cpus-per-task=8 --mem=64G --time=120 --job-name=whole-os-analyze --chdir="$REL" \
   --dependency="afterany:$extract:$FINAL_COMBINE" --export=ALL \
   --output="$WHOLE_ROOT/logs/%x-%j.out" --error="$WHOLE_ROOT/logs/%x-%j.err" \
-  "$REL/scripts/study/driver.sh" analyze | tee "$WHOLE_ROOT/ANALYSIS_JOB"
+  "$REL/scripts/steering/gpu.sh" analyze | tee "$WHOLE_ROOT/ANALYSIS_JOB"

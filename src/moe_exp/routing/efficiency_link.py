@@ -1,6 +1,6 @@
 """Efficiency link for all eight models: LFM2.5 gets its own native signs.
 
-The pre-registration (scripts/study/efficiency_link.py -> driver/EFFICIENCY_LINK_PREREG.json) had no
+The pre-registration (routing/efficiency_link_prereg.py -> driver/EFFICIENCY_LINK_PREREG.json) had no
 native table for LFM2.5, so the whole-reasoning steering gave LFM the pooled seven-model signs. LFM's
 labelled native sentences exist since 2026-10-17 22:22, but lexical/native_lfm25.parquet keeps only
 labels and text (it was built for the lexical readout). This module
@@ -15,7 +15,7 @@ labels and text (it was built for the lexical readout). This module
 LFM's signs are estimated after its interventions ran; the receipt records that. The estimator, draws
 and seed are the pre-registered ones and the seven pre-registered models are unchanged.
 
-    scripts/study/cpu.sh moe_exp.routing.efficiency_link all
+    scripts/routing/efficiency_link.sh
 """
 from __future__ import annotations
 
