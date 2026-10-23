@@ -9,12 +9,11 @@ raw routing tensors, Slurm, or checkpoint weight payloads are read.
 """
 from pathlib import Path
 import argparse
-import hashlib
 import json
 
 import pandas as pd
 
-from store import ANALYSIS, REPO, WORK
+from store import ANALYSIS, REPO, WORK, file_sha
 
 RESULTS = ANALYSIS / 'v3_analysis/results-r2'
 OUTCOMES = ANALYSIS / 'campaign-v3/outcomes/outcomes_v3-99bf8d59506e2893.parquet'
@@ -30,8 +29,7 @@ SOURCES = {}
 
 def source(path):
     path = Path(path)
-    raw = path.read_bytes()
-    SOURCES[str(path)] = {'sha256': hashlib.sha256(raw).hexdigest(), 'bytes': len(raw)}
+    SOURCES[str(path)] = {'sha256': file_sha(path), 'bytes': path.stat().st_size}
     return path
 
 

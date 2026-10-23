@@ -18,7 +18,7 @@ from pathlib import Path
 
 import numpy as np
 
-from routing.dynamics import trajectories
+from routing.dynamics import by_attempt, trajectories
 from routing.selection import analyze, prefix_roster, validate_counts
 import store
 from stats import bootstrap_panel
@@ -30,21 +30,20 @@ LAYERS, EXPERTS, K = range(2, 40), 64, 4
 def routing_row(source, ids, weights, positions):
     """Per-layer routing dynamics of one attempt over its adjacent reasoning tokens (entropy, switches, turnover)."""
     adjacent = np.diff(positions) == 1
+    some_adjacent = adjacent.any()
     row = {'benchmark': source['benchmark'], 'family': source['family'], 'attempt_id': source['attempt_id']}
     for li, layer in enumerate(LAYERS):
         chosen = ids[li, positions]
         dominant = chosen[np.arange(len(chosen)), weights[li, positions].argmax(-1)]
         frequency = np.bincount(dominant, minlength=EXPERTS)/max(1, len(dominant))
         nonzero = frequency[frequency > 0]
-        row[f'entropy:{layer}'] = float(-(nonzero*np.log2(nonzero)).sum()/6)
-        row[f'dominant_switch:{layer}'] = (float((dominant[1:][adjacent] != dominant[:-1][adjacent]).mean())
-                                           if adjacent.any() else None)
-        if adjacent.any():
+        row[f'entropy:{layer}'] = float(-(nonzero*np.log2(nonzero)).sum()/np.log2(EXPERTS))
+        row[f'dominant_switch:{layer}'] = row[f'topk_turnover:{layer}'] = None
+        if some_adjacent:
+            row[f'dominant_switch:{layer}'] = float((dominant[1:][adjacent] != dominant[:-1][adjacent]).mean())
             left, right = chosen[:-1][adjacent], chosen[1:][adjacent]
             intersection = (left[:, :, None] == right[:, None, :]).sum((1, 2))
             row[f'topk_turnover:{layer}'] = float((1-intersection/(2*K-intersection)).mean())
-        else:
-            row[f'topk_turnover:{layer}'] = None
     return row
 
 
@@ -60,9 +59,7 @@ def discover(binding):
     root, bulk = Path(binding['root']), Path(binding['config']['bulk_root'])
     sources = verified(root/'lfm25/SOURCES.json')['records']
     sampled = verified(bulk/'lfm25/SAMPLED_SENTENCES.json')['records']
-    by_attempt = defaultdict(list)
-    for r in sampled:
-        by_attempt[r['attempt_id']].append(r)
+    sampled_of = by_attempt(sampled)
     labels = Units(bulk/'reader/annotations')
     label_counts = {'complete': 0, 'unknown': 0}
     counts = np.zeros((len(sources), 9, len(LAYERS), EXPERTS), np.uint64)
@@ -83,7 +80,7 @@ def discover(binding):
         routing_rows.append(routing_row(source, ids, weights, np.asarray(reasoning_tokens, int)))
         ownership = defaultdict(list)  # class 7 = all reasoning tokens, 8 = all labelled tokens
         ownership[7] = reasoning_tokens
-        for r in by_attempt[source['attempt_id']]:
+        for r in sampled_of[source['attempt_id']]:
             state = labels.state(r['annotation_uid'])
             require(state is not None and state['status'] in ('complete', 'unknown'),
                     'LFM discovery label missing: derive requires every sampled sentence to be terminal')

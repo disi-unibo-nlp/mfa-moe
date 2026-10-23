@@ -20,12 +20,10 @@ import os
 from pathlib import Path
 import time
 
-from routing.readout_analysis import check_first_run, family_folds
-from store import ANALYSIS, WORK, file_sha, require, seal, verified
+import store
+from routing.readout_analysis import FAMILY_FREEZE, SEED, code_hashes, family_folds, freeze, question_families
+from store import ANALYSIS, file_sha, require, seal
 
-HISTORICAL = ANALYSIS / 'forum/tests/r3_context'
-FAMILY_FREEZE = WORK / 'mfa-moe/repo/report/experimental-resume-v1/family-freeze.json'
-SEED = 20260929
 MODEL_ORDER = ('gpt', 'qwen36', 'gemma', 'glm', 'nemotron', 'qwen330b', 'qwen35')
 
 
@@ -162,8 +160,7 @@ def run(workers, out):
         return ANALYSIS / 'depth-paths/results/s3/_tok' / model / f'{int(row):05d}.npz'
     from routing.dynrt.d3a_pairs import load_unit_texts, LABELS_ROOT
     from routing.dynrt.d3a_text import hash_counts
-    family = verified(FAMILY_FREEZE)
-    qf = {q: f for f, questions in family['new_parent_pools']['families'].items() for q in questions}
+    family, qf = question_families()
     split = cm.load_split()
     original_load = cm.load_attempts
     tables, maps, missing, inputs = {}, {}, {}, [FAMILY_FREEZE, cm.SPLIT_PATH,
@@ -186,23 +183,17 @@ def run(workers, out):
         inputs.extend(sorted((LABELS_ROOT / model).glob('part-*/annotations.json')))
     here = Path(__file__).parent
     specification = seal({'schema': 'r3d-clean-readout-v1', 'part': 'R3-D S3 only',
-        'parent_family_freeze': json.loads(FAMILY_FREEZE.read_text())['sha256'],
+        'parent_family_freeze': family['sha256'],
         'models': MODEL_ORDER, 'ids': {m: tables[m]['question'].tolist() for m in MODEL_ORDER},
         'cache_row_map': {m: maps[m].tolist() for m in MODEL_ORDER}, 'missing': missing,
         'inputs': {str(p): file_sha(p) for p in inputs if p.exists()},
-        'code': {str(p): file_sha(p) for p in sorted([Path(__file__), *(here / 'dp').glob('*.py'),
-                                                       *(here / 'dynrt').glob('*.py')])},
+        'code': code_hashes(__file__, here / 'dp', here / 'dynrt', here / 'readout_analysis.py', store.__file__),
         'folds': {'outer': 5, 'inner': 3, 'seed': SEED, 'group': 'frozen duplicate family',
                   'order': 'SHA256 of canonical JSON forum-v1|seed|family; round-robin'},
         'bootstraps': 5000, 'nulls': 5, 'ceiling_CPU_core_hours': 8.,
         'context': 'retrospective s-1,s,s+1; explicit missing slots; no sparse-gap joins',
         'remaining_R3D_core_hours_reserved': 8.})
-    check_first_run(HISTORICAL / 'FROZEN.readout.v3.json', specification)
-    out.mkdir(parents=True, exist_ok=True)
-    frozen = out / 'FROZEN.readout.v3.json'
-    if frozen.exists():
-        require(json.loads(frozen.read_text()) == specification, 'clean readout frozen inputs/code changed')
-    frozen.write_text(json.dumps(specification, indent=1) + '\n')
+    freeze(out, 'FROZEN.readout.v3.json', specification)
     cm.load_attempts = lambda m, c: tables[m] if c == 'A' else original_load(m, c)
     sr.tok_path = lambda m, i: original_tok_path(m, int(maps[m][i]))
     sr.cv.question_folds = lambda questions, n, seed: family_folds(questions, n, seed, qf)

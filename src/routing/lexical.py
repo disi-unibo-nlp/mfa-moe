@@ -9,7 +9,7 @@ CROSS-FITTED by the frozen family folds: continuations of fold f are read by a c
 family of fold f. Per-class sensitivity/false-positive rates come from the same out-of-fold predictions on
 native text (for Rogan-Gladen sensitivity analyses).
 
-    python -m routing.lexical [--out DIR] [--budget SECONDS]     fit the five fold classifiers (about 2 h on 4 CPUs)
+    python -m routing.lexical --out DIR [--budget SECONDS]       fit the five fold classifiers (about 2 h on 4 CPUs)
     predict(sentence_table, DIR)                                  read continuation sentences with them
 """
 from __future__ import annotations
@@ -22,7 +22,7 @@ from pathlib import Path
 import numpy as np
 from scipy import optimize, sparse
 from routing import readout_text as RT
-from store import CLASSES, FAST, check_files, file_sha, publish, require, verified
+from store import CLASSES, FAST, MODELS, check_files, file_sha, publish, require, verified
 
 CIDX = {c: i for i, c in enumerate(CLASSES)}
 MAXC = 600
@@ -30,7 +30,6 @@ START, END, WEND = '<START OF RESPONSE>', '<END OF RESPONSE>', '<END OF OBSERVED
 MATH_RE = re.compile(r"[\$\\^_=+\-*/()<>|{}]")
 BUL_RE = re.compile(r"^\s*([*\-•]|\d+[.)])\s")
 LEXICAL = FAST/'final-routing-20261015-r1/lexical'
-MODELS = ('gpt', 'nemotron', 'qwen35', 'qwen36', 'gemma', 'glm', 'qwen330b')
 SPEC = {'version': 'lexical-readout-v1', 'C': 10.0, 'context_scale': 0.5, 'dense_scale': 0.3, 'max_chars': MAXC,
         'per_model_cap': 60000, 'buckets': RT.N_BUCKETS, 'min_df': RT.MIN_DF}
 
@@ -165,6 +164,8 @@ def training_table(models, cap=SPEC['per_model_cap'], seed=20261017):
 
 def fit_folds(models, out, budget):
     """Cross-fitted classifiers (one per held-out fold) and out-of-fold native confusion per model."""
+    require(not (out/'READOUT.json').exists() and not list(out.glob('fold-*.pkl')),
+            f'{out} already holds a fit; its files are hash-bound, use a new --out')
     table = training_table(models)
     b = blocks(table.sentence_text.fillna('').tolist(), table.prev_sentence.fillna('').tolist(),
                table.next_sentence.fillna('').tolist())
@@ -274,10 +275,10 @@ def predict(sentences, root, *, frozen=None):
 
 def main(argv=None):
     ap = argparse.ArgumentParser(prog='routing.lexical', description='Fit the cross-fitted lexical state readout.')
-    ap.add_argument('--out', default=str(LEXICAL/'readout-v1'))
+    ap.add_argument('--out', required=True, help='new directory; the deployed one is LEXICAL/readout-v1')
     ap.add_argument('--budget', type=float, default=2400, help='wall-clock seconds allowed per fold fit')
     args = ap.parse_args(argv)
-    value = fit_folds(list(MODELS), Path(args.out), args.budget)
+    value = fit_folds(list(MODELS[:-1]), Path(args.out), args.budget)  # the seven campaign models, not lfm25
     print(json.dumps({k: v for k, v in value['native_out_of_fold'].items()
                       if k == 'pooled'} | {'folds': value['folds']}, default=str)[:3000])
 

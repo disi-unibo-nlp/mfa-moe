@@ -13,10 +13,10 @@ import pandas as pd
 from scipy import sparse
 
 from routing import readout_analysis as historical, readout_fit as sr
+from routing.readout_analysis import HISTORICAL
 from routing.readout_text import hash_counts
-from store import ANALYSIS, check_files, digest, file_sha, load, publish, require, verified
+from store import check_files, digest, file_sha, load, publish, require, verified
 
-HISTORICAL = ANALYSIS/'forum/tests/r3_context'
 
 
 def lfm(binding):

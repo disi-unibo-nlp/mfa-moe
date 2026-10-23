@@ -11,10 +11,11 @@
   NATIVE_ACCURACY.json, DERIVED.json
 `dynamics_summary(binding)` builds the same per-attempt panel for LFM2.5 from its published trajectories.
 
-    python -m routing.dynamics CAMPAIGN_DIR MODEL [MODEL ...] [--root NEW_ROOT]
+    python -m routing.dynamics CAMPAIGN_DIR MODEL [MODEL ...] [--out NEW_ROOT]
 
-CAMPAIGN_DIR holds CAMPAIGN.json (report/research-campaign-v3-20261014-r5-r2). With --root everything is recomputed
-into NEW_ROOT, which must hold the campaign's inputs (links to the real files) but none of the outputs.
+CAMPAIGN_DIR holds CAMPAIGN.json (report/research-campaign-v3-20261014-r5-r2). With --out everything is recomputed
+into NEW_ROOT and the campaign folder is only read; without it the outputs are written into the campaign folder
+(an existing nomination file there is kept and only the summaries are redone).
 """
 from __future__ import annotations
 
@@ -28,7 +29,7 @@ import numpy as np
 from routing.selection import (counts_for, enriched_set, family_weights, inclusion_statistics, nominate,
                                random_control, weighted_quantile)
 from stats import bootstrap_panel, clean_rows, unknown_bounds
-from store import ANALYSIS, CLASSES, SEED, canonical, digest, file_sha, private, publish, require, verified
+from store import ANALYSIS, CLASSES, SEED, canonical, digest, file_sha, publish, require, verified, write_once
 
 DEPTH_PATHS = ANALYSIS/'depth-paths/results/part1'
 
@@ -78,9 +79,10 @@ def attempt_panel(sentences, dynamics, sources):
 
     Args:
         sentences: Labelled sentences (attempt_id, class, n_tokens).
-        dynamics: The attempt's runs, transitions and re-entries, as `trajectories` returns them.
-        sources: attempt_id -> source record (benchmark, family, completion_tokens).
+        dynamics: The runs, transitions and re-entries of the attempts, as `trajectories` returns them.
+        sources: Source records (attempt_id, benchmark, family, completion_tokens).
     """
+    sources = {s["attempt_id"]: s for s in sources}
     runs, steps, reentries = by_attempt(dynamics["dwell"]), by_attempt(dynamics["transitions"]), by_attempt(dynamics["reentry"])
     rows = []
     for aid, sent in by_attempt(sentences).items():
@@ -135,16 +137,18 @@ def joined_accuracy(outcomes, metadata, qf):
     return rows
 
 
-def native_accuracy(campaign, model):
+def native_accuracy(campaign, model, out):
+    """Strict accuracy with unknown bounds of one model: inherited from the campaign (or `out`) if published, else computed."""
     import pandas as pd
     from schemas import TraceRecord
     from labeling.spans import trace_digest
     from generation.scoring import extract_answer
     root = Path(campaign["root"])
-    if (root/model/"NATIVE_ESTIMANDS.json").exists() and (root/model/"NATIVE_ACCURACY.json").exists():
-        estimands, summary = verified(root/model/"NATIVE_ESTIMANDS.json"), verified(root/model/"NATIVE_ACCURACY.json")
-        require(estimands.get("exact_attempt_metadata"), "inherited native accuracy lacks exact attempt binding")
-        return estimands, summary
+    for folder in (out, root):
+        if (folder/model/"NATIVE_ESTIMANDS.json").exists() and (folder/model/"NATIVE_ACCURACY.json").exists():
+            estimands, summary = verified(folder/model/"NATIVE_ESTIMANDS.json"), verified(folder/model/"NATIVE_ACCURACY.json")
+            require(estimands.get("exact_attempt_metadata"), "inherited native accuracy lacks exact attempt binding")
+            return estimands, summary
     outcomes = pd.read_parquet(campaign["outcomes"])
     outcomes = outcomes[(outcomes.corpus == "card-v3") & (outcomes.model == model)].to_dict("records")
     require(len({attempt_key(r) for r in outcomes}) == len(outcomes), "duplicate native outcome identity")
@@ -168,31 +172,23 @@ def native_accuracy(campaign, model):
                                               "line_sha256": hashlib.sha256(raw).hexdigest()}}
                 offset += len(raw)
     rows = joined_accuracy(outcomes, metadata, verified(root/"FOLDS.json")["question_families"])
-    estimands = publish(root/model/"NATIVE_ESTIMANDS.json", {"records": rows,
+    estimands = publish(out/model/"NATIVE_ESTIMANDS.json", {"records": rows,
         "historical_adjudicated_not_used": True, "exact_attempt_metadata": True})
-    summary = publish(root/model/"NATIVE_ACCURACY.json", bootstrap_panel(rows,
+    summary = publish(out/model/"NATIVE_ACCURACY.json", bootstrap_panel(rows,
         ("strict", "unknown_lower", "unknown_upper", "tokens"), panel="native:"+model))
     return estimands, summary
 
 
-def write_once(path, write):
-    """Write a data file atomically; a file already there must have the same bytes. Returns its receipt."""
-    private(path).parent.mkdir(parents=True, exist_ok=True, mode=0o700)
-    pending = path.with_name(f".{path.name}.pending")
-    try:
-        with pending.open("wb") as stream:
-            write(stream)
-        if path.exists():
-            require(file_sha(pending) == file_sha(path), "conflicting immutable data artifact")
-        else:
-            pending.rename(path)
-    finally:
-        pending.unlink(missing_ok=True)
-    return {"path": str(path), "sha256": file_sha(path)}
+def publish_summary(path, rows, model):
+    """Family bootstrap of every per-attempt column of the native-dynamics panel."""
+    columns = sorted({k for r in rows for k in r if k not in ("benchmark", "family", "attempt_id", "unavailable_reasons")})
+    return publish(path, bootstrap_panel(rows, columns, panel="native-dynamics:"+model))
 
 
-def fold_nominations(model, fold, counts, tokens, sources, family_fold, layers, k, experts, sentence_rows, folds):
+def fold_nominations(model, fold, counts, tokens, sources, contract, sentence_rows, folds):
     """Nominated sites, atlas rows and expert scores of one discovery fold (families of other folds)."""
+    layers, k, experts = contract["layers"], contract["native_k"], contract["experts"]
+    family_fold = np.array([folds[r["family"]] for r in sources])
     train = family_fold != fold
     rates, support = inclusion_statistics(counts, tokens, sources, train)
     # Class versus the other observed classes; counts are token inclusions.
@@ -254,57 +250,56 @@ def fold_nominations(model, fold, counts, tokens, sources, family_fold, layers, 
     return nominations, atlas, scores, support
 
 
-def derive(campaign, model):
+def derive(campaign, model, out=None):
+    """All derived outputs of one model. Inputs are read from the campaign root; outputs go to `out` (default: the root)."""
     import pandas as pd
     root = Path(campaign["root"])
-    if campaign.get("resume_from") and (root/model/"NOMINATIONS.json").exists():
-        _, accuracy = native_accuracy(campaign, model)
+    resume = out is None and campaign.get("resume_from") and (root/model/"NOMINATIONS.json").exists()
+    out = Path(out or root)
+    if resume:
+        _, accuracy = native_accuracy(campaign, model, out)
         data = clean_rows(pd.read_parquet(root/model/"native_dynamics_estimands.parquet").to_dict("records"))
-        columns = sorted({k for r in data for k in r if k not in ("benchmark", "family", "attempt_id", "unavailable_reasons")})
-        summary = publish(root/model/"NATIVE_DYNAMICS_SUMMARY.json", bootstrap_panel(data, columns, panel="native-dynamics:"+model))
+        summary = publish_summary(root/model/"NATIVE_DYNAMICS_SUMMARY.json", data, model)
         return publish(root/model/"DERIVED.json", {"status": "complete", "original_nominations_preserved": True,
             "nominations_sha256": verified(root/model/"NOMINATIONS.json")["sha256"],
             "native_accuracy_sha256": accuracy["sha256"], "dynamics_summary_sha256": summary["sha256"],
             "analysis_binding": campaign["analysis_binding"], "compatible_artifacts_referenced": True})
     sources = verified(root/model/"SOURCES.json")["records"]
-    folds = verified(root/"FOLDS.json")["folds"]
+    folds_receipt = verified(root/"FOLDS.json")
+    folds, qf = folds_receipt["folds"], folds_receipt["question_families"]
     counts, tokens = counts_for(campaign, model, sources)
     contract = campaign["models"][model]
-    layers, k = contract["layers"], contract["native_k"]
     saved = pd.read_parquet(campaign["saved_inputs"][model]["sentences"])
-    qf = verified(root/"FOLDS.json")["question_families"]
     sentence_rows = [{"attempt_id": r.attempt_id, "question": r.question,
         "benchmark": r.dataset, "family": qf[r.question], "class": CLASSES[int(r.cls)],
         "sentence_index": int(r.sentence_index), "segment": int(r.segment),
         "n_tokens": int(r.n_tokens), "token_start": int(r.tok_start), "token_end": int(r.tok_end)}
         for r in saved.itertuples()]
-    dynamics = publish(root/model/"DYNAMICS.json", trajectories(sentence_rows))
-    panel = attempt_panel(sentence_rows, dynamics, {s["attempt_id"]: s for s in sources})
-    write_once(root/model/"native_dynamics_estimands.parquet",
+    dynamics = publish(out/model/"DYNAMICS.json", trajectories(sentence_rows))
+    panel = attempt_panel(sentence_rows, dynamics, sources)
+    write_once(out/model/"native_dynamics_estimands.parquet",
                lambda stream: pd.DataFrame(panel).to_parquet(stream, index=False))
-    columns = sorted({k for r in panel for k in r if k not in ("benchmark", "family", "attempt_id")})
-    publish(root/model/"NATIVE_DYNAMICS_SUMMARY.json", bootstrap_panel(panel, columns, panel="native-dynamics:"+model))
-    family_fold = np.array([folds[r["family"]] for r in sources])
+    publish_summary(out/model/"NATIVE_DYNAMICS_SUMMARY.json", panel, model)
     nominations, atlas, scores, support = [], [], [], []
     for fold in range(5):
         fold_records, fold_atlas, fold_scores, fold_support = fold_nominations(
-            model, fold, counts, tokens, sources, family_fold, layers, k, contract["experts"], sentence_rows, folds)
+            model, fold, counts, tokens, sources, contract, sentence_rows, folds)
         nominations += fold_records
         atlas += fold_atlas
         scores.append(fold_scores)
         support.append(fold_support)
-    score_file = write_once(root/model/"SCORES.npz", lambda stream: np.savez_compressed(
+    score_file = write_once(out/model/"SCORES.npz", lambda stream: np.savez_compressed(
         stream, scores=np.stack(scores), support=np.stack(support)))
     score_file["bytes"] = Path(score_file["path"]).stat().st_size
-    atlas_file = write_once(root/model/"association_atlas.parquet",
+    atlas_file = write_once(out/model/"association_atlas.parquet",
                             lambda stream: pd.DataFrame(atlas).to_parquet(stream, index=False))
     atlas_file["rows"] = len(atlas)
-    nomination_file = publish(root/model/"NOMINATIONS.json", {"records": nominations,
-        "outcomes_used": False, "layers": layers, "folds_sha256": digest(folds)})
+    nomination_file = publish(out/model/"NOMINATIONS.json", {"records": nominations,
+        "outcomes_used": False, "layers": contract["layers"], "folds_sha256": digest(folds)})
     # Strict native fields are used uniformly beside historically adjudicated
     # descriptive estimates. No candidate-verification/J1 judge is restarted.
-    _, accuracy = native_accuracy(campaign, model)
-    return publish(root/model/"DERIVED.json", {"status": "complete", "scores": score_file,
+    _, accuracy = native_accuracy(campaign, model, out)
+    return publish(out/model/"DERIVED.json", {"status": "complete", "scores": score_file,
         "atlas": atlas_file, "nominations_sha256": nomination_file["sha256"],
         "native_accuracy_sha256": accuracy["sha256"], "dynamics_sha256": dynamics["sha256"],
         "source_conditioned_association_input": campaign["saved_inputs"][model]["histogram"],
@@ -323,12 +318,10 @@ def dynamics_summary(binding):
     recomputed = trajectories(sentences)
     require(all(canonical(dynamics[k]) == canonical(recomputed[k]) for k in ('dwell', 'transitions', 'reentry')),
             'published LFM trajectories differ from the current sentences')
-    rows = attempt_panel(sentences, dynamics, {s['attempt_id']: s for s in inputs['sources']})
+    rows = attempt_panel(sentences, dynamics, inputs['sources'])
     pd.DataFrame(rows).to_parquet(Path(binding['config']['bulk_root'])/'lfm25/derived/native_dynamics_estimands.parquet',
                                   index=False)
-    columns = sorted({k for r in rows for k in r if k not in ('benchmark', 'family', 'attempt_id')})
-    return publish(root/'lfm25/NATIVE_DYNAMICS_SUMMARY.json',
-                   bootstrap_panel(rows, columns, panel='native-dynamics:lfm25'))
+    return publish_summary(root/'lfm25/NATIVE_DYNAMICS_SUMMARY.json', rows, 'lfm25')
 
 
 def main(argv=None):
@@ -336,13 +329,11 @@ def main(argv=None):
                                      description='Recompute the native dynamics and nominations of campaign-v3 models.')
     parser.add_argument('campaign', type=Path, help='directory holding CAMPAIGN.json')
     parser.add_argument('models', nargs='+')
-    parser.add_argument('--root', type=Path, help='write all outputs here and recompute them from the inputs')
+    parser.add_argument('--out', type=Path, help='new folder for all outputs, recomputed from the campaign inputs')
     args = parser.parse_args(argv)
     campaign = json.loads((args.campaign/'CAMPAIGN.json').read_text())
-    if args.root:
-        campaign['root'], campaign['resume_from'] = str(args.root), None
     for model in args.models:
-        print(model, derive(campaign, model)['sha256'], flush=True)
+        print(model, derive(campaign, model, args.out)['sha256'], flush=True)
 
 
 if __name__ == '__main__':
