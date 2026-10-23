@@ -14,16 +14,16 @@ from __future__ import annotations
 import argparse
 from datetime import datetime
 from pathlib import Path
+import shutil
 import subprocess
 from zoneinfo import ZoneInfo
 
-from store import REPO, WORK, file_sha, publish, require, verified
+from store import MODELS, REPO, WORK, check_files, file_sha, publish, require, verified
 
 REPORTS = REPO/'report'
 SNAPSHOTS = WORK/'mfa-moe/releases'
 TEMPLATE = 'whole-reasoning-20261021-r7'  # pins the inputs, the sentence classifier and the nomination reference
 RUN_PATHS = ('src', 'tests/steering', 'tests/routing', 'scripts/slurm', 'scripts/steering')
-ALL_MODELS = ('gpt', 'nemotron', 'qwen35', 'qwen36', 'gemma', 'glm', 'qwen330b', 'lfm25')
 
 
 def rome(text: str) -> float:
@@ -39,26 +39,27 @@ def complement(root: Path, args: argparse.Namespace) -> dict:
     and no canary, and the release hosts a new combine of r7-r17 plus itself.
     """
     from steering.whole import manifest_path
-    cutoff = args.cutoff or '2026-10-24T06:00'
-    parents = {m: REPORTS/('whole-reasoning-20261021-r8' if m == 'gpt' else TEMPLATE) for m in ALL_MODELS}
+    cutoff = args.cutoff
+    require(cutoff, '--cutoff is required: no GPU row may start after it (Rome time, e.g. 2026-10-24T06:00)')
+    parents = {m: REPORTS/('whole-reasoning-20261021-r8' if m == 'gpt' else TEMPLATE) for m in MODELS}
     # 2-GPU shards of 4 hours, sized from the base releases' GPU time per row so that a shard's expected
     # work is about half its walltime (a row still running at the walltime stays unknown).
     shards = {'gpt': 3, 'nemotron': 4, 'qwen35': 12, 'qwen36': 12, 'gemma': 6, 'glm': 27, 'qwen330b': 3, 'lfm25': 8}
-    sweep = {m: verified(parents[m]/m/'SELECTED.json')['dose'] for m in ALL_MODELS}
+    sweep = {m: verified(parents[m]/m/'SELECTED.json')['dose'] for m in MODELS}
     # The combine: every source of r17, with this release joined to each model's base source.
     sources = verified(REPORTS/'whole-reasoning-20261021-r17/SOURCES.json')['sources']
-    for model in ALL_MODELS:
+    for model in MODELS:
         source = next(s for s in sources if s['model'] == model and Path(s['root']) == parents[model]
                       and s['dose'] == sweep[model])
         source.setdefault('complements', []).append(str(root))
     # The complement reads each parent's base manifest (natives) and nominations outside the snapshot.
     inputs = {}
-    for model in ALL_MODELS:
+    for model in MODELS:
         for path in (manifest_path(model, sweep[model], parents[model]), parents[model]/model/'WHOLE_NOMINATIONS.json'):
             inputs[str(path)] = file_sha(path)
     return dict(
-        kind_file={'models': {m: {'parent': str(parents[m])} for m in ALL_MODELS}},
-        template=verified(REPORTS/TEMPLATE/'RELEASE.json'), models=ALL_MODELS, shards=shards, sweep=sweep,
+        kind_file={'models': {m: {'parent': str(parents[m])} for m in MODELS}},
+        template=verified(REPORTS/TEMPLATE/'RELEASE.json'), models=MODELS, shards=shards, sweep=sweep,
         cutoff=rome(cutoff), cpu_ceiling=200., sources=sources, inputs=inputs,
         scope='tests/steering/test_whole*.py; the allocated validation runs tests/steering, '
               'tests/steering/outcome and tests/routing in full',
@@ -67,7 +68,7 @@ def complement(root: Path, args: argparse.Namespace) -> dict:
                'and seeds, so the per-cell results cover both operations for all seven states. The new cells are\n'
                'not efficiency-directed and never enter the primary or the dose response. Its combine job writes\n'
                'the final combined analysis of r7-r17 plus these cells to analysis-combined/EFFECTS_WHOLE.json.\n'
-               f'Shards: {", ".join(f"{m} {shards[m]}" for m in ALL_MODELS)}. GPU work stops at {cutoff} Rome.\n')
+               f'Shards: {", ".join(f"{m} {shards[m]}" for m in MODELS)}. GPU work stops at {cutoff} Rome.\n')
 
 
 def relink(root: Path, args: argparse.Namespace) -> dict:
@@ -78,13 +79,15 @@ def relink(root: Path, args: argparse.Namespace) -> dict:
     of the pooled ones and every one of them already ran at every strength.
     """
     parent_name = 'whole-reasoning-20261021-r18'
+    parent = verified(REPORTS/parent_name/'RELEASE.json')
     link = REPORTS/'final-routing-20261015-r1/driver/EFFICIENCY_LINK_V2.json'
-    require(verified(link)['models'] == list(ALL_MODELS), 'the link receipt does not cover the eight models')
+    sealed_link = verified(link)
+    require(set(sealed_link['models']) == set(MODELS), 'the link receipt does not cover the eight models')
     return dict(
-        kind_file={'parent': str(REPORTS/parent_name), 'link': str(link), 'link_sha256': verified(link)['sha256'],
+        kind_file={'parent': str(REPORTS/parent_name), 'link': str(link), 'link_sha256': sealed_link['sha256'],
                    'reason': 'LFM2.5 uses its own native efficiency-link signs (eight-model receipt) '
                              'instead of the pooled seven-model signs'},
-        template=verified(REPORTS/parent_name/'RELEASE.json'), models=ALL_MODELS, shards={}, sweep={}, cutoff=None,
+        template=parent, models=MODELS, shards={}, sweep={}, cutoff=parent['cutoff'],
         cpu_ceiling=24., sources=verified(REPORTS/parent_name/'SOURCES.json')['sources'],
         inputs={str(link): file_sha(link)},
         scope='tests/steering/test_whole*.py; the allocated run repeats tests/steering, tests/steering/outcome '
@@ -101,13 +104,15 @@ def outcome(root: Path, args: argparse.Namespace) -> dict:
 
     --models: models to steer. --shards: 2-GPU shards (4 hours each) per model, N or model:N,...
     """
-    from steering.outcome.manifest import default_spec
+    from steering.outcome.manifest import DEFAULT_MODELS, default_spec
     from steering.outcome.select import BULK
-    models = tuple((args.models or 'gpt,qwen330b,nemotron').split(','))
+    models = tuple((args.models or DEFAULT_MODELS).split(','))
     shards = args.shards or '3'
     count = ({m: int(shards) for m in models} if shards.isdigit() else
              {m: int(n) for m, n in (item.split(':') for item in shards.split(','))})
-    cutoff = args.cutoff or '2026-10-23T23:00'
+    require(set(count) == set(models), '--shards must name exactly the --models')
+    cutoff = args.cutoff
+    require(cutoff, '--cutoff is required: no GPU row may start after it (Rome time, e.g. 2026-10-23T23:00)')
     deltas, fractions, answer_tokens = (0.4, 0.8, 1.6), (0.5, 0.7, 0.85), 2048  # D-0003
     # The selection reads these outside the snapshot: per-attempt usage and the class nominations.
     inputs = {str(path): file_sha(path) for model in models
@@ -128,7 +133,7 @@ def outcome(root: Path, args: argparse.Namespace) -> dict:
                f'GPU work stops at {cutoff} Rome.\n')
 
 
-KINDS = {'complement': (complement, 'COMPLEMENT.json'), 'relink': (relink, 'RELINK.json'), 'outcome': (outcome, 'OUTCOME.json')}
+KINDS = {'complement': complement, 'relink': relink, 'outcome': outcome}
 
 
 def snapshot(root: Path, commit: str) -> tuple[Path, Path]:
@@ -138,10 +143,13 @@ def snapshot(root: Path, commit: str) -> tuple[Path, Path]:
                     'configs', 'tests', 'docs/ledger', 'pyproject.toml', 'requirements', 'AGENTS.md'],
                    cwd=REPO, check=True)
     folder = SNAPSHOTS/commit
-    if not folder.exists():
-        folder.mkdir(parents=True, mode=0o700)
-        subprocess.run(['tar', '-xzf', str(archive), '-C', str(folder)], check=True)
-        (folder/'RELEASE_COMMIT').write_text(commit+'\n')
+    if not folder.exists():  # unpacked aside and renamed, so a killed tar never leaves a half snapshot behind
+        partial = folder.with_name(commit+'.partial')
+        shutil.rmtree(partial, ignore_errors=True)
+        partial.mkdir(parents=True, mode=0o700)
+        subprocess.run(['tar', '-xzf', str(archive), '-C', str(partial)], check=True)
+        (partial/'RELEASE_COMMIT').write_text(commit+'\n')
+        partial.rename(folder)
     return archive, folder
 
 
@@ -151,41 +159,44 @@ def seal(kind: str, name: str, tests: int, args: argparse.Namespace) -> Path:
                                capture_output=True, text=True, check=True).stdout, 'commit the code first')
     root = REPORTS/name
     require(not root.exists(), f'{root} exists')
-    build, kind_file = KINDS[kind]
-    spec = build(root, args)
+    spec = KINDS[kind](root, args)
+    kind_file = kind.upper()+'.json'
     template, shards = spec['template'], spec['shards']
-    cutoff = spec['cutoff'] or template['cutoff']  # a relink release keeps its parent's cutoff
+    cutoff = spec['cutoff']
     # A 2-GPU shard of 4 hours is 8 GPU-hours; the ceiling is the whole plan plus 10 hours of slack.
     gpu_ceiling = 8.*sum(shards.values())+10 if shards else 0.
     commit = subprocess.run(['git', 'rev-parse', 'HEAD'], cwd=REPO, capture_output=True, text=True,
                             check=True).stdout.strip()
     root.mkdir(mode=0o700)
-    publish(root/kind_file, spec['kind_file'])
-    publish(root/'LOCAL_VALIDATION.json', {'passed': True, 'tests': tests, 'commit': commit, 'scope': spec['scope']})
-    publish(root/'RESOURCE_PLAN.json', {
-        'models': list(spec['models']), 'sweep': spec['sweep'], 'shards': shards, 'new_gpu_hour_ceiling': gpu_ceiling,
-        'cpu_core_hour_ceiling': spec['cpu_ceiling'], 'cutoff': cutoff, 'no_budget_reset': True})
-    if spec['sources'] is not None:
-        publish(root/'SOURCES.json', {'sources': spec['sources']})
-    (root/'README.md').write_text(f'# Whole-reasoning {kind} ({name})\n\n'+spec['readme'])
+    try:
+        kind_receipt = publish(root/kind_file, spec['kind_file'])
+        validation = publish(root/'LOCAL_VALIDATION.json', {'passed': True, 'tests': tests, 'commit': commit,
+                                                             'scope': spec['scope']})
+        plan = publish(root/'RESOURCE_PLAN.json', {
+            'models': list(spec['models']), 'sweep': spec['sweep'], 'shards': shards, 'new_gpu_hour_ceiling': gpu_ceiling,
+            'cpu_core_hour_ceiling': spec['cpu_ceiling'], 'cutoff': cutoff, 'no_budget_reset': True})
+        if spec['sources'] is not None:
+            publish(root/'SOURCES.json', {'sources': spec['sources']})
+        (root/'README.md').write_text(f'# Whole-reasoning {kind} ({name})\n\n'+spec['readme'])
 
-    archive, folder = snapshot(root, commit)
-    files = {str(p): file_sha(p) for p in sorted(folder.rglob('*')) if p.is_file() and '__pycache__' not in p.parts}
-    # The template's pinned inputs that live in a snapshot are the same files in this one.
-    inputs = {k.replace(template['release_root'], str(folder)): v for k, v in template['inputs'].items()}
-    inputs.update(spec['inputs'])
-    for path, expected in inputs.items():
-        require(file_sha(Path(path)) == expected, 'input mismatch: '+path)
-    publish(root/'RELEASE.json', {
-        'commit': commit, 'release_root': str(folder), 'models': list(spec['models']), 'sweep': spec['sweep'],
-        'shards': shards, 'cutoff': cutoff, kind_file.removesuffix('.json').lower()+'_sha256':
-        verified(root/kind_file)['sha256'], 'source_archive': {'path': str(archive), 'sha256_file': file_sha(archive)},
-        'code_files': files, 'inputs': inputs, 'classifier': template['classifier'],
-        'nomination_reference': template['nomination_reference'],
-        'local_validation_sha256': verified(root/'LOCAL_VALIDATION.json')['sha256'],
-        'resource_plan_sha256': verified(root/'RESOURCE_PLAN.json')['sha256'],
-        'new_gpu_hour_ceiling': gpu_ceiling, 'cpu_core_hour_ceiling': spec['cpu_ceiling'], 'engineering_only': False,
-        ('parent_release_sha256' if kind == 'relink' else 'template_release_sha256'): template['sha256']})
+        archive, folder = snapshot(root, commit)
+        files = {str(p): file_sha(p) for p in sorted(folder.rglob('*')) if p.is_file() and '__pycache__' not in p.parts}
+        # The template's pinned inputs that live in a snapshot are the same files in this one.
+        inputs = {k.replace(template['release_root'], str(folder)): v for k, v in template['inputs'].items()}
+        inputs.update(spec['inputs'])
+        check_files(inputs)
+        publish(root/'RELEASE.json', {
+            'commit': commit, 'release_root': str(folder), 'models': list(spec['models']), 'sweep': spec['sweep'],
+            'shards': shards, 'cutoff': cutoff, kind+'_sha256': kind_receipt['sha256'],
+            'source_archive': {'path': str(archive), 'sha256_file': file_sha(archive)},
+            'code_files': files, 'inputs': inputs, 'classifier': template['classifier'],
+            'nomination_reference': template['nomination_reference'],
+            'local_validation_sha256': validation['sha256'], 'resource_plan_sha256': plan['sha256'],
+            'new_gpu_hour_ceiling': gpu_ceiling, 'cpu_core_hour_ceiling': spec['cpu_ceiling'], 'engineering_only': False,
+            'template_release_sha256': template['sha256']})
+    except BaseException:
+        shutil.rmtree(root, ignore_errors=True)  # a failed seal leaves no half-written release
+        raise
     return folder
 
 
@@ -194,9 +205,9 @@ def main() -> None:
     parser.add_argument('kind', choices=sorted(KINDS))
     parser.add_argument('name')
     parser.add_argument('--tests', type=int, required=True, help='tests that passed locally on this commit')
-    parser.add_argument('--models', help='outcome only; default gpt,qwen330b,nemotron')
+    parser.add_argument('--models', help='outcome only: the models to steer (default: the first wave)')
     parser.add_argument('--shards', help='outcome only: N per model, or model:N,...; default 3')
-    parser.add_argument('--cutoff', help='complement, outcome: no GPU row starts after this Rome time, e.g. 2026-10-24T06:00')
+    parser.add_argument('--cutoff', help='complement, outcome (required): no GPU row starts after this Rome time')
     args = parser.parse_args()
     print(seal(args.kind, args.name, args.tests, args))
 
