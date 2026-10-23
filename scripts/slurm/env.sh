@@ -1,0 +1,28 @@
+# Shared setup of every Slurm job. Source it from the repo root: source scripts/slurm/env.sh
+: "${SLURM_JOB_ID:?run this inside a Slurm job}"
+set -euo pipefail
+umask 077
+module load python/3.11.7 cuda/12.6
+export MFA=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe
+# Scratch files go in a short per-job folder: vLLM sockets fail when their path passes 107 characters.
+RUN=$MFA/r/$SLURM_JOB_ID
+mkdir -p "$RUN" "$MFA/logs"
+trap 'kill $(jobs -p) 2>/dev/null || true; sleep 5; rm -rf "$RUN"' EXIT
+export PATH=$MFA/envs/vllm-cu129/bin:$PATH PYTHONPATH=$PWD/src PYTHONDONTWRITEBYTECODE=1
+export HF_HOME=$MFA/cache/hf HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1
+export TIKTOKEN_ENCODINGS_BASE=$MFA/cache/tiktoken TIKTOKEN_RS_CACHE_DIR=$RUN/tiktoken  # gpt-oss tokenizer file; compute nodes are offline
+export TMPDIR=$RUN VLLM_RPC_BASE_PATH=$RUN XDG_CACHE_HOME=$RUN MPLCONFIGDIR=$RUN/mpl DSPY_CACHEDIR=$RUN/dspy
+export TORCH_HOME=$RUN/torch TRITON_CACHE_DIR=$RUN/triton TORCHINDUCTOR_CACHE_DIR=$RUN/inductor CUDA_CACHE_PATH=$RUN/cuda VLLM_CACHE_ROOT=$RUN/vllm
+export VLLM_USE_FLASHINFER_SAMPLER=0 TORCH_CUDA_ARCH_LIST=8.0
+export OMP_NUM_THREADS=1 OPENBLAS_NUM_THREADS=1 MKL_NUM_THREADS=1  # fork pools oversubscribe the CPUs otherwise
+# One port per job: two 2-GPU jobs can land on the same node.
+export PORT=$((20000 + SLURM_JOB_ID % 20000))
+
+# Start scripts/serve/MODEL.sh in the background and wait until it answers.
+start_server() {
+    bash "scripts/serve/$1.sh" > "$MFA/logs/$SLURM_JOB_ID-$1-server.log" 2>&1 &
+    until curl -sf "http://127.0.0.1:$PORT/health" > /dev/null; do
+        kill -0 $! || { tail -50 "$MFA/logs/$SLURM_JOB_ID-$1-server.log"; exit 1; }
+        sleep 5
+    done
+}
