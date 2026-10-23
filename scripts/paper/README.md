@@ -30,5 +30,5 @@ client and never enter run artifacts.
 Validate selection behavior with:
 
 ```sh
-python -m unittest discover -s tests -p test_paper_optimization.py
+PYTHONPATH=src python -m unittest discover -s tests/paper -p test_paper_optimization.py
 ```

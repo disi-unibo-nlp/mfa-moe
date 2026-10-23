@@ -1,13 +1,15 @@
 """Check the author's explicit abstract and heading exclusions before delivery.
 
-These lexical checks supplement native paper-writer semantic/page review. They
-do not judge scientific claims, figure legibility or reference-style cadence.
+These word checks add to the paper-writer review. They do not judge scientific claims, figure legibility or
+reference-style cadence.
+
+  python -m paper.verify_cl_author_style
 """
-from pathlib import Path
 import json
 import re
 
-PAPER = Path(__file__).resolve().parents[2] / "paper/6a510c6db0d9b08aa438c142"
+from paper.cl_paths import PAPER
+
 MODEL_NAMES = r"\b(?:GPT|Qwen\d*(?:\.\d+)?|Gemma|GLM|Nemotron|LFM[\d.]*)\b"
 
 

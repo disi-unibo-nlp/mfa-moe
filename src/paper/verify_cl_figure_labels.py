@@ -1,18 +1,19 @@
-"""Check the routing figure's actual PDF text against bar fills and interval strokes.
+"""Check the routing figure's PDF text against its bars and interval strokes.
 
-The expected labels are the numeric nodes of figures/journal/routing.tex, each checked against the
-routing.dat value it annotates. This supplements inspection of the rendered figure and integrated
-page. It measures the typeset output, including rotated text bounds and cap strokes.
+The expected labels are the numeric nodes of figures/journal/routing.tex, each checked against the routing.dat
+value it annotates. The typeset PDF (BUILD/figure-builds/routing/routing.pdf, made by build_cl_figures) must show
+exactly those labels, none touching a bar or a whisker. Writes BUILD/figure-labels-routing/LABEL_GEOMETRY.json.
+
+  python -m paper.verify_cl_figure_labels
 """
 from collections import Counter
-from pathlib import Path
-import hashlib
 import json
 import re
 
 import pymupdf
 
 from paper.cl_paths import BUILD, FIGURES
+from store import file_sha
 
 
 LABEL = re.compile(r'[\u2212-]?\d+(?:\.\d+)?')
@@ -45,7 +46,6 @@ def expected_labels(root):
 
 
 def main():
-    root = FIGURES
     pdf = BUILD / 'figure-builds/routing/routing.pdf'
     expected = Counter(expected_labels(FIGURES))
     labels, bars, strokes = [], [], []
@@ -82,12 +82,12 @@ def main():
                     for _, box in labels for bar in bars
                     if min(box.y1, bar.y1) > max(box.y0, bar.y0))
     rotated = []
-    for source in root.glob('*.tex'):
+    for source in FIGURES.glob('*.tex'):
         for number, line in enumerate(source.read_text().splitlines(), 1):
             if re.search(r'xticklabel style=\{[^}]*rotate=(?!0(?:,|\}))', line):
                 rotated.append((source.name, number))
     assert not rotated, ('nonhorizontal x-label declarations', rotated)
-    result = {'status': 'pass', 'pdf_sha256': hashlib.sha256(pdf.read_bytes()).hexdigest(),
+    result = {'status': 'pass', 'pdf_sha256': file_sha(pdf),
               'numeric_labels': len(labels), 'bars': len(bars),
               'expected_numeric_multiset_present': True,
               'short_stroke_segments_checked': len(strokes),
