@@ -1,7 +1,8 @@
-"""Export the whole-reasoning strength-sweep results into the journal manuscript.
+"""Write the whole-reasoning tables and figure data of the paper from the sealed EFFECTS_WHOLE.json receipt.
 
-Reads one sealed receipt, EFFECTS_WHOLE.json (src/steering/whole_effects.py::combine; no
-fitting or resampling here) and writes, relative to --out (default: the paper root):
+Reads one receipt (made by steering.whole_effects; no fitting or resampling here). Command:
+python -m paper.export_whole_results [--effects EFFECTS_WHOLE.json] [--out DIR]. It writes, below --out (default: the
+paper folder):
   journal/tables/whole.tex                 primary contrasts at full strength (8 models, pooled row)
   journal/tables/whole_cells.tex           per-cell length and accuracy effects (appendix)
   journal/tables/whole_occupancy.tex       per-cell response of the steered state (appendix)
@@ -27,13 +28,12 @@ import json
 import math
 import re
 
-from paper.cl_paths import DATA, FIGURES  # noqa: E402
-from paper.export_routing_results import (  # noqa: E402
-    DRIVER, MODELS, PAPER, REPO, TABLE_NAMES, TICKS, cid, sha, verified)
+from paper.cl_paths import PAPER, REPO
+from paper.export_routing_results import CLASSES, DRIVER, TABLE_NAMES, TICKS, cid
+from store import MODELS, file_sha, verified
 
-DEFAULT_EFFECTS = REPO / "report/whole-reasoning-20261021-r11/analysis-combined/EFFECTS_WHOLE.json"
+DEFAULT_EFFECTS = REPO / "report/whole-reasoning-20261021-r20/analysis-combined/EFFECTS_WHOLE.json"  # the final receipt
 PREREG = DRIVER / "EFFICIENCY_LINK_PREREG.json"
-CLASSES = ("Read", "Analyze", "Explore", "Plan", "Implement", "Verify", "Monitor")
 STATE = dict(zip(CLASSES, ("Re", "An", "Ex", "Pl", "Im", "Ve", "Mo")))
 OPERATIONS = ("promote", "suppress")
 DOSES = ("quarter", "half", "main")  # figure order, weakest first
@@ -740,12 +740,30 @@ def states_figure(grids, models, out):
     out.write_text("\n".join(lines) + "\n")
 
 
+def dose_data(series, panels, path):
+    """The coordinate file of the dose figure; whiskers are cut at the panel caps, as TeX cannot draw far-off ends."""
+    nan = float("nan")
+    columns = ["x"]
+    for name, _, _, has_error in panels:
+        for dose in DOSES:
+            columns += [f"{name}_{dose}"] + ([f"{name}_{dose}_p", f"{name}_{dose}_m"] if has_error else [])
+    rows = []
+    for x in range(9):
+        row = [x + 1]
+        for name, _, _, has_error in panels:
+            for dose in DOSES:
+                mean, margin = series[name][dose][x] or (nan, nan)
+                low, high = CAPS[name]
+                cut = [min(margin, max(high - mean, 0.)), min(margin, max(mean - low, 0.))]
+                row += [mean, *cut] if has_error else [mean]
+        rows.append(" ".join(format(v, ".6g") for v in row))
+    path.write_text(" ".join(columns) + "\n" + "\n".join(rows) + "\n")
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
-    parser.add_argument("--effects", type=Path, default=DEFAULT_EFFECTS,
-                        help="sealed EFFECTS_WHOLE.json")
-    parser.add_argument("--out", type=Path, default=PAPER,
-                        help="root to write under (default: the paper)")
+    parser.add_argument("--effects", type=Path, default=DEFAULT_EFFECTS, help="sealed EFFECTS_WHOLE.json")
+    parser.add_argument("--out", type=Path, default=PAPER, help="folder laid out like the paper (default: the paper)")
     args = parser.parse_args()
     effects, run_signs = verified(args.effects), verified(PREREG)
     if not set(effects["models"]) <= set(MODELS):
@@ -763,20 +781,15 @@ def main():
         source = str(args.effects.resolve().relative_to(REPO))
     except ValueError:
         source = str(args.effects.resolve())
-    # Tables, canonical figure sources and data live in the paper checkout. A test --out
-    # root holds all of them in the manuscript layout.
-    tables = args.out / "journal/tables"
-    data, figures = ((DATA, FIGURES) if args.out == PAPER else
-                     (args.out / "figures/journal/data", args.out / "figures/journal"))
+    tables, figures = args.out / "journal/tables", args.out / "figures/journal"
+    data = figures / "data"
     for folder in (tables, data):
         folder.mkdir(parents=True, exist_ok=True)
 
     record = {}
     (tables / "whole.tex").write_text(primary_table(effects, record, source, sweep_models))
-    (tables / "whole_cells.tex").write_text(
-        cells_table(effects, record, source, base, cells, prereg))
-    (tables / "whole_occupancy.tex").write_text(
-        occupancy_table(effects, record, source, base, cells))
+    (tables / "whole_cells.tex").write_text(cells_table(effects, record, source, base, cells, prereg))
+    (tables / "whole_occupancy.tex").write_text(occupancy_table(effects, record, source, base, cells))
     (tables / "whole_levels.tex").write_text(levels_table(effects, record, source))
 
     import pandas as pd
@@ -787,24 +800,7 @@ def main():
     panels = (("tok", r"(a) Reasoning-token change, targeted $-$ random (\%)", 1, True),
               ("acc", "(b) Accuracy change, targeted $-$ random (pp)", 1, True),
               ("cap", r"(c) Targeted continuations at the length limit (\%)", 1, False))
-    nan = float("nan")
-    columns = ["x"]
-    for name, _, _, has_error in panels:
-        for dose in DOSES:
-            columns += [f"{name}_{dose}"] + ([f"{name}_{dose}_p", f"{name}_{dose}_m"]
-                                             if has_error else [])
-    rows = []
-    for x in range(9):
-        row = [x + 1]
-        for name, _, _, has_error in panels:
-            for dose in DOSES:
-                mean, margin = series[name][dose][x] or (nan, nan)
-                # Whiskers are cut at the panel caps here: TeX cannot draw a far-off end it clips.
-                low, high = CAPS[name]
-                cut = [min(margin, max(high - mean, 0.)), min(margin, max(mean - low, 0.))]
-                row += [mean, *cut] if has_error else [mean]
-        rows.append(" ".join(format(v, ".6g") for v in row))
-    (data / "whole_dose.dat").write_text(" ".join(columns) + "\n" + "\n".join(rows) + "\n")
+    dose_data(series, panels, data / "whole_dose.dat")
     dose_figure(series, panels, figures / "whole_dose.tex")
 
     models = [m for m in MODELS if m in cells]
@@ -815,7 +811,7 @@ def main():
     states_figure(grids, models, figures / "whole_states.tex")
 
     summary = {
-        "receipt": {"path": source, "file_sha256": sha(args.effects),
+        "receipt": {"path": source, "file_sha256": file_sha(args.effects),
                     "seal_sha256": effects["sha256"], "bootstrap_draws": effects["bootstrap_draws"],
                     "seed": effects["seed"], "models": effects["models"], "base_dose": base},
         "prereg": {"path": str(link_path.relative_to(REPO)), "seal_sha256": prereg["sha256"]},
