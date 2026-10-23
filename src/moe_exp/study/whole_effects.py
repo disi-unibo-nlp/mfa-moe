@@ -188,21 +188,30 @@ def _source_table(source: dict) -> pd.DataFrame:
 
     A source may list top-up releases ('topups') that ran the never-started rows of its failed shards;
     their outcomes join the source's manifest by UID. It may also list complement releases
-    ('complements', whole.complement_manifest) whose new cells join the source's rows by family.
+    ('complements', whole.complement_manifest) whose new cells join the source's rows by family, each
+    followed by the continuations of that complement (whole.continuation_manifest), whose outcomes join
+    the complement's rows by UID like a top-up.
     """
     model, root = source['model'], Path(source['root'])
     value = verified(manifest_path(model, source['dose'], root))
+    base_sha256 = value['sha256']
     parts = [_extracted(root, model, value)]
     for topup in map(Path, source.get('topups', [])):
         planned = verified(manifest_path(model, source['dose'], topup))
         require(planned['parent_manifest_sha256'] == value['sha256'], 'top-up belongs to another manifest')
         parts.append(_extracted(topup, model, planned))
+    complement_sha256 = set()
     for complement in map(Path, source.get('complements', [])):
         planned = verified(manifest_path(model, source['dose'], complement))
-        require(planned['design'] == 'complement' and planned['parent_manifest_sha256'] == value['sha256'],
-                'complement belongs to another manifest')
+        if planned['design'] == 'continuation':
+            # Its rows are rows of an earlier complement in this list, so the table gains none.
+            require(planned['parent_manifest_sha256'] in complement_sha256, 'continuation belongs to another manifest')
+        else:
+            require(planned['design'] == 'complement' and planned['parent_manifest_sha256'] == base_sha256,
+                    'complement belongs to another manifest')
+            complement_sha256.add(planned['sha256'])
+            value = {**value, 'records': value['records']+planned['records']}
         parts.append(_extracted(complement, model, planned))
-        value = {**value, 'records': value['records']+planned['records']}
     observed = pd.concat([part[0] for part in parts], ignore_index=True)
     sentences = pd.concat([part[1] for part in parts], ignore_index=True)
     by_uid = {r['uid']: r for r in observed.to_dict('records')}

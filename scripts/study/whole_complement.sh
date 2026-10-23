@@ -2,8 +2,14 @@
 # Seal a whole-reasoning complement release (the suppress cells the base releases left out), submit
 # its job graph (allocated validation -> shards -> extraction, monitor, combined analysis of r7-r17
 # plus this release) and queue the paper export of the combined receipt into a staging folder.
-#   scripts/study/whole_complement.sh NAME LOCAL_TESTS
+#   scripts/study/whole_complement.sh NAME LOCAL_TESTS [SEALER_OPTIONS...]
 #   e.g. scripts/study/whole_complement.sh whole-reasoning-20261021-r18 107
+# A follow-up of a complement release (its never-started and interrupted rows, a later cutoff, the
+# eight-model efficiency link) passes the sealer's options through:
+#   scripts/study/whole_complement.sh whole-reasoning-20261021-r21 160 \
+#       --continue-from whole-reasoning-20261021-r18 --cutoff 2026-10-25T06:00
+# Print its plan first (seals and submits nothing):
+#   python -m moe_exp.study.whole_complement --continue-from whole-reasoning-20261021-r18 --plan
 # Needs a clean src/tests/scripts tree (commit first).
 set -euo pipefail
 cd "$(dirname "$0")/../.."
@@ -15,8 +21,10 @@ mkdir -p "$TMP"
 
 # 1. Seal: receipts, COMPLEMENT.json, SOURCES.json, the code snapshot and launch.env.
 TMPDIR="$TMP" PYTHONPATH=src:scripts/experimental_resume PYTHONDONTWRITEBYTECODE=1 \
-  "$PY" -B -m moe_exp.study.whole_complement --name "$name" --local-tests "$tests"
-set -a; source "report/$name/launch.env"; set +a
+  "$PY" -B -m moe_exp.study.whole_complement --name "$name" --local-tests "$tests" "${@:3}"
+unset LINK; set -a; source "report/$name/launch.env"; set +a
+# A follow-up names the efficiency-link receipt its combined analysis uses (launch.env LINK).
+[ -z "${LINK:-}" ] || export WHOLE_LINK=$LINK
 REL=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/releases/$COMMIT
 export PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=$REL/src:$REL/scripts/experimental_resume TMPDIR="$TMP" \
        STUDY_DATA_ROOT=$REPO/report/final-routing-20261015-r1 WHOLE_ROOT=$REPO/report/$name \

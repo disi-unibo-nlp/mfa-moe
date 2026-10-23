@@ -3,9 +3,10 @@
 The frozen manifest owns family order, original prompts, doses and seeds. Plain
 receipts bind fresh stores and report canary/production gates; no historical
 continuation is reused, except that a resume release (RESUME.json) continues rows
-a base release left partial, from seeded copies of their saved tokens. Run through
-scripts/study/driver.sh with STUDY_MODULE set to moe_exp.study.whole and
-RELEASE_ROOT set to a materialized commit.
+a base release left partial, from seeded copies of their saved tokens, and a
+continuation release (CONTINUATION.json) does that and also runs the rows its
+parent never started. Run through scripts/study/driver.sh with STUDY_MODULE set
+to moe_exp.study.whole and RELEASE_ROOT set to a materialized commit.
 """
 from __future__ import annotations
 
@@ -68,6 +69,8 @@ CANARY_MINUTES = {model: plan['canary_minutes'] for model, plan in PLAN.items()}
 ROOT = Path(os.environ.get('WHOLE_ROOT', REPO/'report/whole-reasoning-20261020'))
 # Bootstrap draws and seed shared by every whole-reasoning interval.
 DRAWS, SEED = 10000, 20261015
+# Manifest designs that continue rows from saved PARTIAL.json files of a parent store.
+RESUMING_DESIGNS = ('resume', 'continuation')
 
 
 def manifest_path(model: str, dose: str, root: Path | None = None) -> Path:
@@ -321,15 +324,15 @@ def prepare_model(b: dict, model: str, scope: bool) -> dict:
     """Derive one model's nominations and publish its manifests.
 
     A base release publishes the main and half-dose manifests; a sweep release publishes the one sweep
-    dose and selects it (no canary). A top-up or resume release (TOPUP.json / RESUME.json) publishes
-    the rows it takes over from its parent, with the parent's dose and no canary.
+    dose and selects it (no canary). A top-up, resume or continuation release (TOPUP.json / RESUME.json /
+    CONTINUATION.json) publishes the rows it takes over from its parent, with the parent's dose and no canary.
     """
     from moe_exp.outcome_steering.manifest import outcome_manifest
     builders = {'TOPUP.json': topup_manifest, 'RESUME.json': resume_manifest, 'OUTCOME.json': outcome_manifest,
-                'COMPLEMENT.json': complement_manifest}
+                'COMPLEMENT.json': complement_manifest, 'CONTINUATION.json': continuation_manifest}
     present = [name for name in builders if (ROOT/name).exists()]
     require(len(present) <= 1,
-            'a release is either a top-up, a resume or an outcome-steering release (or a complement)')
+            'a release is either a top-up, a resume or an outcome-steering release (or a complement or continuation)')
     if present:
         spec = verified(ROOT/present[0])['models'][model]
         return {model+':'+SWEEP[model]: builders[present[0]](model, spec)}
@@ -494,6 +497,77 @@ def resume_manifest(model: str, spec: dict) -> dict:
     return {key: value[key] for key in ('sha256', 'planned', 'executable', 'scope')}
 
 
+def saved_status(store: driver.Store, uid: str) -> str | None:
+    """A row's saved state read from file presence, in Store.state order, without opening any file."""
+    folder = store.folder(uid)
+    return next((status for name, status in (('RESULT.json', 'complete'), ('OUTPUT.json', 'output'),
+                                              ('PARTIAL.json', 'partial')) if (folder/name).exists()), None)
+
+
+def unfinished_rows(base: dict, store: driver.Store) -> tuple[list[dict], Counter]:
+    """Split a manifest's rows by saved state, for a release that continues its parent.
+
+    Args:
+        base: The parent's manifest.
+        store: The parent's store, only read.
+
+    Returns:
+        The nominated rows that never started or were left partial (manifest order), and a count of every
+        row by state: never_started, partial, complete, output (crashed between output and result; these
+        stay with the parent, which cannot re-admit them) and not_nominated (never executable).
+    """
+    rows, counts = [], Counter()
+    for row in base['records']:
+        status = saved_status(store, row['uid']) if row['nomination_status'] == 'nominated' else 'not_nominated'
+        counts[status or 'never_started'] += 1
+        if status in (None, 'partial'):
+            rows.append(row)
+    return rows, counts
+
+
+def started_families(base: dict, store: driver.Store) -> set[str]:
+    """Families of a manifest with any saved state in the store (a shard that started touches its families)."""
+    return {row['family'] for row in base['records']
+            if row['nomination_status'] == 'nominated' and saved_status(store, row['uid'])}
+
+
+def continuation_manifest(model: str, spec: dict) -> dict:
+    """Publish the never-started and interrupted rows of a parent release as this release's manifest.
+
+    The top-up and resume builders read a base release; this one reads any parent, including a complement
+    release, and does both jobs in one release (r11-r17 needed a top-up and a resume per parent). It runs
+    every nominated row of the parent that has no saved state and continues every row left PARTIAL, with
+    the parent's UIDs, seeds and actions. The saved tokens of a partial are copied into this release's own store
+    (seed_resume); the parent's store is only read. Rows the parent finished, or left as OUTPUT, stay
+    with it; whole_effects joins every outcome to the parent's rows by UID.
+
+    Args:
+        model: Model whose parent release has unfinished rows.
+        spec: {'parent': root of the parent release, which holds its manifest of this model and dose and its
+            stores}. The parent's shards must all have ended.
+    """
+    dose, parent = SWEEP[model], Path(spec['parent'])
+    base = verified(manifest_path(model, dose, parent))
+    store = driver.Store(parent/'stores'/model/dose/'units')
+    rows, counts = unfinished_rows(base, store)
+    require(rows, 'continuation has no unfinished rows')
+    # Each partial must be this very assignment's, or its saved tokens would continue another draw.
+    sources = {}
+    for row in rows:
+        if saved_status(store, row['uid']) == 'partial':
+            require(load(store.folder(row['uid'])/'PARTIAL.json').get('assignment_sha256') == digest(row),
+                    f'partial belongs to another assignment: {row["uid"]}')
+            sources[row['uid']] = str(parent)
+    kept = {k: v for k, v in base.items() if k not in ('sha256', 'records', 'planned', 'executable')}
+    value = publish(manifest_path(model, dose), {
+        **kept, 'records': rows, 'planned': len(rows), 'executable': len(rows), 'design': 'continuation',
+        'parent_root': str(parent), 'parent_manifest_sha256': base['sha256'], 'resume_sources': sources,
+        'parent_states': dict(counts)})
+    publish(ROOT/model/'SELECTED.json', {'dose': dose, 'manifest_sha256': value['sha256'], 'canary_job': None,
+                                         'sweep': True, 'continuation': True})
+    return {key: value[key] for key in ('sha256', 'planned', 'executable', 'scope')}
+
+
 def manifest(model: str, dose: str | None = None) -> dict:
     """Read the selected manifest; selection is fixed by the passing canary (or the sweep)."""
     if dose is None:
@@ -509,22 +583,38 @@ def bound_store(model: str, dose: str, canary: bool = False) -> driver.Store:
     require(Path(release['release_root']).resolve() == REPO, 'whole code is outside its immutable materialized release')
     folder = ROOT/'stores'/model/dose/('canary' if canary else 'units')
     identity = {'manifest_sha256': value['sha256'], 'release_sha256': release['sha256'], 'canary': canary}
-    if (folder/'EXECUTION.json').exists():
-        require({k: v for k, v in verified(folder/'EXECUTION.json').items() if k != 'sha256'} == identity,
-                'whole store belongs to a different release')
-    else:
-        require(not folder.exists() or not any(folder.iterdir()), 'nonempty unbound whole store')
-        publish(folder/'EXECUTION.json', identity)
+    # The shards of one model start together. Without the lock a later shard finds the first one's
+    # half-written receipt in the folder and fails as "nonempty unbound" (r15, r16 and r18 each lost
+    # shards this way). The lock file sits beside the folder, so the folder itself stays empty until bound.
+    with locked(folder.parent, 'bind-'+folder.name):
+        if (folder/'EXECUTION.json').exists():
+            require({k: v for k, v in verified(folder/'EXECUTION.json').items() if k != 'sha256'} == identity,
+                    'whole store belongs to a different release')
+        else:
+            require(not folder.exists() or not any(folder.iterdir()), 'nonempty unbound whole store')
+            publish(folder/'EXECUTION.json', identity)
     return driver.Store(folder)
+
+
+def bind_sweep_stores() -> None:
+    """Bind the store of every sweep model while no shard exists yet.
+
+    The shards of a sweep, top-up, resume, complement or continuation release start only after the
+    validation job, so binding here leaves nothing for them to race on (bound_store also serializes
+    concurrent binders). A model whose preparation failed has no manifest and stays unbound.
+    """
+    for model, dose in SWEEP.items():
+        if manifest_path(model, dose).exists():
+            bound_store(model, dose)
 
 
 def check_saved_state(value: dict, rows: list[dict], store: driver.Store,
                       canary: bool = False) -> None:
     """Refuse a shard that would redraw or overwrite saved work.
 
-    Execution is fresh: no row of the shard may have saved state. The one exception is a resume
-    release, which continues its own seeded partial rows, provided each is a PARTIAL of this
-    manifest's assignment (never a complete, output or foreign state).
+    Execution is fresh: no row of the shard may have saved state. The one exception is a resume or
+    continuation release, which continues its own seeded partial rows, provided each is a PARTIAL of
+    this manifest's assignment (never a complete, output or foreign state).
 
     Args:
         value: The selected manifest.
@@ -532,7 +622,7 @@ def check_saved_state(value: dict, rows: list[dict], store: driver.Store,
         store: The release's bound store.
         canary: Canary shards never resume.
     """
-    resume = value.get('design') == 'resume' and not canary
+    resume = value.get('design') in RESUMING_DESIGNS and not canary
     planned = {row['uid'] for row in value['records']}
     for row in rows:
         state = store.state(row['uid'])
@@ -556,7 +646,8 @@ def seed_resume(model: str, value: dict, rows: list[dict], store: driver.Store,
 
     Args:
         model: Model of the shard.
-        value: The selected resume manifest; 'resume_sources' maps each UID to its partial's root.
+        value: The selected resume or continuation manifest; 'resume_sources' maps each UID that has a
+            partial to the root holding it.
         rows: This shard's rows.
         store: The release's bound store.
         shard: (index, count) of the shard.
@@ -564,11 +655,15 @@ def seed_resume(model: str, value: dict, rows: list[dict], store: driver.Store,
     Returns:
         The published seeding receipt.
     """
-    require(value.get('design') == 'resume', 'only a resume release seeds saved partials')
+    require(value.get('design') in RESUMING_DESIGNS, 'only a resume release seeds saved partials')
+    sources = value['resume_sources']
+    # A continuation also holds never-started rows: they have no partial to copy and start fresh.
+    require(value['design'] == 'continuation' or all(row['uid'] in sources for row in rows),
+            'a resume row has no saved partial')
     seeded = []
-    for row in rows:
+    for row in (row for row in rows if row['uid'] in sources):
         uid = row['uid']
-        origin = Path(value['resume_sources'][uid])/'stores'/model/value['dose']/'units'
+        origin = Path(sources[uid])/'stores'/model/value['dose']/'units'
         path = driver.Store(origin).folder(uid)/'PARTIAL.json'
         partial = load(path)
         require(partial['uid'] == uid and partial['assignment_sha256'] == digest(row),
@@ -794,7 +889,7 @@ def run(model, shard, deadline, *, max_inflight=64, canary=False, dose=None):
         # A shard that starts after the science cutoff leaves its rows unknown without loading the model.
         driver.log({'event': 'whole-shard-after-cutoff', 'model': model, 'shard': list(shard)})
         return None
-    if value.get('design') == 'resume' and not canary:
+    if value.get('design') in RESUMING_DESIGNS and not canary:
         seed_resume(model, value, rows, store, shard)
     executable = admission_order([r for r in rows if r['nomination_status'] == 'nominated'])
     b = driver.binding()
@@ -1337,10 +1432,11 @@ def validate_stage() -> None:
     require(native_quota > 14*2**30, 'WORK reserve is insufficient for the bounded whole experiment')
     preparation = prepare()
     nomination_proof = audit_nominations()
+    bind_sweep_stores()
     # The suite tests the default GPT/Qwen3.6 configuration plus explicit multi-model cases, so it runs
     # in a fresh interpreter without this release's model selection.
     settings = ('WHOLE_MODELS', 'WHOLE_GPU_CEILING', 'WHOLE_CPU_CEILING', 'WHOLE_CUTOFF', 'WHOLE_SWEEP',
-                'WHOLE_SHARDS')
+                'WHOLE_SHARDS', 'WHOLE_LINK')
     env = {k: v for k, v in os.environ.items() if k not in settings}
     tests, failed = 0, False
     for folder in ('tests/study', 'tests/outcome_steering'):

@@ -12,7 +12,13 @@ single authorized graph. See report/whole-reasoning-20261020/README.md for gates
 counts, endpoints and the 72 GPU-hour / 16 CPU-core-hour limits.
 A complement release (`whole_complement.py`, COMPLEMENT.json) adds the suppress cells a base
 release left out; `whole_effects.combine` joins them to the base rows by family through a
-source's `complements` list, and they enter only the per-cell effects.
+source's `complements` list, and they enter only the per-cell effects. A complement whose shards
+could not all start or finish before its cutoff gets one follow-up release
+(`whole_complement.py --continue-from PARENT`, CONTINUATION.json, `whole.continuation_manifest`):
+it runs the rows the parent never started and continues the ones it left PARTIAL, with the
+parent's UIDs and seeds, after all the parent's shard jobs ended. `--plan` prints the counts and
+shards first. The follow-up is added to its parent's source in `complements`, and its combine runs
+under the eight-model efficiency link (`WHOLE_LINK`).
 
 Python implementation for the final routing study. Run it with
 `python -m moe_exp.study`; use `--help` for commands.

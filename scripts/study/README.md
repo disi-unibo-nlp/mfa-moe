@@ -22,6 +22,10 @@ in place until their accepted jobs and frozen dependencies can be archived.
 suppress cells the base releases left out (states tied to shorter reasoning), at each model's base
 strength, plus a new combined analysis of every whole-reasoning release and a staged paper export.
 Python: `src/moe_exp/study/whole_complement.py` and `whole.complement_manifest`.
+A follow-up of a complement that ran out of time passes the sealer's options through, e.g.
+`whole_complement.sh NAME TESTS --continue-from PARENT --cutoff 2026-10-25T06:00`; it runs the parent's
+never-started and interrupted rows (`whole.continuation_manifest`) and combines under the eight-model
+efficiency link. Run `python -m moe_exp.study.whole_complement --continue-from PARENT --plan` first.
 
 After an explicitly authorized code correction, `run.sh submit --replace-terminal` requires all prior allocations to be terminal and a source-matched release receipt in `study-reviews/`. It preserves the previous binding and journals. Ordinary `submit` and `resume` reuse the active release.
 
