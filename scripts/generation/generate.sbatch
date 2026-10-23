@@ -8,6 +8,6 @@ source scripts/slurm/env.sh
 start_server $1
 END=$(date -d "$(squeue -h -j $SLURM_JOB_ID -o %e)" +%s)  # stop starting requests 3 hours before the time limit
 export VLLM_VERSION_RECORD=$(sed -n 's/^Version: \([0-9.]*\).*/\1/p' $MFA/envs/vllm-cu129/lib/python3.11/site-packages/vllm-*.dist-info/METADATA)
-python -B -m moe_exp.generation.generate --profile $1 --save-token-ids --datasets $2 --num-shards $4 --shard-index $3 \
+python -m moe_exp.generation.generate --profile $1 --save-token-ids --datasets $2 --num-shards $4 --shard-index $3 \
   --seed 20260925 --workers 16 --timeout 21600 --deadline-epoch $((END - 3 * 3600)) \
-  --base-url http://127.0.0.1:$PORT/v1 --output-dir $MFA/repo/results/correlation_pipeline/card-v3/$1/generation
+  --base-url $URL --output-dir $MFA/repo/results/correlation_pipeline/card-v3/$1/generation

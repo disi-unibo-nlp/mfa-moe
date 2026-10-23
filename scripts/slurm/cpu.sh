@@ -4,4 +4,5 @@
 #SBATCH --output=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/logs/%x-%j.out
 # Run one Python module on a CPU node: sbatch -J NAME scripts/slurm/cpu.sh MODULE ARGS...
 source scripts/slurm/env.sh
-python -B -m "$@"
+export OMP_NUM_THREADS=$SLURM_CPUS_PER_TASK OPENBLAS_NUM_THREADS=$SLURM_CPUS_PER_TASK MKL_NUM_THREADS=$SLURM_CPUS_PER_TASK
+python -m "$@"
