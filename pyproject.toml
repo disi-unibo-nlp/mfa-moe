@@ -30,7 +30,7 @@ dependencies = [
 ]
 
 [project.scripts]
-gepa-llm-as-judge = "moe_exp.gepaLLMAsJudge.run:main"
+gepa-llm-as-judge = "moe_exp.labeling.gepa.run:main"
 correlation-generate = "moe_exp.generation.generate:main"
 
 [project.optional-dependencies]

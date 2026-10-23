@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 
-ROOT = Path(__file__).resolve().parents[1]
+ROOT = Path(__file__).resolve().parents[2]
 PROGRAM = (
     ROOT
     / "results/gepaLLMAsJudge/qwen3.8-27b-medium-final-s42-v3"
@@ -13,10 +13,7 @@ PROGRAM = (
 
 dspy = pytest.importorskip("dspy")
 
-from moe_exp.correlation_pipeline.batch_predictor import (  # noqa: E402
-    load_program_and_adapter,
-    render_conversation,
-)
+from moe_exp.labeling.batch_predictor import load_program_and_adapter, render_conversation
 
 SAMPLE = {
     "problem_statement": "What is 2+2?",

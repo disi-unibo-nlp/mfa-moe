@@ -1,7 +1,7 @@
 """Version-aware segmentation preserving exact saved historical annotations."""
 def install():
     import sys
-    from moe_exp.correlation_pipeline import spans
+    from moe_exp.labeling import spans
     if getattr(spans.sentence_spans,'_measurement_versioned',False):return
     current=spans.sentence_spans;legacy=spans.sentence_spans_v1
     def versioned(trace):
@@ -16,7 +16,7 @@ def install():
         if module is not None:module.sentence_spans=versioned
 
 def infer_schema(trace, annotation):
-    from moe_exp.correlation_pipeline import spans
+    from moe_exp.labeling import spans
     units=annotation['units']
     indices=[u['index'] for u in units]
     if len(set(indices))!=len(indices):raise ValueError('Duplicate saved annotation indices')

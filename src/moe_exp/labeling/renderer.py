@@ -2,7 +2,7 @@
 
 `OriginalRenderer` is `research_campaign_v3_r6.annotation.Renderer` and `token_ids` is
 `research_campaign_v3_r6.reader_contract.token_ids`, both vendored verbatim. The reader child runs as the module
-`moe_exp.study.renderer_child` (it was the script `scripts/research_campaign_v3_r6/renderer.py`).
+`moe_exp.labeling.renderer_child` (it was the script `scripts/research_campaign_v3_r6/renderer.py`).
 """
 import json
 import os
@@ -16,7 +16,7 @@ from moe_exp.receipts import check_files, require
 class OriginalRenderer:
     def __init__(self,campaign):
         check_files(campaign["renderer"]["files"])
-        self.child=subprocess.Popen([sys.executable,"-B","-m","moe_exp.study.renderer_child",
+        self.child=subprocess.Popen([sys.executable,"-B","-m","moe_exp.labeling.renderer_child",
             campaign["annotator"]["program"]],stdin=subprocess.PIPE,stdout=subprocess.PIPE,text=True,
             env={**os.environ,"PYTHONPATH":os.pathsep.join(filter(None,[str(Path(__file__).resolve().parents[2]),os.environ.get("PYTHONPATH")])),
                  "DSPY_CACHEDIR":os.environ["TMPDIR"]+"/dspy","LITELLM_LOCAL_MODEL_COST_MAP":"True"})

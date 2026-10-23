@@ -6,9 +6,9 @@ import sys
 import unittest
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).parents[1] / "src"))
+sys.path.insert(0, str(Path(__file__).parents[2] / "src"))
 
-from moe_exp.correlation_pipeline.spans import (  # noqa: E402
+from moe_exp.labeling.spans import (
     math_protection_spans,
     map_selection_to_v2,
     sentence_spans,

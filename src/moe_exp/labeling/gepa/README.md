@@ -32,7 +32,7 @@ never silently modified. Every run writes `annotation_audit_*.json`, and the
 same audit can be run without a model:
 
 ```bash
-python -m moe_exp.gepaLLMAsJudge.audit \
+python -m moe_exp.labeling.gepa.audit \
   --dataset-dir data/Schoenfeld_Reasoning \
   --output results/gepaLLMAsJudge/annotation_audit.json
 ```
@@ -86,7 +86,7 @@ primary metric unless the configured label ordering is substantively justified.
 First compare configurations using nested response-grouped cross-validation:
 
 ```bash
-python -m moe_exp.gepaLLMAsJudge.run \
+python -m moe_exp.labeling.gepa.run \
   --dataset-dir data/Schoenfeld_Reasoning \
   --prompt-variant few-shot \
   --few-shot-examples 21 \
@@ -106,7 +106,7 @@ does not produce one deployable prompt; use it to choose the configuration.
 Fit the chosen configuration without evaluating the locked test:
 
 ```bash
-python -m moe_exp.gepaLLMAsJudge.run \
+python -m moe_exp.labeling.gepa.run \
   --dataset-dir data/Schoenfeld_Reasoning \
   --prompt-variant few-shot \
   --few-shot-examples 21 \
@@ -120,7 +120,7 @@ Only after configuration and prompt-selection rules are frozen, explicitly
 authorize the one-time locked-test evaluation:
 
 ```bash
-python -m moe_exp.gepaLLMAsJudge.run \
+python -m moe_exp.labeling.gepa.run \
   --dataset-dir data/Schoenfeld_Reasoning \
   --prompt-variant few-shot \
   --few-shot-examples 21 \

@@ -50,7 +50,7 @@ def normalize_annotation(trace, annotation):
     import copy
     from moe_exp.capture.sentence_schema import install,infer_schema
     install();infer_schema(trace,annotation)
-    from moe_exp.correlation_pipeline.spans import sentence_spans,selected_sentence_indices,validate_annotation
+    from moe_exp.labeling.spans import sentence_spans, selected_sentence_indices, validate_annotation
     a=copy.deepcopy(annotation)
     # Compact batch joins omit this field; the content-bound source retains it.
     if 'sentence_selection' not in a:a['sentence_selection']=copy.deepcopy(trace.metadata.get('sentence_selection'))
@@ -125,7 +125,7 @@ def main():
     from moe_exp.capture.sentence_schema import install
     install()
     from moe_exp.schemas import TraceRecord
-    from moe_exp.correlation_pipeline.spans import trace_digest,validate_annotation
+    from moe_exp.labeling.spans import trace_digest, validate_annotation
     from moe_exp.correlation_pipeline.dynamics.classes import saved_layout
     campaign=json.loads((a.bundle/'campaign.json').read_text());spec=campaign['sources'][a.source]
     for path,expected in campaign['runtime_code_hashes'].items():

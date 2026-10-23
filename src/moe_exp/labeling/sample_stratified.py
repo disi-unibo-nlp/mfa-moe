@@ -51,7 +51,7 @@ Outputs
 
 The module is CPU-only and needs no GPU::
 
-    PYTHONPATH=src python -m moe_exp.correlation_pipeline.sample_stratified \
+    PYTHONPATH=src python -m moe_exp.labeling.sample_stratified \
         --generation-dir results/correlation_pipeline/nemotron-nvfp4-dspark/generation \
         --generation-model nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4 \
         --output-dir results/correlation_pipeline/nemotron-nvfp4-dspark/reasoning-vllm-v1/sampling-100k-stratified \
@@ -75,9 +75,9 @@ from fractions import Fraction
 from pathlib import Path
 from typing import Any
 
-from moe_exp.correlation_pipeline.annotation_partition import capped_quotas
+from moe_exp.labeling.annotation_partition import capped_quotas
 from moe_exp.generation.generate import _model_slug, _write_json_atomic
-from moe_exp.correlation_pipeline.spans import digest, sentence_spans, trace_digest
+from moe_exp.labeling.spans import digest, sentence_spans, trace_digest
 from moe_exp.io import iter_jsonl
 from moe_exp.schemas import TraceRecord
 

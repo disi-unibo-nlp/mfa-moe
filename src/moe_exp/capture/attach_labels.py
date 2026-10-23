@@ -145,7 +145,7 @@ def attach_one(row, membership, done, manifest, records, annotation_inputs):
     from moe_exp.capture.sentence_schema import install
     install()
     from moe_exp.schemas import TraceRecord
-    from moe_exp.correlation_pipeline.spans import trace_digest, validate_annotation
+    from moe_exp.labeling.spans import trace_digest, validate_annotation
     from moe_exp.correlation_pipeline.dynamics.classes import sentence_table, saved_layout
     source = read_location(membership['locations'][0])
     trace = TraceRecord(**source)

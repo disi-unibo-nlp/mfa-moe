@@ -13,7 +13,7 @@ from typing import Any
 
 import dspy
 
-from .data import (
+from moe_exp.labeling.gepa.data import (
     SENTENCE_LABELS,
     EpisodeDocument,
     annotation_audit,
@@ -22,13 +22,13 @@ from .data import (
     make_nested_group_folds,
     split_documents,
 )
-from .metrics import (
+from moe_exp.labeling.gepa.metrics import (
     LabelParseError,
     compute_classification_metrics,
     compute_sentence_agreement,
     parse_sentence_label,
 )
-from .prompts import (
+from moe_exp.labeling.gepa.prompts import (
     SEED_INSTRUCTIONS,
     build_few_shot_instructions,
     select_few_shot_sentences,

@@ -7,7 +7,7 @@ from types import SimpleNamespace
 
 
 def items(n):
-    from moe_exp.correlation_pipeline.annotation_batch import digest
+    from moe_exp.labeling.annotation_batch import digest
     result = []
     for i in range(n):
         trace = SimpleNamespace(dataset='a' if i % 2 else 'b', problem_id='same', sample_id=i,
@@ -24,7 +24,7 @@ def items(n):
 
 
 def test_genuine_cross_trace_batches_and_zero_request_resume(tmp_path):
-    module = importlib.import_module('moe_exp.correlation_pipeline.annotation_batch')
+    module = importlib.import_module('moe_exp.labeling.annotation_batch')
     calls = []
     def classify(batch):
         calls.append(len(batch))
@@ -51,7 +51,7 @@ UNKNOWN_OUTCOME = {
 
 
 def test_unknown_outcome_is_persisted_and_resumes_without_requests(tmp_path):
-    module = importlib.import_module('moe_exp.correlation_pipeline.annotation_batch')
+    module = importlib.import_module('moe_exp.labeling.annotation_batch')
     calls = []
 
     def classify(batch):
@@ -87,7 +87,7 @@ def test_unknown_outcome_is_persisted_and_resumes_without_requests(tmp_path):
 
 
 def test_all_valid_run_keeps_the_legacy_record_and_summary_shape(tmp_path):
-    module = importlib.import_module('moe_exp.correlation_pipeline.annotation_batch')
+    module = importlib.import_module('moe_exp.labeling.annotation_batch')
     calls = []
 
     def classify(batch):

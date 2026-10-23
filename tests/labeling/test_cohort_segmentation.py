@@ -2,8 +2,8 @@ import json
 
 import pytest
 
-from moe_exp.correlation_pipeline import sample_cohorts
-from moe_exp.correlation_pipeline.spans import reasoning_ranges, sentence_spans
+from moe_exp.labeling import sample_cohorts
+from moe_exp.labeling.spans import reasoning_ranges, sentence_spans
 from moe_exp.schemas import TraceRecord
 
 REASONING = "First we set up the equation. Then we carve at each corner. So the answer is 4."

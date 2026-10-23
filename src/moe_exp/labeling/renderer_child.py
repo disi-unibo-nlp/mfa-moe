@@ -1,6 +1,6 @@
 """Bounded worker child for the exact original DSPy program, renderer and parser.
 
-Run as `python -m moe_exp.study.renderer_child PROGRAM` by `OriginalRenderer`; moved unchanged from
+Run as `python -m moe_exp.labeling.renderer_child PROGRAM` by `OriginalRenderer`; moved unchanged from
 `scripts/research_campaign_v3_r6/renderer.py` except the repository depth of `__file__`.
 """
 import json
@@ -12,7 +12,12 @@ def main():
     repo=Path(__file__).resolve().parents[3]
     sys.path.insert(0,str(repo/".research-runtime/original-renderer"))
     sys.path.insert(0,str(repo/"src"))
-    from moe_exp.correlation_pipeline.batch_predictor import load_program_and_adapter,render_conversation,parse_completion,parse_failure_types
+    from moe_exp.labeling.batch_predictor import (
+        load_program_and_adapter,
+        render_conversation,
+        parse_completion,
+        parse_failure_types,
+    )
     program,predict,adapter=load_program_and_adapter(sys.argv[1])
     for line in sys.stdin:
         item=json.loads(line)

@@ -9,7 +9,7 @@ import math
 import re
 from typing import Any, Iterable
 
-from moe_exp.gepaLLMAsJudge.data import SENTENCE_LABELS
+from moe_exp.labeling.gepa.data import SENTENCE_LABELS
 
 SPAN_SCHEMA_VERSION = 1
 
@@ -364,7 +364,7 @@ def validate_annotation(trace: Any, annotation: dict[str, Any]) -> None:
         if labeled.get("status") == "unknown":
             if "label" in labeled:
                 raise ValueError("Unknown outcomes cannot carry a class label")
-            from moe_exp.correlation_pipeline.annotation_batch import _unknown_record
+            from moe_exp.labeling.annotation_batch import _unknown_record
             _unknown_record({}, labeled)
         elif labeled.get("label") not in SENTENCE_LABELS:
             raise ValueError("Invalid reasoning class")
