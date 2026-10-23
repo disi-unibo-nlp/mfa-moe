@@ -11,7 +11,7 @@
 ## Tasks
 
 - [x] F-0011.1 Check the data: adjacent labelled pairs in the 522 readout questions; evidence: gpt 10,936, nemotron 6,096, qwen35 2,812, qwen36 2,531, gemma 5,191, glm 4,556, qwen330b 6,018, lfm25 6,313 (campaign-v3 dynamics sentences.parquet; LFM derived sentences.parquet).
-- [ ] F-0011.2 moe_exp.study.next_state: pair data from the present-state readout loaders, markov/text/routing fits through readout_analysis; evidence: commit and per-model CPU jobs.
+- [x] F-0011.2 moe_exp.study.next_state: pair data from the present-state readout loaders, markov/text/routing fits through readout_analysis; evidence: commits e69bd17..6521595; login smoke test on Qwen3.6 (2,531 pairs, 41,511 source tokens; untuned fold 0: markov 1.655, text 1.681, routing 1.610 nats); jobs 61946688 61946690 61946692 61946694 61946696 61946698 61946700 61946702 + collect 61946704 from snapshot releases/6521595 (boost_usr_prod, 8 CPUs, 40 GB, 3 h, CPU only).
 - [ ] F-0011.3 Collect driver/NEXT_STATE.json and report the eight routing gains.
 - [ ] F-0011.4 Paper: new Fig. 7 (eight models, three nested predictors) and its text; hand to the paper session.
 
