@@ -1,5 +1,5 @@
-"""Reading a predicted label and scoring predictions against gold labels: strict accuracy, balanced accuracy, macro-F1,
-per-class precision and recall, Cohen's kappa and Kendall's tau-b (needs scipy)."""
+"""Reading a predicted label and scoring predictions against gold labels: strict accuracy, balanced
+accuracy, macro-F1, per-class precision and recall, Cohen's kappa and Kendall's tau-b (scipy)."""
 from __future__ import annotations
 
 import json
@@ -12,7 +12,8 @@ from typing import Any
 
 from store import CLASSES
 
-KAPPA_WEIGHT = 0.5  # weight of scaled Cohen kappa against scaled Kendall tau-b in the reported composite
+# weight of scaled Cohen kappa against scaled Kendall tau-b in the reported composite
+KAPPA_WEIGHT = 0.5
 
 
 class LabelParseError(ValueError):

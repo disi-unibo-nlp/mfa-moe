@@ -1,8 +1,9 @@
-"""The reader process for the judge: the original DSPy program, renderer and parser, run in a child process.
+"""The reader process for the judge: the original DSPy program, renderer and parser, run in a child
+process.
 
-`Renderer` is `research_campaign_v3_r6.annotation.Renderer` (with the longer first-answer timeout) and `token_ids` is
-`research_campaign_v3_r6.reader_contract.token_ids`, both vendored verbatim. The child runs as the module
-`labeling.renderer_child`.
+`Renderer` is `research_campaign_v3_r6.annotation.Renderer` (with the longer first-answer timeout)
+and `token_ids` is `research_campaign_v3_r6.reader_contract.token_ids`, both vendored verbatim. The
+child runs as the module `labeling.renderer_child`.
 """
 import json
 import os

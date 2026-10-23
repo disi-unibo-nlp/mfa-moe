@@ -24,7 +24,14 @@ from labeling.gepa.prompts import (
     build_few_shot_instructions,
     select_few_shot_sentences,
 )
-from labeling.gepa.run import _call_lm, _seed_configuration, create_metric, parse_llm_judge_response
+from labeling.gepa.run import (
+    _append_stats,
+    _call_lm,
+    _save_program,
+    _seed_configuration,
+    create_metric,
+    parse_llm_judge_response,
+)
 from store import CLASSES
 
 
@@ -323,3 +330,25 @@ def test_annotation_audit_flags_compound_structural_units() -> None:
     flags = report["items"][0]["flags"]
     assert "structural_or_control_marker" in flags
     assert "mixed_structural_and_substantive_content" in flags
+
+
+def test_stats_csv_gets_new_columns_without_losing_old_rows(tmp_path: Path) -> None:
+    path = tmp_path / "stats.csv"
+    _append_stats(path, {"timestamp": "t1", "model": "m"})
+    _append_stats(path, {"timestamp": "t2", "model": "m", "test_kappa": 0.5})
+    _append_stats(path, {"timestamp": "t3", "model": "m", "test_kappa": 0.6})
+    assert path.read_text(encoding="utf-8").splitlines() == [
+        "timestamp,model,test_kappa",
+        "t1,m,",
+        "t2,m,0.5",
+        "t3,m,0.6",
+    ]
+
+
+def test_a_program_that_cannot_be_saved_only_warns(tmp_path: Path, capsys) -> None:
+    class Unsavable:
+        def save(self, path: Path) -> None:
+            raise RuntimeError("no serializer")
+
+    _save_program(Unsavable(), tmp_path / "program.json")
+    assert "could not serialize program.json" in capsys.readouterr().out
