@@ -9,8 +9,10 @@ from pathlib import Path
 
 import numpy as np
 
+from store import ANALYSIS
+
 RK2 = Path(__file__).resolve().parents[1]
-ROOT = Path("/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24")
+ROOT = ANALYSIS
 DYN = ROOT / "dynamics-routing"
 DYN_RESULTS = DYN / "results"
 V3R2 = ROOT / "v3_analysis" / "results-r2"

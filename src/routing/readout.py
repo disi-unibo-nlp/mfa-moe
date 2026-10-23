@@ -1,74 +1,32 @@
-"""Clean, family-grouped S3 refits from existing caches only (R3-D part a).
+"""Present-state readout of the seven campaign-v3 models: does routing tell a sentence's class beyond its text?
 
-Preparation copies historical helpers without editing them. All corpus loading,
-hashing and fits run in a CPU Slurm allocation. Original cached row identities are
-preserved explicitly; no missing cache producer is launched.
+Family-grouped refits from existing caches only: the token caches `_tok` and the saved sentence tables of the
+campaign. Per model it fits, for each of five outer family folds, a baseline, the routing-augmented model and five
+token-permutation nulls, with three inner folds choosing the penalty, twice (token identity only, and with the
+judge's previous/current/next sentence text). A model whose cache is incomplete is reported INCOMPLETE and nothing
+is produced for it. Takes about 5 hours on 4 CPUs (19 core-hours in all).
+
+    python -m routing.readout --out DIR [--workers 4]
+
+DIR must be new: it gets FROZEN.readout.v3.json (the run's inputs and the code that ran), the fold checkpoints,
+one JSON per model and readout-results.v3.json. The inputs are compared with the first run's spec in HISTORICAL;
+that run's own files are bound by the LFM readout and are never rewritten.
 """
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 import os
 from pathlib import Path
-import shutil
-import sys
 import time
 
-ROOT = Path('/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24')
-REPO = Path('/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo')
-OUT = ROOT / 'forum/tests/r3_context'
+from routing.readout_analysis import check_first_run, family_folds
+from store import ANALYSIS, WORK, file_sha, require, seal, verified
+
+HISTORICAL = ANALYSIS / 'forum/tests/r3_context'
+FAMILY_FREEZE = WORK / 'mfa-moe/repo/report/experimental-resume-v1/family-freeze.json'
 SEED = 20260929
 MODEL_ORDER = ('gpt', 'qwen36', 'gemma', 'glm', 'nemotron', 'qwen330b', 'qwen35')
-
-
-def sha(path):
-    h = hashlib.sha256()
-    with Path(path).open('rb') as handle:
-        while block := handle.read(1 << 20):
-            h.update(block)
-    return h.hexdigest()
-
-
-def digest(value):
-    return hashlib.sha256(json.dumps(value, sort_keys=True, separators=(',', ':'),
-        ensure_ascii=False, allow_nan=False).encode()).hexdigest()
-
-
-def seal(value):
-    return {**value, 'sha256': digest(value)}
-
-
-def verified(path):
-    value = json.loads(Path(path).read_text())
-    expected = value.pop('sha256')
-    if digest(value) != expected:
-        raise ValueError(f'JSON seal mismatch: {path}')
-    return value
-
-
-def prepare():
-    for package, source in [('dp', ROOT / 'depth-paths/dp'),
-                            ('dynrt', ROOT / 'dynamics-routing/dynrt')]:
-        destination = OUT / 'code' / package
-        destination.mkdir(parents=True, exist_ok=True)
-        for path in sorted(source.glob('*.py')):
-            target = destination / path.name
-            if target.exists() and sha(target) != sha(path):
-                raise ValueError(f'historical helper copy changed: {target}')
-            if not target.exists():
-                shutil.copy2(path, target)
-    # The frozen driver copy OUT/code/r3d_readout.py is bound by BINDING.json readout_files; never rewrite it.
-    print(json.dumps({'helpers': str(OUT / 'code'), 'status': 'PREPARED'}))
-
-
-def family_folds(questions, n, seed, question_family):
-    """Shared deterministic family blocks; no label/outcome enters fold assignment."""
-    import numpy as np
-    families = [question_family[str(q)] for q in questions]
-    order = sorted(set(families), key=lambda f: digest(f'forum-v1|{seed}|{f}'))
-    by_family = {f: i % n for i, f in enumerate(order)}
-    return np.array([by_family[f] for f in families], int)
 
 
 def contexts(md, attempts, load_unit_texts, CLASSES):
@@ -95,7 +53,7 @@ def contexts(md, attempts, load_unit_texts, CLASSES):
     return texts, missing
 
 
-def analyse(sr, md, context_counts, mode, workers, family, family_ids):
+def analyse(sr, md, context_counts, mode, workers, family, family_ids, directory):
     import multiprocessing as mp
     import numpy as np
     from scipy import sparse
@@ -121,7 +79,7 @@ def analyse(sr, md, context_counts, mode, workers, family, family_ids):
     sr._STATE.update(md=md, variants=variants)
     names = ['base', 'aug', *(f'null_{i}' for i in range(5))]
     logp = {name: np.full((md.n, 7), np.nan, np.float32) for name in names}
-    checkpoints = OUT / 'readout' / md.model / mode
+    checkpoints = directory / 'readout' / md.model / mode
     checkpoints.mkdir(parents=True, exist_ok=True)
     tasks = []
     statistics, penalties = [], {}
@@ -191,28 +149,28 @@ def analyse(sr, md, context_counts, mode, workers, family, family_ids):
     return out
 
 
-def run(workers):
-    if not os.environ.get('SLURM_JOB_ID') or os.uname().nodename.startswith('login'):
-        raise RuntimeError('Clean readouts require a CPU Slurm allocation')
+def run(workers, out):
+    require(os.environ.get('SLURM_JOB_ID'), 'Clean readouts require a CPU Slurm allocation')
+    out = Path(out)
+    require(not (out / 'readout-results.v3.json').exists(), f'{out} already holds readout results; use a new --out')
     started = time.monotonic()
     import numpy as np
     from routing.dp import common as cm, s3_readout as sr
     # A copied helper resolves cm.RESULTS relative to the copy. Raw caches are
     # explicitly pinned to the historical, read-only root instead.
     def original_tok_path(model, row):
-        return ROOT / 'depth-paths/results/s3/_tok' / model / f'{int(row):05d}.npz'
+        return ANALYSIS / 'depth-paths/results/s3/_tok' / model / f'{int(row):05d}.npz'
     from routing.dynrt.d3a_pairs import load_unit_texts, LABELS_ROOT
     from routing.dynrt.d3a_text import hash_counts
-    family_path = REPO / 'report/experimental-resume-v1/family-freeze.json'
-    family = verified(family_path)
+    family = verified(FAMILY_FREEZE)
     qf = {q: f for f, questions in family['new_parent_pools']['families'].items() for q in questions}
     split = cm.load_split()
     original_load = cm.load_attempts
-    tables, maps, missing, inputs = {}, {}, {}, [family_path, cm.SPLIT_PATH,
-        ROOT / 'forum/tests/r3_integrity/estimates.v2.json',
-        ROOT / 'forum/tests/r3_integrity/out/ids.v2.json',
-        ROOT / 'forum/tests/r3_integrity/out/absent.v2.json',
-        ROOT / 'forum/tests/r3_dynamics_validity/estimates.json']
+    tables, maps, missing, inputs = {}, {}, {}, [FAMILY_FREEZE, cm.SPLIT_PATH,
+        ANALYSIS / 'forum/tests/r3_integrity/estimates.v2.json',
+        ANALYSIS / 'forum/tests/r3_integrity/out/ids.v2.json',
+        ANALYSIS / 'forum/tests/r3_integrity/out/absent.v2.json',
+        ANALYSIS / 'forum/tests/r3_dynamics_validity/estimates.json']
     for model in MODEL_ORDER:
         old = original_load(model, 'A')
         mask = np.array([split[q] in ('dev', 'tune') for q in old['question']])
@@ -226,21 +184,24 @@ def run(workers):
                        cm.FAST / 'manifests' / model / 'A/ready.json'])
         inputs.extend(p for p in cache_paths if p.exists())
         inputs.extend(sorted((LABELS_ROOT / model).glob('part-*/annotations.json')))
+    here = Path(__file__).parent
     specification = seal({'schema': 'r3d-clean-readout-v1', 'part': 'R3-D S3 only',
-        'parent_family_freeze': json.loads(family_path.read_text())['sha256'],
+        'parent_family_freeze': json.loads(FAMILY_FREEZE.read_text())['sha256'],
         'models': MODEL_ORDER, 'ids': {m: tables[m]['question'].tolist() for m in MODEL_ORDER},
         'cache_row_map': {m: maps[m].tolist() for m in MODEL_ORDER}, 'missing': missing,
-        'inputs': {str(p): sha(p) for p in inputs if p.exists()},
-        'code': {str(p): sha(p) for p in sorted([Path(__file__),
-            *(OUT / 'code/dp').glob('*.py'), *(OUT / 'code/dynrt').glob('*.py')])},
+        'inputs': {str(p): file_sha(p) for p in inputs if p.exists()},
+        'code': {str(p): file_sha(p) for p in sorted([Path(__file__), *(here / 'dp').glob('*.py'),
+                                                       *(here / 'dynrt').glob('*.py')])},
         'folds': {'outer': 5, 'inner': 3, 'seed': SEED, 'group': 'frozen duplicate family',
                   'order': 'SHA256 of canonical JSON forum-v1|seed|family; round-robin'},
         'bootstraps': 5000, 'nulls': 5, 'ceiling_CPU_core_hours': 8.,
         'context': 'retrospective s-1,s,s+1; explicit missing slots; no sparse-gap joins',
         'remaining_R3D_core_hours_reserved': 8.})
-    frozen = OUT / 'FROZEN.readout.v3.json'
-    if frozen.exists() and json.loads(frozen.read_text()) != specification:
-        raise ValueError('clean readout frozen inputs/code changed')
+    check_first_run(HISTORICAL / 'FROZEN.readout.v3.json', specification)
+    out.mkdir(parents=True, exist_ok=True)
+    frozen = out / 'FROZEN.readout.v3.json'
+    if frozen.exists():
+        require(json.loads(frozen.read_text()) == specification, 'clean readout frozen inputs/code changed')
     frozen.write_text(json.dumps(specification, indent=1) + '\n')
     cm.load_attempts = lambda m, c: tables[m] if c == 'A' else original_load(m, c)
     sr.tok_path = lambda m, i: original_tok_path(m, int(maps[m][i]))
@@ -259,22 +220,22 @@ def run(workers):
         family_ids = np.array([qf[q] for q in md.groups])
         result = {'missing_context_slots': missing_context}
         for mode in ('token_identity', 'judge_context'):
-            result[mode] = analyse(sr, md, counts, mode, workers, specification, family_ids)
+            result[mode] = analyse(sr, md, counts, mode, workers, specification, family_ids, out)
         results[model] = result
-        (OUT / 'readout' / f'{model}.json').write_text(json.dumps(seal(result), indent=1) + '\n')
+        (out / 'readout' / f'{model}.json').write_text(json.dumps(seal(result), indent=1) + '\n')
         del md, counts
     result = seal({'schema': 'r3d-readout-results-v1', 'frozen': specification['sha256'],
         'models': results, 'seconds': time.monotonic() - started,
         'job_id': os.environ['SLURM_JOB_ID'], 'CPUs': workers,
         'core_hours_upper_estimate': workers * (time.monotonic() - started) / 3600,
         'other_R3D_cells': 'PENDING separate anticipation/B1 driver; not satisfied by S3 readout'})
-    (OUT / 'readout-results.v3.json').write_text(json.dumps(result, indent=1) + '\n')
+    (out / 'readout-results.v3.json').write_text(json.dumps(result, indent=1) + '\n')
     print(json.dumps({'status': 'S3 readout finished', 'models': list(results), 'job_id': result['job_id']}))
 
 
 if __name__ == '__main__':
-    p = argparse.ArgumentParser(description=__doc__)
-    p.add_argument('--prepare', action='store_true')
+    p = argparse.ArgumentParser(description='Seven-model present-state readout.')
+    p.add_argument('--out', required=True, help='new directory for the spec, checkpoints and results')
     p.add_argument('--workers', type=int, default=4)
     args = p.parse_args()
-    prepare() if args.prepare else run(args.workers)
+    run(args.workers, args.out)

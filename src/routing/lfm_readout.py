@@ -14,9 +14,9 @@ from scipy import sparse
 
 from routing import readout_analysis as historical, readout_fit as sr
 from routing.readout_text import hash_counts
-from store import check_files, digest, file_sha, load, publish, require, verified
+from store import ANALYSIS, check_files, digest, file_sha, load, publish, require, verified
 
-HISTORICAL = Path('/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/forum/tests/r3_context')
+HISTORICAL = ANALYSIS/'forum/tests/r3_context'
 
 
 def lfm(binding):

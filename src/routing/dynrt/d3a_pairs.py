@@ -13,16 +13,17 @@ from __future__ import annotations
 import json
 import sys
 from dataclasses import dataclass
-from pathlib import Path
 
 import numpy as np
 import pandas as pd
+
+from store import ANALYSIS
 
 from .common import CLASSES, RESULTS, V3R2, cohort_dir
 from .data import load_cohort, load_outcomes
 
 OUT = RESULTS / "A1"
-LABELS_ROOT = Path("/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/campaign-v3/labels")
+LABELS_ROOT = ANALYSIS / "campaign-v3/labels"
 NC = len(CLASSES)
 
 

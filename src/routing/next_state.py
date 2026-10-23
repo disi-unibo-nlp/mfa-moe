@@ -28,7 +28,7 @@ import pandas as pd
 from scipy import sparse
 
 import store
-from store import CLASSES, MODELS, digest, file_sha, load, publish, require, verified
+from store import ANALYSIS, CLASSES, MODELS, digest, file_sha, load, publish, require, verified
 from routing import readout_analysis, readout_fit as sr
 from routing.dp import common as cm, s3_readout as historical
 from routing.lfm_readout import HISTORICAL
@@ -36,7 +36,7 @@ from routing.lfm_readout import HISTORICAL
 # The historical present-state readout of the seven campaign-v3 models: its frozen population and the
 # token caches its loader reads (routing/readout.py binds the same files).
 FROZEN = HISTORICAL/'FROZEN.readout.v3.json'
-TOKEN_CACHE = Path('/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/depth-paths/results/s3/_tok')
+TOKEN_CACHE = ANALYSIS/'depth-paths/results/s3/_tok'
 LAYERS_EXPERTS_LFM = (38, 64)
 CODE = ('next_state.py', 'readout_fit.py', 'readout_analysis.py')
 

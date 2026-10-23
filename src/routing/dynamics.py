@@ -28,9 +28,9 @@ import numpy as np
 from routing.selection import (counts_for, enriched_set, family_weights, inclusion_statistics, nominate,
                                random_control, weighted_quantile)
 from stats import bootstrap_panel, clean_rows, unknown_bounds
-from store import CLASSES, SEED, WORK, canonical, digest, file_sha, private, publish, require, verified
+from store import ANALYSIS, CLASSES, SEED, canonical, digest, file_sha, private, publish, require, verified
 
-DEPTH_PATHS = WORK/'tools/tmp/claude-analysis-2026-09-24/depth-paths/results/part1'
+DEPTH_PATHS = ANALYSIS/'depth-paths/results/part1'
 
 
 def trajectories(rows):

@@ -7,8 +7,10 @@ from pathlib import Path
 
 import numpy as np
 
+from store import ANALYSIS
+
 W = Path(__file__).resolve().parents[1]
-ROOT = Path("/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24")
+ROOT = ANALYSIS
 V3 = ROOT / "v3_analysis"
 V3R2 = V3 / "results-r2"
 CAMPAIGN = ROOT / "campaign-v3"

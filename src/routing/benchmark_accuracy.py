@@ -12,7 +12,7 @@ Reads the outcome sidecar v3 (pointer or parquet) and writes, under --out:
   summary.md
 Repeated attempts are never treated as independent: CIs resample questions.
 
-    python outcomes_analysis.py --outcomes campaign-v3/outcomes/outcomes_v3.latest.json --out results-v3/outcomes
+    python -m routing.benchmark_accuracy OUT_DIR [--outcomes campaign-v3/outcomes/outcomes_v3.latest.json]
 """
 import argparse
 import hashlib
@@ -22,6 +22,9 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+from store import ANALYSIS
+
+OUTCOMES = ANALYSIS / "campaign-v3/outcomes/outcomes_v3.latest.json"
 PAIRED = ("aime24", "aime25", "amc23")
 
 
@@ -132,8 +135,8 @@ def length_gap_table(table):
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("--outcomes", required=True)
-    ap.add_argument("--out", required=True)
+    ap.add_argument("out")
+    ap.add_argument("--outcomes", default=str(OUTCOMES))
     a = ap.parse_args()
     out = Path(a.out)
     out.mkdir(parents=True, exist_ok=True)

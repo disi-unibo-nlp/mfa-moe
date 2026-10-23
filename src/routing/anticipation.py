@@ -1,7 +1,13 @@
-"""R3-D anticipation: clean past-text/history controls, OOF class estimates and noise.
+"""Does routing predict the next reasoning state beyond the past text? GPT-OSS and Qwen3.6, with noise controls.
 
-Existing K2 raw caches and A1 histograms only. Missing cells remain incomplete;
-no tensor producer is run. The fixed grid/windows are never searched or expanded.
+Clean past-text and class-history controls, out-of-fold class estimates and matched noise, from the existing K2
+raw caches and A1 histograms only. Missing cells stay incomplete; no tensor producer is run, and the fixed grid and
+windows are never searched or widened. About 21 hours on 4 CPUs (84 core-hours).
+
+    python -m routing.anticipation --out DIR [--workers 4]
+
+DIR must be new: it gets FROZEN.anticipation.json (the run's inputs and the code that ran), the fold checkpoints
+and anticipation-results.json. The inputs are compared with the first run's spec in HISTORICAL.
 """
 from __future__ import annotations
 
@@ -10,47 +16,20 @@ import hashlib
 import json
 import os
 from pathlib import Path
-import shutil
-import sys
 import time
 
-ROOT = Path('/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24')
-OUT = ROOT / 'forum/tests/r3_context'
-REPO = Path('/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo')
+from routing.readout_analysis import check_first_run, family_folds
+from store import ANALYSIS, WORK, file_sha, require, seal, verified
+
+HISTORICAL = ANALYSIS / 'forum/tests/r3_context'
+FAMILY_FREEZE = WORK / 'mfa-moe/repo/report/experimental-resume-v1/family-freeze.json'
 SEED = 20260929
 STATE = {}
-
-
-def sha(path):
-    h = hashlib.sha256()
-    with Path(path).open('rb') as handle:
-        while block := handle.read(1 << 20):
-            h.update(block)
-    return h.hexdigest()
-
-
-def seal(value):
-    return {**value, 'sha256': hashlib.sha256(json.dumps(value, sort_keys=True,
-        ensure_ascii=False, separators=(',', ':'), allow_nan=False).encode()).hexdigest()}
-
-
-def prepare():
-    path = OUT / 'code/rkin'
-    path.mkdir(parents=True, exist_ok=True)
-    for source in sorted((ROOT / 'reasoning-kinematics/rk2/rkin').glob('*.py')):
-        target = path / source.name
-        if target.exists() and sha(target) != sha(source):
-            raise ValueError('historical helper copy changed')
-        if not target.exists():
-            shutil.copy2(source, target)
-    # The frozen driver copy OUT/code/r3d_anticipation.py is bound by FROZEN.anticipation.json; never rewrite it.
-    print(json.dumps({'helpers': str(path), 'status': 'PREPARED'}))
 
 
 def augment_baseline(model, pairs, cohort, P, T):
     """Only problem/past emitted text and observed earlier classes; no difficulty."""
     import numpy as np
-    import pandas as pd
     att, sent = cohort.attempts, cohort.sent
     ids = {(r.dataset, r.problem_id, int(r.sample_id), r.trace_sha256) for r in att.itertuples()}
     units = P.load_unit_texts(model, ids)
@@ -248,32 +227,31 @@ def summarize(d, predictions, targets, families):
     return output
 
 
-def run(workers):
-    if not os.environ.get('SLURM_JOB_ID') or os.uname().nodename.startswith('login'):
-        raise RuntimeError('anticipation fits require CPU Slurm')
+def run(workers, out):
+    require(os.environ.get('SLURM_JOB_ID'), 'anticipation fits require CPU Slurm')
+    out = Path(out)
+    require(not (out / 'anticipation-results.json').exists(), f'{out} already holds anticipation results; use a new --out')
     started = time.monotonic()
     import numpy as np
     import pandas as pd
     from scipy import sparse
-    from routing.readout import family_folds, verified
     from routing.dynrt import common as D, cv as C
-    D.RESULTS = ROOT / 'dynamics-routing/results'
+    D.RESULTS = ANALYSIS / 'dynamics-routing/results'
     from routing.dynrt import data as Data, d3a_pairs as P, d3a_text as T, features as F, d3a_softmax as Softmax
     from routing.rkin import common as RK
-    RK.DATA = ROOT / 'reasoning-kinematics/rk2/data'
+    RK.DATA = ANALYSIS / 'reasoning-kinematics/rk2/data'
     from routing.rkin import k2 as K
     K.DATA = RK.DATA
     K.K2DATA = RK.DATA / 'k2'
     K.OUTER = 5
-    family_path = REPO / 'report/experimental-resume-v1/family-freeze.json'
-    family = verified(family_path)
+    family = verified(FAMILY_FREEZE)
     qf = {q:f for f, qs in family['new_parent_pools']['families'].items() for q in qs}
     split = D.load_split()
     folds = lambda qs, n, seed: family_folds(qs, n, seed if seed>=SEED else SEED*1000+seed, qf)
     C.question_folds = folds
     configure_blocks(K, F, C, Softmax, T, folds)
-    inputs = [family_path, ROOT / 'forum/tests/r3_integrity/estimates.v2.json',
-              ROOT / 'forum/tests/r3_integrity/out/absent.v2.json']
+    inputs = [FAMILY_FREEZE, ANALYSIS / 'forum/tests/r3_integrity/estimates.v2.json',
+              ANALYSIS / 'forum/tests/r3_integrity/out/absent.v2.json']
     for model in ('gpt','qwen36'):
         inputs += list((RK.DATA / 'k2' / model).glob('*'))
         provenance = json.loads((RK.DATA / 'k2' / model / 'provenance.json').read_text())
@@ -288,9 +266,10 @@ def run(workers):
         table=pd.read_parquet(K.K2DATA/model/'pairs.parquet',columns=['question'])
         reserved=set(pd.read_parquet(D.V3R2/model/'B/attempts.parquet',columns=['question'])['question'])
         populations[model]=sorted({q for q in table['question'] if split[q] in ('dev','tune') and q not in reserved})
-    frozen = seal({'schema':'r3d-anticipation-v1','inputs':{str(p):sha(p) for p in inputs if p.is_file()},
+    here = Path(__file__).parent
+    frozen = seal({'schema':'r3d-anticipation-v1','inputs':{str(p):file_sha(p) for p in inputs if p.is_file()},
         'canonical_ids':populations,
-        'code':{str(p):sha(p) for p in [Path(__file__),*(OUT/'code/rkin').glob('*.py'),*(OUT/'code/dynrt').glob('*.py')]},
+        'code':{str(p):file_sha(p) for p in [Path(__file__),*(here/'rkin').glob('*.py'),*(here/'dynrt').glob('*.py')]},
         'split':'exact dev+tune before learned transforms; reserved B excluded',
         'outer':5,'inner':3,'repeats':5,'seeds':list(range(SEED,SEED+5)),
         'fold_group':'frozen duplicate family','current_class':'training-only text classifier; grouped OOF training predictions; fixed lambda=1',
@@ -300,9 +279,11 @@ def run(workers):
         'bootstraps':5000,'CPU_core_hour_ceiling':8.,'no_new_tensor_producer':True,
         'responses':['A1 next class','K2 switch','K2 destination'],
         'contained_sensitivity':'source n_tokens >=32 for both 16 and32 windows; reported exclusions'})
-    path = OUT/'FROZEN.anticipation.json'
-    if path.exists() and json.loads(path.read_text()) != frozen:
-        raise ValueError('anticipation inputs/code changed')
+    check_first_run(HISTORICAL/'FROZEN.anticipation.json', frozen)
+    out.mkdir(parents=True, exist_ok=True)
+    path = out/'FROZEN.anticipation.json'
+    if path.exists():
+        require(json.loads(path.read_text()) == frozen, 'anticipation inputs/code changed')
     path.write_text(json.dumps(frozen,indent=1)+'\n')
     results = {}
     for model in ('gpt','qwen36'):
@@ -368,23 +349,23 @@ def run(workers):
                     models['oracle_'+route]=['base','oracle_class',route]
                     for draw in range(20):
                         models[f'noise_{route}_{draw}']=['base','prefix_class',f'noise_{route}_{draw}']
-                predictions,diagnostics=run_cv(K,d,models,workers,frozen['sha256'],OUT/'anticipation'/model/tag)
+                predictions,diagnostics=run_cv(K,d,models,workers,frozen['sha256'],out/'anticipation'/model/tag)
                 results[model][tag]={'status':'CLEAN','questions':len(set(groups)),'pairs':len(selected),
                     'short_sentence_exclusions':len(response_rows)-len(selected),
                     'routing':summarize(d,predictions,targets,qf),
                     'oracle_current_class':'separate saved oracle_* predictions; never an online trigger',
                     'fit_converged_fraction':float(diagnostics[:,1].mean()),
                     'A1_antic_replication':'INCOMPLETE existing cache absent' if model=='qwen36' and target=='next' else None}
-                (OUT/'anticipation'/model/tag/'result.json').write_text(json.dumps(seal(results[model][tag]),indent=1)+'\n')
+                (out/'anticipation'/model/tag/'result.json').write_text(json.dumps(seal(results[model][tag]),indent=1)+'\n')
     output=seal({'schema':'r3d-anticipation-results-v1','models':results,'frozen':frozen['sha256'],
                  'seconds':time.monotonic()-started,'job_id':os.environ['SLURM_JOB_ID'],
                  'B1':'PENDING separate clean fold refit; historical B1 is not reused'})
-    (OUT/'anticipation-results.json').write_text(json.dumps(output,indent=1)+'\n')
+    (out/'anticipation-results.json').write_text(json.dumps(output,indent=1)+'\n')
 
 
 if __name__=='__main__':
-    parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--prepare',action='store_true')
+    parser=argparse.ArgumentParser(description='Seven-model anticipation of the next reasoning state.')
+    parser.add_argument('--out',required=True,help='new directory for the spec, checkpoints and results')
     parser.add_argument('--workers',type=int,default=4)
     args=parser.parse_args()
-    prepare() if args.prepare else run(args.workers)
+    run(args.workers,args.out)
