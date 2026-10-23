@@ -22,26 +22,28 @@ from store import digest, file_sha, load, publish, require, verified
 GPT_TRANSITION = [200007, 200006, 173781, 200005, 17196, 200008]
 
 
-def evaluation_questions(model: str, spec: dict | None = None) -> set[str]:
+def evaluation_questions(model: str, spec: dict) -> set[str]:
     """Question identities (dataset|source_problem_id) of the base release's evaluation families."""
     return {row['source']['question'] for row in base_natives(model, spec)}
 
 
-def base_natives(model: str, spec: dict | None = None) -> list[dict]:
+def base_natives(model: str, spec: dict) -> list[dict]:
     """Native rows of the base whole-reasoning manifest (one per evaluation family)."""
     from steering.whole import manifest_path
-    spec = spec or default_spec(model)
     base = verified(manifest_path(model, spec['base_dose'], Path(spec['base'])))
     rows = sorted((r for r in base['records'] if r['arm'] == 'native'), key=lambda r: r['family'])
     require(rows and len({r['family'] for r in rows}) == len(rows), 'base native roster differs')
     return rows
 
 
-def default_spec(model: str) -> dict:
+def default_spec(model: str, reports: Path) -> dict:
     """Where each model's base natives ran: its base release, at the dose that release selected, plus
-    the top-ups and resumes that finished them. GPT-OSS's base release is r8; every other model's is r7."""
-    from steering.outcome import REPORTS
-    release = {name: str(REPORTS/f'whole-reasoning-20261021-{name}') for name in ('r7', 'r8', 'r11', 'r15')}
+    the top-ups and resumes that finished them. GPT-OSS's base release is r8; every other model's is r7.
+
+    Args:
+        reports: The report/ folder of the working repository.
+    """
+    release = {name: str(reports/f'whole-reasoning-20261021-{name}') for name in ('r7', 'r8', 'r11', 'r15')}
     base = release['r8'] if model == 'gpt' else release['r7']
     dose = load(Path(base)/model/'SELECTED.json')['dose']
     return {'base': base, 'base_dose': dose, 'stores': [base, release['r11'], release['r15']]}
@@ -72,10 +74,11 @@ def reasoning_length(tokens: list[int], closures: list[list[int]]) -> tuple[int,
     return (min(starts), False) if starts else (len(tokens), True)
 
 
-def outcome_manifest(model: str, spec: dict) -> dict:
+def outcome_manifest(root: Path, model: str, spec: dict) -> dict:
     """Publish this release's selection, manifest and SELECTED receipt for one model.
 
     Args:
+        root: The folder of this release.
         model: Study model.
         spec: OUTCOME.json entry: base release/dose, stores holding its natives, deltas, budget
             fractions and the answer allowance of budget rows.
@@ -83,12 +86,13 @@ def outcome_manifest(model: str, spec: dict) -> dict:
     from transformers import AutoTokenizer
     from steering import pulse as driver
     from steering.runtime import closure, prompt_prefix, remaining
-    from steering.whole import ROOT, SWEEP, manifest_path
+    from steering.whole import manifest_path, sweep_doses
     from steering.outcome.select import selection
 
-    dose = SWEEP[model]
+    dose = sweep_doses(root)[model]
     natives = base_natives(model, spec)
-    chosen = publish(ROOT/model/'OUTCOME_SELECTION.json', selection(model, evaluation_questions(model, spec)))
+    chosen = publish(root/model/'OUTCOME_SELECTION.json',
+                     selection(model, evaluation_questions(model, spec), root.parent))
     b = driver.binding()
     profile = b['models'][model]
     tokenizer = AutoTokenizer.from_pretrained(profile['local_path'], local_files_only=True)
@@ -126,12 +130,12 @@ def outcome_manifest(model: str, spec: dict) -> dict:
         row['uid'] = digest(['outcome-v1', chosen['sha256'], row])
     expected = len(natives)*(2*len(spec['deltas'])+len(spec['fractions']))
     require(len(rows) == expected and len({r['uid'] for r in rows}) == expected, 'outcome row count/UID differs')
-    value = publish(manifest_path(model, dose), {
+    value = publish(manifest_path(model, dose, root), {
         'model': model, 'dose': dose, 'design': 'outcome-nudge', 'scope': 'prompt-and-generated-reasoning',
         'selection_sha256': chosen['sha256'], 'native_manifest': spec['base'], 'native_dose': spec['base_dose'],
         'cells': [], 'records': rows, 'planned': expected,
         'executable': sum(r['nomination_status'] == 'nominated' for r in rows), 'audit_units': 0,
         'outcomes_used_for_selection': 'cohort-B attempts only; evaluation families held out by question'})
-    publish(ROOT/model/'SELECTED.json', {'dose': dose, 'manifest_sha256': value['sha256'], 'canary_job': None,
+    publish(root/model/'SELECTED.json', {'dose': dose, 'manifest_sha256': value['sha256'], 'canary_job': None,
                                          'sweep': True, 'outcome': True})
     return {key: value[key] for key in ('sha256', 'planned', 'executable', 'scope')}

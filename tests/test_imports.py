@@ -19,7 +19,7 @@ SRC = REPO / 'src'
 # Modules started by `python -m`, by a job script, by a vLLM engine string or loaded by file path.
 ENTRY_POINTS = [
     'steering.pulse', 'steering.pulse_outcomes', 'steering.pulse_effects', 'steering.whole',
-    'steering.whole_effects', 'steering.whole_complement', 'steering.whole_relink',
+    'steering.whole_effects', 'steering.release',
     'routing.efficiency_link', 'routing.lexical', 'routing.lfm_readout',
     'steering.stream', 'steering.observer', 'steering.fast_penalties', 'steering.penalties',
     'labeling.renderer_child',

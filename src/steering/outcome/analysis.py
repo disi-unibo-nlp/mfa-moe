@@ -22,22 +22,21 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from store import file_sha, publish, require, verified
+from store import file_sha, publish, verified
 
-from steering.outcome import REPORTS
-
-NATIVES = REPORTS/'whole-reasoning-20261021-r17/analysis-combined'
+# The base releases' native and native-repeat rows: the final whole-reasoning table, next to this release.
+NATIVES = 'whole-reasoning-20261021-r17/analysis-combined'
 METRICS = (('log_reasoning', 'tokens'), ('accuracy', 'accuracy'))
 COUNTERS = ('active_positions', 'native_shift_members', 'executed_shift_members',
             'native_shift_weight', 'executed_shift_weight')
 
 
-def release_rows(model: str) -> pd.DataFrame:
+def release_rows(root: Path, model: str) -> pd.DataFrame:
     """This release's nudge and budget rows, joined to their extracted outcomes, with bounds."""
-    from steering.whole import ROOT, manifest
+    from steering.whole import manifest
     from steering.whole_effects import unit_bounds
-    value = manifest(model)
-    folder = ROOT/model/'extraction'
+    value = manifest(root, model)
+    folder = root/model/'extraction'
     observed = pd.read_parquet(folder/'outcomes.parquet') if (folder/'outcomes.parquet').exists() else pd.DataFrame()
     by_uid = {r['uid']: r for r in observed.to_dict('records')} if len(observed) else {}
     missing = {'outcome_status': 'missing', 'finish_reason': 'unknown', 'reasoning_tokens': np.nan,
@@ -57,11 +56,11 @@ def release_rows(model: str) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
-def native_rows(model: str, dose: str) -> pd.DataFrame:
+def native_rows(natives: Path, model: str, dose: str) -> pd.DataFrame:
     """Native and native-repeat rows of the base releases, from the sealed final whole-reasoning table."""
     columns = ['model', 'dose', 'arm', 'family', 'benchmark', 'reasoning_tokens', 'finish_reason',
                *[m+s for m, _ in METRICS for s in ('', ':lower', ':upper')]]
-    table = pd.read_parquet(NATIVES/'continuations.parquet', columns=columns)
+    table = pd.read_parquet(natives/'continuations.parquet', columns=columns)
     return table[(table.model == model) & (table.dose == dose) & table.arm.isin(['native', 'native_repeat'])]
 
 
@@ -154,15 +153,16 @@ def levels(ours: pd.DataFrame, natives: pd.DataFrame) -> list[dict]:
     return result
 
 
-def analyze() -> dict:
-    """Write EFFECTS_OUTCOME.json for every model of this release."""
-    from steering.whole import MODELS, ROOT, manifest
+def analyze(root: Path) -> dict:
+    """Write EFFECTS_OUTCOME.json for every model of the release in root."""
+    from steering.whole import manifest
     from steering.whole_effects import bootstrap, summarize_present
-    effects = verified(NATIVES/'EFFECTS_WHOLE.json')
+    natives_folder = root.parent/NATIVES
+    effects = verified(natives_folder/'EFFECTS_WHOLE.json')
     frames, models = [], {}
-    for model in MODELS:
-        ours = release_rows(model)
-        natives = native_rows(model, manifest(model)['native_dose'])
+    for model in verified(root/'RELEASE.json')['models']:
+        ours = release_rows(root, model)
+        natives = native_rows(natives_folder, model, manifest(root, model)['native_dose'])
         frame = family_frame(model, ours, natives)
         frames.append(frame.set_index('family'))
         models[model] = {'levels': levels(ours, natives), 'manipulation': manipulation(ours),
@@ -179,10 +179,10 @@ def analyze() -> dict:
 
     result = {kind: family(kind) for kind in ('target_random', 'target_native', 'random_native', 'noise',
                                               'budget_native', 'target_budget')}
-    folder = ROOT/'analysis'
+    folder = root/'analysis'
     folder.mkdir(parents=True, exist_ok=True, mode=0o700)
     frame.to_parquet(folder/'families.parquet', index=False)
     return publish(folder/'EFFECTS_OUTCOME.json', {
         **result, 'models': models, 'native_effects_sha256': effects['sha256'],
-        'native_table_sha256': file_sha(NATIVES/'continuations.parquet'),
+        'native_table_sha256': file_sha(natives_folder/'continuations.parquet'),
         'families_sha256': file_sha(folder/'families.parquet')})
