@@ -1,7 +1,8 @@
 """Static import check: every module the live entry points reach resolves (stdlib only, nothing is imported).
 
 For each module under src/moe_exp and each test, every `import` and `from ... import` that names a repo module
-must name a module that exists, and every imported name must be defined there or be a submodule. Strings that name
+must name a module that exists, and every imported name must be defined there or be a submodule. So must every
+attribute read through a module alias (`driver.binding()` after `from . import pulse as driver`). Strings that name
 a `moe_exp` module (worker extensions, `python -m` commands, mock patches) are checked the same way. The modules
 reachable from ENTRY_POINTS must also cover all of src/moe_exp, so dead code cannot linger.
 """
@@ -38,7 +39,7 @@ ENTRY_POINTS = [
 
 # (importer, imported) pairs that are known not to resolve.
 EXEMPT = {
-    # Byte-frozen by the efficiency-link pre-registration hash; study.efficiency_link aliases the module at load.
+    # Byte-frozen by the efficiency-link pre-registration hash; routing.efficiency_link aliases the module at load.
     ('moe_exp.routing.efficiency_link_prereg', 'moe_exp.final_routing.common'),
     ('moe_exp.routing.efficiency_link', 'moe_exp.final_routing.common'),
 }
@@ -136,6 +137,25 @@ def references(importer, tree):
                 yield match, 'string'
 
 
+def attribute_references(importer, tree):
+    """Yield (module, attribute) for every attribute read through a name bound to a repo module."""
+    aliases = {}
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            for alias in node.names:
+                if alias.asname and alias.name in MODULES:
+                    aliases[alias.asname] = alias.name
+        elif isinstance(node, ast.ImportFrom):
+            full = resolve_from(importer, node)
+            for alias in node.names:
+                if f'{full}.{alias.name}' in MODULES:
+                    aliases[alias.asname or alias.name] = f'{full}.{alias.name}'
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Attribute) and isinstance(node.ctx, ast.Load) \
+                and isinstance(node.value, ast.Name) and node.value.id in aliases:
+            yield aliases[node.value.id], node.attr
+
+
 def problem(importer, module, name):
     """Why a reference fails, or None."""
     if (importer, module) in EXEMPT:
@@ -183,7 +203,8 @@ class ImportsResolve(unittest.TestCase):
     def test_every_source_module_resolves(self):
         failures = []
         for module, path in MODULES.items():
-            for target, name in references(module, parse(path)):
+            tree = parse(path)
+            for target, name in [*references(module, tree), *attribute_references(module, tree)]:
                 reason = problem(module, target, name)
                 if reason:
                     failures.append(f'{module}: {reason}')

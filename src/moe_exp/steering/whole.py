@@ -818,7 +818,7 @@ def run(model, shard, deadline, *, max_inflight=64, canary=False, dose=None):
         llm.llm_engine.engine_core.shutdown()
     result = {'model': model, 'dose': value['dose'], 'manifest_sha256': value['sha256'],
               'job': os.environ['SLURM_JOB_ID'], 'shard': list(shard), 'load_seconds': load_seconds,
-              'metrics': metrics, 'native_validation': validation[0], **driver.rescue_completion(store, rows)}
+              'metrics': metrics, 'native_validation': validation[0], **driver.shard_completion(store, rows)}
     if canary:
         result['gate'] = fluency(store, rows, require_complete=True, censor_unfinished=True)
         publish(canary_path(model, value['dose']), result)

@@ -86,7 +86,7 @@ def release(name: str, models: list[str], shards: dict[str, int], local_tests: i
         'reasoning token, against matched random experts, and compares both with unedited routing (the base\n'
         'releases\' native runs) and a stop-thinking-earlier baseline cut from those native runs.\n'
         f'Models: {", ".join(models)}; deltas {list(DELTAS)}; length fractions {list(FRACTIONS)}.\n'
-        'Code: src/moe_exp/outcome_steering (README there). Ledger F-0004, D-0003.\n'
+        'Code: src/moe_exp/steering/outcome (README there). Ledger F-0004, D-0003.\n'
         'GPU work stops at 2026-10-23 23:00 Rome.\n')
 
     archive = root/'SOURCE.tar.gz'

@@ -58,14 +58,8 @@ def prepare():
                 raise ValueError(f'historical helper copy changed: {target}')
             if not target.exists():
                 shutil.copy2(path, target)
-    target = OUT / 'code/r3d_readout.py'
-    if target.resolve() != Path(__file__).resolve():
-        if target.exists() and sha(target) != sha(__file__):
-            backup = OUT / ('driver-' + sha(target)[:16] + '.py')
-            if not backup.exists():
-                shutil.copy2(target, backup)
-        shutil.copy2(__file__, target)
-    print(json.dumps({'driver': str(target), 'status': 'PREPARED'}))
+    # The frozen driver copy OUT/code/r3d_readout.py is bound by BINDING.json readout_files; never rewrite it.
+    print(json.dumps({'helpers': str(OUT / 'code'), 'status': 'PREPARED'}))
 
 
 def family_folds(questions, n, seed, question_family):

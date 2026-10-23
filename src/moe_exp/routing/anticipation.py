@@ -43,10 +43,8 @@ def prepare():
             raise ValueError('historical helper copy changed')
         if not target.exists():
             shutil.copy2(source, target)
-    target = OUT / 'code/r3d_anticipation.py'
-    if target.resolve() != Path(__file__).resolve():
-        shutil.copy2(__file__, target)
-    print(json.dumps({'driver': str(target), 'status': 'PREPARED'}))
+    # The frozen driver copy OUT/code/r3d_anticipation.py is bound by FROZEN.anticipation.json; never rewrite it.
+    print(json.dumps({'helpers': str(path), 'status': 'PREPARED'}))
 
 
 def augment_baseline(model, pairs, cohort, P, T):
