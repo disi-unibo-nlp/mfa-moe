@@ -186,15 +186,27 @@ def driver_test() -> dict:
     families = sorted(pd.read_parquet(final/'continuations.parquet', columns=['family']).family.unique())
     benchmarks = {r['family']: r['benchmark'] for r in load(driver.ROOT/'ALLOCATION.json')['records']}
     boot = Bootstrap(families, benchmarks)
-    # analysis-final ran the plain test (it predates the bounded-outcome wrapper); the same call on the
-    # pre-registration must reproduce its published 49-cell result.
+    # analysis-final ran the plain test (it predates the bounded-outcome wrapper). Its intervals came from
+    # an earlier version of the shared Bootstrap draws, so on the pre-registration today's code must
+    # reproduce every point estimate exactly; the 49-cell test is republished with today's intervals so
+    # that the 49- and 56-cell tests compare like for like.
     published = verified(final/'EFFECTS.json')['efficiency_link']
-    reproduced = {**efficiency_link(verified(PREREG), pairs, boot), 'prereg_sha256': verified(PREREG)['sha256']}
-    require(same(clean(reproduced), published), 'driver link test does not reproduce analysis-final')
-    result = clean({**efficiency_link(verified(LINK), pairs, boot), 'prereg_sha256': verified(LINK)['sha256']})
+    reproduced = clean(efficiency_link(verified(PREREG), pairs, boot))
+    require(same(point_estimates(reproduced), point_estimates(published)),
+            'driver link test does not reproduce the point estimates of analysis-final')
+    result = clean(efficiency_link(verified(LINK), pairs, boot))
     DRIVER_TEST.parent.mkdir(mode=0o700)
-    return publish(DRIVER_TEST, {**result, 'pairs': str(final/'pairs.parquet'),
+    return publish(DRIVER_TEST, {**result, 'prereg_sha256': verified(LINK)['sha256'],
+                                 'preregistered_cells_same_code': reproduced,
+                                 'pairs': str(final/'pairs.parquet'),
                                  'effects_sha256': verified(final/'EFFECTS.json')['sha256']})
+
+
+def point_estimates(test: dict) -> dict:
+    """A link-test result without its bootstrap intervals and the statistics derived from them."""
+    interval_keys = ('spearman_ci', 'sign_agreement_ci', 'supported', 'prereg_sha256')
+    return {key: point_estimates(value) if isinstance(value, dict) else value
+            for key, value in test.items() if key not in interval_keys and key != 'tok_reasoning'}
 
 
 def main(argv=None) -> None:
