@@ -15,7 +15,7 @@ requires an independent comparison with the fixed baseline, source and visual
 checks, and the paper-writer workflow.
 
 ```sh
-python scripts/paper/optimize_sections.py \
+python -m moe_exp.paper.optimize_sections \
   --run-dir paper/manuscript-support/build/elm-optimization \
   --client ~/.paper-writer-skill/skills/deep-research/scripts/deep-research
 ```

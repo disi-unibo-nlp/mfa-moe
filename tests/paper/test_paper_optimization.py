@@ -1,13 +1,13 @@
 """Check scientific vetoes and blinded selection before spending ELM requests.
 
-Run with python -m unittest discover -s tests -p test_paper_optimization.py.
+Run with PYTHONPATH=src python -m unittest discover -s tests/paper -p test_paper_optimization.py.
 These tests require no network, credentials or generated manuscript edits.
 """
 
 import json
 import unittest
 
-from scripts.paper.optimize_sections import _complete_response, protected_changes, select_candidate
+from moe_exp.paper.optimize_sections import _complete_response, protected_changes, select_candidate
 
 
 def review(scores_a: float, scores_b: float, choice: str, regression: str = '') -> dict:

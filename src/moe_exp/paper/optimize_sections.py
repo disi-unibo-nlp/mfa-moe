@@ -4,7 +4,7 @@ This orchestrates the existing deep-research batch client; it never edits the pa
 Every proposal, request, response and selection remains in the private run directory.
 The author-approved protocol and first generator requests must already exist there.
 
-Usage: python scripts/paper/optimize_sections.py --run-dir RUN --client CLIENT
+Usage: python -m moe_exp.paper.optimize_sections --run-dir RUN --client CLIENT
 """
 
 import argparse

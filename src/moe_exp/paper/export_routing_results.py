@@ -17,7 +17,7 @@ import hashlib
 import json
 import math
 
-from cl_paths import DATA, FIGURES, PAPER, REPO  # noqa: E402
+from moe_exp.paper.cl_paths import DATA, FIGURES, PAPER, REPO  # noqa: E402
 
 TABLES = PAPER / "journal/tables"
 DRIVER = REPO / "report/final-routing-20261015-r1/driver"

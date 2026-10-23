@@ -20,8 +20,8 @@ import re
 import sys
 from unittest.mock import patch
 
-REPO = Path(__file__).resolve().parents[2]
-from cl_paths import DATA as SUPPORT_DATA, FIGURES as SUPPORT_FIGURES, NOTES, PAPER as DEFAULT_PAPER  # noqa: E402
+REPO = Path(__file__).resolve().parents[3]
+from moe_exp.paper.cl_paths import DATA as SUPPORT_DATA, FIGURES as SUPPORT_FIGURES, NOTES, PAPER as DEFAULT_PAPER  # noqa: E402
 
 
 def figure_root(paper):

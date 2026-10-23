@@ -9,7 +9,7 @@ import argparse
 import json
 import re
 
-PAPER = Path(__file__).resolve().parents[2] / 'paper/6a510c6db0d9b08aa438c142'
+PAPER = Path(__file__).resolve().parents[3] / 'paper/6a510c6db0d9b08aa438c142'
 MATH_ENV = re.compile(r'\\begin\{(equation\*?|align\*?|alignat\*?|gather\*?|multline\*?|displaymath|verbatim|lstlisting)\}.*?\\end\{\1\}', re.S)
 IDENTIFIER = re.compile(r'\\(?:label|ref|eqref|pageref|cite[tp]?|citeauthor|citeyear|url|path|nolinkurl|texttt|input|includegraphics|bibliography|bibliographystyle|documentclass|usepackage)(?:\[[^\]]*\])?\{')
 ABBREVIATION = re.compile(r'(?:\b(?:Fig|Figs|Eq|Eqs|Sec|Secs|App|Tab|Tabs|Dr|Prof|Mr|Ms|vs|etc|Min)|\be\.g|\bi\.e|\bet al|\b[A-Z])\.$')

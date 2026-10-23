@@ -31,6 +31,9 @@ ENTRY_POINTS = [
     'moe_exp.routing.lexical.build_native', 'moe_exp.routing.lexical.build_extras',
     'moe_exp.routing.lexical.build_steered', 'moe_exp.routing.lexical.make_readme',
     'moe_exp.routing.lexical.validate', 'moe_exp.routing.lexical.lfm_table',
+    'moe_exp.paper.build_cl_figures', 'moe_exp.paper.build_cl_manuscript', 'moe_exp.paper.cl_paths', 'moe_exp.paper.export_cl_exhibits',
+    'moe_exp.paper.export_routing_results', 'moe_exp.paper.export_whole_results', 'moe_exp.paper.format_cl_sentences', 'moe_exp.paper.optimize_sections', 'moe_exp.paper.package_cl_manuscript',
+    'moe_exp.paper.prepare_cl_review', 'moe_exp.paper.verify_cl_author_style', 'moe_exp.paper.verify_cl_bibliography_offline', 'moe_exp.paper.verify_cl_figure_labels', 'moe_exp.paper.verify_cl_tables',
 ]
 
 # (importer, imported) pairs that are known not to resolve.
