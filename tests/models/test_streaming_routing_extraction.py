@@ -5,7 +5,7 @@ from types import SimpleNamespace
 import pytest
 import torch
 
-from models.inference import _generated_tokens_to_cpu, extract_logs_single_pass
+from models.inference import extract_logs_single_pass
 
 
 class CharacterTokenizer:
@@ -134,15 +134,6 @@ def test_streamed_qwen_matches_hf_full_capture(
         router = result
     torch.testing.assert_close(router, expected_router, rtol=0, atol=0)
     assert router.device.type == "cpu"
-
-
-def test_generated_cpu_copy_has_independent_continuation_storage():
-    full = torch.arange(40, dtype=torch.float32).reshape(1, 10, 4)
-    expected = full[0, 6:].clone()
-    copied = _generated_tokens_to_cpu(full, 6)
-    full.zero_()
-    torch.testing.assert_close(copied, expected)
-    assert copied.untyped_storage().nbytes() == expected.numel() * expected.element_size()
 
 
 @pytest.mark.parametrize("fail_forward", [False, True])

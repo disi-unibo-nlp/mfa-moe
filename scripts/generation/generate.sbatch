@@ -4,10 +4,8 @@
 #SBATCH --output=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/logs/%x-%j.out
 # Generate one shard of one benchmark with the model's card sampler:
 #   sbatch scripts/generation/generate.sbatch MODEL DATASET SHARD NSHARDS     e.g. gpt aime24 0 2
+# No new request starts in the last 3 hours of the job (--deadline-margin-hours); resubmit to continue.
 source scripts/slurm/env.sh || exit 1
 start_server $1
-END=$(date -d "$(squeue -h -j $SLURM_JOB_ID -o %e)" +%s)  # stop starting requests 3 hours before the time limit
-export VLLM_VERSION_RECORD=$(sed -n 's/^Version: \([0-9.]*\).*/\1/p' $MFA/envs/vllm-cu129/lib/python3.11/site-packages/vllm-*.dist-info/METADATA)
-python -m generation.generate --profile $1 --save-token-ids --datasets $2 --num-shards $4 --shard-index $3 \
-  --seed 20260925 --workers $(grep -o 'max-num-seqs [0-9]*' scripts/serve/$1.sh | cut -d' ' -f2) --timeout 21600 --deadline-epoch $((END - 3 * 3600)) \
+python -m generation.generate --profile $1 --datasets $2 --shard-index $3 --num-shards $4 \
   --base-url $URL --output-dir $MFA/repo/results/correlation_pipeline/card-v3/$1/generation

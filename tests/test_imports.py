@@ -26,7 +26,7 @@ ENTRY_POINTS = [
     'steering.outcome.__main__',
     'generation.generate', 'labeling.sample_cohorts',
     'labeling.annotation_batch', 'generation.answer_equivalence',
-    'generation.model_profiles', 'labeling.gepa.run',
+    'labeling.gepa.run',
     'capture.run', 'capture.gate', 'capture.vllm_capture',
     'routing.readout', 'routing.anticipation', 'routing.next_state', 'routing.selection',
     'routing.dynamics', 'routing.benchmark_accuracy', 'routing.benchmark_inventory',

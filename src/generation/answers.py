@@ -1,10 +1,7 @@
+"""Read the final answer out of generated text, and compare two answers loosely."""
 from __future__ import annotations
 
 import re
-
-# ---------------------------------------------------------------------------
-# Answer-extraction regexes
-# ---------------------------------------------------------------------------
 
 _GSM_GOLD_RE = re.compile(r"####\s*([^\n]+)")
 _FINAL_ANSWER_RE = re.compile(
@@ -12,11 +9,6 @@ _FINAL_ANSWER_RE = re.compile(
     re.IGNORECASE,
 )
 _NUMBER_RE = re.compile(r"-?\d[\d,]*\.?\d*")
-
-
-def extract_gold_answer_gsm8k(raw: str) -> str:
-    m = _GSM_GOLD_RE.search(raw)
-    return m.group(1).strip().replace(",", "") if m else raw.strip()
 
 
 def last_boxed(text: str) -> str | None:
@@ -85,7 +77,4 @@ def answers_match(model_answer: str, gold_answer: str) -> bool | None:
     try:
         return abs(float(ma) - float(ga)) < 1e-6
     except ValueError:
-        pass
-
-    # Exact match only for non-numeric answers (no substring fallback)
-    return ma == ga
+        return False  # non-numeric answers match only when equal (no substring fallback)

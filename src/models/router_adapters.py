@@ -7,7 +7,6 @@ from typing import Any
 import torch
 import torch.nn.functional as F
 
-ROUTER_CAPTURE_VERSION = 3
 PROBABILITY_ROUTERS = {"gemma4", "gemma4_text"}
 SIGMOID_ROUTERS = {"nemotron_h", "glm4_moe_lite"}
 SUPPORTED_ROUTERS = PROBABILITY_ROUTERS | SIGMOID_ROUTERS | {"qwen3_moe", "qwen3_5_moe", "qwen3_5_moe_text", "gpt_oss"}
@@ -26,7 +25,7 @@ def decoder_layers(model: Any):
 
 
 def router_module(layer: Any, family: str):
-    if family in {"gemma4", "gemma4_text"}:
+    if family in PROBABILITY_ROUTERS:
         return getattr(layer, "router", None)
     block = getattr(layer, "mixer" if family == "nemotron_h" else "mlp", None)
     return getattr(block, "router" if family == "gpt_oss" else "gate", None)
@@ -38,16 +37,6 @@ def available_router_layers(model: Any) -> list[int] | None:
     if family not in SUPPORTED_ROUTERS or not isinstance(layers, torch.nn.ModuleList):
         return None
     return [i for i, layer in enumerate(layers) if router_module(layer, family) is not None]
-
-
-def configured_top_k(config: Any) -> int | None:
-    config = getattr(config, "text_config", None) or config
-    for name in ("num_experts_per_tok", "top_k_experts", "experts_per_token"):
-        value = getattr(config, name, None)
-        if value is not None:
-            return int(value)
-    return None
-
 
 
 def unpack_mxfp4_routes(routing, gather, token_count):
