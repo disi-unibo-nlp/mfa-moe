@@ -7,20 +7,27 @@ LFM2.5 inside the steering code.
 
 ## Run it
 
-Everything needs the frozen manifests of the paper (see "Not in the repository"). For one model and cohort (`A` or `B`):
+Everything needs the frozen manifests of the paper (see "Not in the repository"). The paper's capture folders
+(`capture_dir` in the manifests) are only read, by the gate and the analyses: a run refuses to write into a folder that
+another manifest or other code started, and never overwrites `verification.json` or `result.json`. A repeat capture of one
+model and cohort (`A` or `B`) therefore goes to a new tree with the check in `ROOT/verify` and the shards in `ROOT/0`, `ROOT/1` ...:
 
 ```
 M=/leonardo_scratch/fast/IscrC_MIOSR/lmolfett/mfa-moe/campaign-v3
-sbatch scripts/capture/capture.sbatch gpt $M/manifests/gpt/verify.json $M/capture/gpt/verify verify   # once per model
-sbatch scripts/capture/capture.sbatch gpt $M/manifests/gpt/A/0.json $M/capture/gpt/A/0               # once per shard
-scripts/capture/gate.sh $M/manifests/gpt/A acceptance/capture-gpt-A.json                             # when all shards are done
+ROOT=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/r/capture-gpt-A          # any new folder under an allowed root
+sbatch scripts/capture/capture.sbatch gpt $M/manifests/gpt/verify.json $ROOT/verify verify   # once per model and tree
+sbatch scripts/capture/capture.sbatch gpt $M/manifests/gpt/A/0.json $ROOT/0                  # once per shard
+scripts/capture/gate.sh $M/manifests/gpt/A acceptance/capture-gpt-A.json --captures $ROOT    # when all shards are done
 ```
 
-`capture.sbatch` is one GPU job (2 GPUs, 240 GB, 16 h) and a rerun resumes. The output folder is normally the manifest's
-`capture_dir` (the folder the gate and the analyses read); another new folder repeats a capture without touching the paper's. The verify run (longest trace plus a short one)
-must pass first: gpt compares its query-chunked attention with the native one, glm compares vLLM with a Hugging Face
-reference; the other models only check that every layer and token is covered. The gate re-hashes every captured file.
-Run it from a clean checkout or a release snapshot: the outputs record the commit and the hash of `src/` (`code` in
+`capture.sbatch` is one GPU job (2 GPUs, 240 GB, 16 h). It stops starting traces in the last 30 minutes (`drained.json`,
+exit 75), and the same command resumes after that or after a failure, as long as the code is unchanged (the folder is bound to
+the manifest and the hash of `src/`). The verify run (longest trace plus a short one) must pass first, and a shard in a new
+tree only accepts a verification from the same tree written by the same code: gpt compares its query-chunked attention with
+the native one, glm compares vLLM with a Hugging Face reference; the other models only check that every layer and token is
+covered. Captures are only written under the scratch campaign folder `$M`, `/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/r` or
+`/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/campaign-v3`, never inside a git checkout. The gate re-hashes every captured file; without `--captures` it reads the paper's folders.
+Run from a clean checkout or a release snapshot: the outputs record the commit and the hash of `src/` (`code` in
 `load.json`, `*.complete.json`, `verification.json` and the gate result). The paper's acceptance files are in
 `tools/tmp/claude-analysis-2026-09-24/campaign-v3/acceptance/capture-<model>-<cohort>.json`.
 

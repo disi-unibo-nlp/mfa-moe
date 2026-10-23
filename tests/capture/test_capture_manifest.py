@@ -5,11 +5,14 @@ import json
 import os
 from pathlib import Path
 import tempfile
+import time
 import unittest
 from unittest import mock
 
-from capture import gate, run
-from capture.manifest import atomic, digest, load_manifest, read_location, resume_records, validate_verification
+from capture import buffers, gate, run
+from capture.manifest import (
+    atomic, capture_folders, digest, load_manifest, read_location, resume_records, validate_verification, write_new,
+)
 from store import file_sha
 
 COHORT_CORE = ('schema_version', 'model', 'seed', 'label_total', 'per_b', 'floor', 'traces_sha256')
@@ -22,16 +25,21 @@ def write_json(path, value):
 
 
 class Shard:
-    """Two traces captured in one shard of model `source`, laid out like the real manifests and capture folders."""
+    """Two traces captured in one shard of model `source`, laid out like the real manifests and capture folders.
 
-    def __init__(self, root, source='qwen36'):
+    With `repeat` the capture and its verification are in a repeat tree (`tree/0`, `tree/verify`) while the manifest
+    still names the paper's folders, which do not exist."""
+
+    def __init__(self, root, source='qwen36', repeat=False):
         self.root, self.source = Path(root), source
+        self.tree = self.root / 'tree'
         cohort = dict(schema_version=1, corpus='card-v3', model=source, seed=7, label_total=2, per_b=1, floor=1,
                       traces_sha256='0' * 64, rows=[])
         cohort['manifest_sha256'] = digest({k: cohort[k] for k in COHORT_CORE})
         self.cohort_path = self.root / 'cohorts.json'
         write_json(self.cohort_path, cohort)
-        self.out = self.root / 'capture' / source / 'A' / '0'
+        paper = self.root / 'capture' / source
+        self.out = self.tree / '0' if repeat else paper / 'A' / '0'
         self.out.mkdir(parents=True)
         rows = [dict(id=f'attempt{i}', trace_sha256=str(i) * 64, completion_tokens=10 * i,
                      total_input_tokens=30 * i) for i in (1, 2)]
@@ -42,14 +50,16 @@ class Shard:
                                 file_sha256=file_sha(self.cohort_path), path=str(self.cohort_path.resolve())),
             code_binding='c' * 64, validation_binding='v' * 64, annotation_binding=None, maximum_input_tokens=60,
             attempts=rows, expected_attempts=2, expected_tokens=sum(r['completion_tokens'] for r in rows),
-            capture_dir=str(self.out), verification_path=str(self.root / 'verify' / 'verification.json'))
+            capture_dir=str(paper / 'A' / '0'), verification_path=str(paper / 'verify' / 'verification.json'))
         manifest['binding'] = digest(manifest)
         self.manifest = manifest
         self.manifest_dir = self.root / 'manifests' / source / 'A'
         write_json(self.manifest_dir / '0.json', manifest)
-        write_json(Path(manifest['verification_path']), dict(
+        write_json(self.tree / 'verify' / 'verification.json' if repeat else Path(manifest['verification_path']), dict(
+            code=dict(source_sha256='s' * 64),
             status='passed', validation_binding='v' * 64, maximum_input_tokens=60, all_routed_layers=LAYERS,
             exact_saved_token_coverage=True, unchanged_resume_verified=True, differential=dict(status='passed')))
+        write_json(self.out / 'run-binding.json', {'manifest_binding': manifest['binding'], 'source_sha256': 's' * 64})
         self.records = [self.capture(row) for row in rows]
         used = sum(f['bytes'] for r in self.records for f in r['files'])
         write_json(self.out / 'result.json', dict(
@@ -227,6 +237,14 @@ class GateTests(unittest.TestCase):
         self.assertEqual((result['status'], result['attempts'], result['tokens']), ('complete', 2, 30))
         self.assertEqual(list(result['results']), [str(self.shard.out / 'result.json')])
 
+    def test_a_repeat_capture_is_gated_in_its_own_tree(self):
+        with tempfile.TemporaryDirectory() as other:
+            repeat = Shard(other, repeat=True)
+            result = gate.gate(repeat.manifest_dir, repeat.tree)
+            self.assertEqual((result['status'], result['attempts']), ('complete', 2))
+            with self.assertRaises(FileNotFoundError):
+                gate.gate(repeat.manifest_dir)
+
     def test_a_missing_trace_is_refused(self):
         (self.shard.out / 'attempt2.complete.json').unlink()
         with self.assertRaisesRegex(ValueError, 'Incomplete capture shard'):
@@ -269,26 +287,84 @@ class GateTests(unittest.TestCase):
 
 
 class RunHelperTests(unittest.TestCase):
+    CODE = {'source_sha256': 's' * 64}
+
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
         self.root = Path(self.tmp.name)
+        # the temporary folder stands in for the approved capture storage
+        patch = mock.patch.object(buffers, 'CAPTURE_ROOTS', (self.root,))
+        patch.start()
+        self.addCleanup(patch.stop)
 
     def tearDown(self):
         self.tmp.cleanup()
 
-    def test_an_output_folder_belongs_to_the_first_manifest_that_wrote_to_it(self):
-        manifest = dict(binding='a' * 64, code_binding='c' * 64)
+    def test_an_output_folder_belongs_to_the_first_manifest_and_code_that_wrote_to_it(self):
+        manifest = dict(binding='a' * 64)
         out = self.root / 'out'
         out.mkdir()
-        run.claim_capture_output(manifest, out)
-        run.claim_capture_output(manifest, out)
-        with self.assertRaisesRegex(ValueError, 'choose a fresh output root'):
-            run.claim_capture_output({**manifest, 'binding': 'b' * 64}, out)
+        run.claim_capture_output(manifest, out, self.CODE)
+        run.claim_capture_output(manifest, out, self.CODE)
+        with self.assertRaisesRegex(ValueError, 'other inputs or by other code'):
+            run.claim_capture_output({**manifest, 'binding': 'b' * 64}, out, self.CODE)
+        with self.assertRaisesRegex(ValueError, 'other inputs or by other code'):
+            run.claim_capture_output(manifest, out, {'source_sha256': 'edited'})
         other = self.root / 'other'
         other.mkdir()
         (other / 'stray.txt').write_text('x')
         with self.assertRaisesRegex(ValueError, 'Unbound existing capture output'):
-            run.claim_capture_output(manifest, other)
+            run.claim_capture_output(manifest, other, self.CODE)
+
+    def test_a_folder_of_the_old_bundle_scheme_is_not_resumed(self):
+        out = self.root / 'old'
+        out.mkdir()
+        write_json(out / 'run-binding.json', {'manifest_binding': 'a' * 64, 'code_binding': 'c' * 64})
+        with self.assertRaisesRegex(ValueError, 'other inputs or by other code'):
+            run.claim_capture_output(dict(binding='a' * 64), out, self.CODE)
+
+    def test_a_repeat_capture_goes_to_a_folder_named_like_its_shard(self):
+        shard = Shard(self.root, repeat=True)
+        out, repeat = run.prepare_output(shard.manifest, self.root / 'fresh' / '0', self.CODE)
+        self.assertEqual((out.name, repeat, sorted(os.listdir(out))), ('0', True, ['run-binding.json']))
+        with self.assertRaisesRegex(ValueError, 'repeat capture goes to ROOT/0'):
+            run.prepare_output(shard.manifest, self.root / 'fresh' / 'elsewhere', self.CODE)
+
+    def test_a_finished_capture_is_not_run_or_overwritten_again(self):
+        shard = Shard(self.root, repeat=True)
+        with self.assertRaisesRegex(ValueError, 'already holds result.json'):
+            run.prepare_output(shard.manifest, shard.out, self.CODE)
+        with self.assertRaisesRegex(ValueError, 'other inputs or by other code'):
+            run.prepare_output(shard.manifest, shard.out, {'source_sha256': 'edited'})
+        (shard.out / 'result.json').unlink()
+        run.prepare_output(shard.manifest, shard.out, self.CODE)  # an interrupted run resumes
+        write_json(shard.out / 'verification.json', {'status': 'passed'})
+        with self.assertRaisesRegex(ValueError, 'already holds verification.json'):
+            run.prepare_output(shard.manifest, shard.out, self.CODE)
+
+    def test_the_manifests_own_capture_dir_is_not_a_repeat(self):
+        shard = Shard(self.root)
+        (shard.out / 'result.json').unlink()
+        out, repeat = run.prepare_output(shard.manifest, shard.manifest['capture_dir'], self.CODE)
+        self.assertEqual((out, repeat), (shard.out.resolve(), False))
+
+    def test_a_shard_in_a_repeat_tree_needs_a_verification_written_by_this_code(self):
+        shard = Shard(self.root, repeat=True)
+        run.check_verification(shard.manifest, shard.out, True, self.CODE)
+        with self.assertRaisesRegex(ValueError, 'written by other code'):
+            run.check_verification(shard.manifest, shard.out, True, {'source_sha256': 'edited'})
+        paper = Shard(Path(self.tmp.name) / 'paper')
+        run.check_verification(paper.manifest, paper.out, False, {'source_sha256': 'edited'})
+        (shard.tree / 'verify' / 'verification.json').unlink()
+        with self.assertRaises(FileNotFoundError):
+            run.check_verification(shard.manifest, shard.out, True, self.CODE)
+
+    def test_no_trace_is_started_in_the_last_half_hour_of_the_job(self):
+        now = time.time()
+        self.assertFalse(run.must_stop(None))
+        self.assertFalse(run.must_stop(now + 3600))
+        self.assertTrue(run.must_stop(now + 1700))
+        self.assertTrue(run.must_stop(now - 5))
 
     def test_packed_files_are_lossless_reproducible_and_capped(self):
         raw = b'router' * 5000
@@ -313,6 +389,26 @@ class RunHelperTests(unittest.TestCase):
             run.save_differential(path, binding, {'status': 'passed', 'flips': 1})
 
 
+class CapturePathTests(unittest.TestCase):
+    def test_captures_go_only_under_the_capture_roots(self):
+        mfa = '/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe'
+        for allowed in ('/leonardo_scratch/fast/IscrC_MIOSR/lmolfett/mfa-moe/campaign-v3/capture/gpt/A/0',
+                        mfa + '/r/some-job/capture', mfa + '/campaign-v3/x'):
+            self.assertEqual(str(buffers.approved_capture_path(allowed)), allowed)
+        for refused in ('/tmp/capture', '/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/capture',
+                        '/leonardo/home/userexternal/lmolfett/capture', mfa + '/repo/results', mfa + '/r/../repo',
+                        '/leonardo_scratch/fast/IscrC_MIOSR/lmolfett/mfa-moe/campaign-runs/x'):
+            with self.assertRaisesRegex(ValueError, 'Unapproved capture path'):
+                buffers.approved_capture_path(refused)
+
+    def test_a_git_checkout_is_never_a_capture_folder(self):
+        with tempfile.TemporaryDirectory() as tmp, mock.patch.object(buffers, 'CAPTURE_ROOTS', (Path(tmp),)):
+            (Path(tmp) / 'checkout' / '.git').mkdir(parents=True)
+            self.assertEqual(buffers.approved_capture_path(Path(tmp) / 'fresh'), (Path(tmp) / 'fresh').resolve())
+            with self.assertRaisesRegex(ValueError, 'inside a git checkout'):
+                buffers.approved_capture_path(Path(tmp) / 'checkout' / 'capture')
+
+
 class AtomicTests(unittest.TestCase):
     def test_atomic_leaves_no_partial_file(self):
         with tempfile.TemporaryDirectory() as tmp:
@@ -322,6 +418,19 @@ class AtomicTests(unittest.TestCase):
             self.assertEqual(os.listdir(path.parent), ['x.json'])
             with self.assertRaises(ValueError):
                 atomic(path, {'a': float('nan')})
+
+    def test_a_receipt_is_written_once(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / 'verification.json'
+            write_new(path, {'status': 'passed'})
+            with self.assertRaisesRegex(ValueError, 'Refusing to overwrite'):
+                write_new(path, {'status': 'passed'})
+            self.assertEqual(json.loads(path.read_text()), {'status': 'passed'})
+
+    def test_the_folders_of_a_shard_are_the_papers_or_those_of_a_repeat_tree(self):
+        manifest = {'capture_dir': '/p/capture/m/A/3', 'verification_path': '/p/capture/m/verify/verification.json', 'shard': 3}
+        self.assertEqual(capture_folders(manifest), (Path('/p/capture/m/A/3'), Path('/p/capture/m/verify/verification.json')))
+        self.assertEqual(capture_folders(manifest, '/r/tree'), (Path('/r/tree/3'), Path('/r/tree/verify/verification.json')))
 
 
 if __name__ == '__main__':

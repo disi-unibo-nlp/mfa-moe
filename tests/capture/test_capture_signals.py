@@ -12,7 +12,7 @@ except ImportError:  # pragma: no cover - the light test environment has no torc
 
 if torch is not None:
     from capture.agreement import DifferentialFailed, compare_backend_captures, compare_hf_vllm_capture, compare_native_captures
-    from capture.buffers import CaptureBuffers, approved_capture_path, capture_memory_budget
+    from capture.buffers import CaptureBuffers, capture_memory_budget
     from capture.hf_chunked_capture import chunk_ranges
     from capture.native_selection import boundary_gaps, require_native_boundary
     from capture.vllm_capture import frame_entries
@@ -97,11 +97,6 @@ class BufferTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'Invalid native capture dimensions'):
             capture_memory_budget(10, 2, 8, 4, 5)
 
-    def test_captures_are_only_written_to_the_users_own_storage(self):
-        self.assertEqual(approved_capture_path('/leonardo_work/IscrC_MIOSR/lmolfett/x/../y').name, 'y')
-        with self.assertRaisesRegex(ValueError, 'Unapproved capture path'):
-            approved_capture_path('/tmp/capture')
-
 
 @unittest.skipIf(torch is None, 'torch is not installed')
 class ReplayChecks(unittest.TestCase):
@@ -160,6 +155,13 @@ class AgreementTests(unittest.TestCase):
     def test_long_traces_must_also_keep_the_routing_dynamics(self):
         with self.assertRaisesRegex(ValueError, 'at most 32768'):
             compare_hf_vllm_capture(synthetic_capture(), synthetic_capture(), total_input_tokens=40000, layers=LAYERS)
+
+    def test_a_nan_or_negative_tolerance_is_refused(self):
+        for name, value in (('near_tie_eps', float('nan')), ('selection_relative_l2_bound', -1.0),
+                            ('global_relative_l2_bound', float('inf'))):
+            with self.assertRaisesRegex(ValueError, 'Invalid differential tolerance: ' + name):
+                compare_hf_vllm_capture(synthetic_capture(), vllm_side(), total_input_tokens=100, layers=LAYERS,
+                                        vllm_weight_scale=SCALE, **{name: value})
 
     def test_the_vllm_capture_must_name_one_audited_scale_per_layer(self):
         native = vllm_side()
