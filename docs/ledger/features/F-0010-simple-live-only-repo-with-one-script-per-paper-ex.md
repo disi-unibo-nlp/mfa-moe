@@ -33,3 +33,13 @@
 - `moe_exp.receipts` duplicates `moe_exp.io` (require, digest, load, publish, file_sha, check_files) with different normalisation; merge into io, keeping the campaign variant under an explicit name.
 - `steering/pulse_effects.py` still writes 21 always-unknown `semantic_first_*` columns of the deleted rescue endpoint.
 - `steering/pulse.code_hashes()` now hashes all of src; hash the code that ran or reuse `provenance.code_provenance()`.
+- Lexical `readout-v1/fold-*.pkl` pickles name `moe_exp.study.readout_text.TextTransform`; `routing.lexical._Unpickler` maps only `__main__`, so loading them fails (before and after the flatten). Map the old module name in `find_class`.
+- Launchers still to rework with the Python: the three steering seal-and-launch scripts (one shared block, Python builds the Slurm graph), one release mechanism instead of four, `VLLM_VERSION_RECORD` and the job deadline read in Python, hardcoded `tools/tmp` input paths.
+
+## Layout change 2026-10-23 (user)
+
+"If there's only one subfolder, do not create it [...] If there's only moe_exp, directly put moe_exp contents inside src. And remember the README inside each folder." Done in a6d44ad: packages sit directly in `src/`, `moe_exp/io.py` is `src/store.py`; full suite job 61971484 336 passed, same 3 pre-existing errors.
+
+## Ports pending from analysis/routing-dynamics (peer session repo-a1, F-0012)
+
+From 54591f8 on: AGENTS.md entry and F-0012 record; a new `study/` module for the Fig. 6 next-sentence labels and the Qwen3.6 sentence-table rebuild; a top-up path for r18's unfinished rows; strong-dose roster edits (8 models) in `scripts/paper/export_routing_results.py` and `verify_cl_tables.py`. Port into the new layout at merge (study/* -> routing/ or steering/, scripts/paper/*.py -> src/paper/).
