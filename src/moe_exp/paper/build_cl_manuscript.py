@@ -17,7 +17,7 @@ import sys
 import time
 import pymupdf
 
-from cl_paths import BUILD, PAPER, REPO  # noqa: E402
+from moe_exp.paper.cl_paths import BUILD, PAPER, REPO  # noqa: E402
 SKILL = Path("/leonardo/home/userexternal/lmolfett/.paper-writer-skill/skills/paper-writer")
 PYTHON = Path("/leonardo/home/userexternal/lmolfett/.cache/paper-writer/venv/bin/python")
 TOOLS = Path("/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/verification-paper-tectonic-0.17.0")

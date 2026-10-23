@@ -10,7 +10,7 @@ import importlib.util
 import json
 import sys
 
-from cl_paths import BUILD, PAPER, REPO  # noqa: E402
+from moe_exp.paper.cl_paths import BUILD, PAPER, REPO  # noqa: E402
 SKILL = Path('/leonardo/home/userexternal/lmolfett/.paper-writer-skill/skills/paper-writer')
 
 

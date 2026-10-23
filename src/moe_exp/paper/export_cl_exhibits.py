@@ -16,7 +16,7 @@ import hashlib
 import json
 import shutil
 
-from cl_paths import DATA, FIGURES as ROOT, LEGACY, NOTES, PAPER, REPO  # noqa: E402
+from moe_exp.paper.cl_paths import DATA, FIGURES as ROOT, LEGACY, NOTES, PAPER, REPO  # noqa: E402
 
 TABLES = PAPER / "journal/tables"
 MODELS = ("gpt", "nemotron", "qwen35", "qwen36", "gemma", "glm", "qwen330b", "lfm25")

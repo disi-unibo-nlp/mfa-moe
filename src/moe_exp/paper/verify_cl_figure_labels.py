@@ -12,7 +12,7 @@ import re
 
 import pymupdf
 
-from cl_paths import BUILD, FIGURES
+from moe_exp.paper.cl_paths import BUILD, FIGURES
 
 
 LABEL = re.compile(r'[\u2212-]?\d+(?:\.\d+)?')

@@ -7,7 +7,7 @@ from pathlib import Path
 import json
 import re
 
-PAPER = Path(__file__).resolve().parents[2] / "paper/6a510c6db0d9b08aa438c142"
+PAPER = Path(__file__).resolve().parents[3] / "paper/6a510c6db0d9b08aa438c142"
 MODEL_NAMES = r"\b(?:GPT|Qwen\d*(?:\.\d+)?|Gemma|GLM|Nemotron|LFM[\d.]*)\b"
 
 

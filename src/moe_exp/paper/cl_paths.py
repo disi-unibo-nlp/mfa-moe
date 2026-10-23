@@ -6,7 +6,7 @@ historical evidence stay in the support folder beside the manuscript.
 """
 from pathlib import Path
 
-REPO = Path(__file__).resolve().parents[2]
+REPO = Path(__file__).resolve().parents[3]
 PAPER = REPO / "paper/6a510c6db0d9b08aa438c142"
 SUPPORT = REPO / "paper/manuscript-support"
 FIGURES = PAPER / "figures/journal"  # canonical editable figures, including Overleaf author edits

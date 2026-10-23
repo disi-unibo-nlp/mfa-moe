@@ -9,8 +9,8 @@ import json
 import os
 import pymupdf
 
-from build_cl_manuscript import PAPER
-from cl_paths import BUILD, DATA, FIGURES, LEGACY, NOTES
+from moe_exp.paper.build_cl_manuscript import PAPER
+from moe_exp.paper.cl_paths import BUILD, DATA, FIGURES, LEGACY, NOTES
 
 
 def main():

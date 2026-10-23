@@ -12,8 +12,8 @@ import zipfile
 
 import pymupdf
 
-from build_cl_manuscript import PAPER, SKILL, TOOLS, EXPECTED, sha
-from cl_paths import BUILD
+from moe_exp.paper.build_cl_manuscript import PAPER, SKILL, TOOLS, EXPECTED, sha
+from moe_exp.paper.cl_paths import BUILD
 
 
 def page_proofs(path):

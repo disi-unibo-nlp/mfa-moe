@@ -26,11 +26,9 @@ import argparse
 import json
 import math
 import re
-import sys
 
-sys.path.insert(0, str(Path(__file__).resolve().parent))
-from cl_paths import DATA, FIGURES  # noqa: E402
-from export_routing_results import (  # noqa: E402
+from moe_exp.paper.cl_paths import DATA, FIGURES  # noqa: E402
+from moe_exp.paper.export_routing_results import (  # noqa: E402
     DRIVER, MODELS, PAPER, REPO, TABLE_NAMES, TICKS, cid, sha, verified)
 
 DEFAULT_EFFECTS = REPO / "report/whole-reasoning-20261021-r11/analysis-combined/EFFECTS_WHOLE.json"

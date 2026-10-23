@@ -12,8 +12,8 @@ import shutil
 import subprocess
 import time
 
-from build_cl_manuscript import TOOLS, EXPECTED, sha
-from cl_paths import BUILD, DATA, FIGURES, PAPER
+from moe_exp.paper.build_cl_manuscript import TOOLS, EXPECTED, sha
+from moe_exp.paper.cl_paths import BUILD, DATA, FIGURES, PAPER
 
 NAMES = ('overview', 'conditioning', 'readout', 'selection', 'occupancy', 'next_state', 'state_transitions', 'transition_summary', 'routing', 'whole_dose', 'whole_states')
 

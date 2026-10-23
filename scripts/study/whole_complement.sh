@@ -32,7 +32,7 @@ out=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/r/claude-review/final-export-${n
 env -u SLURM_JOB_ID sbatch --parsable --account=iscrc_miosr --partition=lrd_all_serial --qos=normal \
   --nodes=1 --ntasks=1 --cpus-per-task=2 --mem=16G --time=60 --job-name=whole-final-export \
   --dependency="afterok:$combine" --output="$WHOLE_ROOT/logs/%x-%j.out" --error="$WHOLE_ROOT/logs/%x-%j.err" \
-  --wrap "cd $REPO && module load python/3.11.7 && mkdir -p $out && PYTHONPATH=src:scripts/paper \
+  --wrap "cd $REPO && module load python/3.11.7 && mkdir -p $out && PYTHONPATH=src \
 PYTHONDONTWRITEBYTECODE=1 /leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/envs/correlation-client-3.11/bin/python -B \
-scripts/paper/export_whole_results.py --effects $WHOLE_ROOT/analysis-combined/EFFECTS_WHOLE.json --out $out" \
+-m moe_exp.paper.export_whole_results --effects $WHOLE_ROOT/analysis-combined/EFFECTS_WHOLE.json --out $out" \
   | tee "$WHOLE_ROOT/EXPORT_JOB"
