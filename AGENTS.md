@@ -1,3 +1,18 @@
+**Every paper exhibit on all eight models — 2026-10-23 16:00 Rome (user request; Claude, ledger F-0012):**
+- Audit: Fig. 6 n/e cells (LFM Read row: no AMC23 Read sentence has a labelled successor; LFM Verify persistence;
+  Qwen3.6's three intervals, its dynamics table cut to 509 of 1,486 families by a token-cache mismatch), strong-dose
+  arm on 4 models, probes on 3, old global-steering table on 2, Qwen3.6-only historical interventions.
+- User choices: Qwen3.6 table rebuild from its existing labels + narrow next-sentence labels (successors of Read and
+  Verify sentences, all eight models, ~40 GPU-h); strong dose for qwen35/qwen36/glm/lfm25 (~110 GPU-h); Fig. 9
+  follow-up release after r18's cutoff (up to ~285 GPU-h); remove the global-steering table and the Qwen3.6-only
+  study (queued to the Codex paper session); probes stay at three models.
+- Strong dose: STRONG.json planned for the four models from snapshot `mfa-moe/releases/37506fb...`; jobs qwen35
+  61969933/61969946, qwen36 61969945/61969948, lfm25 61969950-61969952 (8 h, 2 GPUs), GLM test shard 0/6 61969953.
+  Inspect the GLM test for breakdown before submitting GLM shards 1-5/6. Outcomes and the 8-model analysis-strong
+  (fresh dir) are not chained yet.
+- r18 (Fig. 9 complement): 1/75 shards ran by 15:30; shards that start after 2026-10-24 06:00 exit without rows. The
+  follow-up must be sealed after the r18 whole-run jobs end (top-up of a complement parent is a new code path).
+
 **Next-state prediction for all eight models (Fig. 7 redo) — 2026-10-23 14:00 Rome (user request; Claude):**
 - `moe_exp.study.next_state` predicts the state of the next labelled sentence from the current one for all eight
   models: markov (current state only, Fig. 6), text (+ token bag, absolute position, length), routing (+ routing of
