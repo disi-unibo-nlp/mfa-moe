@@ -1,54 +1,64 @@
-"""Batched judge predictor built on the saved GEPA program.
+"""The judge client: label a batch of sentences with Qwen3.8-27B served by vLLM.
 
-Prompt rendering and completion parsing are delegated to DSPy's own ChatAdapter and the
-loaded program's signature, so a batched run produces byte-identical prompts and uses
-identical parsing to the single-request control. Only the transport differs: N rendered
-conversations are posted in one `/v1/chat/completions/batch` request.
-
-Two APIs share that one request path:
-
-* `classify_batch` is the strict compatibility API used by the benchmark and probe
-  callers. It returns canonical label strings and raises on anything unusual.
-* `classify_batch_outcomes` is the tolerant API used by the production annotation batch.
-  A malformed or non-stop choice comes back as an `unknown` outcome carrying the exact
-  raw completion, so one bad choice cannot discard its valid siblings.
+Each sentence becomes a chat prompt built by the saved DSPy program (the frozen GEPA judge). All prompts of a batch
+go to the server in one request to vLLM's `/v1/chat/completions/batch` route, and each answer is read with DSPy's own
+parser, so the labels equal what DSPy's one-request-at-a-time path would give. An answer that cannot be read comes back
+as an `unknown` outcome that keeps the raw text; one bad answer never discards its siblings.
 """
 
 from __future__ import annotations
 
+import json
 import urllib.error
+import urllib.request
 from typing import Any
 
-from labeling.batch_judge import (
-    build_batch_payload,
-    map_batch_choices,
-    map_batch_response,
-    post_batch,
-)
+from store import WORK
 
-JUDGE_INPUT_FIELDS = (
-    "problem_statement",
-    "previous_sentence",
-    "sentence",
-    "next_sentence",
-)
+JUDGE_MODEL = "Qwen/Qwen3.8-27B"
+MAX_TOKENS = 16384
+REASONING_EFFORT = "low"
+# Decoding settings of every labelling run (the model card's); they are part of the checkpoint key.
+SAMPLING = {"temperature": 1.0, "top_p": 0.95, "top_k": 20, "min_p": 0.0,
+            "presence_penalty": 0.0, "repetition_penalty": 1.0}
+# The same settings as the request's chat template and the checkpoint key use.
+CHAT_TEMPLATE_KWARGS = {"enable_thinking": True, "reasoning_effort": REASONING_EFFORT, "preserve_thinking": False}
+API_KEY = "local-vllm-key"  # the key scripts/serve/args.sh starts the server with
+# The frozen judge: the GEPA program every label set was made with.
+JUDGE_PROGRAM = (WORK / "mfa-moe/repo/results/gepaLLMAsJudge/qwen3.8-27b-medium-final-s42-v3"
+                 / "selected_program_20260827_173300.json")
+
+JUDGE_INPUT_FIELDS = ("problem_statement", "previous_sentence", "sentence", "next_sentence")
 
 
-def load_program_and_adapter(judge_program: str) -> tuple[Any, Any, Any]:
-    """Load the real saved GEPA program and the adapter DSPy would use for it."""
-    import dspy
+def question_of(messages: list[dict[str, Any]] | None, prompt: str) -> str:
+    """The question the judge sees: the user message(s) of the generation prompt, or else the bare prompt."""
+    return "\n\n".join(str(m["content"]) for m in (messages or []) if m.get("role") == "user") or prompt
+
+
+def judge_inputs(question: str, units: list[dict[str, Any]], index: int) -> dict[str, str]:
+    """What the judge sees for sentence `index`: the question, one neighbouring sentence each side, edge markers."""
+    return {
+        "problem_statement": question,
+        "previous_sentence": units[index - 1]["text"] if index else "<START OF RESPONSE>",
+        "sentence": units[index]["text"],
+        "next_sentence": units[index + 1]["text"] if index + 1 < len(units) else "<END OF RESPONSE>",
+    }
+
+
+def load_program_and_adapter(judge_program: str) -> tuple[Any, Any]:
+    """Load the saved GEPA program's predictor and the adapter DSPy would use for it."""
     from dspy.adapters.chat_adapter import ChatAdapter
 
     from labeling.gepa.run import EpisodeJudge
 
     program = EpisodeJudge()
     program.load(judge_program)
-    predict = program.classify
-    return program, predict, ChatAdapter()
+    return program.classify, ChatAdapter()
 
 
 def render_conversation(adapter: Any, predict: Any, inputs: dict[str, Any]) -> list[dict[str, Any]]:
-    """Render one judge prompt exactly as DSPy would for the single-request path."""
+    """Render one judge prompt exactly as DSPy would."""
     missing = [field for field in JUDGE_INPUT_FIELDS if field not in inputs]
     if missing:
         raise ValueError(f"missing judge input fields: {missing}")
@@ -59,228 +69,147 @@ def parse_completion(adapter: Any, predict: Any, completion: str) -> str:
     """Parse a completion with DSPy's parser, then the project's label normaliser."""
     from labeling.gepa.metrics import parse_sentence_label
 
-    parsed = adapter.parse(predict.signature, completion)
-    return parse_sentence_label(parsed)
+    return parse_sentence_label(adapter.parse(predict.signature, completion))
 
 
 def parse_failure_types() -> tuple[type[BaseException], ...]:
-    """Exceptions that mean "this one completion could not be turned into a label".
+    """Exceptions that mean "this one completion cannot be turned into a label".
 
-    The project's normaliser raises `LabelParseError` (a `ValueError`); DSPy's adapters
-    raise `AdapterParseError`, which is not a `ValueError`, so it is added when DSPy is
-    importable. Transport and programming errors are deliberately not included.
+    The label normaliser raises `LabelParseError` (a `ValueError`); DSPy's adapters raise `AdapterParseError`, which
+    is not a `ValueError`, so it is added when DSPy is importable. Transport and programming errors are deliberately
+    not included.
     """
-    types: tuple[type[BaseException], ...] = (ValueError, TypeError)
     try:
         from dspy.utils.exceptions import AdapterParseError
     except ImportError:
-        return types
-    return (*types, AdapterParseError)
+        return (ValueError, TypeError)
+    return (ValueError, TypeError, AdapterParseError)
 
 
-def _request_items(
-    items: list[dict[str, Any]],
-    *,
-    mapper: Any,
-    adapter: Any,
-    predict: Any,
-    model: str,
-    base_url: str,
-    api_key: str,
-    max_tokens: int,
-    temperature: float,
-    reasoning_effort: str,
-    timeout: float,
-    top_p: float | None,
-    top_k: int | None,
-    min_p: float | None,
-    presence_penalty: float | None,
-    repetition_penalty: float | None,
-) -> Any:
-    """Render, post and index one batch; shared by the strict and tolerant APIs."""
-    conversations = [render_conversation(adapter, predict, item) for item in items]
-    payload = build_batch_payload(
-        conversations,
-        model=model,
-        max_tokens=max_tokens,
-        temperature=temperature,
-        reasoning_effort=reasoning_effort,
-        top_p=top_p,
-        top_k=top_k,
-        min_p=min_p,
-        presence_penalty=presence_penalty,
-        repetition_penalty=repetition_penalty,
+def batch_payload(conversations: list[list[dict[str, Any]]]) -> dict[str, Any]:
+    """One batch request carrying every conversation. The route supports neither streaming, tools nor `n` > 1."""
+    return {
+        "model": JUDGE_MODEL,
+        "n": 1,
+        "stream": False,
+        "messages": conversations,
+        "max_tokens": MAX_TOKENS,
+        "chat_template_kwargs": CHAT_TEMPLATE_KWARGS,
+        **SAMPLING,
+    }
+
+
+def post_batch(payload: dict[str, Any], *, base_url: str, timeout: float = 600.0) -> dict[str, Any]:
+    """POST one batch request and return the decoded JSON body."""
+    request = urllib.request.Request(
+        base_url.rstrip("/").removesuffix("/v1") + "/v1/chat/completions/batch",
+        data=json.dumps(payload).encode("utf-8"),
+        headers={"Content-Type": "application/json", "Authorization": f"Bearer {API_KEY}"},
+        method="POST",
     )
-    response = post_batch(payload, base_url=base_url, api_key=api_key, timeout=timeout)
-    return mapper(response, expected=len(items))
+    with urllib.request.urlopen(request, timeout=timeout) as handle:
+        return json.loads(handle.read().decode("utf-8"))
 
 
-def _choice_content(choice: dict[str, Any]) -> Any:
-    message = choice.get("message")
-    return message.get("content") if isinstance(message, dict) else None
+def map_batch_choices(response: dict[str, Any], *, expected: int) -> dict[int, dict[str, Any]]:
+    """Map the raw `choices` back to conversation positions without judging their content.
+
+    A structural problem (missing, repeated or out-of-range index, wrong count) stays fatal because such a response
+    cannot be attributed to the input rows. Per-choice problems are left to the caller.
+    """
+    choices = response.get("choices")
+    if not isinstance(choices, list):
+        raise ValueError("batch response has no choices list")
+    if len(choices) != expected:
+        raise ValueError(f"batch response returned {len(choices)} choices, expected {expected}")
+    mapped: dict[int, dict[str, Any]] = {}
+    for choice in choices:
+        if not isinstance(choice, dict):
+            raise ValueError("batch choice must be an object")
+        index = choice.get("index")
+        if type(index) is not int:
+            raise ValueError("batch choice is missing an integer index")
+        if index in mapped:
+            raise ValueError(f"batch response repeated index {index}")
+        if not 0 <= index < expected:
+            raise ValueError(f"batch choice index {index} outside 0..{expected - 1}")
+        mapped[index] = choice
+    return mapped
 
 
-def _unknown_outcome(
-    kind: str,
-    *,
-    error_type: str,
-    message: str,
-    finish_reason: Any,
-    raw_completion: str | None,
-) -> dict[str, Any]:
-    """Build one soft per-choice failure; only JSON-serializable scalars are stored."""
+def check_unknown(outcome: dict[str, Any]) -> tuple[str | None, dict[str, Any]]:
+    """The raw completion and failure of an `unknown` outcome, rejecting metadata that could not be read back."""
+    raw = outcome.get("raw_completion")
+    if raw is not None and not isinstance(raw, str):
+        raise ValueError("unknown outcome raw_completion must be a string or null")
+    failure = outcome.get("failure")
+    if not isinstance(failure, dict):
+        raise ValueError("unknown outcome is missing failure metadata")
+    missing = [key for key in ("kind", "error_type", "message") if not isinstance(failure.get(key), str)]
+    if missing:
+        raise ValueError(f"unknown outcome failure is missing {missing}")
+    finish_reason = failure.get("finish_reason")
+    if finish_reason is not None and not isinstance(finish_reason, str):
+        raise ValueError("unknown outcome finish_reason must be a string or null")
+    return raw, {"kind": failure["kind"], "error_type": failure["error_type"], "message": failure["message"],
+                 "finish_reason": finish_reason}
+
+
+def _unknown_outcome(kind: str, *, error_type: str, message: str, finish_reason: Any,
+                     raw_completion: str | None) -> dict[str, Any]:
     return {
         "status": "unknown",
         "raw_completion": raw_completion,
-        "failure": {
-            "kind": kind,
-            "error_type": error_type,
-            "message": message,
-            "finish_reason": finish_reason,
-        },
+        "failure": {"kind": kind, "error_type": error_type, "message": message, "finish_reason": finish_reason},
     }
 
 
 def classify_batch_outcomes(
-    items: list[dict[str, Any]],
-    *,
-    adapter: Any,
-    predict: Any,
-    model: str,
-    base_url: str,
-    api_key: str,
-    max_tokens: int,
-    temperature: float,
-    reasoning_effort: str,
-    timeout: float = 600.0,
-    top_p: float | None = None,
-    top_k: int | None = None,
-    min_p: float | None = None,
-    presence_penalty: float | None = None,
-    repetition_penalty: float | None = None,
+    items: list[dict[str, Any]], *, adapter: Any, predict: Any, base_url: str
 ) -> list[dict[str, Any]]:
     """Classify `items`, returning one outcome per input row, in input order.
 
-    A clean choice yields exactly `{"label": <canonical label>}`. A per-choice problem
-    yields an `unknown` outcome holding the exact raw completion and deterministic
-    failure metadata, so the caller can persist it and resume without re-requesting it.
-    A non-stop choice is unknown even when its text happens to contain a valid label,
-    because a truncated answer is not a valid annotation. Structural batch failures
-    (missing, duplicated or out-of-range indices, wrong choice count) and transport
-    failures still raise. An HTTP 400 rejects the whole batch when one conversation does
-    not fit the judge context (a degenerate, unpunctuated "sentence" of a looping trace);
-    the batch is bisected so only the rejected conversation becomes `unknown`.
+    A clean choice gives exactly `{"label": <label>}`. A choice that did not stop normally, has no text or cannot be
+    parsed gives an `unknown` outcome holding the raw completion, even when the text happens to contain a valid label
+    (a truncated answer is not an annotation). Transport failures and structural batch failures raise. An HTTP 400
+    rejects the whole batch when one conversation does not fit the judge context (a degenerate, unpunctuated
+    "sentence" of a looping trace); the batch is bisected so that only the rejected conversation becomes `unknown`.
     """
-    request = dict(adapter=adapter, predict=predict, model=model, base_url=base_url,
-                   api_key=api_key, max_tokens=max_tokens, temperature=temperature,
-                   reasoning_effort=reasoning_effort, timeout=timeout, top_p=top_p, top_k=top_k,
-                   min_p=min_p, presence_penalty=presence_penalty,
-                   repetition_penalty=repetition_penalty)
+    conversations = [render_conversation(adapter, predict, item) for item in items]
     try:
-        return _classify_outcomes(items, **request)
+        response = post_batch(batch_payload(conversations), base_url=base_url)
     except urllib.error.HTTPError as error:
         if error.code != 400:
             raise
         if len(items) > 1:
             middle = len(items) // 2
-            return (classify_batch_outcomes(items[:middle], **request)
-                    + classify_batch_outcomes(items[middle:], **request))
+            return (classify_batch_outcomes(items[:middle], adapter=adapter, predict=predict, base_url=base_url)
+                    + classify_batch_outcomes(items[middle:], adapter=adapter, predict=predict, base_url=base_url))
         body = error.read().decode("utf-8", "replace") if error.fp is not None else ""
-        return [_unknown_outcome("request_rejected", error_type="HTTPError",
-                                 message=f"HTTP 400: {body[:300]}", finish_reason=None,
-                                 raw_completion=None)]
-
-
-def _classify_outcomes(items: list[dict[str, Any]], **request: Any) -> list[dict[str, Any]]:
-    """One batch request mapped to per-choice outcomes (see classify_batch_outcomes)."""
-    adapter, predict = request["adapter"], request["predict"]
-    mapped = _request_items(
-        items,
-        mapper=map_batch_choices,
-        adapter=adapter,
-        **{key: value for key, value in request.items() if key != "adapter"},
-    )
+        return [_unknown_outcome("request_rejected", error_type="HTTPError", message=f"HTTP 400: {body[:300]}",
+                                 finish_reason=None, raw_completion=None)]
+    choices = map_batch_choices(response, expected=len(items))
     failure_types = parse_failure_types()
-    outcomes: list[dict[str, Any]] = []
+    outcomes = []
     for index in range(len(items)):
-        choice = mapped[index]
+        choice = choices[index]
         finish_reason = choice.get("finish_reason")
-        content = _choice_content(choice)
+        message = choice.get("message")
+        content = message.get("content") if isinstance(message, dict) else None
         raw_completion = content if isinstance(content, str) else None
         if finish_reason not in (None, "stop"):
-            outcomes.append(
-                _unknown_outcome(
-                    "non_stop",
-                    error_type="ValueError",
-                    message=f"finish_reason={finish_reason!r} is not a normal stop",
-                    finish_reason=finish_reason,
-                    raw_completion=raw_completion,
-                )
-            )
-            continue
-        if not isinstance(content, str):
-            outcomes.append(
-                _unknown_outcome(
-                    "missing_content",
-                    error_type="ValueError",
-                    message="choice has no string message content",
-                    finish_reason=finish_reason,
-                    raw_completion=None,
-                )
-            )
-            continue
-        try:
-            label = parse_completion(adapter, predict, content)
-        except failure_types as error:
-            outcomes.append(
-                _unknown_outcome(
-                    "label_parse",
-                    error_type=type(error).__name__,
-                    message=str(error),
-                    finish_reason=finish_reason,
-                    raw_completion=content,
-                )
-            )
-            continue
-        outcomes.append({"label": label})
+            outcomes.append(_unknown_outcome(
+                "non_stop", error_type="ValueError", message=f"finish_reason={finish_reason!r} is not a normal stop",
+                finish_reason=finish_reason, raw_completion=raw_completion))
+        elif raw_completion is None:
+            outcomes.append(_unknown_outcome(
+                "missing_content", error_type="ValueError", message="choice has no string message content",
+                finish_reason=finish_reason, raw_completion=None))
+        else:
+            try:
+                outcomes.append({"label": parse_completion(adapter, predict, raw_completion)})
+            except failure_types as error:
+                outcomes.append(_unknown_outcome(
+                    "label_parse", error_type=type(error).__name__, message=str(error),
+                    finish_reason=finish_reason, raw_completion=raw_completion))
     return outcomes
-
-
-def classify_batch(
-    items: list[dict[str, Any]],
-    *,
-    adapter: Any,
-    predict: Any,
-    model: str,
-    base_url: str,
-    api_key: str,
-    max_tokens: int,
-    temperature: float,
-    reasoning_effort: str,
-    timeout: float = 600.0,
-    top_p: float | None = None,
-    top_k: int | None = None,
-    min_p: float | None = None,
-    presence_penalty: float | None = None,
-    repetition_penalty: float | None = None,
-) -> list[str]:
-    """Classify `items` in a single batched generation request, order preserved."""
-    mapped = _request_items(
-        items,
-        mapper=map_batch_response,
-        adapter=adapter,
-        predict=predict,
-        model=model,
-        base_url=base_url,
-        api_key=api_key,
-        max_tokens=max_tokens,
-        temperature=temperature,
-        reasoning_effort=reasoning_effort,
-        timeout=timeout,
-        top_p=top_p,
-        top_k=top_k,
-        min_p=min_p,
-        presence_penalty=presence_penalty,
-        repetition_penalty=repetition_penalty,
-    )
-    return [parse_completion(adapter, predict, mapped[i]) for i in range(len(items))]

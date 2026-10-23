@@ -4,12 +4,12 @@ from __future__ import annotations
 
 import json
 from pathlib import Path
-from types import SimpleNamespace
 
 import pytest
 
-from labeling.annotation_partition import enumerate_items
+from labeling.annotation_batch import enumerate_items
 from labeling.sample_stratified import (
+    proportional_quotas,
     quartile_groups,
     reasoning_tokens,
     replay_reasoning_tokens,
@@ -103,15 +103,15 @@ def _fixture(tmp_path: Path, *, unscored: bool = False, status: str = "complete"
     return generation
 
 
-def _args(generation: Path, output: Path, *, seed: int = 42, total: int = 64,
+def _args(generation: Path, output: Path, *, seed: int = 42,
           parts: int = 2, part_size: int = 32, dry_run: bool = False,
-          datasets: list[str] | None = None) -> SimpleNamespace:
-    return SimpleNamespace(
+          datasets: list[str] | None = None) -> dict:
+    """The keyword arguments of `sample` for the small fixture."""
+    return dict(
         generation_dir=generation,
         generation_model="test",
         datasets=list(datasets if datasets is not None else DATASETS),
         output_dir=output,
-        total=total,
         parts=parts,
         part_size=part_size,
         seed=seed,
@@ -141,20 +141,29 @@ def test_quartile_groups_split_equal_counts() -> None:
         quartile_groups([])
 
 
+def test_proportional_quotas_split_by_supply_and_never_exceed_it() -> None:
+    assert proportional_quotas({"a": 1, "b": 10, "c": 10}, 8) == {"a": 0, "b": 4, "c": 4}
+    # largest remainders get the extra unit, ties go to the earlier cell name
+    assert proportional_quotas({"a": 3, "b": 3, "c": 3}, 4) == {"a": 2, "b": 1, "c": 1}
+    # taking everything gives every cell its whole supply
+    assert proportional_quotas({"a": 2, "b": 0, "c": 5}, 7) == {"a": 2, "b": 0, "c": 5}
+    for supply, total in [({"a": 1}, 4), ({"a": 10}, 0)]:
+        with pytest.raises(ValueError):
+            proportional_quotas(supply, total)
+
+
 def test_waterfill_is_max_min_fair() -> None:
-    assert waterfill({"a": 1, "b": 10, "c": 10}, 8, ["a", "b", "c"]) == {"a": 1, "b": 4, "c": 3}
-    assert waterfill({"a": 3, "b": 4}, 0, ["a", "b"]) == {"a": 0, "b": 0}
-    assert waterfill({"a": 3, "b": 4}, 7, ["a", "b"]) == {"a": 3, "b": 4}
+    assert waterfill({"a": 1, "b": 10, "c": 10}, 8) == {"a": 1, "b": 4, "c": 3}
+    assert waterfill({"a": 3, "b": 4}, 0) == {"a": 0, "b": 0}
+    assert waterfill({"a": 3, "b": 4}, 7) == {"a": 3, "b": 4}
     with pytest.raises(ValueError):
-        waterfill({"a": 3}, 4, ["a"])
-    with pytest.raises(ValueError):
-        waterfill({"a": 3}, 1, ["b"])
+        waterfill({"a": 3}, 4)
 
 
 def test_sample_writes_exact_stratified_parts(tmp_path: Path) -> None:
     generation = _fixture(tmp_path)
     output = tmp_path / "sampled"
-    result = sample(_args(generation, output))
+    result = sample(**_args(generation, output))
     assert result["selected_sentences"] == 64
     assert result["parts"] == [{"part": 0, "identities": 32}, {"part": 1, "identities": 32}]
     assert result["eligible"]["math500"]["traces"] == 8
@@ -206,12 +215,13 @@ def test_sample_writes_exact_stratified_parts(tmp_path: Path) -> None:
 def test_sample_output_is_consumable_by_annotation_partition(tmp_path: Path) -> None:
     generation = _fixture(tmp_path)
     output = tmp_path / "sampled"
-    sample(_args(generation, output))
+    sample(**_args(generation, output))
     root = output / "parts" / "part-00" / "generation" / "test"
     items = enumerate_items(root, DATASETS)
     assert len(items) == 32
     identities = [
-        (item[0]["dataset"], item[0]["problem_id"], item[0]["sample_id"], item[0]["sentence_index"])
+        (item["identity"]["dataset"], item["identity"]["problem_id"], item["identity"]["sample_id"],
+         item["identity"]["sentence_index"])
         for item in items
     ]
     assert len(set(identities)) == 32
@@ -219,9 +229,9 @@ def test_sample_output_is_consumable_by_annotation_partition(tmp_path: Path) -> 
 
 def test_sample_is_deterministic_and_seed_sensitive(tmp_path: Path) -> None:
     generation = _fixture(tmp_path)
-    first = sample(_args(generation, tmp_path / "first"))
-    second = sample(_args(generation, tmp_path / "second"))
-    third = sample(_args(generation, tmp_path / "third", seed=7))
+    first = sample(**_args(generation, tmp_path / "first"))
+    second = sample(**_args(generation, tmp_path / "second"))
+    third = sample(**_args(generation, tmp_path / "third", seed=7))
     assert first["manifest_sha256"] == second["manifest_sha256"]
     assert first["manifest_sha256"] != third["manifest_sha256"]
     first_identities = _read_identities(
@@ -235,7 +245,7 @@ def test_sample_is_deterministic_and_seed_sensitive(tmp_path: Path) -> None:
 
 def test_unscored_traces_are_excluded(tmp_path: Path) -> None:
     generation = _fixture(tmp_path, unscored=True)
-    result = sample(_args(generation, tmp_path / "sampled"))
+    result = sample(**_args(generation, tmp_path / "sampled"))
     assert result["eligible"]["math500"]["dropped_unscored"] == 1
     combined = _read_identities(
         tmp_path / "sampled" / "generation" / "test" / "math500" / "traces.jsonl", "math500"
@@ -246,7 +256,7 @@ def test_unscored_traces_are_excluded(tmp_path: Path) -> None:
 def test_incomplete_manifest_is_rejected(tmp_path: Path) -> None:
     generation = _fixture(tmp_path, status="running")
     with pytest.raises(ValueError, match="requires completed generations"):
-        sample(_args(generation, tmp_path / "sampled"))
+        sample(**_args(generation, tmp_path / "sampled"))
 
 
 def test_still_generating_dataset_is_rejected(tmp_path: Path) -> None:
@@ -254,28 +264,28 @@ def test_still_generating_dataset_is_rejected(tmp_path: Path) -> None:
     (generation / "test" / "aime24" / "manifest.json").unlink()
     (generation / "test" / "aime24" / "generation_shards").mkdir()
     with pytest.raises(ValueError, match="still generating"):
-        sample(_args(generation, tmp_path / "sampled"))
+        sample(**_args(generation, tmp_path / "sampled"))
 
 
 def test_different_plan_in_existing_output_is_rejected(tmp_path: Path) -> None:
     generation = _fixture(tmp_path)
     output = tmp_path / "sampled"
-    sample(_args(generation, output))
+    sample(**_args(generation, output))
     with pytest.raises(ValueError, match="different sampling plan"):
-        sample(_args(generation, output, seed=7))
-    assert sample(_args(generation, output))["selected_sentences"] == 64
+        sample(**_args(generation, output, seed=7))
+    assert sample(**_args(generation, output))["selected_sentences"] == 64
 
 
 def test_insufficient_supply_is_rejected(tmp_path: Path) -> None:
     generation = _fixture(tmp_path)
-    with pytest.raises(ValueError, match="fewer than --total"):
-        sample(_args(generation, tmp_path / "sampled", total=4096, parts=2, part_size=2048))
+    with pytest.raises(ValueError, match="fewer than the 4096 to select"):
+        sample(**_args(generation, tmp_path / "sampled", parts=2, part_size=2048))
 
 
 def test_dry_run_writes_nothing(tmp_path: Path) -> None:
     generation = _fixture(tmp_path)
     output = tmp_path / "sampled"
-    result = sample(_args(generation, output, dry_run=True))
+    result = sample(**_args(generation, output, dry_run=True))
     assert result["selected_sentences"] == 64
     assert not output.exists()
 
@@ -368,4 +378,4 @@ def test_constant_reasoning_length_is_rejected(tmp_path: Path) -> None:
         rows.append(row)
     _write_dataset(root, "math500", rows, 1)
     with pytest.raises(ValueError, match="same reasoning length"):
-        sample(_args(generation, tmp_path / "out", datasets=["math500"], total=8, parts=2, part_size=4))
+        sample(**_args(generation, tmp_path / "out", datasets=["math500"], parts=2, part_size=4))

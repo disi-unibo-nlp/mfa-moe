@@ -12,7 +12,7 @@ from types import SimpleNamespace
 import pytest
 
 from labeling import batch_predictor
-from labeling.batch_predictor import classify_batch, classify_batch_outcomes
+from labeling.batch_predictor import classify_batch_outcomes
 
 ITEM = {
     "problem_statement": "problem",
@@ -50,7 +50,7 @@ _MISSING = object()
 def _patch_transport(monkeypatch, choices):
     payloads = []
 
-    def fake_post(payload, *, base_url, api_key, timeout=600.0):
+    def fake_post(payload, *, base_url, timeout=600.0):
         payloads.append(payload)
         return {"choices": choices}
 
@@ -59,16 +59,7 @@ def _patch_transport(monkeypatch, choices):
 
 
 def _kwargs():
-    return dict(
-        adapter=ADAPTER,
-        predict=PREDICT,
-        model="judge-model",
-        base_url="http://127.0.0.1:8000/v1",
-        api_key="test-key",
-        max_tokens=64,
-        temperature=0.0,
-        reasoning_effort="medium",
-    )
+    return dict(adapter=ADAPTER, predict=PREDICT, base_url="http://127.0.0.1:8000/v1")
 
 
 def outcomes_for(monkeypatch, choices, items=None):
@@ -120,32 +111,6 @@ def test_out_of_order_choices_come_back_in_input_order(monkeypatch):
     assert outcomes == [{"label": "Read"}, {"label": "Analyze"}, {"label": "Plan"}]
 
 
-def test_strict_classify_batch_still_returns_label_strings(monkeypatch):
-    _patch_transport(monkeypatch, [choice(0, "Analyze"), choice(1, "Plan")])
-    labels = classify_batch([ITEM, dict(ITEM, sentence="other")], **_kwargs())
-    assert labels == ["Analyze", "Plan"]
-    assert all(isinstance(label, str) for label in labels)
-
-
-def test_strict_classify_batch_still_fails_closed_on_a_bad_choice(monkeypatch):
-    _patch_transport(monkeypatch, [choice(0, "Analyze", finish_reason="length")])
-    with pytest.raises(ValueError):
-        classify_batch([ITEM], **_kwargs())
-
-
-def test_both_apis_send_the_same_batch_payload(monkeypatch):
-    items = [ITEM, dict(ITEM, sentence="other")]
-    choices = [choice(0, "Analyze"), choice(1, "Plan")]
-    tolerant_payloads = _patch_transport(monkeypatch, choices)
-    assert classify_batch_outcomes(items, **_kwargs()) == [
-        {"label": "Analyze"},
-        {"label": "Plan"},
-    ]
-    strict_payloads = _patch_transport(monkeypatch, choices)
-    assert classify_batch(items, **_kwargs()) == ["Analyze", "Plan"]
-    assert tolerant_payloads == strict_payloads
-
-
 def _patch_context_limit(monkeypatch, too_long="HUGE", code=400):
     """Server stand-in: a batch containing an over-long conversation is rejected whole."""
     import io
@@ -153,7 +118,7 @@ def _patch_context_limit(monkeypatch, too_long="HUGE", code=400):
 
     requests = []
 
-    def fake_post(payload, *, base_url, api_key, timeout=600.0):
+    def fake_post(payload, *, base_url, timeout=600.0):
         texts = [conversation[0]["content"] for conversation in payload["messages"]]
         requests.append(texts)
         if any(text == too_long for text in texts):

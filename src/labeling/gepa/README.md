@@ -5,12 +5,8 @@ adapted Schoenfeld Episode Theory labels:
 
 `Read`, `Analyze`, `Plan`, `Implement`, `Explore`, `Verify`, `Monitor`.
 
-Install its optional dependencies from the repository root before running the
-optimizer or its tests:
-
-```bash
-pip install -e ".[dev,gepa-llm-as-judge]"
-```
+Run it with `PYTHONPATH=src`; it needs `dspy` and `scipy`. The frozen judge (the program every other
+folder loads) came out of `scripts/labeling/optimize_judge.sh`.
 
 ## Context and data isolation
 
@@ -28,14 +24,7 @@ validation, outer-CV, or locked-test boundaries.
 
 The prompt defines a whole-unit precedence rule for compound annotations such
 as a `**Final Answer**` marker combined with a boxed answer. Gold labels are
-never silently modified. Every run writes `annotation_audit_*.json`, and the
-same audit can be run without a model:
-
-```bash
-python -m labeling.gepa.audit \
-  --dataset-dir data/Schoenfeld_Reasoning \
-  --output results/gepaLLMAsJudge/annotation_audit.json
-```
+never silently modified. Every run writes `annotation_audit_*.json`.
 
 ## Prompt and optimization
 
@@ -58,8 +47,8 @@ from 1 to 5:
 The GEPA reward is a normalized weighted mean: gold agreement has weight 0.40,
 functional fit 0.25, contextual coherence 0.15, and boundary precision 0.20.
 These are optimization-feedback dimensions, not final experiment metrics.
-Final prompt selection still uses gold-label accuracy, balanced accuracy, or
-macro-F1 plus the per-class recall safety gate. The former static rewards remain
+Final prompt selection still uses gold-label balanced accuracy or macro-F1
+plus the per-class recall safety gate. The former static rewards remain
 available with `--gepa-reward balanced` and `--gepa-reward exact` for ablations.
 Every judge call is also appended to `judge_feedback_*.jsonl`, including the
 candidate and gold labels, four component scores, normalized composite score,
@@ -135,67 +124,19 @@ The current historical test split has already been inspected in earlier
 experiments. A genuinely final result requires newly held-out responses or an
 external evaluation corpus.
 
-## SLURM with Docker
+## Reproducing the frozen judge
 
-Build the two images once:
+`scripts/labeling/optimize_judge.sh API_BASE OUTPUT_DIR` runs the Qwen3.8-27B alignment pass
+that produced `results/gepaLLMAsJudge/qwen3.8-27b-medium-final-s42-v3`: the heavy GEPA budget,
+medium reasoning effort, 4096 reflection tokens, and the earlier 40-example optimized prompt
+(`results/exp0a/context-llmjudge-20k-s42/gepa_optimized_prompt_20260811_135905.txt`) as the
+external seed. Everything else is the default (seed 42, LLM-judge reward, balanced-accuracy
+selection, 26/6/6 split). Add `--evaluate-locked-test` only to the frozen final evaluation job.
+Always use a fresh output directory when changing the reward configuration, because GEPA resumes
+checkpoints found under that directory's `gepa_logs/`.
 
-```bash
-docker build -t llama.cpp:localcuda src/common/llamacpp
-docker build -t moe-mfa-experiments:latest .
-mkdir -p slurm_logs
-```
-
-Run five-fold nested cross-validation:
-
-```bash
-sbatch run_gepaLLMAsJudge.sh \
-  --prompt-variant few-shot \
-  --few-shot-examples 21 \
-  --gepa-reward llm-judge \
-  --cv-folds 5 \
-  --gepa-auto heavy \
-  --output-dir results/gepaLLMAsJudge/context-llmjudge-cv-s42
-```
-
-Run the final fit, still without test evaluation:
-
-```bash
-sbatch run_gepaLLMAsJudge.sh \
-  --prompt-variant few-shot \
-  --few-shot-examples 21 \
-  --gepa-reward llm-judge \
-  --gepa-auto heavy \
-  --output-dir results/gepaLLMAsJudge/context-llmjudge-final-s42
-```
-
-To realign an already optimized prompt with a different model, start a fresh
-output directory and pass the previous prompt as the new seed:
-
-```bash
-bash run_gepaLLMAsJudge.sh \
-  --seed-prompt-file results/exp0a/context-llmjudge-20k-s42/gepa_optimized_prompt_20260811_135905.txt \
-  --enable-thinking \
-  --reasoning-effort medium \
-  --output-dir results/gepaLLMAsJudge/qwen3.8-27b-medium-final-s42 \
-  --gepa-auto heavy
-```
-
-The seed path is relative to the repository because the launcher maps it into
-the project container. A fresh output directory prevents GEPA from resuming
-model-specific candidates and evaluation scores from an earlier run.
-
-Add `--evaluate-locked-test` only to the frozen final evaluation job. Each
-candidate evaluation now requires both a classifier call and a judge call, so
-budgeted runs are substantially slower. Keep judge reasoning disabled on the
-3090; reasoning-enabled ablations should be reserved for the 5090.
-Always use a fresh output directory when changing reward configuration because
-GEPA resumes checkpoints found under that directory's `gepa_logs/`.
-
-The SLURM launcher now defaults to GEPA's `heavy` budget and allows up to 4096
-tokens for each reflection response. The allocation itself is unchanged: one
-GPU, 64 GB host memory, and a 48-hour wall-clock limit. Override the budget
-explicitly with `--max-metric-calls N` when a fixed, auditable compute budget is
-preferred.
+The splits are fixed in `run.py` (`TRAIN_DOCUMENTS`, `VAL_DOCUMENTS`): 26 / 6 / 6 whole
+responses for the seed given with `--seed`.
 
 Outputs include the seed, GEPA-optimized, and safety-selected prompts/programs;
 validation or outer-fold predictions; split response IDs; annotation audit;

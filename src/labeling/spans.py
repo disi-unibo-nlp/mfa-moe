@@ -1,4 +1,8 @@
-"""Deterministic reasoning units and offsets into the exact teacher-forced input."""
+"""Sentence units of a reasoning trace and their offsets into the exact teacher-forced input.
+
+Every label, sampling plan and capture keys off these units and `trace_digest`, so the output of this file
+is frozen: change nothing in the segmentation without bumping the version of every consumer.
+"""
 
 from __future__ import annotations
 
@@ -9,7 +13,8 @@ import math
 import re
 from typing import Any, Iterable
 
-from labeling.gepa.data import SENTENCE_LABELS
+from labeling.batch_predictor import check_unknown
+from store import CLASSES as SENTENCE_LABELS
 
 SPAN_SCHEMA_VERSION = 1
 
@@ -48,12 +53,6 @@ def trace_digest(trace: Any) -> str:
 
 
 _RESERVED_TOKEN = re.compile(r"<\|reserved_\d+\|>")
-
-
-def reasoning_bounds(trace: Any) -> tuple[int, int]:
-    """Return the envelope of the reasoning (which may have message gaps)."""
-    ranges = reasoning_ranges(trace)
-    return ranges[0][0], ranges[-1][1]
 
 
 def reasoning_ranges(trace: Any) -> list[tuple[int, int]]:
@@ -296,35 +295,6 @@ def map_selection_to_v2(trace: Any, indices: Iterable[int]) -> list[int]:
     return sorted(set(mapped))
 
 
-def splitter_delta(trace: Any) -> dict[str, Any]:
-    """Describe how the fixed splitter changes one trace relative to the frozen v1 one."""
-    legacy = sentence_spans_v1(trace)
-    current = sentence_spans(trace)
-    legacy_keys = {(unit["start"], unit["end"], unit["text"]) for unit in legacy}
-    current_keys = {(unit["start"], unit["end"], unit["text"]) for unit in current}
-    superseded = [
-        unit for unit in legacy if (unit["start"], unit["end"], unit["text"]) not in current_keys
-    ]
-    mapped = map_selection_to_v2(trace, [unit["index"] for unit in legacy])
-    return {
-        "v1_units": len(legacy),
-        "v2_units": len(current),
-        "mapped_units": len(mapped),
-        "added_units": len(current_keys - legacy_keys),
-        "superseded_units": len(superseded),
-        "superseded": [
-            {
-                "index": unit["index"],
-                "start": unit["start"],
-                "end": unit["end"],
-                "text": unit["text"],
-            }
-            for unit in superseded
-        ],
-        "affected": legacy_keys != current_keys or len(mapped) != len(legacy),
-    }
-
-
 def selected_sentence_indices(trace: Any, units: list[dict[str, Any]]) -> list[int]:
     """Return the fixed sampling selection, or every unit for ordinary runs."""
     selection = trace.metadata.get("sentence_selection")
@@ -364,8 +334,7 @@ def validate_annotation(trace: Any, annotation: dict[str, Any]) -> None:
         if labeled.get("status") == "unknown":
             if "label" in labeled:
                 raise ValueError("Unknown outcomes cannot carry a class label")
-            from labeling.annotation_batch import _unknown_record
-            _unknown_record({}, labeled)
+            check_unknown(labeled)
         elif labeled.get("label") not in SENTENCE_LABELS:
             raise ValueError("Invalid reasoning class")
 

@@ -13,7 +13,6 @@ from labeling.spans import (
     map_selection_to_v2,
     sentence_spans,
     sentence_spans_v1,
-    splitter_delta,
 )
 from schemas import TraceRecord  # noqa: E402
 
@@ -155,21 +154,9 @@ class MappingTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             map_selection_to_v2(trace("One. Two."), [5])
 
-    def test_splitter_delta_reports_superseded_and_added_units(self):
-        text = "Value is 5$ First sentence here. Second sentence here. And $x^{2}$ is the formula."
-        delta = splitter_delta(trace(text))
-        self.assertTrue(delta["affected"])
-        self.assertEqual(delta["v1_units"], 1)
-        self.assertEqual(delta["v2_units"], 3)
-        self.assertEqual(delta["superseded_units"], 1)
-        self.assertEqual(delta["added_units"], 3)
-        self.assertEqual(delta["mapped_units"], 3)
-
     def test_plain_trace_is_unchanged(self):
-        delta = splitter_delta(trace("First sentence. Second sentence. Third sentence."))
-        self.assertFalse(delta["affected"])
-        self.assertEqual(delta["v1_units"], delta["v2_units"])
-        self.assertEqual(delta["superseded_units"], 0)
+        item = trace("First sentence. Second sentence. Third sentence.")
+        self.assertEqual(sentence_spans(item), sentence_spans_v1(item))
 
 
 if __name__ == "__main__":
