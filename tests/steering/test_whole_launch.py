@@ -1,5 +1,6 @@
-"""Launch regressions: actual nomination optima, continuous admission and relative gates."""
+"""Launch regressions: actual nomination optima, continuous admission, relative gates and the job graph."""
 import math
+import os
 from pathlib import Path
 import tempfile
 import subprocess
@@ -8,7 +9,6 @@ from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
 
-import numpy as np
 import pandas as pd
 
 from steering import pulse as driver, whole, whole_effects
@@ -16,6 +16,8 @@ from store import BENCHMARKS, REPO, WORK, load, publish
 from steering.pulse_effects import Bootstrap
 from steering.selection import select_pairs
 from test_driver import FakeEngine
+
+LINK = driver.DRIVER/'EFFICIENCY_LINK_PREREG.json'  # the seven-model pre-registration
 
 
 class ActualNominationTests(unittest.TestCase):
@@ -31,7 +33,7 @@ class ActualNominationTests(unittest.TestCase):
             for dose in ('main', 'half'):
                 for nomination in nominations['records']:
                     for operation in ('promote', 'suppress'):
-                        if operation == 'suppress' and nomination['class'] not in whole.directions(model)['suppress']:
+                        if operation == 'suppress' and nomination['class'] not in whole.directions(model, LINK)['suppress']:
                             continue
                         cell = whole.cell_actions(nomination, profile, model, dose, operation)
                         targets = {role: {(a['layer'], e) for a in cell['target'] for e in a[role]}
@@ -62,7 +64,7 @@ class ContinuousAdmissionTests(unittest.TestCase):
                 ('random_suppress', 'Analyze', 'suppress'), ('native_repeat', None, 'native'),
                 ('native', None, 'native'), ('target_promote', 'Monitor', 'promote'))
         ]
-        ordered = whole.admission_order(list(reversed(rows)))
+        ordered = whole.admission_order(list(reversed(rows)), LINK)
         self.assertTrue(all(r['class'] != 'Read' for r in ordered[:-2]))
         self.assertEqual([r['family'] for r in ordered[-2:]], ['a', 'b'])
         self.assertEqual(ordered[:5], sorted(ordered[:5], key=lambda r: (r['family'], r['arm'], r['class'] or '')))
@@ -112,92 +114,6 @@ class RelativeGateTests(unittest.TestCase):
         self.assertEqual(value['steered_units'], 0)
 
 
-class MonitorSurvivalTests(unittest.TestCase):
-    def setUp(self):
-        self.temporary = tempfile.TemporaryDirectory(dir=WORK/'tools/tmp')
-        self.addCleanup(self.temporary.cleanup)
-        self.root = Path(self.temporary.name)
-        root_patch = patch.object(whole, 'ROOT', self.root)
-        root_patch.start()
-        self.addCleanup(root_patch.stop)
-
-    def test_own_deadline_neither_writes_stop_nor_cancels_jobs(self):
-        with patch.object(driver, 'deadline_from_slurm', return_value=time.time()-1), \
-             patch.object(whole, 'cancel_jobs') as cancel:
-            whole.monitor()
-        self.assertFalse((self.root/'STOP.json').exists())
-        cancel.assert_not_called()
-
-    def test_transient_accounting_or_storage_exception_retries_without_stop(self):
-        driver.checkpoint(self.root/'JOBS.json', {})
-        for error in (RuntimeError('sacct transient'), RuntimeError('lfs quota transient')):
-            now = time.time()
-            with patch.object(driver, 'deadline_from_slurm', return_value=now+1), \
-                 patch.object(whole, 'all_jobs', return_value=[]), \
-                 patch.object(whole, 'accounting_snapshot', side_effect=error), \
-                 patch.object(whole.time, 'sleep', side_effect=lambda seconds: None) as sleep, \
-                 patch.object(whole.time, 'time', side_effect=[now, now+2]), \
-                 patch.object(whole, 'cancel_jobs') as cancel:
-                whole.monitor()
-            sleep.assert_called_once_with(60)
-            cancel.assert_not_called()
-            self.assertFalse((self.root/'STOP.json').exists())
-
-    def test_transient_scontrol_readback_never_duplicates_sbatch(self):
-        publish(self.root/'RELEASE.json', {'release_root': str(REPO)})
-        minutes = whole.CANARY_MINUTES['gpt']
-        readback = ('UserId=lmolfett(1) Account=iscrc_miosr Partition=boost_usr_prod '
-                    f'NumCPUs=16 TRES=cpu=16,gres/gpu=2 TimeLimit={minutes//60:02d}:{minutes%60:02d}:00 ')
-        responses = [SimpleNamespace(stdout='12345;leonardo\n'),
-                     subprocess.CalledProcessError(1, ['scontrol']), SimpleNamespace(stdout=readback)]
-        with patch.object(whole.subprocess, 'run', side_effect=responses) as run:
-            with self.assertRaises(subprocess.CalledProcessError):
-                whole.submit_stage('canary', model='gpt', dose='main')
-            accepted = whole.submit_stage('canary', model='gpt', dose='main')
-        self.assertEqual(accepted['id'], '12345')
-        self.assertEqual(sum(call.args[0][0] == 'sbatch' for call in run.call_args_list), 1)
-
-    def test_cpu_budget_exhaustion_never_starts_another_cpu_worker_or_stops_gpus(self):
-        publish(self.root/'RELEASE.json', {'prior_usage': {'new_cpu_core_hours': 16.}})
-        driver.checkpoint(self.root/'JOBS.json', {})
-        with patch.object(whole, 'all_jobs', return_value=[]), patch.object(whole, 'native_accounting', return_value={}), \
-             patch.object(whole.subprocess, 'Popen') as worker:
-            with self.assertRaisesRegex(ValueError, 'CPU allowance exhausted'):
-                whole.cpu_stage('analyze', None)
-        worker.assert_not_called()
-        self.assertFalse((self.root/'STOP.json').exists())
-
-    def test_all_model_allocation_maxima_fit_the_release_ceiling(self):
-        # Every canary (and one half-dose fallback each) plus every production shard at its maximum walltime.
-        reserved = sum(2*(2*whole.CANARY_MINUTES[m]+whole.SHARDS[m]*whole.RUN_MINUTES[m])/60 for m in whole.PLAN)
-        self.assertLess(reserved, 720.)
-
-    def test_purged_dependency_requires_native_success_before_afterok_is_satisfied(self):
-        gone = SimpleNamespace(returncode=1, stderr='slurm_load_jobs error: Invalid job id specified')
-        with patch.object(whole.subprocess, 'run', return_value=gone), \
-             patch.object(whole, 'native_accounting', return_value={'old': {'state': 'COMPLETED', 'exit_code': '0:0'}}):
-            self.assertIsNone(whole.scheduler_dependency('afterok:old'))
-        with patch.object(whole.subprocess, 'run', return_value=gone), \
-             patch.object(whole, 'native_accounting', return_value={'failed': {'state': 'FAILED', 'exit_code': '1:0'}}):
-            with self.assertRaisesRegex(ValueError, 'required native'):
-                whole.scheduler_dependency('afterok:failed')
-            self.assertIsNone(whole.scheduler_dependency('afterany:failed'))
-
-
-class PairedPlanningTests(unittest.TestCase):
-    def test_planning_noise_uses_repeat_differences_and_driver_accuracy(self):
-        rows = []
-        for family, native, repeat, correct in (('a', 1, 3, True), ('b', 7, 7, False), ('c', 9, 4, True)):
-            for arm, tokens, accuracy in (('native', native, False), ('native_repeat', repeat, correct)):
-                rows.append({'family': family, 'arm': arm, 'reasoning_tokens': tokens,
-                             'reasoning_end': tokens, 'finish_reason': 'stop', 'strict_correct': accuracy})
-        difference = whole_effects.native_repeat_differences(pd.DataFrame(rows))
-        expected = np.array([math.log(4/2), 0., math.log(5/10)])
-        np.testing.assert_allclose(difference.log_reasoning, expected)
-        self.assertAlmostEqual(difference.log_reasoning.std()/math.sqrt(6), expected.std(ddof=1)/math.sqrt(6))
-        self.assertEqual(difference.correct.tolist(), [1., 0., 1.])
-
-
 class DesignAndCoverageTests(unittest.TestCase):
     def frame(self):
         """A complete synthetic design with distinct non-primary Read perturbations."""
@@ -210,19 +126,19 @@ class DesignAndCoverageTests(unittest.TestCase):
             for arm in ('native', 'native_repeat'):
                 records.append({**base, 'arm': arm, 'class': None, 'operation': 'native'})
             for operation in ('promote', 'suppress'):
-                for cls in (whole.CLASSES if operation == 'promote' else whole.directions(model)['suppress']):
+                for cls in (whole.CLASSES if operation == 'promote' else whole.directions(model, LINK)['suppress']):
                     for role in ('target', 'random'):
                         records.append({**base, 'arm': role+'_'+operation, 'class': cls, 'operation': operation})
         return pd.DataFrame(records)
 
     def test_dropped_promote_cells_are_excluded_and_primary_is_unchanged(self):
         table = self.frame()
-        baseline, _ = whole_effects.family_contrasts(table)
+        baseline, _ = whole_effects.family_contrasts(table, LINK)
         drop = (table.model == 'gpt') & (table['class'] == 'Read') & (table.operation == 'promote')
         table.loc[drop, 'nomination_status'] = 'dropped_availability'
         table.loc[drop, 'log_reasoning:lower'] = 0.
         table.loc[drop, 'log_reasoning:upper'] = 20.
-        cells, _ = whole_effects.family_contrasts(table)
+        cells, _ = whole_effects.family_contrasts(table, LINK)
         self.assertFalse(((cells.model == 'gpt') & (cells['class'] == 'Read') & (cells.operation == 'promote')).any())
         pd.testing.assert_frame_equal(whole_effects.primary_frame(cells), whole_effects.primary_frame(baseline))
 
@@ -230,7 +146,7 @@ class DesignAndCoverageTests(unittest.TestCase):
         table = self.frame()
         table.loc[table['class'] == 'Verify', 'nomination_status'] = 'dropped_availability'
         with self.assertRaisesRegex(ValueError, 'efficiency-directed'):
-            whole_effects.family_contrasts(table)
+            whole_effects.family_contrasts(table, LINK)
 
     def test_sentence_coverage_failure_bounds_one_unit_and_keeps_the_other_observed(self):
         with tempfile.TemporaryDirectory(dir=WORK/'tools/tmp') as temporary:
@@ -256,54 +172,55 @@ class DesignAndCoverageTests(unittest.TestCase):
         self.assertAlmostEqual(table.loc['invalid', 'log_reasoning:upper'], math.log1p(100))
 
 
-class SweepLaunchTests(unittest.TestCase):
-    def test_sweep_release_queues_production_after_validation_without_a_canary(self):
-        submitted = []
+class LaunchGraphTests(unittest.TestCase):
+    """scripts/steering/launch.sh on a sealed release prints the sbatch commands of its graph (DRY_RUN=1)."""
+    PY = Path('/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/envs/vllm-cu129/bin/python')
 
-        def submit(command, *, model=None, dose=None, shard=None, dependency=None, held=False):
-            job = {'id': str(len(submitted)+1), 'command': command, 'model': model, 'dose': dose, 'shard': shard,
-                   'dependency': dependency, 'gpus': 2 if command == 'run' else 0, 'cpus': 1, 'minutes': 240,
-                   'submitted': time.time()}
-            submitted.append(job)
-            return job
+    def launch(self, kind_file: str, shards: dict) -> tuple[list[list[str]], str]:
+        """Lay out a repository-like folder around a made-up release, run the launcher, return its commands."""
         with tempfile.TemporaryDirectory(dir=WORK/'tools/tmp') as temporary:
-            root, base = Path(temporary)/'sweep', Path(temporary)/'base'
-            publish(root/'RELEASE.json', {'release_root': str(REPO)})
-            driver.checkpoint(base/'JOBS.json', {'extraction': {'gpt': {'id': '900'}}})
-            publish(root/'SOURCES.json', {'sources': [{'model': 'gpt', 'root': str(base), 'dose': 'half'},
-                                                      {'model': 'gpt', 'root': str(root), 'dose': 'quarter'}]})
-            with patch.object(whole, 'ROOT', root), patch.object(whole, 'MODELS', ('gpt',)), \
-                 patch.object(whole, 'SWEEP', {'gpt': 'quarter'}), patch.object(whole, 'SHARDS', {'gpt': 2}), \
-                 patch.object(whole, 'GPU_CEILING', 100.), patch.object(whole, 'verify_release'), \
-                 patch.object(whole.driver, 'log'), patch.object(whole, 'submit_stage', side_effect=submit):
-                whole.main(['launch'])
-            schedule = load(root/'JOBS.json')
-            plan = load(root/'gpt/SHARD_PLAN.json')
-        self.assertEqual([job['command'] for job in submitted], ['validate', 'run', 'run', 'extract', 'combine', 'monitor'])
-        self.assertEqual(schedule['canaries'], {'gpt': []})
-        self.assertTrue(all(job['dependency'] == 'afterok:1' and job['dose'] == 'quarter'
-                            for job in submitted if job['command'] == 'run'))
-        self.assertEqual(submitted[3]['dependency'], 'afterany:2:3')
-        # The combined analysis waits for this release's and the base release's extractions.
-        self.assertEqual(submitted[4]['dependency'], 'afterany:4:900')
-        self.assertEqual(schedule['analysis']['command'], 'combine')
-        self.assertEqual(plan['minutes'], whole.RUN_MINUTES['gpt'])
+            repo = Path(temporary)
+            for folder in ('src', 'scripts'):
+                os.symlink(REPO/folder, repo/folder)
+            root = repo/'report/release'
+            publish(root/'RELEASE.json', {'release_root': str(repo), 'models': list(shards), 'shards': shards})
+            publish(root/kind_file, {})
+            run = subprocess.run(['bash', str(repo/'scripts/steering/launch.sh'), 'release'], cwd=repo,
+                                 env={**os.environ, 'DRY_RUN': '1'}, capture_output=True, text=True)
+            self.assertEqual(run.returncode, 0, run.stderr)
+            return [line.split() for line in run.stderr.splitlines() if line.startswith('sbatch')], str(root)
 
-    def test_combined_analysis_allocation_and_release_settings(self):
-        with tempfile.TemporaryDirectory(dir=WORK/'tools/tmp') as temporary:
-            root = Path(temporary)
-            publish(root/'RELEASE.json', {'release_root': str(REPO)})
-            readback = ('UserId=lmolfett(1) Account=iscrc_miosr Partition=boost_usr_prod '
-                        'NumCPUs=8 TimeLimit=06:00:00 ')
-            answers = [SimpleNamespace(stdout='123\n'), SimpleNamespace(stdout=readback)]
-            with patch.object(whole, 'ROOT', root), patch.object(whole, 'SWEEP', {'gpt': 'quarter'}), \
-                 patch.object(whole.subprocess, 'run', side_effect=answers) as run:
-                job = whole.submit_stage('combine')
-            environment = run.call_args_list[0].kwargs['env']
-        self.assertIn('--mem=96G', job['args'])
-        self.assertIn('--time=360', job['args'])
-        self.assertEqual(environment['WHOLE_SWEEP'], 'gpt:quarter')
-        self.assertEqual(float(environment['WHOLE_CUTOFF']), whole.CUTOFF)
+    @staticmethod
+    def option(command, name):
+        return next(word.split('=', 1)[1] for word in command if word.startswith(name+'='))
+
+    @unittest.skipUnless(PY.exists(), 'needs the cluster environment')
+    def test_a_sweep_release_runs_tests_and_manifests_then_shards_then_one_extraction_per_model(self):
+        jobs, root = self.launch('COMPLEMENT.json', {'gpt': 2, 'glm': 1})
+        names = [command[command.index('-J')+1] for command in jobs]
+        self.assertEqual(names, ['whole-tests', 'whole-prepare', 'whole-run-gpt', 'whole-run-gpt', 'whole-extract-gpt',
+                                 'whole-run-glm', 'whole-extract-glm', 'whole-combine'])
+        gate = 'afterok:whole-tests:whole-prepare'
+        shards, extract, combine = jobs[3], jobs[4], jobs[-1]
+        self.assertEqual(self.option(jobs[2], '--dependency'), gate)
+        self.assertEqual(self.option(extract, '--dependency'), gate+',afterany:whole-run-gpt:whole-run-gpt')
+        self.assertEqual(self.option(combine, '--dependency'), gate+',afterany:whole-extract-gpt:whole-extract-glm')
+        self.assertEqual(shards[-6:], ['--release', root, '--model', 'gpt', '--shard', '1/2'])
+        self.assertIn('--gres=gpu:2', shards)
+        self.assertEqual(shards[shards.index('-t')+1], '240')  # a 2-GPU shard of 4 hours
+        self.assertEqual(combine[-4:], ['steering.whole', 'combine', '--release', root])
+        self.assertIn('--export=ALL,MOE_EXP_SCORING_PROCESSES=8', extract)
+
+    @unittest.skipUnless(PY.exists(), 'needs the cluster environment')
+    def test_a_relink_release_runs_only_the_tests_and_the_combine(self):
+        jobs, _ = self.launch('RELINK.json', {'gpt': 0})
+        self.assertEqual([command[command.index('-J')+1] for command in jobs], ['whole-tests', 'whole-combine'])
+        self.assertEqual(self.option(jobs[1], '--dependency'), 'afterok:whole-tests')
+
+    @unittest.skipUnless(PY.exists(), 'needs the cluster environment')
+    def test_an_outcome_release_ends_in_its_own_analysis(self):
+        jobs, root = self.launch('OUTCOME.json', {'gpt': 1})
+        self.assertEqual(jobs[-1][-4:], ['steering.outcome', 'analyze', '--release', root])
 
 
 class DoseResponseTests(unittest.TestCase):
@@ -359,11 +276,11 @@ class DoseResponseTests(unittest.TestCase):
     def test_sweep_doses_pair_with_the_base_release_natives(self):
         table = DesignAndCoverageTests().frame()
         steered = table[(table.model == 'gpt') & (table.operation != 'native')]
-        quarter = steered[[whole.efficiency_directed('gpt', op, c) for op, c in zip(steered.operation, steered['class'])]].copy()
+        quarter = steered[[whole.efficiency_directed('gpt', op, c, LINK) for op, c in zip(steered.operation, steered['class'])]].copy()
         quarter['dose'] = 'quarter'
         for suffix in ('', ':lower', ':upper'):
             quarter.loc[quarter.arm.str.startswith('target_'), 'log_reasoning'+suffix] = 1.
-        cells, noise = whole_effects.family_contrasts(pd.concat([table, quarter], ignore_index=True))
+        cells, noise = whole_effects.family_contrasts(pd.concat([table, quarter], ignore_index=True), LINK)
         self.assertEqual(len(noise), len(whole.MODELS))
         with self.assertRaisesRegex(ValueError, 'several doses'):
             whole_effects.primary_frame(cells)
@@ -406,22 +323,21 @@ class DoseResponseTests(unittest.TestCase):
                     for arm in (('native', 'native_repeat') if natives else ()):
                         rows.append({**row, 'uid': dose+family['family']+arm, 'arm': arm, 'class': None,
                                      'operation': 'native'})
-                    for operation, classes in (('promote', whole.directions('gpt')['promote']),
-                                               ('suppress', whole.directions('gpt')['suppress'])):
+                    for operation, classes in (('promote', whole.directions('gpt', LINK)['promote']),
+                                               ('suppress', whole.directions('gpt', LINK)['suppress'])):
                         for cls in classes:
                             for role in ('target', 'random'):
                                 rows.append({**row, 'uid': dose+family['family']+operation+cls+role, 'class': cls,
                                              'arm': role+'_'+operation, 'operation': operation})
                 publish(whole.manifest_path('gpt', dose, root), {'model': 'gpt', 'dose': dose, 'records': rows})
                 publish(root/'RELEASE.json', {'classifier': {}})
-            sources = publish(Path(temporary)/'SOURCES.json', {'sources': [
+            sources = publish(sweep/'SOURCES.json', {'sources': [
                 {'model': 'gpt', 'root': str(base), 'dose': 'main'},
                 {'model': 'gpt', 'root': str(sweep), 'dose': 'quarter'}]})
             original_load = whole_effects.load
-            with patch.object(whole_effects, 'ROOT', sweep), \
-                 patch.object(whole_effects, 'load', side_effect=lambda path: {'records': allocation}
+            with patch.object(whole_effects, 'load', side_effect=lambda path: {'records': allocation}
                               if Path(path).name == 'ALLOCATION.json' else original_load(path)):
-                result = whole_effects.combine(Path(temporary)/'SOURCES.json')
+                result = whole_effects.combine(sweep)
             self.assertTrue((sweep/'analysis-combined/EFFECTS_WHOLE.json').is_file())
         self.assertEqual(set(result['primary']), {'gpt:tokens', 'gpt:accuracy', 'pooled:tokens', 'pooled:accuracy'})
         self.assertIn('gpt@quarter:tokens', result['dose_response']['contrasts'])
@@ -433,15 +349,7 @@ class DoseResponseTests(unittest.TestCase):
         self.assertEqual(sources['sources'][1]['dose'], 'quarter')
 
 
-class NestedSubmissionAndRankTests(unittest.TestCase):
-    def test_stage_environment_drops_caller_slurm_state_and_keeps_stage_exports(self):
-        caller = {'SLURM_JOB_GPUS': '0,1', 'SLURM_JOB_ID': '1', 'SBATCH_ACCOUNT': 'x', 'SRUN_CPUS_PER_TASK': '16',
-                  'MOE_EXP_SCORING_PROCESSES': '2', 'PATH': '/bin'}
-        with patch.dict('os.environ', caller, clear=True):
-            env = whole.submission_environment({'MOE_EXP_SCORING_PROCESSES': '8', 'WHOLE_ROOT': '/w'})
-        self.assertFalse([k for k in env if k.startswith(('SLURM_', 'SBATCH_', 'SRUN_', 'SALLOC_'))])
-        self.assertEqual((env['MOE_EXP_SCORING_PROCESSES'], env['WHOLE_ROOT'], env['PATH']), ('8', '/w', '/bin'))
-
+class RankAndCanaryTests(unittest.TestCase):
     def test_ranks_may_differ_only_in_float_telemetry(self):
         def payload(l1, changed=3., executed_ids=(1, 2)):
             dose = {'0': {'active_positions': 5., 'changed_membership': changed, 'l1': l1, 'finite': 1.}}
@@ -461,9 +369,9 @@ class NestedSubmissionAndRankTests(unittest.TestCase):
                          'nomination_status': 'nominated', 'audit_capture': False} for arm in ('native', 'native_repeat')]
             records += [{'family': family, 'benchmark': f'b{index%6}', 'arm': role+'_'+operation, 'operation': operation,
                          'class': name, 'nomination_status': 'nominated', 'audit_capture': role == 'target'}
-                        for operation, name in (('promote', 'Verify'), ('suppress', whole.directions('gpt')['suppress'][0]))
+                        for operation, name in (('promote', 'Verify'), ('suppress', whole.directions('gpt', LINK)['suppress'][0]))
                         for role in ('target', 'random')]
-        rows = whole.canary_rows({'model': 'gpt', 'sha256': 'm', 'records': records})
+        rows = whole.canary_rows({'model': 'gpt', 'sha256': 'm', 'records': records}, LINK)
         self.assertEqual(len(rows), 48)
         self.assertEqual(sum(r['audit_capture'] for r in rows), 16)
         self.assertTrue(all(r['canary'] for r in rows))

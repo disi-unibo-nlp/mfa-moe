@@ -1,64 +1,49 @@
-# Eight-model study
+# Steering
 
-The current efficiency experiment is `python -m steering.whole` (Alignment
-v2; ledger D-0002/F-0003). It extends the reduced driver with original-prompt
-whole-reasoning steering, global stable risk-difference nominations, dual score
-override, matched controls, aggregate dose and bounded accuracy/token inference.
-The 512-token rescue is superseded; its commands below describe historical work.
-Run new jobs from a materialized release via `RELEASE_ROOT`, `STUDY_DATA_ROOT`,
-`WHOLE_ROOT`, and `STUDY_MODULE=steering.whole`. `validate`, `canary`, `run`,
-`extract`, `analyze` and `monitor` are bounded Slurm stages; `launch` submits the
-single authorized graph. See report/whole-reasoning-20261020/README.md for gates,
-counts, endpoints and the 72 GPU-hour / 16 CPU-core-hour limits.
-A complement release (`whole_complement.py`, COMPLEMENT.json) adds the suppress cells a base
-release left out; `whole_effects.combine` joins them to the base rows by family through a
-source's `complements` list, and they enter only the per-cell effects.
+Code that pushes the routers of the eight models toward or away from chosen experts while a model
+reasons, and measures what that did to the length and the correctness of the reasoning.
 
-Python implementation for the final routing study. Run it with
-`python -m steering`; use `--help` for commands.
+There are three experiments:
 
-- `session.py` owns request admission, internal IDs, stepping and cleanup.
-- `runtime.py`, `observer.py` and `reader.py` generate, capture routing and annotate.
-- `qualification.py` and `validation.py` check the real engine before production.
-- `workflow.py`, `scheduler.py` and `reservations.py` submit the finite job graph.
-- Frozen design, endpoint, routing and selection helpers are imported normally
-  from the original source package; the study does not install its old schedulers.
+- **Pulsed steering** (`pulse.py`, `pulse_outcomes.py`, `pulse_effects.py`): a short push on the
+  experts of one reasoning state at the start of a continuation, at a central strength and at a
+  stronger one. Its tables are the main and strong steering results of the paper.
+- **Whole-reasoning steering** (`whole.py`, `whole_effects.py`, `release.py`): the push is applied
+  to every prompt and reasoning token. Experts come from the efficiency link, with matched random
+  experts as controls, at three strengths. The sealed result is `EFFECTS_WHOLE.json`.
+- **Outcome-selected nudge** (`outcome/`): not in the paper, the active next line. See its README.
 
-Inputs are the frozen `configs/final_routing.yaml` and existing campaign receipts.
-Compact results stay in `report/final-routing-20261015-r1/`; bulk data stays in
-its approved private FAST directory. Control records live under `study/<commit>/`
-inside that campaign. Jobs run from the committed source snapshot there.
-Earlier source receipts and archives retain their original bytes; corrections
-require a separate release binding.
+## Files
 
-The causal rescue uses an explicit immutable cohort and fresh user WORK stores.
-`python -m steering.rescue --help` lists its maintained commands. Create a
-new storage-only study binding and source receipt, then run `cohort --cohort PATH
---source-receipt SOURCE --classifier DEPLOYED_C10` and `engineering-plan --cohort
-PATH`. Preserve all historical manifests, stores and r8 seals.
+| File | What it does |
+| --- | --- |
+| `pulse.py` | The generation engine (many requests at once, saved and resumed exactly), the pulsed design's manifests and the LFM2.5 native stages. |
+| `pulse_outcomes.py` | Reads the saved continuations and writes one table of outcomes and one of sentences per model. |
+| `pulse_effects.py` | The paired effects with bounds for unknown outcomes, the bootstrap, and the efficiency-link test. |
+| `whole.py` | The whole-reasoning release: manifests, the fluency canary, the shards, `plan`, `prepare`, `run`. |
+| `whole_effects.py` | Replays and scores the finished rows (`extract`) and joins every release into `EFFECTS_WHOLE.json` (`combine`). |
+| `release.py` | Seals a complement, relink or outcome release: receipts plus a frozen copy of the code. |
+| `stream.py`, `operators.py` | The hooks and the operators that change the routing of the running model. |
+| `nominations.py`, `selection.py`, `allocation.py` | Which experts, which layers, which families. |
+| `runtime.py`, `observer.py`, `session.py`, `penalties.py`, `fast_penalties.py` | Prompts, the per-request routing capture used by the LFM2.5 replay, and the repetition penalties. |
 
-Use `submit --cohort PATH --stage validate`, followed by engineering submissions
-with `--model gpt` and `--model qwen36`, and generation with `--stage generate
---model qwen36`. Engineering and generation may queue behind native `afterok`
-dependencies; workers verify their actual prerequisite receipts before loading.
-After generation is terminal, `submit --stage prepare` qualifies new captures,
-publishes the complete generation index, freezes reader tasks and occurrence
-sampling, and fixes the pilot and two disjoint waves. All commands require the
-same `--cohort PATH`.
+## Running a whole-reasoning release
 
-Submit `pilot`, run `reader-admit` after its actual terminal receipt, then submit
-`wave-0` and `wave-1` in order. `reserve` can serve only the first eligible
-unfinished stage; admitted requests without outputs remain unknown. `analysis`
-uses its protected CPU allowance after all owners are terminal and writes fresh
-main, strong and rescue results. A failed scientific gate permits an explicitly
-incomplete closeout, with unavailable outcomes retained in identification bounds.
+A release is a folder `report/NAME`. Every stage takes `--release report/NAME` and reads its
+settings (models, strengths, shards, cutoff time, efficiency link) from the files in it.
 
-The submission journal reserves full limits, reconciles ambiguous acceptance,
-verifies resources and store ownership, and disables automatic requeue. It binds
-the additional 64 GPU-hour / 16 CPU-core-hour ceilings and the 23 October 05:30
-Rome science cutoff. It performs no accounting SSH, environment update, manuscript
-edit or push. Raw main/strong artifacts and the original rescue archive remain
-historical evidence with their original provenance limits.
+```bash
+scripts/steering/whole.sh complement report/NAME TESTS   # seal, then submit the jobs
+scripts/steering/launch.sh NAME                          # submit the jobs of a sealed release
+DRY_RUN=1 scripts/steering/launch.sh NAME                # print the sbatch commands only
+```
+
+The stages are `python -m steering.whole plan | prepare | canary | run | extract | combine`. Slurm
+is only in `scripts/steering/`: dependencies, resources and walltimes are in `launch.sh`.
+Python no longer watches the GPU and CPU budgets or cancels jobs: a shard asks for 4 hours of 2 GPUs,
+the release records its declared ceilings, and `scripts/slurm/ledger.sh whole-` adds up what was spent.
+The fluency canary of a base release is run by hand (`python -m steering.whole canary`), and its
+receipt is what lets `run` start production.
 
 <!-- ledger:begin -->
 ## Ledger
