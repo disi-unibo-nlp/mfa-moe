@@ -1,18 +1,19 @@
-"""Stable receipt primitives and durable per-unit execution states.
+"""Shared basics: sealed receipts, per-unit execution states, trace-line reading and JSONL files.
 
-The primitives (digest, publish, verified, private, locked, ...) are vendored verbatim from the former
-`final_routing.common`; `Units` is the former `study.common.Units`. `read_source` is vendored from
-`research_campaign_v3_r6.inputs`. `iter_jsonl` and `write_jsonl` are the former `jsonl.iter_jsonl` and
-`utils.write_jsonl`.
+A receipt is a JSON file with its own content hash under "sha256". `publish` writes one atomically and
+refuses to change an existing one; `verified` reads one back and checks the hash. `digest` hashes any
+JSON-like value after `clean` has made it JSON-ready (numpy to Python, tuples to lists, missing and
+non-finite numbers to null).
 """
 from __future__ import annotations
 
-from collections.abc import Iterator
+from collections.abc import Iterator, Mapping
 from contextlib import contextmanager
 import fcntl
 import hashlib
 import json
 import math
+import numbers
 import os
 from pathlib import Path
 import tempfile
@@ -23,6 +24,8 @@ REPO = Path(__file__).resolve().parents[1]
 WORK = Path('/leonardo_work/IscrC_MIOSR/lmolfett')
 HOME = Path('/leonardo/home/userexternal/lmolfett')
 FAST = Path('/leonardo_scratch/fast/IscrC_MIOSR/lmolfett/mfa-moe/campaign-runs')
+STUDY = Path(os.environ.get('STUDY_DATA_ROOT', REPO/'report/final-routing-20261015-r1'))
+SEED = 20261008
 CLASSES = ('Read', 'Analyze', 'Plan', 'Implement', 'Explore', 'Verify', 'Monitor')
 BENCHMARKS = ('aime24', 'aime25', 'amc23', 'math500', 'minerva', 'olympiad')
 ARMS = ('native', 'target_activate', 'target_deactivate', 'random_activate', 'random_deactivate')
@@ -36,15 +39,31 @@ def require(condition, message):
         raise ValueError(message)
 
 
-def clean(value):
-    if hasattr(value, 'tolist'):
-        value = value.tolist()
-    if isinstance(value, dict):
-        return {str(k): clean(v) for k, v in value.items()}
+def clean(value, reasons=None, path=''):
+    """JSON-ready copy: string keys, lists for tuples and arrays, Python numbers, null for missing or non-finite.
+
+    If `reasons` is a dict, it gets one entry per null, keyed by its path, saying why."""
+    kind = type(value)
+    if kind in (str, int, bool):
+        return value
+    if kind is float and math.isfinite(value):
+        return value
+    if isinstance(value, Mapping):
+        return {str(k): clean(v, reasons, f'{path}/{k}') for k, v in value.items()}
     if isinstance(value, (list, tuple)):
-        return [clean(v) for v in value]
-    if isinstance(value, float) and not math.isfinite(value):
+        return [clean(v, reasons, f'{path}/{i}') for i, v in enumerate(value)]
+    if value is None or kind.__name__ in ('NAType', 'NaTType'):
+        if reasons is not None:
+            reasons[path] = 'missing_input'
         return None
+    if isinstance(value, numbers.Real):
+        if not math.isfinite(value):
+            if reasons is not None:
+                reasons[path] = 'non_finite_input'
+            return None
+        return value.item() if hasattr(value, 'item') else value
+    if hasattr(value, 'tolist'):
+        return clean(value.tolist(), reasons, path)
     return value
 
 
@@ -55,6 +74,12 @@ def canonical(value):
 
 def digest(value):
     return hashlib.sha256(canonical(value)).hexdigest()
+
+
+def seal(value):
+    """Clean copy of a dict with its content hash under "sha256"."""
+    payload = clean({k: v for k, v in value.items() if k != 'sha256'})
+    return {**payload, 'sha256': digest(payload)}
 
 
 def file_sha(path):
@@ -90,8 +115,7 @@ def locked(root, name='journal'):
 def publish(path, value):
     """Atomic, exclusive publication. An existing receipt must match exactly."""
     path = private(path)
-    payload = clean({k: v for k, v in value.items() if k != 'sha256'})
-    payload['sha256'] = digest(payload)
+    payload = seal(value)
     path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
     if path.exists():
         require(load(path) == payload, f'immutable receipt conflict: {path}')
@@ -119,8 +143,14 @@ def verified(path):
     return value
 
 
-def check_files(binding):
-    for path, expected in binding.items():
+def binding():
+    """The eight-model study's BINDING.json: its design, models and the bulk-data root."""
+    return load(STUDY/'BINDING.json')
+
+
+def check_files(files):
+    """Every bound file must still exist with the recorded sha256."""
+    for path, expected in files.items():
         require(Path(path).is_file() and file_sha(path) == expected, f'bound input changed: {path}')
 
 
