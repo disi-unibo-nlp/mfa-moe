@@ -3,6 +3,7 @@
 `context_id`, `scientific_config`, `parser_parts` and `sentence_contexts` are vendored verbatim from
 `research_campaign_v3_r6.annotation`.
 """
+from labeling.spans import reasoning_ranges
 from receipts import digest, require
 
 
@@ -64,7 +65,6 @@ def sentence_contexts(trace, replay, row, result):
     for i,u,start,end,complete in generated:
         if start-prefix>=row["window"] and i!=first:
             continue
-        from labeling.spans import reasoning_ranges
         segment=next(j for j,(a,b) in enumerate(reasoning_ranges(trace)) if a<=u["start"]<b)
         selected.append({"sentence_index":i,"segment":segment,"token_start":start-prefix,"token_end":end-prefix,
             "n_tokens":end-start,"complete":complete,"first_complete":i==first,
