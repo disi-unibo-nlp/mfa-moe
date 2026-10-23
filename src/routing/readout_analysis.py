@@ -2,7 +2,7 @@
 from pathlib import Path
 import json
 import time
-from store import ANALYSIS, WORK, digest, file_sha, require, seal, verified
+from store import ANALYSIS, WORK, digest, file_sha, load, require, seal, verified
 
 # The first seven-model run: its frozen specs fix the inputs a rerun must reproduce, and the LFM readout binds its files.
 HISTORICAL = ANALYSIS / 'forum/tests/r3_context'
@@ -33,11 +33,11 @@ def freeze(out, name, spec):
     first = HISTORICAL / name
     if first.exists():
         inputs = lambda value: {k: v for k, v in value.items() if k not in ('code', 'sha256')}
-        require(inputs(json.loads(first.read_text())) == inputs(spec), f'inputs differ from the first run: {first}')
+        require(inputs(load(first)) == inputs(spec), f'inputs differ from the first run: {first}')
     out.mkdir(parents=True, exist_ok=True)
     path = out / name
     if path.exists():
-        require(json.loads(path.read_text()) == spec, f'{path} differs from this run')
+        require(load(path) == spec, f'{path} differs from this run')
     path.write_text(json.dumps(spec, indent=1) + '\n')
 
 

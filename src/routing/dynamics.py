@@ -29,7 +29,7 @@ import numpy as np
 from routing.selection import (counts_for, enriched_set, family_weights, inclusion_statistics, nominate,
                                random_control, weighted_quantile)
 from stats import bootstrap_panel, clean_rows, unknown_bounds
-from store import ANALYSIS, CLASSES, SEED, canonical, digest, file_sha, publish, require, verified, write_once
+from store import ANALYSIS, CLASSES, SEED, canonical, digest, file_sha, load, publish, require, verified, write_once
 
 DEPTH_PATHS = ANALYSIS/'depth-paths/results/part1'
 
@@ -331,7 +331,7 @@ def main(argv=None):
     parser.add_argument('models', nargs='+')
     parser.add_argument('--out', type=Path, help='new folder for all outputs, recomputed from the campaign inputs')
     args = parser.parse_args(argv)
-    campaign = json.loads((args.campaign/'CAMPAIGN.json').read_text())
+    campaign = load(args.campaign/'CAMPAIGN.json')
     for model in args.models:
         print(model, derive(campaign, model, args.out)['sha256'], flush=True)
 
