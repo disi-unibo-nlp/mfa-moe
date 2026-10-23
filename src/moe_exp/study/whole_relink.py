@@ -107,7 +107,9 @@ def launch(after: str) -> dict:
     whole.verify_release()
     root = whole.ROOT
     require(not (root/'JOBS.json').exists(), 'relink graph already accepted; supervise the existing jobs')
-    require(whole.LINK == LINK and verified(root/'RELINK.json')['link_sha256'] == verified(LINK)['sha256'],
+    # The snapshot has no report/, so the receipt path comes from RELINK.json, not from this module.
+    relink = verified(root/'RELINK.json')
+    require(whole.LINK == Path(relink['link']) and verified(whole.LINK)['sha256'] == relink['link_sha256'],
             'WHOLE_LINK must name the release link receipt')
     (root/'logs').mkdir(parents=True, exist_ok=True, mode=0o700)
     release_root = verified(root/'RELEASE.json')['release_root']

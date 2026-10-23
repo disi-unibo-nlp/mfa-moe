@@ -1,0 +1,1 @@
+{"commit":"900711963ef8a2cc1a2d233c922e66405210ef9e","passed":true,"scope":"tests/study/test_whole*.py; the allocated run repeats tests/study and tests/outcome_steering in full","sha256":"d5c38a5e339241e6c1c7aa077ed40624e435882d7e3a7d4664ad390a0eaae475","tests":104}
