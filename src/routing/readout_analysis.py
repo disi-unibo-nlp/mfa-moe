@@ -2,12 +2,15 @@
 from pathlib import Path
 import json
 import time
-from store import digest
+from store import digest, require, seal
 SEED = 20260929
 
 
-def seal(value):
-    return {**value, 'sha256': digest(value)}
+def check_first_run(path, spec):
+    """A rerun must start from the first run's inputs; only the code hashes (and so the seal) may differ."""
+    if path.exists():
+        inputs = lambda value: {k: v for k, v in value.items() if k not in ('code', 'sha256')}
+        require(inputs(json.loads(path.read_text())) == inputs(spec), f'inputs differ from the first run: {path}')
 
 
 def family_folds(questions, n, seed, question_family):
@@ -22,7 +25,6 @@ def family_folds(questions, n, seed, question_family):
 def analyse(sr, md, context_counts, mode, workers, family, family_ids, output_root):
     import multiprocessing as mp
     import numpy as np
-    from scipy import sparse
     started = time.monotonic()
     variants = {'aug': sr.path_variant(md, md.top1)}
     for draw in range(5):

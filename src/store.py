@@ -24,6 +24,8 @@ REPO = Path(__file__).resolve().parents[1]
 WORK = Path('/leonardo_work/IscrC_MIOSR/lmolfett')
 HOME = Path('/leonardo/home/userexternal/lmolfett')
 FAST = Path('/leonardo_scratch/fast/IscrC_MIOSR/lmolfett/mfa-moe/campaign-runs')
+# Saved analyses outside the repo that the seven-model readout, next-state and benchmark code read.
+ANALYSIS = WORK/'tools/tmp/claude-analysis-2026-09-24'
 STUDY = Path(os.environ.get('STUDY_DATA_ROOT', REPO/'report/final-routing-20261015-r1'))
 SEED = 20261008
 CLASSES = ('Read', 'Analyze', 'Plan', 'Implement', 'Explore', 'Verify', 'Monitor')

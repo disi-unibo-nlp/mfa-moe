@@ -26,7 +26,7 @@ import numpy as np
 import pandas as pd
 from scipy import sparse
 
-from .common import (CLASSES, DATA, DYN_RESULTS, OUT, abs_bin, code_hashes, dep_hashes, log, sha256_file,
+from .common import (DATA, DYN_RESULTS, OUT, abs_bin, code_hashes, dep_hashes, log, sha256_file,
                      verify_prereg, write_json)
 
 K2DATA = DATA / "k2"
