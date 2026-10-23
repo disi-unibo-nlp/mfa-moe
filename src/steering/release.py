@@ -49,7 +49,7 @@ def complement(root: Path, args: argparse.Namespace) -> dict:
     # The combine: every source of r17, with this release joined to each model's base source.
     sources = verified(REPORTS/'whole-reasoning-20261021-r17/SOURCES.json')['sources']
     for model in MODELS:
-        source = next(s for s in sources if s['model'] == model and Path(s['root']) == parents[model]
+        source = next(s for s in sources if s['model'] == model and Path(s['root']).resolve() == parents[model].resolve()
                       and s['dose'] == sweep[model])
         source.setdefault('complements', []).append(str(root))
     # The complement reads each parent's base manifest (natives) and nominations outside the snapshot.
