@@ -1,87 +1,82 @@
-# Ported router capture (seven source models)
+# Router capture (seven source models)
 
-Provenance note for code copied unchanged into the repository. Step 6 of the cleanup plan simplifies it.
+Replays the saved token ids of the generated traces through each model and records which experts the routers chose, with
+their weights, the router signal and the hidden states of every routed layer. It produced the captures all routing
+results of the paper use (gpt, glm, qwen330b, qwen36, nemotron, gemma, qwen35). `lfm_replay.py` is the same idea for
+LFM2.5 inside the steering code.
+
+## Run it
+
+Everything needs the frozen manifests of the paper (see "Not in the repository"). For one model and cohort (`A` or `B`):
+
+```
+M=/leonardo_scratch/fast/IscrC_MIOSR/lmolfett/mfa-moe/campaign-v3
+sbatch scripts/capture/capture.sbatch gpt $M/manifests/gpt/verify.json $M/capture/gpt/verify verify   # once per model
+sbatch scripts/capture/capture.sbatch gpt $M/manifests/gpt/A/0.json $M/capture/gpt/A/0               # once per shard
+scripts/capture/gate.sh $M/manifests/gpt/A acceptance/capture-gpt-A.json                             # when all shards are done
+```
+
+`capture.sbatch` is one GPU job (2 GPUs, 240 GB, 16 h) and a rerun resumes. The output folder is normally the manifest's
+`capture_dir` (the folder the gate and the analyses read); another new folder repeats a capture without touching the paper's. The verify run (longest trace plus a short one)
+must pass first: gpt compares its query-chunked attention with the native one, glm compares vLLM with a Hugging Face
+reference; the other models only check that every layer and token is covered. The gate re-hashes every captured file.
+Run it from a clean checkout or a release snapshot: the outputs record the commit and the hash of `src/` (`code` in
+`load.json`, `*.complete.json`, `verification.json` and the gate result). The paper's acceptance files are in
+`tools/tmp/claude-analysis-2026-09-24/campaign-v3/acceptance/capture-<model>-<cohort>.json`.
+
+## What is here
+
+| File | What it does |
+|---|---|
+| `run.py` | the GPU job: checks the manifest, replays each trace, writes the packet and tensor files and the markers |
+| `gate.py` | the CPU acceptance of a finished cohort |
+| `manifest.py` | loads and checks a manifest (binding, cohort file, label files, source trace lines), resume markers, verification receipt |
+| `backends.py` | `HFBackend` (transformers) and `VLLMBackend` (two GPUs, tensor parallel) |
+| `vllm_capture.py` | the vLLM worker hooks (`worker_extension_cls`): selection, dispatch and decoder inputs of every routed layer |
+| `buffers.py` | memory budget and in-memory buffers of the vLLM capture |
+| `agreement.py` | glm: HF against vLLM; gpt: chunked against single-pass |
+| `reduce.py` | one raw capture to a packet (features, routing windows, class and position views, expert counts) and tensors |
+| `features.py`, `views.py`, `dynamics/` | the reductions; `dynamics/classes.saved_layout` is also used by the analyses |
+| `native_selection.py`, `sentence_schema.py`, `gpt_attention.py`, `hf_chunked_capture.py` | selector scores and margins, sentence splitter versions, gpt-oss attention and chunked replay |
+
+Output per trace: `<id>.pt.gz` (ids, fp16 weights, selection margins, reasoning token indices), `<id>.json.gz` (packet),
+`<id>.complete.json` (marker with sizes and hashes); per shard `result.json`, `progress.json`, `load.json`, `backend.json`,
+`run-binding.json`. The gate checks that `result.json` equals the markers and that tokens and traces add up to the plan.
+
+Tests: `tests/capture/` (manifest, gate, resume markers, buffers, agreement checks, `reduce_capture` on a synthetic trace; the
+torch ones run in the vLLM environment). The GPU path itself (`backends.py`, `vllm_capture.py`, `run.main`) is not covered.
+
+The checks that must stay: the manifest binding and every file it names, the exact saved token ids (`frame_entries`
+compares each token the engine runs with the saved one; `validate_token_replay`), the dispatched experts being the top-k
+of the scores, equal hashes on both tensor-parallel ranks, full layer and token coverage, the agreement checks, and the
+verification receipt before any shard. Version numbers written into outputs (`capture_version` 2, packet `schema_version` 2,
+`FEATURE_SCHEMA_VERSION` 3, dynamics `SCHEMA_VERSION` 1) must not change.
+
+## Not in the repository
+
+- The planner that cut the cohorts into shards and wrote the manifests (`campaign_v3_plan`, `production_plan`, `join_collection`
+  and the bundle scripts `submit_capture_v3.py`, `run_campaign_v3_module.py`). Its output is on disk and is the input of a
+  rerun: `campaign-v3/manifests/<model>/{A,B}/<shard>.json`, `ready.json`, and `<model>/verify.json` (also failed attempts
+  as `<model>.failed-*`). They name the cohort files under `tools/tmp/claude-analysis-2026-09-24/campaign-v3/cohorts/`
+  and the label files; both are checked against their hashes.
+- The frozen bundles. Every manifest carries `code_binding`, the hash of the bundle it was planned for; a run now records the
+  repository commit instead (the old check against the bundle is gone).
+- `attach_labels` (attached class labels to cohort B captures after the fact; nothing in the repository reads its output).
 
 ## Where it came from
 
-- Source: `/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/measurement_study/` (a separate checkout,
-  last commit 9f16c55). Its files are byte-identical to the last frozen bundle
-  `routing-study/results/measurement-study/campaign-v3/bundles/t2-20260927e/measurement_study/`.
-- Copied (17 modules, the import closure of `campaign_v3_capture` plus the gate and the worker extension):
-  `annotation_provenance, attach_labels, bundle, campaign_v3_capture, campaign_v3_plan, capture_buffers,
-  capture_gate, contract, gemma_cache_policy, gpt_attention, hf_chunked_capture, join_collection,
-  native_selection, production_capture, production_plan, sentence_schema, vllm_capture`.
-  `capture_gate` is not imported by the capture module but is the capture-agreement gate of the same chain;
-  `vllm_capture` is reached through the `worker_extension_cls` string in `production_capture`.
-- Only the imports changed: `measurement_study.X` is now `capture.X`, including the
-  `worker_extension_cls` string `capture.vllm_capture.MeasurementWorkerExtension`.
-- Not copied: `production_analyze, native_replay, recovery_*, nemotron_*, gemma_download, gemma_source_recovery,
-  final_source_join, label_*, plan_collection, prepare_campaign, size_collection, smoke, completed_labels,
-  artifact_*` (pilot, recovery and storage tooling that the capture chain does not import) and the bundle
-  `scripts/` (`submit_capture_v3.py`, `run_campaign_v3_module.py` and others: Slurm plumbing).
-
-## Bundles that actually ran
-
-Captures were produced from frozen bundles under `routing-study/results/measurement-study/campaign-v3/bundles/`:
+Copied from `routing-study/measurement_study/` (commit 9f16c55), which is byte-identical to the last frozen bundle
+`routing-study/results/measurement-study/campaign-v3/bundles/t2-20260927e/`. The captures themselves ran from several bundles:
 
 | model | bundle |
 |---|---|
 | gpt, qwen330b (Hugging Face backend) | `t2-20260926a` |
-| glm | `t2-20260927b`, `-c`, `-d`, then `-e` (the dispatch file was edited four times on 2026-09-27; the last one, 18:48, names `-e`) |
+| glm | `t2-20260927b`, `-c`, `-d`, then `-e` (the dispatch file was edited four times on 2026-09-27) |
 | nemotron, gemma, qwen36, qwen35 (vLLM backend) | `t2-20260927a` |
 
-The copy here is `t2-20260927e`. Against it, `t2-20260926a` and `t2-20260927a` differ in `campaign_v3_capture`
-(56 changed lines), `campaign_v3_plan` (4) and `capture_buffers` (155); `t2-20260927d` differs in
-`capture_buffers` (15). The repository modules the capture imports were bundled with the code
-(`bundle/src`); the repository's current versions differ from the `t2-20260927e` bundle in
-`correlation_pipeline/continuation.py` (additive), `dynamics/routing.py` (adds `expert_weight_occupancy`),
-`dynamics/evaluation.py` and `dynamics/cli.py`.
-
-## How it was launched (commands recorded; sbatch files are not copied)
-
-Driver chain (stdlib Python in the bundle, `scripts/submit_capture_v3.py`, dispatched per model by
-`tools/tmp/claude-analysis-2026-09-24/campaign-v3/code/capture_dispatch-*.py`):
-
-```
-submit_capture_v3.py start --model M --cohort A|B --bundle BUNDLE
-  plan-verify  -> CPU job: run_campaign_v3_module.py --module measurement_study.production_plan ...
-  verify       -> GPU job (below, MODE=verify)
-  after-verify -> plan-cohort: production manifests sized from the verify receipt -> shard GPU jobs (MODE=capture)
-  gate         -> CPU job: run_campaign_v3_module.py --module measurement_study.capture_gate --manifest-dir ...
-```
-
-GPU job (`tools/tmp/claude-analysis-2026-09-24/campaign-v3/code/capture_sbatch-*.sbatch`): partition
-`boost_usr_prod`, qos `normal`, 1 node, 2 GPUs, 16 CPUs, 240 GB, 16 h, `--no-requeue`; `module load
-python/3.11.7 cuda/12.6`; offline Hugging Face; `VLLM_DISABLE_REQUEST_ID_RANDOMIZATION=1`,
-`VLLM_USE_V2_MODEL_RUNNER=0`, `VLLM_USE_FLASHINFER_SAMPLER=0`, `VLLM_RPC_BASE_PATH=$RUN/tmp`,
-`MEASUREMENT_BUNDLE=$BUNDLE`, `MEASUREMENT_DEADLINE_EPOCH` from `squeue %e`; for gpt only,
-`LOCAL_KERNELS=kernels-community/gpt-oss-triton-kernels=<snapshot 0f351046...>` and the
-`envs/forward-kernels-0.16` overlay on `PYTHONPATH`. Command:
-
-```
-srun envs/vllm-cu129/bin/python -B -u -m measurement_study.campaign_v3_capture \
-    SOURCE --manifest MANIFEST --bundle BUNDLE [--verify-only]
-```
-
-The ported module does not run yet: `main()` calls `bundle.worker_init`, which refuses any repository module (a module or
-package directly under `src/`) loaded from outside a frozen bundle, and the old bundles hold
-`measurement_study/*.py`, not `capture/*.py`.
-Step 6 replaces the bundle check with a release snapshot.
-
-## Known leftovers (not touched in the port)
-
-- `bundle.py` verifies loaded modules against a bundle's `SHA256.json` and so blocks running from the repository
-  (see above); it goes away when the release script takes its place.
-- `join_collection.join_cohort` appends the bundle's `scripts/` to `sys.path` and imports
-  `analyze_available_metrics` from it. That helper (a pilot analysis script) is not ported; the function is only
-  used when planning cohorts, never by capture or the gate.
-- `production_capture` hashes `vllm_capture.py` into `capture_code_sha256`; the value of a re-run differs from the
-  historical receipts because the file text changed (imports).
-
-## Later additions in this package
-
-- `lfm_replay.py` is `replay` from the former `study/lfm.py`, unchanged.
-- `features.py`, `views.py` and `dynamics/` (sentence tables and per-layer routing reducers) came from
-  `correlation_pipeline/` and are imported by `production_capture`.
-- The import lines of the ported modules that named `correlation_pipeline.*`, `jsonl` or `provenance` now name
-  `capture.*`, `store` and `provenance`; nothing else in them changed.
+Against `-e`, `t2-20260926a` and `t2-20260927a` differ in `campaign_v3_capture` (56 lines), `campaign_v3_plan` (4) and
+`capture_buffers` (155); `-d` differs in `capture_buffers` (15). The code here is the `-e` logic, so a rerun of gpt or the
+vLLM models uses the later glm fixes (spawned HF reference, per-layer drift limits). The step 6 changes keep every computation
+and drop the rest: the bundle freeze and import checks, the shard planner, the deadline drain (`MEASUREMENT_DEADLINE_EPOCH`),
+the runtime measurements in `verification.json` and the unused `identical_kernels` option of the HF/vLLM comparison. The
+`capture_code_sha256` in the packets is the hash of `vllm_capture.py` and differs from the historical receipts, as the file changed.

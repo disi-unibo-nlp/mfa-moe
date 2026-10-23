@@ -13,8 +13,9 @@ gpt compares its query-chunked attention with the native one, glm compares the v
 reference; the others only check that every routed layer and every token is covered. Its receipt
 `OUTPUT_DIR/verification.json` is what `manifest["verification_path"]` of the shard manifests names.
 
-OUTPUT_DIR is `capture_dir` of the manifest (the folder the gate and the analyses read). It must be a new folder or
-the one this manifest already wrote to; the first run marks it with `run-binding.json`.
+OUTPUT_DIR is normally `capture_dir` of the manifest, the folder the gate and the analyses read. Any other new folder
+repeats a capture without touching the paper's. The folder must be empty or already written by this manifest; the
+first run marks it with `run-binding.json`.
 """
 import argparse
 import gzip
@@ -35,7 +36,10 @@ from store import file_sha
 
 
 def claim_capture_output(manifest, out):
-    """Mark an empty folder as the output of this manifest; refuse a folder that belongs to another one."""
+    """Mark an empty folder as the output of this manifest; refuse a folder that belongs to another one.
+
+    `code_binding` is the hash of the frozen bundle the manifest was planned for; it stays in the marker so that
+    folders written before the bundles were dropped still match."""
     binding = {'manifest_binding': manifest['binding'], 'code_binding': manifest['code_binding']}
     marker = Path(out) / 'run-binding.json'
     if marker.exists():
@@ -158,6 +162,33 @@ def run_differential(source, manifest, out, short, backend, reference, binding):
     return {'status': 'not_required', 'reason': 'native dispatch/selection validation at all tokens'}
 
 
+def capture_one(row, backend, manifest, out, used, code):
+    """Replay, reduce and write one trace (`used` = bytes already written in this folder); returns its marker."""
+    import torch
+    from capture.reduce import reduce_capture
+    torch.cuda.reset_peak_memory_stats()
+    start = time.monotonic()
+    data = backend.capture(_trace(row), 'capture-' + row['id'])
+    packet, tensors = reduce_capture(row, data, backend, manifest)
+    del data
+    stream = io.BytesIO()
+    torch.save(tensors, stream)
+    del tensors
+    tensor_record = pack_bytes(out / (row['id'] + '.pt.gz'), stream.getvalue(), manifest['artifact_cap_bytes'] - used)
+    del stream
+    packet['tensor_artifact'] = tensor_record
+    packet_record = pack_bytes(out / (row['id'] + '.json.gz'), json.dumps(packet, allow_nan=False).encode(),
+                               manifest['artifact_cap_bytes'] - used - tensor_record['bytes'])
+    del packet
+    record = dict(id=row['id'], manifest_binding=manifest['binding'], trace_sha256=row['trace_sha256'],
+                  files=[tensor_record, packet_record], tokens=row['completion_tokens'],
+                  seconds=time.monotonic() - start, job=os.environ['SLURM_JOB_ID'],
+                  parent_peak_cuda_bytes=torch.cuda.max_memory_allocated(),
+                  parent_peak_rss_kib=resource.getrusage(resource.RUSAGE_SELF).ru_maxrss, code=code)
+    atomic(out / (row['id'] + '.complete.json'), record)
+    return record
+
+
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument('source')
@@ -175,7 +206,6 @@ def main(argv=None):
     if torch.cuda.device_count() != 2:
         raise RuntimeError('Exactly two allocated GPUs required')
     from capture.backends import HFBackend, VLLMBackend
-    from capture.reduce import reduce_capture
     from capture.sentence_schema import install
     install()
     code = code_provenance()
@@ -226,33 +256,13 @@ def main(argv=None):
                                        job=os.environ['SLURM_JOB_ID'], provenance=backend.provenance, code=code))
         # Longest input first: it shows the real memory need before the rest is spent.
         for row in sorted(remaining, key=lambda r: (-r['total_input_tokens'], r['id'])):
-            torch.cuda.reset_peak_memory_stats()
-            start = time.monotonic()
-            data = backend.capture(_trace(row), 'capture-' + row['id'])
-            packet, tensors = reduce_capture(row, data, backend, manifest)
-            del data
-            stream = io.BytesIO()
-            torch.save(tensors, stream)
-            del tensors
-            tensor_record = pack_bytes(out / (row['id'] + '.pt.gz'), stream.getvalue(),
-                                       manifest['artifact_cap_bytes'] - used)
-            del stream
-            packet['tensor_artifact'] = tensor_record
-            packet_record = pack_bytes(out / (row['id'] + '.json.gz'), json.dumps(packet, allow_nan=False).encode(),
-                                       manifest['artifact_cap_bytes'] - used - tensor_record['bytes'])
-            del packet
-            elapsed = time.monotonic() - start
-            record = dict(id=row['id'], manifest_binding=manifest['binding'], trace_sha256=row['trace_sha256'],
-                          files=[tensor_record, packet_record], tokens=row['completion_tokens'], seconds=elapsed,
-                          job=os.environ['SLURM_JOB_ID'], parent_peak_cuda_bytes=torch.cuda.max_memory_allocated(),
-                          parent_peak_rss_kib=resource.getrusage(resource.RUSAGE_SELF).ru_maxrss, code=code)
-            atomic(out / (row['id'] + '.complete.json'), record)
+            record = capture_one(row, backend, manifest, out, used, code)
             completed.append(record)
             used += sum(f['bytes'] for f in record['files'])
             atomic(out / 'progress.json', dict(completed=len(completed), expected=manifest['expected_attempts'],
                                                tokens=sum(r['tokens'] for r in completed), artifact_bytes=used))
             print(json.dumps({'completed': len(completed), 'expected': manifest['expected_attempts'],
-                              'last_seconds': elapsed}), flush=True)
+                              'last_seconds': record['seconds']}), flush=True)
     reread, unfinished, checked_bytes = resume_records(manifest, out)
     if unfinished or len(reread) != manifest['expected_attempts'] or sum(r['tokens'] for r in reread) != manifest['expected_tokens']:
         raise ValueError('Incomplete exact capture coverage')

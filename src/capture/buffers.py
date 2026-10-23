@@ -14,13 +14,13 @@ MIB = 1024 ** 2
 GIB = 1024 ** 3
 MAX_WORKER_BYTES = 100 * GIB  # Two TP workers plus engine/headroom in a 240G job.
 MAX_TRANSIENT_BYTES = 96 * GIB
-FAST = Path('/leonardo_scratch/fast/IscrC_MIOSR/lmolfett')
+SCRATCH = Path('/leonardo_scratch/fast/IscrC_MIOSR/lmolfett')
 
 
 def approved_capture_path(output):
-    """Captures are written only to the user's own WORK, HOME or FAST storage."""
+    """Captures are written only to the user's own WORK, HOME or fast scratch storage."""
     path = Path(output).resolve()
-    if not any(path.is_relative_to(root) for root in (WORK, HOME, FAST)):
+    if not any(path.is_relative_to(root) for root in (WORK, HOME, SCRATCH)):
         raise ValueError('Unapproved capture path: ' + str(path))
     return path
 
