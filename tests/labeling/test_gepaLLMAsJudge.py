@@ -230,20 +230,7 @@ def test_load_split_and_flatten_without_cross_document_leakage(tmp_path: Path) -
 
 
 def test_few_shot_prompt_covers_all_sentence_labels() -> None:
-    documents = [
-        EpisodeDocument(
-            question_id=f"q{index}",
-            units=(
-                EpisodeUnit(
-                    text=f"Representative {label} sentence.",
-                    sentence_label=label,
-                ),
-            ),
-        )
-        for index, label in enumerate(SENTENCE_LABELS)
-    ]
-
-    examples = select_few_shot_sentences(documents, count=21)
+    examples = select_few_shot_sentences(count=21)
     prompt = build_few_shot_instructions(examples)
 
     assert {example.label for example in examples} == set(SENTENCE_LABELS)
@@ -261,7 +248,7 @@ def test_external_seed_prompt_is_loaded_verbatim(tmp_path: Path) -> None:
     seed_path.write_text("  Previously optimized instructions.\n", encoding="utf-8")
     args = Namespace(seed_prompt_file=seed_path)
 
-    examples, prompt = _seed_configuration(args, documents=[])
+    examples, prompt = _seed_configuration(args)
 
     assert examples == ()
     assert prompt == "Previously optimized instructions."
@@ -273,7 +260,7 @@ def test_external_seed_prompt_must_not_be_empty(tmp_path: Path) -> None:
     args = Namespace(seed_prompt_file=seed_path)
 
     with pytest.raises(ValueError, match="seed prompt file is empty"):
-        _seed_configuration(args, documents=[])
+        _seed_configuration(args)
 
 
 def test_strict_classification_metrics_include_invalid_predictions() -> None:

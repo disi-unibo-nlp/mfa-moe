@@ -1,9 +1,12 @@
+"""The judge's seed prompt: the instructions for the seven episode labels, and the bank of 21 hand-written contrastive
+examples (three per label) that can be appended to them. The examples are synthetic, so validation and test
+annotations cannot leak into the prompt."""
 from __future__ import annotations
 
 from collections.abc import Sequence
 from dataclasses import dataclass
 
-from labeling.gepa.data import SENTENCE_LABELS, EpisodeDocument
+from labeling.gepa.data import SENTENCE_LABELS
 
 SEED_INSTRUCTIONS = r"""You are an expert reviewer of mathematical reasoning traces. Classify
 the CURRENT UNIT by its primary local function in the adapted Schoenfeld Episode Theory.
@@ -59,14 +62,6 @@ class FewShotSentence:
     sentence: str
     next_sentence: str
     label: str
-
-    @property
-    def question_id(self) -> str:
-        return f"curated:{self.example_id}"
-
-    @property
-    def unit_id(self) -> int:
-        return 0
 
     def metadata(self) -> dict[str, object]:
         return {
@@ -251,13 +246,11 @@ CURATED_CONTRASTIVE_EXAMPLES = (
 )
 
 
-def select_few_shot_sentences(
-    documents: Sequence[EpisodeDocument],
-    *,
-    count: int = 21,
-) -> tuple[FewShotSentence, ...]:
-    """Return a balanced prefix of the audited, synthetic contrastive bank."""
-    del documents  # The fixed bank cannot leak validation or test annotations.
+def select_few_shot_sentences(*, count: int = 21) -> tuple[FewShotSentence, ...]:
+    """Return a balanced prefix of the audited, synthetic contrastive bank.
+
+    The bank is fixed and hand-written, so no validation or test annotation can leak into the prompt.
+    """
     if count <= 0:
         raise ValueError("Few-shot example count must be positive")
     if count > len(CURATED_CONTRASTIVE_EXAMPLES):

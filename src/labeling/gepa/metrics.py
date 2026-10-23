@@ -1,3 +1,5 @@
+"""Reading a predicted label and scoring predictions against gold labels: strict accuracy, balanced accuracy, macro-F1,
+per-class precision and recall, Cohen's kappa and Kendall's tau-b (needs scipy)."""
 from __future__ import annotations
 
 import json
