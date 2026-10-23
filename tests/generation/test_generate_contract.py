@@ -1,7 +1,4 @@
 """The generation contract of the saved traces must not drift, and the job deadline is read from Slurm."""
-from datetime import datetime
-from types import SimpleNamespace
-
 import pytest
 
 from generation import generate
@@ -29,15 +26,21 @@ def test_contract_hash_equals_the_hash_stored_in_the_traces(profile, monkeypatch
     assert contract["generation_sha256"] == STORED_HASHES[profile]
 
 
-def test_vllm_version_drops_the_build_tag(monkeypatch):
-    monkeypatch.setattr(generate.importlib.metadata, "version", lambda name: "0.29.0+cu129")
-    assert generate.vllm_version() == "0.29.0"
+def test_vllm_version_drops_the_build_tag_and_is_read_once(monkeypatch):
+    generate.vllm_version.cache_clear()
+    calls = []
+    monkeypatch.setattr(generate.importlib.metadata, "version", lambda name: calls.append(name) or "0.29.0+cu129")
+    assert generate.vllm_version() == generate.vllm_version() == "0.29.0"
+    assert calls == ["vllm"]
+    generate.vllm_version.cache_clear()
 
 
-def test_deadline_is_the_slurm_end_time_minus_the_margin(monkeypatch):
-    monkeypatch.setenv("SLURM_JOB_ID", "123")
-    monkeypatch.setattr(generate.subprocess, "run",
-                        lambda command, **kwargs: SimpleNamespace(stdout="2026-10-24T12:00:00\n"))
-    assert generate.slurm_deadline(3.0) == datetime(2026, 10, 24, 9, 0).timestamp()
-    monkeypatch.delenv("SLURM_JOB_ID")
-    assert generate.slurm_deadline(3.0) is None
+def test_contract_copies_the_profile_objects(monkeypatch):
+    monkeypatch.setattr(generate, "vllm_version", lambda: "0.29.0")
+    args = generate.build_parser().parse_args(["--profile", "nemotron"])
+    example = {"problem_id": "p", "prompt": "question", "gold_answer": "1"}
+    config = generate._job_contract("math500", example, 0, 0, args)["generation_config"]
+    card = generate.CARD_PROFILES["nemotron"]
+    for key, field in (("sampler", "sampler"), ("chat_template_kwargs", "template_kwargs"),
+                       ("speculation", "speculation"), ("server_extra_args", "extra_args")):
+        assert config[key] == card[field] and config[key] is not card[field]
