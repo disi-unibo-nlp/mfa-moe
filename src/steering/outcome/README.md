@@ -27,7 +27,7 @@ r7 WHOLE_NOMINATIONS.json ──────────> selection()           
                                                        │   target_nudge / random_nudge at each delta
  base releases' native runs (r7/r8 + top-ups) ────────>│   budget rows cut from the native runs
                                                        ▼
-                          WHOLE.json manifest ──> steering.whole (validate, run, extract)
+                          WHOLE.json manifest ──> steering.whole (prepare, run, extract)
                                                        │
  final whole-reasoning table (r17 continuations) ─────>│
                                                        ▼
@@ -41,8 +41,11 @@ r7 WHOLE_NOMINATIONS.json ──────────> selection()           
 | `select.py` | Reads the cohort-B captures and scores every (layer, expert) by wrong-minus-right use, z-scored within each question. It keeps pairs whose sign survives leaving out any one question. It excludes the shared core (top 5% most used per layer) and the most execution-specific experts (top 10% Implement/Analyze). Then it takes the best pairs up to 1.2% of routing (5-40 pairs) and draws matched random controls. |
 | `manifest.py` | Builds the release rows: nudged and random arms at each delta, plus length-limit rows. A length-limit row is a native run cut at 50/70/85% of its reasoning, with the closing tokens appended so the model only writes its answer. A family whose question was used for selection gets a set selected without it. |
 | `analysis.py` | Bounded within-question contrasts: nudge vs random (primary), vs unedited, the rerun noise, the length-limit curve, and "nudge vs stopping at the same length". It also reports how much routing the nudged experts lost. |
-| `release.py` | Seals a release: receipts, a frozen copy of the code (`mfa-moe/releases/<commit>`), `launch.env`. |
-| `__main__.py` | Command line: `usage`, `select` (preview, writes nothing), `release`, `analyze`. |
+| `decide.py` | The extension rule that was declared before any result: launch the next models only if a nudge is shorter than random without losing accuracy, or more accurate than random. |
+| `__main__.py` | Command line: `usage`, `select` (preview, writes nothing), `analyze`, `decide`. |
+
+Sealing the release is `steering.release outcome` (it also writes the code snapshot). The jobs are the
+ordinary whole-reasoning ones (`scripts/steering/launch.sh`) plus `python -m steering.outcome analyze`.
 
 The routing operator itself lives with the other operators. It is
 `steering.operators.score_shift_masked`, applied by `steering.stream`. The
@@ -53,7 +56,8 @@ length-limit prefix lives in `steering.runtime.budget_tokens`.
 ```bash
 scripts/steering/outcome_usage.sh                # 1. CPU job, ~5 min: expert use per cohort-B attempt
 PYTHONPATH=src python -m steering.outcome select    # 2. look at the expert sets (no files)
-scripts/steering/outcome.sh outcome-steering-20261022-r1 3 <passed tests>   # 3. release + jobs
+scripts/steering/whole.sh outcome outcome-steering-20261022-r1 <passed tests> --shards 3   # 3. seal + jobs
+sbatch scripts/steering/outcome_next.sh report/<release>/analysis/EFFECTS_OUTCOME.json <next name> <tests> --models ...   # 4. the extension rule
 ```
 
 Outputs:

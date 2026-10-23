@@ -1,13 +1,15 @@
-# Study tests
+# Steering tests
 
 ```bash
-PYTHONPATH=src python -m unittest discover -s tests/steering -v
+PYTHONPATH=src python -m unittest discover -s tests/steering -v        # and tests/steering/outcome
 ```
 
-Tests cover request identities, admission failures, cleanup, durable recovery,
-submission reconciliation, accounting and the frozen scientific calculations.
-CPU tests load no model. The allocated validation also runs the real-tokenizer
-trace-to-export fixture; a separate two-GPU check exercises LFM and GPT.
+The tests need the vLLM environment (torch, scipy, pandas). They cover the routing operators and
+hooks, how a request is admitted, saved and resumed, the manifests and nominations of the
+whole-reasoning releases (their frozen digests too), the canary gate, the bounded effects with
+unknown outcomes, and the job graph that `scripts/steering/launch.sh` prints for a made-up release
+(`DRY_RUN=1`). No test loads a model or submits a job. `scripts/steering/tests.sh` runs them in a
+Slurm job; every release runs it first.
 
 <!-- ledger:begin -->
 ## Ledger

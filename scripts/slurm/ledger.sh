@@ -1,13 +1,15 @@
 #!/bin/bash
-# Billing ledger of the reduced final-routing driver jobs (names fr-*) since 2026-10-17,
-# against the 6,000 billing-hour cap. Running jobs are charged their elapsed time so far
-# plus the rest of their time limit (outstanding commitment). Login node only.
+# Billing ledger of the jobs whose names start with PREFIX (default fr-, the reduced final-routing driver; whole-
+# for the whole-reasoning releases) since 2026-10-17, against the billing-hour cap (CAP, default 6000). Running jobs
+# are charged their elapsed time so far plus the rest of their time limit (outstanding commitment). Login node only.
+#   scripts/slurm/ledger.sh [PREFIX]
 set -euo pipefail
 CAP=${CAP:-6000}
+PREFIX=${1:-fr-}
 sacct -u lmolfett -S 2026-10-17T00:00:00 -X -n -P \
       --format=JobID,JobName,State,ElapsedRaw,TimelimitRaw,AllocTRES |
-awk -F'|' -v cap="$CAP" '
-  $2 ~ /^fr-/ {
+awk -F'|' -v cap="$CAP" -v prefix="$PREFIX" '
+  index($2, prefix) == 1 {
     b = 0; n = split($6, t, ",");
     for (i = 1; i <= n; i++) if (t[i] ~ /^billing=/) { split(t[i], kv, "="); b = kv[2] }
     used = $4 * b / 3600;

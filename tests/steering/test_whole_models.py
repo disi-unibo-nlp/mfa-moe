@@ -13,6 +13,8 @@ from steering import pulse as driver, whole
 from store import CLASSES, WORK, digest, publish, verified
 from steering.whole import build_manifest, dose_counts, directions
 
+LINK = driver.DRIVER/'EFFICIENCY_LINK_PREREG.json'  # the seven-model pre-registration
+
 
 class DoseTests(unittest.TestCase):
     def test_published_counts_and_half_doses(self):
@@ -39,41 +41,36 @@ class DoseTests(unittest.TestCase):
 
 class DirectionTests(unittest.TestCase):
     def test_preregistered_signs_drive_promote_and_suppress(self):
-        self.assertEqual(directions('gpt')['suppress'], ('Read', 'Analyze', 'Plan', 'Explore'))
-        self.assertEqual(directions('qwen36')['suppress'], ('Analyze', 'Plan', 'Implement'))
-        self.assertEqual(directions('gpt')['promote'], ('Verify', 'Monitor'))
-        self.assertIn('Implement', directions('gemma')['promote'])
-        self.assertEqual(directions('gemma')['source'], 'model')
+        self.assertEqual(directions('gpt', LINK)['suppress'], ('Read', 'Analyze', 'Plan', 'Explore'))
+        self.assertEqual(directions('qwen36', LINK)['suppress'], ('Analyze', 'Plan', 'Implement'))
+        self.assertEqual(directions('gpt', LINK)['promote'], ('Verify', 'Monitor'))
+        self.assertIn('Implement', directions('gemma', LINK)['promote'])
+        self.assertEqual(directions('gemma', LINK)['source'], 'model')
 
     def test_lfm_uses_pooled_signs(self):
-        lfm = directions('lfm25')
+        lfm = directions('lfm25', LINK)
         self.assertEqual(lfm['source'], 'pooled')
         self.assertEqual(lfm['promote'], ('Verify', 'Monitor'))
         self.assertEqual(set(lfm['suppress']), {'Read', 'Analyze', 'Plan', 'Implement', 'Explore'})
 
     def test_eight_model_link_gives_lfm_its_own_signs(self):
-        prereg = verified(whole.LINK)
+        prereg = verified(LINK)
         own = dict(zip(CLASSES, '0++0+--'))
         cells = prereg['cells']+[{'model': 'lfm25', 'class': c, 'tok_reason': {'sign': s}} for c, s in own.items()]
         with tempfile.TemporaryDirectory(dir=WORK) as tmp:
             link = Path(tmp)/'EFFICIENCY_LINK_V2.json'
             publish(link, {**prereg, 'models': prereg['models']+['lfm25'], 'cells': cells})
-            whole.directions.cache_clear()
-            try:
-                with patch.object(whole, 'LINK', link):
-                    lfm, gpt = directions('lfm25'), directions('gpt')
-            finally:
-                whole.directions.cache_clear()
+            lfm, gpt = directions('lfm25', link), directions('gpt', link)
         self.assertEqual(lfm['source'], 'model')
         self.assertEqual(lfm['promote'], ('Verify', 'Monitor'))
         self.assertEqual(lfm['suppress'], ('Analyze', 'Plan', 'Explore'))
         self.assertEqual(gpt['suppress'], ('Read', 'Analyze', 'Plan', 'Explore'))
 
     def test_efficiency_directed_cells(self):
-        self.assertTrue(whole.efficiency_directed('gemma', 'promote', 'Implement'))
-        self.assertFalse(whole.efficiency_directed('gpt', 'promote', 'Implement'))
-        self.assertTrue(whole.efficiency_directed('gpt', 'suppress', 'Read'))
-        self.assertFalse(whole.efficiency_directed('gpt', 'native', None))
+        self.assertTrue(whole.efficiency_directed('gemma', 'promote', 'Implement', LINK))
+        self.assertFalse(whole.efficiency_directed('gpt', 'promote', 'Implement', LINK))
+        self.assertTrue(whole.efficiency_directed('gpt', 'suppress', 'Read', LINK))
+        self.assertFalse(whole.efficiency_directed('gpt', 'native', None, LINK))
 
 
 class SigmoidRouterTests(unittest.TestCase):
@@ -136,7 +133,7 @@ def synthetic_manifest(model, families, layers, experts, k, dose='main', sweep=F
                    'records': [{'fold': f, 'class': c} for f in range(5) for c in CLASSES]}
     with patch('steering.whole.cell_actions', side_effect=synthetic_cell):
         return build_manifest(model, dose, nominations, {'models': {model: profile}}, natives,
-                              {r['family']: [1, 2] for r in natives}, True, sweep=sweep)
+                              {r['family']: [1, 2] for r in natives}, LINK, sweep=sweep)
 
 
 class ManifestTests(unittest.TestCase):
@@ -144,10 +141,10 @@ class ManifestTests(unittest.TestCase):
         for model, families, layers, experts, k in (('glm', 129, 46, 64, 4), ('lfm25', 112, 38, 64, 4),
                                                     ('gemma', 129, 30, 128, 8)):
             value = synthetic_manifest(model, families, layers, experts, k)
-            expected = families*(2+2*(len(CLASSES)+len(directions(model)['suppress'])))
+            expected = families*(2+2*(len(CLASSES)+len(directions(model, LINK)['suppress'])))
             self.assertEqual(len(value['records']), expected)
             self.assertEqual(len({r['uid'] for r in value['records']}), expected)
-            canary = whole.canary_rows({**value, 'sha256': 'synthetic'})
+            canary = whole.canary_rows({**value, 'sha256': 'synthetic'}, LINK)
             self.assertEqual(sum(r['operation'] != 'native' for r in canary), 32)
 
     def test_base_manifests_of_the_running_releases_are_unchanged(self):
@@ -165,7 +162,7 @@ class ManifestTests(unittest.TestCase):
 class StrengthSweepTests(unittest.TestCase):
     def test_counts_grow_with_strength_and_keep_native_top_k(self):
         b = driver.binding()
-        for model in whole.PLAN:
+        for model in whole.MODELS:
             profile = b['models'][model]
             layers, experts, k = len(profile['layers']), profile['experts'], profile['native_k']
             for operation in ('promote', 'suppress'):
@@ -183,12 +180,12 @@ class StrengthSweepTests(unittest.TestCase):
         model, shape = 'gemma', (129, 30, 128, 8)
         sweep = synthetic_manifest(model, *shape, dose='half', sweep=True)
         base = synthetic_manifest(model, *shape, dose='half')
-        planned = len(directions(model)['promote'])+len(directions(model)['suppress'])
+        planned = len(directions(model, LINK)['promote'])+len(directions(model, LINK)['suppress'])
         self.assertEqual(len(sweep['records']), 129*2*planned)
         self.assertEqual(sweep['design'], 'efficiency-sweep')
         self.assertNotIn('design', base)
         self.assertFalse(any(r['operation'] == 'native' or r['audit_capture'] for r in sweep['records']))
-        self.assertTrue(all(whole.efficiency_directed(model, r['operation'], r['class']) for r in sweep['records']))
+        self.assertTrue(all(whole.efficiency_directed(model, r['operation'], r['class'], LINK) for r in sweep['records']))
         self.assertEqual(len({r['uid'] for r in sweep['records']}), len(sweep['records']))
         quarter = synthetic_manifest(model, *shape, dose='quarter', sweep=True)
         main = synthetic_manifest(model, *shape)
@@ -215,10 +212,10 @@ class TopUpTests(unittest.TestCase):
             publish(units/digest(['f1', 'native'])/'RESULT.json', {'status': 'complete'})
             (units/digest(['f3', 'native'])).mkdir(parents=True)
             (units/digest(['f3', 'native'])/'PARTIAL.json').write_text(json.dumps({'tokens': [1, 2]}))
-            with patch.object(whole, 'ROOT', child), patch.object(whole, 'SWEEP', {'gemma': 'main'}):
-                result = whole.topup_manifest('gemma', {'parent': str(parent), 'shards': [[1, 2]]})
-                value = whole.load(whole.manifest_path('gemma', 'main', child))
-                selected = whole.load(child/'gemma/SELECTED.json')
+            publish(child/'RELEASE.json', {'models': ['gemma'], 'sweep': {'gemma': 'main'}})
+            result = whole.topup_manifest(child, 'gemma', {'parent': str(parent), 'shards': [[1, 2]]})
+            value = whole.load(whole.manifest_path('gemma', 'main', child))
+            selected = whole.load(child/'gemma/SELECTED.json')
         # Shard 1/2 holds f1 and f3; their started rows stay with the parent as complete or unknown.
         self.assertEqual({(r['family'], r['arm']) for r in value['records']},
                          {('f1', 'target_promote'), ('f3', 'target_promote')})
@@ -239,9 +236,9 @@ class TopUpTests(unittest.TestCase):
             publish(whole.manifest_path('gemma', 'main', first), {'records': rows[2:],
                     'parent_manifest_sha256': base['sha256']})
             publish(first/'stores/gemma/main/units'/digest(['f1', 'native'])/'RESULT.json', {'status': 'complete'})
-            with patch.object(whole, 'ROOT', second), patch.object(whole, 'SWEEP', {'gemma': 'main'}):
-                whole.topup_manifest('gemma', {'parent': str(parent), 'shards': 'all', 'siblings': [str(first)]})
-                value = whole.load(whole.manifest_path('gemma', 'main', second))
+            publish(second/'RELEASE.json', {'models': ['gemma'], 'sweep': {'gemma': 'main'}})
+            whole.topup_manifest(second, 'gemma', {'parent': str(parent), 'shards': 'all', 'siblings': [str(first)]})
+            value = whole.load(whole.manifest_path('gemma', 'main', second))
         self.assertEqual({(r['family'], r['arm']) for r in value['records']},
                          {('f0', 'target_promote'), ('f1', 'target_promote')})
 
@@ -278,53 +275,6 @@ class CanaryDeadlineTests(unittest.TestCase):
         self.assertEqual(gate['cap_rate'], .25)
         self.assertEqual(gate['native_cap_rate'], .25)
         self.assertIn('incomplete_canary', strict['software_failures'])
-
-
-class CanaryDecisionTests(unittest.TestCase):
-    def test_decision_must_name_this_manifest_and_unchanged_evidence(self):
-        from store import file_sha, publish
-        with tempfile.TemporaryDirectory(dir=WORK) as directory, patch.object(whole, 'ROOT', Path(directory)):
-            evidence = publish(Path(directory)/'evidence/CANARY_HALF.json', {'gate': {'passed': False}})
-            path = Path(directory)/'evidence/CANARY_HALF.json'
-            publish(Path(directory)/'gpt/CANARY_DECISION.json', {
-                'decision': 'proceed', 'manifest_sha256': 'manifest', 'canary_receipt': str(path),
-                'canary_receipt_sha256_file': file_sha(path), 'evidence_sha256': evidence['sha256']})
-            self.assertEqual(whole.canary_decision('gpt', {'sha256': 'manifest'})['decision'], 'proceed')
-            with self.assertRaisesRegex(ValueError, 'canary decision differs'):
-                whole.canary_decision('gpt', {'sha256': 'another manifest'})
-
-    def test_sweep_production_is_never_gated_or_projected(self):
-        schedule = {'production': {'gpt': [{'id': '1', 'gpus': 2, 'minutes': 240}]}}
-        progress = {'pairs': 90, 'executable_pairs': 100}
-        with patch.object(whole, 'SWEEP', {'gpt': 'main'}), \
-             patch.object(whole, 'production_progress', return_value=progress), \
-             patch.object(whole, 'fluency') as gate, patch.object(whole, 'check_projection') as projection:
-            whole.check_production(schedule, 'gpt', {'1': {'elapsed': 10000}}, set(), set(), set(), 1.)
-        gate.assert_not_called()
-        projection.assert_not_called()
-
-    def test_models_without_a_canary_attempt_are_not_advanced(self):
-        schedule = {'canaries': {'gpt': []}, 'production': {'gpt': []}}
-        with patch.object(whole, 'submit_stage') as submit:
-            whole.advance_canary(schedule, 'gpt', {}, set())
-        submit.assert_not_called()
-
-
-class BudgetTests(unittest.TestCase):
-    def test_six_model_release_reserves_every_other_models_maxima(self):
-        models = ('qwen35', 'qwen330b', 'gemma', 'glm', 'nemotron', 'lfm25')
-        maxima = sum(2*(whole.CANARY_MINUTES[m]+whole.SHARDS[m]*whole.RUN_MINUTES[m])/60 for m in models)
-        with tempfile.TemporaryDirectory(dir=WORK) as directory, \
-             patch.object(whole, 'ROOT', Path(directory)), patch.object(whole, 'MODELS', models), \
-             patch.object(whole, 'GPU_CEILING', 530.), \
-             patch.object(whole, 'verified', side_effect=lambda path: (
-                 {'prior_usage': {'new_gpu_hours': 0.}} if path.name == 'RELEASE.json' else whole.load(path))):
-            schedule = {'production': {m: [] for m in models},
-                        'canaries': {m: [{'id': m, 'gpus': 2, 'minutes': whole.CANARY_MINUTES[m]}] for m in models}}
-            whole.admit_shard_plan(schedule, 'glm', {}, set())
-            plan = whole.load(Path(directory)/'glm/SHARD_PLAN.json')
-        self.assertLess(maxima, 530.)
-        self.assertEqual(plan['minutes'], whole.RUN_MINUTES['glm'])
 
 
 if __name__ == '__main__':
