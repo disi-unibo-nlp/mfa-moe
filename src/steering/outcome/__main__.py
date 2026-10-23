@@ -8,8 +8,7 @@ import sys
 
 from store import REPO
 
-MODELS = 'gpt,qwen330b,nemotron'
-
+from steering.outcome.manifest import DEFAULT_MODELS as MODELS
 
 def main() -> None:
     parser = argparse.ArgumentParser(prog='python -m steering.outcome')
@@ -21,7 +20,7 @@ def main() -> None:
     select.add_argument('--models', default=MODELS)
     analyze = commands.add_parser('analyze', help='write EFFECTS_OUTCOME.json (CPU job, after the extractions)')
     analyze.add_argument('--release', type=Path, required=True, help='the release folder, report/NAME')
-    decide = commands.add_parser('decide', help='apply the declared extension rule; exit 0 when it is met')
+    decide = commands.add_parser('decide', help='apply the declared extension rule; exit 0 when it is met, 3 when it is not')
     decide.add_argument('--effects', required=True, help='the sealed EFFECTS_OUTCOME.json')
     args = parser.parse_args()
 
@@ -47,7 +46,7 @@ def main() -> None:
         from steering.outcome.decide import decide as rule
         decision = rule(args.effects)
         print(json.dumps(decision))
-        sys.exit(0 if decision['extend'] else 1)
+        sys.exit(0 if decision["extend"] else 3)  # 3: the rule is not met (any other code is a failure)
 
 
 if __name__ == '__main__':

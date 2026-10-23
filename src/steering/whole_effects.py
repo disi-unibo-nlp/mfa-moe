@@ -12,6 +12,7 @@ from __future__ import annotations
 
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
 import multiprocessing
+import shutil
 from collections import Counter
 import json
 import math
@@ -33,7 +34,6 @@ from steering.whole import (
     efficiency_directed,
     link_receipt,
     manifest,
-    manifest_path,
     repetition_rate,
 )
 
@@ -116,7 +116,6 @@ def _extract_with_worker(row: dict, *, b: dict, model: str, store, inputs):
                         close=_EXTRACTOR.close, store=store, inputs=inputs)
 
 
-
 def extract(root: Path, model: str) -> dict:
     """Extract whatever completed, preserving missing rows for the subsequent planned join."""
     from transformers import AutoTokenizer
@@ -152,11 +151,16 @@ def extract(root: Path, model: str) -> dict:
                 failures.append(failure)
     folder = root/model/'extraction'
     require(not folder.exists(), 'whole extraction requires a fresh destination')
-    folder.mkdir(parents=True, mode=0o700)
-    pd.DataFrame(outcomes, columns=list(outcomes[0]) if outcomes else ['uid']).to_parquet(folder/'outcomes.parquet', index=False)
-    pd.DataFrame(sentences, columns=list(sentences[0]) if sentences else ['uid']).to_parquet(folder/'sentences.parquet', index=False)
-    return publish(folder/'EXTRACTION.json', {'model': model, 'manifest_sha256': value['sha256'],
-                  'planned': len(rows), 'extracted': len(outcomes), 'failures': failures, 'sentences': len(sentences)})
+    # Written aside and renamed last, so a job that dies half-way leaves nothing for combine to read.
+    partial = folder.with_name('extraction.partial')
+    shutil.rmtree(partial, ignore_errors=True)
+    partial.mkdir(parents=True, mode=0o700)
+    pd.DataFrame(outcomes, columns=list(outcomes[0]) if outcomes else ['uid']).to_parquet(partial/'outcomes.parquet', index=False)
+    pd.DataFrame(sentences, columns=list(sentences[0]) if sentences else ['uid']).to_parquet(partial/'sentences.parquet', index=False)
+    receipt = publish(partial/'EXTRACTION.json', {'model': model, 'manifest_sha256': value['sha256'],
+                      'planned': len(rows), 'extracted': len(outcomes), 'failures': failures, 'sentences': len(sentences)})
+    partial.rename(folder)
+    return receipt
 
 
 def load_table(sources: list[dict]) -> pd.DataFrame:
@@ -183,6 +187,8 @@ def _extracted(root: Path, model: str, value: dict) -> tuple[pd.DataFrame, pd.Da
     if (folder/'EXTRACTION.json').exists():
         require(verified(folder/'EXTRACTION.json')['manifest_sha256'] == value['sha256'],
                 'whole extraction belongs to another manifest')
+    else:  # its rows stay unknown in the analysis; say so in the job log
+        driver.log({'event': 'whole-no-extraction', 'model': model, 'release': root.name})
     observed = pd.read_parquet(folder/'outcomes.parquet') if (folder/'outcomes.parquet').exists() else pd.DataFrame()
     sentences = pd.read_parquet(folder/'sentences.parquet') if (folder/'sentences.parquet').exists() else pd.DataFrame()
     if not sentences.empty:
@@ -201,14 +207,14 @@ def _source_table(source: dict) -> pd.DataFrame:
     ('complements', whole.complement_manifest) whose new cells join the source's rows by family.
     """
     model, root = source['model'], Path(source['root'])
-    value = verified(manifest_path(model, source['dose'], root))
+    value = manifest(root, model, source['dose'])
     parts = [_extracted(root, model, value)]
     for topup in map(Path, source.get('topups', [])):
-        planned = verified(manifest_path(model, source['dose'], topup))
+        planned = manifest(topup, model, source['dose'])
         require(planned['parent_manifest_sha256'] == value['sha256'], 'top-up belongs to another manifest')
         parts.append(_extracted(topup, model, planned))
     for complement in map(Path, source.get('complements', [])):
-        planned = verified(manifest_path(model, source['dose'], complement))
+        planned = manifest(complement, model, source['dose'])
         require(planned['design'] == 'complement' and planned['parent_manifest_sha256'] == value['sha256'],
                 'complement belongs to another manifest')
         parts.append(_extracted(complement, model, planned))
@@ -402,20 +408,6 @@ def dose_response(boot, cells: pd.DataFrame) -> dict:
             'declared': 'secondary; separate from the full-dose primary; no best strength is selected'}
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 def arm_summaries(boot, table: pd.DataFrame) -> tuple[list, dict]:
     """Summarize arm levels with the shared draws and normalize additive dose counters."""
     from steering.pulse_effects import summarize
@@ -522,8 +514,6 @@ def verdicts(primary: dict, models) -> dict:
     return result
 
 
-
-
 def combine(root: Path) -> dict:
     """Analyze base and strength-sweep releases together into EFFECTS_WHOLE.json.
 
@@ -549,7 +539,7 @@ def combine(root: Path) -> dict:
     result = {'models': models, 'bootstrap_draws': DRAWS, 'seed': SEED,
               # The receipt whose native signs decide which cells are efficiency-directed.
               'efficiency_link': {'path': str(link), 'sha256': verified(link)['sha256']},
-              'sources': [{**s, 'manifest_sha256': verified(manifest_path(s['model'], s['dose'], Path(s['root'])))['sha256'],
+              'sources': [{**s, 'manifest_sha256': manifest(Path(s['root']), s['model'], s['dose'])['sha256'],
                            'release_sha256': verified(Path(s['root'])/'RELEASE.json')['sha256']} for s in sources],
               **failures(table, sources),
               'primary': summarize_present(boot, primary_frame(cells, dose='main'), 'whole-primary-full'),

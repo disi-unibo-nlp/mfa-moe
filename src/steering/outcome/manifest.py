@@ -15,11 +15,14 @@ from __future__ import annotations
 import math
 from pathlib import Path
 
-from store import digest, file_sha, load, publish, require, verified
+from store import digest, file_sha, load, publish, require
 
 # GPT-OSS closes its analysis channel with this full harmony transition; the runtime closure only
 # matches its last three tokens (<|channel|>final<|message|>).
 GPT_TRANSITION = [200007, 200006, 173781, 200005, 17196, 200008]
+
+
+DEFAULT_MODELS = 'gpt,qwen330b,nemotron'  # the first wave (D-0003)
 
 
 def evaluation_questions(model: str, spec: dict) -> set[str]:
@@ -29,8 +32,8 @@ def evaluation_questions(model: str, spec: dict) -> set[str]:
 
 def base_natives(model: str, spec: dict) -> list[dict]:
     """Native rows of the base whole-reasoning manifest (one per evaluation family)."""
-    from steering.whole import manifest_path
-    base = verified(manifest_path(model, spec['base_dose'], Path(spec['base'])))
+    from steering.whole import manifest
+    base = manifest(Path(spec['base']), model, spec['base_dose'])
     rows = sorted((r for r in base['records'] if r['arm'] == 'native'), key=lambda r: r['family'])
     require(rows and len({r['family'] for r in rows}) == len(rows), 'base native roster differs')
     return rows
@@ -86,7 +89,7 @@ def outcome_manifest(root: Path, model: str, spec: dict) -> dict:
     from transformers import AutoTokenizer
     from steering import pulse as driver
     from steering.runtime import closure, prompt_prefix, remaining
-    from steering.whole import manifest_path, sweep_doses
+    from steering.whole import manifest_path, select_manifest, sweep_doses
     from steering.outcome.select import selection
 
     dose = sweep_doses(root)[model]
@@ -136,6 +139,4 @@ def outcome_manifest(root: Path, model: str, spec: dict) -> dict:
         'cells': [], 'records': rows, 'planned': expected,
         'executable': sum(r['nomination_status'] == 'nominated' for r in rows), 'audit_units': 0,
         'outcomes_used_for_selection': 'cohort-B attempts only; evaluation families held out by question'})
-    publish(root/model/'SELECTED.json', {'dose': dose, 'manifest_sha256': value['sha256'], 'canary_job': None,
-                                         'sweep': True, 'outcome': True})
-    return {key: value[key] for key in ('sha256', 'planned', 'executable', 'scope')}
+    return select_manifest(root, model, value, outcome=True)

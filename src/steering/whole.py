@@ -35,8 +35,6 @@ DOSES = {'main': 1., 'half': .5, 'quarter': .25}
 CANARY_TOKENS = {'glm': 16384}
 # Bootstrap draws and seed shared by every whole-reasoning interval.
 DRAWS, SEED = 10000, 20261015
-# No GPU row starts after this time; releases sealed without a cutoff stop at 2026-10-23 05:30 Europe/Rome.
-DEFAULT_CUTOFF = 1792726200
 
 
 def manifest_path(model: str, dose: str, root: Path) -> Path:
@@ -255,7 +253,6 @@ def build_manifest(model: str, dose: str, nominations: dict, b: dict, natives: l
 
 def prepare(root: Path) -> dict:
     """Publish the manifests of every model of the release (CPU job), then check the rebuilt nominations."""
-    require(os.environ.get('SLURM_JOB_ID'), 'whole discovery requires an allocated CPU job')
     release = verify_release(root)
     b = driver.binding()
     results = {}
@@ -266,9 +263,8 @@ def prepare(root: Path) -> dict:
             # One infeasible model must not block the others; its shards then stop on the missing manifest.
             results[model] = {'prepared': False, 'error': f'{type(error).__name__}: {error}'}
     require(any(':' in key for key in results), 'no whole model could be prepared')
-    publish(root/'PREPARED.json', results)
     audit_nominations(root)
-    return results
+    return publish(root/'PREPARED.json', results)  # the launcher runs prepare only after the unit tests passed
 
 
 def prepare_model(root: Path, b: dict, model: str) -> dict:
@@ -307,11 +303,18 @@ def prepare_model(root: Path, b: dict, model: str) -> dict:
     for dose in ([sweep[model]] if model in sweep else ['main', 'half']):
         value = publish(manifest_path(model, dose, root),
                         build_manifest(model, dose, nominations, b, natives, inputs, link, sweep=model in sweep))
-        results[model+':'+dose] = {key: value[key] for key in ('sha256', 'planned', 'executable', 'scope')}
         if model in sweep:
-            publish(folder/'SELECTED.json', {'dose': dose, 'manifest_sha256': value['sha256'], 'canary_job': None,
-                                             'sweep': True})
+            results[model+':'+dose] = select_manifest(root, model, value)
+        else:
+            results[model+':'+dose] = {key: value[key] for key in ('sha256', 'planned', 'executable', 'scope')}
     return results
+
+
+def select_manifest(root: Path, model: str, value: dict, **design) -> dict:
+    """Make a published manifest the one this release runs (no canary); return its summary."""
+    publish(root/model/'SELECTED.json', {'dose': value['dose'], 'manifest_sha256': value['sha256'],
+                                         'canary_job': None, 'sweep': True, **design})
+    return {key: value[key] for key in ('sha256', 'planned', 'executable', 'scope')}
 
 
 def topup_manifest(root: Path, model: str, spec: dict) -> dict:
@@ -329,10 +332,10 @@ def topup_manifest(root: Path, model: str, spec: dict) -> dict:
             the same parent, all of whose jobs have ended; a row started there stays there}.
     """
     dose, parent = sweep_doses(root)[model], Path(spec['parent'])
-    base = verified(manifest_path(model, dose, parent))
+    base = manifest(parent, model, dose)
     stores = [driver.Store(parent/'stores'/model/dose/'units')]
     for sibling in map(Path, spec.get('siblings', [])):
-        require(verified(manifest_path(model, dose, sibling))['parent_manifest_sha256'] == base['sha256'],
+        require(manifest(sibling, model, dose)['parent_manifest_sha256'] == base['sha256'],
                 'sibling top-up has another parent')
         stores.append(driver.Store(sibling/'stores'/model/dose/'units'))
     families = sorted({row['family'] for row in base['records']})
@@ -347,9 +350,7 @@ def topup_manifest(root: Path, model: str, spec: dict) -> dict:
         'executable': sum(row['nomination_status'] == 'nominated' for row in rows), 'design': 'top-up',
         'parent_root': str(parent), 'parent_manifest_sha256': base['sha256'], 'failed_shards': spec['shards'],
         'siblings': spec.get('siblings', [])})
-    publish(root/model/'SELECTED.json', {'dose': dose, 'manifest_sha256': value['sha256'], 'canary_job': None,
-                                         'sweep': True, 'topup': True})
-    return {key: value[key] for key in ('sha256', 'planned', 'executable', 'scope')}
+    return select_manifest(root, model, value, topup=True)
 
 
 def complement_manifest(root: Path, model: str, spec: dict) -> dict:
@@ -367,7 +368,7 @@ def complement_manifest(root: Path, model: str, spec: dict) -> dict:
         spec: {'parent': root holding the base manifest of this model and dose and its nominations}.
     """
     dose, parent = sweep_doses(root)[model], Path(spec['parent'])
-    base = verified(manifest_path(model, dose, parent))
+    base = manifest(parent, model, dose)
     nominations = verified(parent/model/'WHOLE_NOMINATIONS.json')
     require(nominations['sha256'] == base['nominations_sha256'], 'parent nominations differ from its manifest')
     profile = driver.binding()['models'][model]
@@ -397,9 +398,7 @@ def complement_manifest(root: Path, model: str, spec: dict) -> dict:
         'executable': sum(row['nomination_status'] == 'nominated' for row in rows), 'audit_units': 0,
         'design': 'complement', 'complement_classes': list(classes), 'parent_root': str(parent),
         'parent_manifest_sha256': base['sha256']})
-    publish(root/model/'SELECTED.json', {'dose': dose, 'manifest_sha256': value['sha256'], 'canary_job': None,
-                                         'sweep': True, 'complement': True})
-    return {key: value[key] for key in ('sha256', 'planned', 'executable', 'scope')}
+    return select_manifest(root, model, value, complement=True)
 
 
 def resume_manifest(root: Path, model: str, spec: dict) -> dict:
@@ -418,28 +417,28 @@ def resume_manifest(root: Path, model: str, spec: dict) -> dict:
             whose stores may hold partial rows of that manifest (the parent and its top-ups)}.
     """
     dose, parent = sweep_doses(root)[model], Path(spec['parent'])
-    base = verified(manifest_path(model, dose, parent))
+    base = manifest(parent, model, dose)
     roots = list(map(Path, spec['sources']))
     require(parent in roots, 'resume sources must include the parent')
     for source in roots:
         if source != parent:
-            topup = verified(manifest_path(model, dose, source))
+            topup = manifest(source, model, dose)
             require(topup['parent_manifest_sha256'] == base['sha256'],
                     'resume source belongs to another manifest')
     stores = {str(source): driver.Store(source/'stores'/model/dose/'units') for source in roots}
     rows, sources = [], {}
     for row in base['records']:
-        states = {root: store.state(row['uid']) for root, store in stores.items()}
-        saved = {root: state for root, state in states.items() if state}
+        states = {where: store.state(row['uid']) for where, store in stores.items()}
+        saved = {where: state for where, state in states.items() if state}
         if not any(state['status'] == 'partial' for state in saved.values()):
             continue  # never started, or finished: nothing to continue
         # A row is continued from exactly one partial; any other saved state is a conflict.
         require(len(saved) == 1, f'interrupted row has state in several stores: {row["uid"]}')
-        (root, state), = saved.items()
+        (where, state), = saved.items()
         require(state.get('assignment_sha256') == digest(row),
                 f'partial belongs to another assignment: {row["uid"]}')
         rows.append(row)
-        sources[row['uid']] = root
+        sources[row['uid']] = where
     require(rows, 'resume has no interrupted rows')
     kept = {k: v for k, v in base.items()
             if k not in ('sha256', 'records', 'planned', 'executable')}
@@ -448,9 +447,7 @@ def resume_manifest(root: Path, model: str, spec: dict) -> dict:
         'executable': sum(row['nomination_status'] == 'nominated' for row in rows),
         'design': 'resume', 'parent_root': str(parent), 'parent_manifest_sha256': base['sha256'],
         'resume_sources': sources})
-    publish(root/model/'SELECTED.json', {'dose': dose, 'manifest_sha256': value['sha256'],
-                                         'canary_job': None, 'sweep': True, 'resume': True})
-    return {key: value[key] for key in ('sha256', 'planned', 'executable', 'scope')}
+    return select_manifest(root, model, value, resume=True)
 
 
 def manifest(root: Path, model: str, dose: str | None = None) -> dict:
@@ -465,7 +462,6 @@ def bound_store(root: Path, model: str, dose: str, canary: bool = False) -> driv
     """Reject any nonempty unbound store before the engine is loaded."""
     value = manifest(root, model, dose)
     release = verified(root/'RELEASE.json')
-    require(Path(release['release_root']).resolve() == REPO, 'whole code is outside its immutable materialized release')
     folder = root/'stores'/model/dose/('canary' if canary else 'units')
     identity = {'manifest_sha256': value['sha256'], 'release_sha256': release['sha256'], 'canary': canary}
     if (folder/'EXECUTION.json').exists():
@@ -688,10 +684,6 @@ def fluency(store, rows: list[dict], *, require_complete: bool = False, censor_u
             'observed_steered_units': sum(r['operation'] != 'native' for r in observed)}
 
 
-
-
-
-
 def admission_order(rows: list[dict], link: Path) -> list[dict]:
     """Order all primary and native rows before other promote rows, without barriers."""
     return sorted(rows, key=lambda r: (
@@ -704,6 +696,7 @@ def run(root, model, shard, deadline, *, max_inflight=64, canary=False, dose=Non
     """Run one source-bound shard or canary on the existing hooked engine."""
     from steering.runtime import closure
     release = verify_release(root)
+    verified(root/'PREPARED.json')
     link = link_receipt(root)
     value = manifest(root, model, dose)
     if not canary:
@@ -718,7 +711,7 @@ def run(root, model, shard, deadline, *, max_inflight=64, canary=False, dose=Non
     rows = canary_rows(value, link) if canary else driver.shard_rows(value['records'], shard)
     store = bound_store(root, model, value['dose'], canary)
     check_saved_state(value, rows, store, canary)
-    cutoff = release.get('cutoff', DEFAULT_CUTOFF)
+    cutoff = release['cutoff']  # no GPU row starts after this time
     if time.time() >= cutoff:
         # A shard that starts after the science cutoff leaves its rows unknown without loading the model.
         driver.log({'event': 'whole-shard-after-cutoff', 'model': model, 'shard': list(shard)})
@@ -727,7 +720,7 @@ def run(root, model, shard, deadline, *, max_inflight=64, canary=False, dose=Non
         seed_resume(root, model, value, rows, store, shard)
     executable = admission_order([r for r in rows if r['nomination_status'] == 'nominated'], link)
     b = driver.binding()
-    llm, kwargs, load_seconds = driver.hooked_llm(b, model, max_inflight)
+    llm, _, load_seconds = driver.hooked_llm(b, model, max_inflight)
     try:
         contract = driver.contract_for(b, model, executable)
         reports = llm.collective_rpc('fs_begin', kwargs={'contract': contract})
@@ -800,9 +793,11 @@ def audit_nominations(root: Path) -> dict:
 
 
 def plan(root: Path) -> None:
-    """Tell the launcher what to submit: the release's code snapshot, then 'MODEL SHARDS' per model."""
+    """Tell the launcher what to submit: the release's code snapshot, the command that ends the graph, then
+    'MODEL SHARDS' for every model with shards to run."""
     release = verified(root/'RELEASE.json')
     print(release['release_root'])
+    print('steering.outcome analyze' if (root/'OUTCOME.json').exists() else 'steering.whole combine')
     for model in release['models']:
         if release.get('shards', {}).get(model):
             print(model, release['shards'][model])

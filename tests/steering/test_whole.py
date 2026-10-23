@@ -17,7 +17,7 @@ from steering.operators import score_override_dual
 from steering.selection import global_pairs, layer_matched_controls
 from store import BENCHMARKS, CLASSES, WORK
 from steering.pulse_effects import Bootstrap, bounded_summary
-from steering.stream import Clock, StreamCapture, dose_totals
+from steering.stream import StreamCapture, dose_totals
 from steering.whole import build_manifest, select_pairs
 from steering.whole_effects import unit_bounds, contrast, primary_frame
 from steering import pulse as driver, whole
@@ -352,6 +352,10 @@ class ExecutionGateTests(unittest.TestCase):
 
     def test_production_needs_the_manifest_the_canary_or_the_sweep_selected(self):
         publish(self.root/'RELEASE.json', {'release_root': str(whole.REPO), 'models': ['gpt']})
+        with patch.object(whole, 'verify_release', return_value={}):
+            with self.assertRaises(FileNotFoundError):  # prepare publishes PREPARED.json only after the tests passed
+                whole.run(self.root, 'gpt', (0, 1), 0.)
+        publish(self.root/'PREPARED.json', {})
         publish(whole.manifest_path('gpt', 'main', self.root), {'dose': 'main', 'records': []})
         publish(self.root/'gpt/SELECTED.json', {'dose': 'main', 'manifest_sha256': 'another manifest',
                                                 'canary_job': '1'})
@@ -359,6 +363,7 @@ class ExecutionGateTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'lacks a passing canary'):
                 whole.run(self.root, 'gpt', (0, 1), 0.)
             manifest = whole.manifest(self.root, 'gpt', 'main')
+            (self.root/'gpt/SELECTED.json').unlink()  # receipts are immutable; start over with the right manifest
             publish(self.root/'gpt/SELECTED.json', {'dose': 'main', 'manifest_sha256': manifest['sha256'],
                                                     'canary_job': '1'})
             publish(whole.canary_path(self.root, 'gpt', 'main'), {'gate': {'passed': False}, 'job': '1',
@@ -371,7 +376,12 @@ class ExecutionGateTests(unittest.TestCase):
                                            'shards': {'gpt': 3, 'glm': 27}})
         with patch('builtins.print') as out:
             whole.plan(self.root)
-        self.assertEqual([call.args for call in out.call_args_list], [('/snapshot',), ('gpt', 3), ('glm', 27)])
+        self.assertEqual([call.args for call in out.call_args_list],
+                         [('/snapshot',), ('steering.whole combine',), ('gpt', 3), ('glm', 27)])
+        publish(self.root/'OUTCOME.json', {})
+        with patch('builtins.print') as out:
+            whole.plan(self.root)
+        self.assertEqual(out.call_args_list[1].args, ('steering.outcome analyze',))
 
     def test_the_link_receipt_comes_from_the_release(self):
         publish(self.root/'RELEASE.json', {'release_root': str(whole.REPO)})

@@ -195,32 +195,39 @@ class LaunchGraphTests(unittest.TestCase):
         return next(word.split('=', 1)[1] for word in command if word.startswith(name+'='))
 
     @unittest.skipUnless(PY.exists(), 'needs the cluster environment')
-    def test_a_sweep_release_runs_tests_and_manifests_then_shards_then_one_extraction_per_model(self):
+    def test_a_sweep_release_runs_tests_then_manifests_then_shards_then_one_extraction_per_model(self):
         jobs, root = self.launch('COMPLEMENT.json', {'gpt': 2, 'glm': 1})
         names = [command[command.index('-J')+1] for command in jobs]
         self.assertEqual(names, ['whole-tests', 'whole-prepare', 'whole-run-gpt', 'whole-run-gpt', 'whole-extract-gpt',
-                                 'whole-run-glm', 'whole-extract-glm', 'whole-combine'])
-        gate = 'afterok:whole-tests:whole-prepare'
-        shards, extract, combine = jobs[3], jobs[4], jobs[-1]
-        self.assertEqual(self.option(jobs[2], '--dependency'), gate)
+                                 'whole-run-glm', 'whole-extract-glm', 'whole-combine', 'whole-export'])
+        tests, prepare, first_shard, last_shard, extract, combine, export = (
+            jobs[0], jobs[1], jobs[2], jobs[3], jobs[4], jobs[7], jobs[8])
+        self.assertEqual(self.option(prepare, '--dependency'), 'afterok:whole-tests')  # the manifests wait for the tests
+        gate = 'afterok:whole-prepare'
+        self.assertEqual(self.option(first_shard, '--dependency'), gate)
         self.assertEqual(self.option(extract, '--dependency'), gate+',afterany:whole-run-gpt:whole-run-gpt')
         self.assertEqual(self.option(combine, '--dependency'), gate+',afterany:whole-extract-gpt:whole-extract-glm')
-        self.assertEqual(shards[-6:], ['--release', root, '--model', 'gpt', '--shard', '1/2'])
-        self.assertIn('--gres=gpu:2', shards)
-        self.assertEqual(shards[shards.index('-t')+1], '240')  # a 2-GPU shard of 4 hours
+        self.assertEqual(self.option(export, '--dependency'), 'afterok:whole-combine')
+        self.assertEqual(last_shard[-6:], ['--release', root, '--model', 'gpt', '--shard', '1/2'])
+        self.assertEqual(last_shard[-7], 'steering.whole')
+        self.assertTrue(last_shard[-9].endswith('scripts/steering/gpu.sh'))  # a shard's 2 GPUs and 4 hours are its header
+        for cpu_job in (tests, prepare, extract, combine):  # the serial partition would reject them
+            self.assertEqual(cpu_job[cpu_job.index('-p')+1], 'boost_usr_prod')
         self.assertEqual(combine[-4:], ['steering.whole', 'combine', '--release', root])
         self.assertIn('--export=ALL,MOE_EXP_SCORING_PROCESSES=8', extract)
 
     @unittest.skipUnless(PY.exists(), 'needs the cluster environment')
-    def test_a_relink_release_runs_only_the_tests_and_the_combine(self):
+    def test_a_relink_release_runs_only_the_tests_the_combine_and_the_export(self):
         jobs, _ = self.launch('RELINK.json', {'gpt': 0})
-        self.assertEqual([command[command.index('-J')+1] for command in jobs], ['whole-tests', 'whole-combine'])
+        self.assertEqual([command[command.index('-J')+1] for command in jobs],
+                         ['whole-tests', 'whole-combine', 'whole-export'])
         self.assertEqual(self.option(jobs[1], '--dependency'), 'afterok:whole-tests')
 
     @unittest.skipUnless(PY.exists(), 'needs the cluster environment')
     def test_an_outcome_release_ends_in_its_own_analysis(self):
         jobs, root = self.launch('OUTCOME.json', {'gpt': 1})
         self.assertEqual(jobs[-1][-4:], ['steering.outcome', 'analyze', '--release', root])
+        self.assertNotIn('whole-export', [command[command.index('-J')+1] for command in jobs])
 
 
 class DoseResponseTests(unittest.TestCase):

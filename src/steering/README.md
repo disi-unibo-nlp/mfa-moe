@@ -33,15 +33,15 @@ A release is a folder `report/NAME`. Every stage takes `--release report/NAME` a
 settings (models, strengths, shards, cutoff time, efficiency link) from the files in it.
 
 ```bash
-scripts/steering/whole.sh complement report/NAME TESTS   # seal, then submit the jobs
+scripts/steering/whole.sh complement NAME TESTS --cutoff 2026-10-24T06:00   # seal, then submit the jobs
 scripts/steering/launch.sh NAME                          # submit the jobs of a sealed release
 DRY_RUN=1 scripts/steering/launch.sh NAME                # print the sbatch commands only
 ```
 
 The stages are `python -m steering.whole plan | prepare | canary | run | extract | combine`. Slurm
 is only in `scripts/steering/`: dependencies, resources and walltimes are in `launch.sh`.
-Python no longer watches the GPU and CPU budgets or cancels jobs: a shard asks for 4 hours of 2 GPUs,
-the release records its declared ceilings, and `scripts/slurm/ledger.sh whole-` adds up what was spent.
+A shard asks for 4 hours of 2 GPUs, the release records its declared ceilings, and
+`scripts/slurm/ledger.sh whole-` adds up what was spent.
 The fluency canary of a base release is run by hand (`python -m steering.whole canary`), and its
 receipt is what lets `run` start production.
 

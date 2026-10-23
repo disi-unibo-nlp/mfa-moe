@@ -56,11 +56,15 @@ def release_rows(root: Path, model: str) -> pd.DataFrame:
     return pd.DataFrame(rows)
 
 
-def native_rows(natives: Path, model: str, dose: str) -> pd.DataFrame:
-    """Native and native-repeat rows of the base releases, from the sealed final whole-reasoning table."""
+def native_table(natives: Path) -> pd.DataFrame:
+    """The columns of the sealed final whole-reasoning table that the native rows need."""
     columns = ['model', 'dose', 'arm', 'family', 'benchmark', 'reasoning_tokens', 'finish_reason',
                *[m+s for m, _ in METRICS for s in ('', ':lower', ':upper')]]
-    table = pd.read_parquet(natives/'continuations.parquet', columns=columns)
+    return pd.read_parquet(natives/'continuations.parquet', columns=columns)
+
+
+def native_rows(table: pd.DataFrame, model: str, dose: str) -> pd.DataFrame:
+    """Native and native-repeat rows of the base releases."""
     return table[(table.model == model) & (table.dose == dose) & table.arm.isin(['native', 'native_repeat'])]
 
 
@@ -159,10 +163,11 @@ def analyze(root: Path) -> dict:
     from steering.whole_effects import bootstrap, summarize_present
     natives_folder = root.parent/NATIVES
     effects = verified(natives_folder/'EFFECTS_WHOLE.json')
+    table = native_table(natives_folder)
     frames, models = [], {}
     for model in verified(root/'RELEASE.json')['models']:
         ours = release_rows(root, model)
-        natives = native_rows(natives_folder, model, manifest(root, model)['native_dose'])
+        natives = native_rows(table, model, manifest(root, model)['native_dose'])
         frame = family_frame(model, ours, natives)
         frames.append(frame.set_index('family'))
         models[model] = {'levels': levels(ours, natives), 'manipulation': manipulation(ours),

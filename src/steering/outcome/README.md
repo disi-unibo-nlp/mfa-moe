@@ -56,8 +56,8 @@ length-limit prefix lives in `steering.runtime.budget_tokens`.
 ```bash
 scripts/steering/outcome_usage.sh                # 1. CPU job, ~5 min: expert use per cohort-B attempt
 PYTHONPATH=src python -m steering.outcome select    # 2. look at the expert sets (no files)
-scripts/steering/whole.sh outcome outcome-steering-20261022-r1 <passed tests> --shards 3   # 3. seal + jobs
-sbatch scripts/steering/outcome_next.sh report/<release>/analysis/EFFECTS_OUTCOME.json <next name> <tests> --models ...   # 4. the extension rule
+scripts/steering/whole.sh outcome outcome-steering-20261022-r1 <passed tests> --shards 3 --cutoff 2026-10-23T23:00   # 3. seal + jobs
+sbatch scripts/steering/outcome_next.sh report/<release>/analysis/EFFECTS_OUTCOME.json <next name> <tests> --cutoff ... --models ...   # 4. the extension rule
 ```
 
 Outputs:

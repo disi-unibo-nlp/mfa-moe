@@ -441,6 +441,7 @@ class RunWiringTests(unittest.TestCase):
         self.units = self.parent/'stores/gemma/main/units'
         driver.checkpoint(self.units/self.rows[1]['uid']/'PARTIAL.json', partial(self.rows[1], [4, 5, 6]))
         publish(self.root/'RELEASE.json', {'models': ['gemma'], 'sweep': {'gemma': 'main'}})
+        publish(self.root/'PREPARED.json', {})
         self.patches = [patch.object(whole, 'verify_release', return_value={'cutoff': time.time()+1e6}),
                         patch.object(whole, 'bound_store', side_effect=self.bound),
                         patch.object(driver, 'binding', return_value={}),
