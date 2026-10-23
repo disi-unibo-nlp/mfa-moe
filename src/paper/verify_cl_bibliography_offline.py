@@ -44,10 +44,8 @@ def main():
         raise ValueError('Unverified active keys: ' + ', '.join(sorted(keys - set(data))))
     # Force comparison against current independent evidence, never a stale API cache.
     cache = BUILD / 'bib/cache.json'
-    preserved = None
     if cache.exists():
-        preserved = cache.with_name('cache-before-offline.json')
-        preserved.write_bytes(cache.read_bytes())
+        cache.with_name('cache-before-offline.json').write_bytes(cache.read_bytes())
         cache.write_text('{}\n')
     try:
         bib.main([str(PAPER / 'main.tex'), '--no-normalize'])

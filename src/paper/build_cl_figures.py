@@ -3,7 +3,7 @@
 Names on the command line are built; with none, every figure is built. Each figure is compiled in a copy of the
 sources; the PDF, a preview image and a receipt go to BUILD/figure-builds/NAME. The manuscript folder is only read.
 
-  python -m paper.build_cl_figures [NAME ...] [--timeout-seconds 45]
+  python -m paper.build_cl_figures [NAME ...] [--timeout-seconds 120]
 """
 import argparse
 import json
@@ -31,9 +31,8 @@ PAGE = r'''\documentclass[border=1pt]{standalone}
 '''
 
 
-def build(name, timeout):
-    """Compile one figure and return its receipt."""
-    engine = tectonic()
+def build(name, engine, timeout):
+    """Compile one figure with `engine`; writes its PDF, preview and receipt."""
     root = BUILD / 'figure-builds' / name
     snapshot = root / ('source-' + str(time.time_ns()))
     (snapshot / 'journal').mkdir(parents=True)
@@ -74,13 +73,12 @@ def build(name, timeout):
     }
     (root / 'BUILD.json').write_text(json.dumps(record, indent=2) + '\n')
     print(json.dumps({k: record[k] for k in ('figure', 'elapsed_seconds', 'dimensions_pt')}), flush=True)
-    return record
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__.split('\n\n')[0])
     parser.add_argument('names', nargs='*', metavar='NAME', help='figures to build (default: ' + ', '.join(NAMES) + ')')
-    parser.add_argument('--timeout-seconds', type=int, default=45, help='time limit of each figure')
+    parser.add_argument('--timeout-seconds', type=int, default=120, help='time limit of each figure (the slowest takes about 65 s)')
     args = parser.parse_args()
     if not 0 < args.timeout_seconds <= 600:
         parser.error('--timeout-seconds must be between 1 and 600')
@@ -91,5 +89,6 @@ if __name__ == '__main__':
     missing = [name for name in todo if not (FIGURES / (name + '.tex')).is_file()]
     if missing:
         parser.error('figure source missing for requested figure(s): ' + ', '.join(missing))
+    engine = tectonic()
     for name in todo:
-        build(name, args.timeout_seconds)
+        build(name, engine, args.timeout_seconds)

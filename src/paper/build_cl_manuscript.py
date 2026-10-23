@@ -3,6 +3,7 @@
 Copies every source file into a fresh folder BUILD/source-round-NN, compiles it in up to four passes until the
 references stop changing, and writes BUILD/build/main.pdf, one image per page (BUILD/pages) and the receipt
 BUILD/BUILD.json. The manuscript folder is only read, and the build stops if a source changes while it runs.
+Needs BUILD/bib-verify.log (the bibliography check log) and the rule notes in NOTES.
 
   python -m paper.build_cl_manuscript [--timeout-seconds 180]
 """
@@ -18,10 +19,11 @@ import time
 
 import pymupdf
 
-from paper.cl_paths import BUILD, NOTES, PAPER, PAPER_WRITER, TECTONIC, TECTONIC_SHA256
+from paper.cl_paths import BUILD, FIGURES, NOTES, PAPER, PAPER_WRITER, TECTONIC, TECTONIC_SHA256
 from store import file_sha
 
-PASS_SECONDS = 180  # time limit of one compiler pass; the first pass of the full manuscript takes about 175 s
+PASS_SECONDS = 180  # time limit of one compiler pass; the first pass of the full manuscript takes 70 to 175 s
+AUXILIARY = ("aux", "bbl", "out", "toc")  # files that carry references and the bibliography from one pass to the next
 UNSETTLED = re.compile(r"Rerun to get cross-references right|Label\(s\) may have changed|"
                        r"There were undefined (?:references|citations)|Citation .+ undefined")
 
@@ -44,8 +46,8 @@ def compile_env(tmp):
     return env
 
 
-def source_files(figures=PAPER / "figures/journal"):
-    """Every file a build reads: what main.tex inputs, the class and style, the figures below `figures`, the notes."""
+def source_files(figures=FIGURES):
+    """Source files of a build: what main.tex inputs, the class and style, everything below `figures`, the *.md notes."""
     spec = importlib.util.spec_from_file_location("paper_writer_rules", PAPER_WRITER / "scripts/rules.py")
     rules = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(rules)
@@ -54,6 +56,27 @@ def source_files(figures=PAPER / "figures/journal"):
     files += [p for p in figures.rglob("*") if p.is_file()]
     files += [p for p in PAPER.glob("*.md") if p.is_file()]
     return list(dict.fromkeys(files))
+
+
+def copy_sources(files, folder):
+    """Copy manuscript files into `folder` (same relative paths); returns their hashes by relative path."""
+    hashes = {}
+    for origin in files:
+        name = str(origin.relative_to(PAPER))
+        (folder / name).parent.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(origin, folder / name)
+        hashes[name] = file_sha(origin)
+    return hashes
+
+
+def copy_auxiliary(source, folder):
+    """Copy the auxiliary files found in `source` as main.* into `folder`; returns their hashes by source path."""
+    copied = {}
+    for suffix in AUXILIARY:
+        if (source / ("main." + suffix)).exists():
+            shutil.copyfile(source / ("main." + suffix), folder / ("main." + suffix))
+            copied[str(source / ("main." + suffix))] = file_sha(source / ("main." + suffix))
+    return copied
 
 
 def compile_bounded(snapshot, engine, env, timeout=PASS_SECONDS):
@@ -68,9 +91,7 @@ def compile_bounded(snapshot, engine, env, timeout=PASS_SECONDS):
                "--reruns", "0", "--outdir", str(output), "main.tex"]
     passes = []
     for number in range(1, 5):
-        for suffix in ("aux", "bbl", "out", "toc"):
-            if (output / ("main." + suffix)).exists():
-                shutil.copyfile(output / ("main." + suffix), snapshot / ("main." + suffix))
+        copy_auxiliary(output, snapshot)
         started = time.monotonic()
         with (built / f"compiler-pass-{number}.log").open("w") as stream:
             try:
@@ -102,34 +123,24 @@ def seed_from_last_build(snapshot, bindings):
                     for name in ("references.bib", "clv2025.cls", "compling.bst"))
     if previous.get("exit_code") != 0 or not unchanged:
         return None
-    seed = {}
-    for suffix in ("aux", "bbl", "out", "toc"):
-        source = Path(previous["source_snapshot"]) / (".paper-review/build/main." + suffix)
-        if source.exists():
-            shutil.copyfile(source, snapshot / source.name)
-            seed[str(source)] = file_sha(source)
-    return seed
+    return copy_auxiliary(Path(previous["source_snapshot"]) / ".paper-review/build", snapshot)
 
 
 def render_pages(index):
     """One 144 dpi image per page of BUILD/build/main.pdf, in a fresh folder and in BUILD/pages; returns (folder, count)."""
-    with pymupdf.open(BUILD / "build/main.pdf") as document:
-        count = len(document)
     (BUILD / "pages").mkdir(exist_ok=True)
     for old in (BUILD / "pages").glob("page-*.png"):
         old.unlink()
     fresh = BUILD / f"pages-{index:02d}"
     fresh.mkdir()
-    # Each page is rendered from a freshly opened PDF so that every page image is self-contained.
-    for number in range(count):
-        with pymupdf.open(BUILD / "build/main.pdf") as document:
-            target = fresh / f"page-{number + 1:02d}.png"
-            document[number].get_pixmap(matrix=pymupdf.Matrix(2, 2)).save(target)
-            shutil.copyfile(target, BUILD / "pages" / target.name)
-    return fresh, count
+    with pymupdf.open(BUILD / "build/main.pdf") as document:
+        for number, page in enumerate(document, 1):
+            page.get_pixmap(matrix=pymupdf.Matrix(2, 2)).save(fresh / f"page-{number:02d}.png")
+            shutil.copyfile(fresh / f"page-{number:02d}.png", BUILD / "pages" / f"page-{number:02d}.png")
+        return fresh, len(document)
 
 
-def main(timeout=PASS_SECONDS):
+def main(timeout):
     engine = tectonic()
     BUILD.mkdir(parents=True, exist_ok=True)
     (BUILD / ".gitignore").write_text("*\n")
@@ -138,12 +149,7 @@ def main(timeout=PASS_SECONDS):
     index = len(list(BUILD.glob("source-round-*"))) + 1
     snapshot = BUILD / f"source-round-{index:02d}"
     snapshot.mkdir()
-    bindings = {}
-    for origin in source_files():
-        target = snapshot / origin.relative_to(PAPER)
-        target.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copyfile(origin, target)
-        bindings[str(origin.relative_to(PAPER))] = file_sha(origin)
+    bindings = copy_sources(source_files(), snapshot)
     # paper-writer looks for the rules beside main.tex; they live outside the Overleaf folder.
     for name in ("paper-rules.md", "writing_brief.md"):
         shutil.copyfile(NOTES / name, snapshot / name)
@@ -152,30 +158,24 @@ def main(timeout=PASS_SECONDS):
     started = time.monotonic()
     seed = seed_from_last_build(snapshot, bindings)
     run, passes = compile_bounded(snapshot, engine, compile_env(BUILD / "tmp"), timeout)
+    if [name for name, expected in bindings.items() if file_sha(PAPER / name) != expected]:
+        raise ValueError("manuscript sources changed during the build")
     built = snapshot / ".paper-review"
-    pages = count = None
+    evidence = {"compiler_sha256": TECTONIC_SHA256, "command": run.args, "source_snapshot": str(snapshot),
+                "source_hashes": bindings, "elapsed_seconds": time.monotonic() - started,
+                "exit_code": run.returncode, "compiler_timeout_seconds": timeout, "offline": True,
+                "scientific_computation": False, "agent_runtime_modified": False, "bounded_compile_passes": passes}
+    if seed:
+        evidence["generated_auxiliary_seed"] = seed
     if run.returncode == 0:
         (BUILD / "build").mkdir(exist_ok=True)
         for name in ("main.pdf", "main.log"):
             shutil.copyfile(built / "build" / name, BUILD / "build" / name)
         pages, count = render_pages(index)
+        evidence.update(pdf_sha256=file_sha(BUILD / "build/main.pdf"), pdf_path=str(BUILD / "build/main.pdf"),
+                        page_count=count, page_renders=str(pages), rendering="144 dpi")
     if (built / "main.log").exists():
         shutil.copyfile(built / "main.log", BUILD / "main.log")
-    pdf = BUILD / "build/main.pdf"
-    evidence = {"compiler_sha256": TECTONIC_SHA256, "command": run.args, "source_snapshot": str(snapshot),
-                "source_hashes": bindings, "elapsed_seconds": time.monotonic() - started,
-                "exit_code": run.returncode, "compiler_timeout_seconds": timeout, "offline": True,
-                "scientific_computation": False, "agent_runtime_modified": False,
-                "bounded_compile_passes": passes}
-    if seed:
-        evidence["generated_auxiliary_seed"] = seed
-    if pdf.exists():
-        evidence.update(pdf_sha256=file_sha(pdf), pdf_path=str(pdf))
-    if pages:
-        evidence.update(page_count=count, page_renders=str(pages), rendering="144 dpi; independently reopened PDF per page")
-    evidence["changed_sources"] = [name for name, expected in bindings.items() if file_sha(PAPER / name) != expected]
-    if evidence["changed_sources"]:
-        raise ValueError("manuscript sources changed during the build")
     (BUILD / "BUILD.json").write_text(json.dumps(evidence, indent=2) + "\n")
     return run.returncode
 
