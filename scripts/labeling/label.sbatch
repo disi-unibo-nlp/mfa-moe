@@ -7,4 +7,4 @@
 source scripts/slurm/env.sh || exit 1
 start_server judge
 export PYTHONPATH=$PYTHONPATH:$DSPY/lib/python3.11/site-packages:$MFA/envs/vllm-cu129/lib/python3.11/site-packages
-$DSPY/bin/python -m labeling.annotation_batch --trace-root "$1" --output-dir "$2" --base-url $URL
+$DSPY/bin/python -m labeling.annotation_batch --trace-root "${1:?TRACE_ROOT}" --output-dir "${2:?OUTPUT_DIR}" --base-url $URL

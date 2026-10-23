@@ -1,7 +1,8 @@
 """Sentence units of a reasoning trace and their offsets into the exact teacher-forced input.
 
-Every label, sampling plan and capture keys off these units and `trace_digest`, so the output of this file
-is frozen: change nothing in the segmentation without bumping the version of every consumer.
+Every label, sampling plan and capture keys off these units and `trace_digest`, so the output of
+this file is frozen: change nothing in the segmentation without bumping the version of every
+consumer.
 """
 
 from __future__ import annotations
@@ -13,7 +14,6 @@ import math
 import re
 from typing import Any, Iterable
 
-from labeling.batch_predictor import check_unknown
 from store import CLASSES as SENTENCE_LABELS
 
 SPAN_SCHEMA_VERSION = 1
@@ -310,6 +310,26 @@ def selected_sentence_indices(trace: Any, units: list[dict[str, Any]]) -> list[i
     ):
         raise ValueError("Sentence selection must contain sorted unique valid indices")
     return indices
+
+
+def check_unknown(outcome: dict[str, Any]) -> tuple[str | None, dict[str, Any]]:
+    """The raw completion and failure of an `unknown` outcome, rejecting metadata that could not be
+    read back."""
+    raw = outcome.get("raw_completion")
+    if raw is not None and not isinstance(raw, str):
+        raise ValueError("unknown outcome raw_completion must be a string or null")
+    failure = outcome.get("failure")
+    if not isinstance(failure, dict):
+        raise ValueError("unknown outcome is missing failure metadata")
+    missing = [key for key in ("kind", "error_type", "message")
+               if not isinstance(failure.get(key), str)]
+    if missing:
+        raise ValueError(f"unknown outcome failure is missing {missing}")
+    finish_reason = failure.get("finish_reason")
+    if finish_reason is not None and not isinstance(finish_reason, str):
+        raise ValueError("unknown outcome finish_reason must be a string or null")
+    return raw, {"kind": failure["kind"], "error_type": failure["error_type"],
+                 "message": failure["message"], "finish_reason": finish_reason}
 
 
 def validate_annotation(trace: Any, annotation: dict[str, Any]) -> None:

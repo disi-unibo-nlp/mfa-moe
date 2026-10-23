@@ -152,6 +152,38 @@ class IncludeTracesTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 load_include_traces(affected, "gpt")
 
+    def test_wrong_expected_units_are_rejected_before_the_judge_loads(self):
+        with tempfile.TemporaryDirectory() as raw:
+            directory = Path(raw)
+            root = directory / "corpus"
+            write_corpus(root)
+            affected = directory / "affected.json"
+            write_affected(affected, [("math500", "merged", 0, "gpt")], {"gpt": 7})
+            with self.assertRaisesRegex(ValueError, "expected exactly 7"):
+                main(
+                    [
+                        "--trace-root", str(root),
+                        "--output-dir", str(directory / "out"),
+                        "--judge-program", str(directory / "unused-program.json"),
+                        "--base-url", "http://127.0.0.1:41820/v1",
+                        "--include-traces", str(affected),
+                        "--include-source", "gpt",
+                    ]
+                )
+            # the right count passes the guard and only then needs the (missing) judge program
+            write_affected(affected, [("math500", "merged", 0, "gpt")], {"gpt": 5})
+            with self.assertRaises(FileNotFoundError):
+                main(
+                    [
+                        "--trace-root", str(root),
+                        "--output-dir", str(directory / "out"),
+                        "--judge-program", str(directory / "unused-program.json"),
+                        "--base-url", "http://127.0.0.1:41820/v1",
+                        "--include-traces", str(affected),
+                        "--include-source", "gpt",
+                    ]
+                )
+
     def test_resume_after_a_kill_does_not_re_request_finished_batches(self):
         with tempfile.TemporaryDirectory() as raw:
             directory = Path(raw)

@@ -1,8 +1,10 @@
-"""The labelled Schoenfeld responses the judge prompt is optimised on: loading, response-grouped splits, the DSPy
-examples (problem, neighbouring sentences, gold label) and an audit of units that merit a human look.
+"""The labelled Schoenfeld responses the judge prompt is optimised on: loading, response-grouped
+splits, the DSPy examples (problem, neighbouring sentences, gold label) and an audit of units that
+merit a human look.
 
-Splits cut between whole responses only, so no response is ever in two of train, validation, cross-validation fold or
-locked test. Correct answers and rationales from `SAT.json` are never put in front of the model.
+Splits cut between whole responses only, so no response is ever in two of train, validation,
+cross-validation fold or locked test. Correct answers and rationales from `SAT.json` are never put
+in front of the model.
 """
 from __future__ import annotations
 

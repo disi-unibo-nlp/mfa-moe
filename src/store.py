@@ -25,6 +25,10 @@ HOME = Path('/leonardo/home/userexternal/lmolfett')
 FAST = Path('/leonardo_scratch/fast/IscrC_MIOSR/lmolfett/mfa-moe/campaign-runs')
 CLASSES = ('Read', 'Analyze', 'Plan', 'Implement', 'Explore', 'Verify', 'Monitor')
 BENCHMARKS = ('aime24', 'aime25', 'amc23', 'math500', 'minerva', 'olympiad')
+# The same six benchmarks in the order the sentence samplers and the labeller walk them. The order
+# is hashed into every sampling plan and labelling key, so it must never change (it is not
+# BENCHMARKS' order).
+DATASETS = ('math500', 'aime24', 'aime25', 'olympiad', 'amc23', 'minerva')
 ARMS = ('native', 'target_activate', 'target_deactivate', 'random_activate', 'random_deactivate')
 MODELS = ('gpt', 'nemotron', 'qwen35', 'qwen36', 'gemma', 'glm', 'qwen330b', 'lfm25')
 TERMINAL = {'complete', 'unknown', 'execution_failed', 'upstream_unavailable',
