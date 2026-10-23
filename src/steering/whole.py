@@ -150,15 +150,7 @@ def verify_release() -> dict:
     return release
 
 
-def work_remaining_bytes() -> int:
-    """Read the verified Lustre project quota, preserving the existing WORK reserve."""
-    result = subprocess.run(['lfs', 'quota', '-p', '20149688', '/leonardo_work'],
-                            capture_output=True, text=True, check=True)
-    fields = next(line.split() for line in result.stdout.splitlines() if line.strip().startswith('/leonardo_work '))
-    used, soft, hard = (int(value.rstrip('*')) for value in fields[1:4])
-    limits = [value for value in (soft, hard) if value]
-    require(limits, 'native WORK project quota limit is unavailable')
-    return (min(limits)-used)*1024
+work_remaining_bytes = driver.work_remaining_bytes
 
 
 def _layer_actions(roles: dict, profile: dict) -> list[dict]:
@@ -787,7 +779,7 @@ def run(model, shard, deadline, *, max_inflight=64, canary=False, dose=None):
                 proof = verified(canary_path(model, value['dose']))
                 require(proof['gate']['passed'] and proof['job'] == selected['canary_job'] and
                         proof['manifest_sha256'] == value['sha256'], 'production canary qualification differs')
-    rows = canary_rows(value) if canary else driver.shard_rows(model, shard, 'whole')
+    rows = canary_rows(value) if canary else driver.shard_rows(value['records'], shard)
     store = bound_store(model, value['dose'], canary)
     check_saved_state(value, rows, store, canary)
     if time.time() >= CUTOFF:

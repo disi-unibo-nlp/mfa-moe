@@ -617,26 +617,9 @@ class StreamWorkerExtension:
     def fs_validation(self):
         return self._fs_capture.native_validation
 
-    def fs_state(self):
-        """Expose request-map emptiness for the allocated abort/isolation canary."""
-        capture = self._fs_capture
-        return {'requests': len(capture.requests), 'aliases': len(capture.aliases),
-                'clocks': len(capture.clocks), 'records': len(capture.records)}
-
     def fs_end(self):
         capture = getattr(self, '_fs_capture', None)
         if capture is not None:
             capture.restore()
         self._fs_capture = None
         return {'status': 'detached'}
-
-    def fr_metrics(self):
-        import resource
-        import torch
-        cache = self.vllm_config.cache_config
-        return {'peak_allocated_bytes': torch.cuda.max_memory_allocated(),
-                'peak_reserved_bytes': torch.cuda.max_memory_reserved(),
-                'free_device_bytes': torch.cuda.mem_get_info()[0],
-                'peak_rss_kib': resource.getrusage(resource.RUSAGE_SELF).ru_maxrss,
-                'num_gpu_blocks': getattr(cache, 'num_gpu_blocks', None),
-                'block_size': getattr(cache, 'block_size', None)}

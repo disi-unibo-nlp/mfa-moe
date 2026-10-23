@@ -14,7 +14,7 @@ import argparse
 import json
 from pathlib import Path
 import numpy as np
-from store import BENCHMARKS, CLASSES, MODELS, digest, load, publish, require, verified
+from store import BENCHMARKS, CLASSES, MODELS, load, publish, require, verified
 from steering.pulse import DRIVER, ROOT, binding, bulk, log
 
 PRIMARY = ('activate:first', 'activate:occupancy', 'deactivate:first', 'deactivate:occupancy')
@@ -192,15 +192,12 @@ def analysis_assignments(model: str, design: str) -> list[dict]:
 
     Args:
         model: Model owning the frozen assignments.
-        design: Main, exploratory strong-dose, or whole-reasoning design.
+        design: Main or the exploratory strong-dose design.
 
     Returns:
         Original assignments; no new continuation or random draw is created.
     """
     from steering.pulse import MANIFESTS
-    if design == 'whole':
-        from steering.whole import manifest
-        return manifest(model)['records']
     manifest = verified(DRIVER/model/MANIFESTS[design])
     rows = list(manifest['records'])
     if design == 'main' and manifest.get('unavailable'):
@@ -289,11 +286,10 @@ def _read_outcome_table(folder: Path, kind: str, design: str):
     return pd.concat([main, strong], ignore_index=True)
 
 
-def continuation_table(models, design='main', *, classifier=None):
+def continuation_table(models, design='main'):
     """design 'strong': post-hoc strong-dose arms (renamed to target/random_activate) plus the main-design native rows."""
     import pandas as pd
     frames = []
-    semantic = {}
     for model in models:
         assignments = analysis_assignments(model, design)
         folder = bulk()/model/'outcomes'
@@ -322,7 +318,7 @@ def continuation_table(models, design='main', *, classifier=None):
             outcomes['allowance_role'] = 'actual original request allowance; unavailable prompts use a conservative card bound'
         if not sentences.empty:
             from routing.lexical import LEXICAL, predict
-            sentences = predict(sentences, Path(classifier['root']) if classifier else LEXICAL/'readout-v1', frozen=classifier)
+            sentences = predict(sentences, LEXICAL/'readout-v1')
         groups = {u: g.to_dict('records') for u, g in sentences.groupby('uid')} if not sentences.empty else {}
         rows = []
         for o in outcomes.to_dict('records'):
@@ -337,7 +333,6 @@ def continuation_table(models, design='main', *, classifier=None):
             row.update(ended=e['ended'], uncovered=e['uncovered'], covered=e['covered'],
                        available=e['available'], pulse_available=e['pulse_available'])
             row.update(full_ended=e['full_ended'], full_unknown=e['full_unknown'], full_nonreasoning=e['full_nonreasoning'])
-            semantic_bounds = semantic_endpoint(semantic.get(o['uid'], {'status': 'unknown'}))
             if o['outcome_status'] != 'observed':
                 row['ended'] = np.nan
             for i, c in enumerate(CLASSES):
@@ -355,9 +350,8 @@ def continuation_table(models, design='main', *, classifier=None):
                     np.nan_to_num(e['first_post_hard'][i], nan=0.), e['first_post_lower'][i], e['first_post_upper'][i])
                 row['first_overlap_'+c], row['first_overlap_lower_'+c], row['first_overlap_upper_'+c] = (
                     np.nan_to_num(e['first_overlap_hard'][i], nan=0.), e['first_overlap_lower'][i], e['first_overlap_upper'][i])
-                row['semantic_first_'+c] = float((semantic_bounds[0][i]+semantic_bounds[1][i])/2)
-                row['semantic_first_lower_'+c] = semantic_bounds[0][i]
-                row['semantic_first_upper_'+c] = semantic_bounds[1][i]
+                # Always unknown: the reader endpoint of the superseded rescue design. Kept so the tables are unchanged.
+                row['semantic_first_'+c], row['semantic_first_lower_'+c], row['semantic_first_upper_'+c] = .5, 0., 1.
             for available, prefixes in ((e['available'], ('occ_', 'occs_')),
                                         (e['pulse_available'], ('pulse_occ_',))):
                 if not available:
@@ -371,23 +365,6 @@ def continuation_table(models, design='main', *, classifier=None):
         frames.append(pd.DataFrame(rows))
         log({'event': 'continuations', 'model': model, 'rows': len(rows), 'sentences': len(sentences)})
     return pd.concat(frames, ignore_index=True)
-
-
-def semantic_endpoint(annotation: dict) -> tuple:
-    """Distinguish observed reader labels, genuine no-event and unknown outcomes.
-
-    Args:
-        annotation: Exact assignment/context join from the reader inventory.
-
-    Returns:
-        Seven class-specific lower and upper outcome vectors.
-    """
-    if annotation['status'] == 'no_event':
-        return np.zeros(7), np.zeros(7)
-    if annotation['status'] == 'reader_task' and annotation.get('label') in CLASSES:
-        observed = np.eye(7)[CLASSES.index(annotation['label'])]
-        return observed, observed
-    return np.zeros(7), np.ones(7)
 
 
 def paired(table):
@@ -709,14 +686,14 @@ def _qualified_efficiency_link(prereg: Path, pairs, boot) -> dict:
     return result
 
 
-def analyze(models, out, design='main', *, classifier=None):
+def analyze(models, out, design='main'):
     """Write fresh effect artifacts while retaining planned unknown outcomes."""
     import pandas as pd
     require(not any((out/name).exists() for name in ('EFFECTS.json', 'continuations.parquet', 'pairs.parquet')),
             'corrected analysis requires a fresh output directory; preserve historical results')
     allocation = load(ROOT/'ALLOCATION.json')['records']
     benchmarks = {r['family']: r['benchmark'] for r in allocation}
-    table = continuation_table(models, design, classifier=classifier)
+    table = continuation_table(models, design)
     pairs = paired(table)
     boot = Bootstrap(sorted(table.family.unique()), benchmarks)
     primary_columns = list(PRIMARY)
@@ -783,34 +760,6 @@ def analyze(models, out, design='main', *, classifier=None):
     return publish(out/'EFFECTS.json', result)
 
 
-def null_diagnostic(repetitions: int = 100) -> dict:
-    """Report a bounded fixed-seed six-contrast null simulation diagnostic.
-
-    Args:
-        repetitions: Fixed finite number of synthetic panels.
-
-    Returns:
-        Observed diagnostic coverage, never a universal coverage guarantee.
-    """
-    import pandas as pd
-    rng = np.random.default_rng(20261020)
-    families = [str(index) for index in range(64)]
-    benchmarks = {family: BENCHMARKS[index % len(BENCHMARKS)] for index, family in enumerate(families)}
-    boot = Bootstrap(families, benchmarks, draws=1000)
-    covered = 0
-    for _ in range(repetitions):
-        noise = rng.normal(size=(64, 6))
-        frame = pd.DataFrame({'family': families})
-        for index in range(6):
-            frame[str(index)] = noise[:, index]
-            frame[str(index)+':lower'] = noise[:, index]-.1
-            frame[str(index)+':upper'] = noise[:, index]+.1
-        summary = bounded_summary(boot, frame, list(map(str, range(6))), 'synthetic-null-6')
-        covered += all(row['bound_simultaneous'][0] <= 0 <= row['bound_simultaneous'][1] for row in summary.values())
-    return {'seed': 20261020, 'panels': repetitions, 'bootstrap_draws_per_panel': 1000,
-            'joint_zero_coverage': covered/repetitions, 'role': 'bounded diagnostic, not a coverage guarantee'}
-
-
 def efficiency_link(prereg, pairs, boot):
     """The pre-registered test (EFFICIENCY_LINK_PREREG.json 'test'): frozen beta(m,c) vs measured Delta(m,c) =
     family mean of targeted-minus-random activation (log total tokens; strict accuracy). Spearman rho and the
@@ -872,16 +821,12 @@ def efficiency_link(prereg, pairs, boot):
 
 
 def main(argv=None):
-    """Run a fresh analysis of the main, strong-dose or whole-reasoning design."""
+    """Run a fresh analysis of the main or the strong-dose design."""
     ap = argparse.ArgumentParser(prog='steering.pulse_effects')
     ap.add_argument('--models', default=','.join(MODELS))
     ap.add_argument('--out', type=Path)
-    ap.add_argument('--design', choices=['main', 'strong', 'whole'], default='main')
+    ap.add_argument('--design', choices=['main', 'strong'], default='main')
     args = ap.parse_args(argv)
-    if args.design == 'whole':
-        from steering.whole_effects import analyze
-        analyze()
-        return
     models = args.models.split(',')
     require(models and len(set(models)) == len(models), 'analysis model roster is empty or duplicated')
     value = analyze(models, args.out or DRIVER/'analysis-corrected-v1', args.design)
