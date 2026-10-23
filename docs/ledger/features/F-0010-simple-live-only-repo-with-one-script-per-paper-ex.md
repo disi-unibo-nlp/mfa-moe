@@ -12,9 +12,9 @@
 
 - [x] F-0010.1 Tag the last commit with all historical code and branch the work; evidence: tag archive/pre-cleanup-20261023 -> 978f011; branch polish/simple-repo
 - [ ] F-0010.2 Golden baseline: rerun every CPU analysis and the paper exporters with the current code; record pre-existing differences against sealed receipts; comparator script
-- [ ] F-0010.3 Bring the external code that produced paper numbers into the repo unchanged (router capture, readout helpers dp/dynrt/rkin, benchmark table builder, release sealers)
-- [ ] F-0010.4 Copy the few functions live code takes from old campaigns into live modules, then remove old campaign code and dead code from the tree
-- [ ] F-0010.5 Reorganize live code into topic packages (generation, labeling, capture, routing, steering, paper) with matching scripts/ folders and tests/
+- [x] F-0010.3 Bring the external code that produced paper numbers into the repo unchanged (router capture, readout helpers dp/dynrt/rkin, benchmark table builder, release sealers); evidence: 1b2c8ab
+- [x] F-0010.4 Copy the few functions live code takes from old campaigns into live modules, then remove old campaign code and dead code from the tree; evidence: a1a7438, 317f743, 9bf27e3; full suite job 61960382 334 passed (3 errors also on the tag)
+- [x] F-0010.5 Reorganize live code into topic packages (generation, labeling, capture, routing, steering, paper) with matching scripts/ folders and tests/; evidence: e6b924e..66f0741, merge 12854a8 (F-0011 next_state), review fixes 477fad3
 - [ ] F-0010.6 Bash: one shared Slurm env file, a ~6-line vLLM serve script per model and the judge, one script per paper experiment, one release script
 - [ ] F-0010.7 Simplify the live Python topic by topic (drop unused designs, move Slurm plumbing out of Python), each topic identical on the golden comparison, /simplify and /code-review high applied
 - [ ] F-0010.8 Plain-language README per folder and a top README mapping each paper experiment to its script and receipt; update CLAUDE.md, AGENTS.md, RUNBOOK, memory; retrace stale walkthroughs
@@ -25,3 +25,11 @@
 
 | Metric | Dataset | Baseline | Result | Evidence |
 |---|---|---|---|---|
+
+## Carry-over for F-0010.7 (from the code review of steps 2-4)
+
+- Ported capture cannot run: `capture/bundle.py` refuses modules outside a frozen bundle. Replace with the release snapshot.
+- `routing/readout.py` and `routing/anticipation.py` hash `OUT/code/{dp,dynrt,rkin}` as their code provenance but now run `moe_exp.routing.*`; make provenance name the code that ran, keep the frozen-input checks.
+- `moe_exp.receipts` duplicates `moe_exp.io` (require, digest, load, publish, file_sha, check_files) with different normalisation; merge into io, keeping the campaign variant under an explicit name.
+- `steering/pulse_effects.py` still writes 21 always-unknown `semantic_first_*` columns of the deleted rescue endpoint.
+- `steering/pulse.code_hashes()` now hashes all of src; hash the code that ran or reuse `provenance.code_provenance()`.
