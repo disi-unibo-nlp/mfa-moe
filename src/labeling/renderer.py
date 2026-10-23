@@ -10,7 +10,7 @@ from pathlib import Path
 import select
 import subprocess
 import sys
-from receipts import check_files, require
+from store import check_files, require
 
 
 class OriginalRenderer:

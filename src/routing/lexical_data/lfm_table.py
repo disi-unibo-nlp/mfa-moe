@@ -8,8 +8,7 @@ from collections import Counter
 from pathlib import Path
 import numpy as np
 import pandas as pd
-from store import CLASSES, Units, file_sha, publish, verified
-from steering.pulse import ROOT, binding
+from store import CLASSES, STUDY as ROOT, Units, binding, file_sha, publish, verified
 from routing.lexical import LEXICAL, predict
 
 

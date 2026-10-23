@@ -27,11 +27,11 @@ import numpy as np
 import pandas as pd
 from scipy import sparse
 
+import store
 from store import CLASSES, MODELS, digest, file_sha, load, publish, require, verified
 from routing import readout_analysis, readout_fit as sr
 from routing.dp import common as cm, s3_readout as historical
 from routing.lfm_readout import HISTORICAL
-from steering import pulse as driver
 
 # The historical present-state readout of the seven campaign-v3 models: its frozen population and the
 # token caches its loader reads (routing/readout.py binds the same files).
@@ -65,7 +65,7 @@ def campaign_model(model: str) -> sr.ModelData:
 
 def lfm_model(questions: set) -> sr.ModelData:
     """LFM2.5's labelled discovery sentences and their replayed routing, as readouts.lfm loads them."""
-    binding = driver.binding()
+    binding = store.binding()
     root, bulk = Path(binding['root']), Path(binding['config']['bulk_root'])
     inputs = verified(root/'lfm25/DISCOVERY_INPUTS.json')
     require(file_sha(Path(inputs['sentences'])) == inputs['sentences_sha256'], 'LFM derived sentences changed')
@@ -149,7 +149,7 @@ def run(model: str) -> dict:
     Returns:
         The published report/final-routing-20261015-r1/<model>/NEXT_STATE.json receipt.
     """
-    binding = driver.binding()
+    binding = store.binding()
     root, bulk = Path(binding['root']), Path(binding['config']['bulk_root'])
     target = root/model/'NEXT_STATE.json'
     require(not target.exists(), f'{target} exists')
@@ -185,7 +185,7 @@ def run(model: str) -> dict:
 
 def collect() -> dict:
     """Join the eight per-model receipts into driver/NEXT_STATE.json for the paper exporter."""
-    root = Path(driver.binding()['root'])
+    root = Path(store.binding()['root'])
     receipts = {m: verified(root/m/'NEXT_STATE.json') for m in MODELS}
     return publish(root/'driver/NEXT_STATE.json', {'models': list(MODELS), 'results': receipts,
                                                    'receipt_sha256': {m: r['sha256'] for m, r in receipts.items()}})

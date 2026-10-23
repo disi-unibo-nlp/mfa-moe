@@ -1,21 +1,25 @@
-"""Bind and reuse the historical five-fold present-state readout implementation."""
+"""Present-state readout of LFM2.5: does routing tell the class of a sentence beyond its text?
+
+It runs the same fits as the seven-model readout (readout_fit, readout_analysis) on LFM's replayed routing and
+its 522 readout questions, twice: token identity only, and with the judge's previous/current/next sentence text.
+The population is the one frozen in HISTORICAL/FROZEN.readout.v3.json (the seven-model run's inputs).
+
+    python -m routing.lfm readout      (about 1.5 h on 4 CPUs); result: lfm25/READOUT_RESULTS.json
+"""
 from pathlib import Path
-import sys
-from store import CLASSES, check_files, digest, file_sha, load, publish, require, verified
+
+import numpy as np
+import pandas as pd
+from scipy import sparse
+
+from routing import readout_analysis as historical, readout_fit as sr
+from routing.readout_text import hash_counts
+from store import check_files, digest, file_sha, load, publish, require, verified
 
 HISTORICAL = Path('/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/forum/tests/r3_context')
 
 
-def binding_files():
-    frozen = load(HISTORICAL/'FROZEN.readout.v3.json')
-    return {**frozen['code'], str(HISTORICAL/'FROZEN.readout.v3.json'):file_sha(HISTORICAL/'FROZEN.readout.v3.json'),
-            str(HISTORICAL/'readout-results.v3.json'):file_sha(HISTORICAL/'readout-results.v3.json')}
-
-
 def lfm(binding):
-    import numpy as np
-    import pandas as pd
-    from scipy import sparse
     root, bulk = Path(binding['root']), Path(binding['config']['bulk_root'])
     target = root/'lfm25/READOUT_RESULTS.json'
     inputs = verified(root/'lfm25/DISCOVERY_INPUTS.json')
@@ -33,8 +37,6 @@ def lfm(binding):
         require(value.get('provenance') == provenance, 'published LFM readout was produced by other code or inputs')
         return value
     check_files(binding['readout_files'])
-    from routing import readout_analysis as historical, readout_fit as sr
-    from routing.readout_text import hash_counts
     frozen = load(HISTORICAL/'FROZEN.readout.v3.json')
     questions = set(frozen['ids']['gpt'])
     require(len(questions) == 522, 'original readout population differs')
@@ -44,7 +46,6 @@ def lfm(binding):
     price=verified(root/'CPU_PRICE.json')
     require(len(sent)<=price['limits']['sentences'] and sent.n_tokens.sum()<=price['limits']['tokens'],
             'actual LFM readout exceeds the measured CPU profile; no unpriced analysis')
-    sources = {s['attempt_id']:s for s in inputs['sources']}
     row_of = {s:i for i,s in enumerate(sorted(sent.attempt_id.unique()))}
     sent['row'] = sent.attempt_id.map(row_of)
     top, tsent, tokid, tabs, adjacency = [], [], [], [], []

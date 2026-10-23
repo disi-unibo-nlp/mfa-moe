@@ -30,14 +30,14 @@ import types
 import pandas as pd
 
 import store
-from store import REPO, clean, file_sha, load, publish, require, verified
-from steering import pulse as driver
+from store import REPO, STUDY, clean, file_sha, load, publish, require, verified
 
 FROZEN_SCRIPT = REPO/'src/routing/efficiency_link_prereg.py'
 MODELS = ('gpt', 'nemotron', 'qwen35', 'qwen36', 'gemma', 'glm', 'qwen330b', 'lfm25')
-PREREG = driver.DRIVER/'EFFICIENCY_LINK_PREREG.json'
-LINK = driver.DRIVER/'EFFICIENCY_LINK_V2.json'
-DRIVER_TEST = driver.DRIVER/'analysis-final-link-v2/EFFICIENCY_LINK_TEST.json'
+DRIVER = STUDY/'driver'
+PREREG = DRIVER/'EFFICIENCY_LINK_PREREG.json'
+LINK = DRIVER/'EFFICIENCY_LINK_V2.json'
+DRIVER_TEST = DRIVER/'analysis-final-link-v2/EFFICIENCY_LINK_TEST.json'
 
 
 def frozen():
@@ -92,7 +92,7 @@ def build_table(estimator) -> Path:
     process), and the sentence inclusion probability is selected / supply sentences of the sampling
     cell (only the 1/p sensitivity variant reads it).
     """
-    report = driver.ROOT/'lfm25'
+    report = STUDY/'lfm25'
     labels = pd.read_parquet(estimator.LEXICAL/'native_lfm25.parquet')
     sampled = verified(estimator.STUDY/'lfm25/SAMPLED_SENTENCES.json')['records']
     require(labels.context_hash.tolist() == [r['annotation_uid'] for r in sampled], 'LFM labels and samples differ')
@@ -190,10 +190,10 @@ def driver_test() -> dict:
     """The driver's frozen link test on analysis-final pairs, with the V2 cells (56 instead of 49)."""
     from steering.pulse_effects import Bootstrap, efficiency_link
     require(not DRIVER_TEST.exists(), f'{DRIVER_TEST} exists')
-    final = driver.DRIVER/'analysis-final'
+    final = DRIVER/'analysis-final'
     pairs = pd.read_parquet(final/'pairs.parquet')
     families = sorted(pd.read_parquet(final/'continuations.parquet', columns=['family']).family.unique())
-    benchmarks = {r['family']: r['benchmark'] for r in load(driver.ROOT/'ALLOCATION.json')['records']}
+    benchmarks = {r['family']: r['benchmark'] for r in load(STUDY/'ALLOCATION.json')['records']}
     boot = Bootstrap(families, benchmarks)
     # analysis-final ran the plain test (it predates the bounded-outcome wrapper). Its intervals came from
     # an earlier version of the shared Bootstrap draws, so on the pre-registration today's code must

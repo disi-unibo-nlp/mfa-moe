@@ -5,7 +5,7 @@ Vendored verbatim from `research_campaign_v3_r6.penalties`; the study engine loa
 """
 from __future__ import annotations
 
-from receipts import require
+from store import require
 
 KEY = "research_prefix_penalties"
 
