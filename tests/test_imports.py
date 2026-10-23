@@ -15,12 +15,12 @@ SRC = REPO / 'src'
 
 # Modules started by `python -m`, by a job script, by a vLLM engine string or loaded by file path.
 ENTRY_POINTS = [
-    'moe_exp.study.driver', 'moe_exp.study.outcomes', 'moe_exp.study.effects', 'moe_exp.study.whole',
-    'moe_exp.study.whole_effects', 'moe_exp.study.whole_complement', 'moe_exp.study.whole_relink',
+    'moe_exp.steering.pulse', 'moe_exp.steering.pulse_outcomes', 'moe_exp.steering.pulse_effects', 'moe_exp.steering.whole',
+    'moe_exp.steering.whole_effects', 'moe_exp.steering.whole_complement', 'moe_exp.steering.whole_relink',
     'moe_exp.routing.efficiency_link', 'moe_exp.routing.lexical', 'moe_exp.routing.lfm_readout',
-    'moe_exp.study.stream', 'moe_exp.study.observer', 'moe_exp.study.fast_penalties', 'moe_exp.study.penalties',
+    'moe_exp.steering.stream', 'moe_exp.steering.observer', 'moe_exp.steering.fast_penalties', 'moe_exp.steering.penalties',
     'moe_exp.labeling.renderer_child',
-    'moe_exp.outcome_steering.__main__',
+    'moe_exp.steering.outcome.__main__',
     'moe_exp.generation.generate', 'moe_exp.labeling.sample_cohorts',
     'moe_exp.labeling.annotation_batch', 'moe_exp.generation.answer_equivalence',
     'moe_exp.generation.model_profiles', 'moe_exp.labeling.gepa.run',

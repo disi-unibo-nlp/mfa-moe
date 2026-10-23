@@ -1,6 +1,6 @@
 # Outcome-steering commands
 
-Thin bash wrappers around `python -m moe_exp.outcome_steering`. The code and its explanation are in
+Thin bash wrappers around `python -m moe_exp.steering.outcome`. The code and its explanation are in
 `src/moe_exp/outcome_steering/README.md`.
 
 | Script | When | What it writes |

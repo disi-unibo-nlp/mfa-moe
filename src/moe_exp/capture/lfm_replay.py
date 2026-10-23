@@ -8,7 +8,7 @@ from moe_exp.io import require
 
 
 def replay(binding, rows, deadline):
-    from moe_exp.study.runtime import Backend
+    from moe_exp.steering.runtime import Backend
     from moe_exp.io import read_source
     bulk = Path(binding['config']['bulk_root'])
     backend = Backend(binding, 'lfm25', 1, deadline, replay=True)

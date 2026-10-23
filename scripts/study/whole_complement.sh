@@ -15,7 +15,7 @@ mkdir -p "$TMP"
 
 # 1. Seal: receipts, COMPLEMENT.json, SOURCES.json, the code snapshot and launch.env.
 TMPDIR="$TMP" PYTHONPATH=src PYTHONDONTWRITEBYTECODE=1 \
-  "$PY" -B -m moe_exp.study.whole_complement --name "$name" --local-tests "$tests"
+  "$PY" -B -m moe_exp.steering.whole_complement --name "$name" --local-tests "$tests"
 set -a; source "report/$name/launch.env"; set +a
 REL=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/releases/$COMMIT
 export PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=$REL/src TMPDIR="$TMP" \
@@ -24,7 +24,7 @@ export PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=$REL/src TMPDIR="$TMP" \
        WHOLE_GPU_CEILING=$GPU_CEILING WHOLE_CPU_CEILING=$CPU_CEILING OMP_NUM_THREADS=1
 
 # 2. The ordinary whole-reasoning graph runs it; SOURCES.json makes it queue the combined analysis.
-(cd "$REL" && "$PY" -B -m moe_exp.study.whole launch)
+(cd "$REL" && "$PY" -B -m moe_exp.steering.whole launch)
 
 # 3. Paper tables and figure data from the combined receipt, staged outside the manuscript folder.
 combine=$("$PY" -c "import json; print(json.load(open('$WHOLE_ROOT/JOBS.json'))['analysis']['id'])")

@@ -11,7 +11,7 @@ from moe_exp.io import BENCHMARKS, Units, canonical, digest, file_sha, load, pub
 
 def population(binding):
     from moe_exp.io import read_source
-    from moe_exp.study.allocation import seed_for
+    from moe_exp.steering.allocation import seed_for
     root = Path(binding['root'])
     destination = root/'lfm25/NATIVE_TASKS.json'
     if destination.exists():
@@ -38,7 +38,7 @@ def population(binding):
 
 
 def trace_record(binding, row, raw, tokenizer):
-    from moe_exp.study.runtime import prompt_prefix
+    from moe_exp.steering.runtime import prompt_prefix
     from moe_exp.labeling.contexts import parts
     from moe_exp.models.token_replay import make_token_replay
     from moe_exp.generation.scoring import score_completion_detailed
