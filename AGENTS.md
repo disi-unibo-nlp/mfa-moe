@@ -1,3 +1,12 @@
+**Next-state prediction for all eight models (Fig. 7 redo) — 2026-10-23 14:00 Rome (user request; Claude):**
+- `moe_exp.study.next_state` predicts the state of the next labelled sentence from the current one for all eight
+  models: markov (current state only, Fig. 6), text (+ token bag, absolute position, length), routing (+ routing of
+  every source token). Every adjacent labelled pair of the 522 readout questions (gpt 10,936 ... qwen36 2,531, lfm25
+  6,313), no length filter, no retrospective relative progress. Fits, nulls and family intervals are readout_analysis.
+- CPU jobs from snapshot `mfa-moe/releases/6521595...`: 61946688-61946702 (one per model), collect 61946704 ->
+  `report/final-routing-20261015-r1/<model>/NEXT_STATE.json` and `driver/NEXT_STATE.json`. Ledger F-0011.
+- Pending: new Fig. 7 from driver/NEXT_STATE.json (exporter not written yet) and its text.
+
 **LFM2.5 on its own efficiency-link signs, relink release r20 — 2026-10-23 12:30 Rome (user request; Claude supervises):**
 - The whole-reasoning releases r7-r18 gave LFM2.5 the pooled seven-model signs (the pre-registration had no LFM
   native table). `moe_exp.study.efficiency_link` builds LFM's full native table
