@@ -64,11 +64,12 @@ def bootstrap_panel(records, columns, *, draws=10000, panel="primary", resample_
     samples = np.full((draws if F > 1 else 1, C), np.nan)
     if F > 1:
         rng = np.random.default_rng(int(digest([SEED, 'bootstrap', resample_key or panel])[:16], 16))
-        multiplicities = rng.multinomial(F, np.full(F, 1/F), size=draws)
+        multiplicities = rng.multinomial(F, np.full(F, 1/F), size=draws).astype(np.float64)
+        counted = valid.astype(np.float64)
         for start in range(0, draws, 256):  # blocks only bound memory
             multiplicity = multiplicities[start:start+256]
             numerator = np.einsum('nf,bfc->nbc', multiplicity, nums, optimize=False)
-            denominator = np.einsum('nf,bfc->nbc', multiplicity, valid, optimize=False)
+            denominator = np.tensordot(multiplicity, counted, axes=(1, 1))  # integer counts: exact in any order
             avg = np.divide(numerator, denominator, out=np.full_like(numerator, np.nan), where=denominator > 0)
             samples[start:start+len(multiplicity)] = avg.mean(1)
     supported = (den > 0).all(0) if B else np.zeros(C, bool)

@@ -70,9 +70,12 @@ def clean(value, reasons=None, path=''):
     return value
 
 
+def _dump(cleaned):
+    return json.dumps(cleaned, sort_keys=True, separators=(',', ':'), ensure_ascii=False, allow_nan=False).encode()
+
+
 def canonical(value):
-    return json.dumps(clean(value), sort_keys=True, separators=(',', ':'),
-                      ensure_ascii=False, allow_nan=False).encode()
+    return _dump(clean(value))
 
 
 def digest(value):
@@ -82,7 +85,7 @@ def digest(value):
 def seal(value):
     """Clean copy of a dict with its content hash under "sha256"."""
     payload = clean({k: v for k, v in value.items() if k != 'sha256'})
-    return {**payload, 'sha256': digest(payload)}
+    return {**payload, 'sha256': hashlib.sha256(_dump(payload)).hexdigest()}
 
 
 def file_sha(path):
@@ -126,7 +129,7 @@ def publish(path, value):
     fd, tmp = tempfile.mkstemp(prefix='.pending-', dir=path.parent)
     try:
         with os.fdopen(fd, 'wb') as stream:
-            stream.write(canonical(payload) + b'\n')
+            stream.write(_dump(payload) + b'\n')
             stream.flush()
             os.fsync(stream.fileno())
         try:
