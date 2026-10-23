@@ -213,7 +213,7 @@ def sha_text(text):
 
 
 def task_with_key(task):
-    from rkin import k2
+    from moe_exp.routing.rkin import k2
     return task, k2._task(task)
 
 
@@ -254,17 +254,16 @@ def run(workers):
     if not os.environ.get('SLURM_JOB_ID') or os.uname().nodename.startswith('login'):
         raise RuntimeError('anticipation fits require CPU Slurm')
     started = time.monotonic()
-    sys.path.insert(0, str(OUT / 'code'))
     import numpy as np
     import pandas as pd
     from scipy import sparse
-    from r3d_readout import family_folds, verified
-    from dynrt import common as D, cv as C
+    from moe_exp.routing.readout import family_folds, verified
+    from moe_exp.routing.dynrt import common as D, cv as C
     D.RESULTS = ROOT / 'dynamics-routing/results'
-    from dynrt import data as Data, d3a_pairs as P, d3a_text as T, features as F, d3a_softmax as Softmax
-    from rkin import common as RK
+    from moe_exp.routing.dynrt import data as Data, d3a_pairs as P, d3a_text as T, features as F, d3a_softmax as Softmax
+    from moe_exp.routing.rkin import common as RK
     RK.DATA = ROOT / 'reasoning-kinematics/rk2/data'
-    from rkin import k2 as K
+    from moe_exp.routing.rkin import k2 as K
     K.DATA = RK.DATA
     K.K2DATA = RK.DATA / 'k2'
     K.OUTER = 5
