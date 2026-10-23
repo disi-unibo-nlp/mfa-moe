@@ -262,7 +262,8 @@ def _source_table(source: dict) -> pd.DataFrame:
             row['occ_'+class_name] = (lower+upper)/2
             row['occ_'+class_name+':lower'], row['occ_'+class_name+':upper'] = lower, upper
         rows.append(row)
-    return pd.DataFrame(rows)
+    # The experts of each row stay in the manifest; the analysis never reads them, and they dominate the memory.
+    return pd.DataFrame(rows).drop(columns=['source', 'actions'], errors='ignore')
 
 
 def contrast(target: dict, control: dict, metric: str, benefit=False) -> tuple[float, float, float]:
@@ -554,7 +555,7 @@ def combine(root: Path) -> dict:
     result['levels'], result['manipulation'] = arm_summaries(boot, table)
     result['verdict'] = verdicts(result['primary'], models)
     folder.mkdir(parents=True, mode=0o700)
-    table.drop(columns=['source', 'actions'], errors='ignore').to_parquet(folder/'continuations.parquet', index=False)
+    table.to_parquet(folder/'continuations.parquet', index=False)
     cells.to_parquet(folder/'cells.parquet', index=False)
     return publish(folder/'EFFECTS_WHOLE.json', result)
 
