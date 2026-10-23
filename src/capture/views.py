@@ -1,9 +1,10 @@
-"""Compact full-reasoning, class and absolute-position feature views."""
+"""Feature views of one capture: the whole reasoning, each sentence class, and absolute-position windows.
 
+The position windows use a fixed per-model reference (mean reasoning length, 10 bins) given by the manifest.
+"""
 from __future__ import annotations
 
 from itertools import pairwise
-from pathlib import Path
 from typing import Any
 
 from capture.features import compute_layer_features, json_safe_features
@@ -17,34 +18,7 @@ from labeling.spans import (
     trace_digest,
     validate_annotation,
 )
-from store import iter_jsonl
 from schemas import TraceRecord
-
-
-def position_reference(
-    inputs: list[Path], tokenizer: Any, model_id: str, bins: int
-) -> dict[str, Any]:
-    """Use every supplied generation, independent of labels and extraction --limit."""
-    total = count = 0
-    corpus = []
-    for path in inputs:
-        for row in iter_jsonl(path):
-            trace = TraceRecord(**row)
-            length = len(token_layout(trace, tokenizer)["reasoning_tokens"])
-            total += length
-            count += 1
-            corpus.append((trace.dataset, trace.problem_id, trace_digest(trace), length))
-    if not total or not count:
-        raise ValueError("Cannot define position windows for empty reasoning")
-    return {
-        "model_id": model_id,
-        "mean_reasoning_tokens": total / count,
-        "traces": count,
-        "bins": bins,
-        "corpus_sha256": digest(sorted(corpus)),
-        "rule": "ceil(model_corpus_mean * i / bins); noncumulative; overflow after mean",
-        "limit_applied_to_reference": False,
-    }
 
 
 def compute_views(
