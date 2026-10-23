@@ -321,7 +321,7 @@ def continuation_table(models, design='main', *, classifier=None):
             outcomes['total_allowance'] = outcomes.uid.map(by_uid)
             outcomes['allowance_role'] = 'actual original request allowance; unavailable prompts use a conservative card bound'
         if not sentences.empty:
-            from moe_exp.study.lexical import LEXICAL, predict
+            from moe_exp.routing.lexical import LEXICAL, predict
             sentences = predict(sentences, Path(classifier['root']) if classifier else LEXICAL/'readout-v1', frozen=classifier)
         groups = {u: g.to_dict('records') for u, g in sentences.groupby('uid')} if not sentences.empty else {}
         rows = []

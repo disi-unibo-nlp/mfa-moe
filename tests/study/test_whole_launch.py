@@ -247,7 +247,7 @@ class DesignAndCoverageTests(unittest.TestCase):
             pd.DataFrame(spans).to_parquet(folder/'sentences.parquet')
             publish(root/'RELEASE.json', {'classifier': {}})
             publish(whole.manifest_path('gpt', 'main', root), {'records': records})
-            with patch('moe_exp.study.lexical.predict', side_effect=lambda frame, *args, **kwargs: frame):
+            with patch('moe_exp.routing.lexical.predict', side_effect=lambda frame, *args, **kwargs: frame):
                 table = whole_effects.load_table([{'model': 'gpt', 'root': str(root), 'dose': 'main'}]).set_index('uid')
         self.assertEqual(table.loc['valid', 'outcome_status'], 'observed')
         self.assertEqual(table.loc['invalid', 'outcome_status'], 'unknown_sentence_coverage')

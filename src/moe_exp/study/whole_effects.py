@@ -168,7 +168,7 @@ def load_table(sources: list[dict] | None = None) -> pd.DataFrame:
 
 def _extracted(root: Path, model: str, value: dict) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Read one release's extracted outcomes and lexically labelled sentences for one manifest."""
-    from .lexical import LEXICAL, predict
+    from moe_exp.routing.lexical import LEXICAL, predict
     folder = root/model/'extraction'
     if (folder/'EXTRACTION.json').exists():
         require(verified(folder/'EXTRACTION.json')['manifest_sha256'] == value['sha256'],
