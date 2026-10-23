@@ -1,7 +1,7 @@
 """Build lexical/native_lfm25.parquet from the LFM discovery judge labels and score it with the frozen
 7-model lexical readout (cross-fitted by fold) to measure transfer to LFM text.
 
-Usage (CPU job): python -m moe_exp.routing.lexical.lfm_table
+Usage (CPU job): python -m moe_exp.routing.lexical_data.lfm_table
 """
 import json
 from collections import Counter
