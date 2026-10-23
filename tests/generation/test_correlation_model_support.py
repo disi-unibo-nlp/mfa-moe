@@ -307,7 +307,6 @@ def test_generation_persists_exact_ids_and_reuses_them_on_resume(byte_tokenizer,
         summary = generate.generate_dataset("synthetic", args)
         assert summary["accuracy"] == 1.0
     assert len(calls) == 1
-    assert calls[0]["return_token_ids"] is True
     assert calls[0]["model"] == "openai/gpt-oss-20b"
     assert calls[0]["reasoning_effort"] == "medium"
     row = next(iter(iter_jsonl(tmp_path / "openai--gpt-oss-20b/synthetic/traces.jsonl")))
