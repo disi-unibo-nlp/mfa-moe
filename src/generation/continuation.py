@@ -23,7 +23,7 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import Any
 
-from generation.client import complete_tokens
+from generation.client import complete_tokens, slurm_deadline
 from generation.model_profiles import CARD_PROFILES, load_tokenizer
 
 RESULTS = Path("/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/results/correlation_pipeline")
@@ -136,9 +136,10 @@ def run(args) -> None:
     print(json.dumps(dict(model=args.model, todo=len(todo), done=len(done))), flush=True)
     lock = threading.Lock()
     served = CARD_PROFILES[args.model]["model"]
+    deadline = slurm_deadline(args.deadline_margin_hours)
 
     def one(parent):
-        if args.deadline_epoch and time.time() > args.deadline_epoch:
+        if deadline and time.time() > deadline:
             return None
         live, prompt_ids, completion_ids = ids[key_of(parent)]
         if live["parent_sha256"] != parent["parent_sha256"]:
@@ -241,7 +242,8 @@ def main(argv=None) -> None:
     ap.add_argument("--timeout", type=int, default=21600)
     ap.add_argument("--limit", type=int)
     ap.add_argument("--pilot", type=int, default=0)
-    ap.add_argument("--deadline-epoch", type=float)
+    ap.add_argument("--deadline-margin-hours", type=float, default=3,
+                    help="inside a Slurm job, start no request in the last N hours so running ones can finish")
     args = ap.parse_args(argv)
     {"plan": plan, "run": run, "score": score}[args.command](args)
 

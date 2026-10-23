@@ -178,3 +178,36 @@ def test_streaming_hooks_support_keyword_inputs_and_are_removed_on_failure(fail_
         torch.testing.assert_close(hidden[0], torch.zeros((3, 4)))
         torch.testing.assert_close(hidden[1], torch.ones((3, 4)))
     assert _hook_counts(model) == before
+
+
+def test_a_model_without_backbone_is_asked_for_the_last_token_logits_only():
+    seen = {}
+
+    class Gate(torch.nn.Module):
+        def forward(self, hidden):
+            return torch.zeros(hidden.shape[1], 4)
+
+    class Layer(torch.nn.Module):
+        def __init__(self):
+            super().__init__()
+            self.mlp = torch.nn.Module()
+            self.mlp.gate = Gate()
+
+        def forward(self, hidden_states):
+            self.mlp.gate(hidden_states)
+            return hidden_states
+
+    class Model(torch.nn.Module):
+        def __init__(self):
+            super().__init__()
+            self.anchor = torch.nn.Parameter(torch.zeros(()))
+            self.config = SimpleNamespace(model_type="qwen3_moe")
+            self.layers = torch.nn.ModuleList([Layer()])
+
+        def forward(self, input_ids, logits_to_keep=None, **kwargs):
+            seen["logits_to_keep"] = logits_to_keep
+            self.layers[0](torch.zeros(1, input_ids.shape[1], 4))
+
+    router = extract_logs_single_pass(Model(), CharacterTokenizer(), "p", "cot")
+    assert seen["logits_to_keep"] == 1
+    assert router.shape == (1, 3, 4)
