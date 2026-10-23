@@ -257,7 +257,7 @@ def load_mmlu_pro(max_items: int | None = None) -> list[dict[str, Any]]:
 
 
 def _load_existing(name: str, max_items: int | None) -> list[dict[str, Any]]:
-    from moe_exp.datasets.loaders import load_dataset_by_name
+    from moe_exp.generation.loaders import load_dataset_by_name
 
     return load_dataset_by_name(name, max_items=max_items)
 

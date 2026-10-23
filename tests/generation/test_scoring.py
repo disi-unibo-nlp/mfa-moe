@@ -3,9 +3,9 @@ from concurrent.futures import ThreadPoolExecutor
 
 import pytest
 
-from moe_exp.correlation_pipeline import scoring
-from moe_exp.correlation_pipeline.scoring import score_completion, score_completion_detailed
-from moe_exp.utils import extract_model_answer, last_boxed
+from moe_exp.generation import scoring
+from moe_exp.generation.scoring import score_completion, score_completion_detailed
+from moe_exp.generation.answers import extract_model_answer, last_boxed
 
 
 @pytest.mark.parametrize("text, expected", [

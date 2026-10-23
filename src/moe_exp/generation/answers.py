@@ -1,8 +1,6 @@
 from __future__ import annotations
 
-import json
 import re
-from pathlib import Path
 
 # ---------------------------------------------------------------------------
 # Answer-extraction regexes
@@ -91,36 +89,3 @@ def answers_match(model_answer: str, gold_answer: str) -> bool | None:
 
     # Exact match only for non-numeric answers (no substring fallback)
     return ma == ga
-
-
-# ---------------------------------------------------------------------------
-# I/O helpers
-# ---------------------------------------------------------------------------
-
-
-def write_jsonl(records: list, path: Path) -> None:
-    """Write JSONL atomically so an interrupted run is never a completion marker."""
-    import jsonlines
-
-    path.parent.mkdir(parents=True, exist_ok=True)
-    tmp_path = path.with_name(f".{path.name}.tmp")
-    try:
-        with jsonlines.open(tmp_path, mode="w") as writer:
-            for rec in records:
-                writer.write(rec.model_dump() if hasattr(rec, "model_dump") else rec)
-        tmp_path.replace(path)
-    except Exception:
-        tmp_path.unlink(missing_ok=True)
-        raise
-
-
-def read_json(path: Path) -> dict | list | None:
-    """Read a JSON file, returning None if it doesn't exist."""
-    if not path.exists():
-        return None
-    return json.loads(path.read_text(encoding="utf-8"))
-
-
-def write_json(data: dict, path: Path) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(data, indent=2), encoding="utf-8")

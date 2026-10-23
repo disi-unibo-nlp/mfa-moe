@@ -262,7 +262,7 @@ class AnalysisTests(unittest.TestCase):
 
     def test_threaded_math_verify_uses_helper_process(self):
         from concurrent.futures import ThreadPoolExecutor
-        from moe_exp.correlation_pipeline.scoring import score_completion_detailed, shutdown_scoring_pool
+        from moe_exp.generation.scoring import score_completion_detailed, shutdown_scoring_pool
         self.addCleanup(shutdown_scoring_pool)
         with ThreadPoolExecutor(max_workers=1) as executor:
             result = executor.submit(score_completion_detailed, {'gold_answer': '2'}, answer_type='math',
@@ -279,7 +279,7 @@ class AnalysisTests(unittest.TestCase):
         raw = {'token_ids': replay['completion_token_ids'], 'finish_reason': 'stop', 'reasoning_tokens': 0}
         original = {'prompt': 'Question', 'gold_answer': '2', 'metadata': {}}
         with patch('moe_exp.models.token_replay.make_token_replay', return_value=(text, replay)), \
-             patch('moe_exp.correlation_pipeline.scoring.score_completion_detailed',
+             patch('moe_exp.generation.scoring.score_completion_detailed',
                    return_value={'is_correct': True, 'model_answer': '2'}):
             outcome = record({'models': {'gpt': {'key': 'gpt'}}}, 'gpt', {'horizon': 1000}, raw, None,
                              [[9000]], frozen_input=([1], [], original))
@@ -290,7 +290,7 @@ class AnalysisTests(unittest.TestCase):
                          'completion_offsets': [[i, i+1] for i in range(len(direct))]}
         raw = {**raw, 'token_ids': direct_replay['completion_token_ids']}
         with patch('moe_exp.models.token_replay.make_token_replay', return_value=(direct, direct_replay)), \
-             patch('moe_exp.correlation_pipeline.scoring.score_completion_detailed',
+             patch('moe_exp.generation.scoring.score_completion_detailed',
                    return_value={'is_correct': True, 'model_answer': '2'}):
             outcome = record({'models': {'gpt': {'key': 'gpt'}}}, 'gpt', {'horizon': 1000, 'whole': True},
                              raw, None, [list(range(len('<|channel|>final<|message|>')))],
@@ -485,7 +485,7 @@ class ClosedAnalysisTests(unittest.TestCase):
                     'finish_reason': 'stop', 'reasoning_tokens': 0})
             publish(folder/'CAPTURE.json', {'stats': {'dose': {}}})
             with patch('moe_exp.models.token_replay.make_token_replay', return_value=(text, replay)), \
-                 patch('moe_exp.correlation_pipeline.scoring.score_completion_detailed',
+                 patch('moe_exp.generation.scoring.score_completion_detailed',
                        return_value={'is_correct': True, 'model_answer': '2'}):
                 outcome, sentences, failure = whole_effects._extract_one(
                     row, b={'models': {'gpt': {'key': 'gpt'}}}, model='gpt', tokenizer=None,

@@ -259,9 +259,9 @@ def test_confidence_features_use_actual_selected_set_even_with_selection_bias():
 
 
 def test_generation_persists_exact_ids_and_reuses_them_on_resume(byte_tokenizer, monkeypatch, tmp_path):
-    from moe_exp.correlation_pipeline import generate
-    from moe_exp.correlation_pipeline.benchmarks import BenchmarkSpec
-    from moe_exp.correlation_pipeline.client import Completion
+    from moe_exp.generation import generate
+    from moe_exp.generation.benchmarks import BenchmarkSpec
+    from moe_exp.generation.client import Completion
     from moe_exp.io import iter_jsonl
 
     spec = BenchmarkSpec(
@@ -305,7 +305,7 @@ def test_generation_persists_exact_ids_and_reuses_them_on_resume(byte_tokenizer,
 
 
 def test_client_requests_and_preserves_vllm_token_ids(monkeypatch):
-    from moe_exp.correlation_pipeline.client import generate_completion
+    from moe_exp.generation.client import generate_completion
 
     def response(url, key, payload, timeout):
         assert payload["return_token_ids"] is True
@@ -314,7 +314,7 @@ def test_client_requests_and_preserves_vllm_token_ids(monkeypatch):
             "token_ids": [12, 13], "finish_reason": "stop",
         }]}
 
-    monkeypatch.setattr("moe_exp.correlation_pipeline.client._post_json", response)
+    monkeypatch.setattr("moe_exp.generation.client._post_json", response)
     result = generate_completion(
         base_url="http://localhost/v1", api_key="test", model="test", messages=[],
         max_tokens=20, temperature=.6, top_p=.95, top_k=0, seed=1, return_token_ids=True,

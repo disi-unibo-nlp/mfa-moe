@@ -6,7 +6,7 @@ import re
 import threading
 from typing import Any
 
-from moe_exp.utils import answers_match, extract_model_answer
+from moe_exp.generation.answers import answers_match, extract_model_answer
 
 _CHOICE_RE = re.compile(r"\\boxed\s*\{\s*([A-J])\s*\}", re.IGNORECASE)
 # math_verify parses the submitted answer text; the final answer sits at its end,

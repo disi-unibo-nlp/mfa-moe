@@ -23,7 +23,7 @@ from collections import Counter
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
-from moe_exp.utils import last_boxed
+from moe_exp.generation.answers import last_boxed
 
 JUDGE_MODEL = "Qwen/Qwen3.8-27B"
 JUDGE_SAMPLER = dict(temperature=1.0, top_p=0.95, top_k=20, min_p=0.0, presence_penalty=0.0,
@@ -72,7 +72,7 @@ def build_item(*, corpus, model, dataset, problem_id, sample_id, problem, gold, 
 def build_hist(args) -> None:
     """Residual finished-but-rejected historical answers (strict math_verify False, stop)."""
     import pandas as pd
-    from moe_exp.correlation_pipeline.continuation import DATASETS, HISTORICAL
+    from moe_exp.generation.continuation import DATASETS, HISTORICAL
     rescored = pd.read_parquet(args.rescored)
     wanted = rescored[(rescored.mv_correct == False) & (rescored.finish_reason != "length")]  # noqa: E712
     keys = {(r.model if r.model != "qwen35gptq" else "qwen35", r.problem_id) for r in wanted.itertuples()}
@@ -118,7 +118,7 @@ def build_corpus(args) -> None:
 
 def build_cont(args) -> None:
     """Residual continuation branches: finished reasoning, answer present, strict False."""
-    from moe_exp.correlation_pipeline.continuation import HISTORICAL, DATASETS
+    from moe_exp.generation.continuation import HISTORICAL, DATASETS
     scored = {}
     for line in open(Path(args.cont_dir) / "scored.jsonl"):
         row = json.loads(line)
@@ -144,7 +144,7 @@ def build_cont(args) -> None:
 def audit(args) -> None:
     """Freeze a stratified 100-item audit set BEFORE judging (blind agent adjudication)."""
     import pandas as pd
-    from moe_exp.correlation_pipeline.continuation import DATASETS, HISTORICAL
+    from moe_exp.generation.continuation import DATASETS, HISTORICAL
     items = [json.loads(line) for line in open(args.items)]
     excluded = set()
     for path in args.exclude or []:

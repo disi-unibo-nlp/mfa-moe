@@ -3,7 +3,7 @@ from __future__ import annotations
 import re
 
 from moe_exp.schemas import StepLabels
-from moe_exp.utils import extract_model_answer
+from moe_exp.generation.answers import extract_model_answer
 
 # ---------------------------------------------------------------------------
 # Heuristic patterns

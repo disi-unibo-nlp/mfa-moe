@@ -6,7 +6,7 @@ from typing import Optional
 from huggingface_hub import hf_hub_download
 from rich.console import Console
 
-from moe_exp.utils import extract_gold_answer_gsm8k, extract_model_answer
+from moe_exp.generation.answers import extract_gold_answer_gsm8k, extract_model_answer
 
 console = Console()
 

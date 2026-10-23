@@ -6,9 +6,9 @@ historical runs used no presence/frequency/repetition penalty), so each branch e
 the same conditional sampling law to a larger cumulative budget. Only the suffix is
 stored; outcomes are parsed from the combined original+suffix token sequence.
 
-  python -m moe_exp.correlation_pipeline.continuation plan  --model qwen36 --out DIR
-  python -m moe_exp.correlation_pipeline.continuation run   --model qwen36 --out DIR --base-url URL
-  python -m moe_exp.correlation_pipeline.continuation score --model qwen36 --out DIR
+  python -m moe_exp.generation.continuation plan  --model qwen36 --out DIR
+  python -m moe_exp.generation.continuation run   --model qwen36 --out DIR --base-url URL
+  python -m moe_exp.generation.continuation score --model qwen36 --out DIR
 """
 from __future__ import annotations
 
@@ -23,8 +23,8 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 from typing import Any
 
-from moe_exp.correlation_pipeline.client import complete_tokens
-from moe_exp.correlation_pipeline.model_profiles import CARD_PROFILES
+from moe_exp.generation.client import complete_tokens
+from moe_exp.generation.model_profiles import CARD_PROFILES
 
 RESULTS = Path("/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/results/correlation_pipeline")
 HISTORICAL = {
@@ -300,7 +300,7 @@ def final_answer(text: str, parser: str) -> str | None:
 def score(args) -> None:
     """CPU: decode combined sequences, extract the final answer and score in the main thread."""
     from transformers import AutoTokenizer
-    from moe_exp.correlation_pipeline.scoring import score_completion_detailed
+    from moe_exp.generation.scoring import score_completion_detailed
     card = CARD_PROFILES[args.model]
     tokenizer = (AutoTokenizer.from_pretrained(card["weights"]) if card["weights"] else
                  AutoTokenizer.from_pretrained(card["tokenizer"] or card["model"], revision=card["revision"]))
