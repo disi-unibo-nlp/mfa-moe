@@ -2,8 +2,8 @@
 
 Reads the sealed effects receipts of the reduced final-routing study (no fitting or
 resampling here) and writes:
-  manuscript-support/figures/data/routing.dat           coordinates of the routing figure
-  manuscript-support/figures/data/routing_results.json  every displayed number and its source receipt
+  figures/journal/data/routing.dat           coordinates of the routing figure
+  figures/journal/data/routing_results.json  every displayed number and its source receipt
   journal/tables/routing.tex                 main paired contrasts (8 models and the pooled row)
   journal/tables/routing_levels.tex          per-arm accuracy and token levels (appendix)
   journal/tables/routing_strong.tex          exploratory strong-dose arm (appendix)

@@ -25,7 +25,7 @@ from cl_paths import DATA as SUPPORT_DATA, FIGURES as SUPPORT_FIGURES, NOTES, PA
 
 
 def figure_root(paper):
-    """Figure sources and data: the support folder for the manuscript, else the root's own copy."""
+    """Canonical figure sources and data in the selected manuscript checkout."""
     return SUPPORT_FIGURES if paper == DEFAULT_PAPER else paper / "figures/journal"
 
 

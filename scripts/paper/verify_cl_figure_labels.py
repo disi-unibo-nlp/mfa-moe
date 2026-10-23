@@ -12,7 +12,6 @@ import re
 
 import pymupdf
 
-from build_cl_manuscript import PAPER
 from cl_paths import BUILD, FIGURES
 
 
@@ -46,8 +45,8 @@ def expected_labels(root):
 
 
 def main():
-    root = PAPER / 'figures/journal'
-    pdf = root / 'routing.pdf'
+    root = FIGURES
+    pdf = BUILD / 'figure-builds/routing/routing.pdf'
     expected = Counter(expected_labels(FIGURES))
     labels, bars, strokes = [], [], []
     with pymupdf.open(pdf) as document:
