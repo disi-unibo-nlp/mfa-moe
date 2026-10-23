@@ -7,7 +7,7 @@ import numpy as np
 import pandas as pd
 from scipy import optimize, sparse
 from moe_exp.io import CLASSES
-from .readout_text import TextTransform
+from moe_exp.routing.readout_text import TextTransform
 
 GRID = 10.0 ** np.arange(-3, 3)
 ALPHA = 0.5
@@ -285,7 +285,7 @@ def weighted_nll(logp: np.ndarray, y: np.ndarray, w: np.ndarray) -> float:
 
 
 def outer_folds(groups: np.ndarray, question_family=None) -> np.ndarray:
-    from .readout_analysis import family_folds
+    from moe_exp.routing.readout_analysis import family_folds
     families = question_family if question_family is not None else _STATE['md'].question_family
     return family_folds(groups, OUTER, FOLD_SEED, families)
 
@@ -298,7 +298,7 @@ def run_task(args: tuple) -> dict:
     t0 = time.time()
     folds = outer_folds(md.groups)
     train, test = np.flatnonzero(folds != f), np.flatnonzero(folds == f)
-    from .readout_analysis import family_folds
+    from moe_exp.routing.readout_analysis import family_folds
     inner = family_folds(md.groups[train], INNER, FOLD_SEED * 1000 + f, md.question_family)
     grid = GRID.copy()
     losses = np.zeros((INNER, len(grid)))

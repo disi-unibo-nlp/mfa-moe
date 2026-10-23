@@ -17,7 +17,7 @@ import time
 from pathlib import Path
 import numpy as np
 from scipy import optimize, sparse
-from . import readout_text as RT
+from moe_exp.routing import readout_text as RT
 from moe_exp.io import CLASSES, check_files, file_sha, publish, require, verified
 
 CIDX = {c: i for i, c in enumerate(CLASSES)}
@@ -199,7 +199,7 @@ def fit_folds(models, out, budget=1800):
 
 
 class _Unpickler:
-    """Fits made with `python -m moe_exp.study.lexical` pickled these classes under `__main__`."""
+    """Fits made with `python -m moe_exp.routing.lexical` pickled these classes under `__main__`."""
     def __init__(self, stream):
         import pickle
         import sys
@@ -274,7 +274,7 @@ def predict(sentences, root, *, frozen=None):
 
 
 def main(argv=None):
-    ap = argparse.ArgumentParser(prog='moe_exp.study.lexical')
+    ap = argparse.ArgumentParser(prog='moe_exp.routing.lexical')
     ap.add_argument('command', choices=['fit'])
     ap.add_argument('--models', default='gpt,nemotron,qwen35,qwen36,gemma,glm,qwen330b')
     ap.add_argument('--out', default=str(LEXICAL/'readout-v1'))

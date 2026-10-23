@@ -15,7 +15,7 @@ labels and text (it was built for the lexical readout). This module
 LFM's signs are estimated after its interventions ran; the receipt records that. The estimator, draws
 and seed are the pre-registered ones and the seven pre-registered models are unchanged.
 
-    scripts/study/cpu.sh moe_exp.study.efficiency_link all
+    scripts/study/cpu.sh moe_exp.routing.efficiency_link all
 """
 from __future__ import annotations
 
@@ -31,7 +31,7 @@ import pandas as pd
 from moe_exp import io
 from moe_exp.io import clean
 from moe_exp.io import REPO, file_sha, load, publish, require, verified
-from . import driver
+from moe_exp.study import driver
 
 FROZEN_SCRIPT = REPO/'src/moe_exp/routing/efficiency_link_prereg.py'
 MODELS = ('gpt', 'nemotron', 'qwen35', 'qwen36', 'gemma', 'glm', 'qwen330b', 'lfm25')
@@ -121,7 +121,7 @@ def build_table(estimator) -> Path:
     (folder/'README.md').write_text(
         '# Native tables for the eight-model efficiency link\n\n'
         'The seven `native_<model>.parquet` files link to `../lexical/` (the pre-registered inputs).\n'
-        '`native_lfm25.parquet` is built by `moe_exp.study.efficiency_link table` from LFM2.5\'s sampled\n'
+        '`native_lfm25.parquet` is built by `moe_exp.routing.efficiency_link table` from LFM2.5\'s sampled\n'
         'native sentences (`lfm25/SAMPLED_SENTENCES.json`, labels from `../lexical/native_lfm25.parquet`),\n'
         'its sampled sources (`report/final-routing-20261015-r1/lfm25/SOURCES.json`) and native outcomes\n'
         '(`NATIVE_ESTIMANDS.json`). It has only the columns the estimator reads. Positions are ranks among\n'
@@ -165,7 +165,7 @@ def publish_link(estimator, directory: Path) -> dict:
                 'pre-registered models equal the predecessor\'s (checked to float rounding); LFM2.5 (no native '
                 'table at pre-registration) is estimated after its interventions ran, and the pooled row is '
                 'now the eight-model mean.',
-        'builder': {'path': 'src/moe_exp/study/efficiency_link.py', 'sha256': file_sha(Path(__file__))}})
+        'builder': {'path': 'src/moe_exp/routing/efficiency_link.py', 'sha256': file_sha(Path(__file__))}})
     payload['estimator_spec'] = {**payload['estimator_spec'],
                                  'pooled': payload['estimator_spec']['pooled'].replace('seven', 'eight')}
     payload['test'] = {**payload['test'], 'unit_of_analysis': 'cell = (model, class) with a nominated layer '
@@ -183,7 +183,7 @@ def publish_link(estimator, directory: Path) -> dict:
 
 def driver_test() -> dict:
     """The driver's frozen link test on analysis-final pairs, with the V2 cells (56 instead of 49)."""
-    from .effects import Bootstrap, efficiency_link
+    from moe_exp.study.effects import Bootstrap, efficiency_link
     require(not DRIVER_TEST.exists(), f'{DRIVER_TEST} exists')
     final = driver.DRIVER/'analysis-final'
     pairs = pd.read_parquet(final/'pairs.parquet')
@@ -214,7 +214,7 @@ def point_estimates(test: dict) -> dict:
 
 
 def main(argv=None) -> None:
-    parser = argparse.ArgumentParser(prog='python -m moe_exp.study.efficiency_link')
+    parser = argparse.ArgumentParser(prog='python -m moe_exp.routing.efficiency_link')
     parser.add_argument('command', choices=('table', 'publish', 'driver-test', 'all'))
     args = parser.parse_args(argv)
     estimator = frozen()

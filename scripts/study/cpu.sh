@@ -1,7 +1,7 @@
 #!/bin/bash
 # CPU job for the reduced final-routing analysis, e.g.
 #   sbatch -A iscrc_miosr -p lrd_all_serial --qos=normal -N1 --ntasks=1 --cpus-per-task=4 --mem=30G \
-#          -t 04:00:00 -J fr-cpu-lexical -o LOG scripts/study/cpu.sh moe_exp.study.lexical fit
+#          -t 04:00:00 -J fr-cpu-lexical -o LOG scripts/study/cpu.sh moe_exp.routing.lexical fit
 # First argument: python module; the rest is passed through.
 set -euo pipefail
 umask 077

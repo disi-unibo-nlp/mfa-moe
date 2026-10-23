@@ -17,7 +17,7 @@ SRC = REPO / 'src'
 ENTRY_POINTS = [
     'moe_exp.study.driver', 'moe_exp.study.outcomes', 'moe_exp.study.effects', 'moe_exp.study.whole',
     'moe_exp.study.whole_effects', 'moe_exp.study.whole_complement', 'moe_exp.study.whole_relink',
-    'moe_exp.study.efficiency_link', 'moe_exp.study.lexical', 'moe_exp.study.readouts', 'moe_exp.study.lfm',
+    'moe_exp.routing.efficiency_link', 'moe_exp.routing.lexical', 'moe_exp.routing.lfm_readout',
     'moe_exp.study.stream', 'moe_exp.study.observer', 'moe_exp.study.fast_penalties', 'moe_exp.study.penalties',
     'moe_exp.labeling.renderer_child',
     'moe_exp.outcome_steering.__main__',
@@ -28,13 +28,16 @@ ENTRY_POINTS = [
     'moe_exp.routing.readout', 'moe_exp.routing.next_state', 'moe_exp.routing.selection',
     'moe_exp.routing.dynamics', 'moe_exp.routing.benchmark_accuracy', 'moe_exp.routing.benchmark_inventory',
     'moe_exp.routing.efficiency_link_prereg',
+    'moe_exp.routing.lexical.build_native', 'moe_exp.routing.lexical.build_extras',
+    'moe_exp.routing.lexical.build_steered', 'moe_exp.routing.lexical.make_readme',
+    'moe_exp.routing.lexical.validate', 'moe_exp.routing.lexical.lfm_table',
 ]
 
 # (importer, imported) pairs that are known not to resolve.
 EXEMPT = {
     # Byte-frozen by the efficiency-link pre-registration hash; study.efficiency_link aliases the module at load.
     ('moe_exp.routing.efficiency_link_prereg', 'moe_exp.final_routing.common'),
-    ('moe_exp.study.efficiency_link', 'moe_exp.final_routing.common'),
+    ('moe_exp.routing.efficiency_link', 'moe_exp.final_routing.common'),
 }
 
 DOTTED = re.compile(r'\bmoe_exp(?:\.[A-Za-z_][A-Za-z0-9_]*)+')
@@ -210,7 +213,7 @@ class ImportsResolve(unittest.TestCase):
 
     def test_entry_points_cover_the_package(self):
         for entry in ENTRY_POINTS:
-            self.assertIn(entry, MODULES, entry)
+            self.assertTrue(entry in MODULES, entry)
         unreachable = sorted(set(MODULES) - reachable(ENTRY_POINTS))
         self.assertEqual([], unreachable)
 

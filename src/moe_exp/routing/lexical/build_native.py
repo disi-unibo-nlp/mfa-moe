@@ -20,7 +20,7 @@ from moe_exp.capture.dynamics.classes import saved_layout
 from moe_exp.labeling.spans import trace_digest
 from moe_exp.io import iter_jsonl
 from moe_exp.schemas import TraceRecord
-from moe_exp.study.readout_analysis import family_folds
+from moe_exp.routing.readout_analysis import family_folds
 
 CV3 = Path("/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/campaign-v3")
 R6 = Path("/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/research-campaign-v3-20261014-r6")

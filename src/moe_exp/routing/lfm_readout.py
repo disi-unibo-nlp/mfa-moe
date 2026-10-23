@@ -24,7 +24,7 @@ def lfm(binding):
     sampled_path = bulk/'lfm25/SAMPLED_SENTENCES.json'
     # Checkpoints and the published result are keyed by code as well as data, so a fix never reuses old fits.
     provenance = {'code': {name: file_sha(Path(__file__).with_name(name)) for name in
-                           ('readouts.py', 'readout_fit.py', 'readout_analysis.py', 'readout_text.py')},
+                           ('lfm_readout.py', 'readout_fit.py', 'readout_analysis.py', 'readout_text.py')},
                   'inputs_sha256': inputs['sha256'], 'sentences_sha256': inputs['sentences_sha256'],
                   'sampled_sentences_sha256': file_sha(sampled_path), 'folds_sha256': file_sha(folds_path),
                   'seed_index': 7}
@@ -33,8 +33,8 @@ def lfm(binding):
         require(value.get('provenance') == provenance, 'published LFM readout was produced by other code or inputs')
         return value
     check_files(binding['readout_files'])
-    from . import readout_analysis as historical, readout_fit as sr
-    from .readout_text import hash_counts
+    from moe_exp.routing import readout_analysis as historical, readout_fit as sr
+    from moe_exp.routing.readout_text import hash_counts
     frozen = load(HISTORICAL/'FROZEN.readout.v3.json')
     questions = set(frozen['ids']['gpt'])
     require(len(questions) == 522, 'original readout population differs')

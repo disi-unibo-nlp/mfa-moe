@@ -876,7 +876,7 @@ def main(argv=None):
         log({'event': 'repaired', 'contexts': len(value['records']), 'sha256': value['sha256']})
         return
     if args.command == 'lfm-derive':
-        from moe_exp.study.lfm import derive
+        from moe_exp.routing.selection import derive
         from moe_exp.study.nominations import derive_model
         b = binding()
         if not (ROOT/'lfm25/DISCOVERY_INPUTS.json').exists():
@@ -885,14 +885,14 @@ def main(argv=None):
         log({'event': 'derived', 'plan': plan(['lfm25'])})
         return
     if args.command == 'lfm-readout':
-        from moe_exp.study.readouts import lfm
+        from moe_exp.routing.lfm_readout import lfm
         value = lfm(binding())
         log({'event': 'readout', 'sha256': value['sha256'],
              **{mode: {k: r[k] for k in ('routing', 'routing_excess_over_lexical_null')}
                 for mode, r in value['models']['lfm25'].items()}})
         return
     if args.command == 'lfm-dynamics':
-        from moe_exp.study.lfm import dynamics_summary
+        from moe_exp.routing.dynamics import dynamics_summary
         log({'event': 'dynamics', 'sha256': dynamics_summary(binding())['sha256']})
         return
     require(os.environ.get('SLURM_JOB_ID') and os.environ.get('SLURM_JOB_GPUS'), 'GPU commands require a Slurm GPU allocation')
