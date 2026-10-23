@@ -11,7 +11,7 @@ import math
 from pathlib import Path
 
 from .common import digest, write_json
-from ..provenance import code_provenance, file_sha256
+from moe_exp.provenance import code_provenance, file_sha256
 
 VERSION = 1
 KINDS = {"inventory", "features", "folds", "candidates", "branches", "analysis", "sizing"}

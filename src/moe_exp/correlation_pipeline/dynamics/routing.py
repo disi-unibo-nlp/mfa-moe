@@ -208,7 +208,7 @@ def reduce_trace(trace, router, selected, weights, layers, semantics, *, config=
     from .classes import saved_layout
     from .common import digest
     from moe_exp.correlation_pipeline.spans import trace_digest
-    from moe_exp.correlation_pipeline.provenance import code_provenance
+    from moe_exp.provenance import code_provenance
     layout = saved_layout(trace)
     if layout["token_count"] != router.shape[1]:
         raise ValueError("Dynamics requires exact saved token alignment")

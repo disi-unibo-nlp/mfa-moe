@@ -18,7 +18,7 @@ import pandas as pd
 
 from moe_exp.correlation_pipeline.dynamics.classes import saved_layout
 from moe_exp.correlation_pipeline.spans import trace_digest
-from moe_exp.jsonl import iter_jsonl
+from moe_exp.io import iter_jsonl
 from moe_exp.schemas import TraceRecord
 from moe_exp.study.readout_analysis import family_folds
 

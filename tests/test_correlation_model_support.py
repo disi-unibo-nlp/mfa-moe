@@ -262,7 +262,7 @@ def test_generation_persists_exact_ids_and_reuses_them_on_resume(byte_tokenizer,
     from moe_exp.correlation_pipeline import generate
     from moe_exp.correlation_pipeline.benchmarks import BenchmarkSpec
     from moe_exp.correlation_pipeline.client import Completion
-    from moe_exp.jsonl import iter_jsonl
+    from moe_exp.io import iter_jsonl
 
     spec = BenchmarkSpec(
         name="synthetic", source="test", split="test", default_samples=1,
