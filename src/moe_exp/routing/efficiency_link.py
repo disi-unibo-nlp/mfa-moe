@@ -31,7 +31,7 @@ import pandas as pd
 from moe_exp import io
 from moe_exp.io import clean
 from moe_exp.io import REPO, file_sha, load, publish, require, verified
-from moe_exp.study import driver
+from moe_exp.steering import pulse as driver
 
 FROZEN_SCRIPT = REPO/'src/moe_exp/routing/efficiency_link_prereg.py'
 MODELS = ('gpt', 'nemotron', 'qwen35', 'qwen36', 'gemma', 'glm', 'qwen330b', 'lfm25')
@@ -183,7 +183,7 @@ def publish_link(estimator, directory: Path) -> dict:
 
 def driver_test() -> dict:
     """The driver's frozen link test on analysis-final pairs, with the V2 cells (56 instead of 49)."""
-    from moe_exp.study.effects import Bootstrap, efficiency_link
+    from moe_exp.steering.pulse_effects import Bootstrap, efficiency_link
     require(not DRIVER_TEST.exists(), f'{DRIVER_TEST} exists')
     final = driver.DRIVER/'analysis-final'
     pairs = pd.read_parquet(final/'pairs.parquet')

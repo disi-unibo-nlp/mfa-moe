@@ -9,7 +9,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 from moe_exp.io import CLASSES, Units, file_sha, publish, verified
-from moe_exp.study.driver import ROOT, binding
+from moe_exp.steering.pulse import ROOT, binding
 from moe_exp.routing.lexical import LEXICAL, predict
 
 

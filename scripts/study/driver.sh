@@ -3,7 +3,7 @@
 #   sbatch -A iscrc_miosr -p boost_usr_prod --qos=normal -N1 --ntasks=1 --gres=gpu:2 \
 #          --cpus-per-task=16 --mem=120G -t 12:00:00 -J fr-gpt-0 -o LOG \
 #          scripts/study/driver.sh run --model gpt --shard 0/2
-# All arguments are passed to `python -m moe_exp.study.driver`.
+# All arguments are passed to `python -m moe_exp.steering.pulse`.
 set -euo pipefail
 umask 077
 : "${SLURM_JOB_ID:?Submit through Slurm; direct execution on login nodes is forbidden}"
@@ -34,4 +34,4 @@ if [[ -n "${SLURM_JOB_GPUS:-}" ]]; then
     nvidia-smi --query-gpu=index,name,memory.total --format=csv,noheader
 fi
 echo "job ${SLURM_JOB_ID} on $(hostname) args: $*"
-"$ENV/bin/python" -B -m "${STUDY_MODULE:-moe_exp.study.driver}" "$@"
+"$ENV/bin/python" -B -m "${STUDY_MODULE:-moe_exp.steering.pulse}" "$@"
