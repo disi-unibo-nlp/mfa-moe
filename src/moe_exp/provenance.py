@@ -17,7 +17,7 @@ def file_sha256(path):
 
 
 def code_provenance():
-    root = Path(__file__).resolve().parents[3]
+    root = Path(__file__).resolve().parents[2]
     try:
         revision = subprocess.check_output(
             ["git", "-C", str(root), "rev-parse", "HEAD"], text=True, timeout=5,

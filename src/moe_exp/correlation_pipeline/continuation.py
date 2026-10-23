@@ -98,7 +98,7 @@ def run_branches(manifest, output, generate):
     import fcntl
     from moe_exp.correlation_pipeline.dynamics.contracts import load, save, seal, validate
     from moe_exp.correlation_pipeline.dynamics.common import digest
-    from moe_exp.correlation_pipeline.provenance import code_provenance
+    from moe_exp.provenance import code_provenance
     validate(manifest, "branches")
     code = code_provenance()
     if code["source_sha256"] != manifest["code"]["source_sha256"]:

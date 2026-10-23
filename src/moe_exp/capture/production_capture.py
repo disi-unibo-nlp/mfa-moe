@@ -33,7 +33,7 @@ class HFBackend:
     def __init__(self,spec,out):
         from moe_exp.models.loader import load_model_and_tokenizer
         from moe_exp.models.router_adapters import available_router_layers
-        from moe_exp.correlation_pipeline.provenance import forward_provenance
+        from moe_exp.provenance import forward_provenance
         self.spec=spec
         self.model,self.tokenizer=load_model_and_tokenizer(spec['checkpoint'],quantization='none',revision=spec['revision'],local_files_only=True,offload_folder=str(out/'offload'))
         if 'disk' in getattr(self.model,'hf_device_map',{}).values():raise ValueError('Unbudgeted disk weight offload')

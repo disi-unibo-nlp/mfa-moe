@@ -15,7 +15,7 @@ from moe_exp.correlation_pipeline.spans import (
     sentence_spans_v1,
     trace_digest,
 )
-from moe_exp.jsonl import iter_jsonl
+from moe_exp.io import iter_jsonl
 from moe_exp.schemas import TraceRecord
 
 DATASETS = ("math500", "aime24", "aime25", "olympiad", "amc23", "minerva")

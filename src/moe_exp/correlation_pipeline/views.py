@@ -17,7 +17,7 @@ from moe_exp.correlation_pipeline.spans import (
     trace_digest,
     validate_annotation,
 )
-from moe_exp.jsonl import iter_jsonl
+from moe_exp.io import iter_jsonl
 from moe_exp.schemas import TraceRecord
 
 

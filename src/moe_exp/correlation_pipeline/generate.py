@@ -32,7 +32,7 @@ from moe_exp.correlation_pipeline.scoring import score_completion_detailed
 from moe_exp.correlation_pipeline.model_profiles import CARD_PROFILES, model_profile
 from moe_exp.schemas import TraceRecord
 from moe_exp.models.token_replay import TOKEN_REPLAY_VERSION, make_token_replay
-from moe_exp.utils import write_jsonl
+from moe_exp.io import write_jsonl
 
 logger = logging.getLogger(__name__)
 _SAFE_FILENAME = re.compile(r"[^A-Za-z0-9_.-]+")

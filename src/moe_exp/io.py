@@ -2,10 +2,12 @@
 
 The primitives (digest, publish, verified, private, locked, ...) are vendored verbatim from the former
 `final_routing.common`; `Units` is the former `study.common.Units`. `read_source` is vendored from
-`research_campaign_v3_r6.inputs`.
+`research_campaign_v3_r6.inputs`. `iter_jsonl` and `write_jsonl` are the former `jsonl.iter_jsonl` and
+`utils.write_jsonl`.
 """
 from __future__ import annotations
 
+from collections.abc import Iterator
 from contextlib import contextmanager
 import fcntl
 import hashlib
@@ -15,6 +17,7 @@ import os
 from pathlib import Path
 import tempfile
 import time
+from typing import Any
 
 REPO = Path(__file__).resolve().parents[2]
 WORK = Path('/leonardo_work/IscrC_MIOSR/lmolfett')
@@ -173,3 +176,32 @@ def read_source(location):
         raw = f.read(location["line_bytes"])
     require(hashlib.sha256(raw).hexdigest() == location["line_sha256"], "saved trace line changed")
     return json.loads(raw)
+
+
+def iter_jsonl(path: Path) -> Iterator[dict[str, Any]]:
+    """Yield JSONL objects without treating Unicode line separators as delimiters."""
+    with path.open("r", encoding="utf-8") as input_file:
+        for line_number, line in enumerate(input_file, start=1):
+            if not line.strip():
+                continue
+            try:
+                yield json.loads(line)
+            except json.JSONDecodeError as error:
+                error.add_note(f"Invalid JSONL record {line_number} in {path}")
+                raise
+
+
+def write_jsonl(records: list, path: Path) -> None:
+    """Write JSONL atomically so an interrupted run is never a completion marker."""
+    import jsonlines
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp_path = path.with_name(f".{path.name}.tmp")
+    try:
+        with jsonlines.open(tmp_path, mode="w") as writer:
+            for rec in records:
+                writer.write(rec.model_dump() if hasattr(rec, "model_dump") else rec)
+        tmp_path.replace(path)
+    except Exception:
+        tmp_path.unlink(missing_ok=True)
+        raise
