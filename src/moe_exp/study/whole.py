@@ -327,17 +327,23 @@ def prepare_model(b: dict, model: str, scope: bool) -> dict:
     dose and selects it (no canary). A top-up or resume release (TOPUP.json / RESUME.json) publishes
     the rows it takes over from its parent, with the parent's dose and no canary.
     """
-    from moe_exp.outcome_steering.capture import capture_manifest
-    from moe_exp.outcome_steering.manifest import outcome_manifest, sweep_manifest
-    builders = {'TOPUP.json': topup_manifest, 'RESUME.json': resume_manifest, 'OUTCOME.json': outcome_manifest,
-                'COMPLEMENT.json': complement_manifest, 'CAPTURE.json': capture_manifest,
-                'OUTCOME_SWEEP.json': sweep_manifest}
+    import importlib
+    # Spec file in the release root -> manifest builder ('module:function' builders are imported on use).
+    builders = {'TOPUP.json': topup_manifest, 'RESUME.json': resume_manifest,
+                'OUTCOME.json': 'moe_exp.outcome_steering.manifest:outcome_manifest',
+                'COMPLEMENT.json': complement_manifest,
+                'CAPTURE_NATIVE.json': 'moe_exp.outcome_steering.capture:capture_manifest',
+                'OUTCOME_SWEEP.json': 'moe_exp.outcome_steering.manifest:sweep_manifest'}
     present = [name for name in builders if (ROOT/name).exists()]
     require(len(present) <= 1,
             'a release is either a top-up, a resume, a capture or an outcome-steering release (or a complement)')
     if present:
         spec = verified(ROOT/present[0])['models'][model]
-        return {model+':'+SWEEP[model]: builders[present[0]](model, spec)}
+        builder = builders[present[0]]
+        if isinstance(builder, str):
+            module, name = builder.split(':')
+            builder = getattr(importlib.import_module(module), name)
+        return {model+':'+SWEEP[model]: builder(model, spec)}
     from moe_exp.final_routing.importer import derive_whole
     from .runtime import prompt_prefix
     folder = ROOT/model

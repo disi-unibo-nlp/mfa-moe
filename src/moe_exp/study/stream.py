@@ -471,6 +471,7 @@ class StreamCapture:
             # One action (pre-registered design) or one action per layer (post-hoc strong-dose arm).
             actions = list(r.get('actions') or ([r['action']] if r.get('action') else []))
             if r.get('whole'):
+                require(not (r.get('audit_capture') and r.get('capture_mode')), 'one capture kind per request')
                 for action in actions:
                     positive, negative = set(action['activate']), set(action['deactivate'])
                     require(not positive & negative and len(positive) < self.contract['native_k'] and

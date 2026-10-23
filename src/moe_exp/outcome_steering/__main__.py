@@ -20,6 +20,8 @@ def main() -> None:
     release.add_argument('--models', default=MODELS)
     release.add_argument('--shards', default='3', help='shards per model: N, or model:N,...')
     release.add_argument('--local-tests', type=int, required=True)
+    release.add_argument('--kind', choices=('outcome', 'capture'), default='outcome',
+                         help='outcome: r1 nudge release; capture: native attempts with routing saved')
     commands.add_parser('analyze', help='write EFFECTS_OUTCOME.json (allocated CPU job, from the release)')
     decide = commands.add_parser('decide', help='apply the declared extension rule; launch the other models if met')
     decide.add_argument('--effects', required=True)
@@ -43,10 +45,11 @@ def main() -> None:
                        | {'pairs': len(s['targets'])} for name, s in value['sets'].items()}
             print(json.dumps({'model': model, 'protected': value['protected'], 'sets': summary}, indent=1))
     elif args.command == 'release':
-        from .release import release as seal
+        from .release import capture_release, release as outcome_release
         models = args.models.split(',')
         shards = ({m: int(args.shards) for m in models} if args.shards.isdigit() else
                   {m: int(n) for m, n in (item.split(':') for item in args.shards.split(','))})
+        seal = capture_release if args.kind == 'capture' else outcome_release
         print(json.dumps(seal(args.name, models, shards, args.local_tests)))
     elif args.command == 'decide':
         from .decide import decide as rule

@@ -91,7 +91,8 @@ def record(b, model, row, raw, tokenizer, close, *, frozen_input=None):
             'generated_tokens': len(raw['token_ids']), 'prefix_tokens': len(prefix),
             'reasoning_tokens': sum(p >= len(prefix) for p in reasoning_positions),
             'finish_reason': raw['finish_reason'], 'answer_present': bool(final and final.strip()), 'reasoning_fallback': fallback,
-            'strict_correct': strict, 'accuracy_bounds': [lo, hi]}
+            'strict_correct': strict, 'accuracy_bounds': [lo, hi],
+            'model_answer': detail.get('model_answer') if final is not None else None}
 
 
 def extract(model, shard, design='main', *, cohort=None):

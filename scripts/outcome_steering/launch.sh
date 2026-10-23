@@ -1,34 +1,38 @@
 #!/bin/bash
-# Seal an outcome-steering release from the committed code, submit its whole-reasoning job graph
-# (allocated validation -> shards -> extraction, plus the monitor) and queue its analysis.
-#   scripts/outcome_steering/launch.sh NAME SHARDS LOCAL_TESTS [MODELS]
-#   SHARDS is N per model or model:N,...; MODELS defaults to gpt,qwen330b,nemotron.
-#   e.g. scripts/outcome_steering/launch.sh outcome-steering-20261022-r1 3 125
-# Needs the usage job's output (scripts/outcome_steering/usage.sh) and a clean src/tests/scripts tree.
+# Seal an outcome-steering or capture release from the committed code and submit its whole-reasoning
+# job graph (allocated validation -> shards -> extraction, plus the monitor). An outcome release also
+# queues its analysis.
+#   scripts/outcome_steering/launch.sh NAME SHARDS LOCAL_TESTS [MODELS] [KIND]
+#   SHARDS is N per model or model:N,...; MODELS defaults to gpt,qwen330b,nemotron; KIND is outcome
+#   (default) or capture.
+#   e.g. scripts/outcome_steering/launch.sh outcome-capture-20261023-r1 gpt:3,glm:22 140 gpt,glm capture
+# Receipts go to the working repository's report/ (REPORTS), also when this runs from a worktree.
 set -euo pipefail
 cd "$(dirname "$0")/../.."
-REPO=$PWD
 name="${1:?release name}"; shards="${2:?shards per model}"; tests="${3:?locally passed tests}"
-models="${4:-gpt,qwen330b,nemotron}"
+models="${4:-gpt,qwen330b,nemotron}"; kind="${5:-outcome}"
+REPORTS=${REPORTS:-/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report}
 PY=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/envs/vllm-cu129/bin/python
 TMP=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/r/outcome-steering/tmp
 mkdir -p "$TMP"
 
-# 1. Seal: receipts, OUTCOME.json, the code snapshot under mfa-moe/releases/<commit> and launch.env.
-TMPDIR="$TMP" PYTHONPATH=src:scripts/experimental_resume PYTHONDONTWRITEBYTECODE=1 \
-  "$PY" -B -m moe_exp.outcome_steering release --name "$name" --models "$models" --shards "$shards" --local-tests "$tests"
-set -a; source "report/$name/launch.env"; set +a
+# 1. Seal: receipts, the spec file, the code snapshot under mfa-moe/releases/<commit> and launch.env.
+WHOLE_ROOT=$REPORTS/$name TMPDIR="$TMP" PYTHONPATH=src:scripts/experimental_resume PYTHONDONTWRITEBYTECODE=1 \
+  "$PY" -B -m moe_exp.outcome_steering release --name "$name" --models "$models" --shards "$shards" \
+  --local-tests "$tests" --kind "$kind"
+set -a; source "$REPORTS/$name/launch.env"; set +a
 REL=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/releases/$COMMIT
 export PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=$REL/src:$REL/scripts/experimental_resume TMPDIR="$TMP" \
-       STUDY_DATA_ROOT=$REPO/report/final-routing-20261015-r1 WHOLE_ROOT=$REPO/report/$name \
+       STUDY_DATA_ROOT=$REPORTS/final-routing-20261015-r1 WHOLE_ROOT=$REPORTS/$name \
        WHOLE_MODELS=$MODELS WHOLE_SWEEP=$SWEEP WHOLE_SHARDS=$SHARDS WHOLE_CUTOFF=$CUTOFF \
-       WHOLE_GPU_CEILING=$GPU_CEILING WHOLE_CPU_CEILING=$CPU_CEILING OMP_NUM_THREADS=1
+       WHOLE_GPU_CEILING=$GPU_CEILING WHOLE_CPU_CEILING=$CPU_CEILING WHOLE_JOB_PREFIX=$JOB_PREFIX OMP_NUM_THREADS=1
 
 # 2. The ordinary whole-reasoning graph runs the release (no canary: it is a sweep release).
 (cd "$REL" && "$PY" -B -m moe_exp.study.whole launch)
+[ "$kind" = outcome ] || exit 0
 
-# 3. Analysis: after every extraction of this release and the final whole-reasoning combine, whose
-#    sealed table holds the reused native runs.
+# 3. Analysis (r1 only): after every extraction of this release and the final whole-reasoning combine,
+#    whose sealed table holds the reused native runs.
 FINAL_COMBINE=61741779
 extract=$("$PY" -c "import json; print(':'.join(j['id'] for j in json.load(open('$WHOLE_ROOT/JOBS.json'))['extraction'].values()))")
 test -n "$extract" || { echo 'launch queued no extraction jobs' >&2; exit 1; }

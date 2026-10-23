@@ -79,6 +79,7 @@ def _extract_one(row: dict, *, b: dict, model: str, tokenizer, close, store, inp
                    **{k: rec[k] for k in ('generated_tokens', 'prefix_tokens', 'reasoning_tokens',
                       'reasoning_end', 'finish_reason', 'answer_present', 'reasoning_fallback')},
                    'total_allowance': raw['total_allowance'], 'strict_correct': strict,
+                   'model_answer': rec.get('model_answer'),
                    'repetition_16gram': repetition_rate(raw['token_ids']), 'outcome_status': 'observed',
                    'dose_json': json.dumps(verified(folder/'CAPTURE.json')['stats']['dose'])}
         sentences = [{**{k: row[k] for k in ('uid', 'model', 'family', 'fold', 'class', 'arm')},
