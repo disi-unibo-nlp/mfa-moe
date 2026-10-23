@@ -24,7 +24,7 @@ from pathlib import Path
 from typing import Any
 
 from generation.client import complete_tokens
-from generation.model_profiles import CARD_PROFILES
+from generation.model_profiles import CARD_PROFILES, load_tokenizer
 
 RESULTS = Path("/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/results/correlation_pipeline")
 HISTORICAL = {
@@ -40,107 +40,6 @@ DATASETS = ("math500", "aime24", "aime25", "olympiad", "amc23", "minerva")
 CUMULATIVE_BUDGET = 131_072
 SEED_OFFSET = 7_000_003  # continuation seed = original sample seed + offset (distinct stream)
 CONTINUATION_CONTRACT_VERSION = 1
-
-
-def original_generation_config(record: dict) -> dict:
-    """Resolve both historical flat and card-v3 nested sampler/budget contracts.
-
-    Card-v3 max_tokens=None means context-bounded generation; its recorded
-    effective_max_tokens is the actual ORIGINAL budget, not 131072 extra tokens.
-    """
-    metadata = record["metadata"]
-    saved = metadata["generation_config"]
-    budget = metadata.get("effective_max_tokens") or saved.get("max_tokens")
-    if type(budget) is not int or budget <= 0:
-        raise ValueError("Missing recorded original effective generation budget")
-    fields = ("temperature", "top_p", "top_k", "min_p", "presence_penalty",
-              "frequency_penalty", "repetition_penalty", "stop", "stop_token_ids", "ignore_eos")
-    sampler = saved.get("sampler", saved)
-    result = {k: sampler[k] for k in fields if sampler.get(k) is not None}
-    if "temperature" not in result or "top_p" not in result:
-        raise ValueError("Missing recorded original sampling settings")
-    result.setdefault("top_k", 0)
-    result.update(max_tokens=budget, seed=saved.get("seed"))
-    return result
-
-
-def exact_prefix(record: dict, completion_tokens: int) -> dict:
-    """Branch from any saved exact prefix, charged to the ORIGINAL request budget.
-
-    Historical length-capped continuation functions below retain their separate
-    131072-token extension contract. This function does not consult final outcome.
-    """
-    from capture.dynamics.common import digest
-    replay = record["metadata"].get("token_replay") or {}
-    prompt = replay.get("prompt_token_ids")
-    completion = replay.get("completion_token_ids")
-    if not prompt or completion is None or type(completion_tokens) is not int or not 0 <= completion_tokens <= len(completion):
-        raise ValueError("Exact saved prompt and requested completion prefix required")
-    config = original_generation_config(record)
-    if completion_tokens >= config["max_tokens"]:
-        raise ValueError("No original generation budget remains")
-    prefix = completion[:completion_tokens]
-    return dict(prompt_token_ids=list(prompt), prefix_token_ids=prefix,
-                prefix_tokens=completion_tokens, prefix_sha256=digest([prompt, prefix]),
-                generation_config=dict(config), budget_population="original",
-                original_generation_config=record["metadata"]["generation_config"],
-                max_new_tokens=config["max_tokens"] - completion_tokens)
-
-
-def run_branches(manifest, output, generate):
-    """Resumable branch execution with an injected qualified native backend.
-
-    The backend receives the frozen request and must return exact suffix IDs and
-    intervention telemetry. Immutable files and per-branch locks prevent duplicate
-    results or mixing of manifests. A crash before persistence may repeat compute,
-    but cannot count a branch twice.
-    """
-    import fcntl
-    from capture.dynamics.contracts import load, save, seal, validate
-    from capture.dynamics.common import digest
-    from provenance import code_provenance
-    validate(manifest, "branches")
-    code = code_provenance()
-    if code["source_sha256"] != manifest["code"]["source_sha256"]:
-        raise ValueError("Branch code differs from the frozen manifest")
-    output = Path(output)
-    output.mkdir(parents=True, exist_ok=True)
-    save(output / "branches.json", manifest)
-    results = []
-    for branch in manifest["payload"]["branches"]:
-        branch_id = branch["branch_id"]
-        if branch_id != digest({k: v for k, v in branch.items() if k != "branch_id"}):
-            raise ValueError("Branch binding mismatch")
-        if branch["max_new_tokens"] != branch["original_max_tokens"] - len(branch["prefix_token_ids"]):
-            raise ValueError("Branch changed original cumulative budget")
-        path = output / (branch_id + ".json")
-        with (output / (branch_id + ".lock")).open("a") as lock:
-            fcntl.flock(lock, fcntl.LOCK_EX)
-            if path.exists():
-                artifact = load(path, "analysis")
-                if artifact["inputs"] != {"branches": manifest["binding"], "branch": branch_id}:
-                    raise ValueError("Incompatible resumed branch result")
-            else:
-                start = time.monotonic()
-                value = generate(branch)
-                ids = value.get("suffix_token_ids")
-                if not isinstance(ids, list) or any(type(t) is not int or t < 0 for t in ids):
-                    raise ValueError("Backend did not return exact generated token IDs")
-                if len(ids) > branch["max_new_tokens"] or not value.get("prompt_echo_verified"):
-                    raise ValueError("Backend changed the exact prefix or generation budget")
-                if not value.get("telemetry_verified"):
-                    raise ValueError("Missing native request/token telemetry")
-                result = {**value, "branch_id": branch_id, "manifest_binding": manifest["binding"],
-                    "status": "complete", "seconds": time.monotonic() - start,
-                    "total_tokens": len(branch["prefix_token_ids"]) + len(ids),
-                    "is_correct": None, "capped": value.get("finish_reason") == "length"}
-                artifact = seal("analysis", result,
-                    inputs={"branches": manifest["binding"], "branch": branch_id},
-                    config=dict(decoding=branch["decoding"], seed=branch["seed"], policy=branch["policy"]),
-                    population=manifest["population"], code=code)
-                save(path, artifact)
-            results.append(artifact["payload"])
-    return results
 
 
 def _sha(payload: Any) -> str:
@@ -246,9 +145,9 @@ def run(args) -> None:
             raise RuntimeError(f"Parent changed since planning: {key_of(parent)}")
         started = time.time()
         result = complete_tokens(
-            base_url=args.base_url, api_key=args.api_key, model=served,
+            base_url=args.base_url, model=served,
             prompt_token_ids=prompt_ids + completion_ids, max_tokens=parent["extra_max_tokens"],
-            temperature=parent["temperature"], top_p=parent["top_p"], top_k=parent["top_k"],
+            sampler=dict(temperature=parent["temperature"], top_p=parent["top_p"], top_k=parent["top_k"]),
             seed=(parent["seed"] or 0) + SEED_OFFSET, timeout=args.timeout)
         row = dict(key=key_of(parent), status="complete", model=args.model,
                    dataset=parent["dataset"], problem_id=parent["problem_id"],
@@ -299,11 +198,9 @@ def final_answer(text: str, parser: str) -> str | None:
 
 def score(args) -> None:
     """CPU: decode combined sequences, extract the final answer and score in the main thread."""
-    from transformers import AutoTokenizer
     from generation.scoring import score_completion_detailed
     card = CARD_PROFILES[args.model]
-    tokenizer = (AutoTokenizer.from_pretrained(card["weights"]) if card["weights"] else
-                 AutoTokenizer.from_pretrained(card["tokenizer"] or card["model"], revision=card["revision"]))
+    tokenizer = load_tokenizer(args.model)
     out = Path(args.out)
     parents = {key_of(p): (p, pi, ci) for p, pi, ci in iter_parents(args.model)}
     rows = []
@@ -340,7 +237,6 @@ def main(argv=None) -> None:
     ap.add_argument("--model", required=True, choices=sorted(HISTORICAL))
     ap.add_argument("--out", required=True)
     ap.add_argument("--base-url")
-    ap.add_argument("--api-key", default="local-vllm-key")
     ap.add_argument("--workers", type=int, default=16)
     ap.add_argument("--timeout", type=int, default=21600)
     ap.add_argument("--limit", type=int)
