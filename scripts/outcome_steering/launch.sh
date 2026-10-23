@@ -15,11 +15,11 @@ TMP=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/r/outcome-steering/tmp
 mkdir -p "$TMP"
 
 # 1. Seal: receipts, OUTCOME.json, the code snapshot under mfa-moe/releases/<commit> and launch.env.
-TMPDIR="$TMP" PYTHONPATH=src:scripts/experimental_resume PYTHONDONTWRITEBYTECODE=1 \
+TMPDIR="$TMP" PYTHONPATH=src PYTHONDONTWRITEBYTECODE=1 \
   "$PY" -B -m moe_exp.outcome_steering release --name "$name" --models "$models" --shards "$shards" --local-tests "$tests"
 set -a; source "report/$name/launch.env"; set +a
 REL=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/releases/$COMMIT
-export PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=$REL/src:$REL/scripts/experimental_resume TMPDIR="$TMP" \
+export PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=$REL/src TMPDIR="$TMP" \
        STUDY_DATA_ROOT=$REPO/report/final-routing-20261015-r1 WHOLE_ROOT=$REPO/report/$name \
        WHOLE_MODELS=$MODELS WHOLE_SWEEP=$SWEEP WHOLE_SHARDS=$SHARDS WHOLE_CUTOFF=$CUTOFF \
        WHOLE_GPU_CEILING=$GPU_CEILING WHOLE_CPU_CEILING=$CPU_CEILING OMP_NUM_THREADS=1

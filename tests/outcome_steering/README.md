@@ -14,5 +14,5 @@ The nudge operator and its counters are tested with the other routing operators 
 
 ```bash
 E=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/envs/correlation-client-3.11/bin/python
-TMPDIR=<WORK dir> PYTHONPATH=src:scripts/experimental_resume $E -m unittest discover -s tests/outcome_steering
+TMPDIR=<WORK dir> PYTHONPATH=src $E -m unittest discover -s tests/outcome_steering
 ```

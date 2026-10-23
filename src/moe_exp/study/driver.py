@@ -13,7 +13,7 @@ Commands (python -m moe_exp.study.driver ...):
   run --model M --shard I/N     GPU: assigned continuations of one shard
   native --shard I/N            GPU: LFM native population (unhooked engine)
   annotate --shard I/N          GPU: LFM discovery judge labels (unhooked engine)
-  lfm-materialize | lfm-derive  CPU: reuse study.lfm / final_routing.importer
+  lfm-materialize | lfm-derive  CPU: reuse study.lfm / study.nominations
   lfm-readout | lfm-dynamics    CPU: LFM native readout (study.readouts) and native-dynamics panel
   lfm-replay --shard I/N        GPU: reuse study.lfm.replay (Backend.capture_trace)
   status                        login: dispositions per model

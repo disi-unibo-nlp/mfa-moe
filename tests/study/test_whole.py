@@ -193,7 +193,7 @@ class PromptScopeTests(unittest.TestCase):
         row = {'source': {'attempt_id': 'source', 'prefix_tokens': 0}, 'original_prompt': True}
         with patch('moe_exp.study.runtime.load', return_value={'records': [
                     {'attempt_id': 'source', 'source_location': 'saved'}]}), \
-             patch('moe_exp.research_campaign_v3_r6.inputs.read_source', return_value=trace):
+             patch('moe_exp.io.read_source', return_value=trace):
             self.assertEqual(prompt_prefix(binding, 'gpt', row, None)[:2], ([1, 2, 3], []))
             with self.assertRaisesRegex(ValueError, 'original-prompt'):
                 prompt_prefix(binding, 'gpt', {**row, 'original_prompt': False}, None)

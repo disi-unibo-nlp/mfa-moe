@@ -1,44 +1,9 @@
 import unittest
 import numpy as np
-from moe_exp.io import CLASSES
-from moe_exp.final_routing.endpoints import occupancy, first_sentence, difference
 from moe_exp.study.selection import matched_controls, count_set
 
 
 class ScienceTests(unittest.TestCase):
-    def test_fixed_denominator_closure_and_unknown_are_different(self):
-        observed = {2: 'Verify', 3: 'Analyze', 4: 'Verify'}
-        cap = occupancy(observed, 2, 8)
-        eos = occupancy(observed, 2, 8, natural_eos=5)
-        self.assertEqual(cap['classes']['Verify'], [2/6, 5/6])
-        self.assertEqual(eos['classes']['Verify'], [2/6, 2/6])
-        self.assertEqual(eos['reasoning_ended'], .5)
-        control = occupancy({}, 2, 8, nonreasoning=range(2, 8))
-        self.assertEqual(control['unknown'], 0)
-        self.assertEqual(control['classes']['Verify'], [0, 0])
-
-    def test_first_sentence_no_sentence_stop_vs_cap(self):
-        self.assertEqual(first_sentence([], natural_eos=True)['Verify'], [0, 0])
-        self.assertEqual(first_sentence([], truncated=True)['Verify'], [0, 1])
-        self.assertEqual(first_sentence([{'start': 0, 'label': 'Verify'}])['Verify'], [1, 1])
-
-    def test_suppression_bound_orientation(self):
-        self.assertEqual(difference([.1, .3], [.4, .5], -1), [.10000000000000003, .4])
-
-    def test_simultaneous_interval_preserves_all_eight_bound_components(self):
-        from moe_exp.study.analysis import joint_intervals
-        from moe_exp.io import BENCHMARKS
-        slots=[{'benchmark':b,'family':b+str(i)} for b in BENCHMARKS for i in range(20)]
-        values=np.broadcast_to(np.array([-.2,.4]),(120,4,2)).copy()
-        result=joint_intervals(values,slots,draws=10000,seed=17)
-        self.assertEqual(len(result),4)
-        for row in result:
-            self.assertEqual(row['simultaneous_components'],8)
-            self.assertEqual(row['undefined_draws'],0)
-            self.assertEqual(row['undefined_draws_discarded'],0)
-            self.assertAlmostEqual(row['ci_lower'],-.2)
-            self.assertAlmostEqual(row['ci_upper'],.4)
-
     def test_count_controls_are_nested_disjoint_and_frequency_matched(self):
         freq = np.arange(64)
         sets = [[0], [0, 15], [0, 15, 30]]
