@@ -35,7 +35,7 @@ class HFBackend:
         from models.router_adapters import available_router_layers
         from provenance import forward_provenance
         self.spec=spec
-        self.model,self.tokenizer=load_model_and_tokenizer(spec['checkpoint'],quantization='none',revision=spec['revision'],local_files_only=True,offload_folder=str(out/'offload'))
+        self.model,self.tokenizer=load_model_and_tokenizer(spec['checkpoint'],revision=spec['revision'],local_files_only=True,offload_folder=str(out/'offload'))
         if 'disk' in getattr(self.model,'hf_device_map',{}).values():raise ValueError('Unbudgeted disk weight offload')
         if available_router_layers(self.model)!=spec['layers']:raise ValueError('Changed native layer topology')
         q=getattr(self.model,'hf_quantizer',None)
