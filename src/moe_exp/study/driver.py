@@ -775,7 +775,29 @@ def lfm_native(shard, deadline):
 
 
 def lfm_annotate(shard, deadline):
-    """Discovery judge labels with the original renderer, prompt tokens, decoding and parser."""
+    """Discovery judge labels of LFM2.5 (the 100,000 sampled sentences)."""
+    b = binding()
+    rows = verified(ROOT/'lfm25/ANNOTATION_TASKS.json')['records']
+    return annotate_rows(rows, shard, deadline, units_root=Path(b['config']['bulk_root'])/'reader/annotations',
+                         progress_root=bulk(b)/'reader-progress', jobs_root=bulk(b)/'lfm25/jobs',
+                         stage='lfm-annotate')
+
+
+def annotate_rows(rows, shard, deadline, *, units_root, progress_root, jobs_root, stage):
+    """Judge one shard of `rows` with the original renderer, prompt tokens, decoding and parser.
+
+    Args:
+        rows: Judge tasks, each {'uid', 'inputs', ...}; the shard keeps every row with index % count == shard index.
+        shard: (index, count).
+        deadline: Unix time after which no new request is admitted.
+        units_root: Durable per-uid label store (RESULT.json holds the label); an existing result is never redrawn.
+        progress_root: Mutable partial-generation store, so an interrupted job resumes mid-generation.
+        jobs_root: Directory for the job receipt.
+        stage: Name written to the log and to the receipt.
+
+    Returns:
+        The job receipt, or {'status': 'complete'} when every row of the shard already has a result.
+    """
     from vllm import SamplingParams
     from vllm.sampling_params import RequestOutputKind
     from moe_exp.final_routing.renderer import Renderer
@@ -786,12 +808,11 @@ def lfm_annotate(shard, deadline):
     parent = load(Path(b['source_campaign'])/'CAMPAIGN.json')
     a = parent['annotator']
     require(a['config']['max_tokens'] == 16384, 'fixed reader allowance changed')
-    rows = verified(ROOT/'lfm25/ANNOTATION_TASKS.json')['records']
     rows = [r for i, r in enumerate(rows) if i % shard[1] == shard[0]]
-    units = Units(Path(b['config']['bulk_root'])/'reader/annotations')
-    store = Store(bulk(b)/'reader-progress')
+    units = Units(units_root)
+    store = Store(progress_root)
     pending = [r for r in rows if units.state(r['uid']) is None]
-    log({'event': 'start', 'stage': 'lfm-annotate', 'rows': len(rows), 'pending': len(pending)})
+    log({'event': 'start', 'stage': stage, 'rows': len(rows), 'pending': len(pending)})
     if not pending:
         return {'status': 'complete'}
     llm, kwargs, load_seconds = plain_llm(reader_kwargs(a))
@@ -833,9 +854,9 @@ def lfm_annotate(shard, deadline):
             llm.llm_engine.engine_core.shutdown()
         finally:
             renderer.close()
-    receipt = {'stage': 'lfm-annotate', 'shard': list(shard), 'job': os.environ.get('SLURM_JOB_ID'),
+    receipt = {'stage': stage, 'shard': list(shard), 'job': os.environ.get('SLURM_JOB_ID'),
                'load_seconds': load_seconds, 'metrics': metrics, 'code': code_hashes()}
-    publish(bulk(b)/'lfm25/jobs'/('annotate-'+os.environ.get('SLURM_JOB_ID', 'local')+'.json'), receipt)
+    publish(jobs_root/('annotate-'+os.environ.get('SLURM_JOB_ID', 'local')+'.json'), receipt)
     log({'event': 'end', **receipt})
     return receipt
 
