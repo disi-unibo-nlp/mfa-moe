@@ -12,13 +12,9 @@ reads only the sealed EFFECTS_OUTCOME.json; DECISION.json records the cells that
 """
 from __future__ import annotations
 
-import os
 from pathlib import Path
-import subprocess
 
 from store import publish, verified
-
-from steering.outcome import REPORTS
 
 
 def interval(summary: dict) -> list[float]:
@@ -43,17 +39,10 @@ def qualifying(effects: dict) -> list[dict]:
     return cells
 
 
-def decide(effects_path: str, name: str, models: str, shards: str, local_tests: str) -> dict:
-    """Write DECISION.json next to the receipt and, if the rule is met, launch the next release."""
+def decide(effects_path: str) -> dict:
+    """Write DECISION.json next to the receipt; `extend` says whether the next release should be launched."""
     effects = verified(effects_path)
     cells = qualifying(effects)
-    decision = {'rule': __doc__.strip().splitlines()[0], 'effects_sha256': effects['sha256'],
-                'qualifying_cells': cells, 'extend': bool(cells), 'next_release': name if cells else None,
-                'next_models': models.split(',') if cells else []}
-    receipt = publish(Path(effects_path).parent/'DECISION.json', decision)
-    if cells:
-        # A job must not pass its own Slurm identity to the jobs it submits.
-        env = {k: v for k, v in os.environ.items() if not k.startswith('SLURM_')}
-        subprocess.run([str(REPORTS.parent/'scripts/steering/outcome.sh'), name, shards, local_tests,
-                        models], env=env, check=True, cwd=REPORTS.parent)
-    return receipt
+    return publish(Path(effects_path).parent/'DECISION.json', {
+        'rule': __doc__.strip().splitlines()[0], 'effects_sha256': effects['sha256'],
+        'qualifying_cells': cells, 'extend': bool(cells)})
