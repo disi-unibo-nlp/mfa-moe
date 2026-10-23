@@ -5,7 +5,6 @@ from pathlib import Path
 import pytest
 
 from labeling.gepa.data import (
-    SENTENCE_LABELS,
     EpisodeDocument,
     EpisodeUnit,
     annotation_audit,
@@ -26,6 +25,7 @@ from labeling.gepa.prompts import (
     select_few_shot_sentences,
 )
 from labeling.gepa.run import _call_lm, _seed_configuration, create_metric, parse_llm_judge_response
+from store import CLASSES
 
 
 def test_parse_sentence_label_is_case_tolerant_but_strict() -> None:
@@ -233,11 +233,11 @@ def test_few_shot_prompt_covers_all_sentence_labels() -> None:
     examples = select_few_shot_sentences(count=21)
     prompt = build_few_shot_instructions(examples)
 
-    assert {example.label for example in examples} == set(SENTENCE_LABELS)
+    assert {example.label for example in examples} == set(CLASSES)
     assert prompt.startswith(SEED_INSTRUCTIONS)
     assert prompt.count("Correct label:") == 21
     assert all(
-        sum(example.label == label for example in examples) == 3 for label in SENTENCE_LABELS
+        sum(example.label == label for example in examples) == 3 for label in CLASSES
     )
     assert "Previous unit:" in prompt
     assert "Next unit:" in prompt

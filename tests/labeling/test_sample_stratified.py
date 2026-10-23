@@ -103,7 +103,7 @@ def _fixture(tmp_path: Path, *, unscored: bool = False, status: str = "complete"
     return generation
 
 
-def _args(generation: Path, output: Path, *, seed: int = 42, total: int = 64,
+def _args(generation: Path, output: Path, *, seed: int = 42,
           parts: int = 2, part_size: int = 32, dry_run: bool = False,
           datasets: list[str] | None = None) -> dict:
     """The keyword arguments of `sample` for the small fixture."""
@@ -112,7 +112,6 @@ def _args(generation: Path, output: Path, *, seed: int = 42, total: int = 64,
         generation_model="test",
         datasets=list(datasets if datasets is not None else DATASETS),
         output_dir=output,
-        total=total,
         parts=parts,
         part_size=part_size,
         seed=seed,
@@ -154,13 +153,11 @@ def test_proportional_quotas_split_by_supply_and_never_exceed_it() -> None:
 
 
 def test_waterfill_is_max_min_fair() -> None:
-    assert waterfill({"a": 1, "b": 10, "c": 10}, 8, ["a", "b", "c"]) == {"a": 1, "b": 4, "c": 3}
-    assert waterfill({"a": 3, "b": 4}, 0, ["a", "b"]) == {"a": 0, "b": 0}
-    assert waterfill({"a": 3, "b": 4}, 7, ["a", "b"]) == {"a": 3, "b": 4}
+    assert waterfill({"a": 1, "b": 10, "c": 10}, 8) == {"a": 1, "b": 4, "c": 3}
+    assert waterfill({"a": 3, "b": 4}, 0) == {"a": 0, "b": 0}
+    assert waterfill({"a": 3, "b": 4}, 7) == {"a": 3, "b": 4}
     with pytest.raises(ValueError):
-        waterfill({"a": 3}, 4, ["a"])
-    with pytest.raises(ValueError):
-        waterfill({"a": 3}, 1, ["b"])
+        waterfill({"a": 3}, 4)
 
 
 def test_sample_writes_exact_stratified_parts(tmp_path: Path) -> None:
@@ -282,7 +279,7 @@ def test_different_plan_in_existing_output_is_rejected(tmp_path: Path) -> None:
 def test_insufficient_supply_is_rejected(tmp_path: Path) -> None:
     generation = _fixture(tmp_path)
     with pytest.raises(ValueError, match="fewer than the 4096 to select"):
-        sample(**_args(generation, tmp_path / "sampled", total=4096, parts=2, part_size=2048))
+        sample(**_args(generation, tmp_path / "sampled", parts=2, part_size=2048))
 
 
 def test_dry_run_writes_nothing(tmp_path: Path) -> None:
@@ -381,4 +378,4 @@ def test_constant_reasoning_length_is_rejected(tmp_path: Path) -> None:
         rows.append(row)
     _write_dataset(root, "math500", rows, 1)
     with pytest.raises(ValueError, match="same reasoning length"):
-        sample(**_args(generation, tmp_path / "out", datasets=["math500"], total=8, parts=2, part_size=4))
+        sample(**_args(generation, tmp_path / "out", datasets=["math500"], parts=2, part_size=4))

@@ -6,7 +6,7 @@ from __future__ import annotations
 from collections.abc import Sequence
 from dataclasses import dataclass
 
-from labeling.gepa.data import SENTENCE_LABELS
+from store import CLASSES
 
 SEED_INSTRUCTIONS = r"""You are an expert reviewer of mathematical reasoning traces. Classify
 the CURRENT UNIT by its primary local function in the adapted Schoenfeld Episode Theory.
@@ -260,12 +260,12 @@ def select_few_shot_sentences(*, count: int = 21) -> tuple[FewShotSentence, ...]
 
     by_label = {
         label: [example for example in CURATED_CONTRASTIVE_EXAMPLES if example.label == label]
-        for label in SENTENCE_LABELS
+        for label in CLASSES
     }
     selected: list[FewShotSentence] = []
     round_index = 0
     while len(selected) < count:
-        for label in SENTENCE_LABELS:
+        for label in CLASSES:
             if len(selected) >= count:
                 break
             candidates = by_label[label]

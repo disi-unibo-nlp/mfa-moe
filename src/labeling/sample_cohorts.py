@@ -60,24 +60,24 @@ def scan(gen_root: Path) -> tuple[list[dict], list[dict], list[str]]:
             for line_index, raw in enumerate(handle):
                 row = json.loads(raw)
                 trace = TraceRecord(**row)
-                line_hashes.append(hashlib.sha256(raw).hexdigest())
+                line_sha = hashlib.sha256(raw).hexdigest()
+                line_hashes.append(line_sha)
                 try:
                     units = sentence_spans(trace)
                 except ValueError as error:
                     excluded.append(dict(dataset=dataset, problem_id=row["problem_id"],
                                          line_index=line_index, reason=str(error),
                                          state=outcome_state(row)))
-                    offset += len(raw)
-                    continue
-                rows.append(dict(
-                    dataset=dataset, problem_id=row["problem_id"],
-                    source_problem_id=row.get("source_problem_id") or row["problem_id"],
-                    sample_id=row.get("sample_id", 0), trace_path=str(path), line_index=line_index,
-                    byte_offset=offset, line_sha256=hashlib.sha256(raw).hexdigest(),
-                    trace_sha256=trace_digest(trace), units=len(units),
-                    completion_tokens=len((row["metadata"].get("token_replay") or {}).get("completion_token_ids") or []),
-                    termination=(row["metadata"].get("termination") or row["metadata"].get("finish_reason")),
-                    state=outcome_state(row)))
+                else:
+                    rows.append(dict(
+                        dataset=dataset, problem_id=row["problem_id"],
+                        source_problem_id=row.get("source_problem_id") or row["problem_id"],
+                        sample_id=row.get("sample_id", 0), trace_path=str(path), line_index=line_index,
+                        byte_offset=offset, line_sha256=line_sha,
+                        trace_sha256=trace_digest(trace), units=len(units),
+                        completion_tokens=len((row["metadata"].get("token_replay") or {}).get("completion_token_ids") or []),
+                        termination=(row["metadata"].get("termination") or row["metadata"].get("finish_reason")),
+                        state=outcome_state(row)))
                 offset += len(raw)
     total = len(rows) + len(excluded)
     if total and len(excluded) / total > MAX_EXCLUDED_FRACTION:
@@ -130,7 +130,7 @@ def select(rows: list[dict]) -> dict:
                 selection={k: sorted(v) for k, v in selection.items()})
 
 
-def write(model: str, gen_root: Path, out: Path, rows, chosen, excluded, line_hashes) -> None:
+def write(model: str, gen_root: Path, out: Path, chosen, excluded, line_hashes) -> None:
     out.mkdir(parents=True, exist_ok=True)
     slug = gen_root.name
     selection = chosen["selection"]
@@ -162,32 +162,38 @@ def write(model: str, gen_root: Path, out: Path, rows, chosen, excluded, line_ha
         i = load.index(min(load))
         parts[i].append(key)
         load[i] += len(indices)
-    state = {(r["dataset"], r["problem_id"]): r["state"] for r in rows}
-    cohorts_of = defaultdict(set)
+    state, cohorts_of = {}, defaultdict(set)
     for r in chosen["cohort_a"] + chosen["cohort_b"]:
+        state[(r["dataset"], r["problem_id"])] = r["state"]
         cohorts_of[(r["dataset"], r["problem_id"])].add(r["cohort"])
-    part_totals = []
-    for index, keys in enumerate(parts):
-        wanted = set(keys)
-        root = out / "labels" / f"part-{index:02d}" / "generation" / slug
-        for dataset in DATASETS:
-            target = root / dataset / "traces.jsonl"
+    part_of = {key: index for index, keys in enumerate(parts) for key in keys}
+    roots = [out / "labels" / f"part-{index:02d}" / "generation" / slug for index in range(PARTS)]
+    for dataset in DATASETS:
+        targets = [root / dataset / "traces.jsonl" for root in roots]
+        temporaries = [target.with_name(".traces.jsonl.tmp") for target in targets]
+        for target in targets:
             target.parent.mkdir(parents=True, exist_ok=True)
-            temporary = target.with_name(".traces.jsonl.tmp")
-            with temporary.open("w") as sink, (gen_root / dataset / "traces.jsonl").open() as source:
+        sinks = [temporary.open("w") for temporary in temporaries]
+        try:
+            with (gen_root / dataset / "traces.jsonl").open() as source:
                 for line in source:
                     row = json.loads(line)
                     key = (dataset, row["problem_id"])
-                    if key not in wanted:
+                    if key not in part_of:
                         continue
                     row["metadata"]["sentence_selection"] = dict(
                         base_sel, stratum={"state": state[key], "cohorts": sorted(cohorts_of[key])},
                         indices=selection[key])
-                    sink.write(json.dumps(row, ensure_ascii=False) + "\n")
+                    sinks[part_of[key]].write(json.dumps(row, ensure_ascii=False) + "\n")
+        finally:
+            for sink in sinks:
                 sink.flush()
                 os.fsync(sink.fileno())
+                sink.close()
+        for temporary, target in zip(temporaries, targets):
             os.replace(temporary, target)
-        part_totals.append(dict(part=index, trace_root=str(root), total=load[index], traces=len(keys)))
+    part_totals = [dict(part=index, trace_root=str(root), total=load[index], traces=len(parts[index]))
+                   for index, root in enumerate(roots)]
     (out / "parts.json").write_text(json.dumps(dict(manifest_sha256=manifest_sha, parts=part_totals), indent=1))
     print(json.dumps(dict(model=model, A=len(chosen["cohort_a"]), B=len(chosen["cohort_b"]),
                           labeled=sum(load), parts=load)))
@@ -200,7 +206,7 @@ def main(argv=None) -> None:
     ap.add_argument("--out", type=Path, required=True)
     args = ap.parse_args(argv)
     rows, excluded, line_hashes = scan(args.gen_root)
-    write(args.model, args.gen_root, args.out, rows, select(rows), excluded, line_hashes)
+    write(args.model, args.gen_root, args.out, select(rows), excluded, line_hashes)
 
 
 if __name__ == "__main__":

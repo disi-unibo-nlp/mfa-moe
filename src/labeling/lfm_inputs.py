@@ -1,4 +1,4 @@
-"""The LFM2.5 side of the labelling: its native task list, its 100k discovery sample and the judge inputs of that sample.
+"""The LFM2.5 side of the labelling: its native task list, its 100k discovery sample and that sample's judge inputs.
 
 `population` lists the native attempts. `materialize` commits the finished native generations as trace files, runs the
 same stratified sampler as the other seven models (`labeling.sample_stratified.build_plan`) and writes the sampled
@@ -9,7 +9,7 @@ source-parity inputs. They run as `python -m steering.pulse` steps (`lfm-native`
 from collections import defaultdict
 from pathlib import Path
 import hashlib
-from labeling.annotation_batch import judge_inputs as sentence_inputs
+from labeling.batch_predictor import judge_inputs as sentence_inputs, question_of
 from store import BENCHMARKS, Units, canonical, digest, file_sha, load, publish, require, verified
 
 
@@ -69,9 +69,8 @@ def trace_record(binding, row, raw, tokenizer):
 def judge_inputs(value, units, index):
     """Judge inputs exactly as the seven source models' labelling built them: the user message(s) of the generation
     prompt (falling back to the bare prompt), one neighbouring unit on each side and the original edge sentinels."""
-    messages = value.get('generation_messages') or value['metadata'].get('generation_messages') or []
-    question = '\n\n'.join(m['content'] for m in messages if m['role'] == 'user') or value['prompt']
-    return sentence_inputs(question, units, index)
+    messages = value.get('generation_messages') or value['metadata'].get('generation_messages')
+    return sentence_inputs(question_of(messages, value['prompt']), units, index)
 
 
 def repair_annotation_inputs(binding):

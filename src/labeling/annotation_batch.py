@@ -7,7 +7,6 @@ Output in OUT: `annotations.json` (one record per sentence, in file order), `sum
 `checkpoints/batch-NNNNNN.json`. A rerun with the same inputs skips the finished batches.
 
     python -m labeling.annotation_batch --trace-root ROOT --output-dir OUT --base-url http://127.0.0.1:PORT/v1
-        --judge-program results/gepaLLMAsJudge/qwen3.8-27b-medium-final-s42-v3/selected_program_20260827_173300.json
 
 With `--include-traces LIST.json` only the listed traces are labelled, and their stored selection is mapped from the
 frozen version 1 sentence splitter to the current one (the targeted relabel of the traces the splitter fix changed).
@@ -19,12 +18,13 @@ import argparse
 import hashlib
 import json
 import os
-from pathlib import Path
 import tempfile
+from pathlib import Path
 from typing import Any
 
 from labeling.batch_predictor import (
-    JUDGE_MODEL, MAX_TOKENS, REASONING_EFFORT, SAMPLING, classify_batch_outcomes, load_program_and_adapter,
+    CHAT_TEMPLATE_KWARGS, JUDGE_MODEL, JUDGE_PROGRAM, MAX_TOKENS, SAMPLING, check_unknown, classify_batch_outcomes,
+    judge_inputs, load_program_and_adapter, question_of,
 )
 from labeling.spans import (
     digest, map_selection_to_v2, selected_sentence_indices, sentence_spans, sentence_spans_v1, trace_digest,
@@ -32,6 +32,7 @@ from labeling.spans import (
 from schemas import TraceRecord
 from store import CLASSES, iter_jsonl
 
+# The order is part of every sampling plan and labelling key (it is not store.BENCHMARKS' alphabetical order).
 DATASETS = ("math500", "aime24", "aime25", "olympiad", "amc23", "minerva")
 BATCH_SIZE = 64
 UNKNOWN_FIELDS = frozenset(("status", "raw_completion", "failure"))
@@ -49,39 +50,13 @@ def _publish(path: Path, value: Any) -> None:
             os.fsync(handle.fileno())
         os.link(name, path)
     finally:
-        try:
-            os.unlink(name)
-        except FileNotFoundError:
-            pass
+        Path(name).unlink(missing_ok=True)
 
 
 def _unknown_record(row: dict[str, Any], outcome: dict[str, Any]) -> dict[str, Any]:
-    """One persisted `unknown` record, rejecting metadata we could not read back."""
-    raw = outcome.get("raw_completion")
-    if raw is not None and not isinstance(raw, str):
-        raise ValueError("unknown outcome raw_completion must be a string or null")
-    failure = outcome.get("failure")
-    if not isinstance(failure, dict):
-        raise ValueError("unknown outcome is missing failure metadata")
-    missing = [
-        key for key in ("kind", "error_type", "message") if not isinstance(failure.get(key), str)
-    ]
-    if missing:
-        raise ValueError(f"unknown outcome failure is missing {missing}")
-    finish_reason = failure.get("finish_reason")
-    if finish_reason is not None and not isinstance(finish_reason, str):
-        raise ValueError("unknown outcome finish_reason must be a string or null")
-    return dict(
-        row,
-        status="unknown",
-        raw_completion=raw,
-        failure={
-            "kind": failure["kind"],
-            "error_type": failure["error_type"],
-            "message": failure["message"],
-            "finish_reason": finish_reason,
-        },
-    )
+    """One persisted `unknown` record: the row plus the raw completion and failure."""
+    raw, failure = check_unknown(outcome)
+    return dict(row, status="unknown", raw_completion=raw, failure=failure)
 
 
 def validate_record(row: dict[str, Any], record: Any) -> None:
@@ -92,7 +67,7 @@ def validate_record(row: dict[str, Any], record: Any) -> None:
     added = set(record) - set(row)
     if added == {"label"} and record["label"] in CLASSES:
         return
-    if added == set(UNKNOWN_FIELDS) and record.get("status") == "unknown":
+    if added == UNKNOWN_FIELDS and record.get("status") == "unknown":
         _unknown_record(row, record)
         return
     raise ValueError("invalid checkpoint record")
@@ -201,27 +176,7 @@ def checkpoint_config(source_plan: dict, program_bytes: bytes) -> dict:
         "batch_size": BATCH_SIZE,
         "max_tokens": MAX_TOKENS,
         **SAMPLING,
-        "reasoning_effort": REASONING_EFFORT,
-        "enable_thinking": True,
-        "preserve_thinking": False,
-    }
-
-
-def _question(trace: TraceRecord) -> str:
-    return "\n\n".join(
-        str(message["content"])
-        for message in (trace.generation_messages or [])
-        if message.get("role") == "user"
-    ) or trace.prompt
-
-
-def judge_inputs(question: str, units: list[dict[str, Any]], index: int) -> dict[str, str]:
-    """What the judge sees for sentence `index`: the question, one neighbouring sentence each side, edge markers."""
-    return {
-        "problem_statement": question,
-        "previous_sentence": units[index - 1]["text"] if index else "<START OF RESPONSE>",
-        "sentence": units[index]["text"],
-        "next_sentence": units[index + 1]["text"] if index + 1 < len(units) else "<END OF RESPONSE>",
+        **CHAT_TEMPLATE_KWARGS,
     }
 
 
@@ -237,8 +192,6 @@ def enumerate_items(
     one has been seen; a key that is missing from the source is an error rather than a silently smaller part.
     """
     remaining = set(include) if include is not None else None
-    if remaining is not None and not remaining:
-        raise ValueError("include must name at least one trace")
     rows = []
     for dataset in datasets:
         path = trace_root / dataset / "traces.jsonl"
@@ -257,7 +210,7 @@ def enumerate_items(
                 # it onto the current splitter's sub-units.
                 stored = selected_sentence_indices(trace, sentence_spans_v1(trace))
                 indices = map_selection_to_v2(trace, stored)
-            question = _question(trace)
+            question = question_of(trace.generation_messages, trace.prompt)
             sha = trace_digest(trace)
             for index in indices:
                 identity = {
@@ -288,7 +241,7 @@ def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--trace-root", type=Path, required=True)
     parser.add_argument("--output-dir", type=Path, required=True)
-    parser.add_argument("--judge-program", type=Path, required=True)
+    parser.add_argument("--judge-program", type=Path, default=JUDGE_PROGRAM)
     parser.add_argument("--base-url", required=True)
     parser.add_argument("--include-traces", type=Path, help="JSON list of the only traces to label")
     parser.add_argument("--include-source", choices=("gpt", "gemma"),
@@ -299,6 +252,8 @@ def main(argv: list[str] | None = None) -> None:
     rows = enumerate_items(args.trace_root, include=include)
     if not rows:
         raise ValueError(f"no sentences to label under {args.trace_root}")
+    # The part fields below describe one part holding every sentence. They are redundant, but the plan's hash is part
+    # of every checkpoint key, so they stay as they were when runs were launched with --part 0 --parts 1.
     source_plan = {
         "schema_version": 1,
         "trace_root": str(args.trace_root),
@@ -317,7 +272,7 @@ def main(argv: list[str] | None = None) -> None:
     if args.plan_only:
         return
     config = checkpoint_config(source_plan, args.judge_program.read_bytes())
-    _program, predict, adapter = load_program_and_adapter(str(args.judge_program))
+    predict, adapter = load_program_and_adapter(str(args.judge_program))
 
     def classify(batch):
         return classify_batch_outcomes(batch, adapter=adapter, predict=predict, base_url=args.base_url)

@@ -7,5 +7,4 @@
 source scripts/slurm/env.sh || exit 1
 start_server judge
 export PYTHONPATH=$PYTHONPATH:$DSPY/lib/python3.11/site-packages:$MFA/envs/vllm-cu129/lib/python3.11/site-packages
-$DSPY/bin/python -m labeling.annotation_batch --trace-root "$1" --output-dir "$2" --base-url $URL \
-  --judge-program $MFA/repo/results/gepaLLMAsJudge/qwen3.8-27b-medium-final-s42-v3/selected_program_20260827_173300.json
+$DSPY/bin/python -m labeling.annotation_batch --trace-root "$1" --output-dir "$2" --base-url $URL
