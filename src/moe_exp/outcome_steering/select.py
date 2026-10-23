@@ -354,6 +354,24 @@ def class_rates(counts: np.ndarray, tokens: np.ndarray, index: int) -> tuple[np.
     return rates, n > 0
 
 
+def r2_protected(usage: dict, arrays: dict, nominations: dict) -> tuple[np.ndarray, int, set, set]:
+    """Native frequency (selections per reasoning token), native k, committee and execution pairs.
+
+    The committee (top COMMITTEE_SHARE experts per layer by native use) comes from the captures
+    themselves; the execution-specific experts from the r7 class nominations.
+    """
+    layers = usage['layers']
+    usable = np.array([r['usable'] for r in usage['attempts']])
+    rates, _ = class_rates(arrays['counts'][usable], arrays['tokens'][usable], 7)
+    frequency = rates.mean(0)
+    k = int(round(float(frequency[0].sum())))
+    top = math.ceil(COMMITTEE_SHARE*frequency.shape[1])
+    committee = {(layers[i], int(e)) for i in range(len(layers)) for e in np.argsort(-frequency[i], kind='stable')[:top]}
+    require(nominations['layers'] == layers, 'nomination layers differ from the capture layers')
+    _, _, execution = protected_pairs(nominations)
+    return frequency, k, committee, execution
+
+
 def r2_selection(usage: dict, arrays: dict, nominations: dict, holdouts: list[str], model: str) -> dict:
     """Every r2 expert set of one model: 7 class sets and the class-blind set, each for 'all' and per holdout.
 
@@ -365,16 +383,10 @@ def r2_selection(usage: dict, arrays: dict, nominations: dict, holdouts: list[st
         model: Study model (GPT-OSS uses Beyond the Trace's five as its class-blind set).
     """
     layers, records = usage['layers'], usage['attempts']
-    k = int(round(arrays['counts'][:, 7].sum((0, 2))[0]/max(1, arrays['tokens'][:, 7].sum())))
     questions = [r['question'] for r in records]
     strict = [r['strict'] for r in records]
     usable = np.array([r['usable'] for r in records])
-    all_rates, _ = class_rates(arrays['counts'][usable], arrays['tokens'][usable], 7)
-    frequency = all_rates.mean(0)
-    top = math.ceil(COMMITTEE_SHARE*frequency.shape[1])
-    committee = {(layers[i], int(e)) for i in range(len(layers)) for e in np.argsort(-frequency[i], kind='stable')[:top]}
-    _, _, execution = protected_pairs({**nominations, 'records': nominations['records'],
-                                       'layers': nominations['layers'], 'experts': nominations['experts']})
+    frequency, k, committee, execution = r2_protected(usage, arrays, nominations)
     protected = committee | execution
     window = window_layers(layers)
     sets = {}
