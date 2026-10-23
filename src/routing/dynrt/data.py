@@ -7,7 +7,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from .common import CLASSES, RESULTS, V3R2, cohort_dir, keep_mask
+from .common import RESULTS, V3R2, cohort_dir, keep_mask
 from .features import NC, SentenceTable
 
 OUTCOME_COLUMNS = ("correct", "adjudication_status", "difficulty", "difficulty_n", "difficulty_source")
@@ -78,13 +78,3 @@ def load_static(model: str, cohort: str, attempts: pd.DataFrame, family: str = "
     x = x[cols].reindex(attempts["attempt_id"]).reset_index(drop=True)
     x.columns = [c.split("|")[2] for c in cols]
     return x
-
-
-def class_share_check(model: str, cohort: str, cohort_obj: Cohort) -> float:
-    """Max |our class share - v3an cls_frac| over attempts (cohort A only)."""
-    x = pd.read_parquet(V3R2 / model / cohort / "features.parquet")
-    cols = [f"cls_frac|{c}|fraction|-" for c in CLASSES]
-    if cols[0] not in x.columns:
-        return float("nan")
-    v = x[cols].reindex(cohort_obj.attempts["attempt_id"]).fillna(0.0).to_numpy()
-    return float(np.abs(v - cohort_obj.shares).max())

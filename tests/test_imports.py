@@ -20,7 +20,7 @@ SRC = REPO / 'src'
 ENTRY_POINTS = [
     'steering.pulse', 'steering.pulse_outcomes', 'steering.pulse_effects', 'steering.whole',
     'steering.whole_effects', 'steering.whole_complement', 'steering.whole_relink',
-    'routing.efficiency_link', 'routing.lexical', 'routing.lfm_readout',
+    'routing.efficiency_link', 'routing.lexical', 'routing.lfm',
     'steering.stream', 'steering.observer', 'steering.fast_penalties', 'steering.penalties',
     'labeling.renderer_child',
     'steering.outcome.__main__',
@@ -46,6 +46,9 @@ EXEMPT = {
     ('routing.efficiency_link_prereg', 'moe_exp.final_routing.common'),
     ('routing.efficiency_link', 'moe_exp.final_routing'),
     ('routing.efficiency_link', 'moe_exp.final_routing.common'),
+    # The stored lexical fold pickles name the text transform by its old module; routing.lexical maps it (and a test).
+    ('routing.lexical', 'moe_exp.study.readout_text'),
+    ('tests', 'moe_exp.study.readout_text'),
 }
 
 OLD_PACKAGE = 'moe_exp'
