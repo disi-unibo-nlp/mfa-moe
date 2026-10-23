@@ -90,6 +90,47 @@ def capture_release(name: str, models: list[str], shards: dict[str, int], local_
                 extra_inputs=extra, cutoff=CAPTURE_CUTOFF, cpu_ceiling=200., job_prefix='oc', stores=stores)
 
 
+CAPTURE_RELEASE = 'outcome-capture-20261023-r1'
+R2_DELTAS = (0.4, 0.8, 1.2)    # logit shifts of the r2 sweep (D-0006)
+
+
+def sweep_release(name: str, models: list[str], shards: dict[str, int], local_tests: int, half: str,
+                  pick_path: str | None = None) -> dict:
+    """Seal one half of the r2 class-conditioned sweep (OUTCOME_SWEEP.json).
+
+    Half A runs every available expert set at every R2_DELTAS shift; half B runs the cells of PICK.json
+    (pick.py). Both read the capture release: its manifests (prompts, seeds, unedited arm), the
+    SELECTION_R2.json sets and, for the stop-early rows, its finished attempts.
+    """
+    from .manifest import halves
+    capture = REPORTS/CAPTURE_RELEASE
+    require(half in ('A', 'B') and (half == 'A') == (pick_path is None), 'half A has no pick; half B needs one')
+    picked = verified(pick_path) if pick_path else None
+    spec, extra = {}, []
+    for model in models:
+        selection_path = capture/model/'SELECTION_R2.json'
+        selection = verified(selection_path)
+        questions = verified(capture/'CAPTURE_NATIVE.json')['models'][model]['questions']
+        available = [name_ for name_, entry in selection['sets'].items() if 'sets' in entry]
+        cells = ([{'set': s, 'delta': d} for s in available for d in R2_DELTAS] if half == 'A' else
+                 [c for c in picked['confirm'] if c['set'] in available])
+        require(cells, f'no cell to run for {model}')
+        spec[model] = {'capture': str(capture), 'selection': str(selection_path),
+                       'selection_sha256': selection['sha256'], 'half': half, 'questions': halves(questions)[half],
+                       'cells': cells, 'fractions': list(FRACTIONS), 'answer_tokens': ANSWER_TOKENS,
+                       'pick': {'path': pick_path, 'sha256': picked['sha256']} if picked else None}
+        extra += [selection_path, capture/model/'WHOLE.json', capture/model/'extraction'/'outcomes.parquet']
+    readme = (f'# Class-conditioned outcome nudge, half {half} ({name})\n\n'
+              'Experts used more in wrong than in right attempts of the same question, on the tokens of one\n'
+              'reasoning class (or on all reasoning, the class-blind set), are nudged down by a logit shift at\n'
+              'every prompt and reasoning token, against two disjoint matched random sets. The unedited arm is\n'
+              f'the six attempts per question of {CAPTURE_RELEASE}; stop-early rows cut one of them.\n'
+              f'Cells: {len(spec[models[0]]["cells"])} per model; shifts {list(R2_DELTAS)}. Ledger F-0013, D-0006.\n')
+    stores = Path('/leonardo_scratch/fast/IscrC_MIOSR/lmolfett/mfa-moe/campaign-runs')/name/'stores'
+    return seal(name, models, shards, local_tests, spec_name='OUTCOME_SWEEP.json', spec=spec, readme=readme,
+                extra_inputs=extra, cutoff=CAPTURE_CUTOFF, cpu_ceiling=60., job_prefix='os', stores=stores)
+
+
 def seal(name: str, models: list[str], shards: dict[str, int], local_tests: int, *, spec_name: str, spec: dict,
          readme: str, extra_inputs: list, cutoff: int, cpu_ceiling: float, job_prefix: str,
          stores: Path | None = None) -> dict:

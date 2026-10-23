@@ -155,8 +155,10 @@ def levels(ours: pd.DataFrame, natives: pd.DataFrame) -> list[dict]:
 
 
 def analyze() -> dict:
-    """Write EFFECTS_OUTCOME.json for every model of this release."""
+    """Write EFFECTS_OUTCOME.json for every model of this release (an r2 sweep release: analyze_sweep)."""
     from moe_exp.study.whole import MODELS, ROOT, manifest
+    if (ROOT/'OUTCOME_SWEEP.json').exists():
+        return analyze_sweep()
     from moe_exp.study.whole_effects import bootstrap, summarize_present
     effects = verified(NATIVES/'EFFECTS_WHOLE.json')
     frames, models = [], {}
@@ -186,3 +188,153 @@ def analyze() -> dict:
         **result, 'models': models, 'native_effects_sha256': effects['sha256'],
         'native_table_sha256': file_sha(NATIVES/'continuations.parquet'),
         'families_sha256': file_sha(folder/'families.parquet')})
+
+
+# ---------------------------------------------------------------------------------------------
+# r2: one half of the class-conditioned sweep (OUTCOME_SWEEP.json releases, D-0006)
+# ---------------------------------------------------------------------------------------------
+#
+# Each family is a capture question. Its unedited arm is the mean of its six capture attempts (each
+# bounded as usual); `noise` is attempt 1 against attempt 0. The random arm of a cell is the mean of
+# its two disjoint draws. Columns are model:set:delta:contrast:metric. Each half has its own family
+# bootstrap: the shared all-study bootstrap would leave half-sized benchmarks empty in some draws.
+
+def bounded_mean(rows: list[dict]) -> dict:
+    """Point, lower and upper of the mean of bounded rows, per metric."""
+    keys = [m+s for m, _ in METRICS for s in ('', ':lower', ':upper')]
+    return {key: float(np.mean([r[key] for r in rows])) for key in keys}
+
+
+def capture_natives(capture: Path, model: str, questions: set[str]) -> dict[str, list[dict]]:
+    """Bounded capture attempts of one model (the unedited arm), grouped by question in attempt order."""
+    from moe_exp.study.whole import manifest_path
+    from moe_exp.study.whole_effects import unit_bounds
+    value = verified(manifest_path(model, 'main', capture))
+    folder = capture/model/'extraction'
+    observed = pd.read_parquet(folder/'outcomes.parquet') if (folder/'outcomes.parquet').exists() else pd.DataFrame()
+    by_uid = {r['uid']: r for r in observed.to_dict('records')} if len(observed) else {}
+    missing = {'outcome_status': 'missing', 'finish_reason': 'unknown', 'reasoning_tokens': np.nan,
+               'reasoning_end': None, 'strict_correct': None}
+    result = {}
+    for row in value['records']:
+        if row['question'] in questions:
+            merged = {**{k: v for k, v in row.items() if k not in ('actions', 'source')}, **by_uid.get(row['uid'], missing)}
+            merged.update(unit_bounds(merged))
+            result.setdefault(row['question'], []).append(merged)
+    return {q: sorted(r, key=lambda x: x['attempt']) for q, r in result.items()}
+
+
+def sweep_family_frame(model: str, ours: pd.DataFrame, natives: dict[str, list[dict]]) -> pd.DataFrame:
+    """One row per question with every r2 contrast as point/lower/upper columns."""
+    records = []
+    for question, members in ours.groupby('question'):
+        attempts = natives.get(question, [])
+        if len(attempts) < 2:
+            continue
+        base, record = bounded_mean(attempts), {'family': members.family.iloc[0], 'question': question}
+
+        def put(name, treated, control, metrics=METRICS):
+            for metric, label in metrics:
+                for suffix, value in zip(('', ':lower', ':upper'), contrast(treated, control, metric)):
+                    record[f'{model}:{name}:{label}{suffix}'] = value
+
+        put('noise', attempts[1], attempts[0])
+        rows = members.to_dict('records')
+        budget = [r for r in rows if r['arm'] == 'budget']
+        source = next((a for a in attempts if budget and a['uid'] == budget[0]['native_uid']), None)
+        curve = [(source['log_reasoning'], source['accuracy:lower'], source['accuracy:upper'])] if source else []
+        for row in budget:
+            put(f"{row['class']}:budget_native", row, base)
+            curve.append((row['log_reasoning'], row['accuracy:lower'], row['accuracy:upper']))
+        nudges = [r for r in rows if r['arm'] != 'budget']
+        for (expert_set, delta), cell in pd.DataFrame(nudges).groupby(['expert_set', 'class']) if nudges else []:
+            cell = cell.to_dict('records')
+            target = next(r for r in cell if r['arm'] == 'target_nudge')
+            draws = [r for r in cell if r['arm'] == 'random_nudge']
+            random = bounded_mean(draws)
+            name = f'{expert_set}:{delta}'
+            put(f'{name}:target_random', target, random)
+            put(f'{name}:target_native', target, base)
+            put(f'{name}:random_native', random, base)
+            if len(curve) > 1:
+                lowest, highest = curve_range(curve, target['log_reasoning:lower'], target['log_reasoning:upper'])
+                lower, upper = target['accuracy:lower']-highest, target['accuracy:upper']-lowest
+                column = f'{model}:{name}:target_budget:accuracy'
+                record.update({column: (lower+upper)/2, column+':lower': lower, column+':upper': upper})
+        records.append(record)
+    return pd.DataFrame(records)
+
+
+def sweep_manipulation(ours: pd.DataFrame) -> list[dict]:
+    """Top-k slots and weight the nudged experts keep, per set, delta, arm and draw."""
+    result = []
+    nudges = ours[ours.arm != 'budget'].assign(draw=lambda f: f['draw'].fillna(-1))
+    for (expert_set, delta, arm, draw), group in nudges.groupby(['expert_set', 'class', 'arm', 'draw']):
+        totals = dict.fromkeys(COUNTERS, 0.)
+        failures = 0.
+        for text in group.dose_json.dropna():
+            for counters in json.loads(text).values():
+                for key in COUNTERS:
+                    totals[key] += float(counters.get(key, 0.))
+                failures += float(counters.get('membership_failures', 0.))
+        kept = totals['executed_shift_members']/totals['native_shift_members'] if totals['native_shift_members'] else None
+        result.append({'expert_set': expert_set, 'class': delta, 'arm': arm, 'draw': None if draw < 0 else int(draw),
+                       'rows': len(group), **totals, 'kept_slot_share': kept, 'membership_failures': failures})
+    return result
+
+
+def sweep_levels(ours: pd.DataFrame) -> list[dict]:
+    """Per set, delta and arm: completed rows, mean reasoning tokens, accuracy and length-limit rate."""
+    result = []
+    keyed = ours.assign(expert_set=ours['expert_set'].fillna('-'), draw=ours['draw'].fillna(-1))
+    for (expert_set, name, arm, draw), group in keyed.groupby(['expert_set', 'class', 'arm', 'draw']):
+        done = group[group.finish_reason.isin(['stop', 'length'])]
+        result.append({'expert_set': expert_set, 'class': name, 'arm': arm, 'draw': None if draw < 0 else int(draw),
+                       'rows': len(group), 'completed': len(done),
+                       'mean_reasoning_tokens': float(np.expm1(done.log_reasoning).mean()) if len(done) else None,
+                       'accuracy': float(done.accuracy.mean()) if len(done) else None,
+                       'length_limit_rate': float((done.finish_reason == 'length').mean()) if len(done) else None})
+    return result
+
+
+def analyze_sweep() -> dict:
+    """Write EFFECTS_OUTCOME.json for an r2 sweep release (one half)."""
+    from moe_exp.study.effects import Bootstrap
+    from moe_exp.study.whole import MODELS, ROOT, manifest
+    from moe_exp.study.whole_effects import DRAWS as WHOLE_DRAWS, SEED as WHOLE_SEED, summarize_present
+    spec = verified(ROOT/'OUTCOME_SWEEP.json')
+    frames, models, benchmarks = [], {}, {}
+    for model in MODELS:
+        entry = spec['models'][model]
+        ours = release_rows(model)
+        natives = capture_natives(Path(entry['capture']), model, set(entry['questions']))
+        frame = sweep_family_frame(model, ours, natives)
+        frames.append(frame.set_index('family'))
+        for question, rows in natives.items():
+            benchmarks[rows[0]['family']] = rows[0]['benchmark']
+        flat = [r for rows in natives.values() for r in rows]
+        done = [r for r in flat if r['finish_reason'] in ('stop', 'length')]
+        models[model] = {
+            'half': entry['half'], 'families': len(frame), 'manipulation': sweep_manipulation(ours),
+            'levels': sweep_levels(ours),
+            'native': {'attempts': len(flat), 'completed': len(done),
+                       'accuracy': float(np.mean([r['accuracy'] for r in done])) if done else None,
+                       'mean_reasoning_tokens': float(np.mean([np.expm1(r['log_reasoning']) for r in done])) if done else None,
+                       'length_limit_rate': float(np.mean([r['finish_reason'] == 'length' for r in done])) if done else None}}
+    frame = pd.concat(frames, axis=1).reset_index().drop(columns=['question'], errors='ignore')
+    frame = frame.loc[:, ~frame.columns.duplicated()]
+    boot = Bootstrap(sorted(benchmarks), benchmarks, draws=WHOLE_DRAWS, seed=WHOLE_SEED)
+    columns = [c for c in frame.columns if c != 'family']
+
+    def family(kind):
+        names = [c for c in columns if f':{kind}:' in c]
+        return summarize_present(boot, frame[['family', *names]], 'outcome-r2-'+kind) if names else {}
+
+    result = {kind: family(kind) for kind in ('target_random', 'target_native', 'random_native', 'noise',
+                                              'budget_native', 'target_budget')}
+    folder = ROOT/'analysis'
+    folder.mkdir(parents=True, exist_ok=True, mode=0o700)
+    frame.to_parquet(folder/'families.parquet', index=False)
+    return publish(folder/'EFFECTS_OUTCOME.json', {
+        **result, 'models': models, 'half': sorted({e['half'] for e in spec['models'].values()}),
+        'spec_sha256': spec['sha256'], 'families_sha256': file_sha(folder/'families.parquet')})
