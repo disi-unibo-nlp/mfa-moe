@@ -105,7 +105,7 @@ def analyse(sr, md, context_counts, mode, workers, family, family_ids):
     import multiprocessing as mp
     import numpy as np
     from scipy import sparse
-    from dynrt.d3a_text import TextTransform
+    from moe_exp.routing.dynrt.d3a_text import TextTransform
     started = time.monotonic()
     original_design = sr.fold_design
 
@@ -201,15 +201,14 @@ def run(workers):
     if not os.environ.get('SLURM_JOB_ID') or os.uname().nodename.startswith('login'):
         raise RuntimeError('Clean readouts require a CPU Slurm allocation')
     started = time.monotonic()
-    sys.path.insert(0, str(OUT / 'code'))
     import numpy as np
-    from dp import common as cm, s3_readout as sr
+    from moe_exp.routing.dp import common as cm, s3_readout as sr
     # A copied helper resolves cm.RESULTS relative to the copy. Raw caches are
     # explicitly pinned to the historical, read-only root instead.
     def original_tok_path(model, row):
         return ROOT / 'depth-paths/results/s3/_tok' / model / f'{int(row):05d}.npz'
-    from dynrt.d3a_pairs import load_unit_texts, LABELS_ROOT
-    from dynrt.d3a_text import hash_counts
+    from moe_exp.routing.dynrt.d3a_pairs import load_unit_texts, LABELS_ROOT
+    from moe_exp.routing.dynrt.d3a_text import hash_counts
     family_path = REPO / 'report/experimental-resume-v1/family-freeze.json'
     family = verified(family_path)
     qf = {q: f for f, questions in family['new_parent_pools']['families'].items() for q in questions}
