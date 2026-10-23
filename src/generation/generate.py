@@ -12,23 +12,23 @@ Every trace keeps the exact prompt and completion token IDs (metadata.token_repl
 from __future__ import annotations
 
 import argparse
+import copy
 import hashlib
 import importlib.metadata
 import json
 import logging
 import os
 import re
-import subprocess
 import time
 from concurrent.futures import ThreadPoolExecutor
-from datetime import datetime
+from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
 from tqdm import tqdm
 
 from generation.benchmarks import BENCHMARKS, DEFAULT_BENCHMARKS, generation_messages, sample_variant
-from generation.client import generate_completion
+from generation.client import generate_completion, slurm_deadline
 from generation.model_profiles import CARD_PROFILES, load_tokenizer
 from generation.scoring import score_completion_detailed
 from models.token_replay import TOKEN_REPLAY_VERSION, make_token_replay
@@ -43,19 +43,10 @@ SEED = 20260925  # an attempt uses SEED + 1000 * problem index + sample index
 TIMEOUT_S = 21600  # wait for one reply
 
 
+@lru_cache(maxsize=None)
 def vllm_version() -> str:
     """Installed vLLM release without its build tag (0.29.0+cu129 -> 0.29.0); recorded in the generation contract."""
     return importlib.metadata.version("vllm").split("+")[0]
-
-
-def slurm_deadline(margin_hours: float) -> float | None:
-    """UNIX time to stop starting requests: end of this Slurm job minus the margin (None outside Slurm)."""
-    job = os.environ.get("SLURM_JOB_ID")
-    if not job:
-        return None
-    end = subprocess.run(["squeue", "-h", "-j", job, "-o", "%e"], capture_output=True, text=True,
-                         check=True).stdout.strip()
-    return datetime.fromisoformat(end).timestamp() - margin_hours * 3600
 
 
 def _model_slug(model: str) -> str:
@@ -109,7 +100,7 @@ def _job_contract(
         }
     )
     card = CARD_PROFILES[args.profile]
-    generation_config = {
+    generation_config = copy.deepcopy({
         "generation_contract_version": _GENERATION_CONTRACT_VERSION,
         "profile": args.profile,
         "served_model": card["model"],
@@ -130,7 +121,7 @@ def _job_contract(
         "seed": SEED + example_index * 1000 + sample_id,
         "scoring_contract_version": _SCORING_CONTRACT_VERSION,
         "token_replay_version": TOKEN_REPLAY_VERSION,
-    }
+    })  # a copy: the profile's own dicts are never shared with a trace
     return dict(example=example, messages=messages, example_sha256=example_sha256,
                 generation_config=generation_config, generation_sha256=_digest(generation_config))
 

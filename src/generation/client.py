@@ -2,9 +2,12 @@
 from __future__ import annotations
 
 import json
+import os
+import subprocess
 import time
 import urllib.request
 from dataclasses import dataclass
+from datetime import datetime
 from typing import Any
 
 from generation.model_profiles import API_KEY
@@ -56,10 +59,29 @@ def _post_with_retries(url, payload, timeout, max_retries, first_wait, longest_w
 
 
 def _sampling_fields(sampler: dict[str, Any], seed: int) -> dict[str, Any]:
-    """Request fields of a model-card sampler: unset (None) ones are left out, top_k 0 (off) is sent as -1."""
-    fields = {key: value for key, value in sampler.items() if value is not None}
-    fields["top_k"] = fields["top_k"] or -1
-    return {**fields, "seed": seed, "stream": False}
+    """Request fields of a model-card sampler.
+
+    temperature, top_p and top_k are always sent (top_k 0 = off is sent as -1); min_p and the penalties only
+    when the card sets them.
+    """
+    extras = {key: sampler[key] for key in ("min_p", "presence_penalty", "repetition_penalty")
+              if sampler.get(key) is not None}
+    top_k = sampler["top_k"]
+    return {"temperature": sampler["temperature"], "top_p": sampler["top_p"],
+            "top_k": -1 if top_k == 0 else top_k, **extras, "seed": seed, "stream": False}
+
+
+def slurm_deadline(margin_hours: float) -> float | None:
+    """UNIX time to stop sending requests: the end of this Slurm job minus the margin (None outside Slurm)."""
+    job = os.environ.get("SLURM_JOB_ID")
+    if not job:
+        return None
+    end = os.environ.get("SLURM_JOB_END_TIME")  # epoch seconds, set by Slurm inside the job
+    if end is not None:
+        return float(end) - margin_hours * 3600
+    reply = subprocess.run(["squeue", "-h", "-j", job, "-o", "%e"], capture_output=True, text=True,
+                           check=True).stdout.strip()
+    return datetime.fromisoformat(reply).timestamp() - margin_hours * 3600
 
 
 def generate_completion(

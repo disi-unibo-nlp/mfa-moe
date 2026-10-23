@@ -1,6 +1,7 @@
 """Teacher-forced forward pass over a saved prompt and completion: router signals of the generated tokens."""
 from __future__ import annotations
 
+import inspect
 from typing import TYPE_CHECKING
 
 import torch
@@ -142,8 +143,11 @@ def extract_logs_single_pass(
     # CausalLM wrapper also computes an auxiliary load-balancing loss when
     # router outputs are requested, materializing a large token/expert one-hot.
     from models.router_adapters import stream_router_signals
+    forward_model = getattr(model, "model", model)
+    forward_kwargs = {**inputs, "use_cache": False, "return_dict": True}
+    if forward_model is model and "logits_to_keep" in inspect.signature(model.forward).parameters:
+        forward_kwargs["logits_to_keep"] = 1  # the whole model would otherwise compute logits for every token
     return stream_router_signals(
-        model, getattr(model, "model", model), {**inputs, "use_cache": False, "return_dict": True},
-        prompt_len, None if layer_indices is None else set(layer_indices),
-        extract_hidden_states, routing_details,
+        model, forward_model, forward_kwargs, prompt_len,
+        None if layer_indices is None else set(layer_indices), extract_hidden_states, routing_details,
     )
