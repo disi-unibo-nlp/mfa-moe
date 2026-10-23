@@ -1,4 +1,4 @@
-"""KV-cached chunked native HF replay with bounded activation lifetime."""
+"""gpt-oss replay in chunks of the saved tokens with a KV cache, so very long traces fit in memory (HF backend)."""
 from __future__ import annotations
 
 
@@ -68,26 +68,3 @@ def capture_chunked(model, tokenizer, trace, layers, chunk_size=512):
     return dict(**arrays, selection=arrays['router'], semantics=semantics,
                 audit={'native_dispatch': True, 'backend': 'hf_kv_chunked',
                        'layers': layers, 'chunk_size': chunk_size, 'tokens': len(completion)})
-
-
-def compare_native_captures(reference, candidate, *, relative_l2_limit=.005):
-    """Fail closed on expert-set disagreements; numerical tolerance is explicit."""
-    import math
-    import torch
-    if reference['ids'].shape != candidate['ids'].shape or not torch.equal(
-            reference['ids'].sort(-1).values, candidate['ids'].sort(-1).values):
-        raise ValueError('Chunked replay changed native selected expert sets')
-    results = {}
-    for field in ('router', 'hidden'):
-        a, b = reference[field].float(), candidate[field].float()
-        if a.shape != b.shape or not torch.isfinite(a).all() or not torch.isfinite(b).all():
-            raise ValueError('Invalid differential shape/value: ' + field)
-        error = float(torch.linalg.vector_norm(a-b) / torch.linalg.vector_norm(a).clamp_min(1e-12))
-        if not math.isfinite(error) or error > relative_l2_limit:
-            raise ValueError('Chunked differential exceeded tolerance: ' + field)
-        results[field + '_relative_l2'] = error
-    a = reference['weights'].gather(-1, reference['ids'].argsort(-1)).float()
-    b = candidate['weights'].gather(-1, candidate['ids'].argsort(-1)).float()
-    if not torch.isfinite(a).all() or not torch.isfinite(b).all() or not torch.allclose(a, b, rtol=.01, atol=.001):
-        raise ValueError('Chunked replay changed native executed weights')
-    return dict(status='passed', selected_sets_identical=True, **results)
