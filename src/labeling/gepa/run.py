@@ -1,3 +1,12 @@
+"""Optimise the judge prompt with GEPA against a running OpenAI-compatible server (the workstation's llama.cpp).
+
+Input: the labelled Schoenfeld responses (`--dataset-dir`), a server, and a GEPA budget. The responses are split
+26 / 6 / 6 into train / validation / locked test by seed, whole responses only. The locked test is touched only with
+`--evaluate-locked-test`, and never in cross-validation (`--cv-folds`).
+Output in `--output-dir`: `selected_program_<time>.json` (the judge program that `labeling.batch_predictor` loads),
+the seed and GEPA-optimised prompts and programs, validation predictions, `results_<time>.json`, the judge feedback
+log and `stats.csv`. `scripts/labeling/optimize_judge.sh` is the command that produced the frozen judge.
+"""
 from __future__ import annotations
 
 import argparse
@@ -33,6 +42,10 @@ from labeling.gepa.prompts import (
     build_few_shot_instructions,
     select_few_shot_sentences,
 )
+
+TRAIN_DOCUMENTS = 26
+VAL_DOCUMENTS = 6
+KAPPA_WEIGHT = 0.5  # weight of scaled Cohen kappa against scaled Kendall tau-b in the reported composite
 
 JUDGE_SCORE_WEIGHTS = {
     "gold_agreement": 0.40,
@@ -331,51 +344,53 @@ def _make_lm(
     )
 
 
-def _configure_lm(lm: dspy.LM) -> None:
-    if hasattr(dspy, "configure"):
-        dspy.configure(lm=lm)
-    else:
-        dspy.settings.configure(lm=lm)
-
-
-def _gepa_class() -> Any:
-    if hasattr(dspy, "GEPA"):
-        return dspy.GEPA
-    from dspy.teleprompt import GEPA
-
-    return GEPA
-
-
 def _extract_instructions(program: Any) -> str:
-    for path in (("classify", "predict", "signature"), ("classify", "signature")):
-        current = program
-        try:
-            for attribute in path:
-                current = getattr(current, attribute)
-        except AttributeError:
-            continue
-        instructions = getattr(current, "instructions", None)
-        if instructions:
-            return str(instructions)
-    return "Could not extract optimized instructions from this DSPy version."
+    return str(program.classify.signature.instructions)
+
+
+def _report_from_rows(rows: Sequence[dict[str, Any]]) -> dict[str, Any]:
+    """Strict accuracy, coverage and the agreement metrics of a list of prediction rows."""
+    gold = [str(row["gold_label"]) for row in rows]
+    predicted = [row.get("predicted_label") for row in rows]
+    valid_pairs = [
+        (expected, actual) for expected, actual in zip(gold, predicted) if isinstance(actual, str)
+    ]
+    report: dict[str, Any] = {
+        "sentences": len(rows),
+        "valid_predictions": len(valid_pairs),
+        "failed_predictions": len(rows) - len(valid_pairs),
+        "coverage": len(valid_pairs) / len(rows) if rows else 0.0,
+        "strict_accuracy": sum(row["correct"] for row in rows) / len(rows) if rows else 0.0,
+    }
+    if rows:
+        report["strict_classification"] = compute_classification_metrics(gold, predicted)
+    if valid_pairs:
+        agreement = compute_sentence_agreement(
+            [pair[0] for pair in valid_pairs],
+            [pair[1] for pair in valid_pairs],
+            kappa_weight=KAPPA_WEIGHT,
+        )
+        report["corpus_agreement_valid_predictions"] = agreement.to_dict()
+        report["coverage_adjusted_score"] = report["coverage"] * agreement.score
+    return report
 
 
 def _evaluate_and_collect(
-    program: Any,
-    examples: Sequence[Any],
-    *,
-    kappa_weight: float,
+    program: Any, examples: Sequence[Any]
 ) -> tuple[dict[str, Any], list[dict[str, Any]]]:
-    gold_all: list[str] = []
-    predicted_all: list[str | None] = []
-    gold_valid: list[str] = []
-    predicted_valid: list[str] = []
+    """Run the program on every example. A failed call counts as an invalid prediction."""
     rows: list[dict[str, Any]] = []
-    correct = 0
-
     for example in examples:
         gold = str(example.gold_label)
-        gold_all.append(gold)
+        row = {
+            "question_id": example.question_id,
+            "unit_id": example.unit_id,
+            "problem_statement": example.problem_statement,
+            "previous_sentence": example.previous_sentence,
+            "sentence": example.sentence,
+            "next_sentence": example.next_sentence,
+            "gold_label": gold,
+        }
         try:
             prediction = program(
                 problem_statement=example.problem_statement,
@@ -383,85 +398,22 @@ def _evaluate_and_collect(
                 sentence=example.sentence,
                 next_sentence=example.next_sentence,
             )
-            predicted = parse_sentence_label(prediction)
-            predicted_all.append(predicted)
-            is_correct = predicted == gold
-            correct += int(is_correct)
-            gold_valid.append(gold)
-            predicted_valid.append(predicted)
-            row = {
-                "question_id": example.question_id,
-                "unit_id": example.unit_id,
-                "problem_statement": example.problem_statement,
-                "previous_sentence": example.previous_sentence,
-                "sentence": example.sentence,
-                "next_sentence": example.next_sentence,
-                "gold_label": gold,
-                "predicted_label": predicted,
-                "correct": is_correct,
-            }
+            row["predicted_label"] = parse_sentence_label(prediction)
+            row["correct"] = row["predicted_label"] == gold
         except Exception as exc:  # noqa: BLE001 - failed LM calls count as invalid predictions
-            predicted_all.append(None)
-            row = {
-                "question_id": example.question_id,
-                "unit_id": example.unit_id,
-                "problem_statement": example.problem_statement,
-                "previous_sentence": example.previous_sentence,
-                "sentence": example.sentence,
-                "next_sentence": example.next_sentence,
-                "gold_label": gold,
-                "error": str(exc),
-                "correct": False,
-            }
+            row["error"] = str(exc)
+            row["correct"] = False
         rows.append(row)
-
-    total = len(examples)
-    valid = len(predicted_valid)
-    report: dict[str, Any] = {
-        "sentences": total,
-        "valid_predictions": valid,
-        "failed_predictions": total - valid,
-        "coverage": valid / total if total else 0.0,
-        "strict_accuracy": correct / total if total else 0.0,
-    }
-    if gold_all:
-        report["strict_classification"] = compute_classification_metrics(
-            gold_all,
-            predicted_all,
-        )
-    if predicted_valid:
-        agreement = compute_sentence_agreement(
-            gold_valid,
-            predicted_valid,
-            kappa_weight=kappa_weight,
-        )
-        report["corpus_agreement_valid_predictions"] = agreement.to_dict()
-        report["coverage_adjusted_score"] = report["coverage"] * agreement.score
-    return report, rows
+    return _report_from_rows(rows), rows
 
 
 def _append_stats(path: Path, row: dict[str, Any]) -> None:
-    if not path.exists():
-        with path.open("w", newline="", encoding="utf-8") as handle:
-            writer = csv.DictWriter(handle, fieldnames=list(row))
+    new_file = not path.exists()
+    with path.open("a" if not new_file else "w", newline="", encoding="utf-8") as handle:
+        writer = csv.DictWriter(handle, fieldnames=list(row))
+        if new_file:
             writer.writeheader()
-            writer.writerow(row)
-        return
-
-    with path.open(newline="", encoding="utf-8") as handle:
-        reader = csv.DictReader(handle)
-        old_fields = reader.fieldnames or []
-        old_rows = list(reader)
-    fields = old_fields + [field for field in row if field not in old_fields]
-    if fields != old_fields:
-        with path.open("w", newline="", encoding="utf-8") as handle:
-            writer = csv.DictWriter(handle, fieldnames=fields)
-            writer.writeheader()
-            writer.writerows(old_rows)
-            writer.writerow(row)
-    else:
-        with path.open("a", newline="", encoding="utf-8") as handle:
-            csv.DictWriter(handle, fieldnames=fields).writerow(row)
+        writer.writerow(row)
 
 
 def _write_jsonl(path: Path, rows: Sequence[dict[str, Any]]) -> None:
@@ -471,10 +423,7 @@ def _write_jsonl(path: Path, rows: Sequence[dict[str, Any]]) -> None:
 
 
 def _selection_value(report: dict[str, Any], metric: str) -> float:
-    if metric == "accuracy":
-        return float(report["strict_accuracy"])
-    classification = report.get("strict_classification", {})
-    return float(classification.get(metric, 0.0))
+    return float(report.get("strict_classification", {}).get(metric, 0.0))
 
 
 def _select_program(
@@ -524,32 +473,6 @@ def _select_program(
     )
 
 
-def _gepa_kwargs(
-    args: argparse.Namespace,
-    *,
-    metric: Callable[..., dspy.Prediction],
-    reflection_lm: dspy.LM,
-    log_dir: Path,
-    seed: int,
-) -> dict[str, Any]:
-    kwargs: dict[str, Any] = {
-        "metric": metric,
-        "num_threads": args.num_threads,
-        "track_stats": True,
-        "track_best_outputs": False,
-        "reflection_lm": reflection_lm,
-        "log_dir": str(log_dir),
-        "seed": seed,
-    }
-    if args.gepa_auto:
-        kwargs["auto"] = args.gepa_auto
-    elif args.max_full_evals is not None:
-        kwargs["max_full_evals"] = args.max_full_evals
-    else:
-        kwargs["max_metric_calls"] = args.max_metric_calls
-    return kwargs
-
-
 def _optimize_and_select(
     args: argparse.Namespace,
     *,
@@ -561,30 +484,26 @@ def _optimize_and_select(
     log_dir: Path,
     seed: int,
 ) -> dict[str, Any]:
+    """GEPA from the seed prompt, then the safety gate that decides between the seed and the optimised prompt."""
     seed_program = EpisodeJudge(seed_instructions)
-    seed_report, seed_predictions = _evaluate_and_collect(
-        seed_program,
-        valset,
-        kappa_weight=args.kappa_weight,
-    )
-    optimized_program = _gepa_class()(
-        **_gepa_kwargs(
-            args,
-            metric=metric,
-            reflection_lm=reflection_lm,
-            log_dir=log_dir,
-            seed=seed,
-        )
-    ).compile(
-        seed_program,
-        trainset=trainset,
-        valset=valset,
-    )
-    optimized_report, optimized_predictions = _evaluate_and_collect(
-        optimized_program,
-        valset,
-        kappa_weight=args.kappa_weight,
-    )
+    seed_report, seed_predictions = _evaluate_and_collect(seed_program, valset)
+    gepa_kwargs: dict[str, Any] = {
+        "metric": metric,
+        "num_threads": args.num_threads,
+        "track_stats": True,
+        "track_best_outputs": False,
+        "reflection_lm": reflection_lm,
+        "log_dir": str(log_dir),
+        "seed": seed,
+    }
+    if args.gepa_auto:
+        gepa_kwargs["auto"] = args.gepa_auto
+    elif args.max_full_evals is not None:
+        gepa_kwargs["max_full_evals"] = args.max_full_evals
+    else:
+        gepa_kwargs["max_metric_calls"] = args.max_metric_calls
+    optimized_program = dspy.GEPA(**gepa_kwargs).compile(seed_program, trainset=trainset, valset=valset)
+    optimized_report, optimized_predictions = _evaluate_and_collect(optimized_program, valset)
     selected_program, selected_name, decision = _select_program(
         seed_program,
         optimized_program,
@@ -606,24 +525,6 @@ def _optimize_and_select(
     }
 
 
-def _truncate_documents(
-    documents: Sequence[EpisodeDocument],
-    max_units: int | None,
-) -> list[EpisodeDocument]:
-    if max_units is None:
-        return list(documents)
-    if max_units <= 0:
-        raise ValueError("--max-units-per-document must be positive")
-    return [
-        EpisodeDocument(
-            question_id=document.question_id,
-            units=document.units[:max_units],
-            problem_statement=document.problem_statement,
-        )
-        for document in documents
-    ]
-
-
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
         description="Optimize a seven-class Schoenfeld sentence judge with GEPA and llama.cpp.",
@@ -634,20 +535,6 @@ def parse_args() -> argparse.Namespace:
         type=Path,
         required=True,
         help="Root of MingLiiii/Schoenfeld_Reasoning or its responses_labeled directory.",
-    )
-    parser.add_argument("--train-documents", type=int, default=26)
-    parser.add_argument("--val-documents", type=int, default=6)
-    parser.add_argument(
-        "--test-documents",
-        type=int,
-        default=None,
-        help="Limit held-out evaluation documents; intended only for smoke tests.",
-    )
-    parser.add_argument(
-        "--max-units-per-document",
-        type=int,
-        default=None,
-        help="Truncate each response to its first N sentences; intended only for smoke tests.",
     )
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument(
@@ -682,7 +569,7 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument(
         "--selection-metric",
-        choices=("balanced_accuracy", "macro_f1", "accuracy"),
+        choices=("balanced_accuracy", "macro_f1"),
         default="balanced_accuracy",
         help="Validation metric used by the seed-versus-optimized safety gate.",
     )
@@ -738,12 +625,6 @@ def parse_args() -> argparse.Namespace:
         help="Qwen chat-template reasoning effort when --enable-thinking is set.",
     )
 
-    parser.add_argument(
-        "--kappa-weight",
-        type=float,
-        default=0.5,
-        help="Reporting weight of scaled Cohen kappa versus scaled Kendall tau-b.",
-    )
     budget = parser.add_mutually_exclusive_group(required=True)
     budget.add_argument("--gepa-auto", choices=("light", "medium", "heavy"))
     budget.add_argument("--max-full-evals", type=int)
@@ -761,72 +642,26 @@ def parse_args() -> argparse.Namespace:
     return args
 
 
-def _report_from_rows(
-    rows: Sequence[dict[str, Any]],
-    *,
-    kappa_weight: float,
-) -> dict[str, Any]:
-    gold = [str(row["gold_label"]) for row in rows]
-    predicted = [row.get("predicted_label") for row in rows]
-    valid_pairs = [
-        (expected, actual) for expected, actual in zip(gold, predicted) if isinstance(actual, str)
-    ]
-    report: dict[str, Any] = {
-        "sentences": len(rows),
-        "valid_predictions": len(valid_pairs),
-        "failed_predictions": len(rows) - len(valid_pairs),
-        "coverage": len(valid_pairs) / len(rows) if rows else 0.0,
-        "strict_accuracy": sum(row["correct"] for row in rows) / len(rows) if rows else 0.0,
-    }
-    if rows:
-        report["strict_classification"] = compute_classification_metrics(gold, predicted)
-    if valid_pairs:
-        agreement = compute_sentence_agreement(
-            [pair[0] for pair in valid_pairs],
-            [pair[1] for pair in valid_pairs],
-            kappa_weight=kappa_weight,
-        )
-        report["corpus_agreement_valid_predictions"] = agreement.to_dict()
-        report["coverage_adjusted_score"] = report["coverage"] * agreement.score
-    return report
-
-
-def _save_program(program: Any, path: Path) -> None:
-    try:
-        program.save(path)
-    except Exception as exc:  # noqa: BLE001 - serialization support varies by DSPy version
-        print(f"Warning: DSPy could not serialize {path.name}: {exc}")
-
-
-def _few_shot_configuration(
-    args: argparse.Namespace,
-    documents: Sequence[EpisodeDocument],
-) -> tuple[tuple[Any, ...], str]:
+def _seed_configuration(args: argparse.Namespace) -> tuple[tuple[Any, ...], str]:
+    """The few-shot examples and instructions GEPA starts from: an external prompt file, or the base prompt, or the
+    base prompt plus curated demonstrations."""
+    if args.seed_prompt_file is not None:
+        seed_prompt_file = Path(args.seed_prompt_file)
+        if not seed_prompt_file.is_file():
+            raise FileNotFoundError(f"seed prompt file does not exist: {seed_prompt_file}")
+        seed_instructions = seed_prompt_file.read_text(encoding="utf-8").strip()
+        if not seed_instructions:
+            raise ValueError(f"seed prompt file is empty: {seed_prompt_file}")
+        print(f"Using external GEPA seed prompt: {seed_prompt_file}")
+        return (), seed_instructions
     if args.prompt_variant != "few-shot":
         return (), SEED_INSTRUCTIONS
-    examples = select_few_shot_sentences(documents, count=args.few_shot_examples)
+    examples = select_few_shot_sentences(count=args.few_shot_examples)
     print(
         "Curated demonstrations: "
         + ", ".join(f"{example.example_id}={example.label}" for example in examples)
     )
     return examples, build_few_shot_instructions(examples)
-
-
-def _seed_configuration(
-    args: argparse.Namespace,
-    documents: Sequence[EpisodeDocument],
-) -> tuple[tuple[Any, ...], str]:
-    if args.seed_prompt_file is None:
-        return _few_shot_configuration(args, documents)
-
-    seed_prompt_file = Path(args.seed_prompt_file)
-    if not seed_prompt_file.is_file():
-        raise FileNotFoundError(f"seed prompt file does not exist: {seed_prompt_file}")
-    seed_instructions = seed_prompt_file.read_text(encoding="utf-8").strip()
-    if not seed_instructions:
-        raise ValueError(f"seed prompt file is empty: {seed_prompt_file}")
-    print(f"Using external GEPA seed prompt: {seed_prompt_file}")
-    return (), seed_instructions
 
 
 def _common_result_metadata(
@@ -895,8 +730,8 @@ def _common_result_metadata(
                 "strict accuracy, balanced accuracy, macro-F1, per-class metrics, "
                 "Cohen kappa, and Kendall tau-b"
             ),
-            "kappa_weight": args.kappa_weight,
-            "kendall_tau_b_weight": 1.0 - args.kappa_weight,
+            "kappa_weight": KAPPA_WEIGHT,
+            "kendall_tau_b_weight": 1.0 - KAPPA_WEIGHT,
             "kendall_label_order": list(SENTENCE_LABELS),
         },
     }
@@ -907,11 +742,13 @@ def _run_cross_validation(
     *,
     documents: Sequence[EpisodeDocument],
     timestamp: str,
+    audit_name: str,
     seed_instructions: str,
     few_shot_examples: Sequence[Any],
     metric: Callable[..., dspy.Prediction],
     reflection_lm: dspy.LM,
 ) -> dict[str, Any]:
+    """Nested response-grouped cross-validation: GEPA on each fold's inner split, scored on its untouched outer fold."""
     folds, locked_test = make_nested_group_folds(
         documents,
         folds=args.cv_folds,
@@ -943,24 +780,16 @@ def _run_cross_validation(
             log_dir=args.output_dir / "gepa_logs" / f"fold_{fold_number}",
             seed=args.seed + fold_index,
         )
-        outer_report, outer_predictions = _evaluate_and_collect(
-            outcome["selected_program"],
-            outer_testset,
-            kappa_weight=args.kappa_weight,
-        )
+        outer_report, outer_predictions = _evaluate_and_collect(outcome["selected_program"], outer_testset)
         for row in outer_predictions:
             row["outer_fold"] = fold_number
         all_outer_predictions.extend(outer_predictions)
 
-        selected_instructions = _extract_instructions(outcome["selected_program"])
         (prompts_dir / f"fold_{fold_number}_selected.txt").write_text(
-            selected_instructions,
+            _extract_instructions(outcome["selected_program"]),
             encoding="utf-8",
         )
-        _save_program(
-            outcome["selected_program"],
-            prompts_dir / f"fold_{fold_number}_selected_program.json",
-        )
+        outcome["selected_program"].save(prompts_dir / f"fold_{fold_number}_selected_program.json")
         fold_reports.append(
             {
                 "fold": fold_number,
@@ -992,12 +821,10 @@ def _run_cross_validation(
             "cv_folds": args.cv_folds,
             "inner_validation_documents": args.cv_inner_val_documents,
             "folds": fold_reports,
-            "aggregate_outer_test": _report_from_rows(
-                all_outer_predictions,
-                kappa_weight=args.kappa_weight,
-            ),
+            "aggregate_outer_test": _report_from_rows(all_outer_predictions),
             "locked_test_evaluated": False,
             "locked_test_question_ids": [document.question_id for document in locked_test],
+            "annotation_audit_file": audit_name,
         }
     )
     _write_jsonl(
@@ -1013,11 +840,10 @@ def _run_cross_validation(
 
 def main() -> None:
     args = parse_args()
-    raw_documents = load_documents(args.dataset_dir)
-    documents = _truncate_documents(raw_documents, args.max_units_per_document)
+    documents = load_documents(args.dataset_dir)
     args.output_dir.mkdir(parents=True, exist_ok=True)
     timestamp = datetime.now(UTC).strftime("%Y%m%d_%H%M%S")
-    audit = annotation_audit(raw_documents)
+    audit = annotation_audit(documents)
     audit_path = args.output_dir / f"annotation_audit_{timestamp}.json"
     audit_path.write_text(
         json.dumps(audit, indent=2, ensure_ascii=False),
@@ -1044,7 +870,7 @@ def main() -> None:
         max_tokens=args.reflection_max_tokens,
         temperature=args.reflection_temperature,
     )
-    _configure_lm(task_lm)
+    dspy.configure(lm=task_lm)
     judge_audit_path = (
         args.output_dir / f"judge_feedback_{timestamp}.jsonl"
         if args.gepa_reward == "llm-judge"
@@ -1055,7 +881,7 @@ def main() -> None:
         evaluation_lm=judge_lm,
         judge_audit_path=judge_audit_path,
     )
-    few_shot_examples, seed_instructions = _seed_configuration(args, documents)
+    few_shot_examples, seed_instructions = _seed_configuration(args)
     (args.output_dir / f"seed_prompt_{timestamp}.txt").write_text(
         seed_instructions,
         encoding="utf-8",
@@ -1066,29 +892,21 @@ def main() -> None:
             args,
             documents=documents,
             timestamp=timestamp,
+            audit_name=audit_path.name,
             seed_instructions=seed_instructions,
             few_shot_examples=few_shot_examples,
             metric=metric,
             reflection_lm=reflection_lm,
-        )
-        result["annotation_audit_file"] = audit_path.name
-        (args.output_dir / f"cross_validation_{timestamp}.json").write_text(
-            json.dumps(result, indent=2, ensure_ascii=False),
-            encoding="utf-8",
         )
         print(json.dumps(result, indent=2, ensure_ascii=False))
         return
 
     train_docs, val_docs, test_docs = split_documents(
         documents,
-        train_size=args.train_documents,
-        val_size=args.val_documents,
+        train_size=TRAIN_DOCUMENTS,
+        val_size=VAL_DOCUMENTS,
         seed=args.seed,
     )
-    if args.test_documents is not None:
-        if args.test_documents <= 0:
-            raise ValueError("--test-documents must be positive")
-        test_docs = test_docs[: args.test_documents]
     trainset = documents_to_dspy_examples(train_docs, dspy)
     valset = documents_to_dspy_examples(val_docs, dspy)
     testset = documents_to_dspy_examples(test_docs, dspy)
@@ -1127,11 +945,7 @@ def main() -> None:
     test_predictions: list[dict[str, Any]] = []
     if args.evaluate_locked_test:
         print("Explicit authorization received; evaluating the selected prompt on locked test.")
-        test_report, test_predictions = _evaluate_and_collect(
-            outcome["selected_program"],
-            testset,
-            kappa_weight=args.kappa_weight,
-        )
+        test_report, test_predictions = _evaluate_and_collect(outcome["selected_program"], testset)
     else:
         print("Locked test not evaluated. Re-run once with --evaluate-locked-test when ready.")
 
@@ -1146,10 +960,6 @@ def main() -> None:
         {
             "mode": "final_fit",
             "annotation_audit_file": audit_path.name,
-            "smoke_limits": {
-                "max_units_per_document": args.max_units_per_document,
-                "test_documents": args.test_documents,
-            },
             "split_question_ids": {
                 "train": [document.question_id for document in train_docs],
                 "validation": [document.question_id for document in val_docs],
@@ -1162,7 +972,6 @@ def main() -> None:
             },
             "seed_validation": outcome["seed_report"],
             "gepa_optimized_validation": outcome["optimized_report"],
-            "optimized_validation": outcome["optimized_report"],
             "selection": outcome["selection"],
             "selected_validation": selected_report,
             "selected_program": outcome["selected_name"],
@@ -1202,14 +1011,8 @@ def main() -> None:
         selected_instructions,
         encoding="utf-8",
     )
-    _save_program(
-        outcome["optimized_program"],
-        args.output_dir / f"gepa_optimized_program_{timestamp}.json",
-    )
-    _save_program(
-        outcome["selected_program"],
-        args.output_dir / f"selected_program_{timestamp}.json",
-    )
+    outcome["optimized_program"].save(args.output_dir / f"gepa_optimized_program_{timestamp}.json")
+    outcome["selected_program"].save(args.output_dir / f"selected_program_{timestamp}.json")
 
     selected_nominal = selected_report["strict_classification"]
     test_agreement = (

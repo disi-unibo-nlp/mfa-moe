@@ -1,3 +1,9 @@
+"""The labelled Schoenfeld responses the judge prompt is optimised on: loading, response-grouped splits, the DSPy
+examples (problem, neighbouring sentences, gold label) and an audit of units that merit a human look.
+
+Splits cut between whole responses only, so no response is ever in two of train, validation, cross-validation fold or
+locked test. Correct answers and rationales from `SAT.json` are never put in front of the model.
+"""
 from __future__ import annotations
 
 import json
@@ -9,15 +15,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-SENTENCE_LABELS = (
-    "Read",
-    "Analyze",
-    "Plan",
-    "Implement",
-    "Explore",
-    "Verify",
-    "Monitor",
-)
+from store import CLASSES as SENTENCE_LABELS
 
 
 @dataclass(frozen=True)
@@ -45,10 +43,6 @@ def _resolve_labels_dir(dataset_dir: Path) -> Path:
             f"Expected responses_labeled under {dataset_dir}, or pass that directory directly."
         )
     return labels_dir
-
-
-def _dataset_root(labels_dir: Path) -> Path:
-    return labels_dir.parent
 
 
 def _nonempty_text(value: Any) -> str:
@@ -109,7 +103,7 @@ def _natural_json_key(path: Path) -> tuple[int, str]:
 def load_documents(dataset_dir: Path) -> list[EpisodeDocument]:
     """Load sentence-level gold labels, retaining response membership for splitting."""
     labels_dir = _resolve_labels_dir(dataset_dir)
-    problems = _load_problem_statements(_dataset_root(labels_dir))
+    problems = _load_problem_statements(labels_dir.parent)
     documents: list[EpisodeDocument] = []
 
     for path in sorted(labels_dir.glob("*.json"), key=_natural_json_key):
