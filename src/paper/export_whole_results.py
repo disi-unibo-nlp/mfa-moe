@@ -29,9 +29,10 @@ import json
 import math
 import re
 
+from paper.cl_models import MODELS, PLOT_LABELS
 from paper.cl_paths import PAPER, REPO
 from paper.export_routing_results import PAPER_CLASSES, DRIVER, TABLE_NAMES, TICKS, cid
-from store import MODELS, file_sha, verified
+from store import file_sha, verified
 
 DEFAULT_EFFECTS = REPO / "report/whole-reasoning-20261021-r20/analysis-combined/EFFECTS_WHOLE.json"  # the final receipt
 PREREG = DRIVER / "EFFICIENCY_LINK_PREREG.json"
@@ -69,8 +70,6 @@ STATE_PANELS = (("tokens", r"(a) Reasoning-token change, targeted $-$ random (\%
 CELL_W, CELL_H, BLOCK_GAP, PANEL_GAP = 20, 18, 8, 46  # pt
 # Ends of the diverging scale of state_transitions.tex: gomblueone below zero, F00000 above.
 SCALE_ENDS = {"low": (24, 118, 210), "high": (240, 0, 0)}
-# One \plotmodel label per model, in paper order (the pooled "All models" tick is dropped).
-PLOT_LABELS = re.findall(r"\{\\plotmodel\{[^}]*\}\{[^}]*\}\{[^}]*\}\}", TICKS)
 
 
 # --- receipt access and display units --------------------------------------------------------
@@ -204,7 +203,7 @@ def primary_table(effects, record, source, sweep_models):
         "Paired effects of routing edits at full strength on reasoning tokens and strict accuracy, "
         "with family-bootstrap simultaneous 95\\% confidence intervals as subscripts.",
         "Targeted edits promote or suppress the efficiency-directed states of each model, random "
-        "edits use matched control expert sets, and native routing is unedited; each column pair "
+        "edits use matched control expert sets, and native routing is unedited.\n%\nEach column pair "
         "compares the first arm with the second.",
         UNITS + ".",
         SIMULTANEOUS.format("the rows and both outcomes of each comparison"),
@@ -673,7 +672,7 @@ def states_figure(grids, models, out):
     rows = len(models)
     height, block_width = rows * CELL_H, len(PAPER_CLASSES) * CELL_W
     width = 2 * block_width + BLOCK_GAP
-    labels = ",".join(PLOT_LABELS[MODELS.index(m)] for m in models)
+    labels = ",".join(PLOT_LABELS[m] for m in models)
     states = ",".join(STATE[c] for c in PAPER_CLASSES)
     lines = ["% Native PORTS temperature-heatmap cell grid (plot-ports-temperature-heatmap.tex), "
              "adapted as in state_transitions.tex:",

@@ -19,8 +19,9 @@ the larger one-sided margin.
 import json
 import math
 
+from paper.cl_models import MODELS, SOURCE_MODELS, TICKS as MODEL_TICKS
 from paper.cl_paths import DATA, FIGURES, PAPER, REPO
-from store import MODELS, file_sha, verified
+from store import file_sha, verified
 
 TABLES = PAPER / "journal/tables"
 DRIVER = REPO / "report/final-routing-20261015-r1/driver"
@@ -63,9 +64,7 @@ def cid(mean, minus, digits, plus=None):
     return "\\cid{" + f"{mean:.{digits}f}" + "}{" + f"{minus:.{digits}f}" + "}{" + f"{plus:.{digits}f}" + "}"
 
 
-TICKS = ("{\\plotmodel{openai}{}{20B}},{\\plotmodel{nvidia}{3.5}{30B}},{\\plotmodel{qwen}{3.5}{35B}},"
-         "{\\plotmodel{qwen}{3.6}{35B}},{\\plotmodel{gemma}{4}{26B}},{\\plotmodel{zhipu}{4.7}{30B}},"
-         "{\\plotmodel{qwen}{3}{30B}},{\\plotmodel{liquid}{2.5}{24B}},{\\shortstack{All\\\\models}}")
+TICKS = MODEL_TICKS + r",{\shortstack{All\\models}}"
 COLORS = ("gomblueone", "gombluetwo", "gomorangeone", "gomorangetwo")
 SHIFTS = (-10.5, -3.5, 3.5, 10.5)
 STATE = ("activate:occupancy", "deactivate:occupancy", "activate:first", "deactivate:first")
@@ -150,13 +149,13 @@ def routing_table(effects, record):
     table = r"""% Source: report/final-routing-20261015-r1/driver/analysis-final/EFFECTS.json via scripts/paper/export_routing_results.py.
 \begin{table}[tb]
 \centering\small
-\caption{Paired effects of routing interventions at central strength, with family-bootstrap simultaneous 95\% confidence intervals as subscripts.
+\caption{Effects of brief expert activation and deactivation at the model-specific expert budget, with family-bootstrap simultaneous 95\% confidence intervals as subscripts.
 %
-State columns give targeted minus matched-random arms in percentage points for target-state occupancy over the analysis window and for the first complete sentence; positive values favor the intended direction of activation or deactivation.
+State columns report targeted minus matched-random arms in percentage points for target-state occupancy over the analysis window and for the first complete sentence.
+%
+Positive values favor the intended direction of activation or deactivation.
 %
 Efficiency columns compare targeted activation with matched random activation and with native routing, as accuracy in percentage points and generated tokens to the final answer in percent.
-%
-Each model uses its prepared family prefixes, 129 families except Nemotron and Qwen3-30B (128) and LFM2.5 (112).
 %
 Intervals are simultaneous over the four state contrasts or over all efficiency contrasts of the row.}
 \label{tab:routing}
@@ -166,7 +165,7 @@ Intervals are simultaneous over the four state contrasts or over all efficiency 
 \toprule
  & \multicolumn{4}{c}{Target state, targeted $-$ random (pp)} & \multicolumn{2}{c}{Activation $-$ random} & \multicolumn{2}{c}{Activation $-$ native} \\
 \cmidrule(lr){2-5}\cmidrule(lr){6-7}\cmidrule(lr){8-9}
-Model & Occ.\ act. & Occ.\ deact. & First act. & First deact. & Acc.\ (pp) & Tokens (\%) & Acc.\ (pp) & Tokens (\%) \\
+Model & Occ\ act & Occ\ deact & First act & First deact & Acc\ (pp) & Tokens (\%) & Acc\ (pp) & Tokens (\%) \\
 \midrule
 """ + "\n".join(rows) + r"""
 \bottomrule
@@ -228,7 +227,7 @@ def strong_table(strong, record):
     if tuple(strong["models"]) != ("gpt", "nemotron", "qwen330b", "gemma") or strong["design"] != "strong":
         raise ValueError("strong-dose roster differs")
     srows, record["strong"] = [], {}
-    for model in strong["models"] + ["all"]:
+    for model in [m for m in MODELS if m in strong["models"]] + ["all"]:
         primary = strong["primary_pooled"] if model == "all" else strong["primary_by_model"][model]
         cells = [points(primary["activate:occupancy"]), points(primary["activate:first"])]
         record["strong"][model] = {"occupancy": cells[0], "first": cells[1]}
@@ -249,7 +248,7 @@ def strong_table(strong, record):
 %
 The arm forces the nominated high-count expert sets at all three depth regions throughout the analysis window and compares them with the matched high-count control sets.
 %
-State columns give targeted minus matched-random percentage points.
+State columns report targeted minus matched-random percentage points.
 %
 Accuracy is in percentage points and generated tokens in percent; efficiency contrasts are estimated on the pooled population only.}
 \label{tab:routing-strong}
@@ -281,7 +280,7 @@ def link_table(effects):
     cells = {(c["model"], c["class"]): c["tok_reason"] for c in link["cells"]}
     pooled_link = {c["class"]: c["tok_reason"] for c in link["pooled"]}
     link_rows = []
-    for model in link["models"] + ["pooled"]:
+    for model in [m for m in MODELS if m in link["models"]] + ["pooled"]:
         entries = []
         for c in PAPER_CLASSES:
             v = pooled_link[c] if model == "pooled" else cells[model, c]
@@ -292,13 +291,17 @@ def link_table(effects):
     (TABLES / "efficiency_link.tex").write_text(r"""% Source: report/final-routing-20261015-r1/driver/EFFICIENCY_LINK_V2.json via scripts/paper/export_routing_results.py.
 \begin{table}[tb]
 \centering\small
-\caption{Pre-registered native association between the current reasoning state and the remaining reasoning length, with 95\% family-bootstrap confidence intervals as subscripts.
+\caption{Native association between the current reasoning state and the remaining reasoning length, with 95\% family-bootstrap confidence intervals as subscripts.
 %
-Entries are 100 times the regression coefficient of a class indicator on the log of the reasoning tokens that remain after the sentence, with question and absolute-position fixed effects.
+Entries are 100 times the coefficient of the class indicator in a regression of $\log(1+R_s)$, where $R_s$ counts reasoning tokens remaining after sentence $s$, with question-by-absolute-position-bin fixed effects and equal sentence weights.
 %
 Negative values mark states followed by shorter remaining reasoning.
 %
-The coefficients of the seven other models were frozen before any intervention outcome existed; those of LFM2.5, whose native labels came later, were estimated afterwards with the same estimator.}
+Re, An, Ex, Pl, Im, Ve and Mo abbreviate Read, Analyze, Explore, Plan, Implement, Verify and Monitor.
+%
+The coefficients of the seven other models were frozen before any intervention outcome existed.
+%
+Those of LFM2.5, whose native labels came later, were estimated after its intervention runs with the same estimator.}
 \label{tab:efficiency-link}
 \setlength{\tabcolsep}{2pt}
 \begin{adjustbox}{max width=\linewidth}
@@ -317,7 +320,7 @@ Model & \textrm{Re} & \textrm{An} & \textrm{Ex} & \textrm{Pl} & \textrm{Im} & \t
 
 def main():
     effects, strong = verified(MAIN), verified(STRONG)
-    if tuple(effects["models"]) != MODELS or effects["design"] != "main":
+    if tuple(effects["models"]) != SOURCE_MODELS or effects["design"] != "main":
         raise ValueError("main effects roster differs")
     record = {}
     routing_table(effects, record)

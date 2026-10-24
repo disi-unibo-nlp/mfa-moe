@@ -14,4 +14,4 @@ scripts/paper/build.sh
 scripts/paper/check.sh
 ```
 
-Never edit the exported tables by hand. `export.sh` runs `paper.export_routing_results`, `paper.export_whole_results` and `paper.export_cl_exhibits`; what each one writes, which receipt feeds which table or figure, and the other checks (`paper.verify_cl_tables` and friends) are in [`src/paper`](../../src/paper/README.md).
+Never edit the exported tables by hand. `export.sh` runs `paper.export_routing_results`, `paper.export_whole_results` and `paper.export_cl_exhibits`; what each one writes, which receipt feeds which table or figure, and the other checks (`paper.verify_cl_tables`, `paper.verify_cl_printed_tables` and friends) are in [`src/paper`](../../src/paper/README.md).
