@@ -15,7 +15,7 @@ import json
 from pathlib import Path
 import numpy as np
 from store import BENCHMARKS, CLASSES, MODELS, load, publish, require, verified
-from steering.pulse import DRIVER, ROOT, binding, bulk, log
+from steering.pulse import DRIVER, STUDY, binding, bulk, log
 
 PRIMARY = ('activate:first', 'activate:occupancy', 'deactivate:first', 'deactivate:occupancy')
 SEMANTIC_PREFIXES = {
@@ -201,7 +201,7 @@ def analysis_assignments(model: str, design: str) -> list[dict]:
     manifest = verified(DRIVER/model/MANIFESTS[design])
     rows = list(manifest['records'])
     if design == 'main' and manifest.get('unavailable'):
-        original = verified(ROOT/model/'ASSIGNMENTS-full.json')
+        original = verified(STUDY/model/'ASSIGNMENTS-full.json')
         require(original['sha256'] == manifest['source_assignments_sha256'], 'original analysis assignments changed')
         unavailable = set(manifest['unavailable'])
         restored = [row for row in original['records'] if row['uid'] in unavailable]
@@ -691,7 +691,7 @@ def analyze(models, out, design='main'):
     import pandas as pd
     require(not any((out/name).exists() for name in ('EFFECTS.json', 'continuations.parquet', 'pairs.parquet')),
             'corrected analysis requires a fresh output directory; preserve historical results')
-    allocation = load(ROOT/'ALLOCATION.json')['records']
+    allocation = load(STUDY/'ALLOCATION.json')['records']
     benchmarks = {r['family']: r['benchmark'] for r in allocation}
     table = continuation_table(models, design)
     pairs = paired(table)

@@ -58,11 +58,11 @@ Each paper experiment has one launcher. The launcher submits the job, which call
 | Experiment | Launcher (`scripts/routing/`) | Module (`src/routing/`) | Output or receipt | Used in the paper |
 | --- | --- | --- | --- | --- |
 | Present-state readout, 7 models | `readout.sh OUT_DIR` | `readout` | `readout-results.v3.json` | Figure `readout`, table `readout` |
-| Present-state readout, LFM2.5 | `lfm.sh` | `lfm` (`derive`, `readout`, `dynamics`) | `report/final-routing-20261015-r1/lfm25/READOUT_RESULTS.json` | Same figure and table |
+| Present-state readout, LFM2.5 | `lfm.sh OUT_DIR` | `lfm` (`derive`, `readout`, `dynamics`) | `report/final-routing-20261015-r1/lfm25/READOUT_RESULTS.json` (a rerun writes `OUT_DIR/READOUT_RESULTS.json`) | Same figure and table |
 | Anticipation (GPT-OSS, Qwen3.6) | `anticipation.sh OUT_DIR` | `anticipation` | `anticipation-results.json` | Figure `next_state`, table `next_state` |
 | Next state, 8 models | `next_state.sh` | `next_state` | `report/final-routing-20261015-r1/driver/NEXT_STATE.json` | Not in the paper yet (it will replace the anticipation figure) |
-| Expert selection coverage | `selection.sh OUT_DIR` (LFM2.5: `lfm.sh`) | `selection`, `lfm` | `selection_coverage.csv` | Figure `selection`, tables `selection`, `selection_folds` |
-| Occupancy and transitions | `dynamics.sh OUT_DIR` (LFM2.5: `lfm.sh`) | `dynamics`, `lfm` | `NATIVE_DYNAMICS_SUMMARY.json` per model | Figures `occupancy`, `state_transitions`, `transition_summary`; tables `occupancy`, `state_transitions` |
+| Expert selection coverage | `selection.sh OUT_DIR` (LFM2.5: `lfm.sh OUT_DIR`) | `selection`, `lfm` | `selection_coverage.csv` | Figure `selection`, tables `selection`, `selection_folds` |
+| Occupancy and transitions | `dynamics.sh OUT_DIR` (LFM2.5: `lfm.sh OUT_DIR`) | `dynamics`, `lfm` | `NATIVE_DYNAMICS_SUMMARY.json` per model | Figures `occupancy`, `state_transitions`, `transition_summary`; tables `occupancy`, `state_transitions` |
 | Efficiency link | `efficiency_link.sh` | `efficiency_link` | `report/final-routing-20261015-r1/driver/EFFICIENCY_LINK_V2.json` | Table `efficiency_link`; picks the experts of whole-reasoning steering |
 | Lexical classifier | `lexical.sh OUT_DIR` | `lexical` | five fold classifiers in `OUT_DIR` | Appendix, lexical reading of continuations |
 
@@ -84,7 +84,7 @@ Launchers are in `scripts/steering/`, modules in `src/steering/`.
 | Build the figures and the PDF | `build.sh` | `build_cl_figures`, `build_cl_manuscript` | PDF under `paper/manuscript-support/build` |
 | Check the writing rules | `check.sh` | paper-writer rules | rule report |
 
-Unit tests of the live code: `tests/` (see its README). `scripts/steering/tests.sh` runs the steering and routing tests as a Slurm job.
+Unit tests of the live code: `tests/` (see its README). Every steering release first runs the steering and routing tests in a Slurm job (`python -m steering.whole validate`).
 
 ## Old code
 

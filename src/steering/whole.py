@@ -6,6 +6,8 @@ and the seeds; no row is ever redrawn. Run each stage as a Slurm job from the re
 (scripts/steering/launch.sh submits them):
 
   python -m steering.whole plan --release R                   what to run: the snapshot and the shards per model
+  python -m steering.whole budget --release R --cpu-hours C --gpu-hours G   refuse jobs that exceed the release's ceilings
+  python -m steering.whole validate --release R               CPU: the unit tests of the snapshot, sealed in CPU_VALIDATION.json
   python -m steering.whole prepare --release R                CPU: publish the manifests of every model
   python -m steering.whole canary --release R --model M       GPU: the fluency canary of a base release
   python -m steering.whole run --release R --model M --shard I/N    GPU: the rows of one shard
@@ -19,6 +21,9 @@ from functools import lru_cache
 import math
 import os
 from pathlib import Path
+import re
+import subprocess
+import sys
 import time
 
 import numpy as np
@@ -118,6 +123,44 @@ def verify_release(root: Path) -> dict:
     check_files(release['code_files'])
     check_files(release['inputs'])
     return release
+
+
+def validate(root: Path) -> dict:
+    """Run the unit tests of the steering and routing code from the release snapshot and seal the result.
+
+    A receipt left by an earlier launch of the same release is kept: its tests ran on the same snapshot.
+
+    Returns:
+        CPU_VALIDATION.json: whether every suite passed, how many tests ran, the job and the snapshot commit.
+    """
+    release = verify_release(root)
+    path = root/'CPU_VALIDATION.json'
+    if not path.exists():
+        tests, failed = 0, False
+        for folder in ('tests/steering', 'tests/steering/outcome', 'tests/routing'):
+            suite = subprocess.run([sys.executable, '-B', '-m', 'unittest', 'discover', '-s', folder, '-t', folder],
+                                   cwd=REPO, capture_output=True, text=True)
+            sys.stderr.write(suite.stderr)
+            ran = re.search(r'^Ran (\d+) tests?', suite.stderr, re.MULTILINE)
+            tests += int(ran.group(1)) if ran else 0
+            failed |= suite.returncode != 0 or not ran
+        publish(path, {'passed': not failed and tests > 0, 'tests': tests, 'job': os.environ['SLURM_JOB_ID'],
+                       'commit': release['commit']})
+    return verified(path)
+
+
+def validated(root: Path) -> None:
+    """Stop unless the unit tests of this release passed in an allocated job (see validate)."""
+    require(verified(root/'CPU_VALIDATION.json')['passed'], 'the unit tests of this release did not pass')
+
+
+def budget(root: Path, cpu_hours: float, gpu_hours: float) -> None:
+    """Stop unless the time limits of the jobs about to be submitted fit the ceilings sealed in the release."""
+    release = verified(root/'RELEASE.json')
+    cpu_ceiling, gpu_ceiling = release['cpu_core_hour_ceiling'], release['new_gpu_hour_ceiling']
+    print(f'committed {cpu_hours:.1f} CPU core-hours of {cpu_ceiling:.1f} and {gpu_hours:.1f} GPU-hours of {gpu_ceiling:.1f}')
+    require(cpu_hours <= cpu_ceiling, f'the jobs commit {cpu_hours:.1f} CPU core-hours; the release allows {cpu_ceiling:.1f}')
+    require(gpu_hours <= gpu_ceiling, f'the jobs commit {gpu_hours:.1f} GPU-hours; the release allows {gpu_ceiling:.1f}')
 
 
 def _layer_actions(roles: dict, profile: dict) -> list[dict]:
@@ -805,8 +848,10 @@ def plan(root: Path) -> None:
 
 def main(argv=None):
     parser = argparse.ArgumentParser(prog='steering.whole', description=__doc__.split('\n\n')[0])
-    parser.add_argument('command', choices=('plan', 'prepare', 'canary', 'run', 'extract', 'combine'))
+    parser.add_argument('command', choices=('plan', 'budget', 'validate', 'prepare', 'canary', 'run', 'extract', 'combine'))
     parser.add_argument('--release', type=Path, required=True, help='the release folder, report/NAME')
+    parser.add_argument('--cpu-hours', type=float, help='budget only: CPU core-hours the jobs may use at most')
+    parser.add_argument('--gpu-hours', type=float, help='budget only: GPU-hours the jobs may use at most')
     parser.add_argument('--model', choices=MODELS)
     parser.add_argument('--dose', choices=tuple(DOSES), help='canary only; default: the model\'s declared start dose')
     parser.add_argument('--shard', type=driver.parse_shard, default=(0, 1))
@@ -814,8 +859,14 @@ def main(argv=None):
     root = args.release.resolve()
     if args.command == 'plan':
         return plan(root)
+    if args.command == 'budget':
+        require(args.cpu_hours is not None and args.gpu_hours is not None, 'budget needs --cpu-hours and --gpu-hours')
+        return budget(root, args.cpu_hours, args.gpu_hours)
     require(os.environ.get('SLURM_JOB_ID'), 'whole stages run inside Slurm jobs')
-    if args.command == 'prepare':
+    if args.command == 'validate':
+        require(validate(root)['passed'], 'the unit tests of this release failed')
+    elif args.command == 'prepare':
+        validated(root)
         driver.log({'event': 'prepare-whole', 'results': prepare(root)})
     elif args.command in ('canary', 'run'):
         require(os.environ.get('SLURM_JOB_GPUS'), 'whole inference requires allocated GPUs')
@@ -840,6 +891,7 @@ def main(argv=None):
         if args.command == 'extract':
             whole_effects.extract(root, args.model)
         else:
+            validated(root)
             whole_effects.combine(root)
 
 

@@ -16,8 +16,8 @@ The same routing operators serve all three.
 | --- | --- |
 | `pulse.py` | The pulsed design: its manifests, one engine per model shard that admits requests while others finish, and the LFM2.5 stages (`native`, `annotate`, `lfm-replay`). |
 | `pulse_outcomes.py` | Reads the saved continuations and writes one table of outcomes and one of sentences per model. |
-| `pulse_effects.py` | The paired effects with bounds for unknown outcomes, the family bootstrap and the efficiency-link test. |
-| `whole.py` | The whole-reasoning release: manifests, the fluency canary, the shards, `plan`, `prepare`, `run`. |
+| `pulse_effects.py` | The paired effects with bounds for unknown outcomes, the bootstrap, and the efficiency-link test. |
+| `whole.py` | The whole-reasoning release: manifests, the fluency canary, the shards, `plan`, `budget`, `validate`, `prepare`, `run`. |
 | `whole_effects.py` | Replays and scores the finished rows (`extract`) and joins every release into `EFFECTS_WHOLE.json` (`combine`). |
 | `release.py` | Seals a complement, relink or outcome release: receipts plus a frozen copy of the code. |
 | `stream.py`, `observer.py`, `operators.py` | The hooks that change the routing of the running model, and the operators: hard inclusion and exclusion, and the score override that follows SteerMoE. |
@@ -46,7 +46,14 @@ scripts/steering/launch.sh NAME                          # submit the jobs of a 
 DRY_RUN=1 scripts/steering/launch.sh NAME                # print the sbatch commands only
 ```
 
-The stages are `plan`, `prepare`, `canary`, `run`, `extract`, `combine`. Slurm is only in `scripts/steering/`: dependencies, resources and walltimes are in `launch.sh`. A shard asks for 4 hours of 2 GPUs, the release records its declared ceilings, and `scripts/slurm/ledger.sh whole-` adds up what was spent. The fluency canary of a base release runs by hand (`python -m steering.whole canary`); it checks that steered continuations do not break down (reach the limit or repeat themselves far more often than native ones), and its receipt is what lets `run` start production. A continuation still running at the end of an allocation is saved with its tokens and resumed later through the same hooks, so every position keeps its steering and nothing is redrawn.
+The stages are `python -m steering.whole plan | budget | validate | prepare | canary | run | extract |
+combine`. Slurm is only in `scripts/steering/`: dependencies, resources and walltimes are in
+`launch.sh`. A shard asks for 4 hours of 2 GPUs. The release records its CPU and GPU ceilings, and
+`launch.sh` submits nothing when the walltimes of its jobs add up to more (`budget`);
+`scripts/slurm/ledger.sh whole-` adds up what was spent. `validate` runs the unit tests of the
+snapshot and seals the result in `CPU_VALIDATION.json`; `prepare` and `combine` need it to have passed.
+The fluency canary of a base release is run by hand (`python -m steering.whole canary`), and its
+receipt is what lets `run` start production.
 
 Two rules apply to results: an outcome that is unknown (a continuation that reaches its allowance, or never finishes) keeps an interval and is never dropped, and nothing is redrawn after the fact. Token contrasts are `log(1+T_control) - log(1+T_treated)`, so a positive value means shorter reasoning than the control.
 

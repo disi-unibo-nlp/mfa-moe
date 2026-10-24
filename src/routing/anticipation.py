@@ -224,7 +224,8 @@ def summarize(d, predictions, targets, families):
 
 
 def run(workers, out):
-    require(os.environ.get('SLURM_JOB_ID'), 'anticipation fits require CPU Slurm')
+    # Set in batch jobs and srun steps, not in the interactive shell that salloc starts on a login node.
+    require(os.environ.get('SLURM_JOB_ID') and os.environ.get('SLURMD_NODENAME'), 'anticipation fits require a CPU Slurm batch job')
     out = Path(out)
     require(not (out / 'anticipation-results.json').exists(), f'{out} already holds anticipation results; use a new --out')
     started = time.monotonic()

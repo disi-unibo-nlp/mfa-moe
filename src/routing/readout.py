@@ -148,7 +148,9 @@ def analyse(sr, md, context_counts, mode, workers, family, family_ids, directory
 
 
 def run(workers, out):
-    require(os.environ.get('SLURM_JOB_ID'), 'Clean readouts require a CPU Slurm allocation')
+    # SLURMD_NODENAME is set in batch jobs and srun steps (also on the serial partition, whose nodes are login08 and
+    # login13), but not in the interactive shell that salloc starts on a login node.
+    require(os.environ.get('SLURM_JOB_ID') and os.environ.get('SLURMD_NODENAME'), 'Clean readouts require a CPU Slurm batch job')
     out = Path(out)
     require(not (out / 'readout-results.v3.json').exists(), f'{out} already holds readout results; use a new --out')
     started = time.monotonic()
