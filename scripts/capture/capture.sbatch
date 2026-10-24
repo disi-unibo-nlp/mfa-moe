@@ -5,7 +5,7 @@
 # Capture the routers of one shard of one model from its frozen manifest, or ("verify") run the 2-trace check that comes first:
 #   sbatch scripts/capture/capture.sbatch MODEL MANIFEST OUTPUT_DIR [verify]
 # The paper's manifests: /leonardo_scratch/fast/IscrC_MIOSR/lmolfett/mfa-moe/campaign-v3/manifests/MODEL/{A,B}/SHARD.json and MODEL/verify.json.
-# A repeat goes to a new tree: OUTPUT_DIR = ROOT/verify for the check, then ROOT/0, ROOT/1 ... for the shards (see src/capture/PORTED.md).
+# A repeat goes to a new tree: OUTPUT_DIR = ROOT/verify for the check, then ROOT/0, ROOT/1 ... for the shards (see src/capture/README.md).
 # After "drained" (exit 75, the last 30 minutes are not used) or a failure, the same command resumes.
 [ -z "${4:-}" ] || [ "$4" = verify ] || { echo "4th argument must be the word verify, got: $4" >&2; exit 2; }
 source scripts/slurm/env.sh || exit 1
