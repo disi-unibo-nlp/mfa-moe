@@ -334,8 +334,8 @@ def prepare_model(root: Path, b: dict, model: str) -> dict:
                 'CAPTURE_NATIVE.json': capture_manifest, 'OUTCOME_SWEEP.json': sweep_manifest}
     sweep = sweep_doses(root)
     present = [name for name in builders if (root/name).exists()]
-    require(len(present) <= 1, 'a release is either a top-up, a resume, an outcome-steering release, a capture '
-                               'release, a complement or a continuation')
+    require(len(present) <= 1, 'a release is either a top-up, a resume or an outcome-steering release '
+                               '(or a complement, a continuation or a capture)')
     if present:
         spec = verified(root/present[0])['models'][model]
         return {model+':'+sweep[model]: builders[present[0]](root, model, spec)}
