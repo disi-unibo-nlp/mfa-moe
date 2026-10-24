@@ -24,7 +24,7 @@ ENTRY_POINTS = [
     'steering.stream', 'steering.observer', 'steering.fast_penalties', 'steering.penalties',
     'labeling.renderer_child',
     'steering.outcome.__main__',
-    'generation.generate', 'labeling.sample_cohorts',
+    'generation.generate', 'generation.serve_flags', 'models.roster', 'labeling.sample_cohorts',
     'labeling.annotation_batch', 'generation.answer_equivalence',
     'labeling.gepa.run',
     'capture.run', 'capture.gate', 'capture.vllm_capture',

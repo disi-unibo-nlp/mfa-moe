@@ -1,21 +1,23 @@
 # scripts/serve
 
-One short vLLM server script per model, plus one for the judge. You do not run them by hand. A job that needs a model calls `start_server NAME` from `scripts/slurm/env.sh`, which starts `scripts/serve/NAME.sh` in the background and waits for it.
+One script starts the vLLM server of any model: `serve_model.sh HF_MODEL`, for example `serve_model.sh openai/gpt-oss-20b`. You do not run it by hand. A job that needs a model calls `start_server HF_MODEL` from `scripts/slurm/env.sh` (`start_server $JUDGE_MODEL` for the judge), which starts `serve_model.sh` in the background and waits for it. `start_server` also accepts the short key (`gpt`) of a study model; the list of models is `python -m models.roster`.
 
-`args.sh` holds the flags every server shares: two GPUs with tensor parallelism, bfloat16 weights and KV cache (the A100 has no FP8 KV cache), prefix caching, 8,192 batched tokens, 90 percent of GPU memory, and a local-only address on the job's port.
+The flags are not in the script. `src/generation/serve_flags.py` builds them from one table: the server settings of each card profile in `src/generation/model_profiles.py` (the same values every trace records in its contract) and the judge's own settings. `serve_model.sh` runs what `PORT=20123 python -m generation.serve_flags HF_MODEL` prints, one argument per line. `tests/generation/test_serve_flags.py` pins the result against the command lines the eight earlier per-model scripts started, so a change to a flag shows up as a failing test.
 
-| Script | Model and revision | Reasoning parser | Context | Notes |
+The flags every server shares: two GPUs with tensor parallelism, bfloat16 weights and KV cache (the A100 has no FP8 KV cache), prefix caching, 8,192 batched tokens, 90 percent of GPU memory, and a local-only address on the job's port.
+
+| Model | Hugging Face id and revision | Reasoning parser | Context | Notes |
 | --- | --- | --- | --- | --- |
-| `gpt.sh` | `openai/gpt-oss-20b` `6cee5e8` | `openai_gptoss` | 131,072 | Native MXFP4 weights. Sampling and the medium reasoning level are set by the client. |
-| `nemotron.sh` | `nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4` `bee7596` | `nemotron_v3` | 133,120 | DSpark draft model, 3 speculative tokens. Triton attention and Mamba backend, Marlin linear layers. |
-| `qwen35.sh` | `Qwen3.5-35B-A3B-GPTQ-Int4` `3af5ca2` (local copy) | `qwen3` | 133,120 | MTP, 3 speculative tokens. Text only. |
-| `qwen36.sh` | `Qwen/Qwen3.6-35B-A3B-FP8` `95a723d` | `qwen3` | 133,120 | MTP, 3 speculative tokens. Text only. |
-| `gemma.sh` | `nvidia/Gemma-4-26B-A4B-NVFP4` `a19cfe0` (local copy) | `gemma4` | 133,120 | Text only, Marlin linear layers. Thinking is switched on by the client. |
-| `glm.sh` | `zai-org/GLM-4.7-Flash` `7dd2089` | `glm45` | 133,120 | `TRITON_MLA` attention: GLM uses MLA kernels, and this is the only MLA backend that supports the A100. |
-| `qwen330b.sh` | `Qwen/Qwen3-30B-A3B` `ad44e77` | `qwen3` | 40,960 | The model's native window, no YaRN. No MTP head. |
-| `judge.sh` | `Qwen/Qwen3.8-27B` `1d4bf0f` | `qwen3` | 49,152 | The sentence labeller and answer checker. MTP, 3 tokens, eager mode, 64 sequences. |
+| `gpt` | `openai/gpt-oss-20b` `6cee5e8` | `openai_gptoss` | 131,072 | Native MXFP4 weights. Sampling and the medium reasoning level are set by the client. |
+| `nemotron` | `nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4` `bee7596` | `nemotron_v3` | 133,120 | DSpark draft model, 3 speculative tokens. Triton attention and Mamba backend, Marlin linear layers. |
+| `qwen35` | `Qwen/Qwen3.5-35B-A3B-GPTQ-Int4` `3af5ca2` (local copy) | `qwen3` | 133,120 | MTP, 3 speculative tokens. Text only. |
+| `qwen36` | `Qwen/Qwen3.6-35B-A3B-FP8` `95a723d` | `qwen3` | 133,120 | MTP, 3 speculative tokens. Text only. |
+| `gemma` | `nvidia/Gemma-4-26B-A4B-NVFP4` `a19cfe0` (local copy) | `gemma4` | 133,120 | Text only, Marlin linear layers. Thinking is switched on by the client. |
+| `glm` | `zai-org/GLM-4.7-Flash` `7dd2089` | `glm45` | 133,120 | `TRITON_MLA` attention: GLM uses MLA kernels, and this is the only MLA backend that supports the A100. |
+| `qwen330b` | `Qwen/Qwen3-30B-A3B` `ad44e77` | `qwen3` | 40,960 | The model's native window, no YaRN. No MTP head. |
+| judge | `Qwen/Qwen3.8-27B` `1d4bf0f` | `qwen3` | 49,152 | The sentence labeller and answer checker. MTP, 3 tokens, eager mode, 64 sequences. |
 
-LFM2.5 has no script here. Its generation, labeling and replay run inside the steering code (`src/steering`), which owns its engine.
+LFM2.5 has no server here (`serve_flags` refuses it). Its generation, labeling and replay run inside the steering code (`src/steering`), which owns its engine.
 
 Why the A100 needs these settings (found in probe jobs in September 2026):
 
@@ -28,7 +30,7 @@ Things that cost time before:
 
 - Readiness is slow. A bfloat16 Qwen3-30B-A3B needs about 750 s before `/health` answers, so the wait in `env.sh` is 45 minutes.
 - The checkpoints of `qwen35` and `gemma` are local copies under `mfa-moe/cache/native-replay/`, because the compute nodes are offline.
-- `src/generation/model_profiles.py` records the same settings (revision, parser, context, attention, speculation) in every trace, and `tests/generation/test_serve_scripts.py` checks that it matches these scripts. Change both together.
+- Changing a setting in `src/generation/model_profiles.py` changes the server and the contract hash of every new trace together, so old traces are never mixed with new ones.
 
 <!-- ledger:begin -->
 ## Ledger

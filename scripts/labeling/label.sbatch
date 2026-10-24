@@ -5,6 +5,6 @@
 # Label every selected sentence under TRACE_ROOT with the judge. A rerun resumes from OUTPUT_DIR/checkpoints:
 #   sbatch scripts/labeling/label.sbatch TRACE_ROOT OUTPUT_DIR
 source scripts/slurm/env.sh || exit 1
-start_server judge
+start_server $JUDGE_MODEL
 export PYTHONPATH=$PYTHONPATH:$DSPY/lib/python3.11/site-packages:$MFA/envs/vllm-cu129/lib/python3.11/site-packages
 $DSPY/bin/python -m labeling.annotation_batch --trace-root "${1:?TRACE_ROOT}" --output-dir "${2:?OUTPUT_DIR}" --base-url $URL

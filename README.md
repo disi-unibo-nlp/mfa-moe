@@ -26,7 +26,7 @@ Every folder under `scripts/`, `src/` and `tests/` has its own README. Start the
 
 - Everything runs on the CINECA LEONARDO cluster. Run GPU and long CPU work through Slurm only. The login node is for short checks (600 s of CPU, no GPU).
 - Two environments live in `/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/envs/`. `vllm-cu129` (vLLM 0.29, torch with CUDA 12.9, scipy) is the one every Slurm job uses. `correlation-client-3.11` (numpy, pandas, pydantic, pytest; no torch, no scipy) is for light tests.
-- The judge client needs a third environment with DSPy, built once by `scripts/setup/dspy_env.sh`.
+- The judge client needs a third environment with DSPy, built once by `scripts/setup/build_judge_client_env.sh`.
 - The package is not installed. Run from the repository root with `PYTHONPATH=src`.
 - Compute nodes are offline. Model weights are read from `mfa-moe/cache/hf`.
 - `scripts/slurm/env.sh` sets up each job: modules, offline mode, per-job cache folders, and a port derived from the job id, so two jobs on one node do not collide. Launchers source it.
@@ -44,14 +44,14 @@ Each paper experiment has one launcher. The launcher submits the job, which call
 
 | Experiment | Launcher (`scripts/`) | Module (`src/`) | Output or receipt | Used in the paper |
 | --- | --- | --- | --- | --- |
-| Trace generation, 8 models | `generation/generate.sbatch MODEL DATASET SHARD NSHARDS`; `lfm25`: `sbatch steering/gpu.sh steering.pulse native --shard I/N` | `generation.generate`; `steering.pulse` | `results/correlation_pipeline/card-v3/MODEL/generation/<checkpoint>/<dataset>/traces.jsonl` | Benchmark tables, setup |
+| Trace generation, 8 models | `generation/generate.sbatch MODEL DATASET SHARD NSHARDS`; `lfm25`: `sbatch slurm/run_module_gpu.sbatch steering.pulse native --shard I/N` | `generation.generate`; `steering.pulse` | `results/correlation_pipeline/card-v3/MODEL/generation/<checkpoint>/<dataset>/traces.jsonl` | Benchmark tables, setup |
 | Answer scoring (J1) | `generation/score.sbatch ITEMS OUT` | `generation.scoring` (inside generation), `generation.answer_equivalence` | judge verdicts in `OUT` | Accuracy in the benchmark tables |
 | Benchmark accuracy tables | `routing/benchmarks.sh OUT_DIR` | `routing.benchmark_accuracy`, `routing.benchmark_inventory` | `OUT_DIR/accuracy/*.csv`, `OUT_DIR/inventory` | Tables `benchmarks`, `benchmark_details` |
 | Judge optimisation (GEPA) | `labeling/optimize_judge.sh API_BASE OUT_DIR` | `labeling.gepa.run` | `selected_program_*.json` (the frozen judge) | Appendix, external annotation development |
 | Sentence sampling | `labeling/sample.sh MODEL` | `labeling.sample_cohorts` | `cohorts.json`, `parts.json`, four label part roots | Appendix, sentence sampling |
 | Sentence labeling | `labeling/label.sbatch TRACE_ROOT OUT_DIR` | `labeling.annotation_batch` | `annotations.json`, `summary.json` | Every exhibit that uses states |
 | Router capture | `capture/capture.sbatch MODEL MANIFEST OUT_DIR [verify]`, then `capture/gate.sh MANIFEST_DIR OUT.json` | `capture.run`, `capture.gate` | per-trace packets and tensors, `result.json`, the gate's acceptance JSON | Input of all routing results |
-| LFM2.5 replay | `sbatch steering/gpu.sh steering.pulse lfm-replay --shard I/N` | `steering.pulse`, `capture.lfm_replay` | `lfm25/replay/<attempt>.npz` under the study scratch folder | Input of the LFM2.5 rows |
+| LFM2.5 replay | `sbatch slurm/run_module_gpu.sbatch steering.pulse lfm-replay --shard I/N` | `steering.pulse`, `capture.lfm_replay` | `lfm25/replay/<attempt>.npz` under the study scratch folder | Input of the LFM2.5 rows |
 
 ### Analyses of native routing
 

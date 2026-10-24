@@ -3,17 +3,17 @@
 Request (sent with every call): sampler, max_tokens, template_kwargs, reasoning_effort. They come from the
 model card; `card` names the line of the card (or generation_config.json) that gives them.
 
-Server (nothing here starts a server; scripts/serve/MODEL.sh does that). generate.py records revision, weights,
-max_model_len, attention, speculation, language_model_only and extra_args in every trace's generation contract,
-so changing one forces fresh generation instead of silently mixing traces. parser (used by the continuation
-scorer) and max_num_seqs (how many requests the client keeps in flight) are not in the contract.
-tests/generation/test_serve_scripts.py checks that every value matches its serve script.
+Server (nothing here starts a server; scripts/serve/serve_model.sh does that, with the flags that serve_flags.py builds
+from these values). generate.py records revision, weights, max_model_len, attention, speculation,
+language_model_only and extra_args in every trace's generation contract, so changing one forces fresh generation
+instead of silently mixing traces. parser (used by the continuation scorer) and max_num_seqs (how many requests the
+client keeps in flight) are not in the contract. tests/generation/test_serve_flags.py pins the flags built from them.
 """
 from functools import lru_cache
 
 
 MFA = "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe"
-API_KEY = "local-vllm-key"  # the key scripts/serve/args.sh starts every server with
+API_KEY = "local-vllm-key"  # the key serve_flags.py starts every server with
 CARD_OUTPUT_TOKENS = 131_072
 CARD_CONTEXT = 133_120  # output cap plus prompt room; every chosen checkpoint supports it
 

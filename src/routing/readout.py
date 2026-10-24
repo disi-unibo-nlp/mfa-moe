@@ -21,10 +21,11 @@ from pathlib import Path
 import time
 
 import store
+from models.roster import READOUT_ORDER
 from routing.readout_analysis import FAMILY_FREEZE, SEED, code_hashes, family_folds, freeze, question_families
 from store import ANALYSIS, file_sha, require, seal
 
-MODEL_ORDER = ('gpt', 'qwen36', 'gemma', 'glm', 'nemotron', 'qwen330b', 'qwen35')
+MODEL_ORDER = READOUT_ORDER  # the seven captured models, in the order of the frozen specification
 
 
 def contexts(md, attempts, load_unit_texts, CLASSES):

@@ -3,7 +3,8 @@ batch.
 
 Input: a trace root `ROOT/<dataset>/traces.jsonl` whose rows name the sentences to label in
 `metadata.sentence_selection` (written by `labeling.sample_stratified` and
-`labeling.sample_cohorts`), and a vLLM server that serves the judge (`scripts/serve/judge.sh`).
+`labeling.sample_cohorts`), and a vLLM server that serves the judge (`start_server $JUDGE_MODEL`, from
+`scripts/slurm/env.sh`).
 Output in OUT: `annotations.json` (one record per sentence, in file order), `summary.json` and
 `checkpoints/batch-NNNNNN.json`. A rerun with the same inputs skips the finished batches.
 

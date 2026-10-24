@@ -52,7 +52,7 @@ The stages are `python -m steering.whole plan | budget | validate | prepare | ca
 combine`. Slurm is only in `scripts/steering/`: dependencies, resources and walltimes are in
 `launch.sh`. A shard asks for 4 hours of 2 GPUs. The release records its CPU and GPU ceilings, and
 `launch.sh` submits nothing when the walltimes of its jobs add up to more (`budget`);
-`scripts/slurm/ledger.sh whole-` adds up what was spent. `validate` runs the unit tests of the
+`scripts/slurm/billing_hours_used.sh whole-` adds up what was spent. `validate` runs the unit tests of the
 snapshot and seals the result in `CPU_VALIDATION.json`; `prepare` and `combine` need it to have passed.
 The fluency canary of a base release is run by hand (`python -m steering.whole canary`), and its
 receipt is what lets `run` start production.

@@ -12,16 +12,17 @@ Launchers for the routing interventions: edit the routers while a model reasons,
 | `outcome_derive.sh NAME MODEL...` | Queues, for a launched capture release, one CPU job per model after that model's extraction: class usage, expert sets, signal table and attempt selection (`steering.outcome derive`), run from the release snapshot. `DRY_RUN=1` prints the sbatch lines. |
 | `outcome_pick.sh HALF_A MODEL NAME TESTS [OPTION...]` | CPU job, submitted behind half A's analysis: applies the frozen pick rule (`steering.outcome pick`) and, if it picks cells, seals and launches half B with `whole.sh sweep`. |
 | `outcome_next.sh EFFECTS NAME TESTS [OPTION...]` | Applies the declared extension rule to an outcome analysis and, if it is met, seals and launches the next release. |
-| `gpu.sh MODULE ARGS...` | The job script of a GPU stage: one Python module on 2 GPUs. |
 
 ## Pulsed steering
 
 This gives the main and strong doses of the paper.
 
+The GPU stages run through `scripts/slurm/run_module_gpu.sbatch MODULE ARGS...` (one Python module on 2 GPUs).
+
 ```bash
-sbatch -J pulse-plan scripts/slurm/cpu.sh steering.pulse plan   # CPU: writes driver/MODEL/ASSIGNMENTS.json
+sbatch -J pulse-plan scripts/slurm/run_module_cpu.sbatch steering.pulse plan   # CPU: writes driver/MODEL/ASSIGNMENTS.json
 scripts/steering/pulse.sh 2 12 gpt                            # 2 shards of 12 hours for GPT-OSS
-sbatch -t 12:00:00 -J fr-gpt-0 scripts/steering/gpu.sh steering.pulse run --model gpt --shard 0/2 --design strong   # strong dose, after plan-strong
+sbatch -t 12:00:00 -J fr-gpt-0 scripts/slurm/run_module_gpu.sbatch steering.pulse run --model gpt --shard 0/2 --design strong   # strong dose, after plan-strong
 scripts/steering/pulse_analyze.sh /new/folder
 ```
 
@@ -29,10 +30,10 @@ scripts/steering/pulse_analyze.sh /new/folder
 
 LFM2.5 has no server script. Its stages run in this order, and `scripts/routing/lfm.sh` follows them:
 
-1. `sbatch scripts/steering/gpu.sh steering.pulse native --shard I/N` generates its traces.
-2. `sbatch scripts/slurm/cpu.sh routing.lfm materialize` picks and prepares the sentences to label (CPU).
-3. `sbatch scripts/steering/gpu.sh steering.pulse annotate --shard I/N` labels them.
-4. `sbatch scripts/steering/gpu.sh steering.pulse lfm-replay --shard I/N` records its routers.
+1. `sbatch scripts/slurm/run_module_gpu.sbatch steering.pulse native --shard I/N` generates its traces.
+2. `sbatch scripts/slurm/run_module_cpu.sbatch routing.lfm materialize` picks and prepares the sentences to label (CPU).
+3. `sbatch scripts/slurm/run_module_gpu.sbatch steering.pulse annotate --shard I/N` labels them.
+4. `sbatch scripts/slurm/run_module_gpu.sbatch steering.pulse lfm-replay --shard I/N` records its routers.
 
 ## Whole-reasoning steering and the dose sweep
 
@@ -48,7 +49,7 @@ python -m steering.followup report/whole-reasoning-20261021-r18          # plan 
 AFTER="JOB ..." scripts/steering/whole.sh continuation whole-reasoning-20261021-r21 TESTS --parent whole-reasoning-20261021-r18 --cutoff 2026-10-27T06:00
 ```
 
-A release is the folder `report/NAME`: it fixes the models, strengths, shards, cut-off time and efficiency link of one run, and it holds a frozen copy of the code. Its jobs run from that copy in `mfa-moe/releases/<commit>`, not from the working tree. `whole.sh` needs a clean `src`, `tests` and `scripts` tree. `scripts/slurm/ledger.sh whole-` adds up what the releases cost.
+A release is the folder `report/NAME`: it fixes the models, strengths, shards, cut-off time and efficiency link of one run, and it holds a frozen copy of the code. Its jobs run from that copy in `mfa-moe/releases/<commit>`, not from the working tree. `whole.sh` needs a clean `src`, `tests` and `scripts` tree. `scripts/slurm/billing_hours_used.sh whole-` adds up what the releases cost.
 
 ## Outcome-selected nudge
 

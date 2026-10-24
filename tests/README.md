@@ -26,10 +26,10 @@ $W/vllm-cu129/bin/python -B -m unittest discover -s tests/steering -t tests/stee
 
 # 3. pytest with torch and DSPy (about 2 minutes of CPU: run it as a CPU job). The light interpreter, plus the packages of the other two environments on the path.
 SP=lib/python3.11/site-packages
-DSPY=/leonardo_scratch/large/userexternal/lmolfett/mfa-moe/qwen-fp-fa-smoke/envs/qwen-fp-fa-dspy-88189c22f214ed65
+source scripts/setup/judge_client_env_path.sh   # sets DSPY, the judge client environment
 PYTHONPATH=src:$DSPY/$SP:$W/vllm-cu129/$SP $W/correlation-client-3.11/bin/python -m pytest -q -p no:cacheprovider tests/models
 ```
 
-Each topic README says which of the three applies. A test that needs a package the environment lacks is skipped or fails at import, so check the environment before reading a failure as a bug. The login node allows 600 s of CPU, so run the large folders (`steering`, and the torch tests of option 3) in Slurm. Every steering release runs `tests/steering`, `tests/steering/outcome` and `tests/routing` first in a Slurm job (`python -m steering.whole validate`, through `scripts/slurm/cpu.sh`).
+Each topic README says which of the three applies. A test that needs a package the environment lacks is skipped or fails at import, so check the environment before reading a failure as a bug. The login node allows 600 s of CPU, so run the large folders (`steering`, and the torch tests of option 3) in Slurm. Every steering release runs `tests/steering`, `tests/steering/outcome` and `tests/routing` first in a Slurm job (`python -m steering.whole validate`, through `scripts/slurm/run_module_cpu.sbatch`).
 
 Tests that read sealed files in `report/` (three in `tests/steering`) fail in a fresh git worktree, because those files are not in git.

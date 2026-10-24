@@ -7,7 +7,7 @@ for model in "$@"; do
   test -f "report/final-routing-20261015-r1/driver/$model/ASSIGNMENTS.json"
   for ((s = 0; s < n; s++)); do
     env -u SLURM_JOB_ID sbatch -t $hours:00:00 -J fr-$model-$s-of-$n \
-      scripts/steering/gpu.sh steering.pulse run --model $model --shard $s/$n
+      scripts/slurm/run_module_gpu.sbatch steering.pulse run --model $model --shard $s/$n
   done
 done
-scripts/slurm/ledger.sh | tail -1
+scripts/slurm/billing_hours_used.sh | tail -1

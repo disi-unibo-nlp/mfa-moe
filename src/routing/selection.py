@@ -18,7 +18,8 @@ import csv
 from pathlib import Path
 import numpy as np
 
-from store import CLASSES, MODELS, SEED, WORK, digest, file_sha, require, seal, verified
+from models.roster import CAPTURED
+from store import CLASSES, SEED, WORK, digest, file_sha, require, seal, verified
 
 RECEIPTS = WORK / 'mfa-moe/repo/report/expert-memory-study-v1'  # reports are not tracked in git; they live in the main checkout
 
@@ -276,7 +277,7 @@ def export(campaign_dir, output):
     campaign_dir, output = Path(campaign_dir), Path(output)
     campaign = verified(campaign_dir / 'CAMPAIGN.json')
     rows = []
-    for model in MODELS[:-1]:  # the seven captured models; LFM2.5 has its own SELECTION_COVERAGE.json
+    for model in CAPTURED:  # LFM2.5 has its own SELECTION_COVERAGE.json
         path = campaign_dir / model / 'SELECTION.json'
         if path.exists():
             receipt = verified(path)

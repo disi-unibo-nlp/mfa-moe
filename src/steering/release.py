@@ -30,7 +30,8 @@ SNAPSHOTS = WORK/'mfa-moe/releases'
 TEMPLATE = 'whole-reasoning-20261021-r7'  # pins the inputs, the sentence classifier and the nomination reference
 CHAIN = 'whole-reasoning-20261021-r20'  # the release whose source list a continuation extends
 LINK = 'final-routing-20261015-r1/driver/EFFICIENCY_LINK_V2.json'  # the eight-model efficiency link, under report/
-RUN_PATHS = ('src', 'tests/steering', 'tests/routing', 'scripts/slurm', 'scripts/steering')
+# The jobs also read scripts/setup and requirements (scripts/slurm/env.sh finds the judge client environment there).
+RUN_PATHS = ('src', 'tests/steering', 'tests/routing', 'scripts/slurm', 'scripts/setup', 'scripts/steering', 'requirements')
 # The kind file of a release is KIND.json unless the kind names its file here.
 KIND_FILES = {'capture': 'CAPTURE_NATIVE.json', 'sweep': 'OUTCOME_SWEEP.json'}
 FRACTIONS = (0.5, 0.7, 0.85)  # where the length-limit baseline stops the native reasoning
@@ -41,8 +42,8 @@ OUTCOME_SCOPE = ('tests/steering/outcome plus tests/steering/test_stream_batch.p
 
 
 def prior_usage() -> dict:
-    """The billing totals of the earlier whole-reasoning and outcome jobs (scripts/slurm/ledger.sh), as of now."""
-    ledger = str(REPO/'scripts/slurm/ledger.sh')
+    """The billing totals of the earlier whole-reasoning and outcome jobs (scripts/slurm/billing_hours_used.sh), as of now."""
+    ledger = str(REPO/'scripts/slurm/billing_hours_used.sh')
     totals = {prefix: subprocess.run([ledger, prefix], capture_output=True, text=True, check=True).stdout.splitlines()[-1]
               for prefix in ('whole-', 'os-', 'oc-')}
     return {'ledger_totals': totals, 'snapshot_time': time.time(), 'budget_reset': False}

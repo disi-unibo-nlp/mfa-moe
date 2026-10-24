@@ -6,11 +6,11 @@ set -euo pipefail
 out=$(realpath "$1")
 jobs=
 for model in gpt nemotron qwen35 qwen36 gemma glm qwen330b lfm25; do
-  jobs+=:$(sbatch --parsable -J pulse-outcomes-$model -c 1 --mem=12G scripts/slurm/cpu.sh steering.pulse_outcomes --model $model)
+  jobs+=:$(sbatch --parsable -J pulse-outcomes-$model -c 1 --mem=12G scripts/slurm/run_module_cpu.sbatch steering.pulse_outcomes --model $model)
 done
 for model in gpt nemotron qwen330b gemma; do
-  jobs+=:$(sbatch --parsable -J pulse-outcomes-strong-$model -c 1 --mem=12G scripts/slurm/cpu.sh steering.pulse_outcomes --model $model --design strong)
+  jobs+=:$(sbatch --parsable -J pulse-outcomes-strong-$model -c 1 --mem=12G scripts/slurm/run_module_cpu.sbatch steering.pulse_outcomes --model $model --design strong)
 done
-sbatch -J pulse-effects --dependency=afterok$jobs -c 1 --mem=12G scripts/slurm/cpu.sh steering.pulse_effects --out $out/main
+sbatch -J pulse-effects --dependency=afterok$jobs -c 1 --mem=12G scripts/slurm/run_module_cpu.sbatch steering.pulse_effects --out $out/main
 sbatch -J pulse-effects-strong --dependency=afterok$jobs -c 1 --mem=12G \
-  scripts/slurm/cpu.sh steering.pulse_effects --design strong --models gpt,nemotron,qwen330b,gemma --out $out/strong
+  scripts/slurm/run_module_cpu.sbatch steering.pulse_effects --design strong --models gpt,nemotron,qwen330b,gemma --out $out/strong

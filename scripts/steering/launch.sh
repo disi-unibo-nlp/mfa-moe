@@ -54,11 +54,11 @@ S() {  # S NAME CORES MINUTES GPUS sbatch-options... script args...: submit one 
 }
 
 graph() {  # every job of the release, in order
-  S $prefix-tests 4 60 0 "${cpu[@]}" --mem=24G scripts/slurm/cpu.sh steering.whole validate --release "$R"
+  S $prefix-tests 4 60 0 "${cpu[@]}" --mem=24G scripts/slurm/run_module_cpu.sbatch steering.whole validate --release "$R"
   local gate=$JOB
   if [ ${#plan[@]} -gt 3 ]; then  # a release without shards (a relink) publishes no manifests
     S $prefix-prepare 4 60 0 "${cpu[@]}" --dependency=afterok:$gate --mem=24G \
-      scripts/slurm/cpu.sh steering.whole prepare --release "$R"
+      scripts/slurm/run_module_cpu.sbatch steering.whole prepare --release "$R"
     gate=$JOB  # it ran only because the tests passed
   fi
 
@@ -68,11 +68,11 @@ graph() {  # every job of the release, in order
     runs=()
     for ((i = 0; i < shards; i++)); do  # a shard is 2 GPUs for 4 hours
       S $prefix-run-$model 16 240 2 --dependency=afterok:$gate \
-        scripts/steering/gpu.sh steering.whole run --release "$R" --model $model --shard $i/$shards
+        scripts/slurm/run_module_gpu.sbatch steering.whole run --release "$R" --model $model --shard $i/$shards
       runs+=($JOB)
     done
     S $prefix-extract-$model 8 90 0 "${cpu[@]}" --dependency=afterok:$gate,afterany:$(join "${runs[@]}") --mem=24G \
-      --export=ALL,MOE_EXP_SCORING_PROCESSES=8 scripts/slurm/cpu.sh steering.whole extract --release "$R" --model $model
+      --export=ALL,MOE_EXP_SCORING_PROCESSES=8 scripts/slurm/run_module_cpu.sbatch steering.whole extract --release "$R" --model $model
     extractions+=($JOB)
   done
 
@@ -82,12 +82,12 @@ graph() {  # every job of the release, in order
   test ${#wait_for[@]} -eq 0 || dependency+=,afterok:$(join "${wait_for[@]}")
   test ${final[0]} = steering.whole || memory=64G
   S $prefix-${final[1]} 8 120 0 "${cpu[@]}" --dependency=$dependency --mem=$memory \
-    scripts/slurm/cpu.sh "${final[@]}" --release "$R"
+    scripts/slurm/run_module_cpu.sbatch "${final[@]}" --release "$R"
   if [ ${final[0]} = steering.whole ]; then
     # Paper tables and figure data of the combined receipt, staged beside it. Run from this checkout: the snapshot
     # has no report/ folder, and the exporter reads the efficiency-link receipt from there.
     S $prefix-export 2 60 0 "${cpu[@]}" --dependency=afterok:$JOB --mem=16G --chdir="$repo" \
-      "$repo/scripts/slurm/cpu.sh" paper.export_whole_results --effects "$R/analysis-combined/EFFECTS_WHOLE.json" --out "$R/export"
+      "$repo/scripts/slurm/run_module_cpu.sbatch" paper.export_whole_results --effects "$R/analysis-combined/EFFECTS_WHOLE.json" --out "$R/export"
   fi
 }
 
