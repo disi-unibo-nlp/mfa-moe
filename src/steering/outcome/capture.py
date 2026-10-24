@@ -7,7 +7,7 @@ later nudge releases, so nothing is generated twice.
 
 - ``roster()`` fixes the questions: a fixed number per benchmark, drawn by a digest over the
   1,547-question pool every model shares, one question per family. It never reads an outcome.
-- ``capture_manifest(root, model, spec)`` is called by ``steering.whole`` prepare when the release
+- ``capture_manifest(root, model, spec)`` is called by ``steering.whole_reasoning`` prepare when the release
   holds ``CAPTURE_NATIVE.json``; it publishes the model's manifest and its SELECTED receipt.
 
 ``reports`` below is the report/ folder that holds the study's sealed inputs (the folds and the
@@ -114,11 +114,11 @@ def capture_rows(model: str, spec: dict, profile: dict, prompts: dict[str, list[
 
 def capture_manifest(root: Path, model: str, spec: dict) -> dict:
     """Publish one model's capture manifest and select it (no canary: native routing only)."""
-    from steering import pulse
+    from steering import pulsed_steering
     from steering.runtime import prompt_prefix
-    from steering.whole import manifest_path, select_manifest, sweep_doses
+    from steering.whole_reasoning import manifest_path, select_manifest, sweep_doses
     dose = sweep_doses(root)[model]
-    b = pulse.binding()
+    b = pulsed_steering.binding()
     profile = b['models'][model]
     table = sources(root.parent, model)
     prompts = {}

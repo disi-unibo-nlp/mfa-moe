@@ -150,7 +150,7 @@ def main(argv=None):
         result = materialize(study)
     elif stage == 'derive':
         from steering.nominations import derive_model
-        from steering.pulse import plan
+        from steering.pulsed_steering import plan
         if not (store.STUDY/'lfm25/DISCOVERY_INPUTS.json').exists():
             discover(study)
         derive_model(study, 'lfm25')

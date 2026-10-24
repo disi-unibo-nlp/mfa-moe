@@ -3,7 +3,7 @@
 Question: can we make a reasoning model think less without getting worse, by gently turning
 down a few experts that the model tends to use when it ends up wrong?
 
-The earlier whole-reasoning experiment (`steering.whole`) picked experts by reasoning-step class
+The earlier whole-reasoning experiment (`steering.whole_reasoning`) picked experts by reasoning-step class
 (Plan, Implement, ...) and forced them on or off at every token. Almost nothing beat matched random
 experts, and cutting the high-traffic "execution" experts broke the models. This package changes two
 things, following "Beyond the Trace" (`chen2026beyond`):
@@ -27,7 +27,7 @@ base release WHOLE_NOMINATIONS.json ─> selection()                (score, stab
                                                        │   target_nudge / random_nudge at each delta
  base releases' native runs (+ top-ups) ───────────>│   budget rows cut from the native runs
                                                        ▼
-                          WHOLE.json manifest ──> steering.whole (prepare, run, extract)
+                          WHOLE.json manifest ──> steering.whole_reasoning (prepare, run, extract)
                                                        │
  final whole-reasoning table of continuations ─────>│
                                                        ▼
@@ -42,10 +42,10 @@ base release WHOLE_NOMINATIONS.json ─> selection()                (score, stab
 | `manifest.py` | Builds the release rows: nudged and random arms at each delta, plus length-limit rows. A length-limit row is a native run cut at 50/70/85% of its reasoning, with the closing tokens appended so the model only writes its answer. A family whose question was used for selection gets a set selected without it. For r2 it also builds the halves A/B of the question roster and the sweep rows (`sweep_manifest`). |
 | `analysis.py` | Bounded within-question contrasts: nudge vs random (primary), vs unedited, the rerun noise, the length-limit curve, and "nudge vs stopping at the same length". It also reports how much routing the nudged experts lost. `analyze_sweep` does the same for one half of the r2 sweep against the mean of the six capture attempts. |
 | `decide.py` | The extension rule that was declared before any result: launch the next models only if a nudge is shorter than random without losing accuracy, or more accurate than random. |
-| `__main__.py` | Command line: `usage`, `select` (preview, writes nothing), `derive`, `analyze`, `pick`, `decide`. |
+| `__main__.py` | Command line: `usage` (`--reports DIR --out DIR`), `select` (preview, writes nothing), `derive`, `analyze`, `pick`, `decide`. A model is a Hugging Face id or a short key. |
 
 Sealing the release is `steering.release outcome` (it also writes the code snapshot). The jobs are the
-ordinary whole-reasoning ones (`scripts/steering/launch.sh`) plus `python -m steering.outcome analyze --release report/NAME`.
+ordinary whole-reasoning ones (`scripts/steering/submit_release_jobs.sh`) plus `python -m steering.outcome analyze --release report/NAME`.
 The files below belong to the second campaign and extend `select.py`, `manifest.py` and `analysis.py` (their `r2` sections).
 
 The routing operator itself lives with the other operators. It is
@@ -98,19 +98,22 @@ selections) and `report/outcome-steering-20261023-r6` (half A of GPT-OSS; its an
 was stopped). Commands:
 
 ```bash
-scripts/steering/whole.sh capture NAME TESTS --shards gpt:3,glm:15 --cutoff 2026-10-30T23:00     # seal + jobs (oc-*)
-scripts/steering/outcome_derive.sh NAME gpt glm      # CPU chain per model, each after its extraction
-scripts/steering/whole.sh sweep NAME_A TESTS --half A --capture NAME --models gpt --shards 15 --cutoff 2026-10-30T23:00   # jobs os-*
-sbatch --dependency=afterok:ANALYSIS_JOB scripts/steering/outcome_pick.sh NAME_A gpt NAME_B TESTS --capture NAME --shards 2 --cutoff ...   # half B
+scripts/steering/seal_release.sh capture NAME TESTS --shards gpt:3,glm:15 --cutoff 2026-10-30T23:00     # seal
+scripts/steering/submit_release_jobs.sh report/NAME                                                      # jobs oc-*
+scripts/steering/derive_outcome_sets.sh report/NAME openai/gpt-oss-20b zai-org/GLM-4.7-Flash            # CPU chain per model, each after its extraction
+scripts/steering/seal_release.sh sweep NAME_A TESTS --half A --capture NAME --models gpt --shards 15 --cutoff 2026-10-30T23:00
+scripts/steering/submit_release_jobs.sh report/NAME_A                                                    # jobs os-*
+sbatch --dependency=afterok:ANALYSIS_JOB scripts/steering/pick_and_launch_half_b.sbatch report/NAME_A openai/gpt-oss-20b NAME_B TESTS --capture NAME --shards 2 --cutoff ...   # half B
 ```
 
 ## Running r1
 
 ```bash
-scripts/steering/outcome_usage.sh                # 1. CPU job, ~5 min: expert use per cohort-B attempt
+scripts/steering/measure_expert_usage.sh report OUT_DIR openai/gpt-oss-20b     # 1. CPU job, ~5 min: expert use per cohort-B attempt (the release reads select.BULK)
 PYTHONPATH=src python -m steering.outcome select    # 2. look at the expert sets (no files)
-scripts/steering/whole.sh outcome outcome-steering-20261022-r1 <passed tests> --shards 3 --cutoff 2026-10-23T23:00   # 3. seal + jobs
-sbatch scripts/steering/outcome_next.sh report/<release>/analysis/EFFECTS_OUTCOME.json <next name> <tests> --cutoff ... --models ...   # 4. the extension rule
+scripts/steering/seal_release.sh outcome outcome-steering-20261022-r1 <passed tests> --shards 3 --cutoff 2026-10-23T23:00   # 3. seal
+scripts/steering/submit_release_jobs.sh report/outcome-steering-20261022-r1                                                  #    and submit
+sbatch scripts/steering/decide_and_launch_next.sbatch report/<release>/analysis/EFFECTS_OUTCOME.json <next name> <tests> --cutoff ... --models ...   # 4. the extension rule
 ```
 
 Outputs:

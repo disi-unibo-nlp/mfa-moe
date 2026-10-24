@@ -3,7 +3,7 @@ import unittest
 from unittest.mock import MagicMock, patch
 import numpy as np
 from store import CLASSES
-from steering.pulse_effects import (
+from steering.pulsed_effects import (
     Bootstrap,
     analysis_assignments,
     bounded_summary,
@@ -211,9 +211,9 @@ class PlannedOutcomesTest(unittest.TestCase):
 
     def absent_table(self):
         """Extract an entirely unavailable fixture without reading or writing data."""
-        with patch('steering.pulse_effects.analysis_assignments', return_value=self.assignments), \
-             patch('steering.pulse_effects.bulk', return_value=MagicMock()), \
-             patch('steering.pulse_effects.log'):
+        with patch('steering.pulsed_effects.analysis_assignments', return_value=self.assignments), \
+             patch('steering.pulsed_effects.bulk', return_value=MagicMock()), \
+             patch('steering.pulsed_effects.log'):
             return continuation_table(['gpt'])
 
     def test_all_planned_missing_arms_remain_in_bounded_contrasts(self):
@@ -269,7 +269,7 @@ class PlannedOutcomesTest(unittest.TestCase):
             'source_assignments_sha256': 'sealed-source',
         }
         original = {'sha256': 'sealed-source', 'records': self.assignments}
-        with patch('steering.pulse_effects.verified', side_effect=[manifest, original]):
+        with patch('steering.pulsed_effects.verified', side_effect=[manifest, original]):
             rows = analysis_assignments('gpt', 'main')
         self.assertEqual(rows, self.assignments[:2])
 

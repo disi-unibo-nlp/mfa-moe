@@ -1,4 +1,4 @@
-"""Freeze the rows of an outcome-steering release (called by steering.whole prepare).
+"""Freeze the rows of an outcome-steering release (called by steering.whole_reasoning prepare).
 
 Each evaluation family of the base whole-reasoning release gets:
 
@@ -32,7 +32,7 @@ def evaluation_questions(model: str, spec: dict) -> set[str]:
 
 def base_natives(model: str, spec: dict) -> list[dict]:
     """Native rows of the base whole-reasoning manifest (one per evaluation family)."""
-    from steering.whole import manifest
+    from steering.whole_reasoning import manifest
     base = manifest(Path(spec['base']), model, spec['base_dose'])
     rows = sorted((r for r in base['records'] if r['arm'] == 'native'), key=lambda r: r['family'])
     require(rows and len({r['family'] for r in rows}) == len(rows), 'base native roster differs')
@@ -87,16 +87,16 @@ def outcome_manifest(root: Path, model: str, spec: dict) -> dict:
             fractions and the answer allowance of budget rows.
     """
     from transformers import AutoTokenizer
-    from steering import pulse
+    from steering import pulsed_steering
     from steering.runtime import closure, prompt_prefix, remaining
-    from steering.whole import manifest_path, select_manifest, sweep_doses
+    from steering.whole_reasoning import manifest_path, select_manifest, sweep_doses
     from steering.outcome.select import selection
 
     dose = sweep_doses(root)[model]
     natives = base_natives(model, spec)
     chosen = publish(root/model/'OUTCOME_SELECTION.json',
                      selection(model, evaluation_questions(model, spec), root.parent))
-    b = pulse.binding()
+    b = pulsed_steering.binding()
     profile = b['models'][model]
     tokenizer = AutoTokenizer.from_pretrained(profile['local_path'], local_files_only=True)
     closures = closure(tokenizer, model)
@@ -161,7 +161,7 @@ def halves(questions: list[str]) -> dict[str, list[str]]:
 
 def capture_rows_by_question(capture: Path, model: str) -> dict[str, list[dict]]:
     """The capture release's native rows of one model, grouped by question in attempt order."""
-    from steering.whole import manifest_path
+    from steering.whole_reasoning import manifest_path
     rows = {}
     for row in verified(manifest_path(model, 'main', capture))['records']:
         rows.setdefault(row['question'], []).append(row)
@@ -212,16 +212,16 @@ def sweep_manifest(root: Path, model: str, spec: dict) -> dict:
             cells [{set, delta}], fractions, answer_tokens.
     """
     from transformers import AutoTokenizer
-    from steering import pulse
+    from steering import pulsed_steering
     from steering.runtime import closure, prompt_prefix, remaining
-    from steering.whole import manifest_path, select_manifest, sweep_doses
+    from steering.whole_reasoning import manifest_path, select_manifest, sweep_doses
     dose = sweep_doses(root)[model]
     selection = verified(spec['selection'])
     require(selection['sha256'] == spec['selection_sha256'], 'selection changed since the release was sealed')
     capture = Path(spec['capture'])
     natives = capture_rows_by_question(capture, model)
     rows = sweep_rows(model, spec, selection, natives)
-    b = pulse.binding()
+    b = pulsed_steering.binding()
     profile = b['models'][model]
     tokenizer = AutoTokenizer.from_pretrained(profile['local_path'], local_files_only=True)
     closures = closure(tokenizer, model)

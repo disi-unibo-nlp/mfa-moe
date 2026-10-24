@@ -82,7 +82,7 @@ def attempt_counts(task: tuple) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
 def usage(release: Path, model: str, workers: int = 8) -> dict:
     """Write USAGE_CLASS.npz/.json for one model of a capture release."""
     import pandas as pd
-    from steering.whole import manifest_path
+    from steering.whole_reasoning import manifest_path
     value = verified(manifest_path(model, 'main', release))
     require(value.get('design') == 'outcome-capture', 'not a capture manifest')
     profile_layers = value['records'][0]['capture_layers']

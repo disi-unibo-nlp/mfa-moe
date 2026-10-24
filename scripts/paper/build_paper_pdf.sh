@@ -1,6 +1,6 @@
 #!/bin/bash
 # Build the figures and the manuscript PDF with the offline tectonic (a few minutes; `pw build` renders a stale PDF here):
-#   scripts/paper/build.sh
+#   scripts/paper/build_paper_pdf.sh
 set -euo pipefail
 export PYTHONPATH=src PYTHONDONTWRITEBYTECODE=1
 PY=/leonardo/home/userexternal/lmolfett/.cache/paper-writer/venv/bin/python

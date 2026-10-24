@@ -1,14 +1,15 @@
 """Sealing a release: one mechanism for complement, relink, outcome, capture, sweep and continuation releases."""
 import json
 from pathlib import Path
+import subprocess
 from types import SimpleNamespace
 import tempfile
 import unittest
 from unittest.mock import patch
 
-from steering import release, whole
+from steering import release, whole_reasoning as whole
 from steering.outcome import capture, manifest
-from store import WORK, file_sha, publish, verified
+from store import REPO, WORK, file_sha, publish, verified
 
 LINK_PATH = 'final-routing-20261015-r1/driver/EFFICIENCY_LINK_V2.json'
 ARGS = SimpleNamespace(models=None, shards=None, cutoff=None)
@@ -85,6 +86,13 @@ class SealTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'exactly the --models'):
             release.outcome(self.reports/'x', SimpleNamespace(models='gemma,glm', shards='glm:12', cutoff='2026-10-24T06:00'))
 
+    def test_models_and_shards_take_hugging_face_ids_and_record_short_keys(self):
+        args = SimpleNamespace(models='openai/gpt-oss-20b,zai-org/GLM-4.7-Flash', shards='openai/gpt-oss-20b:3,glm:12')
+        self.assertEqual(release.models_and_shards(args, ''), (('gpt', 'glm'), {'gpt': 3, 'glm': 12}))
+        self.assertEqual(release.models_and_shards(SimpleNamespace(models=None, shards='2'), 'gemma'), (('gemma',), {'gemma': 2}))
+        with self.assertRaisesRegex(ValueError, 'unknown model'):
+            release.models_and_shards(SimpleNamespace(models='someone/else', shards=None), '')
+
     def test_the_rome_times_of_the_first_releases(self):
         self.assertEqual(release.rome('2026-10-24T06:00'), 1792814400.)  # complement r18
         self.assertEqual(release.rome('2026-10-23T23:00'), 1792789200.)  # outcome r1
@@ -92,6 +100,17 @@ class SealTests(unittest.TestCase):
     def test_a_cutoff_names_its_zone_or_is_epoch_seconds(self):
         self.assertEqual(release.rome('2026-10-24T04:00+00:00'), 1792814400.)  # the same moment as 06:00 in Rome
         self.assertEqual(release.rome('1792814400'), 1792814400.)
+
+
+class ArchiveTests(unittest.TestCase):
+    @unittest.skipUnless((REPO/'.git').exists(), 'needs the git checkout')
+    def test_the_snapshot_archives_only_paths_the_repository_tracks(self):
+        for path in release.ARCHIVED:  # a path git does not know makes `git archive` fail, and with it every seal
+            tracked = subprocess.run(['git', 'ls-files', '--', path], cwd=REPO, capture_output=True, text=True, check=True)
+            self.assertTrue(tracked.stdout, path)
+
+    def test_the_old_ledger_folder_is_not_archived(self):
+        self.assertNotIn('docs/ledger', release.ARCHIVED)
 
 
 class OutcomeReleaseTests(unittest.TestCase):

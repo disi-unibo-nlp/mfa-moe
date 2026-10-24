@@ -19,7 +19,7 @@ import shutil
 from paper.cl_models import MODELS, SEVEN_MODELS
 from paper.cl_paths import DATA, REPO, SAVED_REPORTS
 from paper.export_routing_results import PAPER_CLASSES
-from store import BENCHMARKS, FAST, file_sha, verified
+from store import BENCHMARKS, FAST, STUDY, file_sha, verified
 
 
 def read_csv(name):
@@ -60,8 +60,8 @@ def capture():
                                                    "new_measurement": False}, indent=2) + "\n")
 
 
-LFM_ROOT = REPO / "report/final-routing-20261015-r1/lfm25"
-LFM_BULK = FAST / "final-routing-20261015-r1/lfm25"
+LFM_ROOT = STUDY / "lfm25"
+LFM_BULK = FAST / STUDY.name / "lfm25"
 
 
 def lfm_benchmark_cells():

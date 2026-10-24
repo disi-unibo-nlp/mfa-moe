@@ -90,7 +90,7 @@ class PickTests(unittest.TestCase):
 
 
 class PickCommandTests(unittest.TestCase):
-    """`steering.outcome pick` tells scripts/steering/outcome_pick.sh whether half B has cells to run."""
+    """`steering.outcome pick` tells scripts/steering/pick_and_launch_half_b.sbatch whether half B has cells to run."""
     def pick_command(self, completed, target_random, target_native):
         """Run the command on a made-up half-A receipt; return its exit code and the folder it wrote PICK.json to."""
         temporary = tempfile.TemporaryDirectory(dir=WORK/'tools/tmp')

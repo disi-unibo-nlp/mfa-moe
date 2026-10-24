@@ -57,7 +57,7 @@ from routing.sentence_table import (CAMPAIGN, PAIR_SOURCES, attempt_layout, camp
                                     original_label_records, pairs_dir, receipt_dir, sentence_extent, trace_key,
                                     write_table)
 from stats import bootstrap_panel
-from steering.pulse import ADMISSION_MARGIN_HOURS, annotate_rows, log, parse_shard
+from steering.pulsed_steering import ADMISSION_MARGIN_HOURS, annotate_rows, log, parse_shard
 from store import CLASSES, MODELS, STUDY, Units, binding, digest, file_sha, load, publish, require, verified
 
 NEXT_COLUMN = ':next:'

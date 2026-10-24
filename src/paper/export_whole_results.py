@@ -1,6 +1,6 @@
 """Write the whole-reasoning tables and figure data of the paper from the sealed EFFECTS_WHOLE.json receipt.
 
-Reads one receipt (made by steering.whole_effects; no fitting or resampling here), the efficiency-link receipt it names
+Reads one receipt (made by steering.whole_reasoning_effects; no fitting or resampling here), the efficiency-link receipt it names
 and continuations.parquet beside it (needs pandas). Command:
 python -m paper.export_whole_results [--effects EFFECTS_WHOLE.json] [--out DIR]. It writes, below --out (default: the
 paper folder):

@@ -13,9 +13,9 @@ from unittest.mock import patch
 
 import pandas as pd
 
-from steering import pulse, whole, whole_effects
+from steering import pulsed_steering as pulse, whole_reasoning as whole, whole_reasoning_effects as whole_effects
 from store import BENCHMARKS, REPO, WORK, load, publish
-from steering.pulse_effects import Bootstrap
+from steering.pulsed_effects import Bootstrap
 from steering.selection import select_pairs
 from test_driver import FakeEngine
 
@@ -176,7 +176,7 @@ class DesignAndCoverageTests(unittest.TestCase):
 
 
 class LaunchGraphTests(unittest.TestCase):
-    """scripts/steering/launch.sh on a made-up sealed release, with Slurm commands that only keep a record."""
+    """scripts/steering/submit_release_jobs.sh on a made-up sealed release, with Slurm commands that only keep a record."""
     PY = Path('/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/envs/vllm-cu129/bin/python')
     FAKE = {  # job numbers count up from 1001; FAIL_AT and HANG_AT name the sbatch call that fails or hangs
         'sbatch': 'n=$(( $(cat "$FAKE_SLURM/count" 2>/dev/null || echo 0) + 1 )); echo $n > "$FAKE_SLURM/count"\n'
@@ -198,6 +198,8 @@ class LaunchGraphTests(unittest.TestCase):
             (self.repo/'bin'/name).write_text('#!/bin/bash\n'+body)
             (self.repo/'bin'/name).chmod(0o755)
         self.root = self.repo/'report/release'
+        self.study = self.repo/'study'  # the launcher wants a study folder and hands it to the jobs
+        publish(self.study/'BINDING.json', {})
 
     def seal(self, kind_file: str, shards: dict, cpu_ceiling=1000., gpu_ceiling=1000., **release):
         publish(self.root/'RELEASE.json', {'release_root': str(self.repo), 'models': list(shards), 'shards': shards,
@@ -206,11 +208,12 @@ class LaunchGraphTests(unittest.TestCase):
         publish(self.root/kind_file, {})
 
     def environment(self, **extra):
-        return {**os.environ, 'PATH': f"{self.repo/'bin'}:{os.environ['PATH']}", 'FAKE_SLURM': str(self.repo), **extra}
+        return {**os.environ, 'PATH': f"{self.repo/'bin'}:{os.environ['PATH']}", 'FAKE_SLURM': str(self.repo),
+                'STUDY_DATA_ROOT': str(self.study), **extra}
 
     def launch(self, *jobs, **extra):
-        return subprocess.run(['bash', str(self.repo/'scripts/steering/launch.sh'), 'release', *jobs], cwd=self.repo,
-                              env=self.environment(**extra), capture_output=True, text=True)
+        return subprocess.run(['bash', str(self.repo/'scripts/steering/submit_release_jobs.sh'), str(self.root), *jobs],
+                              cwd=self.repo, env=self.environment(**extra), capture_output=True, text=True)
 
     def dry_run(self, kind_file: str, shards: dict, *jobs, **release) -> list[list[str]]:
         """The sbatch commands the launcher prints for a release."""
@@ -238,12 +241,12 @@ class LaunchGraphTests(unittest.TestCase):
         self.assertEqual(self.option(combine, '--dependency'), gate+',afterany:whole-extract-gpt:whole-extract-glm')
         self.assertEqual(self.option(export, '--dependency'), 'afterok:whole-combine')
         self.assertEqual(last_shard[-6:], ['--release', root, '--model', 'gpt', '--shard', '1/2'])
-        self.assertEqual(last_shard[-8:-6], ['steering.whole', 'run'])
+        self.assertEqual(last_shard[-8:-6], ['steering.whole_reasoning', 'run'])
         self.assertTrue(last_shard[-9].endswith('scripts/slurm/run_module_gpu.sbatch'))
         for cpu_job in (tests, prepare, extract, combine):  # the serial partition would reject them
             self.assertEqual(cpu_job[cpu_job.index('-p')+1], 'boost_usr_prod')
-        self.assertEqual(tests[-4:], ['steering.whole', 'validate', '--release', root])
-        self.assertEqual(combine[-4:], ['steering.whole', 'combine', '--release', root])
+        self.assertEqual(tests[-4:], ['steering.whole_reasoning', 'validate', '--release', root])
+        self.assertEqual(combine[-4:], ['steering.whole_reasoning', 'combine', '--release', root])
         self.assertIn('--export=ALL,MOE_EXP_SCORING_PROCESSES=8', extract)
 
     @unittest.skipUnless(PY.exists(), 'needs the cluster environment')
@@ -254,7 +257,7 @@ class LaunchGraphTests(unittest.TestCase):
             command = jobs[name]
             self.assertEqual((command[command.index('-c')+1], command[command.index('-t')+1]), (cpus, minutes), name)
         self.assertIn('--gres=gpu:2', jobs['whole-run-gpt'])
-        self.assertLess(jobs['whole-run-gpt'].index('--gres=gpu:2'), jobs['whole-run-gpt'].index('steering.whole'))
+        self.assertLess(jobs['whole-run-gpt'].index('--gres=gpu:2'), jobs['whole-run-gpt'].index('steering.whole_reasoning'))
         self.assertFalse(any('--gres' in command for name, command in jobs.items() if name != 'whole-run-gpt'))
 
     @unittest.skipUnless(PY.exists(), 'needs the cluster environment')
@@ -304,22 +307,28 @@ class LaunchGraphTests(unittest.TestCase):
                          ['os-tests', 'os-prepare', 'os-run-gpt', 'os-extract-gpt', 'os-analyze'])
         self.assertEqual(jobs[-1][-4:], ['steering.outcome', 'analyze', '--release', str(self.root)])
 
+    def derive(self, *models):
+        return subprocess.run(['bash', str(self.repo/'scripts/steering/derive_outcome_sets.sh'), str(self.root), *models],
+                              cwd=self.repo, env=self.environment(DRY_RUN='1'), capture_output=True, text=True)
+
     @unittest.skipUnless(PY.exists(), 'needs the cluster environment')
     def test_the_derive_chain_waits_for_the_extraction_of_each_model_it_is_given(self):
         self.seal('CAPTURE_NATIVE.json', {'gpt': 1, 'glm': 1}, job_prefix='oc')
         (self.root/'JOBS.txt').write_text('oc-tests 11 x\noc-extract-gpt 21 x\noc-extract-glm 22 x\n')
-        run = subprocess.run(['bash', str(self.repo/'scripts/steering/outcome_derive.sh'), 'release', 'glm', 'gpt'],
-                             cwd=self.repo, env=self.environment(DRY_RUN='1'), capture_output=True, text=True)
+        run = self.derive('glm', 'openai/gpt-oss-20b')  # a short key and a Hugging Face id
         self.assertEqual(run.returncode, 0, run.stderr)
         glm, gpt = (line.split() for line in run.stderr.splitlines() if line.startswith('sbatch'))
         self.assertEqual((glm[glm.index('-J')+1], self.option(glm, '--dependency')), ('oc-derive-glm', 'afterok:22'))
         self.assertEqual((gpt[gpt.index('-J')+1], self.option(gpt, '--dependency')), ('oc-derive-gpt', 'afterok:21'))
         self.assertEqual(gpt[-6:], ['--release', str(self.root), '--models', 'gpt', '--workers', '4'])
         self.assertEqual(self.option(gpt, '--chdir'), str(self.repo))  # the snapshot of the release
-        missing = subprocess.run(['bash', str(self.repo/'scripts/steering/outcome_derive.sh'), 'release', 'qwen35'],
-                                 cwd=self.repo, env=self.environment(DRY_RUN='1'), capture_output=True, text=True)
+        self.assertIn('--kill-on-invalid-dep=yes', gpt)
+        self.assertIn(f'--export=ALL,STUDY_DATA_ROOT={self.study}', gpt)
+        missing = self.derive('qwen35')
         self.assertNotEqual(missing.returncode, 0)
         self.assertIn('no queued extraction of qwen35', missing.stderr)
+        unqueued = self.derive('zai-org/GLM-4.7-Flash', 'Qwen/Qwen3-30B-A3B')  # in the study, but not in this release
+        self.assertIn('no queued extraction of Qwen/Qwen3-30B-A3B', unqueued.stderr)
 
     @unittest.skipUnless(PY.exists(), 'needs the cluster environment')
     def test_nothing_is_submitted_when_the_time_limits_exceed_a_ceiling(self):
@@ -355,7 +364,7 @@ class LaunchGraphTests(unittest.TestCase):
     @unittest.skipUnless(PY.exists(), 'needs the cluster environment')
     def test_an_interrupted_launch_cancels_its_jobs_too(self):
         self.seal('RELINK.json', {'gpt': 0})
-        process = subprocess.Popen(['bash', str(self.repo/'scripts/steering/launch.sh'), 'release'], cwd=self.repo,
+        process = subprocess.Popen(['bash', str(self.repo/'scripts/steering/submit_release_jobs.sh'), str(self.root)], cwd=self.repo,
                                    env=self.environment(HANG_AT='3'), stdout=subprocess.DEVNULL,
                                    stderr=subprocess.PIPE, text=True, start_new_session=True)  # its own process group, as a terminal gives it
         for _ in range(100):  # the third sbatch call is under way: two jobs are queued

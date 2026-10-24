@@ -10,7 +10,7 @@
 N is the number of tests that passed locally on this commit. Run it from the repository with the committed code
 clean: what runs is `git archive HEAD`, unpacked once into mfa-moe/releases/<commit>. It writes report/NAME/
 (RELEASE.json, the kind file COMPLEMENT/RELINK/OUTCOME/CAPTURE_NATIVE/OUTCOME_SWEEP.json, SOURCES.json, README.md and
-the receipts they cite) and prints the snapshot path. scripts/steering/launch.sh then submits the jobs.
+the receipts they cite) and prints the snapshot path. scripts/steering/submit_release_jobs.sh report/NAME then submits the jobs.
 """
 from __future__ import annotations
 
@@ -22,7 +22,8 @@ import subprocess
 import time
 from zoneinfo import ZoneInfo
 
-from steering.followup import APPROVED_GPU_HOURS, parse_shards, plan_followup
+from models.roster import resolve
+from steering.plan_continuation import APPROVED_GPU_HOURS, parse_shards, plan_continuation
 from store import FAST, MODELS, REPO, WORK, check_files, file_sha, publish, require, verified
 
 REPORTS = REPO/'report'
@@ -32,6 +33,8 @@ CHAIN = 'whole-reasoning-20261021-r20'  # the release whose source list a contin
 LINK = 'final-routing-20261015-r1/driver/EFFICIENCY_LINK_V2.json'  # the eight-model efficiency link, under report/
 # The jobs also read scripts/setup and requirements (scripts/slurm/env.sh finds the judge client environment there).
 RUN_PATHS = ('src', 'tests/steering', 'tests/routing', 'scripts/slurm', 'scripts/setup', 'scripts/steering', 'requirements')
+# What a snapshot unpacks: the paths of the repository that `git archive` takes at the sealed commit.
+ARCHIVED = ('src', 'scripts', 'configs', 'tests', 'pyproject.toml', 'requirements', 'AGENTS.md')
 # The kind file of a release is KIND.json unless the kind names its file here.
 KIND_FILES = {'capture': 'CAPTURE_NATIVE.json', 'sweep': 'OUTCOME_SWEEP.json'}
 FRACTIONS = (0.5, 0.7, 0.85)  # where the length-limit baseline stops the native reasoning
@@ -64,13 +67,14 @@ def complement(root: Path, args: argparse.Namespace) -> dict:
     of the paper has empty suppress cells. The new cells run on the same families and seeds with no native rows
     and no canary, and the release hosts a new combine of r7-r17 plus itself.
     """
-    from steering.whole import manifest_path
+    from steering.whole_reasoning import manifest_path
     cutoff = args.cutoff
     require(cutoff, '--cutoff is required: no GPU row may start after it (Rome time, e.g. 2026-10-24T06:00)')
     parents = {m: REPORTS/('whole-reasoning-20261021-r8' if m == 'gpt' else TEMPLATE) for m in MODELS}
     # 2-GPU shards of 4 hours, sized from the base releases' GPU time per row so that a shard's expected
     # work is about half its walltime (a row still running at the walltime stays unknown).
     shards = {'gpt': 3, 'nemotron': 4, 'qwen35': 12, 'qwen36': 12, 'gemma': 6, 'glm': 27, 'qwen330b': 3, 'lfm25': 8}
+    require(set(shards) == set(MODELS), 'the shard sizes name other models than store.MODELS')
     sweep = {m: verified(parents[m]/m/'SELECTED.json')['dose'] for m in MODELS}
     # The combine: every source of r17, with this release joined to each model's base source.
     sources = verified(REPORTS/'whole-reasoning-20261021-r17/SOURCES.json')['sources']
@@ -126,11 +130,13 @@ def relink(root: Path, args: argparse.Namespace) -> dict:
 
 
 def models_and_shards(args: argparse.Namespace, default_models: str) -> tuple[tuple[str, ...], dict[str, int]]:
-    """The models of a GPU release and their 2-GPU shards (4 hours each): --models, and --shards as N or model:N,..."""
-    models = tuple((args.models or default_models).split(','))
+    """The models of a GPU release and their 2-GPU shards (4 hours each): --models, and --shards as N or model:N,...
+
+    A model is a Hugging Face id or a short key; a release records the short key."""
+    models = tuple(resolve(m) for m in (args.models or default_models).split(','))
     shards = args.shards or '3'
     count = ({m: int(shards) for m in models} if shards.isdigit() else
-             {m: int(n) for m, n in (item.split(':') for item in shards.split(','))})
+             {resolve(m): int(n) for m, n in (item.split(':') for item in shards.split(','))})
     require(set(count) == set(models), '--shards must name exactly the --models')
     return models, count
 
@@ -149,7 +155,7 @@ def outcome(root: Path, args: argparse.Namespace) -> dict:
     # The selection reads these outside the snapshot: per-attempt usage and the class nominations.
     inputs = {str(path): file_sha(path) for model in models
               for path in (BULK/model/'USAGE.json', BULK/model/'USAGE.npz', REPORTS/TEMPLATE/model/'WHOLE_NOMINATIONS.json')}
-    # The CPU ceiling is the time limits launch.sh gives the tests, the manifests and the analysis (24 core-hours)
+    # The CPU ceiling is the time limits submit_release_jobs.sh gives the tests, the manifests and the analysis (24 core-hours)
     # plus those of each model's extraction (12).
     return dict(
         kind_file={'models': {m: {**default_spec(m, REPORTS), 'deltas': list(deltas), 'fractions': list(fractions),
@@ -242,17 +248,17 @@ def continuation(root: Path, args: argparse.Namespace) -> dict:
     """The follow-up of a complement release that could not start or finish all its shards before its cutoff.
 
     It runs every row the parent never started and continues every row it left PARTIAL
-    (steering.whole.continuation_manifest), with the parent's UIDs, seeds and actions and a later cutoff, after
-    all the parent's shard jobs have ended. Its shards are sized by steering.followup under --max-gpu-hours. Its
+    (steering.whole_reasoning.continuation_manifest), with the parent's UIDs, seeds and actions and a later cutoff, after
+    all the parent's shard jobs have ended. Its shards are sized by steering.plan_continuation under --max-gpu-hours. Its
     combine extends the source list of release --chain (the newer efficiency link) with this release, and runs
-    under the eight-model link (--link). The parent's extraction jobs are passed as AFTER="..." to whole.sh.
+    under the eight-model link (--link). The parent's extraction jobs are passed to scripts/steering/submit_release_jobs.sh.
     """
-    from steering.whole import manifest_path
+    from steering.whole_reasoning import manifest_path
     require(args.parent, '--parent is required: the complement release to continue')
     require(args.cutoff, '--cutoff is required: no GPU row may start after it (Rome time, e.g. 2026-10-27T06:00)')
     parent = REPORTS/args.parent
     parent_release = verified(parent/'RELEASE.json')
-    plan = plan_followup(parent, args.max_gpu_hours or APPROVED_GPU_HOURS, parse_shards(args.shards or ''))
+    plan = plan_continuation(parent, args.max_gpu_hours or APPROVED_GPU_HOURS, parse_shards(args.shards or ''))
     require(not plan['live_parent_jobs'], f'{args.parent} still has shard jobs that have not ended: {plan["live_parent_jobs"]}')
     cutoff = rome(args.cutoff)
     require(cutoff > max(time.time(), parent_release['cutoff']), "the cutoff must be later than now and than the parent's")
@@ -296,8 +302,7 @@ KINDS = {'complement': complement, 'relink': relink, 'outcome': outcome, 'captur
 def snapshot(root: Path, commit: str) -> tuple[Path, Path]:
     """Archive the commit into the release and unpack it once under mfa-moe/releases/<commit>."""
     archive = root/'SOURCE.tar.gz'
-    subprocess.run(['git', 'archive', '--format=tar.gz', '--output='+str(archive), commit, 'src', 'scripts',
-                    'configs', 'tests', 'docs/ledger', 'pyproject.toml', 'requirements', 'AGENTS.md'],
+    subprocess.run(['git', 'archive', '--format=tar.gz', '--output='+str(archive), commit, *ARCHIVED],
                    cwd=REPO, check=True)
     folder = SNAPSHOTS/commit
     if not folder.exists():  # unpacked aside and renamed, so a killed tar never leaves a half snapshot behind

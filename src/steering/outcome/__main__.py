@@ -6,14 +6,24 @@ import json
 from pathlib import Path
 import sys
 
+from models.roster import resolve
 from store import REPO
 
 from steering.outcome.manifest import DEFAULT_MODELS as MODELS
 
+
+def models_of(text: str) -> list[str]:
+    """Short keys of the models in a comma-separated list of Hugging Face ids or short keys."""
+    return [resolve(name) for name in text.split(',')]
+
+
 def main() -> None:
-    parser = argparse.ArgumentParser(prog='python -m steering.outcome')
+    parser = argparse.ArgumentParser(prog='python -m steering.outcome',
+                                     epilog='A model is a Hugging Face id or a short key; --models takes a comma-separated list.')
     commands = parser.add_subparsers(dest='command', required=True)
     usage = commands.add_parser('usage', help='per-attempt expert usage on cohort B (CPU job; needs torch)')
+    usage.add_argument('--reports', type=Path, required=True, help='the report/ folder holding the base release whole-reasoning-20261021-r7')
+    usage.add_argument('--out', type=Path, required=True, help='folder that receives MODEL/USAGE.json and USAGE.npz')
     usage.add_argument('--models', default=MODELS)
     usage.add_argument('--workers', type=int, default=4)
     select = commands.add_parser('select', help='print each model\'s expert sets; writes nothing')
@@ -34,13 +44,13 @@ def main() -> None:
     reports = REPO/'report'
     if args.command == 'usage':
         from steering.outcome.select import usage as run
-        for model in args.models.split(','):
-            receipt = run(model, reports, args.workers)
+        for model in models_of(args.models):
+            receipt = run(model, args.reports.resolve(), args.workers, args.out.resolve())
             print(model, receipt['shape'], receipt['sha256'])
     elif args.command == 'select':
         from steering.outcome.manifest import default_spec, evaluation_questions
         from steering.outcome.select import selection
-        for model in args.models.split(','):
+        for model in models_of(args.models):
             questions = evaluation_questions(model, default_spec(model, reports))
             value = selection(model, questions, reports)
             summary = {name: {k: s[k] for k in ('mass', 'control_mass', 'unstable_fill', 'stable_positive', 'questions')}
@@ -48,14 +58,14 @@ def main() -> None:
             print(json.dumps({'model': model, 'protected': value['protected'], 'sets': summary}, indent=1))
     elif args.command == 'derive':
         from steering.outcome.derive import derive as run_chain
-        for model in args.models.split(','):
+        for model in models_of(args.models):
             print(model, json.dumps(run_chain(args.release.resolve(), model, args.workers)), flush=True)
     elif args.command == 'analyze':
         from steering.outcome.analysis import analyze as run
         print(json.dumps({'sha256': run(args.release.resolve())['sha256']}))
     elif args.command == 'pick':
         from steering.outcome.pick import write_pick
-        receipt = write_pick(args.effects, args.model)
+        receipt = write_pick(args.effects, resolve(args.model))
         print(json.dumps(receipt))
         sys.exit(0 if receipt['confirm'] else 3)  # 3: no cell to confirm (any other code is a failure)
     elif args.command == 'decide':

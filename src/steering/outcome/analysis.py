@@ -1,6 +1,6 @@
 """Effects of the outcome-selected nudge and of the stop-thinking-earlier baseline.
 
-Every number is a within-family (same question) contrast with the bounds of whole_effects: a run that
+Every number is a within-family (same question) contrast with the bounds of whole_reasoning_effects: a run that
 hits its allowance or never finishes keeps an interval, never a guessed value.
 
 - ``target_random``: nudged experts against matched random experts at the same delta (primary).
@@ -33,8 +33,8 @@ COUNTERS = ('active_positions', 'native_shift_members', 'executed_shift_members'
 
 def release_rows(root: Path, model: str) -> pd.DataFrame:
     """This release's nudge and budget rows, joined to their extracted outcomes, with bounds."""
-    from steering.whole import manifest
-    from steering.whole_effects import unit_bounds
+    from steering.whole_reasoning import manifest
+    from steering.whole_reasoning_effects import unit_bounds
     value = manifest(root, model)
     folder = root/model/'extraction'
     observed = pd.read_parquet(folder/'outcomes.parquet') if (folder/'outcomes.parquet').exists() else pd.DataFrame()
@@ -70,7 +70,7 @@ def native_rows(table: pd.DataFrame, model: str, dose: str) -> pd.DataFrame:
 
 def contrast(treated: dict, control: dict, metric: str) -> tuple[float, float, float]:
     """Point, lower and upper of treated - control (reversed for tokens, so positive = shorter)."""
-    from steering.whole_effects import contrast as bounded
+    from steering.whole_reasoning_effects import contrast as bounded
     return bounded(treated, control, metric, metric == 'log_reasoning')
 
 
@@ -161,8 +161,8 @@ def analyze(root: Path) -> dict:
     """Write EFFECTS_OUTCOME.json for every model of the release in root (an r2 sweep release: analyze_sweep)."""
     if (root/'OUTCOME_SWEEP.json').exists():
         return analyze_sweep(root)
-    from steering.whole import manifest
-    from steering.whole_effects import bootstrap, summarize_present
+    from steering.whole_reasoning import manifest
+    from steering.whole_reasoning_effects import bootstrap, summarize_present
     natives_folder = root.parent/NATIVES
     effects = verified(natives_folder/'EFFECTS_WHOLE.json')
     table = native_table(natives_folder)
@@ -212,8 +212,8 @@ def bounded_mean(rows: list[dict]) -> dict:
 
 def capture_natives(capture: Path, model: str, questions: set[str]) -> dict[str, list[dict]]:
     """Bounded capture attempts of one model (the unedited arm), grouped by question in attempt order."""
-    from steering.whole import manifest_path
-    from steering.whole_effects import unit_bounds
+    from steering.whole_reasoning import manifest_path
+    from steering.whole_reasoning_effects import unit_bounds
     value = verified(manifest_path(model, 'main', capture))
     folder = capture/model/'extraction'
     observed = pd.read_parquet(folder/'outcomes.parquet') if (folder/'outcomes.parquet').exists() else pd.DataFrame()
@@ -305,15 +305,15 @@ def sweep_levels(ours: pd.DataFrame) -> list[dict]:
 
 def sweep_summary(boot, frame: pd.DataFrame, kind: str) -> dict:
     """The simultaneous 95% envelope over every column of one kind of contrast (empty if the half has none)."""
-    from steering.whole_effects import summarize_present
+    from steering.whole_reasoning_effects import summarize_present
     names = [c for c in frame.columns if c != 'family' and f':{kind}:' in c]
     return summarize_present(boot, frame[['family', *names]], 'outcome-r2-'+kind) if names else {}
 
 
 def analyze_sweep(root: Path) -> dict:
     """Write EFFECTS_OUTCOME.json for an r2 sweep release (one half) in root."""
-    from steering.pulse_effects import Bootstrap
-    from steering.whole import DRAWS, SEED
+    from steering.pulsed_effects import Bootstrap
+    from steering.whole_reasoning import DRAWS, SEED
     spec = verified(root/'OUTCOME_SWEEP.json')
     # The analysis waits for any end of extraction; refuse a release whose shards never ran.
     require((root/'CPU_VALIDATION.json').exists() and verified(root/'CPU_VALIDATION.json')['passed'],

@@ -6,7 +6,7 @@ Model order: tables, figure data and figure ticks list the models by ascending t
 
 ## Write the tables and figure data
 
-No fitting or resampling happens in these three. They read sealed receipts, so a number in the paper can be traced to one.
+No fitting or resampling happens in these three. They read sealed receipts, so a number in the paper can be traced to one. The routing study they read is `store.STUDY` (`STUDY_DATA_ROOT`, default `report/final-routing-20261015-r1`); `scripts/paper/export_paper_tables.sh STUDY_DIR` sets it, and the `% Source:` line of each table cites the path actually read.
 
 | Module | Reads | Writes (in the paper folder) |
 | --- | --- | --- |
@@ -20,13 +20,13 @@ Which experiment feeds which exhibit:
 
 | Exhibit | Comes from |
 | --- | --- |
-| Figure `readout`, table `readout` | `routing.readout`, `routing.lfm readout` (`routing_readout.csv`) |
-| Figure `selection`, tables `selection`, `selection_folds` | `routing.selection export`, `routing.lfm derive` (`selection_coverage.csv`) |
-| Figures `occupancy`, `state_transitions`, `transition_summary`; tables `occupancy`, `state_transitions` | `routing.dynamics`, `routing.lfm dynamics` (`native_dynamics.json`) |
-| Figure `next_state`, table `next_state` | `routing.anticipation` (`anticipation.csv`) |
+| Figure `readout`, table `readout` | `routing.present_state_readout`, `routing.lfm25_analyses readout` (`routing_readout.csv`) |
+| Figure `selection`, tables `selection`, `selection_folds` | `routing.expert_selection export`, `routing.lfm25_analyses derive` (`selection_coverage.csv`) |
+| Figures `occupancy`, `state_transitions`, `transition_summary`; tables `occupancy`, `state_transitions` | `routing.state_dynamics`, `routing.lfm25_analyses dynamics` (`native_dynamics.json`) |
+| Figure `next_state`, table `next_state` | `routing.next_state_anticipation` (`anticipation.csv`) |
 | Tables `benchmarks`, `benchmark_details` | `routing.benchmark_accuracy`, `routing.benchmark_inventory` (`benchmark_cells.csv`) |
-| Figure `routing`; tables `routing`, `routing_levels`, `routing_strong`, `efficiency_link` | `steering.pulse_effects`, `routing.efficiency_link` |
-| Figures `whole_states`, `whole_dose`; tables `whole`, `whole_cells`, `whole_occupancy`, `whole_levels` | `steering.whole_effects combine` |
+| Figure `routing`; tables `routing`, `routing_levels`, `routing_strong`, `efficiency_link` | `steering.pulsed_effects`, `routing.efficiency_link` |
+| Figures `whole_states`, `whole_dose`; tables `whole`, `whole_cells`, `whole_occupancy`, `whole_levels` | `steering.whole_reasoning_effects combine` |
 
 ## Build and check
 
@@ -36,7 +36,7 @@ PYTHONPATH=src $P -m paper.build_cl_figures [NAME ...] [--timeout-seconds 120]  
 PYTHONPATH=src $P -m paper.build_cl_manuscript [--timeout-seconds 300]             # up to four passes of the offline tectonic
 ```
 
-`scripts/paper/build.sh` runs both. Output goes to `paper/manuscript-support/build` (the PDF, one image per page, a build receipt); the manuscript folder is only read, and the build stops if a source changes while it runs. The first pass reuses the `aux` and `bbl` files of the newest finished build whose references, class and bibliography style are unchanged, even if the latest build failed.
+`scripts/paper/build_paper_pdf.sh` runs both. Output goes to `paper/manuscript-support/build` (the PDF, one image per page, a build receipt); the manuscript folder is only read, and the build stops if a source changes while it runs. The first pass reuses the `aux` and `bbl` files of the newest finished build whose references, class and bibliography style are unchanged, even if the latest build failed.
 
 ```bash
 PYTHONPATH=src $P -m paper.verify_cl_printed_tables --paper paper/6a510c6db0d9b08aa438c142 \
