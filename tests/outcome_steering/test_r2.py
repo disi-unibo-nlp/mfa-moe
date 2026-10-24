@@ -83,6 +83,17 @@ class WindowTests(unittest.TestCase):
         self.assertAlmostEqual(chosen['mass'], 5/(3*EXPERTS))
         self.assertIn('slot_share', chosen)
 
+    def test_fixed_set_with_a_crowded_quintile_falls_back_to_nearest_usage(self):
+        frequency = np.tile(np.linspace(.01, .3, EXPERTS), (len(LAYERS), 1))
+        fixed = [(12, 20), (12, 21), (12, 22), (12, 23), (16, 5)]           # four in one layer/quintile
+        protected = {(12, e) for e in range(18, 26) if e not in (20, 21, 22, 23)}
+        chosen = select.choose_window(np.zeros(frequency.shape), frequency, LAYERS, [12, 16, 20], K, protected,
+                                      ['gpt', 'blind', 'all'], fixed=fixed)
+        first, second = ({(p['layer'], p['expert']) for p in d} for d in chosen['controls'])
+        self.assertIn('nearest_usage', chosen['control_matching'])
+        self.assertFalse(first & second or (first | second) & (protected | set(fixed)))
+        self.assertEqual(sorted(l for l, _ in first), sorted(l for l, _ in fixed))
+
     def test_fixed_set_is_kept_with_its_controls(self):
         usage, arrays = synthetic()
         frequency = select.class_rates(arrays['counts'], arrays['tokens'], 7)[0].mean(0)

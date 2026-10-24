@@ -328,13 +328,35 @@ def choose_window(score: np.ndarray, frequency: np.ndarray, layers: list[int], w
 
     window_frequency = [frequency[layers.index(layer)].tolist() for layer in window]   # rows in window order
 
-    def draws(pairs):
+    def nearest(pairs, taken, draw):
+        # Same layer, closest native usage (ties by a fixed digest): used only when a fixed set leaves too
+        # few experts in its layer/quintile pool (GPT-OSS has 32 experts per layer and two disjoint draws).
+        chosen = []
+        for p in pairs:
+            row = window_frequency[window.index(p['layer'])]
+            pool = [e for e in range(len(row)) if (p['layer'], e) not in taken]
+            require(pool, f'no control expert left in layer {p["layer"]}: {identity}')
+            expert = min(pool, key=lambda e: (abs(row[e]-row[p['expert']]), digest([identity, draw, p['layer'], e])))
+            taken = taken | {(p['layer'], expert)}
+            chosen.append({'layer': int(p['layer']), 'expert': int(expert)})
+        return chosen
+
+    def draws(pairs, exact=True):
         result, taken = [], set(protected) | {(p['layer'], p['expert']) for p in pairs}
         for draw in range(DRAWS):
-            controls = layer_matched_controls([], pairs, window_frequency, window, taken, identity+['draw', draw])
-            result.append(controls['deactivate'])
-            taken |= {(p['layer'], p['expert']) for p in controls['deactivate']}
+            try:
+                controls = layer_matched_controls([], pairs, window_frequency, window, taken,
+                                                  identity+['draw', draw])['deactivate']
+            except ValueError:
+                if exact:
+                    raise
+                controls = nearest(pairs, taken, draw)
+                matching.append(draw)
+            result.append(controls)
+            taken |= {(p['layer'], p['expert']) for p in controls}
         return result
+
+    matching = []                                 # draws that fell back to nearest-usage matching
 
     if fixed is not None:
         chosen = [{'layer': l, 'expert': e, 'score': float(score[layers.index(l), e]), 'fixed': True} for l, e in fixed]
@@ -354,8 +376,9 @@ def choose_window(score: np.ndarray, frequency: np.ndarray, layers: list[int], w
                 continue
             chosen.append(pair)
     require(chosen, f'no nudgeable pair: {identity}')
-    controls = draws(chosen)
+    controls = draws(chosen, exact=fixed is None)
     return {'targets': chosen, 'controls': controls, 'mass': mass(chosen), 'slot_share': slots(chosen),
+            'control_matching': ['nearest_usage' if d in matching else 'layer_quintile' for d in range(DRAWS)],
             'control_mass': [mass(c) for c in controls], 'short': len(chosen) < R2_MIN_PAIRS}
 
 
