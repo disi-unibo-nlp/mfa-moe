@@ -1,4 +1,4 @@
-"""Routing interventions on the running model: the hooks, the generation driver and the analyses."""
+"""Routing interventions on the running model: the hooks, the generation engine and the analyses."""
 import os
 
 # The hooks patch the router modules of the model inside this process, so vLLM must not move its

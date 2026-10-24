@@ -1,4 +1,4 @@
-"""Launch regressions: actual nomination optima, continuous admission, relative gates and the job graph."""
+"""Launch checks: actual nomination optima, continuous admission, relative gates and the job graph."""
 import math
 import os
 from pathlib import Path
@@ -13,23 +13,23 @@ from unittest.mock import patch
 
 import pandas as pd
 
-from steering import pulse as driver, whole, whole_effects
+from steering import pulse, whole, whole_effects
 from store import BENCHMARKS, REPO, WORK, load, publish
 from steering.pulse_effects import Bootstrap
 from steering.selection import select_pairs
 from test_driver import FakeEngine
 
-LINK = driver.DRIVER/'EFFICIENCY_LINK_PREREG.json'  # the seven-model pre-registration
+LINK = pulse.DRIVER/'EFFICIENCY_LINK_PREREG.json'  # the seven-model pre-registration
 
 
 class ActualNominationTests(unittest.TestCase):
     def test_greedy_matches_all_70_dp_optima_and_preserves_other_exact_rank_cells(self):
         """Use saved discovery evidence; neither nominations nor tests read whole outcomes."""
-        history = driver.STUDY.parent/'whole-reasoning-20261020-r2'
-        proposal = load(history/'CONTROL_FEASIBLE_RD_BOTH_DOSES.json')
+        saved = pulse.STUDY.parent/'whole-reasoning-20261020-r2'
+        proposal = load(saved/'CONTROL_FEASIBLE_RD_BOTH_DOSES.json')
         references = {(r['dose'], r['fold'], r['class']): r for r in proposal['records']}
         for model, layers, experts, native_k in (('gpt', 24, 32, 4), ('qwen36', 40, 256, 8)):
-            path = history/'gpt/WHOLE_NOMINATIONS.json' if model == 'gpt' else history/'qwen-feasibility/qwen36/WHOLE_NOMINATIONS.json'
+            path = saved/'gpt/WHOLE_NOMINATIONS.json' if model == 'gpt' else saved/'qwen-feasibility/qwen36/WHOLE_NOMINATIONS.json'
             nominations = load(path)
             profile = {'layers': list(range(layers)), 'experts': experts, 'native_k': native_k}
             for dose in ('main', 'half'):
@@ -84,7 +84,7 @@ class ContinuousAdmissionTests(unittest.TestCase):
             return {'prompt_ids': [0], 'params': SimpleNamespace(seed=7, max_tokens=250),
                     'request': None, 'total': 250}
         with tempfile.TemporaryDirectory(dir=WORK/'tools/tmp') as temporary:
-            engine = driver.Engine(SimpleNamespace(llm_engine=fake), driver.Store(Path(temporary)), time.time()+30,
+            engine = pulse.Engine(SimpleNamespace(llm_engine=fake), pulse.Store(Path(temporary)), time.time()+30,
                                    hooked=False, max_inflight=64, drain_seconds=0)
             engine.run(rows, build, lambda *args: None)
         self.assertEqual(len(snapshots[0]), 64)
@@ -100,7 +100,7 @@ class RelativeGateTests(unittest.TestCase):
             ('target_promote', 'promote', ratio, steered_cap, steered_rep),
             ('random_promote', 'promote', ratio, steered_cap, steered_rep))]
 
-    def test_historically_long_and_repetitive_native_does_not_fail_equal_steering(self):
+    def test_long_and_repetitive_native_does_not_fail_equal_steering(self):
         self.assertEqual(whole.relative_fluency(self.rows())['fluency_failures'], [])
 
     def test_only_relative_cap_and_repetition_excess_fail(self):
@@ -565,10 +565,10 @@ class RankAndCanaryTests(unittest.TestCase):
             capture = {'0': {'positions': [0], 'executed_ids': [list(executed_ids)]}}
             return {'capture': capture, 'stats': {'dose': dose}, 'closed': True, 'passes': 1,
                     'observed_tokens': 9, 'sha256': str(l1)+str(changed)+str(executed_ids)}
-        self.assertTrue(driver.ranks_agree(payload(1.0), payload(1.0+1e-9)))
-        self.assertFalse(driver.ranks_agree(payload(1.0), payload(1.01)))
-        self.assertFalse(driver.ranks_agree(payload(1.0), payload(1.0, changed=4.)))
-        self.assertFalse(driver.ranks_agree(payload(1.0), payload(1.0, executed_ids=(1, 3))))
+        self.assertTrue(pulse.ranks_agree(payload(1.0), payload(1.0+1e-9)))
+        self.assertFalse(pulse.ranks_agree(payload(1.0), payload(1.01)))
+        self.assertFalse(pulse.ranks_agree(payload(1.0), payload(1.0, changed=4.)))
+        self.assertFalse(pulse.ranks_agree(payload(1.0), payload(1.0, executed_ids=(1, 3))))
 
     def test_canary_rows_keep_production_audit_flags(self):
         records = []

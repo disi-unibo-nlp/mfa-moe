@@ -3,7 +3,7 @@
 The paper-writer bibliography checker runs with its network lookup replaced by the records in
 BUILD/author-revision-20261014/PRIMARY_RECORDS.json. It does not normalise the references. The checker writes a cache,
 a report and a log beside the manuscript it reads, so it runs on a fresh copy of the cited files in BUILD/bib-offline
-(no old online cache, nothing written into the manuscript folder). Writes BUILD/bib/OFFLINE_VERIFICATION.json.
+(no cache from an online run, nothing written into the manuscript folder). Writes BUILD/bib/OFFLINE_VERIFICATION.json.
 
   python -m paper.verify_cl_bibliography_offline
 """

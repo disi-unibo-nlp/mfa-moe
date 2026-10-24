@@ -53,7 +53,7 @@ class SealTests(unittest.TestCase):
         self.assertEqual((sealed['commit'], sealed['release_root']), ('abc123', str(folder)))
         self.assertEqual((sealed['models'], sealed['shards'], sealed['sweep'], sealed['cutoff']),
                          (list(release.MODELS), {}, {}, 1792814400.))
-        self.assertEqual(sealed['parent_release_sha256'], self.parent['sha256'])  # the key the earlier relinks used
+        self.assertEqual(sealed['parent_release_sha256'], self.parent['sha256'])  # the key a relink names its parent by
         self.assertNotIn('template_release_sha256', sealed)
         # The release records what the earlier jobs cost, since its ceilings do not reset the budget.
         usage = verified(root/'PRIOR_USAGE.json')

@@ -10,7 +10,7 @@ later nudge releases, so nothing is generated twice.
 - ``capture_manifest(root, model, spec)`` is called by ``steering.whole`` prepare when the release
   holds ``CAPTURE_NATIVE.json``; it publishes the model's manifest and its SELECTED receipt.
 
-``reports`` below is the report/ folder that holds the campaign's sealed inputs (the folds and the
+``reports`` below is the report/ folder that holds the study's sealed inputs (the folds and the
 source tables); a release finds it as the parent of its own folder.
 """
 from __future__ import annotations
@@ -30,7 +30,7 @@ PER_BENCHMARK = {
     'math500': 50,
 }
 ATTEMPTS = 6                 # native attempts per question
-CAP_TOKENS = 32768           # completion allowance of every row (the card-v3 generation budget)
+CAP_TOKENS = 32768           # completion allowance of every row (the generation budget of every model)
 SOURCE_CAMPAIGN = 'research-campaign-v3-20261014-r6'
 FOLDS = SOURCE_CAMPAIGN+'/FOLDS.json'
 SOURCES = {'lfm25': 'final-routing-20261015-r1/lfm25/SOURCES.json'}   # every other model: <campaign>/<model>/SOURCES.json
@@ -114,11 +114,11 @@ def capture_rows(model: str, spec: dict, profile: dict, prompts: dict[str, list[
 
 def capture_manifest(root: Path, model: str, spec: dict) -> dict:
     """Publish one model's capture manifest and select it (no canary: native routing only)."""
-    from steering import pulse as driver
+    from steering import pulse
     from steering.runtime import prompt_prefix
     from steering.whole import manifest_path, select_manifest, sweep_doses
     dose = sweep_doses(root)[model]
-    b = driver.binding()
+    b = pulse.binding()
     profile = b['models'][model]
     table = sources(root.parent, model)
     prompts = {}

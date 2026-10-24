@@ -2,12 +2,12 @@
 
 The order is ascending total parameters (journal/setup.tex); equal sizes keep the order of `store.MODELS`.
 Exporters import MODELS and TICKS from here so labels, rows and categorical figure coordinates agree.
-`SOURCE_MODELS` is the order of the sealed receipts and `ORIGINAL_MODELS` the seven models of the first
-capture. The display order never decides which models a receipt must cover.
+`SOURCE_MODELS` is the order of the sealed receipts and `SEVEN_MODELS` the seven models of the
+seven-model capture. The display order never decides which models a receipt must cover.
 """
 from store import MODELS as SOURCE_MODELS
 
-ORIGINAL_MODELS = SOURCE_MODELS[:7]  # native-memory fixtures and the first dynamics capture exist for these only
+SEVEN_MODELS = SOURCE_MODELS[:7]  # native-memory fixtures and the native dynamics capture exist for these only
 TOTAL_PARAMETERS_B = {"gpt": 20, "nemotron": 30, "qwen35": 35, "qwen36": 35, "gemma": 26, "glm": 30, "qwen330b": 30,
                       "lfm25": 24}
 MODELS = tuple(sorted(SOURCE_MODELS, key=TOTAL_PARAMETERS_B.__getitem__))

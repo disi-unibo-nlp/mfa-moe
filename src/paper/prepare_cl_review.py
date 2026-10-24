@@ -1,4 +1,4 @@
-"""Add the journal's figure sources, data, notes and old evidence files to a paper-writer review packet.
+"""Add the journal's figure sources, data, notes and evidence files to a paper-writer review packet.
 
 Run `pw packet` first; this only extends BUILD/packet.json and BUILD/packet.md with those files and points the
 packet at the page images of the current build (BUILD/BUILD.json). It also writes the PDF text to BUILD/pdf-text.md.
@@ -12,9 +12,9 @@ import os
 
 import pymupdf
 
-from paper.cl_paths import BUILD, DATA, FIGURES, LEGACY, NOTES, PAPER
+from paper.cl_paths import BUILD, DATA, FIGURES, NOTES, PAPER, SAVED_REPORTS
 
-OLD_EVIDENCE = (
+EVIDENCE_FILES = (
     'archive/20261014-pre-journal/SOURCE_SNAPSHOT.json', 'guiding_weighting_table.tex',
     'probe_grouped_summary_table.tex', 'expert_selection_audit.tex', 'generated/seven_model_evidence.tex',
     'generated/verification_status.tex')
@@ -33,7 +33,7 @@ def main():
     extra += [BUILD / 'author-revision-20261014/PRIMARY_RECORDS.json', BUILD / 'bib/OFFLINE_VERIFICATION.json',
               BUILD / 'bib/report.md', BUILD / 'bib-verify.log', BUILD / 'delivery/PACKAGE.json',
               BUILD / 'BUILD.json', BUILD / 'pdf-text.md']
-    extra += [LEGACY / name for name in OLD_EVIDENCE]
+    extra += [SAVED_REPORTS / name for name in EVIDENCE_FILES]
     metadata = json.loads((BUILD / 'packet.json').read_text())
     metadata['files'] = list(dict.fromkeys(metadata['files'] + [str(p) for p in extra]))
     metadata['review_pages'] = str(pages)

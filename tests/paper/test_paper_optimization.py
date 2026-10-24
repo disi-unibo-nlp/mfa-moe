@@ -67,7 +67,7 @@ class PaperOptimizationTests(unittest.TestCase):
         self.assertIn('intervals', changes)
         self.assertEqual(changes['citations']['removed'], ['source'])
 
-    def test_author_link_removal_does_not_lose_numeric_measurements(self) -> None:
+    def test_removing_a_link_does_not_lose_numeric_measurements(self) -> None:
         """Removing a URL version number is not a changed scientific number."""
         baseline = r'\href{https://example.org/model/2024}{Model 2.5} & 64'
         candidate = r'Model 2.5 & 64'

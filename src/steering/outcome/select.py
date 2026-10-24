@@ -2,7 +2,8 @@
 
 The question asked of the data is simple: when a model answers the same question several
 times, which experts does it use more in its wrong attempts than in its right ones?
-Campaign-v3 cohort B holds 6-8 attempts per AIME/AMC question with their per-token routing.
+Cohort B of the saved seven-model captures holds 6-8 attempts per AIME/AMC question with their per-token
+routing.
 
 Two stages:
 
@@ -28,6 +29,7 @@ import numpy as np
 
 from store import FAST, digest, file_sha, load, publish, require
 
+# The saved routing captures of the seven-model study, and the re-scored outcomes of those attempts.
 CAPTURES = Path('/leonardo_scratch/fast/IscrC_MIOSR/lmolfett/mfa-moe/campaign-v3')
 OUTCOMES = Path('/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/'
                 'campaign-v3/outcomes/outcomes_v3-99bf8d59506e2893.parquet')
@@ -45,7 +47,7 @@ MIN_PAIRS, MAX_PAIRS = 5, 40
 # ---------------------------------------------------------------------------------------------
 
 def nominations_path(reports: Path, model: str) -> Path:
-    """The class nominations of the base release r7 (the reports folder is report/ of the working repository)."""
+    """The class nominations of the base release r7; `reports` is the report/ folder."""
     return reports/'whole-reasoning-20261021-r7'/model/'WHOLE_NOMINATIONS.json'
 
 
@@ -240,7 +242,7 @@ def selection(model: str, holdouts: list[str], reports: Path) -> dict:
 
 
 # ---------------------------------------------------------------------------------------------
-# r2: class-conditioned selection on fresh captures (D-0006)
+# r2: class-conditioned selection on the captured attempts
 # ---------------------------------------------------------------------------------------------
 #
 # Every class c gets its own score: the same within-question wrong-minus-right z-difference as r1,
@@ -248,9 +250,9 @@ def selection(model: str, holdouts: list[str], reports: Path) -> dict:
 # relative depth 1/2, 2/3 and 5/6 (layers 12/16/20 of GPT-OSS, where Beyond the Trace chose its five
 # experts). Pairs are added until they carry MASS_SHARE of those layers' native gate weight per
 # reasoning token, the paper's definition (its five carry "1.2% of the gated mass across the three
-# recorded layers"; ELM grounding check 2026-10-23), at most R2_MAX_PAIRS. Two disjoint
-# matched random sets are drawn per expert set. The leave-one-question-out stability filter of r1 is
-# dropped: it passed as many pairs under shuffled labels as under real ones (review of 2026-10-23).
+# recorded layers"), at most R2_MAX_PAIRS. Two disjoint matched random sets are drawn per expert set.
+# No leave-one-question-out stability filter is applied here: it passed as many pairs under shuffled
+# labels as under real ones.
 
 CLASS_NAMES = ('Read', 'Analyze', 'Plan', 'Implement', 'Explore', 'Verify', 'Monitor')
 BLIND = 'blind'                   # the class-blind set: all reasoning tokens (index ALL_REASONING)

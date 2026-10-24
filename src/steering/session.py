@@ -31,7 +31,7 @@ class Session:
         require(not self.bound, 'request map already bound')
         require(set(self.internal_to_external.values()) == set(self.requests), 'batch admission incomplete')
         if self.contract is not None:
-            reports = self.llm.collective_rpc('fr_bind', kwargs={'aliases': self.internal_to_external})
+            reports = self.llm.collective_rpc('routing_bind', kwargs={'aliases': self.internal_to_external})
             expected = digest(self.internal_to_external)
             require(len(reports) == self.workers and all(r['mapping_sha256'] == expected for r in reports),
                     'tensor-parallel request maps disagree')
@@ -48,7 +48,7 @@ class Session:
         require(not self.engine.has_unfinished_requests(), 'batch still has unfinished requests')
         if self.contract is None:
             return None
-        reports = self.llm.collective_rpc('fr_end')
+        reports = self.llm.collective_rpc('routing_end')
         require(len(reports) == self.workers and reports[0]['capture_sha256'] == reports[1]['capture_sha256'],
                 'tensor-parallel captures disagree')
         require(all(report['request_map_sha256'] == digest(self.internal_to_external) for report in reports),
@@ -62,7 +62,7 @@ class Session:
             require(not self.engine.has_unfinished_requests(), 'abort left unfinished engine requests')
         finally:
             if self.contract is not None:
-                reports = self.llm.collective_rpc('fr_abort')
+                reports = self.llm.collective_rpc('routing_abort')
                 require(len(reports) == self.workers and all(r['status'] == 'detached' for r in reports),
                         'routing hooks were not detached on every rank')
 
@@ -73,7 +73,7 @@ def request_session(llm, requests, contract=None):
     require(not session.engine.has_unfinished_requests(), 'engine has neighboring requests')
     try:
         if contract is not None:
-            llm.collective_rpc('fr_begin', kwargs={'contract': contract, 'requests': requests})
+            llm.collective_rpc('routing_begin', kwargs={'contract': contract, 'requests': requests})
         yield session
     finally:
         try:

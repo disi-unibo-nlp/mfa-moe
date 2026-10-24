@@ -18,7 +18,7 @@ def main() -> None:
     usage.add_argument('--workers', type=int, default=4)
     select = commands.add_parser('select', help='print each model\'s expert sets; writes nothing')
     select.add_argument('--models', default=MODELS)
-    derive = commands.add_parser('derive', help='class usage, r2 selection, signal table, attempt selection (CPU job)')
+    derive = commands.add_parser('derive', help='class usage, class-conditioned selection, signal table, attempt selection (CPU job)')
     derive.add_argument('--release', type=Path, required=True, help='the capture release folder, report/NAME')
     derive.add_argument('--models', required=True)
     derive.add_argument('--workers', type=int, default=8)

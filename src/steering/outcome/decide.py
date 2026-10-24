@@ -1,7 +1,7 @@
 """Declared rule for extending the nudge experiment to more models, applied automatically.
 
-The rule was fixed before any nudge outcome existed (ledger D-0003, 2026-10-22): extend when, for at
-least one first-wave model and one delta, either
+The rule was fixed before any nudge outcome existed: extend when, for at least one model of the first
+release and one delta, either
 
 - the nudge is shorter than matched random experts (target-random token interval above zero) and
   its accuracy against unedited routing is not lower than -1 point (point estimate), or

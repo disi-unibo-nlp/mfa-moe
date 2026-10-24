@@ -9,11 +9,11 @@ from unittest.mock import patch
 import torch
 
 from steering.operators import score_override_dual_masked
-from steering import pulse as driver, whole
+from steering import pulse, whole
 from store import CLASSES, WORK, digest, publish, verified
 from steering.whole import build_manifest, dose_counts, directions
 
-LINK = driver.DRIVER/'EFFICIENCY_LINK_PREREG.json'  # the seven-model pre-registration
+LINK = pulse.DRIVER/'EFFICIENCY_LINK_PREREG.json'  # the seven-model pre-registration
 
 
 class DoseTests(unittest.TestCase):
@@ -147,9 +147,9 @@ class ManifestTests(unittest.TestCase):
             canary = whole.canary_rows({**value, 'sha256': 'synthetic'}, LINK)
             self.assertEqual(sum(r['operation'] != 'native' for r in canary), 32)
 
-    def test_base_manifests_of_the_running_releases_are_unchanged(self):
-        # Digests from the code that built the r7/r8 production manifests (commit a7df701), on the
-        # same synthetic inputs: the strength sweep must not move any planned row or UID.
+    def test_base_manifests_keep_their_frozen_digests(self):
+        # Digests of base manifests built from synthetic inputs. They pin every planned row and UID of the
+        # base releases (r7, r8): no change to the manifest code may move one.
         frozen = {('gemma', 'main'): '171a90091a827d91d7f4e875d4559457f25f1ac3f5013f4019bdfe67082b7f9a',
                   ('glm', 'half'): '5e82f59ffad516d7bbdccb25f3d27dc300187dcb87bc3459c2be0ecac8632c9c',
                   ('gpt', 'half'): '8c0b31d3d9e96c6309921bddc8ef306f5ea223094865279a0a35afc5b098203f',
@@ -161,7 +161,7 @@ class ManifestTests(unittest.TestCase):
 
 class StrengthSweepTests(unittest.TestCase):
     def test_counts_grow_with_strength_and_keep_native_top_k(self):
-        b = driver.binding()
+        b = pulse.binding()
         for model in whole.MODELS:
             profile = b['models'][model]
             layers, experts, k = len(profile['layers']), profile['experts'], profile['native_k']
@@ -245,10 +245,10 @@ class TopUpTests(unittest.TestCase):
 
 class CanaryDeadlineTests(unittest.TestCase):
     def test_rows_running_at_the_deadline_count_as_reaching_the_length_limit(self):
-        from steering import pulse as driver
+        from steering import pulse
         from store import digest, publish
         with tempfile.TemporaryDirectory(dir=WORK) as directory:
-            store = driver.Store(Path(directory))
+            store = pulse.Store(Path(directory))
             rows = []
             for family in ('a', 'b'):
                 for arm, operation in (('native', 'native'), ('native_repeat', 'native'),

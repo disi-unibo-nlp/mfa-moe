@@ -11,7 +11,7 @@ import unittest
 from unittest.mock import patch
 
 from steering import followup, release, whole
-from steering import pulse as driver
+from steering import pulse
 from store import MODELS, WORK, digest, file_sha, load, publish
 
 TMP = WORK/'tools/tmp'
@@ -42,9 +42,9 @@ class SyntheticComplement(unittest.TestCase):
             'models': ['gemma'], 'sweep': {'gemma': 'main'}, 'shards': {'gemma': 4}, 'complement_sha256': 'x',
             'cutoff': 1000., 'release_root': '/old/snapshot', 'inputs': {str(self.input_file): file_sha(self.input_file)},
             'classifier': {}, 'nomination_reference': 'n', 'template_release_sha256': 't'})
-        store = driver.Store(self.parent/'stores/gemma/main/units')
+        store = pulse.Store(self.parent/'stores/gemma/main/units')
         publish(store.folder(self.rows[0]['uid'])/'RESULT.json', {'status': 'complete'})
-        driver.checkpoint(store.folder(self.rows[1]['uid'])/'PARTIAL.json', {'uid': self.rows[1]['uid']})
+        pulse.checkpoint(store.folder(self.rows[1]['uid'])/'PARTIAL.json', {'uid': self.rows[1]['uid']})
         publish(store.folder(self.rows[2]['uid'])/'OUTPUT.json', {'token_ids': []})
         # Shard i takes family f<i>: shard 0 finished, shard 1 failed after starting f1 (row 2), shards 2 and 3
         # (f2, f3) ended without touching a row.
@@ -94,7 +94,7 @@ class FollowupPlanTests(SyntheticComplement):
                                                    if k not in ('sha256', 'complement_sha256')})
         with self.assertRaisesRegex(ValueError, 'not a complement release'):
             followup.plan_followup(self.reports/'base')
-        store = driver.Store(self.parent/'stores/gemma/main/units')
+        store = pulse.Store(self.parent/'stores/gemma/main/units')
         for row in self.rows:
             folder = store.folder(row['uid'])
             for name in ('OUTPUT.json', 'PARTIAL.json'):

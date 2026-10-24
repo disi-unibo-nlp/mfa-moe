@@ -56,19 +56,19 @@ class FakeLLM:
 
     def collective_rpc(self, method, kwargs=None):
         self.calls.append(method)
-        if method == 'fr_begin':
+        if method == 'routing_begin':
             self.attached = True
             if self.attach_failure:
                 raise RuntimeError('second rank failed to attach')
             return [{'status': 'attached'}] * 2
-        if method == 'fr_bind':
+        if method == 'routing_bind':
             self.aliases = kwargs['aliases']
             return [{'mapping_sha256': digest(self.aliases)}] * 2
-        if method == 'fr_end':
+        if method == 'routing_end':
             self.attached = False
             return [{'capture_sha256': 'same', 'request_map_sha256': digest(self.aliases),
                      'capture': {uid: {} for uid in self.aliases.values()}}] * 2
-        if method == 'fr_abort':
+        if method == 'routing_abort':
             self.attached = False
             return [{'status': 'detached'}] * 2
         raise AssertionError(method)
@@ -156,7 +156,7 @@ class SessionTests(unittest.TestCase):
         llm = FakeLLM(); original = llm.collective_rpc
         def rpc(method, kwargs=None):
             reports = original(method, kwargs)
-            return [reports[0], {'mapping_sha256': 'wrong'}] if method == 'fr_bind' else reports
+            return [reports[0], {'mapping_sha256': 'wrong'}] if method == 'routing_bind' else reports
         llm.collective_rpc = rpc
         with self.assertRaisesRegex(ValueError, 'maps disagree'):
             with request_session(llm, [{'uid': 'a'}], {}) as session:

@@ -1,6 +1,6 @@
 """Incremental prefix-history penalties for continuous batching.
 
-Same contract and operator order as `research_campaign_v3_r6.penalties.PrefixPenalties`
+Same contract and operator order as `steering.penalties.PrefixPenalties`
 (repetition over prompt|history, then frequency, then presence over history =
 saved prefix + generated tokens), but per-row device state is built once and
 updated with new tokens only, instead of rebuilding prompt/history tensors on

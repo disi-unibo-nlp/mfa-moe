@@ -1,7 +1,6 @@
-"""Restore cumulative completion history through vLLM's original penalty operator.
+"""Restore cumulative completion history through vLLM's penalty operator.
 
-Vendored verbatim from `research_campaign_v3_r6.penalties`; the study engine loads it by the string
-`steering.penalties:PrefixPenalties`.
+The engine loads it by the string `steering.penalties:PrefixPenalties`.
 """
 from __future__ import annotations
 

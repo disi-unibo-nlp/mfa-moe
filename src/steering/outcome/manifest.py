@@ -22,7 +22,7 @@ from store import digest, file_sha, load, publish, require, verified
 GPT_TRANSITION = [200007, 200006, 173781, 200005, 17196, 200008]
 
 
-DEFAULT_MODELS = 'gpt,qwen330b,nemotron'  # the first wave (D-0003)
+DEFAULT_MODELS = 'gpt,qwen330b,nemotron'  # the models an outcome release nudges unless --models says otherwise
 
 
 def evaluation_questions(model: str, spec: dict) -> set[str]:
@@ -44,7 +44,7 @@ def default_spec(model: str, reports: Path) -> dict:
     the top-ups and resumes that finished them. GPT-OSS's base release is r8; every other model's is r7.
 
     Args:
-        reports: The report/ folder of the working repository.
+        reports: The report/ folder.
     """
     release = {name: str(reports/f'whole-reasoning-20261021-{name}') for name in ('r7', 'r8', 'r11', 'r15')}
     base = release['r8'] if model == 'gpt' else release['r7']
@@ -87,7 +87,7 @@ def outcome_manifest(root: Path, model: str, spec: dict) -> dict:
             fractions and the answer allowance of budget rows.
     """
     from transformers import AutoTokenizer
-    from steering import pulse as driver
+    from steering import pulse
     from steering.runtime import closure, prompt_prefix, remaining
     from steering.whole import manifest_path, select_manifest, sweep_doses
     from steering.outcome.select import selection
@@ -96,7 +96,7 @@ def outcome_manifest(root: Path, model: str, spec: dict) -> dict:
     natives = base_natives(model, spec)
     chosen = publish(root/model/'OUTCOME_SELECTION.json',
                      selection(model, evaluation_questions(model, spec), root.parent))
-    b = driver.binding()
+    b = pulse.binding()
     profile = b['models'][model]
     tokenizer = AutoTokenizer.from_pretrained(profile['local_path'], local_files_only=True)
     closures = closure(tokenizer, model)
@@ -143,7 +143,7 @@ def outcome_manifest(root: Path, model: str, spec: dict) -> dict:
 
 
 # ---------------------------------------------------------------------------------------------
-# r2: class-conditioned sweep on one half of the capture questions (D-0006)
+# r2: class-conditioned sweep on one half of the capture questions
 # ---------------------------------------------------------------------------------------------
 
 HALF_TAG = 'outcome-half-v1'
@@ -212,7 +212,7 @@ def sweep_manifest(root: Path, model: str, spec: dict) -> dict:
             cells [{set, delta}], fractions, answer_tokens.
     """
     from transformers import AutoTokenizer
-    from steering import pulse as driver
+    from steering import pulse
     from steering.runtime import closure, prompt_prefix, remaining
     from steering.whole import manifest_path, select_manifest, sweep_doses
     dose = sweep_doses(root)[model]
@@ -221,7 +221,7 @@ def sweep_manifest(root: Path, model: str, spec: dict) -> dict:
     capture = Path(spec['capture'])
     natives = capture_rows_by_question(capture, model)
     rows = sweep_rows(model, spec, selection, natives)
-    b = driver.binding()
+    b = pulse.binding()
     profile = b['models'][model]
     tokenizer = AutoTokenizer.from_pretrained(profile['local_path'], local_files_only=True)
     closures = closure(tokenizer, model)

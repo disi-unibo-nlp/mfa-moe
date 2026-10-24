@@ -1,4 +1,4 @@
-"""Cross-fitted COUNT nominations; legacy mass selectors are never substituted."""
+"""Cross-fitted COUNT nominations: positive inclusion excess at fixed expert counts."""
 from collections import Counter
 import math
 import numpy as np

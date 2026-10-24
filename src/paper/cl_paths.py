@@ -1,7 +1,7 @@
 """Where the CL manuscript, its figures and its build tools live.
 
 The manuscript folder is an Overleaf checkout: it owns the editable text, the figure sources and the
-data behind them. Build output, review notes and old report sources stay in `paper/manuscript-support`.
+data behind them. Build output, review notes and report sources stay in `paper/manuscript-support`.
 """
 from store import HOME, REPO, WORK
 
@@ -11,7 +11,7 @@ FIGURES = PAPER / "figures/journal"   # figure sources, including Overleaf autho
 DATA = FIGURES / "data"               # coordinates and records behind the figures and tables
 BUILD = SUPPORT / "build"             # manuscript and figure builds, page renders, review records
 NOTES = SUPPORT / "notes"             # writing brief, paper rules, audits
-LEGACY = SUPPORT / "legacy"           # earlier report sources, scripts and data
+SAVED_REPORTS = SUPPORT / "legacy"     # report sources, scripts and generated data the exhibits read
 
 # Tools outside the repository.
 PAPER_WRITER = HOME / ".paper-writer-skill/skills/paper-writer"       # rules.py (source files, bibliography)

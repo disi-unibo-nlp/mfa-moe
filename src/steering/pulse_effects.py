@@ -1,6 +1,6 @@
-"""Intervention effects of the reduced design (CPU): lexical state endpoints, efficiency, inference.
+"""Intervention effects of the pulsed design (CPU): lexical state endpoints, efficiency, inference.
 
-Endpoints per continuation (window [pulse, H) of continuation tokens, H = 16·Q75, as `endpoints.occupancy`):
+Endpoints per continuation (window [pulse, H) of continuation tokens, H = 16·Q75):
   occupancy of each class (hard lexical labels; soft = classifier probability mass), fraction ended,
   class of the first complete sentence, generated/total tokens, strict accuracy with unknown bounds.
 Contrasts are paired within (model, family, class): targeted vs matched random (primary; deactivation sign
@@ -33,10 +33,10 @@ SEMANTIC_PREFIXES = {
 def endpoints(outcome, sentences):
     """Return fixed-window point estimates and explicit missingness bounds.
 
-    The original endpoint counted uncovered positions as zero and therefore
-    gave an outcome with no sentence rows a perfect null.  The aliases
-    ``occupancy_hard``/``first_hard`` are retained for existing consumers; the
-    new ``*_lower`` and ``*_upper`` fields are the values used for inference.
+    A position no sentence row covers is unknown, not zero, so an outcome with no
+    sentence rows is not a perfect null.  ``occupancy_hard``/``first_hard`` are the
+    point estimates over the observed rows; the ``*_lower`` and ``*_upper`` fields
+    bound the endpoint and are the values used for inference.
     """
     pulse, horizon = int(outcome['pulse_tokens']), int(outcome['horizon'])
     end = outcome['reasoning_end']
@@ -195,7 +195,7 @@ def analysis_assignments(model: str, design: str) -> list[dict]:
         design: Main or the exploratory strong-dose design.
 
     Returns:
-        Original assignments; no new continuation or random draw is created.
+        The assignments as frozen; no new continuation or random draw is created.
     """
     from steering.pulse import MANIFESTS
     manifest = verified(DRIVER/model/MANIFESTS[design])
@@ -271,7 +271,7 @@ def restore_outcomes(outcomes, assignments: list[dict]):
 
 
 def _read_outcome_table(folder: Path, kind: str, design: str):
-    """Read one design's shards, retaining its original native comparison."""
+    """Read one design's shards; the strong design also reads the main design's native rows."""
     import pandas as pd
     frames = [pd.read_parquet(path) for path in sorted(folder.glob(kind+'-[0-9]*.parquet'))]
     main = pd.concat(frames, ignore_index=True) if frames else pd.DataFrame()
@@ -287,7 +287,7 @@ def _read_outcome_table(folder: Path, kind: str, design: str):
 
 
 def continuation_table(models, design='main'):
-    """design 'strong': post-hoc strong-dose arms (renamed to target/random_activate) plus the main-design native rows."""
+    """design 'strong': the strong-dose arms (renamed to target/random_activate) plus the main-design native rows."""
     import pandas as pd
     frames = []
     for model in models:
@@ -350,7 +350,7 @@ def continuation_table(models, design='main'):
                     np.nan_to_num(e['first_post_hard'][i], nan=0.), e['first_post_lower'][i], e['first_post_upper'][i])
                 row['first_overlap_'+c], row['first_overlap_lower_'+c], row['first_overlap_upper_'+c] = (
                     np.nan_to_num(e['first_overlap_hard'][i], nan=0.), e['first_overlap_lower'][i], e['first_overlap_upper'][i])
-                # Always unknown: the reader endpoint of the superseded rescue design. Kept so the tables are unchanged.
+                # The semantic first-sentence endpoint is not measured: point .5, bounds 0 to 1.
                 row['semantic_first_'+c], row['semantic_first_lower_'+c], row['semantic_first_upper_'+c] = .5, 0., 1.
             for available, prefixes in ((e['available'], ('occ_', 'occs_')),
                                         (e['pulse_available'], ('pulse_occ_',))):
@@ -392,18 +392,13 @@ def paired(table):
     t['correct_lower'] = t.accuracy_lower.astype(float)
     t['correct_upper'] = t.accuracy_upper.astype(float)
     native = t[t.arm == 'native'].set_index(['model', 'family', 'layer_regime'])
-    require(native.index.is_unique, 'native rescue/main rows are not unique')
+    require(native.index.is_unique, 'native rows are not unique')
     rows = []
     observed = t[~t.arm.isin(('native', 'native_repeat'))]
     for (model, family, c, regime), g in observed.groupby(['model', 'family', 'class', 'layer_regime']):
         require(g.arm.is_unique, f'{model}/{family}/{c}/{regime}: duplicate intervention arm')
         arms = {r['arm']: r for r in g.to_dict('records')}
-        if (model, family, regime) in native.index:
-            nat = native.loc[(model, family, regime)].to_dict()
-        elif (model, family, 'native') in native.index:
-            nat = native.loc[(model, family, 'native')].to_dict()
-        else:
-            nat = None
+        nat = native.loc[(model, family, regime)].to_dict() if (model, family, regime) in native.index else None
         out = {'model': model, 'family': family, 'class': c, 'layer_regime': regime,
                'benchmark': g.benchmark.iloc[0], 'layer': g.layer.iloc[0]}
         for direction, sign in (('activate', 1), ('deactivate', -1)):
@@ -487,7 +482,7 @@ def paired(table):
                     out[f'{direction}:{metric}:vs_native'] = np.nan
             for c2 in CLASSES:  # response matrix: targeted vs random on every observed class
                 if ta and ra:
-                    prefix = 'full_occ_' if ta.get('operator') == 'score_override' else 'occ_'
+                    prefix = 'occ_'
                     lower_role, upper_role = ('lower_', 'upper_') if sign > 0 else ('upper_', 'lower_')
                     out[f'{direction}:response:{c2}'] = sign*(ta[prefix+c2]-ra[prefix+c2])
                     out[f'{direction}:response:{c2}:lower'] = sign*(ta[prefix+lower_role+c2]-ra[prefix+upper_role+c2])
@@ -533,7 +528,7 @@ class Bootstrap:
             'missing_cells': missing,
         }
         if missing and column+':lower' in frame and column+':upper' in frame:
-            # Compatibility midpoints only fill this metric, never an unrelated endpoint.
+            # Midpoints of the bounds fill only this metric's missing cells, never an unrelated endpoint.
             absent = ~np.isfinite(sub[column].to_numpy(dtype=float))
             sub.loc[absent, column] = (frame.loc[absent, column+':lower']+frame.loc[absent, column+':upper'])/2
         if not np.isfinite(sub[column].to_numpy(dtype=float)).all():
@@ -687,10 +682,10 @@ def _qualified_efficiency_link(prereg: Path, pairs, boot) -> dict:
 
 
 def analyze(models, out, design='main'):
-    """Write fresh effect artifacts while retaining planned unknown outcomes."""
+    """Write the effect artifacts of one design, keeping planned unknown outcomes as bounds."""
     import pandas as pd
     require(not any((out/name).exists() for name in ('EFFECTS.json', 'continuations.parquet', 'pairs.parquet')),
-            'corrected analysis requires a fresh output directory; preserve historical results')
+            'the analysis requires a fresh output directory; saved results are never overwritten')
     allocation = load(STUDY/'ALLOCATION.json')['records']
     benchmarks = {r['family']: r['benchmark'] for r in allocation}
     table = continuation_table(models, design)
@@ -824,12 +819,12 @@ def main(argv=None):
     """Run a fresh analysis of the main or the strong-dose design."""
     ap = argparse.ArgumentParser(prog='steering.pulse_effects')
     ap.add_argument('--models', default=','.join(MODELS))
-    ap.add_argument('--out', type=Path)
+    ap.add_argument('--out', type=Path, required=True)
     ap.add_argument('--design', choices=['main', 'strong'], default='main')
     args = ap.parse_args(argv)
     models = args.models.split(',')
     require(models and len(set(models)) == len(models), 'analysis model roster is empty or duplicated')
-    value = analyze(models, args.out or DRIVER/'analysis-corrected-v1', args.design)
+    value = analyze(models, args.out, args.design)
     log({'event': 'effects', 'primary': value['primary_pooled']})
 
 

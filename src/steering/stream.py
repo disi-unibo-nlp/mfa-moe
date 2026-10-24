@@ -13,7 +13,7 @@ from __future__ import annotations
 import inspect
 from store import digest, require
 from steering.observer import discover
-from steering.operators import hard_select, policy, score_override_select, score_override_dual
+from steering.operators import hard_select, policy, score_override_dual
 
 
 class Clock:
@@ -179,37 +179,18 @@ class StreamCapture:
                 stats = self.counts[uid]
                 if any(active):
                     operator = action.get('operator', 'hard_select')
-                    if operator == 'hard_select':
-                        aw, ai, changed = hard_select(logits[ix], nw[ix], ni[ix], action['experts'],
-                                                      action['direction'], active=active, **native_policy)
-                        validation_logits = logits[ix]
-                    elif operator == 'score_override':
-                        aw, ai, changed = score_override_select(
-                            logits[ix], nw[ix], ni[ix], action['experts'], action['direction'],
-                            epsilon=action.get('epsilon', .01), active=active, **native_policy)
-                        validation_logits = logits[ix]
-                    else:
-                        raise ValueError('unknown routing operator: '+operator)
+                    require(operator == 'hard_select', 'unknown routing operator: '+operator)
+                    aw, ai, changed = hard_select(logits[ix], nw[ix], ni[ix], action['experts'],
+                                                  action['direction'], active=active, **native_policy)
                     if weights is nw:
                         weights, ids = nw.clone(), ni.clone()
                     weights[ix], ids[ix] = aw, ai
                     require(bool(torch.isfinite(weights[ix]).all()), 'nonfinite dispatched weights')
-                    if bool(changed.any()) and operator == 'hard_select':
+                    if bool(changed.any()):
                         sel = ids[ix][changed].long()
-                        expected = self._expected(validation_logits[changed], sel, native_policy)
+                        expected = self._expected(logits[ix][changed], sel, native_policy)
                         require(bool(torch.allclose(expected, weights[ix][changed].float(), rtol=.02, atol=.02)),
                                 'intervened affinity/normalization/scaling equation differs')
-                    if operator == 'score_override':
-                        scores = validation_logits.float().log_softmax(-1)
-                        flags = torch.as_tensor(active, device=scores.device)
-                        target = torch.tensor(action['experts'], device=scores.device)
-                        extreme = (scores.max(-1).values+action.get('epsilon', .01)
-                                   if action['direction'] == 'activate' else
-                                   scores.min(-1).values-action.get('epsilon', .01))
-                        scores[:, target] = extreme[:, None]
-                        expected = self._expected(scores[flags], ids[ix][flags], native_policy)
-                        require(bool(torch.allclose(expected, weights[ix][flags].float(), rtol=.02, atol=.02)),
-                                'score override mixture normalization/scaling differs')
                     flags = torch.as_tensor(active, device=ix.device)
                     dispatched = ids[ix][flags].tolist()
                     require(all(len(set(v)) == self.contract['native_k'] for v in dispatched),
@@ -219,7 +200,7 @@ class StreamCapture:
                                  for v in dispatched)
                     stats['target_contract'] &= passed
                     require(passed, 'assigned inclusion/exclusion was not dispatched '
-                            f'operator={operator} direction={action["direction"]} '
+                            f'direction={action["direction"]} '
                             f'wanted={sorted(wanted)} dispatched={dispatched}')
                     unchanged = ~changed
                     stats['noop_exact'] &= bool(torch.equal(ids[ix][unchanged], ni[ix][unchanged]) and
@@ -468,7 +449,7 @@ class StreamCapture:
         for r in requests:
             uid = r['uid']
             require(uid not in self.requests, 'request already attached')
-            # One action (pre-registered design) or one action per layer (post-hoc strong-dose arm).
+            # One action, or one action per layer (the strong-dose arm).
             actions = list(r.get('actions') or ([r['action']] if r.get('action') else []))
             if r.get('whole'):
                 require(not (r.get('audit_capture') and r.get('capture_mode')), 'one capture kind per request')
@@ -651,27 +632,27 @@ def dose_totals(native_weights, native_ids, weights, ids, active, prompt, activa
 
 
 class StreamWorkerExtension:
-    def fs_begin(self, *, contract):
+    def stream_begin(self, *, contract):
         cfg = self.vllm_config
         require(cfg.speculative_config is None and cfg.model_config.enforce_eager and
                 not cfg.cache_config.enable_prefix_caching and not cfg.scheduler_config.async_scheduling,
                 'unqualified scheduling/cache profile')
-        require(getattr(self, '_fs_capture', None) is None, 'capture already attached')
-        self._fs_capture = StreamCapture(self.model_runner, contract)
-        return {'status': 'attached', 'geometry': self._fs_capture.geometry}
+        require(getattr(self, '_stream_capture', None) is None, 'capture already attached')
+        self._stream_capture = StreamCapture(self.model_runner, contract)
+        return {'status': 'attached', 'geometry': self._stream_capture.geometry}
 
-    def fs_add(self, *, requests, aliases):
-        return self._fs_capture.add(requests, aliases)
+    def stream_add(self, *, requests, aliases):
+        return self._stream_capture.add(requests, aliases)
 
-    def fs_release(self, *, uids):
-        return {uid: self._fs_capture.release(uid) for uid in uids}
+    def stream_release(self, *, uids):
+        return {uid: self._stream_capture.release(uid) for uid in uids}
 
-    def fs_validation(self):
-        return self._fs_capture.native_validation
+    def stream_validation(self):
+        return self._stream_capture.native_validation
 
-    def fs_end(self):
-        capture = getattr(self, '_fs_capture', None)
+    def stream_end(self):
+        capture = getattr(self, '_stream_capture', None)
         if capture is not None:
             capture.restore()
-        self._fs_capture = None
+        self._stream_capture = None
         return {'status': 'detached'}

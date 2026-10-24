@@ -3,9 +3,9 @@
   python -m steering.release complement NAME --tests N   suppress the states the base releases left out (r18)
   python -m steering.release relink NAME --tests N       the final combine again under the eight-model link (r19, r20)
   python -m steering.release outcome NAME --tests N      the outcome-selected nudge (--models, --shards)
-  python -m steering.release capture NAME --tests N      native attempts with routing saved (outcome r2 data)
-  python -m steering.release sweep NAME --tests N --half A|B --capture C --models M   one half of the r2 nudge sweep
-  python -m steering.release continuation NAME --tests N --parent P   the rows a complement left unfinished (r21)
+  python -m steering.release capture NAME --tests N      native attempts with routing saved (data of the class-conditioned selection)
+  python -m steering.release sweep NAME --tests N --half A|B --capture C --models M   one half of the class-conditioned nudge sweep
+  python -m steering.release continuation NAME --tests N --parent P   the rows a complement left unfinished
 
 N is the number of tests that passed locally on this commit. Run it from the repository with the committed code
 clean: what runs is `git archive HEAD`, unpacked once into mfa-moe/releases/<commit>. It writes report/NAME/
@@ -31,11 +31,11 @@ TEMPLATE = 'whole-reasoning-20261021-r7'  # pins the inputs, the sentence classi
 CHAIN = 'whole-reasoning-20261021-r20'  # the release whose source list a continuation extends
 LINK = 'final-routing-20261015-r1/driver/EFFICIENCY_LINK_V2.json'  # the eight-model efficiency link, under report/
 RUN_PATHS = ('src', 'tests/steering', 'tests/routing', 'scripts/slurm', 'scripts/steering')
-# The kind file of a release is KIND.json unless the kind has a name its earlier releases already used.
+# The kind file of a release is KIND.json unless the kind names its file here.
 KIND_FILES = {'capture': 'CAPTURE_NATIVE.json', 'sweep': 'OUTCOME_SWEEP.json'}
-FRACTIONS = (0.5, 0.7, 0.85)  # where the length-limit baseline stops the native reasoning (D-0003, D-0006)
+FRACTIONS = (0.5, 0.7, 0.85)  # where the length-limit baseline stops the native reasoning
 ANSWER_TOKENS = 2048          # answer allowance of a length-limit row
-SWEEP_DELTAS = (0.4, 0.8, 1.2)  # logit shifts of the r2 sweep (D-0006)
+SWEEP_DELTAS = (0.4, 0.8, 1.2)  # logit shifts of the class-conditioned sweep
 OUTCOME_SCOPE = ('tests/steering/outcome plus tests/steering/test_stream_batch.py; the allocated validation runs '
                  'both suites in full')
 
@@ -135,7 +135,7 @@ def models_and_shards(args: argparse.Namespace, default_models: str) -> tuple[tu
 
 
 def outcome(root: Path, args: argparse.Namespace) -> dict:
-    """The outcome-selected gentle nudge (steering.outcome; ledger F-0004, D-0003).
+    """The outcome-selected gentle nudge (steering.outcome).
 
     --models: models to steer. --shards: 2-GPU shards (4 hours each) per model, N or model:N,...
     """
@@ -144,7 +144,7 @@ def outcome(root: Path, args: argparse.Namespace) -> dict:
     models, count = models_and_shards(args, DEFAULT_MODELS)
     cutoff = args.cutoff
     require(cutoff, '--cutoff is required: no GPU row may start after it (Rome time, e.g. 2026-10-23T23:00)')
-    deltas, fractions, answer_tokens = (0.4, 0.8, 1.6), FRACTIONS, ANSWER_TOKENS  # D-0003
+    deltas, fractions, answer_tokens = (0.4, 0.8, 1.6), FRACTIONS, ANSWER_TOKENS
     # The selection reads these outside the snapshot: per-attempt usage and the class nominations.
     inputs = {str(path): file_sha(path) for model in models
               for path in (BULK/model/'USAGE.json', BULK/model/'USAGE.npz', REPORTS/TEMPLATE/model/'WHOLE_NOMINATIONS.json')}
@@ -157,16 +157,16 @@ def outcome(root: Path, args: argparse.Namespace) -> dict:
         sweep={m: 'main' for m in models}, cutoff=rome(cutoff), cpu_ceiling=24.+12.*len(models), sources=None, inputs=inputs,
         scope=OUTCOME_SCOPE,
         readme='Nudges a small set of experts chosen by outcome (used more in wrong than right attempts of the same\n'
-               'question, campaign-v3 cohort B) by subtracting a delta from their router logits at every prompt and\n'
+               'question, cohort B) by subtracting a delta from their router logits at every prompt and\n'
                "reasoning token, against matched random experts, and compares both with unedited routing (the base\n"
                "releases' native runs) and a stop-thinking-earlier baseline cut from those native runs.\n"
                f'Models: {", ".join(models)}; deltas {list(deltas)}; length fractions {list(fractions)}.\n'
-               'Code: src/steering/outcome (README there). Ledger F-0004, D-0003.\n'
+               'Code: src/steering/outcome (README there).\n'
                f'GPU work stops at {cutoff} Rome.\n')
 
 
 def capture(root: Path, args: argparse.Namespace) -> dict:
-    """Native attempts with their routing saved, the data of the class-conditioned outcome selection (F-0013, D-0006).
+    """Native attempts with their routing saved, the data of the class-conditioned outcome selection.
 
     Every model answers the same roster of 300 questions six times with unedited routing; every reasoning token keeps
     its native top-k ids and weights at every routed layer. --models defaults to all eight, --shards to 3 per model.
@@ -188,12 +188,12 @@ def capture(root: Path, args: argparse.Namespace) -> dict:
                'reasoning token keeps its native top-k expert ids and weights at every routed layer (AUDIT.npz per\n'
                f'unit). Completion allowance {CAP_TOKENS} tokens. These attempts feed the class-conditioned outcome\n'
                'selection, the attempt-selection analysis and serve as the unedited arm of the nudge releases.\n'
-               f'Models: {", ".join(models)}. Code: src/steering/outcome (capture.py). Ledger F-0013, D-0006.\n'
+               f'Models: {", ".join(models)}. Code: src/steering/outcome (capture.py).\n'
                f'GPU work stops at {cutoff} Rome.\n')
 
 
 def sweep(root: Path, args: argparse.Namespace) -> dict:
-    """One half of the r2 class-conditioned sweep (F-0013, D-0006).
+    """One half of the class-conditioned sweep.
 
     --capture: the capture release (report/NAME) whose manifests, expert sets (SELECTION_R2.json) and finished
     attempts the sweep reads. --half A runs every available expert set at every shift of SWEEP_DELTAS; --half B runs
@@ -233,13 +233,12 @@ def sweep(root: Path, args: argparse.Namespace) -> dict:
                'reasoning class (or on all reasoning, the class-blind set), are nudged down by a logit shift at\n'
                'every prompt and reasoning token, against two disjoint matched random sets. The unedited arm is\n'
                f'the six attempts per question of {args.capture}; stop-early rows cut one of them.\n'
-               f'Half {args.half}; cells: {len(spec[models[0]]["cells"])} per model; shifts {list(SWEEP_DELTAS)}. '
-               'Ledger F-0013, D-0006.\n'
+               f'Half {args.half}; cells: {len(spec[models[0]]["cells"])} per model; shifts {list(SWEEP_DELTAS)}.\n'
                f'GPU work stops at {cutoff} Rome.\n')
 
 
 def continuation(root: Path, args: argparse.Namespace) -> dict:
-    """r21: the follow-up of a complement release that could not start or finish all its shards before its cutoff.
+    """The follow-up of a complement release that could not start or finish all its shards before its cutoff.
 
     It runs every row the parent never started and continues every row it left PARTIAL
     (steering.whole.continuation_manifest), with the parent's UIDs, seeds and actions and a later cutoff, after
