@@ -17,11 +17,13 @@ from steering.operators import score_override_dual
 from steering.selection import global_pairs, layer_matched_controls
 from store import BENCHMARKS, CLASSES, WORK
 from steering.pulse_effects import Bootstrap, bounded_summary
-from steering.stream import Clock, StreamCapture, dose_totals
+from steering.stream import StreamCapture, dose_totals
 from steering.whole import build_manifest, select_pairs
 from steering.whole_effects import unit_bounds, contrast, primary_frame
-from steering import whole
+from steering import pulse as driver, whole
 from store import publish
+
+LINK = driver.DRIVER/'EFFICIENCY_LINK_PREREG.json'  # the seven-model pre-registration
 
 
 class NominationTests(unittest.TestCase):
@@ -207,17 +209,6 @@ class PromptScopeTests(unittest.TestCase):
 
 
 class AnalysisTests(unittest.TestCase):
-    def test_native_only_pooled_planning_retains_cross_model_family_covariance(self):
-        from steering.whole_effects import _pooled_native_planning
-        residuals = {
-            'gpt': pd.DataFrame({'log_reasoning': [1., -1.], 'correct': [.5, -.5]}, index=['a', 'b']),
-            'qwen36': pd.DataFrame({'log_reasoning': [-1., 1.], 'correct': [-.5, .5]}, index=['a', 'b']),
-        }
-        result = _pooled_native_planning(residuals, 3.48)
-        self.assertEqual(result['mde_log_tokens'], 0.)
-        self.assertEqual(result['mde_accuracy'], 0.)
-        self.assertEqual(result['transport_status'], 'SUSPECTED')
-
     def test_first_endpoints_reject_incomplete_overlap_and_out_of_horizon_sentences(self):
         from steering.pulse_effects import endpoints
         outcome = {'pulse_tokens': 4, 'horizon': 8, 'reasoning_end': None, 'generated_tokens': 8,
@@ -313,12 +304,12 @@ class ManifestTests(unittest.TestCase):
                         'target': [], 'random': [], 'qualified': True}
             with patch('steering.whole.cell_actions', side_effect=cell):
                 value = build_manifest(model, 'main', nominations, {'models': {model: profile}}, natives,
-                                       {r['family']: [1, 2] for r in natives}, True)
+                                       {r['family']: [1, 2] for r in natives}, LINK)
             rows = value['records']
             self.assertEqual(len(rows), expected)
             self.assertEqual(len({r['uid'] for r in rows}), expected)
             self.assertEqual(sum(r['audit_capture'] for r in rows), 32)
-            canary = whole.canary_rows({**value, 'sha256': 'synthetic-manifest'})
+            canary = whole.canary_rows({**value, 'sha256': 'synthetic-manifest'}, LINK)
             self.assertEqual(len(canary), 48)
             self.assertTrue(all(r['total_allowance'] == r['horizon'] == 32766 for r in canary))
             for family, members in groupby(rows, key=lambda r: r['family']):
@@ -345,125 +336,59 @@ class ManifestTests(unittest.TestCase):
 
 class ExecutionGateTests(unittest.TestCase):
     def setUp(self):
-        """Isolate all gate receipts in user WORK, without accessing a scheduler."""
+        """Isolate the release receipts in user WORK, without accessing a scheduler."""
         self.temporary = tempfile.TemporaryDirectory(dir=WORK/'tools/tmp')
         self.addCleanup(self.temporary.cleanup)
         self.root = Path(self.temporary.name)
-        root_patch = patch.object(whole, 'ROOT', self.root)
-        root_patch.start()
-        self.addCleanup(root_patch.stop)
-        # These gate regressions use the GPT/Qwen3.6 sizes of release r5 under its 72 GPU-hour ceiling.
-        for name, values in (('SHARDS', {'gpt': 2, 'qwen36': 7}), ('RUN_MINUTES', {'gpt': 165, 'qwen36': 240}),
-                             ('CANARY_MINUTES', {'gpt': 45, 'qwen36': 90})):
-            sizes = patch.dict(getattr(whole, name), values)
-            sizes.start()
-            self.addCleanup(sizes.stop)
-        publish(self.root/'RELEASE.json', {'release_root': str(whole.REPO),
-                'prior_usage': {'new_gpu_hours': 2., 'new_cpu_core_hours': 3.}})
 
     def test_nonempty_unbound_store_rejects_before_any_engine_load(self):
+        publish(self.root/'RELEASE.json', {'release_root': str(whole.REPO)})
         folder = self.root/'stores/gpt/main/units'
         folder.mkdir(parents=True)
         (folder/'PARTIAL.json').write_text('{}')
         with patch.object(whole, 'manifest', return_value={'sha256': 'manifest'}):
             with self.assertRaisesRegex(ValueError, 'nonempty unbound'):
-                whole.bound_store('gpt', 'main')
+                whole.bound_store(self.root, 'gpt', 'main')
 
-    def test_shard_admission_charges_failures_and_allocation_maxima_before_submission(self):
-        schedule = {'production': {m: [] for m in whole.MODELS},
-                    'canaries': {m: [{'id': m, 'gpus': 2, 'minutes': whole.CANARY_MINUTES[m]}]
-                                 for m in whole.MODELS}}
-        whole.admit_shard_plan(schedule, 'gpt', {}, set())
-        plan = whole.verified(self.root/'gpt/SHARD_PLAN.json')
-        self.assertEqual(plan['minutes'], 142)
-        self.assertLessEqual(whole.reserved_gpu_hours(schedule, {}, set()), whole.GPU_CEILING)
+    def test_production_needs_the_manifest_the_canary_or_the_sweep_selected(self):
+        publish(self.root/'RELEASE.json', {'release_root': str(whole.REPO), 'models': ['gpt']})
+        with patch.object(whole, 'verify_release', return_value={}):
+            with self.assertRaises(FileNotFoundError):  # prepare publishes PREPARED.json only after the tests passed
+                whole.run(self.root, 'gpt', (0, 1), 0.)
+        publish(self.root/'PREPARED.json', {})
+        publish(whole.manifest_path('gpt', 'main', self.root), {'dose': 'main', 'records': []})
+        publish(self.root/'gpt/SELECTED.json', {'dose': 'main', 'manifest_sha256': 'another manifest',
+                                                'canary_job': '1'})
+        with patch.object(whole, 'verify_release', return_value={}):
+            with self.assertRaisesRegex(ValueError, 'lacks a passing canary'):
+                whole.run(self.root, 'gpt', (0, 1), 0.)
+            manifest = whole.manifest(self.root, 'gpt', 'main')
+            (self.root/'gpt/SELECTED.json').unlink()  # receipts are immutable; start over with the right manifest
+            publish(self.root/'gpt/SELECTED.json', {'dose': 'main', 'manifest_sha256': manifest['sha256'],
+                                                    'canary_job': '1'})
+            publish(whole.canary_path(self.root, 'gpt', 'main'), {'gate': {'passed': False}, 'job': '1',
+                                                                  'manifest_sha256': manifest['sha256']})
+            with self.assertRaisesRegex(ValueError, 'canary qualification differs'):
+                whole.run(self.root, 'gpt', (0, 1), 0.)
 
-    def test_only_fluency_failure_selects_the_one_half_dose_fallback(self):
-        schedule = {'canaries': {'gpt': [{'id': '1', 'dose': 'main', 'gpus': 2, 'minutes': 45}]},
-                    'production': {'gpt': []}}
-        publish(self.root/'gpt/CANARY.json', {'gate': {'passed': False, 'fluency_failures': ['cap'],
-                                                    'software_failures': []}})
-        publish(self.root/'gpt/WHOLE_HALF.json', {'dose': 'half', 'records': []})
-        with patch.object(whole, 'submit_stage', return_value={'id': '2', 'dose': 'half'}) as submit, \
-             patch.object(whole.driver, 'checkpoint'):
-            whole.advance_canary(schedule, 'gpt', {'1': {'state': 'FAILED', 'elapsed': 60}}, set())
-        self.assertEqual(submit.call_args.kwargs['dose'], 'half')
-        self.assertEqual([job['dose'] for job in schedule['canaries']['gpt']], ['main', 'half'])
-        self.assertEqual(whole.verified(self.root/'gpt/SELECTED.json')['dose'], 'half')
+    def test_plan_names_the_snapshot_and_the_shards_of_each_model(self):
+        publish(self.root/'RELEASE.json', {'release_root': '/snapshot', 'models': ['gpt', 'glm', 'qwen36'],
+                                           'shards': {'gpt': 3, 'glm': 27}})
+        with patch('builtins.print') as out:
+            whole.plan(self.root)
+        self.assertEqual([call.args for call in out.call_args_list],
+                         [('/snapshot',), ('steering.whole combine',), ('gpt', 3), ('glm', 27)])
+        publish(self.root/'OUTCOME.json', {})
+        with patch('builtins.print') as out:
+            whole.plan(self.root)
+        self.assertEqual(out.call_args_list[1].args, ('steering.outcome analyze',))
 
-    def test_software_failure_never_becomes_a_dose_failure(self):
-        schedule = {'canaries': {'gpt': [{'id': '1', 'dose': 'main'}]}, 'production': {'gpt': []}}
-        publish(self.root/'gpt/CANARY.json', {'gate': {'passed': False, 'fluency_failures': ['cap'],
-                                                    'software_failures': ['bad membership']}})
-        stopped = set()
-        with patch.object(whole, 'submit_stage') as submit:
-            whole.advance_canary(schedule, 'gpt', {'1': {'state': 'FAILED'}}, stopped)
-        submit.assert_not_called()
-        self.assertEqual(stopped, {'gpt'})
-
-    def test_passing_canaries_submit_nine_unheld_shards_and_dependent_cpu_work(self):
-        schedule = {'canaries': {m: [{'id': str(i+1), 'dose': 'main'}] for i, m in enumerate(whole.MODELS)},
-                    'production': {m: [] for m in whole.MODELS}}
-        for model in whole.MODELS:
-            publish(self.root/model/'CANARY.json', {'gate': {'passed': True}})
-        calls = []
-        def record_submission(command, **kwargs):
-            calls.append({'command': command, **kwargs})
-            return {'id': str(len(calls)+10), 'held': kwargs.get('held', False)}
-        with patch.object(whole, 'submit_stage', side_effect=record_submission), \
-             patch.object(whole, 'bound_store'), patch.object(whole, 'admit_shard_plan'), \
-             patch.object(whole.driver, 'checkpoint'):
-            for model in whole.MODELS:
-                whole.advance_canary(schedule, model, {'1': {'state': 'COMPLETED'}, '2': {'state': 'COMPLETED'}}, set())
-        production = [c for c in calls if c['command'] == 'run']
-        self.assertEqual(len(production), 9)
-        self.assertFalse(any(c.get('held') for c in calls))
-        self.assertTrue(all(c['dependency'].startswith('afterok:') for c in production))
-        self.assertEqual([c['command'] for c in calls].count('extract'), 2)
-        self.assertEqual(calls[-1]['command'], 'analyze')
-        self.assertTrue(all(c['dependency'].startswith('afterany:') for c in calls if c['command'] != 'run'))
-
-    def test_quarter_pair_projection_cancels_exact_remaining_shards_above_ceiling(self):
-        schedule = {'production': {'gpt': [{'id': '10', 'gpus': 2}], 'qwen36': []},
-                    'canaries': {'gpt': [], 'qwen36': []}}
-        stopped = set()
-        with patch.object(whole, 'cancel_jobs') as cancel:
-            whole.check_projection(schedule, 'gpt', {'10': {'elapsed': 18000}},
-                                   {'pairs': 25, 'executable_pairs': 100}, stopped, 10.)
-        self.assertTrue((self.root/'STOP.json').exists())
-        self.assertEqual(stopped, {'gpt', 'qwen36'})
-        self.assertEqual([job['id'] for job in cancel.call_args.args[0]], ['10'])
-        self.assertAlmostEqual(whole.verified(self.root/'gpt/PROJECTION.json')['total_projected_gpu_hours'], 98.)
-
-    def test_accounting_carries_all_earlier_terminal_costs(self):
-        jobs = [{'id': 'gpu', 'gpus': 2, 'cpus': 16, 'submitted': 0},
-                {'id': 'cpu', 'gpus': 0, 'cpus': 4, 'submitted': 0}]
-        usage = {'gpu': {'state': 'COMPLETED', 'elapsed': 1800}, 'cpu': {'state': 'FAILED', 'elapsed': 900}}
-        with patch.object(whole, 'native_accounting', return_value=usage), \
-             patch.object(whole, 'work_remaining_bytes', return_value=20*2**30):
-            _, gpu_hours = whole.accounting_snapshot(jobs)
-        self.assertEqual(gpu_hours, 3.)
-        self.assertEqual(whole.load(self.root/'ACCOUNTING.json')['new_cpu_core_hours'], 4.)
-
-    def test_failed_validation_never_queues_empty_extraction_or_analysis(self):
-        import time
-        schedule = {'validation': {'id': 'cpu', 'gpus': 0, 'cpus': 4},
-                    'canaries': {'gpt': [{'id': 'g', 'gpus': 2}], 'qwen36': [{'id': 'q', 'gpus': 2}]},
-                    'production': {'gpt': [], 'qwen36': []}, 'extraction': {}}
-        whole.driver.checkpoint(self.root/'JOBS.json', schedule)
-        whole.driver.checkpoint(self.root/'ACCOUNTING.json', {'work_remaining_bytes': 20*2**30})
-        usage = {'cpu': {'state': 'FAILED'}, 'g': {'state': 'CANCELLED'}, 'q': {'state': 'CANCELLED'}}
-        # A science cutoff in the past would stop the release for that reason instead.
-        with patch.object(whole.driver, 'deadline_from_slurm', return_value=time.time()+300), \
-             patch.object(whole, 'CUTOFF', time.time()+1e6), \
-             patch.object(whole, 'accounting_snapshot', return_value=(usage, 0.)), \
-             patch.object(whole, 'native_accounting', return_value=usage), \
-             patch.object(whole, 'cancel_jobs') as cancel, patch.object(whole, 'advance_extraction') as extraction:
-            whole.monitor()
-        extraction.assert_not_called()
-        self.assertFalse((self.root/'STOP.json').exists())
-        self.assertEqual(whole.load(self.root/'VALIDATION_STOP.json')['reason'], 'cpu_validation_failed')
-        self.assertTrue(all(job['gpus'] == 2 for job in cancel.call_args.args[0]))
+    def test_the_link_receipt_comes_from_the_release(self):
+        publish(self.root/'RELEASE.json', {'release_root': str(whole.REPO)})
+        self.assertEqual(whole.link_receipt(self.root), driver.DRIVER/'EFFICIENCY_LINK_PREREG.json')
+        link = publish(self.root/'LINK.json', {'models': ['gpt']})
+        publish(self.root/'RELINK.json', {'link': str(self.root/'LINK.json'), 'link_sha256': link['sha256']})
+        self.assertEqual(whole.link_receipt(self.root), self.root/'LINK.json')
 
 
 class ClosedAnalysisTests(unittest.TestCase):
@@ -498,10 +423,11 @@ class ClosedAnalysisTests(unittest.TestCase):
 
     def test_all_missing_production_still_exports_six_bounded_primary_contrasts(self):
         from steering import whole_effects
+        models = ('gpt', 'qwen36')
         manifests, allocation = {}, []
         for i, benchmark in enumerate(BENCHMARKS):
             allocation.append({'family': str(i), 'benchmark': benchmark})
-        for model in whole.MODELS:
+        for model in models:
             rows = []
             for family in allocation:
                 base = {**family, 'model': model, 'dose': 'main', 'fold': int(family['family']) % 5,
@@ -510,7 +436,7 @@ class ClosedAnalysisTests(unittest.TestCase):
                     rows.append({**base, 'uid': model+family['family']+arm, 'class': None,
                                  'arm': arm, 'operation': 'native'})
                 for operation in ('promote', 'suppress'):
-                    for cls in (CLASSES if operation == 'promote' else whole.directions(model)['suppress']):
+                    for cls in (CLASSES if operation == 'promote' else whole.directions(model, LINK)['suppress']):
                         for role in ('target', 'random'):
                             rows.append({**base, 'uid': model+family['family']+operation+cls+role,
                                          'class': cls, 'arm': role+'_'+operation, 'operation': operation})
@@ -518,19 +444,19 @@ class ClosedAnalysisTests(unittest.TestCase):
                                 'scope': 'prompt-and-generated-reasoning'}
         original_load = whole_effects.load
         with tempfile.TemporaryDirectory(dir=WORK/'tools/tmp') as temporary, \
-             patch.object(whole_effects, 'ROOT', Path(temporary)), \
-             patch.object(whole_effects, 'manifest', side_effect=lambda model, dose=None: manifests[model]), \
              patch.object(whole_effects, 'load', side_effect=lambda path: {'records': allocation}
                           if Path(path).name == 'ALLOCATION.json' else original_load(path)):
-            for model in whole.MODELS:
-                manifests[model] = publish(whole.manifest_path(model, 'main', Path(temporary)), manifests[model])
-            publish(Path(temporary)/'RELEASE.json', {'role': 'bounded closeout fixture'})
-            publish(Path(temporary)/'gpt/extraction/EXTRACTION.json', {
+            root = Path(temporary)
+            for model in models:
+                manifests[model] = publish(whole.manifest_path(model, 'main', root), manifests[model])
+            publish(root/'RELEASE.json', {'role': 'bounded closeout fixture', 'classifier': {}})
+            publish(root/'SOURCES.json', {'sources': [{'model': model, 'root': str(root), 'dose': 'main'}
+                                                      for model in models]})
+            publish(root/'gpt/extraction/EXTRACTION.json', {
                 'manifest_sha256': manifests['gpt']['sha256'],
                 'failures': [{'uid': 'failed-replay-unit', 'error': 'synthetic replay failure'}]})
-            result = whole_effects.analyze()
-            self.assertTrue((Path(temporary)/'analysis/EFFECTS.json').is_file())
-            self.assertIn('Extraction failures: 1', (Path(temporary)/'analysis/REPORT.md').read_text())
+            result = whole_effects.combine(root)
+            self.assertTrue((root/'analysis-combined/EFFECTS_WHOLE.json').is_file())
         self.assertEqual(result['extraction_failures']['count'], 1)
         self.assertEqual(len(result['primary']), 6)
         self.assertTrue(all(value['status'] == 'qualified_bounds' for value in result['primary'].values()))

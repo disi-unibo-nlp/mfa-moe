@@ -38,48 +38,6 @@ def hard_select(logits, native_weights, native_ids, targets, direction, *, scori
             torch.where(changed[:, None], ids.to(native_ids.dtype), native_ids), changed)
 
 
-def score_override(logits, targets, direction, *, epsilon=0.01, active=None, scoring='softmax',
-                   correction_bias=None):
-    """Return logits with the reference-style score override for active rows.
-
-    This follows the operator used by the public SteerMoE implementation: scores
-    are evaluated in log-softmax space, positive target experts are assigned the
-    row maximum plus ``epsilon`` and negative target experts the row minimum
-    minus ``epsilon``.  The native selector must still be called on the returned
-    logits so its top-k, correction bias, normalization and scaling semantics
-    are preserved.
-    """
-    import torch
-    require(direction in ('activate', 'deactivate'), 'invalid intervention direction')
-    require(scoring == 'softmax', 'score override requires a softmax router')
-    require(logits.ndim == 2 and targets, 'invalid score-override shape or target set')
-    targets = sorted(set(targets))
-    require(all(type(e) is int and 0 <= e < logits.shape[-1] for e in targets),
-            'invalid score-override expert identity')
-    if active is None:
-        active = torch.ones(len(logits), dtype=torch.bool, device=logits.device)
-    else:
-        active = torch.as_tensor(active, dtype=torch.bool, device=logits.device)
-    require(active.shape == (len(logits),), 'score-override active mask differs')
-    changed = torch.zeros(len(logits), dtype=torch.bool, device=logits.device)
-    if not bool(active.any()):
-        return logits, changed
-    out = logits.clone()
-    rows = torch.where(active)[0]
-    target_index = torch.tensor(targets, dtype=torch.long, device=logits.device)
-    selected = logits[rows].float().log_softmax(-1)
-    if direction == 'activate':
-        value = selected.max(dim=-1, keepdim=True).values + epsilon
-    else:
-        value = selected.min(dim=-1, keepdim=True).values - epsilon
-    # Correction bias belongs to the native selector; the override is defined
-    # on log-softmax scores before that selector applies its own policy.
-    selected[:, target_index] = value
-    out[rows] = selected.to(logits.dtype)
-    changed[rows] = True
-    return out, changed
-
-
 def score_override_select(logits, native_weights, native_ids, targets, direction, *, epsilon=0.01,
                           active=None, scoring='softmax', renormalize=True, correction_bias=None,
                           scale=1., expert_scale=None):

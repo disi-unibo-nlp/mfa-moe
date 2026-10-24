@@ -260,18 +260,6 @@ class RequestCapture:
 
 
 class RoutingWorkerExtension:
-    def fr_metrics(self):
-        import resource
-        import torch
-        cache = self.vllm_config.cache_config
-        return {'peak_allocated_bytes': torch.cuda.max_memory_allocated(),
-                'peak_reserved_bytes': torch.cuda.max_memory_reserved(),
-                'free_device_bytes': torch.cuda.mem_get_info()[0],
-                'peak_rss_kib': resource.getrusage(resource.RUSAGE_SELF).ru_maxrss,
-                'num_gpu_blocks': getattr(cache, 'num_gpu_blocks', None),
-                'block_size': getattr(cache, 'block_size', None),
-                'kv_cache_memory_bytes': getattr(cache, 'kv_cache_memory_bytes', None)}
-
     def fr_begin(self, *, contract, requests):
         cfg = self.vllm_config
         require(cfg.speculative_config is None and cfg.model_config.enforce_eager and

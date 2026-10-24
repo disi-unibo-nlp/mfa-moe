@@ -218,10 +218,10 @@ class ResumeManifestTests(unittest.TestCase):
     def resume(self, sources=None, parent=None):
         self.n += 1
         spec = {'parent': str(parent or self.parent), 'sources': [str(s) for s in (sources or (self.parent, self.topup))]}
-        with patch.object(whole, 'ROOT', Path(self.directory.name)/f'child{self.n}'), \
-             patch.object(whole, 'SWEEP', {'gemma': 'main'}):
-            result = whole.resume_manifest('gemma', spec)
-            return (result, load(whole.manifest_path('gemma', 'main')), load(whole.ROOT/'gemma/SELECTED.json'))
+        root = Path(self.directory.name)/f'child{self.n}'
+        publish(root/'RELEASE.json', {'models': ['gemma'], 'sweep': {'gemma': 'main'}})
+        result = whole.resume_manifest(root, 'gemma', spec)
+        return result, load(whole.manifest_path('gemma', 'main', root)), load(root/'gemma/SELECTED.json')
 
     def test_only_partial_rows_are_selected_each_with_its_source_store(self):
         self.put('parent', 0, 'complete')
@@ -281,12 +281,12 @@ class ResumeManifestTests(unittest.TestCase):
         root = Path(self.directory.name)/'release'
         spec = {'models': {'gemma': {'parent': str(self.parent), 'sources': [str(self.parent)]}}}
         publish(root/'RESUME.json', spec)
-        with patch.object(whole, 'ROOT', root), patch.object(whole, 'SWEEP', {'gemma': 'main'}):
-            result = whole.prepare_model({}, 'gemma', True)
-            self.assertEqual(result['gemma:main']['planned'], 1)
-            publish(root/'TOPUP.json', {'models': {}})
-            with self.assertRaisesRegex(ValueError, 'either a top-up, a resume or an outcome-steering release'):
-                whole.prepare_model({}, 'gemma', True)
+        publish(root/'RELEASE.json', {'models': ['gemma'], 'sweep': {'gemma': 'main'}})
+        result = whole.prepare_model(root, {}, 'gemma')
+        self.assertEqual(result['gemma:main']['planned'], 1)
+        publish(root/'TOPUP.json', {'models': {}})
+        with self.assertRaisesRegex(ValueError, 'either a top-up, a resume or an outcome-steering release'):
+            whole.prepare_model(root, {}, 'gemma')
 
 
 class SavedStateGateTests(unittest.TestCase):
@@ -381,8 +381,7 @@ class SeedResumeTests(unittest.TestCase):
         return {str(p): (file_sha(p), p.stat().st_mtime_ns) for p in paths}
 
     def seed(self, rows=None, shard=(1, 4)):
-        with patch.object(whole, 'ROOT', self.root):
-            return whole.seed_resume('gemma', self.value, rows or self.rows, self.store, shard)
+        return whole.seed_resume(self.root, 'gemma', self.value, rows or self.rows, self.store, shard)
 
     def test_partials_are_copied_with_a_receipt_and_sources_stay_untouched(self):
         before = self.source_files()
@@ -424,8 +423,8 @@ class SeedResumeTests(unittest.TestCase):
                           {**self.states[row['uid']], 'assignment_sha256': '1'*64})
         with self.assertRaisesRegex(ValueError, 'not this assignment'):
             self.seed(rows=[row])
-        with self.assertRaisesRegex(ValueError, 'only a resume release'), patch.object(whole, 'ROOT', self.root):
-            whole.seed_resume('gemma', {**self.value, 'design': 'top-up'}, self.rows, self.store, (0, 1))
+        with self.assertRaisesRegex(ValueError, 'only a resume release'):
+            whole.seed_resume(self.root, 'gemma', {**self.value, 'design': 'top-up'}, self.rows, self.store, (0, 1))
 
 
 class RunWiringTests(unittest.TestCase):
@@ -441,9 +440,9 @@ class RunWiringTests(unittest.TestCase):
             'model': 'gemma', 'dose': 'main', 'scope': 'x', 'records': self.rows})
         self.units = self.parent/'stores/gemma/main/units'
         driver.checkpoint(self.units/self.rows[1]['uid']/'PARTIAL.json', partial(self.rows[1], [4, 5, 6]))
-        publish(self.root/'CPU_VALIDATION.json', {'passed': True})
-        self.patches = [patch.object(whole, 'ROOT', self.root), patch.object(whole, 'SWEEP', {'gemma': 'main'}),
-                        patch.object(whole, 'verify_release'), patch.object(whole, 'CUTOFF', time.time()+1e6),
+        publish(self.root/'RELEASE.json', {'models': ['gemma'], 'sweep': {'gemma': 'main'}})
+        publish(self.root/'PREPARED.json', {})
+        self.patches = [patch.object(whole, 'verify_release', return_value={'cutoff': time.time()+1e6}),
                         patch.object(whole, 'bound_store', side_effect=self.bound),
                         patch.object(driver, 'binding', return_value={}),
                         patch.object(driver, 'hooked_llm', side_effect=RuntimeError('engine reached'))]
@@ -451,35 +450,35 @@ class RunWiringTests(unittest.TestCase):
             p.start()
             self.addCleanup(p.stop)
 
-    def bound(self, model, dose, canary=False):
-        return driver.Store(self.root/'stores'/model/dose/'units')
+    def bound(self, root, model, dose, canary=False):
+        return driver.Store(root/'stores'/model/dose/'units')
 
     def test_resume_shard_seeds_its_rows_then_reaches_the_engine(self):
-        whole.resume_manifest('gemma', {'parent': str(self.parent), 'sources': [str(self.parent)]})
+        whole.resume_manifest(self.root, 'gemma', {'parent': str(self.parent), 'sources': [str(self.parent)]})
         with self.assertRaisesRegex(RuntimeError, 'engine reached'):
-            whole.run('gemma', (0, 1), 0.)
+            whole.run(self.root, 'gemma', (0, 1), 0.)
         uid = self.rows[1]['uid']
-        self.assertEqual(self.bound('gemma', 'main').state(uid)['tokens'], [4, 5, 6])
+        self.assertEqual(self.bound(self.root, 'gemma', 'main').state(uid)['tokens'], [4, 5, 6])
         receipt = load(self.root/'gemma/resume/shard-0-1.json')
         self.assertEqual([(r['uid'], r['history']) for r in receipt['rows']], [(uid, 3)])
         # A restarted shard passes the gate again with the seeded partial in place.
         with self.assertRaisesRegex(RuntimeError, 'engine reached'):
-            whole.run('gemma', (0, 1), 0.)
+            whole.run(self.root, 'gemma', (0, 1), 0.)
 
     def test_non_resume_release_refuses_a_partial_before_the_engine(self):
-        publish(whole.manifest_path('gemma', 'main'), {**self.base, 'design': 'top-up'})
+        publish(whole.manifest_path('gemma', 'main', self.root), {**self.base, 'design': 'top-up'})
         publish(self.root/'gemma/SELECTED.json', {'dose': 'main', 'manifest_sha256': load(
-            whole.manifest_path('gemma', 'main'))['sha256'], 'canary_job': None, 'sweep': True})
-        driver.checkpoint(self.bound('gemma', 'main').folder(self.rows[1]['uid'])/'PARTIAL.json',
+            whole.manifest_path('gemma', 'main', self.root))['sha256'], 'canary_job': None, 'sweep': True})
+        driver.checkpoint(self.bound(self.root, 'gemma', 'main').folder(self.rows[1]['uid'])/'PARTIAL.json',
                           partial(self.rows[1], [1]))
         with self.assertRaisesRegex(ValueError, 'fresh only'):
-            whole.run('gemma', (0, 1), 0.)
+            whole.run(self.root, 'gemma', (0, 1), 0.)
 
     def test_after_the_cutoff_nothing_is_seeded(self):
-        whole.resume_manifest('gemma', {'parent': str(self.parent), 'sources': [str(self.parent)]})
-        with patch.object(whole, 'CUTOFF', 1.):
-            self.assertIsNone(whole.run('gemma', (0, 1), 0.))
-        self.assertIsNone(self.bound('gemma', 'main').state(self.rows[1]['uid']))
+        whole.resume_manifest(self.root, 'gemma', {'parent': str(self.parent), 'sources': [str(self.parent)]})
+        with patch.object(whole, 'verify_release', return_value={'cutoff': 1.}):
+            self.assertIsNone(whole.run(self.root, 'gemma', (0, 1), 0.))
+        self.assertIsNone(self.bound(self.root, 'gemma', 'main').state(self.rows[1]['uid']))
 
 
 class ResumeAnalysisJoinTests(unittest.TestCase):

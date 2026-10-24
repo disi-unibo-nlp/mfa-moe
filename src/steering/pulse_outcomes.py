@@ -9,9 +9,8 @@ from __future__ import annotations
 import argparse
 import json
 import time
-from pathlib import Path
 from store import require
-from steering.pulse import DRIVER, STORES, Store, binding, bulk, log, shard_rows
+from steering.pulse import DRIVER, STORES, Store, binding, bulk, design_rows, log
 
 START, END = '<START OF RESPONSE>', '<END OF RESPONSE>'
 
@@ -100,7 +99,7 @@ def extract(model, shard, design='main'):
     from store import load
     from steering.runtime import closure
     b = binding()
-    rows = shard_rows(model, shard, design)
+    rows = design_rows(model, design, shard)
     store = Store(bulk(b)/model/STORES[design])
     tokenizer = AutoTokenizer.from_pretrained(b['models'][model]['local_path'], local_files_only=True)
     close = closure(tokenizer, model)

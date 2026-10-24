@@ -21,7 +21,6 @@ from __future__ import annotations
 
 from concurrent.futures import ProcessPoolExecutor
 import gzip
-import json
 import math
 from pathlib import Path
 
@@ -29,13 +28,10 @@ import numpy as np
 
 from store import FAST, digest, file_sha, load, publish, require
 
-from steering.outcome import REPORTS
-
 CAPTURES = Path('/leonardo_scratch/fast/IscrC_MIOSR/lmolfett/mfa-moe/campaign-v3')
 OUTCOMES = Path('/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/'
                 'campaign-v3/outcomes/outcomes_v3-99bf8d59506e2893.parquet')
 BULK = FAST/'outcome-steering'
-NOMINATIONS = REPORTS/'whole-reasoning-20261021-r7/{model}/WHOLE_NOMINATIONS.json'
 
 COMMITTEE_SHARE = .05            # top share of experts per layer by native use = shared core
 EXECUTION_SHARE = .10            # top share of positive Implement/Analyze candidates per fold
@@ -47,6 +43,11 @@ MIN_PAIRS, MAX_PAIRS = 5, 40
 # ---------------------------------------------------------------------------------------------
 # Stage 1: per-attempt usage rates (needs torch, so it runs in a CPU allocation)
 # ---------------------------------------------------------------------------------------------
+
+def class_nominations(reports: Path, model: str) -> dict:
+    """The class nominations of the base release r7 (the reports folder is report/ of the working repository)."""
+    return load(reports/'whole-reasoning-20261021-r7'/model/'WHOLE_NOMINATIONS.json')
+
 
 def cohort_attempts(model: str) -> list[dict]:
     """Cohort-B attempts of one model, with their capture file and its recorded hash."""
@@ -99,9 +100,9 @@ def _attempt_rate(task: tuple[str, str, int]) -> np.ndarray:
     return (rate/len(reasoning)).astype(np.float32)
 
 
-def usage(model: str, workers: int = 4) -> dict:
+def usage(model: str, reports: Path, workers: int = 4) -> dict:
     """Write USAGE.npz (rates) and USAGE.json (attempts, outcomes, hashes) for one model."""
-    nominations = load(str(NOMINATIONS).format(model=model))
+    nominations = class_nominations(reports, model)
     attempts = cohort_attempts(model)
     strict = strict_outcomes(model, attempts)
     tasks = [(row['tensor'], row['tensor_sha256'], nominations['experts']) for row in attempts]
@@ -205,12 +206,12 @@ def choose(score, stable, frequency, layers, k, protected, identity) -> dict:
             'unstable_fill': unstable, 'stable_positive': int((stable & (score > 0)).sum())}
 
 
-def selection(model: str, holdouts: list[str]) -> dict:
+def selection(model: str, holdouts: list[str], reports: Path) -> dict:
     """All expert sets of one model: 'all' plus one per held-out evaluation question."""
     receipt = load(BULK/model/'USAGE.json')
     require(file_sha(BULK/model/'USAGE.npz') == receipt['rates_sha256'], 'USAGE.npz changed')
     rates = np.load(BULK/model/'USAGE.npz')['rates']
-    nominations = load(str(NOMINATIONS).format(model=model))
+    nominations = class_nominations(reports, model)
     layers, k = nominations['layers'], nominations['records'][0]['native_k']
     questions = [row['question'] for row in receipt['attempts']]
     strict = [row['strict'] for row in receipt['attempts']]

@@ -27,31 +27,6 @@ class ScienceTests(unittest.TestCase):
             self.assertIs(i, ids)
             self.assertFalse(changed.any())
 
-    def test_score_override_sets_extreme_log_probs_and_preserves_inactive_rows(self):
-        import torch
-        from steering.operators import score_override
-        logits = torch.tensor([[0., 1., 2., 3., 4., 5.], [0., 1., 2., 3., 4., 5.]])
-        out, changed = score_override(logits, [0, 1], 'activate', active=[True, False])
-        self.assertEqual(changed.tolist(), [True, False])
-        reference = logits[0].log_softmax(-1)
-        reference[[0, 1]] = reference.max()+.01
-        self.assertTrue(torch.allclose(out[0], reference))
-        self.assertTrue(torch.equal(out[1], logits[1]))
-        out, changed = score_override(logits, [0, 1], 'deactivate', active=[True, False])
-        reference = logits[0].log_softmax(-1)
-        reference[[0, 1]] = reference.min()-.01
-        self.assertTrue(torch.allclose(out[0], reference))
-        self.assertFalse(changed[1])
-
-    def test_score_override_is_invariant_to_a_constant_logit_shift(self):
-        import torch
-        from steering.operators import score_override
-        logits = torch.tensor([[0., 1., 2., 3., 4., 5.]])
-        for direction in ('activate', 'deactivate'):
-            original, _ = score_override(logits, [0, 1], direction)
-            shifted, _ = score_override(logits+100., [0, 1], direction)
-            self.assertTrue(torch.allclose(original, shifted))
-
     def test_executed_score_override_matches_reference_selection_and_weighting(self):
         import torch
         from steering.operators import score_override_select
