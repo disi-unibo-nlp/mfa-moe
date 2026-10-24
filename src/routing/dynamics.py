@@ -29,7 +29,7 @@ import numpy as np
 from routing.selection import (counts_for, enriched_set, family_weights, inclusion_statistics, nominate,
                                random_control, weighted_quantile)
 from stats import bootstrap_panel, clean_rows, unknown_bounds
-from store import ANALYSIS, CLASSES, SEED, canonical, digest, file_sha, load, publish, require, verified, write_once
+from store import ANALYSIS, CLASSES, SEED, canonical, digest, file_sha, publish, require, verified, write_once
 
 DEPTH_PATHS = ANALYSIS/'depth-paths/results/part1'
 
@@ -138,17 +138,18 @@ def joined_accuracy(outcomes, metadata, qf):
 
 
 def native_accuracy(campaign, model, out):
-    """Strict accuracy with unknown bounds of one model: inherited from the campaign (or `out`) if published, else computed."""
+    """Strict accuracy with unknown bounds of one model: kept if `out` already holds it, else computed into `out`.
+
+    With a new `out` the campaign's own NATIVE_ESTIMANDS.json and NATIVE_ACCURACY.json are never reused."""
     import pandas as pd
     from schemas import TraceRecord
     from labeling.spans import trace_digest
     from generation.scoring import extract_answer
     root = Path(campaign["root"])
-    for folder in (out, root):
-        if (folder/model/"NATIVE_ESTIMANDS.json").exists() and (folder/model/"NATIVE_ACCURACY.json").exists():
-            estimands, summary = verified(folder/model/"NATIVE_ESTIMANDS.json"), verified(folder/model/"NATIVE_ACCURACY.json")
-            require(estimands.get("exact_attempt_metadata"), "inherited native accuracy lacks exact attempt binding")
-            return estimands, summary
+    if (out/model/"NATIVE_ESTIMANDS.json").exists() and (out/model/"NATIVE_ACCURACY.json").exists():
+        estimands, summary = verified(out/model/"NATIVE_ESTIMANDS.json"), verified(out/model/"NATIVE_ACCURACY.json")
+        require(estimands.get("exact_attempt_metadata"), "published native accuracy lacks exact attempt binding")
+        return estimands, summary
     outcomes = pd.read_parquet(campaign["outcomes"])
     outcomes = outcomes[(outcomes.corpus == "card-v3") & (outcomes.model == model)].to_dict("records")
     require(len({attempt_key(r) for r in outcomes}) == len(outcomes), "duplicate native outcome identity")
@@ -331,7 +332,7 @@ def main(argv=None):
     parser.add_argument('models', nargs='+')
     parser.add_argument('--out', type=Path, help='new folder for all outputs, recomputed from the campaign inputs')
     args = parser.parse_args(argv)
-    campaign = load(args.campaign/'CAMPAIGN.json')
+    campaign = verified(args.campaign/'CAMPAIGN.json')
     for model in args.models:
         print(model, derive(campaign, model, args.out)['sha256'], flush=True)
 
