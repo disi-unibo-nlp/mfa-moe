@@ -74,7 +74,7 @@ Launchers are in `scripts/steering/`, modules in `src/steering/`.
 | Experiment | Launcher | Module | Output or receipt | Used in the paper |
 | --- | --- | --- | --- | --- |
 | Pulsed steering, main and strong doses | `pulse.sh SHARDS HOURS MODEL...`, then `pulse_analyze.sh OUT` | `pulse`, `pulse_outcomes`, `pulse_effects` | `report/final-routing-20261015-r1/driver/analysis-final/EFFECTS.json` and `.../analysis-strong/EFFECTS.json` | Figure `routing`, tables `routing`, `routing_levels`, `routing_strong` |
-| Whole-reasoning steering and dose sweep | `whole.sh KIND NAME TESTS [OPTION...]` (calls `launch.sh`) | `release`, `whole`, `whole_effects` | `report/whole-reasoning-20261021-r20/analysis-combined/EFFECTS_WHOLE.json` | Figures `whole_states`, `whole_dose`; tables `whole`, `whole_cells`, `whole_occupancy`, `whole_levels` |
+| Whole-reasoning steering and dose sweep | `whole.sh KIND NAME TESTS [OPTION...]` (calls `launch.sh`); KIND `continuation` runs what a complement left unfinished | `release`, `whole`, `whole_effects`, `followup` (the continuation's plan) | `report/whole-reasoning-20261021-r20/analysis-combined/EFFECTS_WHOLE.json` | Figures `whole_states`, `whole_dose`; tables `whole`, `whole_cells`, `whole_occupancy`, `whole_levels` |
 | Outcome-selected nudge | `outcome_usage.sh`, `whole.sh outcome ...`, `outcome_next.sh` | `outcome` | `analysis/EFFECTS_OUTCOME.json` in the release | Not in the paper. This is the next line of work. |
 
 ### Paper
