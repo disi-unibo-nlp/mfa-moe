@@ -5,7 +5,7 @@
 - purpose: Make the manuscript figures directly editable in Overleaf and preserve an auditable checklist of author feedback, leaving final comment resolution to the author.
 - acceptance: Latest Overleaf revision preserved; all accessible review threads and project chat reconciled into actionable TODOs; all 11 native figure sources and required data compile inside the paper checkout; original PDFs retained byte-for-byte; current source-only manuscript renders inspected; scoped Overleaf delivery verified by remote revision. Inaccessible comments remain explicitly pending.
 - keywords: overleaf, tikz, figures, comments, todos, manuscript, paper-writer
-- paths: scripts/paper, paper/manuscript-support
+- paths: src/paper/build_cl_figures.py, src/paper/build_cl_manuscript.py, src/paper/verify_cl_figure_labels.py, src/paper/cl_paths.py, scripts/paper/build.sh
 - decisions: D-0004, D-0005
 
 Evidence paths without a repository prefix are under paper/manuscript-support/build/. The Overleaf checkout is a separate Git repository; its published commit is recorded below. Local tooling changes remain uncommitted and source-bound in TOOLING_SOURCE.json.

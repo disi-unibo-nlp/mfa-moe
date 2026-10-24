@@ -5,10 +5,12 @@
 - purpose: Qualify and reconcile historical and newly authorized evidence without changing the scientific design or deleting missing outcomes.
 - acceptance: Immutable 7424-assignment cohort; fixed 2007-generation roster and 37 incompatible unknowns; allocated saved-token and 64-cell engineering qualification; reader labels in six-contrast inference; 512-occurrence HT audit; fresh main, strong and rescue reports. Additional ceilings 64 GPU-hours and 16 CPU-only core-hours; science cutoff 2026-10-23 05:30 Europe/Rome, delivery 11:30.
 - keywords: rescue, cohort, reader, steering, causal, ownership, deadline
-- paths: src/moe_exp/study, tests/study, scripts/slurm
+- paths:
 - decisions: D-0001
 
 Replaced by F-0003 at the user's explicit Alignment v2 instruction. Completed evidence and failures remain historical.
+
+Code note 2026-10-24: the rescue study code this feature concerned (`src/moe_exp/study`, `tests/study` and the rescue wrappers in `scripts/slurm`) was removed from the live tree in the 2026-10-23 cleanup (F-0010) and is kept at git tag `archive/pre-cleanup-20261023`. `paths` is empty because no live code is governed any more; the evidence and task lines below keep their original file names.
 
 ## Tasks
 

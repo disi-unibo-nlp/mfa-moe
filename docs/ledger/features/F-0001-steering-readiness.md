@@ -5,10 +5,12 @@
 - purpose: Establish the actual experiment state, distinguish scientific evidence from pipeline failures, and repair demonstrated defects before another allocation.
 - acceptance: Native Slurm accounting and saved artifacts reconcile; independent reviews cite code and papers; demonstrated corrections pass bounded regression checks; unfinished measurements and remaining budget are explicit.
 - keywords: steering, rescue, reader, effects, routing, paper, measurement
-- paths: src/moe_exp/study, tests/study
+- paths:
 - decisions:
 
 The user replaced remaining rescue work with Alignment v2 (F-0003) on 2026-10-20. Earlier evidence remains preserved.
+
+Code note 2026-10-24: the rescue study code this feature concerned (`src/moe_exp/study`, `tests/study`) was removed from the live tree in the 2026-10-23 cleanup (F-0010) and is kept at git tag `archive/pre-cleanup-20261023`. `paths` is empty because no live code is governed any more; the evidence and task lines below keep their original file names.
 
 ## Tasks
 

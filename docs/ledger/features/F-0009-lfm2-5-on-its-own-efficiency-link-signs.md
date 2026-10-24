@@ -5,7 +5,7 @@
 - purpose: The whole-reasoning steering chose each model's efficiency-directed states from the seven-model efficiency-link pre-registration (driver/EFFICIENCY_LINK_PREREG.json), which had no native table for LFM2.5, so LFM used the pooled signs. Give LFM its own native signs everywhere (primary, dose response, pooled row, both link tests) so the eight models are compared on the same rule.
 - acceptance: driver/EFFICIENCY_LINK_V2.json covers 8 models with the frozen estimator (2,000 draws, seed 20261017), its seven pre-registered models equal the prereg's cells; every LFM cell directed under its own signs has target and random rows at every strength in r7-r18 (no new steering); a combine-only release r19 rewrites EFFECTS_WHOLE.json with the V2 link (seven models unchanged); the driver link test reruns on analysis-final pairs with 56 cells and reproduces the published 49-cell test on the prereg; paper tables and text name LFM's after-the-fact estimate.
 - keywords: efficiency link, LFM2.5, lfm25, pooled signs, directions, WHOLE_LINK, relink, r19, EFFICIENCY_LINK_V2
-- paths: src/moe_exp/study, scripts/study, tests/study, scripts/paper
+- paths: src/routing, scripts/routing, tests/routing, src/steering, scripts/steering, tests/steering, src/paper, scripts/paper
 - decisions: D-0002
 
 ## Tasks

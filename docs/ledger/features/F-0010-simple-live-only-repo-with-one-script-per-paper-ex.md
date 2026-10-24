@@ -5,7 +5,7 @@
 - purpose: A person can read the repo, find the script behind every paper result, and rerun it, without wading through 250k lines of finished campaigns.
 - acceptance: (1) find scripts -name '*.py' and find src -name '*.sh' are empty; (2) every paper experiment has one script listed in the top README; (3) rerunning every CPU analysis and the paper exporters with the new code gives outputs identical to the golden baseline from commit 978f011 (mfa-moe/r/polish-golden/, provenance keys ignored); (4) all tests pass; (5) /simplify and /code-review high ran on every step with confirmed findings fixed.
 - keywords: cleanup, layout, scripts, readme, simplify, legacy, archive, vllm serve, env.sh, release.sh
-- paths: scripts, src/moe_exp, tests
+- paths: scripts, src, tests
 - decisions: 
 
 ## Tasks
