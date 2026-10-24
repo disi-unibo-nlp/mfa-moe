@@ -14,28 +14,31 @@ destination of a pair whose source is an original sampled label. Occupancy, dwel
 read the original sample alone, and the added rows carry `pair_completion=True` so nothing else can use them.
 A sentence the judge already saw but could not label stays unknown; nothing is redrawn.
 
-Inputs: the saved traces and original judge records of the seven captured models (`routing.sentence_table`), LFM2.5's
-own sources and tasks in the study folder, the published panels in the capture record
+Inputs: the saved traces and original judge records of the seven captured models (`routing.labelled_sentence_table`),
+LFM2.5's own sources and tasks in the study folder, the published panels in the capture record
 `report/research-campaign-v3-20261014-r5-r2`.
 The source classes are Read and Verify (`read-verify`); `--source-classes Read,Verify,Plan,Explore,Monitor` widens the
 rule (`read-verify-plan-explore-monitor`), and a widened plan reuses the labels of the narrower one.
 
-Steps (one launcher runs them all: scripts/routing/transition_pairs.sh):
+Steps (`scripts/routing/label_next_sentences.sh STUDY_DIR` runs them all). Every step takes `--study STUDY_DIR`, and
+`--model HF_MODEL` unless it is `collect` or `variant`:
 
-    python -m routing.transition_pairs plan --model M                CPU  build the judge contexts of the missing
+    python -m routing.next_sentence_labels plan --model M            CPU  build the judge contexts of the missing
                                          successors, audit them against the contexts of the original labels, write counts
-    python -m routing.transition_pairs judge --model M --shard I/N   GPU  judge one shard (durable per-context results,
+    python -m routing.next_sentence_labels judge --model M --shard I/N   GPU  judge one shard (durable per-context results,
                                          resumable mid-generation)
-    python -m routing.transition_pairs summary --model M             CPU  merge the labels, recompute the native-dynamics
+    python -m routing.next_sentence_labels summary --model M         CPU  merge the labels, recompute the native-dynamics
                                          panel, write receipts
-    python -m routing.transition_pairs summary --model M --original-sample-only
+    python -m routing.next_sentence_labels summary --model M --original-sample-only
                                     CPU  the same panel without added labels (reproduces the published panel)
-    python -m routing.transition_pairs collect                       CPU  join the eight panels with the published
+    python -m routing.next_sentence_labels collect                   CPU  join the eight panels with the published
                                          ones and list the changes
+    python -m routing.next_sentence_labels variant                   print the name of the receipt folder of the rule
+                                         (`read-verify`), so a launcher need not spell it
 
 Outputs: the work files (`PAIR_TASKS.json`, `PAIR_SENTENCES.parquet`, the label store) under the bulk root's
 `transition-pairs/<model>/`, and the receipts `PAIR_PLAN.json`, `PAIR_LABELS.json`, `NATIVE_DYNAMICS_SUMMARY.json`
-under `report/final-routing-20261015-r1/transition-pairs/<model>/<variant>/` and `driver/TRANSITION_PAIRS.<variant>.json`.
+under `STUDY_DIR/transition-pairs/<model>/<variant>/` and `STUDY_DIR/driver/TRANSITION_PAIRS.<variant>.json`.
 """
 from __future__ import annotations
 
@@ -49,16 +52,18 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+import store
 from generation.client import slurm_deadline
 from labeling.contexts import context_id
 from labeling.lfm_inputs import judge_inputs
-from routing.dynamics import trajectories
-from routing.sentence_table import (CAMPAIGN, PAIR_SOURCES, attempt_layout, campaign, campaign_sources,
-                                    original_label_records, pairs_dir, receipt_dir, sentence_extent, trace_key,
-                                    write_table)
+from models.roster import resolve
+from routing.labelled_sentence_table import (PAIR_SOURCES, attempt_layout, campaign, campaign_dir, campaign_sources,
+                                             original_label_records, pairs_dir, receipt_dir, sentence_extent,
+                                             trace_key, write_table)
+from routing.state_dynamics import trajectories
 from stats import bootstrap_panel
 from steering.pulse import ADMISSION_MARGIN_HOURS, annotate_rows, log, parse_shard
-from store import CLASSES, MODELS, STUDY, Units, binding, digest, file_sha, load, publish, require, verified
+from store import CLASSES, MODELS, Units, binding, digest, file_sha, load, publish, require, verified
 
 NEXT_COLUMN = ':next:'
 SUCCESSOR_COLUMNS = ('attempt_id', 'question', 'dataset', 'sentence_index', 'source_index', 'source_class', 'segment',
@@ -78,13 +83,13 @@ def variant(classes: tuple[str, ...]) -> str:
 
 def model_sources(model: str) -> list[dict]:
     """The attempts of a model: the captured sources, or LFM2.5's own discovery sources."""
-    return verified(STUDY/'lfm25/SOURCES.json')['records'] if model == 'lfm25' else campaign_sources(model)
+    return verified(store.STUDY/'lfm25/SOURCES.json')['records'] if model == 'lfm25' else campaign_sources(model)
 
 
 def original_table_path(model: str) -> Path:
     """Parquet of the model's original labelled sentences (Qwen3.6: the table rebuilt on all its attempts)."""
     if model == 'lfm25':
-        inputs = verified(STUDY/'lfm25/DISCOVERY_INPUTS.json')
+        inputs = verified(store.STUDY/'lfm25/DISCOVERY_INPUTS.json')
         require(file_sha(inputs['sentences']) == inputs['sentences_sha256'], 'LFM derived sentences changed')
         return Path(inputs['sentences'])
     if model == 'qwen36':
@@ -122,7 +127,7 @@ def judge_history(model: str, sources: list[dict], sentences: pd.DataFrame,
     judged, inputs = defaultdict(dict), defaultdict(dict)
     if model == 'lfm25':
         bulk = Path(binding()['config']['bulk_root'])
-        context = {t['uid']: t['inputs'] for t in verified(STUDY/'lfm25/ANNOTATION_TASKS.json')['records']}
+        context = {t['uid']: t['inputs'] for t in verified(store.STUDY/'lfm25/ANNOTATION_TASKS.json')['records']}
         for r in verified(bulk/'lfm25/SAMPLED_SENTENCES.json')['records']:
             judged[r['attempt_id']][r['sentence_index']] = None
             if (r['attempt_id'], r['sentence_index']) in wanted:
@@ -385,14 +390,14 @@ def published_estimands_path(model: str) -> Path | None:
     """Per-attempt estimands of the published panel, when this model has one on the same attempts."""
     if model == 'lfm25':
         return Path(binding()['config']['bulk_root'])/'lfm25/derived/native_dynamics_estimands.parquet'
-    return None if model == 'qwen36' else CAMPAIGN/model/'native_dynamics_estimands.parquet'
+    return None if model == 'qwen36' else campaign_dir()/model/'native_dynamics_estimands.parquet'
 
 
 def published_panel_path(model: str) -> Path:
     """The published NATIVE_DYNAMICS_SUMMARY.json the paper reads."""
     if model == 'lfm25':
-        return STUDY/'lfm25/NATIVE_DYNAMICS_SUMMARY.json'
-    return CAMPAIGN/model/'NATIVE_DYNAMICS_SUMMARY.json'
+        return store.STUDY/'lfm25/NATIVE_DYNAMICS_SUMMARY.json'
+    return campaign_dir()/model/'NATIVE_DYNAMICS_SUMMARY.json'
 
 
 def reproduction(rows: list[dict], published: Path) -> dict:
@@ -474,15 +479,16 @@ def collect(classes: tuple[str, ...] = PAIR_SOURCES) -> dict:
             'critical_value': {'published': published['critical_value'], 'completed': new['critical_value']},
             'source_family_support': {c: new['results'][f'{c}:next:Read']['benchmark_family_support'] for c in CLASSES},
             'pair_completion': new['pair_completion'], 'panel_sha256': new['sha256']}
-    return publish(STUDY/'driver'/f'TRANSITION_PAIRS.{variant(classes)}.json',
+    return publish(store.STUDY/'driver'/f'TRANSITION_PAIRS.{variant(classes)}.json',
                    {'source_classes': list(classes), 'models': models})
 
 
 def main(argv: list[str] | None = None) -> None:
     """Run one step for one model (`collect` for all eight) and log the counts that identify its receipt."""
-    parser = argparse.ArgumentParser(prog='routing.transition_pairs', description=__doc__.split('\n\n')[0])
-    parser.add_argument('command', choices=['plan', 'judge', 'summary', 'collect'])
-    parser.add_argument('--model')
+    parser = argparse.ArgumentParser(prog='routing.next_sentence_labels', description=__doc__.split('\n\n')[0])
+    parser.add_argument('command', choices=['plan', 'judge', 'summary', 'collect', 'variant'])
+    parser.add_argument('--study', type=Path, default=store.STUDY, help='the study folder; its receipts are written here')
+    parser.add_argument('--model', help='the model, as its Hugging Face id (or short key)')
     parser.add_argument('--shard', default='0/1', type=parse_shard)
     parser.add_argument('--workers', type=int, default=int(os.environ.get('SLURM_CPUS_PER_TASK', '4')))
     parser.add_argument('--limit', type=int, help='plan debug: first N attempts, nothing published')
@@ -492,14 +498,21 @@ def main(argv: list[str] | None = None) -> None:
     args = parser.parse_args(argv)
     classes = tuple(args.source_classes.split(','))
     require(set(classes) <= set(CLASSES), 'unknown source class')
+    if args.command == 'variant':
+        print(variant(classes))
+        return
+    store.STUDY, store.DRIVER = args.study, args.study/'driver'
     if args.command == 'collect':
         result = collect(classes)
-    elif args.command == 'plan':
-        result = plan(args.model, args.workers, args.limit, classes)
-    elif args.command == 'judge':
-        result = judge(args.model, args.shard, classes)
     else:
-        result = summary(args.model, args.original_sample_only, classes)
+        require(args.model, f'{args.command} needs --model')
+        model = resolve(args.model)
+        if args.command == 'plan':
+            result = plan(model, args.workers, args.limit, classes)
+        elif args.command == 'judge':
+            result = judge(model, args.shard, classes)
+        else:
+            result = summary(model, args.original_sample_only, classes)
     shown = ('sha256', 'successors_to_judge', 'distinct_contexts', 'no_label_needed',
              'context_parity_with_original_labels')
     log({'event': args.command, 'model': args.model, **{k: v for k, v in result.items() if k in shown}})

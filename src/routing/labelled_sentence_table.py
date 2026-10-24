@@ -14,18 +14,20 @@ is skipped and a conflicting one removed), writes the table with the extraction'
 ways: per attempt, the class token totals equal the nine saved class counts, and for every attempt that the
 saved table also holds, the rows are equal.
 
-Inputs: `report/research-campaign-v3-20261014-r5-r2/<model>/SOURCES.json` and `CAMPAIGN.json` (the record of the
-seven-model capture and its saved inputs), the four `campaign-v3/labels/<model>/part-*/annotations.json` of
-`store.ANALYSIS`, and the saved traces.
+Inputs: `research-campaign-v3-20261014-r5-r2/<model>/SOURCES.json` and `CAMPAIGN.json` (the record of the
+seven-model capture and its saved inputs; the folder sits next to the study folder), the four
+`campaign-v3/labels/<model>/part-*/annotations.json` of `store.ANALYSIS`, and the saved traces.
 
-    sbatch -J pairs-table scripts/slurm/run_module_cpu.sbatch routing.sentence_table rebuild --model qwen36   (8 CPUs, about 1 minute)
-    python -m routing.sentence_table rebuild --model qwen36 --limit 8 --output PATH            (small debug run)
+    scripts/routing/rebuild_sentence_table.sh STUDY_DIR HF_MODEL                                (8 CPUs, about 1 minute)
+    python -m routing.labelled_sentence_table rebuild --study STUDY_DIR --model HF_MODEL
+    python -m routing.labelled_sentence_table rebuild --study STUDY_DIR --model HF_MODEL --limit 8 --output PATH
+                                                                                                 (small debug run)
 
 Output: `sentences.parquet` in the model's folder of the transition-pair work (the bulk root named in the study
-binding) and the receipt `report/final-routing-20261015-r1/transition-pairs/<model>/SENTENCES.json`. A rerun
+binding) and the receipt `STUDY_DIR/transition-pairs/<model>/SENTENCES.json`. A rerun
 rebuilds the table and finishes when the files already there are the same (same bytes; the receipt may differ in
 `module_sha256`, which records the code that wrote it and is not part of what it says); a different result is refused.
-Used by: `routing.transition_pairs` (Fig. 6 and the state-transitions table).
+Used by: `routing.next_sentence_labels` (Fig. 6 and the state-transitions table).
 """
 from __future__ import annotations
 
@@ -43,10 +45,10 @@ import pandas as pd
 from capture.dynamics.classes import saved_layout
 from labeling.spans import reasoning_ranges, trace_digest
 from schemas import TraceRecord
-from store import ANALYSIS, CLASSES, STUDY, binding, file_sha, load, publish, read_source, require, write_once
+import store
+from models.roster import resolve
+from store import ANALYSIS, CLASSES, binding, file_sha, load, publish, read_source, require, write_once
 
-# The record of the seven-model capture sits next to the study report, outside the code tree.
-CAMPAIGN = STUDY.parent/'research-campaign-v3-20261014-r5-r2'
 PAIR_SOURCES = ('Read', 'Verify')
 # Absolute reasoning-token position bins of the extraction: 0-1k, 1-2k, 2-4k, 4-8k, 8-16k, 16k+ (1k = 1024).
 ABSOLUTE_BIN_EDGES = (1024, 2048, 4096, 8192, 16384)
@@ -58,6 +60,11 @@ DTYPES = {'sentence_index': 'int32', 'cls': 'int8', 'segment': 'int16', 'tok_sta
           'prev_same_segment': 'bool', 'next_same_segment': 'bool', 'abs_bin': 'int8', 'rel_pos': 'float64'}
 
 
+def campaign_dir() -> Path:
+    """The record of the seven-model capture; it sits next to the study report, outside the code tree."""
+    return store.STUDY.parent/'research-campaign-v3-20261014-r5-r2'
+
+
 def pairs_dir(model: str) -> Path:
     """Private bulk directory of this model's transition-pair work (tables, judge stores, merged labels)."""
     return Path(binding()['config']['bulk_root'])/'transition-pairs'/model
@@ -65,12 +72,12 @@ def pairs_dir(model: str) -> Path:
 
 def receipt_dir(model: str) -> Path:
     """Compact receipts of this model's transition-pair work, inside the study report."""
-    return STUDY/'transition-pairs'/model
+    return store.STUDY/'transition-pairs'/model
 
 
 def campaign_sources(model: str) -> list[dict]:
     """The 1,547 attempts (source trace location, trace digest, family, completion length) of a captured model."""
-    sources = load(CAMPAIGN/model/'SOURCES.json')['records']
+    sources = load(campaign_dir()/model/'SOURCES.json')['records']
     require(len(sources) == 1547, f'{model}: expected 1,547 attempts')
     return sources
 
@@ -194,7 +201,7 @@ def as_frame(rows: list[dict]) -> pd.DataFrame:
 
 def campaign() -> dict:
     """The CAMPAIGN.json record that names every saved input of the seven models."""
-    return load(CAMPAIGN/'CAMPAIGN.json')
+    return load(campaign_dir()/'CAMPAIGN.json')
 
 
 def check_class_counts(frame: pd.DataFrame, model: str, sources: list[dict]) -> int:
@@ -268,19 +275,21 @@ def rebuild(model: str, workers: int, limit: int | None = None, output: Path | N
         'existing_table': compare_with_existing(frame, model),
         'class_sentences': frame.groupby('cls_name').size().to_dict(),
         'label_files': {str(p): file_sha(p) for p in label_files(model)},
-        'sources_sha256': file_sha(CAMPAIGN/model/'SOURCES.json'), 'campaign_sha256': campaign()['sha256'],
+        'sources_sha256': file_sha(campaign_dir()/model/'SOURCES.json'), 'campaign_sha256': campaign()['sha256'],
         'module_sha256': file_sha(Path(__file__))}, provenance=('module_sha256',))
 
 
 def main(argv: list[str] | None = None) -> None:
-    parser = argparse.ArgumentParser(prog='routing.sentence_table', description=__doc__.split('\n\n')[0])
+    parser = argparse.ArgumentParser(prog='routing.labelled_sentence_table', description=__doc__.split('\n\n')[0])
     parser.add_argument('command', choices=['rebuild'])
-    parser.add_argument('--model', required=True)
+    parser.add_argument('--study', type=Path, default=store.STUDY, help='the study folder; its receipts are written here')
+    parser.add_argument('--model', required=True, help='the model, as its Hugging Face id (or short key)')
     parser.add_argument('--workers', type=int, default=int(os.environ.get('SLURM_CPUS_PER_TASK', '4')))
     parser.add_argument('--limit', type=int, help='debug: first N attempts, no receipt')
     parser.add_argument('--output', type=Path, help='debug: parquet path')
     args = parser.parse_args(argv)
-    print(json.dumps(rebuild(args.model, args.workers, args.limit, args.output), indent=1, default=str))
+    store.STUDY, store.DRIVER = args.study, args.study/'driver'
+    print(json.dumps(rebuild(resolve(args.model), args.workers, args.limit, args.output), indent=1, default=str))
 
 
 if __name__ == '__main__':

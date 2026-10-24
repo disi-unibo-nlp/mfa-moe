@@ -13,6 +13,7 @@ import json
 
 import pandas as pd
 
+from models.roster import CAPTURED
 from store import ANALYSIS, REPO, WORK, file_sha
 
 RESULTS = ANALYSIS / 'v3_analysis/results-r2'
@@ -20,7 +21,7 @@ OUTCOMES = ANALYSIS / 'campaign-v3/outcomes/outcomes_v3-99bf8d59506e2893.parquet
 SAVED = ANALYSIS / 'results-v3/outcomes-99bf8d59506e2893'
 # Reports are not tracked in git; they live in the main checkout.
 B4_PRECISION = WORK / 'mfa-moe/repo/report/experimental-resume-v1/R3E_B4_PRECISION_READOUT_v1.md'
-MODELS = ['gpt', 'nemotron', 'qwen35', 'qwen36', 'gemma', 'glm', 'qwen330b']
+MODELS = list(CAPTURED)
 LABELS = {'gpt': 'GPT-OSS', 'nemotron': 'Nemotron', 'qwen35': 'Qwen3.5',
           'qwen36': 'Qwen3.6', 'gemma': 'Gemma', 'glm': 'GLM', 'qwen330b': 'Qwen3-30B'}
 DATASETS = ['aime24', 'aime25', 'amc23', 'math500', 'minerva', 'olympiad']

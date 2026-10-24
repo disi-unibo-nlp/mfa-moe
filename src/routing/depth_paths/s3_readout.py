@@ -1,12 +1,13 @@
 """Path-based present-state readout machinery: do depth paths predict the reasoning class of a sentence beyond its
-token ids? `routing.readout` drives these functions for the seven models; no outcomes are read.
+token ids? `routing.present_state_readout` drives these functions for the seven models; no outcomes are
+read.
 
 Rows: the judge-labelled sentences of cohort A (the saved sentence tables in `common.DYN_RESULTS`) with >= 1 reasoning
 token; y = class (7); Qwen3.6 keeps the dev and tune questions of the steering split. Tokens: the token caches in
 `common.TOKEN_CACHE` (top-1 paths and token ids of the labelled-sentence tokens).
 - baseline: token-id bag (crc32(id) mod 4,096 buckets; sublinear tf x in-fold idf, training df >= 2,
-  L2-normalised x 10, as the hashed text block of `dynrt.d3a_text`) + position (absolute-position bin one-hot (6) and
-  relative-position decile one-hot (10)) + log sentence length;
+  L2-normalised x 10, as the hashed text block of `dynamics_routing.d3a_text`) + position (absolute-position bin
+  one-hot (6) and relative-position decile one-hot (10)) + log sentence length;
 - augmented: baseline + path features of the sentence: mean path surprise (under the add-0.5 depth
   bigram fitted on the training sentences' tokens), mean F2 (fraction of layers whose top-1 equals the
   previous token's, over within-sentence adjacent token pairs) and the per-layer top-1 histograms
@@ -242,7 +243,7 @@ def randomized_pca(x: sparse.csr_matrix, k: int, seed: int, n_iter: int = PCA_IT
 # ------------------------------------------------------------------------------ design
 
 class BagTransform:
-    """In-fold tf-idf of the token-id bag (the transform of `dynrt.d3a_text` on N_BUCKETS columns)."""
+    """In-fold tf-idf of the token-id bag (the transform of `dynamics_routing.d3a_text` on N_BUCKETS columns)."""
 
     def __init__(self, counts: sparse.csr_matrix, train: np.ndarray, scale: float = BAG_SCALE):
         x = counts[train]
@@ -307,7 +308,7 @@ def _log_softmax(z: np.ndarray) -> np.ndarray:
 
 def fit_softmax(xd: np.ndarray, xs: sparse.csr_matrix, y: np.ndarray, w: np.ndarray, lam: float,
                 theta0: np.ndarray | None = None, maxiter: int = 400) -> SoftmaxFit:
-    """Weighted multinomial ridge, objective sum w nll / sum w + lam/2 |B|^2 (as `dynrt.d3a_softmax`)."""
+    """Weighted multinomial ridge, objective sum w nll / sum w + lam/2 |B|^2 (as `dynamics_routing.d3a_softmax`)."""
     n, pd_ = xd.shape
     ps = xs.shape[1]
     wn = w / w.sum()

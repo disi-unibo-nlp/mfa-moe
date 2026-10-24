@@ -1,15 +1,19 @@
 """LFM2.5 analyses that need no GPU, once its traces are replayed and its sentences labelled.
 
-    python -m routing.lfm materialize   sampled sentences, judge inputs and annotation tasks
-    python -m routing.lfm derive        class counts, class trajectories, expert-selection coverage, nominations
+    python -m routing.lfm25_analyses materialize --study STUDY_DIR
+                                        sampled sentences, judge inputs and annotation tasks
+    python -m routing.lfm25_analyses derive --study STUDY_DIR
+                                        class counts, class trajectories, expert-selection coverage, nominations
                                         and the main-design assignments (the replay and labels must exist)
-    python -m routing.lfm readout --out DIR
+    python -m routing.lfm25_analyses readout --study STUDY_DIR --out DIR
                                         present-state readout of routing, five folds and five nulls (about 1.5 h, 4 CPUs);
                                         DIR must be new, the receipt published in the study folder is not rewritten
-    python -m routing.lfm dynamics      class occupancy, dwell and next-class panel (needs derive)
+    python -m routing.lfm25_analyses dynamics --study STUDY_DIR
+                                        class occupancy, dwell and next-class panel (needs derive)
 
-The study folder is STUDY_DATA_ROOT (default report/final-routing-20261015-r1). `scripts/routing/lfm.sh OUT_DIR`
-runs derive, then readout (into OUT_DIR) and dynamics. The replay itself is the GPU stage `python -m steering.pulse lfm-replay`.
+STUDY_DIR is the study folder (default: STUDY_DATA_ROOT, else report/final-routing-20261015-r1).
+`scripts/routing/run_lfm25_analyses.sh STUDY_DIR OUT_DIR` runs derive, then readout (into OUT_DIR) and dynamics. The
+replay itself is the GPU stage `python -m steering.pulse lfm-replay`.
 """
 from __future__ import annotations
 
@@ -20,8 +24,8 @@ from pathlib import Path
 
 import numpy as np
 
-from routing.dynamics import by_attempt, trajectories
-from routing.selection import analyze, prefix_roster, validate_counts
+from routing.state_dynamics import by_attempt, trajectories
+from routing.expert_selection import analyze, prefix_roster, validate_counts
 import store
 from stats import bootstrap_panel
 from store import CLASSES, Units, digest, file_sha, load, publish, read_source, require, verified
@@ -52,7 +56,7 @@ def routing_row(source, ids, weights, positions):
 def discover(binding):
     """Class counts, sentence table, trajectories, selection coverage and prefixes from the replay and the labels.
 
-    The LFM2.5 counterpart of the saved-data analysis of the seven captured models (`routing.dynamics`). Writes
+    The LFM2.5 counterpart of the saved-data analysis of the seven captured models (`routing.state_dynamics`). Writes
     DISCOVERY_INPUTS.json last, so its presence means every other output exists.
     """
     import pandas as pd
@@ -138,10 +142,12 @@ def discover(binding):
 
 
 def main(argv=None):
-    parser = argparse.ArgumentParser(prog='python -m routing.lfm', description='LFM2.5 analyses that need no GPU.')
+    parser = argparse.ArgumentParser(prog='python -m routing.lfm25_analyses', description='LFM2.5 analyses that need no GPU.')
     parser.add_argument('stage', choices=('materialize', 'derive', 'readout', 'dynamics'))
+    parser.add_argument('--study', type=Path, default=store.STUDY, help='the study folder (BINDING.json, receipts)')
     parser.add_argument('--out', type=Path, help='readout only: new folder for the fits and READOUT_RESULTS.json')
     args = parser.parse_args(argv)
+    store.STUDY, store.DRIVER = args.study, args.study/'driver'
     stage = args.stage
     require(args.out or stage != 'readout', 'readout needs --out, a new folder')
     study = store.binding()
@@ -161,7 +167,7 @@ def main(argv=None):
         result = {'sha256': value['sha256'], **{mode: {k: r[k] for k in ('routing', 'routing_excess_over_lexical_null')}
                                                  for mode, r in value['models']['lfm25'].items()}}
     else:
-        from routing.dynamics import dynamics_summary
+        from routing.state_dynamics import dynamics_summary
         result = {'sha256': dynamics_summary(study)['sha256']}
     print(json.dumps({'stage': stage, **result}, default=str), flush=True)
 

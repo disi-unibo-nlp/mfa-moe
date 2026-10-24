@@ -1,10 +1,10 @@
-"""Window design and cross-fit task of the anticipation fits (`routing.anticipation`).
+"""Window design and cross-fit task of the anticipation fits (`routing.next_state_anticipation`).
 
 The saved K2 caches in `data/k2/<model>/` hold, per adjacent labelled pair (s, s+1), the pair table, the lexical counts
 of sentence s and the kinematic columns of its last 16 / 32 reasoning tokens. `KData` is one response (TARGET: switch
 = 1[b != a] over all pairs, 2-class softmax; dest = class of s+1 over switch pairs, 7-class). `Blocks` is the
 fold-fitted design (tf-idf of the text and lexical counts, standardised dense blocks); `_task` is one
-(repeat, outer fold) of the cross-fit with the inner penalty search. `routing.anticipation` subclasses `Blocks` for its
+(repeat, outer fold) of the cross-fit with the inner penalty search. `routing.next_state_anticipation` subclasses `Blocks` for its
 controls and runs `_task` in a pool.
 """
 from __future__ import annotations
@@ -52,7 +52,7 @@ class Blocks:
     """Fold-fitted design (tf-idf of text and lexical counts, standardised dense blocks)."""
 
     def __init__(self, d: KData, tr: np.ndarray, evs: list[np.ndarray]):
-        from routing.dynrt.d3a_text import TextTransform
+        from routing.dynamics_routing.d3a_text import TextTransform
         self.d, self.tr, self.evs = d, tr, evs
         parts_tr, parts_ev = [], [[] for _ in evs]
         for counts, scale in ((d.text, d.s_text), (d.lex, d.s_lex)):
@@ -71,7 +71,7 @@ class Blocks:
         return self.d.extra[key] if key in self.d.extra else self.d.dense[key]
 
     def block(self, key: str):
-        from routing.dynrt.cv import Scaler
+        from routing.dynamics_routing.cv import Scaler
         if key not in self._cache:
             raw = self._raw(key)
             sc = Scaler.fit(raw[self.tr])
@@ -85,7 +85,7 @@ class Blocks:
 
 
 def fit_path(blk: Blocks, keys, grid_desc: np.ndarray, stats: list) -> np.ndarray:
-    from routing.dynrt.d3a_softmax import fit_softmax, predict_log_proba, weighted_nll
+    from routing.dynamics_routing.d3a_softmax import fit_softmax, predict_log_proba, weighted_nll
     d = blk.d
     xd_tr, xd_ev = blk.dense(keys)
     ev = blk.evs[0]
@@ -102,8 +102,8 @@ _STATE: dict = {}
 
 
 def _task(args):
-    from routing.dynrt.cv import GRID, question_folds
-    from routing.dynrt.d3a_softmax import fit_softmax, predict_log_proba
+    from routing.dynamics_routing.cv import GRID, question_folds
+    from routing.dynamics_routing.d3a_softmax import fit_softmax, predict_log_proba
     r, f, names = args
     d: KData = _STATE["data"]
     models = {m: _STATE["models"][m] for m in names}

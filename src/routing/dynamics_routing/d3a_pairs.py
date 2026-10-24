@@ -10,7 +10,7 @@ import json
 
 from store import ANALYSIS
 
-from .common import CLASSES  # noqa: F401  (read as `P.CLASSES` by routing.anticipation)
+from .common import CLASSES  # noqa: F401  (read as `P.CLASSES` by routing.next_state_anticipation)
 
 LABELS_ROOT = ANALYSIS / "campaign-v3/labels"
 

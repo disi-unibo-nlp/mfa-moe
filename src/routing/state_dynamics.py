@@ -1,6 +1,6 @@
 """Class dynamics and expert nominations from saved labelled sentences.
 
-`derive(campaign, model)` is the saved-data analysis of one captured model. From its labelled sentences it writes
+`derive(campaign, model, out)` is the saved-data analysis of one captured model. From its labelled sentences it writes
   DYNAMICS.json                 class runs, transitions and re-entries (gaps in the labelling stay censored)
   native_dynamics_estimands.parquet, NATIVE_DYNAMICS_SUMMARY.json
                                 per attempt: class occupancy, dwell tokens, re-entry and next-class rates, then a
@@ -11,12 +11,11 @@
   NATIVE_ACCURACY.json, DERIVED.json
 `dynamics_summary(binding)` builds the same per-attempt panel for LFM2.5 from its published trajectories.
 
-    python -m routing.dynamics CAMPAIGN_DIR MODEL [MODEL ...] [--out NEW_ROOT]
+    python -m routing.state_dynamics CAMPAIGN_DIR --out NEW_ROOT [HF_MODEL ...]
 
 CAMPAIGN_DIR holds CAMPAIGN.json, the record of the seven-model capture (report/research-campaign-v3-20261014-r5-r2).
-With --out everything is recomputed into NEW_ROOT and CAMPAIGN_DIR is only read; without it the outputs are written
-into CAMPAIGN_DIR (when its CAMPAIGN.json names a `resume_from` parent and a NOMINATIONS.json is already there, the
-nominations are kept and only the summaries are redone).
+Everything is recomputed into the new folder NEW_ROOT, and CAMPAIGN_DIR is only read. The models are the ones given, as
+Hugging Face ids, or by default all the models CAMPAIGN.json lists.
 """
 from __future__ import annotations
 
@@ -27,9 +26,10 @@ import json
 from pathlib import Path
 import numpy as np
 
-from routing.selection import (counts_for, enriched_set, family_weights, inclusion_statistics, nominate,
-                               random_control, weighted_quantile)
-from stats import bootstrap_panel, clean_rows, unknown_bounds
+from models.roster import resolve
+from routing.expert_selection import (counts_for, enriched_set, family_weights, inclusion_statistics, nominate,
+                                      random_control, weighted_quantile)
+from stats import bootstrap_panel, unknown_bounds
 from store import ANALYSIS, CLASSES, SEED, canonical, digest, file_sha, publish, require, verified, write_once
 
 DEPTH_PATHS = ANALYSIS/'depth-paths/results/part1'
@@ -251,20 +251,10 @@ def fold_nominations(model, fold, counts, tokens, sources, contract, sentence_ro
     return nominations, atlas, scores, support
 
 
-def derive(campaign, model, out=None):
-    """All derived outputs of one model. Inputs are read from the capture record's root; outputs go to `out` (default: the root)."""
+def derive(campaign, model, out):
+    """All derived outputs of one model. Inputs are read from the capture record's root; outputs go to `out`."""
     import pandas as pd
-    root = Path(campaign["root"])
-    resume = out is None and campaign.get("resume_from") and (root/model/"NOMINATIONS.json").exists()
-    out = Path(out or root)
-    if resume:
-        _, accuracy = native_accuracy(campaign, model, out)
-        data = clean_rows(pd.read_parquet(root/model/"native_dynamics_estimands.parquet").to_dict("records"))
-        summary = publish_summary(root/model/"NATIVE_DYNAMICS_SUMMARY.json", data, model)
-        return publish(root/model/"DERIVED.json", {"status": "complete", "original_nominations_preserved": True,
-            "nominations_sha256": verified(root/model/"NOMINATIONS.json")["sha256"],
-            "native_accuracy_sha256": accuracy["sha256"], "dynamics_summary_sha256": summary["sha256"],
-            "analysis_binding": campaign["analysis_binding"], "compatible_artifacts_referenced": True})
+    root, out = Path(campaign["root"]), Path(out)
     sources = verified(root/model/"SOURCES.json")["records"]
     folds_receipt = verified(root/"FOLDS.json")
     folds, qf = folds_receipt["folds"], folds_receipt["question_families"]
@@ -325,14 +315,14 @@ def dynamics_summary(binding):
 
 
 def main(argv=None):
-    parser = argparse.ArgumentParser(prog='python -m routing.dynamics',
+    parser = argparse.ArgumentParser(prog='python -m routing.state_dynamics',
                                      description='Recompute the native dynamics and nominations of the captured models.')
     parser.add_argument('campaign', type=Path, help='directory holding CAMPAIGN.json')
-    parser.add_argument('models', nargs='+')
-    parser.add_argument('--out', type=Path, help='new folder for all outputs, recomputed from the campaign inputs')
+    parser.add_argument('models', nargs='*', help='Hugging Face ids; default: the models CAMPAIGN.json lists')
+    parser.add_argument('--out', type=Path, required=True, help='new folder for all outputs, recomputed from the campaign inputs')
     args = parser.parse_args(argv)
     campaign = verified(args.campaign/'CAMPAIGN.json')
-    for model in args.models:
+    for model in [resolve(m) for m in args.models] or list(campaign['models']):
         print(model, derive(campaign, model, args.out)['sha256'], flush=True)
 
 

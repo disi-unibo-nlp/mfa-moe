@@ -4,11 +4,13 @@ Past-text and class-history controls, out-of-fold class estimates and matched no
 caches and A1 pair histograms only. Missing cells stay incomplete; no tensor producer is run, and the fixed grid and
 windows are never searched or widened. About 21 hours on 4 CPUs (84 core-hours).
 
-    python -m routing.anticipation --out DIR [--workers 4]
+    python -m routing.next_state_anticipation --out DIR [--analysis-dir ANALYSIS_DIR] [--workers 4]
 
 DIR must be new: it gets FROZEN.anticipation.json (the run's inputs and the code that ran), the fold checkpoints
-and anticipation-results.json. The inputs are compared with the published run's spec in PUBLISHED_RUN
-(routing.readout_analysis).
+and anticipation-results.json. ANALYSIS_DIR holds the saved caches the fits read (default `store.ANALYSIS`). The
+inputs are compared with the published run's spec in PUBLISHED_RUN (routing.readout_analysis), which names them by
+absolute path, so only the published run's own ANALYSIS_DIR reproduces it; any other path stops the run at that
+comparison.
 """
 from __future__ import annotations
 
@@ -20,8 +22,12 @@ from pathlib import Path
 import time
 
 import store
-from routing.readout_analysis import FAMILY_FREEZE, SEED, code_hashes, family_folds, freeze, question_families
+from routing.readout_analysis import (FAMILY_FREEZE, SEED, code_hashes, family_folds, freeze, question_families,
+                                      use_analysis_dir)
 from store import ANALYSIS, file_sha, require, seal
+
+# The two models whose window caches (K2) and A1 pair histograms were saved.
+MODELS = ('gpt', 'qwen36')
 
 
 def augment_baseline(model, pairs, cohort, P, T):
@@ -187,7 +193,7 @@ def sha_text(text):
 
 
 def task_with_key(task):
-    from routing.rkin import k2
+    from routing.reasoning_kinematics import k2
     return task, k2._task(task)
 
 
@@ -224,27 +230,28 @@ def summarize(d, predictions, targets, families):
     return output
 
 
-def run(workers, out):
+def run(workers, out, analysis_dir=ANALYSIS):
     # Set in batch jobs and srun steps, not in the interactive shell that salloc starts on a login node.
     require(os.environ.get('SLURM_JOB_ID') and os.environ.get('SLURMD_NODENAME'), 'anticipation fits require a CPU Slurm batch job')
     out = Path(out)
     require(not (out / 'anticipation-results.json').exists(), f'{out} already holds anticipation results; use a new --out')
+    analysis = use_analysis_dir(analysis_dir)
     started = time.monotonic()
     import numpy as np
     import pandas as pd
     from scipy import sparse
-    from routing.dynrt import common as D, cv as C
-    from routing.dynrt import data as Data, d3a_pairs as P, d3a_text as T, features as F, d3a_softmax as Softmax
-    from routing.rkin import common as RK
-    from routing.rkin import k2 as K
+    from routing.dynamics_routing import common as D, cv as C
+    from routing.dynamics_routing import data as Data, d3a_pairs as P, d3a_text as T, features as F, d3a_softmax as Softmax
+    from routing.reasoning_kinematics import common as RK
+    from routing.reasoning_kinematics import k2 as K
     _, qf = question_families()
     split = D.load_split()
     folds = lambda qs, n, seed: family_folds(qs, n, seed if seed>=SEED else SEED*1000+seed, qf)
     C.question_folds = folds
     configure_blocks(K, F, C, Softmax, T, folds)
-    inputs = [FAMILY_FREEZE, ANALYSIS / 'forum/tests/r3_integrity/estimates.v2.json',
-              ANALYSIS / 'forum/tests/r3_integrity/out/absent.v2.json']
-    for model in ('gpt','qwen36'):
+    inputs = [FAMILY_FREEZE, analysis / 'forum/tests/r3_integrity/estimates.v2.json',
+              analysis / 'forum/tests/r3_integrity/out/absent.v2.json']
+    for model in MODELS:
         inputs += list((RK.DATA / 'k2' / model).glob('*'))
         provenance = json.loads((RK.DATA / 'k2' / model / 'provenance.json').read_text())
         inputs += [Path(provenance['text_counts'])]
@@ -254,14 +261,14 @@ def run(workers, out):
         inputs += list((P.LABELS_ROOT/model).glob('part-*/annotations.json'))
     inputs += [D.RESULTS/'A1/pairs.parquet',D.RESULTS/'A1/antic/antic_hist.npz']
     populations={}
-    for model in ('gpt','qwen36'):
+    for model in MODELS:
         table=pd.read_parquet(K.K2DATA/model/'pairs.parquet',columns=['question'])
         reserved=set(pd.read_parquet(D.V3R2/model/'B/attempts.parquet',columns=['question'])['question'])
         populations[model]=sorted({q for q in table['question'] if split[q] in ('dev','tune') and q not in reserved})
     here = Path(__file__).parent
     frozen = seal({'schema':'r3d-anticipation-v1','inputs':{str(p):file_sha(p) for p in inputs if p.is_file()},
         'canonical_ids':populations,
-        'code':code_hashes(__file__,here/'rkin',here/'dynrt',here/'readout_analysis.py',store.__file__),
+        'code':code_hashes(__file__,here/'reasoning_kinematics',here/'dynamics_routing',here/'readout_analysis.py',store.__file__),
         'split':'exact dev+tune before learned transforms; reserved B excluded',
         'outer':5,'inner':3,'repeats':5,'seeds':list(range(SEED,SEED+5)),
         'fold_group':'frozen duplicate family','current_class':'training-only text classifier; grouped OOF training predictions; fixed lambda=1',
@@ -273,7 +280,7 @@ def run(workers, out):
         'contained_sensitivity':'source n_tokens >=32 for both 16 and32 windows; reported exclusions'})
     freeze(out, 'FROZEN.anticipation.json', frozen)
     results = {}
-    for model in ('gpt','qwen36'):
+    for model in MODELS:
         pairs_all = pd.read_parquet(K.K2DATA/model/'pairs.parquet')
         keep = np.array([split[q] in ('dev','tune') for q in pairs_all['question']])
         # The prepared K2 pairs already exclude cohort B; check it here.
@@ -353,6 +360,7 @@ def run(workers, out):
 if __name__=='__main__':
     parser=argparse.ArgumentParser(description='Anticipation of the next reasoning state (GPT-OSS and Qwen3.6).')
     parser.add_argument('--out',required=True,help='new directory for the spec, checkpoints and results')
+    parser.add_argument('--analysis-dir',type=Path,default=ANALYSIS,help='saved analysis caches (default: store.ANALYSIS)')
     parser.add_argument('--workers',type=int,default=4)
     args=parser.parse_args()
-    run(args.workers,args.out)
+    run(args.workers,args.out,args.analysis_dir)

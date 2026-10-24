@@ -6,11 +6,13 @@ token-permutation nulls, with three inner folds choosing the penalty, twice (tok
 judge's previous/current/next sentence text). A model whose cache is incomplete is reported INCOMPLETE and nothing
 is produced for it. Takes about 5 hours on 4 CPUs (19 core-hours in all).
 
-    python -m routing.readout --out DIR [--workers 4]
+    python -m routing.present_state_readout --out DIR [--analysis-dir ANALYSIS_DIR] [--workers 4]
 
 DIR must be new: it gets FROZEN.readout.v3.json (the run's inputs and the code that ran), the fold checkpoints,
-one JSON per model and readout-results.v3.json. The inputs are compared with the published run's spec in
-PUBLISHED_RUN; that run's own files are bound by the LFM readout and are never rewritten.
+one JSON per model and readout-results.v3.json. ANALYSIS_DIR holds the saved caches the fits read (default
+`store.ANALYSIS`). The inputs are compared with the published run's spec in PUBLISHED_RUN, which names them by absolute
+path, so only the published run's own ANALYSIS_DIR reproduces it; any other path stops the run at that comparison.
+That run's own files are bound by the LFM readout and are never rewritten.
 """
 from __future__ import annotations
 
@@ -22,7 +24,8 @@ import time
 
 import store
 from models.roster import READOUT_ORDER
-from routing.readout_analysis import FAMILY_FREEZE, SEED, code_hashes, family_folds, freeze, question_families
+from routing.readout_analysis import (FAMILY_FREEZE, SEED, code_hashes, family_folds, freeze, question_families,
+                                      use_analysis_dir)
 from store import ANALYSIS, file_sha, require, seal
 
 MODEL_ORDER = READOUT_ORDER  # the seven captured models, in the order of the frozen specification
@@ -56,7 +59,7 @@ def analyse(sr, md, context_counts, mode, workers, family, family_ids, directory
     import multiprocessing as mp
     import numpy as np
     from scipy import sparse
-    from routing.dynrt.d3a_text import TextTransform
+    from routing.dynamics_routing.d3a_text import TextTransform
     started = time.monotonic()
     original_design = sr.fold_design
 
@@ -148,28 +151,29 @@ def analyse(sr, md, context_counts, mode, workers, family, family_ids, directory
     return out
 
 
-def run(workers, out):
+def run(workers, out, analysis_dir=ANALYSIS):
     # SLURMD_NODENAME is set in batch jobs and srun steps (also on the serial partition, whose nodes are login08 and
     # login13), but not in the interactive shell that salloc starts on a login node.
     require(os.environ.get('SLURM_JOB_ID') and os.environ.get('SLURMD_NODENAME'), 'Clean readouts require a CPU Slurm batch job')
     out = Path(out)
     require(not (out / 'readout-results.v3.json').exists(), f'{out} already holds readout results; use a new --out')
+    analysis = use_analysis_dir(analysis_dir)
     started = time.monotonic()
     import numpy as np
-    from routing.dp import common as cm, s3_readout as sr
+    from routing.depth_paths import common as cm, s3_readout as sr
     # The token caches are read from their saved, read-only location, not from the helper's own results folder.
     def token_cache_path(model, row):
         return cm.TOKEN_CACHE / model / f'{int(row):05d}.npz'
-    from routing.dynrt.d3a_pairs import load_unit_texts, LABELS_ROOT
-    from routing.dynrt.d3a_text import hash_counts
+    from routing.dynamics_routing.d3a_pairs import load_unit_texts, LABELS_ROOT
+    from routing.dynamics_routing.d3a_text import hash_counts
     family, qf = question_families()
     split = cm.load_split()
     load_attempts = cm.load_attempts
     tables, maps, missing, inputs = {}, {}, {}, [FAMILY_FREEZE, cm.SPLIT_PATH,
-        ANALYSIS / 'forum/tests/r3_integrity/estimates.v2.json',
-        ANALYSIS / 'forum/tests/r3_integrity/out/ids.v2.json',
-        ANALYSIS / 'forum/tests/r3_integrity/out/absent.v2.json',
-        ANALYSIS / 'forum/tests/r3_dynamics_validity/estimates.json']
+        analysis / 'forum/tests/r3_integrity/estimates.v2.json',
+        analysis / 'forum/tests/r3_integrity/out/ids.v2.json',
+        analysis / 'forum/tests/r3_integrity/out/absent.v2.json',
+        analysis / 'forum/tests/r3_dynamics_validity/estimates.json']
     for model in MODEL_ORDER:
         attempts = load_attempts(model, 'A')
         mask = np.array([split[q] in ('dev', 'tune') for q in attempts['question']])
@@ -189,7 +193,7 @@ def run(workers, out):
         'models': MODEL_ORDER, 'ids': {m: tables[m]['question'].tolist() for m in MODEL_ORDER},
         'cache_row_map': {m: maps[m].tolist() for m in MODEL_ORDER}, 'missing': missing,
         'inputs': {str(p): file_sha(p) for p in inputs if p.exists()},
-        'code': code_hashes(__file__, here / 'dp', here / 'dynrt', here / 'readout_analysis.py', store.__file__),
+        'code': code_hashes(__file__, here / 'depth_paths', here / 'dynamics_routing', here / 'readout_analysis.py', store.__file__),
         'folds': {'outer': 5, 'inner': 3, 'seed': SEED, 'group': 'frozen duplicate family',
                   'order': 'SHA256 of canonical JSON forum-v1|seed|family; round-robin'},
         'bootstraps': 5000, 'nulls': 5, 'ceiling_CPU_core_hours': 8.,
@@ -229,6 +233,7 @@ def run(workers, out):
 if __name__ == '__main__':
     p = argparse.ArgumentParser(description='Seven-model present-state readout.')
     p.add_argument('--out', required=True, help='new directory for the spec, checkpoints and results')
+    p.add_argument('--analysis-dir', type=Path, default=ANALYSIS, help='saved analysis caches (default: store.ANALYSIS)')
     p.add_argument('--workers', type=int, default=4)
     args = p.parse_args()
-    run(args.workers, args.out)
+    run(args.workers, args.out, args.analysis_dir)

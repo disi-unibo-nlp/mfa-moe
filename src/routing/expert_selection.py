@@ -4,11 +4,12 @@ Counts are [attempt, class, layer, expert] token inclusions. `analyze` fits the 
 labelled-frequency expert sets on four of five family folds and scores their coverage on the fifth; the other
 functions rank experts per class and layer, nominate one layer per depth third and draw matched random controls.
 
-    python -m routing.selection export OUT_DIR [--campaign DIR]
+    python -m routing.expert_selection export CAMPAIGN_DIR OUT_DIR
 
-`export` writes OUT_DIR/selection_coverage.csv, the table behind the manuscript's selection figure: for each of the
-seven captured models, fold and selector, the minimum class coverage on the held-out families. It reads the stored
-SELECTION.json receipts of the seven-model expert selection (default report/expert-memory-study-v1).
+`export` writes OUT_DIR/selection_coverage.csv, the table behind the manuscript's selection figure: for each model of
+CAMPAIGN_DIR/CAMPAIGN.json (the seven captured ones), fold and selector, the minimum class coverage on the held-out
+families. It reads the stored SELECTION.json receipts of the seven-model expert selection that CAMPAIGN_DIR holds
+(report/expert-memory-study-v1); every model of the campaign must have one.
 """
 from __future__ import annotations
 
@@ -18,10 +19,7 @@ import csv
 from pathlib import Path
 import numpy as np
 
-from models.roster import CAPTURED
-from store import CLASSES, SEED, WORK, digest, file_sha, require, seal, verified
-
-RECEIPTS = WORK / 'mfa-moe/repo/report/expert-memory-study-v1'  # reports are not tracked in git; they live in the main checkout
+from store import CLASSES, MODELS, SEED, digest, file_sha, require, seal, verified
 
 
 def family_folds(families, n=5):
@@ -276,17 +274,17 @@ def export(campaign_dir, output):
     """Write selection_coverage.csv (model, fold, selector, minimum class coverage, test families, complete)."""
     campaign_dir, output = Path(campaign_dir), Path(output)
     campaign = verified(campaign_dir / 'CAMPAIGN.json')
+    models = [model for model in MODELS if model in campaign['models']]  # the study's order, not the file's
+    require(len(models) == len(campaign['models']), 'CAMPAIGN.json names a model outside the study')
     rows = []
-    for model in CAPTURED:  # LFM2.5 has its own SELECTION_COVERAGE.json
-        path = campaign_dir / model / 'SELECTION.json'
-        if path.exists():
-            receipt = verified(path)
-            require(receipt['campaign_sha256'] == campaign['sha256'], 'foreign selection receipt')
-            for fold in receipt['folds']:
-                for arm, result in fold['held_out'].items():
-                    rows.append({'model': model, 'fold': fold['fold'], 'arm': arm,
-                                 'minimum_class_coverage': result['minimum_class_coverage'],
-                                 'test_families': fold['test_families'], 'minimum_complete': result['minimum_complete']})
+    for model in models:
+        receipt = verified(campaign_dir / model / 'SELECTION.json')
+        require(receipt['campaign_sha256'] == campaign['sha256'], 'foreign selection receipt')
+        for fold in receipt['folds']:
+            for arm, result in fold['held_out'].items():
+                rows.append({'model': model, 'fold': fold['fold'], 'arm': arm,
+                             'minimum_class_coverage': result['minimum_class_coverage'],
+                             'test_families': fold['test_families'], 'minimum_complete': result['minimum_complete']})
     require(rows, 'no SELECTION.json receipts found')
     output.mkdir(parents=True)
     with (output / 'selection_coverage.csv').open('x') as stream:
@@ -297,10 +295,10 @@ def export(campaign_dir, output):
 
 
 def main(argv=None):
-    parser = argparse.ArgumentParser(prog='python -m routing.selection', description='Selection coverage table for the paper.')
+    parser = argparse.ArgumentParser(prog='python -m routing.expert_selection', description='Selection coverage table for the paper.')
     parser.add_argument('command', choices=('export',))
+    parser.add_argument('campaign', type=Path, help='folder with CAMPAIGN.json and the SELECTION.json receipts')
     parser.add_argument('output', type=Path, help='new folder')
-    parser.add_argument('--campaign', type=Path, default=RECEIPTS)
     args = parser.parse_args(argv)
     print(export(args.campaign, args.output), flush=True)
 

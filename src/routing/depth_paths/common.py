@@ -9,6 +9,7 @@ import numpy as np
 import pandas as pd
 import pyarrow.parquet as pq
 
+from models.roster import CAPTURED
 from store import ANALYSIS
 
 ROOT = ANALYSIS
@@ -20,7 +21,8 @@ SPLIT_PATH = STEER / "manifests/split-v1.json"
 SPLIT_SEAL = "b14fe2405ce7c3eefdc0be7a4c58787c109d47a2ad48e77d598c1c398ac91731"
 FAST = Path("/leonardo_scratch/fast/IscrC_MIOSR/lmolfett/mfa-moe/campaign-v3")
 
-MODELS = ("gemma", "glm", "gpt", "nemotron", "qwen330b", "qwen35", "qwen36")
+# The captured models in alphabetical order: the readout's token-permutation nulls are seeded by a model's index here.
+MODELS = tuple(sorted(CAPTURED))
 CLASSES = ("Read", "Analyze", "Plan", "Implement", "Explore", "Verify", "Monitor")
 
 ALPHA = 0.5                                   # add-alpha smoothing of the depth bigram (path surprise)

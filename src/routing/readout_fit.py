@@ -1,7 +1,7 @@
 """Readout mathematics of the LFM2.5 readout and next-state prediction, with explicit model seed and family ownership.
 
 Its numerical helpers (token hashing, path features, randomized PCA, softmax fit, bootstrap) have the bodies of the
-seven-model readout's in `routing.dp.s3_readout`; tests/routing/test_readout.py pins them to the code the published
+seven-model readout's in `routing.depth_paths.s3_readout`; tests/routing/test_readout.py pins them to the code the published
 seven-model run recorded."""
 from __future__ import annotations
 from dataclasses import dataclass
@@ -251,7 +251,7 @@ def _log_softmax(z: np.ndarray) -> np.ndarray:
 
 def fit_softmax(xd: np.ndarray, xs: sparse.csr_matrix, y: np.ndarray, w: np.ndarray, lam: float,
                 theta0: np.ndarray | None = None, maxiter: int = 400) -> SoftmaxFit:
-    """Weighted multinomial ridge, objective sum w nll / sum w + lam/2 |B|^2 (as `dynrt.d3a_softmax`)."""
+    """Weighted multinomial ridge, objective sum w nll / sum w + lam/2 |B|^2 (as `dynamics_routing.d3a_softmax`)."""
     n, pd_ = xd.shape
     ps = xs.shape[1]
     wn = w / w.sum()
