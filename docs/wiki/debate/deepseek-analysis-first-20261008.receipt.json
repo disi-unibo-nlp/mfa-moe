@@ -1,0 +1,15 @@
+{
+  "configured_model": "deepseek-flash",
+  "catalog_display_name": "DeepSeek V4.1 Flash",
+  "reasoning_effort": "max",
+  "sandbox": "read-only",
+  "ephemeral": true,
+  "return_code": 0,
+  "elapsed_seconds": 68.176,
+  "output_exists": true,
+  "output_bytes": 9681,
+  "private_event_log": "/leonardo/home/userexternal/lmolfett/.codex/model-analysis-review-20261008-r1/deepseek-analysis-first.events.jsonl",
+  "credential_extraction": false,
+  "prompt_file": "paper/wiki/debate/deepseek-analysis-first-20261008-prompt.md",
+  "output_file": "paper/wiki/debate/deepseek-analysis-first-20261008.md"
+}
