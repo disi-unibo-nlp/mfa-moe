@@ -176,9 +176,10 @@ def continuation(root: Path, args: argparse.Namespace) -> dict:
     sweep = {m: plan['models'][m]['dose'] for m in models}
     sources = verified(REPORTS/(args.chain or CHAIN)/'SOURCES.json')['sources']
     for model in models:
-        source = next((s for s in sources if s['model'] == model and str(parent) in s.get('complements', [])), None)
+        source = next((s for s in sources if s['model'] == model and
+                       parent.resolve() in {Path(c).resolve() for c in s.get('complements', [])}), None)
         require(source, f'{args.chain or CHAIN} has no {model} source with {args.parent} among its complements')
-        source['complements'].append(str(root))
+        source['complements'].append(str(root.resolve()))
     # The continuation reads each parent manifest; the combine reads the link receipt.
     inputs = {str(manifest_path(model, sweep[model], parent)): file_sha(manifest_path(model, sweep[model], parent))
               for model in models}
