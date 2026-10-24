@@ -1,5 +1,0 @@
-liu2025spiral: author order Bo Liu, Simon Yu, Zichen Liu, Leon Guertler, ... is printed on the ICLR 2026 title page; OpenAlex W4416261883 reorders it <https://proceedings.iclr.cc/paper_files/paper/2026/file/3ba7c8c36b71b2fc31fae3361aefefbf-Paper-Conference.pdf>
-lasby2026reap: ICLR 2026 paper; title and authors as printed on its OpenReview record <https://openreview.net/forum?id=ukGxWd2aDG>
-chen2025overthinking: ICML 2025 (PMLR 267) title, 14-author order and pages 9487-9499 as printed on the proceedings page; DBLP was unreachable on 2026-10-21 <https://proceedings.mlr.press/v267/chen25bx.html>
-su2026rewiring: ICML 2026 (PMLR 306) title, six authors and pages as printed on the proceedings page; DBLP was unreachable on 2026-10-21 <https://proceedings.mlr.press/v306/su26o.html>
-schoenfeld1985mathematical: book by Alan H. Schoenfeld, Academic Press, Orlando FL, 1985, ISBN 0-12-628870-4; OpenAlex matched an unrelated article <https://openlibrary.org/books/OL3021196M>

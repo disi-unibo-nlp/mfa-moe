@@ -1,9 +1,0 @@
-{
-  "convention": "symmetric enclosing display",
-  "half_width": "max(estimate - lower, upper - estimate)",
-  "original_source_cells_retained": true,
-  "confidence_interpretation": "encloses each saved nominal 95% interval; no new coverage calibration",
-  "new_fitting": false,
-  "new_resampling": false,
-  "original_inferential_limits_unchanged": true
-}

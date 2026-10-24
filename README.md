@@ -3,7 +3,7 @@
 This repository holds the code behind a journal paper on how the routers of mixture-of-experts (MoE) language models behave while the model reasons step by step.
 Eight models solve competition-math problems. A judge model labels each reasoning sentence with one of seven states (Read, Analyze, Plan, Implement, Explore, Verify, Monitor).
 We replay the saved text through each model and record which experts the routers pick, ask whether routing says anything about the state of a sentence beyond its text, and then edit the routing during generation to see what changes.
-The manuscript is in `paper/`.
+The manuscript lives in `paper/`, which this repository does not track (it is an Overleaf checkout kept next to the code; see `.gitignore`).
 
 The eight models, with the short names used in every command: `gpt` (GPT-OSS-20B), `nemotron` (Nemotron-3.5-Lightning-30B-A3B), `qwen35` (Qwen3.5-35B-A3B), `qwen36` (Qwen3.6-35B-A3B), `gemma` (Gemma-4-26B-A4B), `glm` (GLM-4.7-Flash), `qwen330b` (Qwen3-30B-A3B) and `lfm25` (LFM2.5-24B-A2B). Their checkpoints and router types are in [src/models](src/models/README.md).
 
@@ -16,7 +16,7 @@ The eight models, with the short names used in every command: `gpt` (GPT-OSS-20B
 | `tests/` | Unit tests, one folder per `src/` topic. |
 | `results/` | Git-ignored outputs of generation and labeling runs. |
 | `report/` | Receipts: small JSON files that record what a finished run read and produced, each with a hash of its own content. Whether a stage passed is decided by its receipt, not by a log or a job state. |
-| `paper/` | The manuscript (an Overleaf checkout, sources only), the research wiki and the support files around it. |
+| `paper/` | Not tracked here: the manuscript (an Overleaf checkout), the research wiki and the support files around it sit in this folder on disk. The code in `src/paper` reads and writes it. |
 | `configs/`, `data/`, `requirements/` | The frozen design of the eight-model study, small input data, the lock file of the judge-client environment. |
 | `docs/ledger/` | Decisions and plans. `AGENTS.md` is the dated log of what is running now. |
 

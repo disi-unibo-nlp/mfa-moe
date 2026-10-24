@@ -1,2 +1,0 @@
-# Preserve source-bound generated graphics exactly as emitted by the renderer.
-generated/research_campaign_v3/output/figures/*.svg -text -whitespace

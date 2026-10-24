@@ -716,3 +716,6 @@ paper/manuscript-support/*
 !paper/manuscript-support/figures/**
 !paper/manuscript-support/notes/
 !paper/manuscript-support/notes/**
+
+# The paper (manuscript, wiki, figure sources) is not tracked by the code repository; it lives in its own Overleaf checkout under paper/.
+/paper/
