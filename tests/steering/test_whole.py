@@ -371,17 +371,27 @@ class ExecutionGateTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'canary qualification differs'):
                 whole.run(self.root, 'gpt', (0, 1), 0.)
 
-    def test_plan_names_the_snapshot_and_the_shards_of_each_model(self):
+    def test_plan_names_the_snapshot_the_job_prefix_the_final_command_and_the_shards_of_each_model(self):
         publish(self.root/'RELEASE.json', {'release_root': '/snapshot', 'models': ['gpt', 'glm', 'qwen36'],
                                            'shards': {'gpt': 3, 'glm': 27}})
-        with patch('builtins.print') as out:
-            whole.plan(self.root)
-        self.assertEqual([call.args for call in out.call_args_list],
-                         [('/snapshot',), ('steering.whole combine',), ('gpt', 3), ('glm', 27)])
+
+        def printed():
+            with patch('builtins.print') as out:
+                whole.plan(self.root)
+            return [call.args for call in out.call_args_list]
+        self.assertEqual(printed(), [('/snapshot',), ('whole',), ('steering.whole combine',), ('gpt', 3), ('glm', 27)])
         publish(self.root/'OUTCOME.json', {})
-        with patch('builtins.print') as out:
-            whole.plan(self.root)
-        self.assertEqual(out.call_args_list[1].args, ('steering.outcome analyze',))
+        self.assertEqual(printed()[2], ('steering.outcome analyze',))
+        (self.root/'OUTCOME.json').unlink()
+        publish(self.root/'OUTCOME_SWEEP.json', {})
+        self.assertEqual(printed()[2], ('steering.outcome analyze',))
+        (self.root/'OUTCOME_SWEEP.json').unlink()
+        # A capture release ends with its extractions (an empty command line) and names its jobs oc-*.
+        publish(self.root/'CAPTURE_NATIVE.json', {})
+        (self.root/'RELEASE.json').unlink()
+        publish(self.root/'RELEASE.json', {'release_root': '/snapshot', 'models': ['gpt'], 'shards': {'gpt': 3},
+                                           'job_prefix': 'oc'})
+        self.assertEqual(printed(), [('/snapshot',), ('oc',), ('',), ('gpt', 3)])
 
     def test_the_link_receipt_comes_from_the_release(self):
         publish(self.root/'RELEASE.json', {'release_root': str(whole.REPO)})

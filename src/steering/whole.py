@@ -324,14 +324,18 @@ def prepare_model(root: Path, b: dict, model: str) -> dict:
     A base release publishes the main and half-dose manifests; a sweep release publishes the one sweep
     dose and selects it (no canary). A top-up, resume or continuation release (TOPUP.json / RESUME.json /
     CONTINUATION.json) publishes the rows it takes over from its parent, with the parent's dose and no canary.
+    An outcome-steering release (OUTCOME.json, OUTCOME_SWEEP.json) builds its nudge rows and a capture release
+    (CAPTURE_NATIVE.json) its native attempts, both from steering.outcome.
     """
-    from steering.outcome.manifest import outcome_manifest
+    from steering.outcome.capture import capture_manifest
+    from steering.outcome.manifest import outcome_manifest, sweep_manifest
     builders = {'TOPUP.json': topup_manifest, 'RESUME.json': resume_manifest, 'OUTCOME.json': outcome_manifest,
-                'COMPLEMENT.json': complement_manifest, 'CONTINUATION.json': continuation_manifest}
+                'COMPLEMENT.json': complement_manifest, 'CONTINUATION.json': continuation_manifest,
+                'CAPTURE_NATIVE.json': capture_manifest, 'OUTCOME_SWEEP.json': sweep_manifest}
     sweep = sweep_doses(root)
     present = [name for name in builders if (root/name).exists()]
-    require(len(present) <= 1,
-            'a release is either a top-up, a resume or an outcome-steering release (or a complement or continuation)')
+    require(len(present) <= 1, 'a release is either a top-up, a resume or an outcome-steering release '
+                               '(or a complement, a continuation or a capture)')
     if present:
         spec = verified(root/present[0])['models'][model]
         return {model+':'+sweep[model]: builders[present[0]](root, model, spec)}
@@ -936,11 +940,18 @@ def audit_nominations(root: Path) -> dict:
 
 
 def plan(root: Path) -> None:
-    """Tell the launcher what to submit: the release's code snapshot, the command that ends the graph, then
-    'MODEL SHARDS' for every model with shards to run."""
+    """Tell the launcher what to submit: the release's code snapshot, the prefix of its Slurm job names, the
+    command that ends the graph (an empty line when the release ends with its extractions, as a capture
+    release does), then 'MODEL SHARDS' for every model with shards to run."""
     release = verified(root/'RELEASE.json')
     print(release['release_root'])
-    print('steering.outcome analyze' if (root/'OUTCOME.json').exists() else 'steering.whole combine')
+    print(release.get('job_prefix', 'whole'))
+    if (root/'CAPTURE_NATIVE.json').exists():
+        print('')
+    elif (root/'OUTCOME.json').exists() or (root/'OUTCOME_SWEEP.json').exists():
+        print('steering.outcome analyze')
+    else:
+        print('steering.whole combine')
     for model in release['models']:
         if release.get('shards', {}).get(model):
             print(model, release['shards'][model])

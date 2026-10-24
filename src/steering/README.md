@@ -6,7 +6,7 @@ There are three experiments:
 
 - Pulsed steering (`pulse.py`, `pulse_outcomes.py`, `pulse_effects.py`): a short push on the experts of one reasoning state at the start of a continuation. Activating a state forces its nominated experts into the selection; deactivating removes them. It runs at a central strength and, for four models, a stronger one. Each edit is compared with matched random experts at the same layers and with native routing. Its tables are the main and strong steering results of the paper (figure `routing`).
 - Whole-reasoning steering (`whole.py`, `whole_effects.py`, `release.py`, `followup.py`): the push is applied at every prompt and reasoning token until the reasoning closes, and the final answer is left to native routing. States are promoted or suppressed according to whether they precede shorter or longer remaining reasoning (the efficiency link), at quarter, half and full strength, with matched random experts as controls. The sealed result is `EFFECTS_WHOLE.json` (figures `whole_states`, `whole_dose`).
-- Outcome-selected nudge (`outcome/`): not in the paper, the active next line. See [its README](outcome/README.md).
+- Outcome-selected nudge (`outcome/`): not in the paper, the active next line. Two campaigns: r1 (experts picked by outcome on cohort B) and r2 (native attempts captured on all eight models, experts picked inside each reasoning class). See [its README](outcome/README.md).
 
 The same routing operators serve all three.
 
@@ -19,9 +19,9 @@ The same routing operators serve all three.
 | `pulse_effects.py` | The paired effects with bounds for unknown outcomes, the bootstrap, and the efficiency-link test. |
 | `whole.py` | The whole-reasoning release: manifests, the fluency canary, the shards, `plan`, `budget`, `validate`, `prepare`, `run`. |
 | `whole_effects.py` | Replays and scores the finished rows (`extract`) and joins every release into `EFFECTS_WHOLE.json` (`combine`). |
-| `release.py` | Seals a complement, relink, outcome or continuation release: receipts plus a frozen copy of the code. |
+| `release.py` | Seals a complement, relink, outcome, capture, sweep or continuation release: receipts plus a frozen copy of the code. A capture or sweep release records its job-name prefix (`oc`, `os`) and keeps its stores on FAST. |
 | `followup.py` | Sizes the continuation of a complement release (read-only): its rows by saved state, its shard jobs by outcome, and the shards to run under a GPU-hour limit. |
-| `stream.py`, `observer.py`, `operators.py` | The hooks that change the routing of the running model, and the operators: hard inclusion and exclusion, and the score override that follows SteerMoE. |
+| `stream.py`, `observer.py`, `operators.py` | The hooks that change the routing of the running model, and the operators: hard inclusion and exclusion, and the score override that follows SteerMoE. A row with `capture_mode: native_ids` also keeps the native top-k ids (uint8) and weights (float16) of every reasoning token. |
 | `nominations.py`, `selection.py`, `allocation.py` | Which experts to edit for each state (the nominations), which layer of the network, and which question families go to which arm. |
 | `runtime.py`, `session.py`, `penalties.py`, `fast_penalties.py` | Prompts and the durable per-request generation, one request lifecycle, and the repetition penalties applied to saved history. |
 
@@ -32,7 +32,7 @@ python -m steering.pulse COMMAND [--model M] [--shard I/N] [--design main|strong
 python -m steering.pulse_outcomes --model M [--design strong]
 python -m steering.pulse_effects --out DIR [--design strong --models gpt,nemotron,qwen330b,gemma]
 python -m steering.whole COMMAND --release report/NAME [--model M] [--shard I/N]     # plan, prepare, canary, run, extract, combine
-python -m steering.release KIND NAME --tests N [--models ...] [--shards ...] [--cutoff TIME]   # KIND: complement, relink, outcome, continuation
+python -m steering.release KIND NAME --tests N [--models ...] [--shards ...] [--cutoff TIME]   # KIND: complement, relink, outcome, capture, sweep, continuation
 python -m steering.followup report/PARENT [--max-gpu-hours H] [--shards model:N,...]          # plan of a continuation; seals nothing
 ```
 

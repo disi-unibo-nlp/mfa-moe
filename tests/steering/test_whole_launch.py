@@ -199,9 +199,10 @@ class LaunchGraphTests(unittest.TestCase):
             (self.repo/'bin'/name).chmod(0o755)
         self.root = self.repo/'report/release'
 
-    def seal(self, kind_file: str, shards: dict, cpu_ceiling=1000., gpu_ceiling=1000.):
+    def seal(self, kind_file: str, shards: dict, cpu_ceiling=1000., gpu_ceiling=1000., **release):
         publish(self.root/'RELEASE.json', {'release_root': str(self.repo), 'models': list(shards), 'shards': shards,
-                                           'cpu_core_hour_ceiling': cpu_ceiling, 'new_gpu_hour_ceiling': gpu_ceiling})
+                                           'cpu_core_hour_ceiling': cpu_ceiling, 'new_gpu_hour_ceiling': gpu_ceiling,
+                                           **release})
         publish(self.root/kind_file, {})
 
     def environment(self, **extra):
@@ -211,9 +212,9 @@ class LaunchGraphTests(unittest.TestCase):
         return subprocess.run(['bash', str(self.repo/'scripts/steering/launch.sh'), 'release', *jobs], cwd=self.repo,
                               env=self.environment(**extra), capture_output=True, text=True)
 
-    def dry_run(self, kind_file: str, shards: dict, *jobs, **ceilings) -> list[list[str]]:
+    def dry_run(self, kind_file: str, shards: dict, *jobs, **release) -> list[list[str]]:
         """The sbatch commands the launcher prints for a release."""
-        self.seal(kind_file, shards, **ceilings)
+        self.seal(kind_file, shards, **release)
         run = self.launch(*jobs, DRY_RUN='1')
         self.assertEqual(run.returncode, 0, run.stderr)
         return [line.split() for line in run.stderr.splitlines() if line.startswith('sbatch')]
@@ -288,6 +289,37 @@ class LaunchGraphTests(unittest.TestCase):
         self.assertEqual(jobs[-1][-4:], ['steering.outcome', 'analyze', '--release', str(self.root)])
         self.assertEqual((jobs[-1][jobs[-1].index('-c')+1], jobs[-1][jobs[-1].index('-t')+1]), ('8', '120'))
         self.assertNotIn('whole-export', [command[command.index('-J')+1] for command in jobs])
+
+    @unittest.skipUnless(PY.exists(), 'needs the cluster environment')
+    def test_a_capture_release_ends_with_its_extractions_and_names_its_jobs_oc(self):
+        jobs = self.dry_run('CAPTURE_NATIVE.json', {'gpt': 2, 'glm': 1}, job_prefix='oc')
+        self.assertEqual([command[command.index('-J')+1] for command in jobs],
+                         ['oc-tests', 'oc-prepare', 'oc-run-gpt', 'oc-run-gpt', 'oc-extract-gpt', 'oc-run-glm',
+                          'oc-extract-glm'])
+
+    @unittest.skipUnless(PY.exists(), 'needs the cluster environment')
+    def test_an_outcome_sweep_names_its_jobs_os_and_ends_in_its_analysis(self):
+        jobs = self.dry_run('OUTCOME_SWEEP.json', {'gpt': 1}, job_prefix='os')
+        self.assertEqual([command[command.index('-J')+1] for command in jobs],
+                         ['os-tests', 'os-prepare', 'os-run-gpt', 'os-extract-gpt', 'os-analyze'])
+        self.assertEqual(jobs[-1][-4:], ['steering.outcome', 'analyze', '--release', str(self.root)])
+
+    @unittest.skipUnless(PY.exists(), 'needs the cluster environment')
+    def test_the_derive_chain_waits_for_the_extraction_of_each_model_it_is_given(self):
+        self.seal('CAPTURE_NATIVE.json', {'gpt': 1, 'glm': 1}, job_prefix='oc')
+        (self.root/'JOBS.txt').write_text('oc-tests 11 x\noc-extract-gpt 21 x\noc-extract-glm 22 x\n')
+        run = subprocess.run(['bash', str(self.repo/'scripts/steering/outcome_derive.sh'), 'release', 'glm', 'gpt'],
+                             cwd=self.repo, env=self.environment(DRY_RUN='1'), capture_output=True, text=True)
+        self.assertEqual(run.returncode, 0, run.stderr)
+        glm, gpt = (line.split() for line in run.stderr.splitlines() if line.startswith('sbatch'))
+        self.assertEqual((glm[glm.index('-J')+1], self.option(glm, '--dependency')), ('oc-derive-glm', 'afterok:22'))
+        self.assertEqual((gpt[gpt.index('-J')+1], self.option(gpt, '--dependency')), ('oc-derive-gpt', 'afterok:21'))
+        self.assertEqual(gpt[-6:], ['--release', str(self.root), '--models', 'gpt', '--workers', '4'])
+        self.assertEqual(self.option(gpt, '--chdir'), str(self.repo))  # the snapshot of the release
+        missing = subprocess.run(['bash', str(self.repo/'scripts/steering/outcome_derive.sh'), 'release', 'qwen35'],
+                                 cwd=self.repo, env=self.environment(DRY_RUN='1'), capture_output=True, text=True)
+        self.assertNotEqual(missing.returncode, 0)
+        self.assertIn('no queued extraction of qwen35', missing.stderr)
 
     @unittest.skipUnless(PY.exists(), 'needs the cluster environment')
     def test_nothing_is_submitted_when_the_time_limits_exceed_a_ceiling(self):

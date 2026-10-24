@@ -1,6 +1,6 @@
 # W-0002: Whole nomination and an actual control-feasible GPT cell
 - date: 2026-10-24
-- commit: 6bb8d88b807fca6ebc0c2aa9dccd23a577f96f4f
+- commit: 308969e40638d01287c016aa5d61306f00fc57c4
 - source: report/whole-reasoning-20261020-r3-batched/deterministic/gpt/WHOLE_NOMINATIONS.json (sha256 11e2324f), gpt/WHOLE.json (8b78678e), gpt/WHOLE_HALF.json (99764d19), qwen36/WHOLE.json (83a966ae), NOMINATION_AUDIT.json (215cdfb7), the DP reference CONTROL_FEASIBLE_RD_BOTH_DOSES.json (e3577e2f); every value below comes from a run on 2026-10-24 of the code at this commit over those saved files
 - paths: src/steering/selection.py, src/steering/nominations.py, src/steering/whole.py, tests/steering/test_whole.py
 - keywords: whole, risk difference, quintile, feasibility, controls, nomination
@@ -61,7 +61,7 @@ controls. The rebuilt cell equals the cell stored in `gpt/WHOLE.json` (`True`).
 
 All cells of the deterministic release were rebuilt from the saved nominations and compared with what the
 release stored. For GPT the nominations themselves were recomputed too; for Qwen3.6 the saved candidate
-lists were used (recomputing them did not finish inside the 550 s wall limit set for this login-node run).
+lists were used (recomputing them did not finish inside the 550 s wall limit of the first, login-node run).
 
 | Check | GPT-OSS | Qwen3.6 |
 |---|---|---|
@@ -72,8 +72,8 @@ lists were used (recomputing them did not finish inside the 550 s wall limit set
 | promote cells whose targets and controls equal the saved DP reference | 70 of 70 | not in the DP reference |
 | rows planned = executable, per dose | 3,096 | 2,838 |
 
-The unit tests `tests/steering/test_whole.py` and `tests/steering/test_stream_batch.py` ran on the login
-node in the vLLM environment: 32 tests, OK, 59 s. They include the sign-survival, half-availability and
+The unit tests `tests/steering/test_whole.py` and `tests/steering/test_stream_batch.py` ran in a CPU job
+in the vLLM environment: 33 tests, OK, 14 s. They include the sign-survival, half-availability and
 control-matching tests behind steps 1 to 4.
 
 ## Worth noticing
@@ -85,4 +85,4 @@ control-matching tests behind steps 1 to 4.
 - Targets still sit on more frequently used experts than their controls (0.362 against 0.295), so the
   matching is by quintile, not by value.
 - The release's original allocated qualification (job 61581053, 190 tests) is a Slurm stage of every release
-  (`python -m steering.whole validate`); the login-node run above is a spot check of the same code, not a replacement.
+  (`python -m steering.whole validate`); the CPU-job run above is a spot check of the same code, not a replacement.

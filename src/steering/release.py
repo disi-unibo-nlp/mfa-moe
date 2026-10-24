@@ -3,12 +3,14 @@
   python -m steering.release complement NAME --tests N   suppress the states the base releases left out (r18)
   python -m steering.release relink NAME --tests N       the final combine again under the eight-model link (r19, r20)
   python -m steering.release outcome NAME --tests N      the outcome-selected nudge (--models, --shards)
+  python -m steering.release capture NAME --tests N      native attempts with routing saved (outcome r2 data)
+  python -m steering.release sweep NAME --tests N --half A|B --capture C --models M   one half of the r2 nudge sweep
   python -m steering.release continuation NAME --tests N --parent P   the rows a complement left unfinished (r21)
 
 N is the number of tests that passed locally on this commit. Run it from the repository with the committed code
 clean: what runs is `git archive HEAD`, unpacked once into mfa-moe/releases/<commit>. It writes report/NAME/
-(RELEASE.json, the kind file COMPLEMENT/RELINK/OUTCOME.json, SOURCES.json, README.md and the receipts they cite)
-and prints the snapshot path. scripts/steering/launch.sh then submits the jobs.
+(RELEASE.json, the kind file COMPLEMENT/RELINK/OUTCOME/CAPTURE_NATIVE/OUTCOME_SWEEP.json, SOURCES.json, README.md and
+the receipts they cite) and prints the snapshot path. scripts/steering/launch.sh then submits the jobs.
 """
 from __future__ import annotations
 
@@ -21,7 +23,7 @@ import time
 from zoneinfo import ZoneInfo
 
 from steering.followup import APPROVED_GPU_HOURS, parse_shards, plan_followup
-from store import MODELS, REPO, WORK, check_files, file_sha, publish, require, verified
+from store import FAST, MODELS, REPO, WORK, check_files, file_sha, publish, require, verified
 
 REPORTS = REPO/'report'
 SNAPSHOTS = WORK/'mfa-moe/releases'
@@ -29,13 +31,20 @@ TEMPLATE = 'whole-reasoning-20261021-r7'  # pins the inputs, the sentence classi
 CHAIN = 'whole-reasoning-20261021-r20'  # the release whose source list a continuation extends
 LINK = 'final-routing-20261015-r1/driver/EFFICIENCY_LINK_V2.json'  # the eight-model efficiency link, under report/
 RUN_PATHS = ('src', 'tests/steering', 'tests/routing', 'scripts/slurm', 'scripts/steering')
+# The kind file of a release is KIND.json unless the kind has a name its earlier releases already used.
+KIND_FILES = {'capture': 'CAPTURE_NATIVE.json', 'sweep': 'OUTCOME_SWEEP.json'}
+FRACTIONS = (0.5, 0.7, 0.85)  # where the length-limit baseline stops the native reasoning (D-0003, D-0006)
+ANSWER_TOKENS = 2048          # answer allowance of a length-limit row
+SWEEP_DELTAS = (0.4, 0.8, 1.2)  # logit shifts of the r2 sweep (D-0006)
+OUTCOME_SCOPE = ('tests/steering/outcome plus tests/steering/test_stream_batch.py; the allocated validation runs '
+                 'both suites in full')
 
 
 def prior_usage() -> dict:
     """The billing totals of the earlier whole-reasoning and outcome jobs (scripts/slurm/ledger.sh), as of now."""
     ledger = str(REPO/'scripts/slurm/ledger.sh')
     totals = {prefix: subprocess.run([ledger, prefix], capture_output=True, text=True, check=True).stdout.splitlines()[-1]
-              for prefix in ('whole-', 'os-')}
+              for prefix in ('whole-', 'os-', 'oc-')}
     return {'ledger_totals': totals, 'snapshot_time': time.time(), 'budget_reset': False}
 
 
@@ -115,6 +124,16 @@ def relink(root: Path, args: argparse.Namespace) -> dict:
                'models keep their pre-registered signs. Output: analysis-combined/EFFECTS_WHOLE.json.\n')
 
 
+def models_and_shards(args: argparse.Namespace, default_models: str) -> tuple[tuple[str, ...], dict[str, int]]:
+    """The models of a GPU release and their 2-GPU shards (4 hours each): --models, and --shards as N or model:N,..."""
+    models = tuple((args.models or default_models).split(','))
+    shards = args.shards or '3'
+    count = ({m: int(shards) for m in models} if shards.isdigit() else
+             {m: int(n) for m, n in (item.split(':') for item in shards.split(','))})
+    require(set(count) == set(models), '--shards must name exactly the --models')
+    return models, count
+
+
 def outcome(root: Path, args: argparse.Namespace) -> dict:
     """The outcome-selected gentle nudge (steering.outcome; ledger F-0004, D-0003).
 
@@ -122,14 +141,10 @@ def outcome(root: Path, args: argparse.Namespace) -> dict:
     """
     from steering.outcome.manifest import DEFAULT_MODELS, default_spec
     from steering.outcome.select import BULK
-    models = tuple((args.models or DEFAULT_MODELS).split(','))
-    shards = args.shards or '3'
-    count = ({m: int(shards) for m in models} if shards.isdigit() else
-             {m: int(n) for m, n in (item.split(':') for item in shards.split(','))})
-    require(set(count) == set(models), '--shards must name exactly the --models')
+    models, count = models_and_shards(args, DEFAULT_MODELS)
     cutoff = args.cutoff
     require(cutoff, '--cutoff is required: no GPU row may start after it (Rome time, e.g. 2026-10-23T23:00)')
-    deltas, fractions, answer_tokens = (0.4, 0.8, 1.6), (0.5, 0.7, 0.85), 2048  # D-0003
+    deltas, fractions, answer_tokens = (0.4, 0.8, 1.6), FRACTIONS, ANSWER_TOKENS  # D-0003
     # The selection reads these outside the snapshot: per-attempt usage and the class nominations.
     inputs = {str(path): file_sha(path) for model in models
               for path in (BULK/model/'USAGE.json', BULK/model/'USAGE.npz', REPORTS/TEMPLATE/model/'WHOLE_NOMINATIONS.json')}
@@ -140,14 +155,86 @@ def outcome(root: Path, args: argparse.Namespace) -> dict:
                                   'answer_tokens': answer_tokens} for m in models}},
         template=verified(REPORTS/TEMPLATE/'RELEASE.json'), models=models, shards=count,
         sweep={m: 'main' for m in models}, cutoff=rome(cutoff), cpu_ceiling=24.+12.*len(models), sources=None, inputs=inputs,
-        scope='tests/steering/outcome plus tests/steering/test_stream_batch.py; the allocated validation runs '
-              'both suites in full',
+        scope=OUTCOME_SCOPE,
         readme='Nudges a small set of experts chosen by outcome (used more in wrong than right attempts of the same\n'
                'question, campaign-v3 cohort B) by subtracting a delta from their router logits at every prompt and\n'
                "reasoning token, against matched random experts, and compares both with unedited routing (the base\n"
                "releases' native runs) and a stop-thinking-earlier baseline cut from those native runs.\n"
                f'Models: {", ".join(models)}; deltas {list(deltas)}; length fractions {list(fractions)}.\n'
                'Code: src/steering/outcome (README there). Ledger F-0004, D-0003.\n'
+               f'GPU work stops at {cutoff} Rome.\n')
+
+
+def capture(root: Path, args: argparse.Namespace) -> dict:
+    """Native attempts with their routing saved, the data of the class-conditioned outcome selection (F-0013, D-0006).
+
+    Every model answers the same roster of 300 questions six times with unedited routing; every reasoning token keeps
+    its native top-k ids and weights at every routed layer. --models defaults to all eight, --shards to 3 per model.
+    The stores go to FAST (report/NAME/stores is a link), because WORK cannot hold the captures. The jobs are named
+    oc-*, so scripts that count whole-* jobs never see them.
+    """
+    from steering.outcome.capture import ATTEMPTS, CAP_TOKENS, pinned_inputs, roster
+    models, count = models_and_shards(args, ','.join(MODELS))
+    cutoff = args.cutoff
+    require(cutoff, '--cutoff is required: no GPU row may start after it (Rome time, e.g. 2026-10-30T23:00)')
+    questions = roster(list(models), REPORTS)
+    return dict(
+        kind_file={'models': {m: {'questions': questions, 'attempts': ATTEMPTS, 'cap_tokens': CAP_TOKENS} for m in models}},
+        template=verified(REPORTS/TEMPLATE/'RELEASE.json'), models=models, shards=count,
+        sweep={m: 'main' for m in models}, cutoff=rome(cutoff), cpu_ceiling=200., sources=None,
+        inputs={str(path): file_sha(path) for path in pinned_inputs(REPORTS, list(models))},
+        scope=OUTCOME_SCOPE, job_prefix='oc', stores=FAST/root.name/'stores',
+        readme=f'Every model answers the same {len(questions)} questions {ATTEMPTS} times with unedited routing; every\n'
+               'reasoning token keeps its native top-k expert ids and weights at every routed layer (AUDIT.npz per\n'
+               f'unit). Completion allowance {CAP_TOKENS} tokens. These attempts feed the class-conditioned outcome\n'
+               'selection, the attempt-selection analysis and serve as the unedited arm of the nudge releases.\n'
+               f'Models: {", ".join(models)}. Code: src/steering/outcome (capture.py). Ledger F-0013, D-0006.\n'
+               f'GPU work stops at {cutoff} Rome.\n')
+
+
+def sweep(root: Path, args: argparse.Namespace) -> dict:
+    """One half of the r2 class-conditioned sweep (F-0013, D-0006).
+
+    --capture: the capture release (report/NAME) whose manifests, expert sets (SELECTION_R2.json) and finished
+    attempts the sweep reads. --half A runs every available expert set at every shift of SWEEP_DELTAS; --half B runs
+    the cells of --pick (the PICK.json that steering.outcome pick wrote for half A). --models is required.
+    The jobs are named os-*; the stores go to FAST like a capture's.
+    """
+    from steering.outcome.manifest import halves
+    require(args.half in ('A', 'B') and (args.half == 'A') == (args.pick is None),
+            '--half is A or B; half A has no --pick and half B needs one')
+    require(args.capture and args.models, '--capture and --models are required')
+    models, count = models_and_shards(args, '')
+    cutoff = args.cutoff
+    require(cutoff, '--cutoff is required: no GPU row may start after it (Rome time, e.g. 2026-10-30T23:00)')
+    capture_root = REPORTS/args.capture
+    picked = verified(args.pick) if args.pick else None
+    spec, inputs = {}, {}
+    for model in models:
+        selection_path = capture_root/model/'SELECTION_R2.json'
+        selection = verified(selection_path)
+        questions = verified(capture_root/'CAPTURE_NATIVE.json')['models'][model]['questions']
+        available = [name for name, entry in selection['sets'].items() if 'sets' in entry]
+        cells = ([{'set': name, 'delta': delta} for name in available for delta in SWEEP_DELTAS] if args.half == 'A'
+                 else [cell for cell in picked['confirm'] if cell['set'] in available])
+        require(cells, f'no cell to run for {model}')
+        spec[model] = {'capture': str(capture_root), 'selection': str(selection_path),
+                       'selection_sha256': selection['sha256'], 'half': args.half,
+                       'questions': halves(questions)[args.half], 'cells': cells, 'fractions': list(FRACTIONS),
+                       'answer_tokens': ANSWER_TOKENS,
+                       'pick': {'path': str(args.pick), 'sha256': picked['sha256']} if picked else None}
+        for path in (selection_path, capture_root/model/'WHOLE.json', capture_root/model/'extraction/outcomes.parquet'):
+            inputs[str(path)] = file_sha(path)
+    return dict(
+        kind_file={'models': spec}, template=verified(REPORTS/TEMPLATE/'RELEASE.json'), models=models, shards=count,
+        sweep={m: 'main' for m in models}, cutoff=rome(cutoff), cpu_ceiling=60., sources=None, inputs=inputs,
+        scope=OUTCOME_SCOPE, job_prefix='os', stores=FAST/root.name/'stores',
+        readme='Experts used more in wrong than in right attempts of the same question, on the tokens of one\n'
+               'reasoning class (or on all reasoning, the class-blind set), are nudged down by a logit shift at\n'
+               'every prompt and reasoning token, against two disjoint matched random sets. The unedited arm is\n'
+               f'the six attempts per question of {args.capture}; stop-early rows cut one of them.\n'
+               f'Half {args.half}; cells: {len(spec[models[0]]["cells"])} per model; shifts {list(SWEEP_DELTAS)}. '
+               'Ledger F-0013, D-0006.\n'
                f'GPU work stops at {cutoff} Rome.\n')
 
 
@@ -202,7 +289,8 @@ def continuation(root: Path, args: argparse.Namespace) -> dict:
                f'GPU work stops at {datetime.fromtimestamp(cutoff, ZoneInfo("Europe/Rome")):%Y-%m-%d %H:%M} Rome.\n')
 
 
-KINDS = {'complement': complement, 'relink': relink, 'outcome': outcome, 'continuation': continuation}
+KINDS = {'complement': complement, 'relink': relink, 'outcome': outcome, 'capture': capture, 'sweep': sweep,
+         'continuation': continuation}
 
 
 def snapshot(root: Path, commit: str) -> tuple[Path, Path]:
@@ -229,8 +317,9 @@ def seal(kind: str, name: str, tests: int, args: argparse.Namespace) -> Path:
     root = REPORTS/name
     require(not root.exists(), f'{root} exists')
     spec = KINDS[kind](root, args)
-    kind_file = kind.upper()+'.json'
+    kind_file = KIND_FILES.get(kind, kind.upper()+'.json')
     template, shards = spec['template'], spec['shards']
+    stores = spec.get('stores')  # FAST folder that report/NAME/stores links to (captures and sweeps)
     cutoff = spec['cutoff']
     # A 2-GPU shard of 4 hours is 8 GPU-hours; the ceiling is the whole plan plus 10 hours of slack.
     gpu_ceiling = 8.*sum(shards.values())+10 if shards else 0.
@@ -241,8 +330,12 @@ def seal(kind: str, name: str, tests: int, args: argparse.Namespace) -> Path:
     derived = {('parent' if kind in ('relink', 'continuation') else 'template')+'_release_sha256': template['sha256']}
     if kind == 'continuation':
         derived['template_release_sha256'] = template['template_release_sha256']
+    require(stores is None or not stores.exists(), f'{stores} exists')
     root.mkdir(mode=0o700)
     try:
+        if stores is not None:
+            stores.mkdir(parents=True, mode=0o700)
+            (root/'stores').symlink_to(stores)
         prior = publish(root/'PRIOR_USAGE.json', prior_usage())
         kind_receipt = publish(root/kind_file, spec['kind_file'])
         validation = publish(root/'LOCAL_VALIDATION.json', {'passed': True, 'tests': tests, 'commit': commit,
@@ -268,9 +361,12 @@ def seal(kind: str, name: str, tests: int, args: argparse.Namespace) -> Path:
             'nomination_reference': template['nomination_reference'],
             'local_validation_sha256': validation['sha256'], 'resource_plan_sha256': plan['sha256'],
             'new_gpu_hour_ceiling': gpu_ceiling, 'cpu_core_hour_ceiling': spec['cpu_ceiling'], 'engineering_only': False,
-            'prior_usage': prior, **derived})
+            'prior_usage': prior, 'job_prefix': spec.get('job_prefix', 'whole'),
+            **({'stores': str(stores)} if stores is not None else {}), **derived})
     except BaseException:
         shutil.rmtree(root, ignore_errors=True)  # a failed seal leaves no half-written release
+        if stores is not None:
+            shutil.rmtree(stores, ignore_errors=True)
         raise
     return folder
 
@@ -281,11 +377,15 @@ def main() -> None:
     parser.add_argument('kind', choices=sorted(KINDS))
     parser.add_argument('name')
     parser.add_argument('--tests', type=int, required=True, help='tests that passed locally on this commit')
-    parser.add_argument('--models', help='outcome only: the models to steer (default: the first wave)')
-    parser.add_argument('--shards', help='outcome: N per model, or model:N,...; default 3. continuation: model:N,... '
-                        'instead of the computed sizes')
-    parser.add_argument('--cutoff', help='complement, outcome, continuation (required): no GPU row starts after this '
-                        'time (Rome, unless it names a zone)')
+    parser.add_argument('--models', help='outcome, capture, sweep: the models (default: outcome the first wave, '
+                        'capture all eight; sweep requires it)')
+    parser.add_argument('--shards', help='outcome, capture, sweep: N per model, or model:N,...; default 3. '
+                        'continuation: model:N,... instead of the computed sizes')
+    parser.add_argument('--cutoff', help='complement, outcome, capture, sweep, continuation (required): no GPU row '
+                        'starts after this time (Rome, unless it names a zone)')
+    parser.add_argument('--half', choices=('A', 'B'), help='sweep only: the question half to run')
+    parser.add_argument('--capture', help='sweep only: the capture release (report/NAME) the sweep reads')
+    parser.add_argument('--pick', type=Path, help='sweep half B only: the PICK.json of half A (steering.outcome pick)')
     parser.add_argument('--parent', help='continuation only: the complement release (report/NAME) to continue')
     parser.add_argument('--chain', help=f'continuation only: the release whose SOURCES.json it extends (default {CHAIN})')
     parser.add_argument('--link', type=Path, help=f'continuation only: efficiency-link receipt (default report/{LINK})')
