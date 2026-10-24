@@ -18,7 +18,7 @@
 - [x] F-0010.6 Bash: one shared Slurm env file, a ~6-line vLLM serve script per model and the judge, one script per paper experiment, one release script; evidence: 2c37a70..b0db3a4, fe69325, b0db3a4; release sealing is `python -m steering.release` via scripts/steering/whole.sh (the bash release.sh was dropped as a second mechanism); /simplify + /code-review high applied
 - [x] F-0010.7 Simplify the live Python topic by topic (drop unused designs, move Slurm plumbing out of Python), each topic identical on the golden comparison, /simplify and /code-review high applied; evidence: merges of s6/{capture,paper,generation,labeling,routing,steering} and s6/fixes (40cace8..4cf4752); per-topic golden reports in mfa-moe/r/polish-s6-*/
 - [x] F-0010.8 Plain-language README per folder and a top README mapping each paper experiment to its script and receipt; update CLAUDE.md, AGENTS.md, RUNBOOK, memory; retrace stale walkthroughs; evidence: s7/docs merge, 3e8251f, d161d2f, s9/ledger merge (W-0002..W-0004 retraced, W-0006..W-0011 new, ledger check 0 errors)
-- [ ] F-0010.9 End-to-end check: full golden rerun identical, paper export and build unchanged, all tests pass, final /code-review high
+- [x] F-0010.9 End-to-end check: full golden rerun identical, paper export and build unchanged, all tests pass, final /code-review high; evidence: mfa-moe/r/polish-final/ on 610ed2a: suite job 62117100 476 passed 3 skipped 0 failed; golden reruns identical: pulse outcomes 36/36, effects main 3/3 and strong 3/3 (62117353), whole extract 3/3 and combine r7-r17 3/3 (62117491), LFM derive 13/13 and dynamics 2/2, efficiency link 4/4, v3 derive 49/49, SELECTION 7/7, selection_coverage.csv byte-identical, paper exports identical to the ported tooling; final /code-review high findings fixed (s9/fixes)
 - [ ] F-0010.10 Merge into main and push (user 2026-10-23: "at the end I need to merge and push everything refactored and simplified to main") after the r18/r20 exports have run (done 2026-10-24 06:31/06:53); rerun the checks on the merged tree
 
 ## Results
@@ -26,7 +26,7 @@
 | Metric | Dataset | Baseline | Result | Evidence |
 |---|---|---|---|---|
 | Python lines in src | live code | 124k (src/moe_exp at 978f011, plus 119k in scripts/experimental_resume) | 29.3k | `find src -name '*.py' \| xargs cat \| wc -l` |
-| CPU analyses equal to golden | 15 golden analyses | golden 978f011 | identical where rerun (c, d, e-pickles, f, g-vs-WIP; a, b see F-0010.9) | mfa-moe/r/polish-final/ |
+| CPU analyses equal to golden | 15 golden analyses | golden 978f011 | identical on every rerun analysis (a, b, c, d, f; g against the ported tooling; e: stored pickles load; r3d drivers: 1-CPU smoke bit-identical) | mfa-moe/r/polish-final/ |
 | Tests | tests/ | 334 passed at 4c steps 2-4 | 476 passed, 3 skipped, 0 failed | job 62117100 |
 
 ## Carry-over for F-0010.7 (from the code review of steps 2-4)
