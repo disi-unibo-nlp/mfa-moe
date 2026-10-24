@@ -1,6 +1,6 @@
 # W-0011: Outcome-selected steering, the GPT-OSS expert set
 - date: 2026-10-24
-- commit: 610ed2a6b1f5089b828de755c0eb951df4df7e08
+- commit: 308969e40638d01287c016aa5d61306f00fc57c4
 - source: report/outcome-steering-20261022-r1 (gpt/OUTCOME_SELECTION.json sha256 6a283ef2, gpt/WHOLE.json, analysis/EFFECTS_OUTCOME.json 9e0f3f73, analysis/DECISION.json), the per-attempt usage /leonardo_scratch/fast/IscrC_MIOSR/lmolfett/mfa-moe/campaign-runs/outcome-steering/gpt/USAGE.{json,npz} (usage sha256 afcca894) and the class nominations of report/whole-reasoning-20261021-r7; every value below comes from a run on 2026-10-24 of the code at this commit on those files
 - paths: src/steering/outcome/select.py, src/steering/outcome/manifest.py, src/steering/outcome/decide.py, scripts/steering/outcome_usage.sh, tests/steering/outcome/test_select.py
 - keywords: outcome, nudge, expert selection, within-question z-score, extension rule, D-0003
@@ -74,7 +74,7 @@ interval above zero. Applied to the saved `EFFECTS_OUTCOME.json` it finds no qua
 | 1.6 | -0.110 [-0.587, 0.368] | -0.069 [-0.192, 0.053] | -0.039 |
 
 Intervals are the simultaneous 95 percent ones. Native accuracy is 0.736 at a mean of 4,118 reasoning tokens; the target
-nudge at 0.4 gives 0.736 and 4,078 tokens. Tests: `tests/steering/outcome` 20 passed (0.2 s).
+nudge at 0.4 gives 0.736 and 4,078 tokens. Tests: `tests/steering/outcome` 40 passed (3.9 s, including the r2 tests).
 
 ## Worth noticing
 

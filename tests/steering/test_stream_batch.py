@@ -60,6 +60,7 @@ class WholeBatchTests(unittest.TestCase):
         capture.whole_slots, capture.whole_totals, capture.whole_role_cache = {'a': 0, 'b': 1}, {}, {}
         capture.next_whole_slot = 2
         capture.whole_step, capture.whole_row_cache, capture.whole_audit_pending = 0, None, []
+        capture.whole_ids_pending = []
         capture.requests = {
             'a': {'actions': {0: {'activate': [0], 'deactivate': [3, 4]}, 1: {'activate': [], 'deactivate': [5]}},
                   'prompt_scope': True, 'audit_capture': True},
@@ -104,6 +105,43 @@ class WholeBatchTests(unittest.TestCase):
                 for key in DOSE_KEYS:
                     torch.testing.assert_close(batched.counts[uid]['dose'][layer][key].float(),
                                                reference.counts[uid]['dose'][layer][key].float())
+
+    def test_native_id_capture_keeps_the_audit_native_ids_of_generated_tokens(self):
+        torch.manual_seed(91)
+        audit, slim = self.capture(), self.capture()
+        for uid in slim.requests:
+            slim.requests[uid].update(audit_capture=False, capture_mode='native_ids')
+        steps = [  # prefill (prompt + first generated token), then two decode steps
+            [('a', [(0, {'reasoning': True, 'prompt': True, 'generated_position': -1}),
+                    (1, {'reasoning': True, 'prompt': False, 'generated_position': 0})]),
+             ('b', [(2, {'reasoning': True, 'prompt': True, 'generated_position': -1}),
+                    (3, {'reasoning': True, 'prompt': False, 'generated_position': 0})])],
+            [('b', [(0, {'reasoning': True, 'prompt': False, 'generated_position': 1})]),
+             ('a', [(1, {'reasoning': True, 'prompt': False, 'generated_position': 1})])],
+            [('a', [(0, {'reasoning': True, 'prompt': False, 'generated_position': 2})])]]
+        for work in steps:
+            rows = sum(len(r) for _, r in work)
+            for capture in (audit, slim):
+                capture.whole_step += 1
+            for layer in (0, 1):
+                logits = torch.randn(rows, 32)
+                affinity = logits.softmax(-1)
+                ni = affinity.topk(4, -1).indices
+                nw = affinity.gather(1, ni)
+                nw /= nw.sum(-1, keepdim=True)
+                for capture in (audit, slim):
+                    capture._whole_batch(layer, work, logits, nw, ni, {})
+            for capture in (audit, slim):
+                capture._flush_whole_audit()
+        for uid in ('a', 'b'):
+            for layer in ('0', '1'):
+                full, kept = audit.records[uid][layer], slim.records[uid][layer]
+                self.assertEqual(kept['tokens'], len(full['positions']))
+                ids = torch.as_tensor(__import__('numpy').concatenate(kept['native_ids']))
+                weights = torch.as_tensor(__import__('numpy').concatenate(kept['native_weights']))
+                self.assertTrue(torch.equal(ids.long(), torch.tensor(full['native_ids'])))
+                torch.testing.assert_close(weights.float(), torch.tensor(full['native_weights']), rtol=1e-3, atol=1e-3)
+        self.assertEqual(slim.records['a']['0']['tokens'], 3)
 
     def test_growing_buffer_preserves_prior_counters_and_refreshes_live_views(self):
         capture = self.capture()

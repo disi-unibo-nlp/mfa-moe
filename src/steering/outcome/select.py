@@ -44,9 +44,14 @@ MIN_PAIRS, MAX_PAIRS = 5, 40
 # Stage 1: per-attempt usage rates (needs torch, so it runs in a CPU allocation)
 # ---------------------------------------------------------------------------------------------
 
-def class_nominations(reports: Path, model: str) -> dict:
+def nominations_path(reports: Path, model: str) -> Path:
     """The class nominations of the base release r7 (the reports folder is report/ of the working repository)."""
-    return load(reports/'whole-reasoning-20261021-r7'/model/'WHOLE_NOMINATIONS.json')
+    return reports/'whole-reasoning-20261021-r7'/model/'WHOLE_NOMINATIONS.json'
+
+
+def class_nominations(reports: Path, model: str) -> dict:
+    """The class nominations of the base release r7, read without checking their receipt hash."""
+    return load(nominations_path(reports, model))
 
 
 def cohort_attempts(model: str) -> list[dict]:
@@ -232,3 +237,258 @@ def selection(model: str, holdouts: list[str], reports: Path) -> dict:
             'protected': {'committee': len(committee), 'execution': len(execution), 'union': len(protected)},
             'attempts': len(questions), 'known_outcomes': sum(s is not None for s in strict), 'sets': sets,
             'set_id': digest(sets)}
+
+
+# ---------------------------------------------------------------------------------------------
+# r2: class-conditioned selection on fresh captures (D-0006)
+# ---------------------------------------------------------------------------------------------
+#
+# Every class c gets its own score: the same within-question wrong-minus-right z-difference as r1,
+# computed on the usage of the tokens labelled c. Candidates come only from the three routed layers at
+# relative depth 1/2, 2/3 and 5/6 (layers 12/16/20 of GPT-OSS, where Beyond the Trace chose its five
+# experts). Pairs are added until they carry MASS_SHARE of those layers' native gate weight per
+# reasoning token, the paper's definition (its five carry "1.2% of the gated mass across the three
+# recorded layers"; ELM grounding check 2026-10-23), at most R2_MAX_PAIRS. Two disjoint
+# matched random sets are drawn per expert set. The leave-one-question-out stability filter of r1 is
+# dropped: it passed as many pairs under shuffled labels as under real ones (review of 2026-10-23).
+
+CLASS_NAMES = ('Read', 'Analyze', 'Plan', 'Implement', 'Explore', 'Verify', 'Monitor')
+BLIND = 'blind'                   # the class-blind set: all reasoning tokens (index ALL_REASONING)
+MASS_SHARE = .012                 # share of the window layers' native gate weight (Beyond the Trace, App. A.6)
+R2_MIN_PAIRS, R2_MAX_PAIRS = 5, 10
+DRAWS = 2                         # matched random sets per expert set
+PAPER_FIVE = ((12, 23), (12, 12), (12, 24), (16, 11), (20, 0))    # Beyond the Trace, GPT-OSS-20B
+
+
+def window_layers(layers: list[int]) -> list[int]:
+    """The three routed layers at relative depth 1/2, 2/3 and 5/6 (12, 16, 20 for 24 layers)."""
+    n = len(layers)
+    return [layers[n//2], layers[2*n//3], layers[5*n//6]]
+
+
+def question_differences(rates: np.ndarray, questions: list[str], strict: list[bool | None],
+                         valid: np.ndarray) -> tuple[np.ndarray, list[str]]:
+    """Per mixed-outcome question, z(wrong) - z(right) for every (layer, expert).
+
+    Args:
+        rates: (attempts, layers, experts) usage per token.
+        questions, strict: Question and known correctness (None = unknown) of every attempt.
+        valid: Attempts that may enter (e.g. the class occurs in them).
+
+    Returns:
+        (questions used, layers, experts) differences and the questions used, sorted.
+    """
+    questions, strict = np.asarray(questions), np.asarray(strict, dtype=object)
+    known = valid & (strict != None)  # noqa: E711
+    differences, used = [], []
+    for question in sorted(set(questions[known].tolist())):
+        rows = np.flatnonzero((questions == question) & known)
+        right, wrong = strict[rows] == True, strict[rows] == False  # noqa: E712
+        if not right.any() or not wrong.any():
+            continue
+        block = rates[rows].astype(np.float64)
+        spread = block.std(0, ddof=1)
+        z = np.divide(block-block.mean(0), spread, out=np.zeros_like(block), where=spread > 0)
+        differences.append(z[wrong].mean(0)-z[right].mean(0))
+        used.append(question)
+    shape = (0,)+rates.shape[1:]
+    return (np.stack(differences) if differences else np.zeros(shape)), used
+
+
+def holdout_scores(differences: np.ndarray, used: list[str], holdouts: list[str]) -> dict[str, np.ndarray]:
+    """'all' plus, for every held-out question, the mean difference without it (exact, no refit)."""
+    total, n = differences.sum(0), len(used)
+    require(n >= 2, 'fewer than two mixed-outcome questions')
+    position = {q: i for i, q in enumerate(used)}
+    scores = {'all': total/n}
+    for question in holdouts:
+        scores[question] = (total-differences[position[question]])/(n-1) if question in position else total/n
+    return scores
+
+
+class WindowSets:
+    """What choosing a window set shares: the gate-weight share of a pair list and its matched random draws.
+
+    Args:
+        frequency: (layers, experts) native top-k selections per reasoning token; controls are matched on it.
+        layers, window, k: Routed layers, the three candidate layers and native top-k.
+        protected: (layer, expert) pairs never nudged and never drawn as controls.
+        identity: Deterministic identity of the set (model, set name, holdout).
+        gate: (layers, experts) native gate weight per reasoning token; the set size is its window share
+            (defaults to `frequency`, i.e. the slot share, for callers without weights).
+    """
+    def __init__(self, frequency: np.ndarray, layers: list[int], window: list[int], k: int, protected: set,
+                 identity: list, gate: np.ndarray | None = None):
+        self.frequency, self.layers, self.window, self.k = frequency, layers, window, k
+        self.protected, self.identity = protected, identity
+        self.gate = frequency if gate is None else gate
+        self.window_gate = float(sum(self.gate[layers.index(layer)].sum() for layer in window))
+        self.window_frequency = [frequency[layers.index(layer)].tolist() for layer in window]   # rows in window order
+        self.matching = []                            # draws that fell back to nearest-usage matching
+
+    def mass(self, pairs: list[dict]) -> float:
+        """Share of the window layers' gate weight that the pairs carry."""
+        return float(sum(self.gate[self.layers.index(p['layer'])][p['expert']] for p in pairs))/self.window_gate
+
+    def slots(self, pairs: list[dict]) -> float:
+        """Share of the window layers' top-k slots that the pairs fill."""
+        return float(sum(self.frequency[self.layers.index(p['layer'])][p['expert']] for p in pairs)
+                     )/(len(self.window)*self.k)
+
+    def nearest(self, pairs: list[dict], taken: set, draw: int) -> list[dict]:
+        """Controls from the same layer with the closest native usage (ties by a fixed digest).
+
+        Used only when a fixed set leaves too few experts in its layer/quintile pool (GPT-OSS has 32 experts
+        per layer and two disjoint draws).
+        """
+        chosen = []
+        for p in pairs:
+            row = self.window_frequency[self.window.index(p['layer'])]
+            pool = [e for e in range(len(row)) if (p['layer'], e) not in taken]
+            require(pool, f'no control expert left in layer {p["layer"]}: {self.identity}')
+            expert = min(pool, key=lambda e: (abs(row[e]-row[p['expert']]), digest([self.identity, draw, p['layer'], e])))
+            taken = taken | {(p['layer'], expert)}
+            chosen.append({'layer': int(p['layer']), 'expert': int(expert)})
+        return chosen
+
+    def draws(self, pairs: list[dict], exact: bool = True) -> list[list[dict]]:
+        """DRAWS disjoint matched random sets for the pairs; with `exact` False, nearest-usage matching may fill in."""
+        from steering.selection import layer_matched_controls
+        result, taken = [], set(self.protected) | {(p['layer'], p['expert']) for p in pairs}
+        for draw in range(DRAWS):
+            try:
+                controls = layer_matched_controls([], pairs, self.window_frequency, self.window, taken,
+                                                  self.identity+['draw', draw])['deactivate']
+            except ValueError:
+                if exact:
+                    raise
+                controls = self.nearest(pairs, taken, draw)
+                self.matching.append(draw)
+            result.append(controls)
+            taken |= {(p['layer'], p['expert']) for p in controls}
+        return result
+
+
+def ranked_window_pairs(score: np.ndarray, layers: list[int], window: list[int], protected: set,
+                        sets: WindowSets) -> list[dict]:
+    """The best positive unprotected window pairs, added until MASS_SHARE or R2_MAX_PAIRS."""
+    rows = [layers.index(l) for l in window]
+    candidates = sorted(((float(score[i, e]), layers[i], int(e)) for i in rows for e in range(score.shape[1])
+                         if score[i, e] > 0 and (layers[i], int(e)) not in protected),
+                        key=lambda c: (-c[0], c[1], c[2]))
+    chosen = []
+    for value, layer, expert in candidates:
+        if len(chosen) >= R2_MAX_PAIRS or (len(chosen) >= R2_MIN_PAIRS and sets.mass(chosen) >= MASS_SHARE):
+            break
+        pair = {'layer': layer, 'expert': expert, 'score': value}
+        try:
+            sets.draws(chosen+[pair])                 # skip pairs whose control pools would run out
+        except ValueError:
+            continue
+        chosen.append(pair)
+    return chosen
+
+
+def choose_window(score: np.ndarray, frequency: np.ndarray, layers: list[int], window: list[int], k: int,
+                  protected: set, identity: list, fixed: list[tuple[int, int]] | None = None,
+                  gate: np.ndarray | None = None) -> dict:
+    """Best positive window pairs until MASS_SHARE of the window's gate weight, plus DRAWS matched random sets.
+
+    Args:
+        score: (layers, experts) score of this set (ignored for a fixed set).
+        frequency: (layers, experts) native top-k selections per reasoning token (sums to k per layer);
+            controls are matched on it.
+        layers, window, k: Routed layers, the three candidate layers and native top-k.
+        protected: (layer, expert) pairs never nudged and never drawn as controls.
+        identity: Deterministic identity of the set (model, set name, holdout).
+        fixed: A given set (Beyond the Trace's five) instead of ranked candidates.
+        gate: (layers, experts) native gate weight per reasoning token; the set size is its window share
+            (defaults to `frequency`, i.e. the slot share, for callers without weights).
+    """
+    sets = WindowSets(frequency, layers, window, k, protected, identity, gate)
+    if fixed is not None:
+        chosen = [{'layer': l, 'expert': e, 'score': float(score[layers.index(l), e]), 'fixed': True} for l, e in fixed]
+    else:
+        chosen = ranked_window_pairs(score, layers, window, protected, sets)
+    require(chosen, f'no nudgeable pair: {identity}')
+    controls = sets.draws(chosen, exact=fixed is None)
+    return {'targets': chosen, 'controls': controls, 'mass': sets.mass(chosen), 'slot_share': sets.slots(chosen),
+            'control_matching': ['nearest_usage' if d in sets.matching else 'layer_quintile' for d in range(DRAWS)],
+            'control_mass': [sets.mass(c) for c in controls], 'short': len(chosen) < R2_MIN_PAIRS}
+
+
+def class_rates(counts: np.ndarray, tokens: np.ndarray, index: int) -> tuple[np.ndarray, np.ndarray]:
+    """Usage per token of class `index` and the attempts where the class occurs."""
+    n = tokens[:, index].astype(np.float64)
+    rates = np.divide(counts[:, index], n[:, None, None], out=np.zeros(counts[:, index].shape), where=n[:, None, None] > 0)
+    return rates, n > 0
+
+
+def gate_rate(usage: dict, arrays: dict) -> np.ndarray:
+    """(layers, experts) native gate weight per reasoning token, averaged over usable attempts."""
+    usable = np.array([r['usable'] for r in usage['attempts']])
+    tokens = arrays['tokens'][usable, 7].astype(np.float64)
+    weights = arrays['weights'][usable].astype(np.float64)
+    return np.divide(weights, tokens[:, None, None], out=np.zeros(weights.shape), where=tokens[:, None, None] > 0).mean(0)
+
+
+def r2_protected(usage: dict, arrays: dict, nominations: dict) -> tuple[np.ndarray, int, set, set]:
+    """Native frequency (selections per reasoning token), native k, committee and execution pairs.
+
+    The committee (top COMMITTEE_SHARE experts per layer by native use) comes from the captures
+    themselves; the execution-specific experts from the r7 class nominations.
+    """
+    layers = usage['layers']
+    usable = np.array([r['usable'] for r in usage['attempts']])
+    rates, _ = class_rates(arrays['counts'][usable], arrays['tokens'][usable], 7)
+    frequency = rates.mean(0)
+    k = int(round(float(frequency[0].sum())))
+    top = math.ceil(COMMITTEE_SHARE*frequency.shape[1])
+    committee = {(layers[i], int(e)) for i in range(len(layers)) for e in np.argsort(-frequency[i], kind='stable')[:top]}
+    require(nominations['layers'] == layers, 'nomination layers differ from the capture layers')
+    _, _, execution = protected_pairs(nominations)
+    return frequency, k, committee, execution
+
+
+def r2_selection(usage: dict, arrays: dict, nominations: dict, holdouts: list[str], model: str) -> dict:
+    """Every r2 expert set of one model: 7 class sets and the class-blind set, each for 'all' and per holdout.
+
+    Args:
+        usage: USAGE_CLASS.json (attempt records, layers, experts).
+        arrays: USAGE_CLASS.npz arrays (counts, tokens, weights).
+        nominations: r7 WHOLE_NOMINATIONS.json of the model (execution-specific experts).
+        holdouts: Evaluation questions; each gets sets selected without it.
+        model: Study model (GPT-OSS uses Beyond the Trace's five as its class-blind set).
+    """
+    layers, records = usage['layers'], usage['attempts']
+    questions = [r['question'] for r in records]
+    strict = [r['strict'] for r in records]
+    usable = np.array([r['usable'] for r in records])
+    frequency, k, committee, execution = r2_protected(usage, arrays, nominations)
+    gate = gate_rate(usage, arrays)
+    protected = committee | execution
+    window = window_layers(layers)
+    sets = {}
+    for name, index in [*((c, i) for i, c in enumerate(CLASS_NAMES)), (BLIND, 7)]:
+        rates, present = class_rates(arrays['counts'], arrays['tokens'], index)
+        differences, used = question_differences(rates, questions, strict, usable & present)
+        if len(used) < 2:
+            sets[name] = {'status': 'too_few_mixed_questions', 'questions': len(used)}
+            continue
+        scores = holdout_scores(differences, used, holdouts)
+        fixed = list(PAPER_FIVE) if model == 'gpt' and name == BLIND else None
+        sets[name] = {'questions': len(used), 'fixed': fixed is not None, 'sets': {
+            holdout: choose_window(score, frequency, layers, window, k, protected,
+                                   [model, 'outcome-r2', name, holdout], fixed, gate)
+            for holdout, score in scores.items()}}
+    return {'model': model, 'selector': 'class-outcome-window-v2', 'layers': layers, 'window': window,
+            'native_k': k, 'experts': usage['experts'], 'usage_sha256': usage['sha256'],
+            'nominations_sha256': nominations['sha256'],
+            'rules': {'mass_share': MASS_SHARE, 'mass_definition': 'native gate weight per reasoning token, share of the '
+                      'three window layers (Beyond the Trace App. A.6)', 'pairs': [R2_MIN_PAIRS, R2_MAX_PAIRS], 'draws': DRAWS,
+                      'committee_share': COMMITTEE_SHARE, 'execution_share': EXECUTION_SHARE,
+                      'committee_source': 'capture native frequency', 'execution_source': 'r7 nominations',
+                      'paper_five': [list(p) for p in PAPER_FIVE] if model == 'gpt' else None},
+            'protected': {'committee': len(committee), 'execution': len(execution), 'union': len(protected)},
+            'attempts': len(records), 'usable': int(usable.sum()),
+            'known_outcomes': sum(s is not None for s in strict), 'sets': sets, 'set_id': digest(sets)}
