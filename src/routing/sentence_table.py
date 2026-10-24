@@ -265,7 +265,7 @@ def rebuild(model: str, workers: int, limit: int | None = None, output: Path | N
         'class_sentences': frame.groupby('cls_name').size().to_dict(),
         'label_files': {str(p): file_sha(p) for p in label_files(model)},
         'sources_sha256': file_sha(CAMPAIGN/model/'SOURCES.json'), 'campaign_sha256': campaign()['sha256'],
-        'module_sha256': file_sha(Path(__file__))})
+        'module_sha256': file_sha(Path(__file__))}, provenance=('module_sha256',))
 
 
 def main(argv: list[str] | None = None) -> None:

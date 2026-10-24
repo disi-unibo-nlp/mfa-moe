@@ -275,7 +275,7 @@ def plan(model: str, workers: int, limit: int | None = None, classes: tuple[str,
         'original_table': str(table), 'original_table_sha256': file_sha(table),
         'annotator': {k: annotator['config'][k] for k in ('judge_model', 'program_sha256', 'reasoning_effort',
                                                            'max_tokens', 'temperature', 'top_p', 'top_k')},
-        'module_sha256': file_sha(Path(__file__))})
+        'module_sha256': file_sha(Path(__file__))}, provenance=('module_sha256',))
 
 
 # ----------------------------------------------------------------------------- judge and merge
