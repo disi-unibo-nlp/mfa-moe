@@ -12,10 +12,10 @@
 
 - [x] F-0013.1 Native-id capture in the stream hooks (uint8 ids, float16 weights per reasoning token, hashed beside the receipt), per-row token cap, job-name prefix, locked store binding; evidence: tests/study/test_stream_batch.py 10 pass (new native-id test); commits a3aaa67, 607789b.
 - [x] F-0013.2 Capture manifest and release (roster of 300 shared questions, 6 attempts, 32,768 cap, stores on FAST); evidence: tests/outcome_steering/test_capture.py; dry run 1,800 rows for each of the 8 models.
-- [x] F-0013.3 Launch the capture release outcome-capture-20261023-r1 for all eight models; evidence: release commit c68b233, validate 61994112, 55 oc-run shards, monitor 61994431 (JOBS.json).
-- [ ] F-0013.4 Class labels and per-class usage (classes.py) on each model's captures; queued as oc-derive 61994580-61994587 (snapshot 962186f).
+- [x] F-0013.3 Launch the capture release for all eight models; evidence: r1 (c68b233) failed allocated validation 61994112 on one pinned test message, no shard ran (VALIDATION_FAILED.json); r2 (cf82b90) validate 62112740, 55 oc-run shards, monitor 62113122 (JOBS.json).
+- [ ] F-0013.4 Class labels and per-class usage (classes.py) on each model's captures; queued as oc-derive 62113144-62113158 (snapshot cf82b90).
 - [ ] F-0013.5 Class-conditioned selection with window layers, footprint target, protections and two control draws; signal table.
-- [ ] F-0013.6 Sweep manifest, per-half analysis, pick rule and the GPT-OSS half-A and half-B releases; code in 8dcb2a0 (tests/outcome_steering/test_sweep.py), os-launch-A 61995068 queued after the GPT-OSS derive.
+- [ ] F-0013.6 Sweep manifest, per-half analysis, pick rule and the GPT-OSS half-A and half-B releases; code in 8dcb2a0 (tests/outcome_steering/test_sweep.py), os-launch-A 62113159 queued after the GPT-OSS derive.
 - [ ] F-0013.7 Joint review of the GPT-OSS receipt; decide the other seven models' grid and ceiling.
 
 ## Results
