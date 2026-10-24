@@ -44,7 +44,7 @@ It keeps one completion per source problem, splits each benchmark into four equa
 sbatch scripts/labeling/label.sbatch TRACE_ROOT OUT_DIR       # one part; python -m labeling.annotation_batch ...
 ```
 
-The judge is Qwen3.8-27B, served by `scripts/serve/judge.sh`, with the frozen program `results/gepaLLMAsJudge/qwen3.8-27b-medium-final-s42-v3/selected_program_20260827_173300.json`. Thinking is on with low reasoning effort, temperature 1.0, top-p 0.95, top-k 20, up to 16,384 new tokens. Each sentence is judged with its question and one neighbouring sentence on each side.
+The judge is Qwen3.8-27B, served by `scripts/serve/serve_model.sh` (`start_server $JUDGE_MODEL`), with the frozen program `results/gepaLLMAsJudge/qwen3.8-27b-medium-final-s42-v3/selected_program_20260827_173300.json`. Thinking is on with low reasoning effort, temperature 1.0, top-p 0.95, top-k 20, up to 16,384 new tokens. Each sentence is judged with its question and one neighbouring sentence on each side.
 
 Output in `OUT_DIR`: `annotations.json` (one record per sentence, in file order), `summary.json` and `checkpoints/batch-NNNNNN.json`. A rerun with the same inputs skips the finished batches. A changed judge setting changes the checkpoint key, so stale labels are recomputed rather than reused. An answer that cannot be read is stored as `unknown` with its raw text; it never drops its neighbours.
 

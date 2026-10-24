@@ -8,6 +8,7 @@ Loads the checkpoints and reads the routers of each model family. It is the base
 | `router_adapters.py` | Hooks that stream the router signal, the experts that were really selected, their weights and the hidden state of each routed layer, keeping the absolute layer index. |
 | `inference.py` | Teacher-forced forward pass over a saved prompt and completion. |
 | `token_replay.py` | Saves and checks the exact token ids of a generation, with a character span for each token. |
+| `roster.py` | The one registry of the study models: short keys, Hugging Face ids and the named lists (`python -m models.roster [--captured]` prints them, `resolve` maps an id to the key), plus the judge's id. |
 | `engine.py` | The offline vLLM settings of the study models, and the marker where reasoning closes. |
 
 ## The models

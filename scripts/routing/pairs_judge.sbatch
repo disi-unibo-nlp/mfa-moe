@@ -5,7 +5,7 @@
 # One shard of the next-sentence judge of one model (a rerun resumes); scripts/routing/transition_pairs.sh submits them:
 #   sbatch scripts/routing/pairs_judge.sbatch MODEL I/N [SOURCE_CLASSES]
 source scripts/slurm/env.sh || exit 1
-# As scripts/steering/gpu.sh (the LFM2.5 labels): a few BLAS threads next to the engine. The renderer child finds DSPy
+# As scripts/slurm/run_module_gpu.sbatch (the LFM2.5 labels): a few BLAS threads next to the engine. The renderer child finds DSPy
 # in the pinned copy the study names (labeling.renderer); the judge-client environment is not put on PYTHONPATH, where
 # its openai and pydantic would shadow the vLLM environment's.
 T=$((SLURM_CPUS_PER_TASK < 4 ? SLURM_CPUS_PER_TASK : 4))

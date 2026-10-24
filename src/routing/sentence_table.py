@@ -18,7 +18,7 @@ Inputs: `report/research-campaign-v3-20261014-r5-r2/<model>/SOURCES.json` and `C
 seven-model capture and its saved inputs), the four `campaign-v3/labels/<model>/part-*/annotations.json` of
 `store.ANALYSIS`, and the saved traces.
 
-    sbatch -J pairs-table scripts/slurm/cpu.sh routing.sentence_table rebuild --model qwen36   (8 CPUs, about 1 minute)
+    sbatch -J pairs-table scripts/slurm/run_module_cpu.sbatch routing.sentence_table rebuild --model qwen36   (8 CPUs, about 1 minute)
     python -m routing.sentence_table rebuild --model qwen36 --limit 8 --output PATH            (small debug run)
 
 Output: `sentences.parquet` in the model's folder of the transition-pair work (the bulk root named in the study

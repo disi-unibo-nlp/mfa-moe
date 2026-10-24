@@ -21,7 +21,8 @@ from pathlib import Path
 import numpy as np
 from scipy import optimize, sparse
 from routing import readout_text as RT
-from store import CLASSES, FAST, MODELS, check_files, file_sha, publish, require, verified
+from models.roster import CAPTURED
+from store import CLASSES, FAST, check_files, file_sha, publish, require, verified
 
 CIDX = {c: i for i, c in enumerate(CLASSES)}
 MAXC = 600
@@ -278,7 +279,7 @@ def main(argv=None):
     ap.add_argument('--out', required=True, help='new directory; the deployed one is LEXICAL/readout-v1')
     ap.add_argument('--budget', type=float, default=2400, help='wall-clock seconds allowed per fold fit')
     args = ap.parse_args(argv)
-    value = fit_folds(list(MODELS[:-1]), Path(args.out), args.budget)  # the seven captured models, not lfm25
+    value = fit_folds(list(CAPTURED), Path(args.out), args.budget)  # not lfm25
     print(json.dumps({k: v for k, v in value['native_out_of_fold'].items()
                       if k == 'pooled'} | {'folds': value['folds']}, default=str)[:3000])
 

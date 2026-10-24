@@ -5,7 +5,7 @@
 # Every other setting is the default (seed 42, 21-example few-shot prompt, LLM-judge reward, balanced-accuracy
 # selection, medium reasoning effort, split 26/6/6); the seed prompt is the file named on the last line.
 MFA=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe
-DSPY=/leonardo_scratch/large/userexternal/lmolfett/mfa-moe/qwen-fp-fa-smoke/envs/qwen-fp-fa-dspy-88189c22f214ed65
+source scripts/setup/judge_client_env_path.sh  # sets DSPY, the judge client environment
 PYTHONPATH=src:$DSPY/lib/python3.11/site-packages:$MFA/envs/vllm-cu129/lib/python3.11/site-packages \
 $DSPY/bin/python -m labeling.gepa.run --dataset-dir data/Schoenfeld_Reasoning --api-base "$1" --output-dir "$2" \
   --gepa-auto heavy --enable-thinking --reflection-max-tokens 4096 \

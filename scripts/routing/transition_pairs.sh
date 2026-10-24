@@ -28,17 +28,17 @@ afterok() {  # --dependency=afterok:ID:... for the jobs that were submitted (not
 }
 table=""
 have transition-pairs/qwen36/SENTENCES.json ||
-  table=$(submit -J pairs-table "${cpu[@]}" scripts/slurm/cpu.sh routing.sentence_table rebuild --model qwen36)
+  table=$(submit -J pairs-table "${cpu[@]}" scripts/slurm/run_module_cpu.sbatch routing.sentence_table rebuild --model qwen36)
 have transition-pairs/qwen36/NATIVE_DYNAMICS_SUMMARY.original-sample.json ||
   submit -J pairs-original-qwen36 "${cpu[@]}" $(afterok $table) \
-    scripts/slurm/cpu.sh routing.transition_pairs summary --model qwen36 --original-sample-only > /dev/null
+    scripts/slurm/run_module_cpu.sbatch routing.transition_pairs summary --model qwen36 --original-sample-only > /dev/null
 summaries=()
 for m in "${models[@]}"; do
   have transition-pairs/$m/$variant/NATIVE_DYNAMICS_SUMMARY.json && continue
   plan=""
   have transition-pairs/$m/$variant/PAIR_PLAN.json || plan=$(submit -J pairs-plan-$m "${cpu[@]}" \
     $(test $m != qwen36 || afterok $table) \
-    scripts/slurm/cpu.sh routing.transition_pairs plan --model $m --source-classes $classes)
+    scripts/slurm/run_module_cpu.sbatch routing.transition_pairs plan --model $m --source-classes $classes)
   dependencies=(); test -z "$plan" || dependencies+=(afterok:$plan)
   test -z "${AFTER:-}" || dependencies+=(afterany:$(join $AFTER))
   dependency=""; test ${#dependencies[@]} -eq 0 || dependency=--dependency=$(IFS=,; echo "${dependencies[*]}")
@@ -47,8 +47,8 @@ for m in "${models[@]}"; do
     judges+=($(submit -J pairs-judge-$m-$i $dependency scripts/routing/pairs_judge.sbatch $m $i/$shards $classes))
   done
   summaries+=($(submit -J pairs-summary-$m "${cpu[@]}" $(afterok "${judges[@]}") \
-    scripts/slurm/cpu.sh routing.transition_pairs summary --model $m --source-classes $classes))
+    scripts/slurm/run_module_cpu.sbatch routing.transition_pairs summary --model $m --source-classes $classes))
 done
 have driver/TRANSITION_PAIRS.$variant.json ||
   submit -J pairs-collect -p boost_usr_prod -c 2 --mem=8G -t 00:20:00 $(afterok "${summaries[@]}") \
-    scripts/slurm/cpu.sh routing.transition_pairs collect --source-classes $classes > /dev/null
+    scripts/slurm/run_module_cpu.sbatch routing.transition_pairs collect --source-classes $classes > /dev/null

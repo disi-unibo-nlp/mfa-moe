@@ -19,15 +19,21 @@ export OMP_NUM_THREADS=${THREADS:-1} OPENBLAS_NUM_THREADS=${THREADS:-1} MKL_NUM_
 # One port per job: two 2-GPU jobs can land on the same node.
 export PORT=$((20000 + SLURM_JOB_ID % 20000))
 export URL=http://127.0.0.1:$PORT/v1
-# The judge client (DSPy) lives in its own environment.
-export DSPY=/leonardo_scratch/large/userexternal/lmolfett/mfa-moe/qwen-fp-fa-smoke/envs/qwen-fp-fa-dspy-88189c22f214ed65
+# The judge client (DSPy) lives in its own environment; scripts/setup/judge_client_env_path.sh says where.
+source scripts/setup/judge_client_env_path.sh
+export DSPY
+# The judge model's Hugging Face id, defined once in src/models/roster.py: start_server "$JUDGE_MODEL".
+JUDGE_MODEL=$(python -m models.roster --judge)
+export JUDGE_MODEL
 
-# Start scripts/serve/MODEL.sh in the background and wait until it answers (cold start takes ~16 min; give up at 45).
+# Start the vLLM server of HF_MODEL (a Hugging Face id, scripts/serve/serve_model.sh) in the background and wait until it
+# answers (cold start takes ~16 min; give up at 45).
 start_server() {
+    local log=$MFA/logs/$SLURM_JOB_ID-${1##*/}-server.log
     curl -sf -m 5 "http://127.0.0.1:$PORT/health" > /dev/null && { echo "port $PORT is taken by another server"; exit 1; }
-    bash "scripts/serve/$1.sh" > "$MFA/logs/$SLURM_JOB_ID-$1-server.log" 2>&1 &
+    bash scripts/serve/serve_model.sh "$1" > "$log" 2>&1 &
     until curl -sf -m 5 "http://127.0.0.1:$PORT/health" > /dev/null; do
-        kill -0 $! && ((SECONDS < 2700)) || { tail -50 "$MFA/logs/$SLURM_JOB_ID-$1-server.log"; exit 1; }
+        kill -0 $! && ((SECONDS < 2700)) || { tail -50 "$log"; exit 1; }
         sleep 5
     done
 }

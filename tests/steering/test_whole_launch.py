@@ -239,7 +239,7 @@ class LaunchGraphTests(unittest.TestCase):
         self.assertEqual(self.option(export, '--dependency'), 'afterok:whole-combine')
         self.assertEqual(last_shard[-6:], ['--release', root, '--model', 'gpt', '--shard', '1/2'])
         self.assertEqual(last_shard[-8:-6], ['steering.whole', 'run'])
-        self.assertTrue(last_shard[-9].endswith('scripts/steering/gpu.sh'))
+        self.assertTrue(last_shard[-9].endswith('scripts/slurm/run_module_gpu.sbatch'))
         for cpu_job in (tests, prepare, extract, combine):  # the serial partition would reject them
             self.assertEqual(cpu_job[cpu_job.index('-p')+1], 'boost_usr_prod')
         self.assertEqual(tests[-4:], ['steering.whole', 'validate', '--release', root])
@@ -262,7 +262,7 @@ class LaunchGraphTests(unittest.TestCase):
         jobs = {command[command.index('-J')+1]: command for command in self.dry_run('COMPLEMENT.json', {'gpt': 1})}
         export = jobs['whole-export']
         self.assertEqual(self.option(export, '--chdir'), str(self.repo))
-        self.assertEqual(export[export.index('paper.export_whole_results')-1], str(self.repo/'scripts/slurm/cpu.sh'))
+        self.assertEqual(export[export.index('paper.export_whole_results')-1], str(self.repo/'scripts/slurm/run_module_cpu.sbatch'))
         self.assertIn(str(self.root/'analysis-combined/EFFECTS_WHOLE.json'), export)
 
     @unittest.skipUnless(PY.exists(), 'needs the cluster environment')

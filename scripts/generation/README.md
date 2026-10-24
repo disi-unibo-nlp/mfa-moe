@@ -4,8 +4,8 @@ Generate benchmark traces with a model, and check answers with the judge. Both a
 
 | Script | What it does |
 | --- | --- |
-| `generate.sbatch MODEL DATASET SHARD NSHARDS` | Starts the server of `MODEL` (`scripts/serve/MODEL.sh`) and generates one slice of one benchmark: every attempt whose position in the list of attempts is `SHARD` modulo `NSHARDS`. 2 GPUs, 20 hours. No new request starts in the last 3 hours, so running ones can finish. |
-| `score.sbatch ITEMS OUT` | Starts the judge and decides whether a finished answer equals the reference answer when `math_verify` said no (three votes per item). 2 GPUs, 6 hours. |
+| `generate.sbatch MODEL DATASET SHARD NSHARDS` | Starts the server of `MODEL` (`start_server` in `scripts/slurm/env.sh`, which runs `scripts/serve/serve_model.sh`) and generates one slice of one benchmark: every attempt whose position in the list of attempts is `SHARD` modulo `NSHARDS`. 2 GPUs, 20 hours. No new request starts in the last 3 hours, so running ones can finish. |
+| `score.sbatch ITEMS OUT` | Starts the judge (`start_server $JUDGE_MODEL`) and decides whether a finished answer equals the reference answer when `math_verify` said no (three votes per item). 2 GPUs, 6 hours. |
 
 ```bash
 sbatch scripts/generation/generate.sbatch gpt aime24 0 2      # first half of GPT-OSS on AIME 2024
@@ -16,7 +16,7 @@ sbatch scripts/generation/generate.sbatch gpt aime24 1 2      # second half
 
 - Output: `/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/results/correlation_pipeline/card-v3/MODEL/generation/<checkpoint>/<dataset>/` (the main checkout's `results/`, which git ignores; written there whichever checkout you submit from). Each finished attempt is one file in `generation_shards/`, so a job that stops (or hits the deadline) is resumed by submitting the same command again.
 - When all shards of a dataset are done, collect them into `traces.jsonl` and `manifest.json`. This needs no server:
-  `sbatch -J assemble scripts/slurm/cpu.sh generation.generate --profile gpt --datasets aime24 --assemble-only --output-dir /leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/results/correlation_pipeline/card-v3/gpt/generation`
+  `sbatch -J assemble scripts/slurm/run_module_cpu.sbatch generation.generate --profile gpt --datasets aime24 --assemble-only --output-dir /leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/results/correlation_pipeline/card-v3/gpt/generation`
 - `score.sbatch` takes a file of items made on the CPU by `python -m generation.answer_equivalence build-corpus --gen-root ... --corpus card-v3 --model MODEL --out ITEMS`. The module and the sampling settings are described in [`src/generation`](../../src/generation/README.md).
 
 Paper use: the traces feed every other experiment; the accuracies and the J1 verdicts fill the benchmark tables.

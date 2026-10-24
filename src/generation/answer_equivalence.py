@@ -24,8 +24,8 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
 from generation.answers import last_boxed
+from models.roster import JUDGE_MODEL
 
-JUDGE_MODEL = "Qwen/Qwen3.8-27B"
 JUDGE_SAMPLER = dict(temperature=1.0, top_p=0.95, top_k=20, min_p=0.0, presence_penalty=0.0,
                      repetition_penalty=1.0)  # Qwen3.8-27B README.md:252 (thinking mode)
 VOTES = 3

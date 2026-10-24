@@ -125,8 +125,8 @@ class SubmittedJobsTests(unittest.TestCase):
             record.mkdir()
             (text/'JOBS.txt').write_text(
                 'whole-tests 1 sbatch -J whole-tests steering.whole validate --release R\n'
-                'whole-run-glm 2 sbatch -J whole-run-glm gpu.sh steering.whole run --release R --model glm --shard 3/27\n'
-                'whole-extract-glm 3 sbatch -J whole-extract-glm cpu.sh steering.whole extract --release R --model glm\n')
+                'whole-run-glm 2 sbatch -J whole-run-glm run_module_gpu.sbatch steering.whole run --release R --model glm --shard 3/27\n'
+                'whole-extract-glm 3 sbatch -J whole-extract-glm run_module_cpu.sbatch steering.whole extract --release R --model glm\n')
             publish(record/'JOBS.json', {'production': {'glm': [{'id': '2', 'model': 'glm', 'shard': [3, 27]}]},
                                       'extraction': {'glm': {'id': '3'}}})
             expected = {'run': [{'id': '2', 'model': 'glm', 'shard': [3, 27]}],

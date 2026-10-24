@@ -14,9 +14,9 @@ import urllib.error
 import urllib.request
 from typing import Any
 
+from models.roster import JUDGE_MODEL
 from store import WORK
 
-JUDGE_MODEL = "Qwen/Qwen3.8-27B"
 MAX_TOKENS = 16384
 REASONING_EFFORT = "low"
 # Decoding settings of every labelling run (the model card's); they are part of the checkpoint key.
@@ -25,7 +25,7 @@ SAMPLING = {"temperature": 1.0, "top_p": 0.95, "top_k": 20, "min_p": 0.0,
 # The same settings as the request's chat template and the checkpoint key use.
 CHAT_TEMPLATE_KWARGS = {"enable_thinking": True, "reasoning_effort": REASONING_EFFORT,
                         "preserve_thinking": False}
-API_KEY = "local-vllm-key"  # the key scripts/serve/args.sh starts the server with
+API_KEY = "local-vllm-key"  # the key generation/serve_flags.py starts the server with
 # The frozen judge: the GEPA program every label set was made with.
 JUDGE_PROGRAM = (WORK / "mfa-moe/repo/results/gepaLLMAsJudge/qwen3.8-27b-medium-final-s42-v3"
                  / "selected_program_20260827_173300.json")

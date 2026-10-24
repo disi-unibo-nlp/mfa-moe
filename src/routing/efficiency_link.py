@@ -30,6 +30,7 @@ import types
 import pandas as pd
 
 import store
+from models.roster import CAPTURED
 from store import DRIVER, MODELS, REPO, STUDY, clean, file_sha, load, publish, require, verified
 
 FROZEN_SCRIPT = REPO/'src/routing/efficiency_link_prereg.py'
@@ -118,7 +119,7 @@ def build_table(estimator) -> Path:
     folder = lexical_dir(estimator)
     require(not folder.exists(), f'{folder} exists; the table is written once')
     folder.mkdir(mode=0o700)
-    for model in MODELS[:-1]:
+    for model in CAPTURED:
         (folder/f'native_{model}.parquet').symlink_to(estimator.LEXICAL/f'native_{model}.parquet')
     table.to_parquet(folder/'native_lfm25.parquet', index=False)
     (folder/'README.md').write_text(

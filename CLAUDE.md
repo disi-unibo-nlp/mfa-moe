@@ -29,13 +29,13 @@ The code does not tell you what is running, what is frozen or what was decided. 
 
 | Topic | `scripts/` | `src/` |
 |---|---|---|
-| Slurm setup | `slurm/env.sh` (sourced by every job), `cpu.sh MODULE ARGS`, `ledger.sh PREFIX` | `store.py` (paths, MODELS/CLASSES/DATASETS, digest/seal/publish/verified), `stats.py`, `schemas.py`, `provenance.py` |
-| Model servers | `serve/MODEL.sh` (one `vllm serve`, about 6 lines), `serve/args.sh` (shared flags) | |
+| Slurm setup | `slurm/env.sh` (sourced by every job), `run_module_cpu.sbatch MODULE ARGS`, `run_module_gpu.sbatch MODULE ARGS`, `billing_hours_used.sh PREFIX`, `gpu_hours_left.sh` | `store.py` (paths, MODELS/CLASSES/DATASETS, digest/seal/publish/verified), `stats.py`, `schemas.py`, `provenance.py`, `models/roster.py` (model ids and rosters) |
+| Model servers | `serve/serve_model.sh HF_MODEL` (one `vllm serve`; its flags come from `generation/serve_flags.py`) | `generation/serve_flags.py` |
 | Generation | `generation/generate.sbatch MODEL DATASET SHARD NSHARDS`, `score.sbatch` | `generation/` (client, profiles, benchmarks, scoring, answer equivalence), `models/` (router adapters, HF loading) |
 | Labeling | `labeling/sample.sh`, `label.sbatch TRACE_ROOT OUTPUT_DIR`, `optimize_judge.sh` | `labeling/` (spans, samplers, judge client, `gepa/`) |
 | Router capture | `capture/capture.sbatch`, `gate.sh` | `capture/` |
 | Routing analyses | `routing/*.sh` (readout, anticipation, next_state, selection, dynamics, transition_pairs, lfm, efficiency_link, lexical, benchmarks) | `routing/` |
-| Steering | `steering/pulse.sh`, `pulse_analyze.sh`, `whole.sh KIND NAME TESTS`, `launch.sh NAME [JOB...]`, `gpu.sh MODULE ARGS` | `steering/` (pulse, whole, release, followup, outcome/) |
+| Steering | `steering/pulse.sh`, `pulse_analyze.sh`, `whole.sh KIND NAME TESTS`, `launch.sh NAME [JOB...]` | `steering/` (pulse, whole, release, followup, outcome/) |
 | Paper | `paper/export.sh`, `build.sh`, `check.sh` | `paper/` (exporters, build, verifiers; locations in `paper/cl_paths.py`) |
 
 The code that came before this layout lives at the git tag `archive/pre-cleanup-20261023`: the old campaigns `research_campaign_*`, `final_routing`, `scripts/experimental_resume`, rescue, and the journaled job graph. Every historical receipt names its own commit, so old results stay traceable.
@@ -46,7 +46,7 @@ The repo `.venv` is empty; do not use it. The environments live in `/leonardo_wo
 
 - **`correlation-client-3.11`:** pydantic, numpy, pandas, pytest. It has no torch, scipy or dspy. Use it for light tests on the login node.
 - **`vllm-cu129`:** vLLM 0.29 plus torch cu129. It is used by every job (`scripts/slurm/env.sh` puts it on PATH). Its imports are slow on the login node.
-- **The DSPy env:** the judge client and GEPA use it. Its path is `$DSPY` in `scripts/slurm/env.sh`.
+- **The DSPy env:** the judge client and GEPA use it. Its path is `$DSPY`, set in `scripts/setup/judge_client_env_path.sh` and exported by `scripts/slurm/env.sh`; `scripts/setup/build_judge_client_env.sh` builds it.
 
 The package is not installed. Always set `PYTHONPATH=src`.
 
