@@ -9,9 +9,8 @@
 
 N is the number of tests that passed locally on this commit. Run it from the repository with the committed code
 clean: what runs is `git archive HEAD`, unpacked once into mfa-moe/releases/<commit>. It writes report/NAME/
-(RELEASE.json, the kind file COMPLEMENT/RELINK/OUTCOME/CAPTURE_NATIVE/OUTCOME_SWEEP.json, SOURCES.json, README.md
-and the receipts they cite)
-and prints the snapshot path. scripts/steering/launch.sh then submits the jobs.
+(RELEASE.json, the kind file COMPLEMENT/RELINK/OUTCOME/CAPTURE_NATIVE/OUTCOME_SWEEP.json, SOURCES.json, README.md and
+the receipts they cite) and prints the snapshot path. scripts/steering/launch.sh then submits the jobs.
 """
 from __future__ import annotations
 
@@ -230,7 +229,7 @@ def sweep(root: Path, args: argparse.Namespace) -> dict:
         kind_file={'models': spec}, template=verified(REPORTS/TEMPLATE/'RELEASE.json'), models=models, shards=count,
         sweep={m: 'main' for m in models}, cutoff=rome(cutoff), cpu_ceiling=60., sources=None, inputs=inputs,
         scope=OUTCOME_SCOPE, job_prefix='os', stores=FAST/root.name/'stores',
-        readme=f'Experts used more in wrong than in right attempts of the same question, on the tokens of one\n'
+        readme='Experts used more in wrong than in right attempts of the same question, on the tokens of one\n'
                'reasoning class (or on all reasoning, the class-blind set), are nudged down by a logit shift at\n'
                'every prompt and reasoning token, against two disjoint matched random sets. The unedited arm is\n'
                f'the six attempts per question of {args.capture}; stop-early rows cut one of them.\n'
