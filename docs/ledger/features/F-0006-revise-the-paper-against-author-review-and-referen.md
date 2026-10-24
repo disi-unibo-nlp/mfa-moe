@@ -5,7 +5,7 @@
 - purpose: Implement the manuscript revisions recorded by F-0005, using the author's full reference sections and preserving their control over comment resolution.
 - acceptance: Every accessible author comment is mapped to a verified edit or an explicit remaining scientific task; revised sections receive independent scientific and reference-calibrated style reviews plus a Humanizer pass; the current native figures and integrated pages are inspected; source checks pass before the scoped Overleaf delivery; explanatory replies follow delivery without resolving or deleting any original thread.
 - keywords: paper, Overleaf, review, comments, style, Humanizer, TikZ, next-state
-- paths: paper/manuscript-support, scripts/paper
+- paths: paper/manuscript-support, src/paper, scripts/paper
 - decisions: D-0004, D-0005
 
 ## Tasks
