@@ -4,7 +4,7 @@ Request (sent with every call): sampler, max_tokens, template_kwargs, reasoning_
 model card; `card` names the line of the card (or generation_config.json) that gives them.
 
 Server (nothing here starts a server; scripts/serve/serve_model.sh does that, with the flags that serve_flags.py builds
-from these values). generate.py records revision, weights, max_model_len, attention, speculation,
+from these values). generate_answers.py records revision, weights, max_model_len, attention, speculation,
 language_model_only and extra_args in every trace's generation contract, so changing one forces fresh generation
 instead of silently mixing traces. parser (used by the continuation scorer) and max_num_seqs (how many requests the
 client keeps in flight) are not in the contract. tests/generation/test_serve_flags.py pins the flags built from them.
@@ -98,6 +98,22 @@ CARD_PROFILES: dict[str, dict] = {
              "default medium reasoning level (README.md:147-155); output bounded by the "
              "131,072-token context"),
 }
+
+
+def trace_profile(row: dict) -> str:
+    """The short key of the model that generated a saved trace: the `profile` of its generation contract."""
+    profile = ((row.get("metadata") or {}).get("generation_config") or {}).get("profile")
+    if profile not in CARD_PROFILES:
+        raise ValueError(f"trace {row.get('problem_id')!r} does not name its model: metadata.generation_config.profile "
+                         f"is {profile!r}, expected one of {sorted(CARD_PROFILES)}")
+    return profile
+
+
+def single_profile(profiles: set[str]) -> str:
+    """The one model that all the traces of a folder come from (no traces, or traces of several models, is an error)."""
+    if len(profiles) != 1:
+        raise ValueError(f"the traces must all come from one model, found {sorted(profiles) or 'no traces'}")
+    return next(iter(profiles))
 
 
 @lru_cache(maxsize=None)

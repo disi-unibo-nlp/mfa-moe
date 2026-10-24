@@ -31,7 +31,7 @@ dependencies = [
 
 [project.scripts]
 gepa-llm-as-judge = "labeling.gepa.run:main"
-correlation-generate = "generation.generate:main"
+correlation-generate = "generation.generate_answers:main"
 
 [project.optional-dependencies]
 dev = [

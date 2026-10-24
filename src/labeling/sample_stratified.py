@@ -6,7 +6,7 @@ Input: the finished benchmark generations `GENERATION_DIR/<model-slug>/<dataset>
 `generation/<slug>/<dataset>/traces.jsonl` (the 100k selection: one row per chosen completion, with
 `metadata.sentence_selection`) and four self-contained part roots
 `parts/part-0X/generation/<slug>/...` of exactly 25,000 sentences each, which
-`labeling.annotation_batch` labels.
+`labeling.label_sentences` labels.
 
     python -m labeling.sample_stratified --output-dir OUT --generation-model openai/gpt-oss-20b
         --generation-dir results/correlation_pipeline/gpt-oss-20b/generation [--dry-run]
@@ -43,7 +43,7 @@ from fractions import Fraction
 from pathlib import Path
 from typing import Any
 
-from generation.generate import _model_slug, _write_json_atomic
+from generation.generate_answers import _model_slug, _write_json_atomic
 from labeling.spans import digest, sentence_spans, trace_digest
 from schemas import TraceRecord
 from store import DATASETS, file_sha, iter_jsonl

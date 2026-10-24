@@ -1,12 +1,13 @@
 """Generate benchmark traces of one model with its model-card sampler, through a running vLLM server.
 
-Inputs: --profile (model name in model_profiles.py), --base-url of the server, --datasets (default: the six math
-benchmarks) and, to split the work over jobs, --num-shards / --shard-index.
-Command: sbatch scripts/generation/generate.sbatch MODEL DATASET SHARD NSHARDS
+Inputs: --model (the Hugging Face id of the model, e.g. openai/gpt-oss-20b), --output-dir, --base-url of the
+server, --datasets (default: the six math benchmarks) and, to split the work over jobs, --num-shards / --shard-index.
+Command: sbatch scripts/generation/generate_answers.sbatch HF_MODEL DATASET SHARD NSHARDS OUT_DIR
 Outputs, in --output-dir/<served model>/<dataset>/: generation_shards/ (one JSON per attempt; a finished attempt
 is reused when its contract hash still matches, so an interrupted job resumes) and, once the dataset is
 complete, traces.jsonl and manifest.json. A sharded run writes only its shards; run once more with
---assemble-only (no server needed) to collect them into traces.jsonl.
+--assemble-only (no server needed) to collect them into traces.jsonl. Each run also records its datasets in
+--output-dir/<served model>/summary.json, next to the datasets that earlier runs recorded there.
 Every trace keeps the exact prompt and completion token IDs (metadata.token_replay) for the forward replay.
 """
 from __future__ import annotations
@@ -31,6 +32,7 @@ from generation.benchmarks import BENCHMARKS, DEFAULT_BENCHMARKS, generation_mes
 from generation.client import generate_completion, slurm_deadline
 from generation.model_profiles import CARD_PROFILES, load_tokenizer
 from generation.scoring import score_completion_detailed
+from models.roster import resolve
 from models.token_replay import TOKEN_REPLAY_VERSION, make_token_replay
 from schemas import TraceRecord
 from store import write_jsonl
@@ -273,13 +275,33 @@ def generate_dataset(dataset: str, args: argparse.Namespace, deadline: float | N
     return summary
 
 
+def write_summary(model_dir: Path, summaries: list[dict[str, Any]]) -> Path:
+    """Record `summaries` in model_dir/summary.json. The datasets that earlier runs recorded stay there, and a
+    dataset that is run again replaces its own entry, so assembling one dataset at a time keeps all of them."""
+    path = model_dir / "summary.json"
+    recorded = json.loads(path.read_text(encoding="utf-8"))["datasets"] if path.exists() else []
+    by_dataset = {summary["dataset"]: summary for summary in recorded}
+    by_dataset.update((summary["dataset"], summary) for summary in summaries)
+    _write_json_atomic({"status": "complete", "datasets": list(by_dataset.values())}, path)
+    return path
+
+
+def _model_key(name: str) -> str:
+    """The short key of a model given as its Hugging Face id (or its short key)."""
+    try:
+        return resolve(name)
+    except ValueError as error:
+        raise argparse.ArgumentTypeError(str(error)) from None
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument("--profile", required=True, choices=sorted(CARD_PROFILES),
-                        help="model name in model_profiles.py: its sampler, token cap and recorded server settings")
+    parser.add_argument("--model", dest="profile", required=True, type=_model_key, metavar="HF_MODEL",
+                        help="Hugging Face id of the model (e.g. openai/gpt-oss-20b); its card in model_profiles.py "
+                             "sets the sampler, token cap and recorded server settings")
     parser.add_argument("--datasets", nargs="+", choices=tuple(BENCHMARKS), default=DEFAULT_BENCHMARKS)
-    parser.add_argument("--output-dir", type=Path, default=Path("results/correlation_pipeline/generation"))
-    parser.add_argument("--base-url", default="http://127.0.0.1:41800/v1")
+    parser.add_argument("--output-dir", type=Path, required=True)
+    parser.add_argument("--base-url", help="OpenAI-compatible URL of the running server (not needed to assemble)")
     parser.add_argument("--max-items", type=int, default=None, help="first N problems only (a quick check)")
     parser.add_argument("--num-shards", type=int, default=1)
     parser.add_argument("--shard-index", type=int, default=0)
@@ -292,15 +314,17 @@ def build_parser() -> argparse.ArgumentParser:
 
 def main(argv: list[str] | None = None) -> None:
     logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
-    args = build_parser().parse_args(argv)
+    parser = build_parser()
+    args = parser.parse_args(argv)
     if not 0 <= args.shard_index < args.num_shards:
         raise ValueError("--shard-index must be in [0, --num-shards)")
+    if not args.assemble_only and not args.base_url:
+        parser.error("--base-url is required unless --assemble-only")
     deadline = slurm_deadline(args.deadline_margin_hours)
     summaries = [generate_dataset(dataset, args, deadline) for dataset in args.datasets]
     if args.num_shards > 1 and not args.assemble_only:
         return
-    summary_path = args.output_dir / _model_slug(CARD_PROFILES[args.profile]["model"]) / "summary.json"
-    _write_json_atomic({"status": "complete", "datasets": summaries}, summary_path)
+    summary_path = write_summary(args.output_dir / _model_slug(CARD_PROFILES[args.profile]["model"]), summaries)
     logger.info("Generation complete: %s", summary_path)
 
 

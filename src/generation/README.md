@@ -4,26 +4,28 @@ Makes the reasoning traces: it sends benchmark problems to a vLLM server with ea
 
 | File | What it does |
 | --- | --- |
-| `generate.py` | The command that generates the traces of one model on one or more benchmarks. |
+| `generate_answers.py` | The command that generates the traces of one model on one or more benchmarks. |
 | `model_profiles.py` | Per model: sampler, output cap, thinking settings, and the server settings recorded with every trace. |
 | `serve_flags.py` | The `vllm serve` flags of every model (and the judge), built from the server settings of `model_profiles.py`; `scripts/serve/serve_model.sh` runs them. |
 | `benchmarks.py` | The benchmarks, how many samples per problem, and the prompt. |
 | `client.py` | One chat completion request, or the continuation of an exact token prefix. |
 | `scoring.py`, `answers.py` | Read the final answer out of the text and compare it with the reference. |
-| `answer_equivalence.py` | J1: the judge decides whether a rejected answer is equivalent to the reference. |
+| `judge_answers.py` | J1: the judge decides whether a rejected answer is equivalent to the reference. |
 | `continuation.py` | Continues traces that hit an older 32,768-token cap, from their exact saved ids, up to 131,072 tokens in total. |
 
 ## Generate
 
-Inputs are a model name (a key of `CARD_PROFILES`: `gpt gemma glm nemotron qwen330b qwen35 qwen36`), a running server, and the benchmarks (default: the six below). The launcher `scripts/generation/generate.sbatch MODEL DATASET SHARD NSHARDS` starts the server and calls:
+Inputs are the Hugging Face id of the model (`--model`, one of the seven in `CARD_PROFILES`: `python -m models.roster --captured` lists them), a running server, the output folder, and the benchmarks (default: the six below). The launcher `scripts/generation/generate_answers.sbatch HF_MODEL DATASET SHARD NSHARDS OUT_DIR` starts the server and calls:
 
 ```bash
-PYTHONPATH=src python -m generation.generate --profile gpt --datasets aime24 --shard-index 0 --num-shards 2 \
-  --base-url http://127.0.0.1:PORT/v1 --output-dir OUT
-PYTHONPATH=src python -m generation.generate --profile gpt --datasets aime24 --assemble-only --output-dir OUT   # no server
+PYTHONPATH=src python -m generation.generate_answers --model openai/gpt-oss-20b --datasets aime24 --shard-index 0 \
+  --num-shards 2 --base-url http://127.0.0.1:PORT/v1 --output-dir OUT
+PYTHONPATH=src python -m generation.generate_answers --model openai/gpt-oss-20b --datasets aime24 --assemble-only --output-dir OUT   # no server
 ```
 
-Output: `OUT/<checkpoint>/<dataset>/generation_shards/` (one JSON per attempt) and, once complete, `traces.jsonl` and `manifest.json`. A finished attempt is reused when its contract hash still matches, so an interrupted job resumes. The hash covers the sampler, context, server settings, vLLM version and seed, but not the server address.
+The id is resolved to the short key (`gpt`) through `models.roster`; the short key is what the generation contract hashes and records as `profile`, so it never changes.
+
+Output: `OUT/<checkpoint>/<dataset>/generation_shards/` (one JSON per attempt) and, once complete, `traces.jsonl` and `manifest.json`; `OUT/<checkpoint>/summary.json` lists the datasets of all the runs into `OUT` (a run adds its datasets and replaces the entries it runs again). A finished attempt is reused when its contract hash still matches, so an interrupted job resumes. The hash covers the sampler, context, server settings, vLLM version and seed, but not the server address.
 
 Every trace keeps the exact prompt and completion token ids and the character span of each token (`metadata.token_replay`). The capture replays these ids, so nothing is re-tokenised later.
 
@@ -58,11 +60,11 @@ Server settings (revision, parser, attention backend, speculation) are in `model
 
 - `scoring.py` reads the last `\boxed{}` answer and compares it with `math_verify`; if that cannot decide, it uses a normalised exact or numeric match. `math_verify` uses signal timeouts, so calls from worker threads run in a helper process.
 - Multiple-choice benchmarks need `\boxed{LETTER}`.
-- J1 (`answer_equivalence.py`): for finished answers that `math_verify` rejected, the judge (Qwen3.8-27B) compares the final answer with the reference, three votes per item, with the outcomes EQUIVALENT, NOT_EQUIVALENT or UNCERTAIN. It is not asked to solve the problem. Build the items on the CPU, then judge them on a GPU with `scripts/generation/score.sbatch ITEMS OUT`:
+- J1 (`judge_answers.py`): for finished answers that `math_verify` rejected, the judge (Qwen3.8-27B) compares the final answer with the reference, three votes per item, with the outcomes EQUIVALENT, NOT_EQUIVALENT or UNCERTAIN. It is not asked to solve the problem. Build the items on the CPU (the model is read from the traces), then judge them on a GPU:
 
 ```bash
-PYTHONPATH=src python -m generation.answer_equivalence build-corpus --gen-root GEN_ROOT --corpus card-v3 --model gpt --out ITEMS.jsonl
-sbatch scripts/generation/score.sbatch ITEMS.jsonl VERDICTS.jsonl
+scripts/generation/list_rejected_answers.sh TRACES_DIR ITEMS.jsonl     # python -m generation.judge_answers build-corpus --traces-dir TRACES_DIR --out ITEMS.jsonl
+sbatch scripts/generation/judge_answers.sbatch ITEMS.jsonl VERDICTS.jsonl
 ```
 
   The other subcommands are `build-hist` and `build-cont` (items of the older corpus and of continued traces) and `audit` (freezes a 100-item audit set before any judging).

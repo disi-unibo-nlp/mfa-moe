@@ -272,7 +272,7 @@ def test_confidence_features_use_actual_selected_set_even_with_selection_bias():
 
 
 def test_generation_persists_exact_ids_and_reuses_them_on_resume(byte_tokenizer, monkeypatch, tmp_path):
-    from generation import generate
+    from generation import generate_answers
     from generation.benchmarks import BenchmarkSpec
     from generation.client import Completion
     from store import iter_jsonl
@@ -284,9 +284,9 @@ def test_generation_persists_exact_ids_and_reuses_them_on_resume(byte_tokenizer,
              "options": ["wrong", "right"]},
         ],
     )
-    monkeypatch.setitem(generate.BENCHMARKS, "synthetic", spec)
-    monkeypatch.setattr(generate, "load_tokenizer", lambda profile: byte_tokenizer)
-    monkeypatch.setattr(generate, "vllm_version", lambda: "0.29.0")
+    monkeypatch.setitem(generate_answers.BENCHMARKS, "synthetic", spec)
+    monkeypatch.setattr(generate_answers, "load_tokenizer", lambda profile: byte_tokenizer)
+    monkeypatch.setattr(generate_answers, "vllm_version", lambda: "0.29.0")
     raw = "<|channel|>analysis<|message|>Reason.<|end|>" \
           "<|start|>assistant<|channel|>final<|message|>\\boxed{B}<|return|>"
     ids = byte_tokenizer.encode(raw, add_special_tokens=False)
@@ -301,10 +301,10 @@ def test_generation_persists_exact_ids_and_reuses_them_on_resume(byte_tokenizer,
             prompt_token_ids=prompt_ids, token_ids=ids,
         )
 
-    monkeypatch.setattr(generate, "generate_completion", completion)
-    args = generate.build_parser().parse_args(["--profile", "gpt", "--output-dir", str(tmp_path)])
+    monkeypatch.setattr(generate_answers, "generate_completion", completion)
+    args = generate_answers.build_parser().parse_args(["--model", "openai/gpt-oss-20b", "--output-dir", str(tmp_path)])
     for _ in range(2):
-        summary = generate.generate_dataset("synthetic", args)
+        summary = generate_answers.generate_dataset("synthetic", args)
         assert summary["accuracy"] == 1.0
     assert len(calls) == 1
     assert calls[0]["model"] == "openai/gpt-oss-20b"
