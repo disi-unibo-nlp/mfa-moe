@@ -1,8 +1,0 @@
-model,planned_problem_families,planned_native_solutions,planned_audit_records,planned_reader_outputs,closed_native_solutions,audit_records,unique_prefix_positions,audit_families,closed_reader_outputs,both_draws_usable_records,eligible_confirmation,checked_confirmation,eligible_apparent_families,checked_apparent_families,eligible_held_out_families,checked_held_out_families,recognition_status
-gpt,48,48,128,256,48,128,127,46,256,84,0.22413793103448276,0.1875,29,8,11,4,FAIL
-nemotron,48,48,128,256,48,128,127,47,256,81,0.25,0.1,34,10,11,2,FAIL
-qwen35,48,48,128,256,,,,,,,,,,,,,NOT_CLOSED
-qwen36,48,48,128,256,48,128,128,47,,,,,,,,,NOT_CLOSED
-gemma,48,48,128,256,48,128,128,47,256,91,0.2552083333333333,0.4166666666666667,32,12,11,4,FAIL
-glm,48,48,128,256,,,,,,,,,,,,,NOT_CLOSED
-qwen330b,48,48,128,256,48,128,128,48,256,80,0.101010101010101,0.3333333333333333,33,12,10,4,FAIL

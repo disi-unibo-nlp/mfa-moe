@@ -1,6 +1,0 @@
-test_purged_dependency_requires_native_success_before_afterok_is_satisfied (test_whole_launch.MonitorSurvivalTests.test_purged_dependency_requires_native_success_before_afterok_is_satisfied) ... ok
-
-----------------------------------------------------------------------
-Ran 1 test in 0.025s
-
-OK

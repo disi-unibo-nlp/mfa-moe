@@ -1,1 +1,0 @@
-{"cpu_core_hours":0,"error":"ValueError: WHOLE_LINK must name the release link receipt (the check compared against the snapshot path of the receipt)","gpu_hours":0,"jobs_submitted":0,"sha256":"5a221955482d074b966f9f836c97ba96def472ddff79862628e3ad0bcf438c1c","stage":"launch","superseded_by":"report/whole-reasoning-20261021-r20"}

@@ -1,1 +1,0 @@
-{"exit_code":137,"last_test":"test_actual_all_seven_inherited_parquet_roundtrip","no_passing_readiness_claimed":true,"parquet_fixture_now_reads_a_bounded_real_batch":true,"scientific_sources_unchanged":true,"sha256":"ec56d5c56deab1312206a339a3e8bafac69545f23293ca99c3f8c2dd62fafdc4","status":"interrupted","test_fixture_native_k_corrected":true}

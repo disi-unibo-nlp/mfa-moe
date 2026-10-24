@@ -1,1 +1,0 @@
-{"cpu_core_hour_ceiling":24.0,"jobs":"allocated tests, then one combine","models":["gpt","nemotron","qwen35","qwen36","gemma","glm","qwen330b","lfm25"],"new_gpu_hour_ceiling":0.0,"no_budget_reset":true,"sha256":"1b51dafaa4101edc13da391b074c9bfdb069e4cd7e2752b6882ca5f485196534"}

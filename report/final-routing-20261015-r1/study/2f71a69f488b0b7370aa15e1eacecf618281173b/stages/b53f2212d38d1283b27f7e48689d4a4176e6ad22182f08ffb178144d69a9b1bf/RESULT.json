@@ -1,1 +1,0 @@
-{"card_sha256":"b53f2212d38d1283b27f7e48689d4a4176e6ad22182f08ffb178144d69a9b1bf","elapsed_seconds":3.2720978260040283,"error":"[Errno 2] No such file or directory: 'saldo'","error_type":"FileNotFoundError","job_id":"60676742","sha256":"bfb9cdf3414c9ca59e24cc199447f06a714e7c2c2b0648b49efc4865727a1115","status":"execution_failed"}

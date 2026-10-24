@@ -1,1 +1,0 @@
-{"failure_scope":"model","model":"qwen330b","reason":"original Qwen3-30B inputs unavailable; independent models remain eligible","sha256":"31b12de1aedeef09d2dc2caf20e9069a281caad43d5ab8087e997a396c6bc280","stage":"measure","status":"upstream_unavailable"}

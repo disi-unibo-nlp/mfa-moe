@@ -1,1 +1,0 @@
-{"detail":{"pair_indices":[65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85],"restartable":true,"status":"complete"},"failure_scope":null,"job_id":"60604442","model":"qwen35","seconds":7621.131458318792,"sha256":"23b79f21bd8e5c01cf559733ad6ebb09d0ea7dd3bf042c8ac3bf96caeff8756a","shard_index":5,"stage":"coordination","status":"complete","threshold_index":0}

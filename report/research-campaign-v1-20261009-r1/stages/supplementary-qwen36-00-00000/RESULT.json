@@ -1,1 +1,0 @@
-{"error":"native weighted count alignment differs","error_type":"ValueError","job_id":"59762413","model":"qwen36","redraw":false,"seconds":115.56021367851645,"sha256":"06cbf93a1ee5dc4d6d482a8fdfcd4599bf8879bace2e93af7609d31587619b38","shard_index":0,"stage":"supplementary","status":"execution_failed","threshold_index":0}

@@ -1,1 +1,0 @@
-{"card_sha256":"6bfeef5ce9262003a0287717a53efeed0b7966c84c780094e201bc2f4912138f","elapsed_seconds":16.139888763427734,"error":"tuple.index(x): x not in tuple","error_type":"ValueError","job_id":"60643319","sha256":"d04e29bd070ea88e9407f5a657d33b3464ae1f6f2cfc0f69ec4b1b2f46265678","status":"execution_failed"}
