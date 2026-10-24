@@ -643,7 +643,8 @@ def seed_resume(root: Path, model: str, value: dict, rows: list[dict], store: dr
     """Copy each row's source PARTIAL.json into the bound store and publish what was copied.
 
     The source stores are only read. A target that already holds a PARTIAL (a restarted shard) must
-    be the source plus later progress, so tokens a previous job generated are never replaced.
+    be the source plus later progress, so tokens a previous job generated are never replaced. A row
+    that has since finished (a RESULT or an OUTPUT in the target) is left alone.
 
     Args:
         root: The folder of this release.
@@ -673,7 +674,7 @@ def seed_resume(root: Path, model: str, value: dict, rows: list[dict], store: dr
         saved = store.state(uid)
         if saved is None:
             driver.checkpoint(store.folder(uid)/'PARTIAL.json', partial)
-        else:
+        elif saved['status'] == 'partial':  # a finished row (RESULT or OUTPUT) has no partial left to compare
             keys = ('uid', 'assignment_sha256', 'total_allowance')
             require(all(saved[key] == partial[key] for key in keys) and
                     saved['tokens'][:len(partial['tokens'])] == partial['tokens'] and
