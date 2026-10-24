@@ -1,6 +1,6 @@
 # W-0003: One saved whole-routing canary unit
 - date: 2026-10-24
-- commit: 610ed2a6b1f5089b828de755c0eb951df4df7e08
+- commit: 6bb8d88b807fca6ebc0c2aa9dccd23a577f96f4f
 - source: report/whole-reasoning-20261020-r3-batched/deterministic/stores/gpt/main/canary/d110fdc51c1f33901e79e28217594b4654f1ae3a69f15a03aee8435067a09618/ (AUDIT.npz, CAPTURE.json, OUTPUT.json, PARTIAL.json, RESULT.json), gpt/WHOLE.json (8b78678e), gpt/CANARY.json, GPT_SOFTWARE_FAILURE.json; native job 61581237; every value below comes from a run on 2026-10-24 of the code at this commit over those saved files
 - paths: src/steering/whole.py, src/steering/pulse.py, src/steering/stream.py, src/steering/operators.py, scripts/steering/gpu.sh, tests/steering/test_stream_batch.py
 - keywords: whole, batching, routing, audit, dose, canary
@@ -98,5 +98,5 @@ which equals `full_capture.sha256_file` in `CAPTURE.json`.
   later cleanup error (`unknown released request`) hides that first error. Three saved units do not qualify the
   48-row canary, and GPT production was withheld; the failure and every charge remain recorded.
 - The tests of the batched counters (`tests/steering/test_stream_batch.py`, with `test_whole.py`) ran on the
-  login node: 32 tests, OK, 33 s. The canary now starts with `sbatch scripts/steering/gpu.sh steering.whole
+  login node: 32 tests, OK, 59 s. The canary now starts with `sbatch scripts/steering/gpu.sh steering.whole
   canary --release report/NAME --model gpt`.
