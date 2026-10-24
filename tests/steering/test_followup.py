@@ -195,6 +195,16 @@ class ContinuationSealTests(SyntheticComplement):
         # The chain release itself is untouched.
         self.assertEqual(load(self.reports/'chain/SOURCES.json')['sources'][0]['complements'], [str(self.parent)])
 
+    def test_the_chain_names_the_parent_by_another_path_to_the_same_folder(self):
+        alias = self.reports/'alias'
+        alias.symlink_to(self.parent, target_is_directory=True)
+        chain = [{'model': 'gemma', 'root': str(self.reports/'base'), 'dose': 'main', 'complements': [str(alias)]}]
+        publish(self.reports/'aliased/SOURCES.json', {'sources': chain})
+        release.seal('continuation', 'child', 12, SimpleNamespace(**{**vars(self.args), 'chain': 'aliased'}))
+        root = self.reports/'child'
+        sources = load(root/'SOURCES.json')['sources']
+        self.assertEqual(sources[0]['complements'], [str(alias), str(root.resolve())])
+
     def test_a_continuation_waits_for_the_parent_and_for_a_later_cutoff_and_leaves_nothing_behind(self):
         self.states = dict(zip('0123', ('COMPLETED', 'FAILED', 'FAILED', 'RUNNING')))
         with self.assertRaisesRegex(ValueError, 'not ended'):

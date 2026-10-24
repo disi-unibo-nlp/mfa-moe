@@ -417,6 +417,16 @@ class SeedResumeTests(unittest.TestCase):
             self.seed()
         self.assertEqual(load(self.store.folder(uid)/'PARTIAL.json'), diverged)
 
+    def test_a_restart_over_finished_rows_leaves_their_result_and_output_alone(self):
+        first = self.seed()
+        done, crashed, partial_row = (row['uid'] for row in self.rows)
+        publish(self.store.folder(done)/'RESULT.json', {'status': 'complete'})
+        publish(self.store.folder(crashed)/'OUTPUT.json', {'token_ids': [1]})
+        self.assertEqual(self.seed(), first)
+        self.assertEqual(self.store.state(done)['status'], 'complete')
+        self.assertEqual(self.store.state(crashed)['status'], 'output')
+        self.assertEqual(self.store.state(partial_row), {'status': 'partial', **self.states[partial_row]})
+
     def test_a_source_of_another_assignment_or_a_non_resume_manifest_is_refused(self):
         row = self.rows[0]
         driver.checkpoint(self.parent/'stores/gemma/main/units'/row['uid']/'PARTIAL.json',
