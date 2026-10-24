@@ -1,5 +1,5 @@
 # F-0010: Simple live-only repo with one script per paper experiment
-- status: active
+- status: done
 - date: 2026-10-23
 - request: "We need to finish the work of repo polishing. [...] only bash in scripts, and py in src. Everuthing separated in sufolders by topic. Each with a specific README. But with simple human terms. Also the code. Very simple and functional. Like for isntaince, to launch a vllm serve, no need to do infiiinte if-else, args etc. Just a simple script that run vllm serve model-name gen-configs its fine. If the file can be 6 rows then we can do that. We need to be on point with the experiments. So we have a clear script for each experiment." Amended: "envision also the use of the simplify and review skills". Answers 2026-10-23: remove old code (keep a git tag); full simplify with same numbers; port external code into the repo; branch now, merge after r18.
 - purpose: A person can read the repo, find the script behind every paper result, and rerun it, without wading through 250k lines of finished campaigns.
@@ -19,7 +19,7 @@
 - [x] F-0010.7 Simplify the live Python topic by topic (drop unused designs, move Slurm plumbing out of Python), each topic identical on the golden comparison, /simplify and /code-review high applied; evidence: merges of s6/{capture,paper,generation,labeling,routing,steering} and s6/fixes (40cace8..4cf4752); per-topic golden reports in mfa-moe/r/polish-s6-*/
 - [x] F-0010.8 Plain-language README per folder and a top README mapping each paper experiment to its script and receipt; update CLAUDE.md, AGENTS.md, RUNBOOK, memory; retrace stale walkthroughs; evidence: s7/docs merge, 3e8251f, d161d2f, s9/ledger merge (W-0002..W-0004 retraced, W-0006..W-0011 new, ledger check 0 errors)
 - [x] F-0010.9 End-to-end check: full golden rerun identical, paper export and build unchanged, all tests pass, final /code-review high; evidence: mfa-moe/r/polish-final/ on 610ed2a: suite job 62117100 476 passed 3 skipped 0 failed; golden reruns identical: pulse outcomes 36/36, effects main 3/3 and strong 3/3 (62117353), whole extract 3/3 and combine r7-r17 3/3 (62117491), LFM derive 13/13 and dynamics 2/2, efficiency link 4/4, v3 derive 49/49, SELECTION 7/7, selection_coverage.csv byte-identical, paper exports identical to the ported tooling; final /code-review high findings fixed (s9/fixes)
-- [ ] F-0010.10 Merge into main and push (user 2026-10-23: "at the end I need to merge and push everything refactored and simplified to main") after the r18/r20 exports have run (done 2026-10-24 06:31/06:53); rerun the checks on the merged tree
+- [x] F-0010.10 Merge into main and push (user 2026-10-23: "at the end I need to merge and push everything refactored and simplified to main") after the r18/r20 exports have run (done 2026-10-24 06:31/06:53); rerun the checks on the merged tree; evidence: merge commit 262a358 on main (parents 61fbfea, 5597899; tree = polish/simple-repo; user chose "Merge, cleanup wins" 2026-10-24), pushed with tag archive/pre-cleanup-20261023; light tests on the merged tree 124 passed
 
 ## Results
 
