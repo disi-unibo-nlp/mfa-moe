@@ -1,6 +1,6 @@
 # W-0002: Whole nomination and an actual control-feasible GPT cell
 - date: 2026-10-24
-- commit: 610ed2a6b1f5089b828de755c0eb951df4df7e08
+- commit: 6bb8d88b807fca6ebc0c2aa9dccd23a577f96f4f
 - source: report/whole-reasoning-20261020-r3-batched/deterministic/gpt/WHOLE_NOMINATIONS.json (sha256 11e2324f), gpt/WHOLE.json (8b78678e), gpt/WHOLE_HALF.json (99764d19), qwen36/WHOLE.json (83a966ae), NOMINATION_AUDIT.json (215cdfb7), the DP reference CONTROL_FEASIBLE_RD_BOTH_DOSES.json (e3577e2f); every value below comes from a run on 2026-10-24 of the code at this commit over those saved files
 - paths: src/steering/selection.py, src/steering/nominations.py, src/steering/whole.py, tests/steering/test_whole.py
 - keywords: whole, risk difference, quintile, feasibility, controls, nomination
@@ -73,7 +73,7 @@ lists were used (recomputing them did not finish inside the 550 s wall limit set
 | rows planned = executable, per dose | 3,096 | 2,838 |
 
 The unit tests `tests/steering/test_whole.py` and `tests/steering/test_stream_batch.py` ran on the login
-node in the vLLM environment: 32 tests, OK, 33 s. They include the sign-survival, half-availability and
+node in the vLLM environment: 32 tests, OK, 59 s. They include the sign-survival, half-availability and
 control-matching tests behind steps 1 to 4.
 
 ## Worth noticing
