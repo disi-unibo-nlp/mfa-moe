@@ -1,9 +1,10 @@
 """Pick the sentences to label for one model of the card corpus: cohorts A and B.
 
-Input: `--gen-root`, the model's finished generations `<dataset>/traces.jsonl`. Output in `--out`:
-`cohorts.json`, `parts.json` and four label part roots
-`labels/part-0X/generation/<slug>/<dataset>/traces.jsonl` that `labeling.annotation_batch` labels
-(`scripts/labeling/sample.sh MODEL` runs this).
+Input: `--traces-dir`, the model's finished generations `<dataset>/traces.jsonl`; the model is read from the traces
+(`metadata.generation_config.profile`, which must be the same in every trace). Output in `--out`, a folder that does
+not exist yet: `cohorts.json`, `parts.json` and four label part roots
+`labels/part-0X/generation/<slug>/<dataset>/traces.jsonl` that `labeling.label_sentences` labels
+(`scripts/labeling/choose_sentences.sh TRACES_DIR OUT_DIR` runs this).
 
 Cohort A: one attempt per question, drawn uniformly at random (inclusion probability
 1/attempts-for-that-question), labeled with a shared budget of sentences (every unit of
@@ -25,6 +26,7 @@ import random
 from collections import defaultdict
 from pathlib import Path
 
+from generation.model_profiles import single_profile, trace_profile
 from labeling.spans import sentence_spans, trace_digest
 from schemas import TraceRecord
 from store import DATASETS
@@ -51,17 +53,19 @@ def outcome_state(row: dict) -> str:
     return "unscored"
 
 
-def scan(gen_root: Path) -> tuple[list[dict], list[dict], list[str]]:
-    """Cohort-eligible rows, traces excluded because they cannot be segmented, and the
-    sha256 of every corpus line in file order (bound into traces_sha256)."""
-    rows, excluded, line_hashes = [], [], []
+def scan(traces_dir: Path) -> tuple[list[dict], list[dict], list[str], str]:
+    """Cohort-eligible rows, traces excluded because they cannot be segmented, the
+    sha256 of every corpus line in file order (bound into traces_sha256) and the model
+    (the short key that every trace names in its generation contract)."""
+    rows, excluded, line_hashes, profiles = [], [], [], set()
     for dataset in DATASETS:
-        path = gen_root / dataset / "traces.jsonl"
+        path = traces_dir / dataset / "traces.jsonl"
         offset = 0
         with path.open("rb") as handle:
             for line_index, raw in enumerate(handle):
                 row = json.loads(raw)
                 trace = TraceRecord(**row)
+                profiles.add(trace_profile(row))
                 line_sha = hashlib.sha256(raw).hexdigest()
                 line_hashes.append(line_sha)
                 try:
@@ -86,7 +90,7 @@ def scan(gen_root: Path) -> tuple[list[dict], list[dict], list[str]]:
     total = len(rows) + len(excluded)
     if total and len(excluded) / total > MAX_EXCLUDED_FRACTION:
         raise ValueError(f"{len(excluded)} of {total} traces cannot be segmented: {excluded[:3]}")
-    return rows, excluded, line_hashes
+    return rows, excluded, line_hashes, single_profile(profiles)
 
 
 def select(rows: list[dict]) -> dict:
@@ -135,9 +139,9 @@ def select(rows: list[dict]) -> dict:
                 selection={k: sorted(v) for k, v in selection.items()})
 
 
-def write(model: str, gen_root: Path, out: Path, chosen, excluded, line_hashes) -> None:
-    out.mkdir(parents=True, exist_ok=True)
-    slug = gen_root.name
+def write(model: str, traces_dir: Path, out: Path, chosen, excluded, line_hashes) -> None:
+    out.mkdir(parents=True)
+    slug = traces_dir.name
     selection = chosen["selection"]
     manifest_core = dict(schema_version=SCHEMA_VERSION, model=model, seed=SEED,
                          label_total=LABEL_TOTAL, per_b=PER_B, floor=FLOOR,
@@ -181,7 +185,7 @@ def write(model: str, gen_root: Path, out: Path, chosen, excluded, line_hashes) 
             target.parent.mkdir(parents=True, exist_ok=True)
         sinks = [temporary.open("w") for temporary in temporaries]
         try:
-            with (gen_root / dataset / "traces.jsonl").open() as source:
+            with (traces_dir / dataset / "traces.jsonl").open() as source:
                 for line in source:
                     row = json.loads(line)
                     key = (dataset, row["problem_id"])
@@ -209,13 +213,14 @@ def write(model: str, gen_root: Path, out: Path, chosen, excluded, line_hashes) 
 def main(argv=None) -> None:
     ap = argparse.ArgumentParser(description=__doc__,
                                  formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--model", required=True)
-    ap.add_argument("--gen-root", type=Path, required=True,
-                    help=".../card-v3/<model>/generation/<slug>")
-    ap.add_argument("--out", type=Path, required=True)
+    ap.add_argument("--traces-dir", type=Path, required=True,
+                    help=".../card-v3/<model>/generation/<slug>, the folder holding <dataset>/traces.jsonl")
+    ap.add_argument("--out", type=Path, required=True, help="a new folder")
     args = ap.parse_args(argv)
-    rows, excluded, line_hashes = scan(args.gen_root)
-    write(args.model, args.gen_root, args.out, select(rows), excluded, line_hashes)
+    if args.out.exists():
+        raise FileExistsError(f"{args.out} exists; the cohorts of a model are never overwritten, choose a new folder")
+    rows, excluded, line_hashes, model = scan(args.traces_dir)
+    write(model, args.traces_dir, args.out, select(rows), excluded, line_hashes)
 
 
 if __name__ == "__main__":

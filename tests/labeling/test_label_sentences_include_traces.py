@@ -11,7 +11,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parents[2] / "src"))
 
-from labeling.annotation_batch import DATASETS, enumerate_items, main, run_part
+from labeling.label_sentences import DATASETS, enumerate_items, main, run_part
 from schemas import TraceRecord  # noqa: E402
 
 MERGED_TEXT = (
@@ -145,7 +145,7 @@ class IncludeTracesTests(unittest.TestCase):
             write_corpus(root)
             affected = directory / "affected.json"
             write_affected(affected, [("math500", "merged", 0, "gemma")], {"gemma": 5})
-            from labeling.annotation_batch import load_include_traces
+            from labeling.label_sentences import load_include_traces
 
             self.assertEqual(load_include_traces(affected, "gemma"), {("math500", "merged", 0)})
             # The same key exists in this corpus but belongs to the other source's run.

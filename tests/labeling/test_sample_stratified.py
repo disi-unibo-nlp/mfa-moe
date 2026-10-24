@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from labeling.annotation_batch import enumerate_items
+from labeling.label_sentences import enumerate_items
 from labeling.sample_stratified import (
     proportional_quotas,
     quartile_groups,

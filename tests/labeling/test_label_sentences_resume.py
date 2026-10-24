@@ -22,7 +22,7 @@ def labels(label, n):
 
 
 def test_genuine_cross_trace_batches_and_zero_request_resume(tmp_path):
-    module = importlib.import_module('labeling.annotation_batch')
+    module = importlib.import_module('labeling.label_sentences')
     calls = []
     def classify(batch):
         calls.append(len(batch))
@@ -49,7 +49,7 @@ UNKNOWN_OUTCOME = {
 
 
 def test_unknown_outcome_is_persisted_and_resumes_without_requests(tmp_path):
-    module = importlib.import_module('labeling.annotation_batch')
+    module = importlib.import_module('labeling.label_sentences')
     calls = []
 
     def classify(batch):
@@ -85,7 +85,7 @@ def test_unknown_outcome_is_persisted_and_resumes_without_requests(tmp_path):
 
 
 def test_all_valid_run_has_label_only_records_and_no_unknown_count(tmp_path):
-    module = importlib.import_module('labeling.annotation_batch')
+    module = importlib.import_module('labeling.label_sentences')
     calls = []
 
     def classify(batch):
@@ -107,7 +107,7 @@ def test_all_valid_run_has_label_only_records_and_no_unknown_count(tmp_path):
 
 
 def test_checkpoint_key_binds_traces_program_and_decoding_but_not_the_server(tmp_path):
-    module = importlib.import_module('labeling.annotation_batch')
+    module = importlib.import_module('labeling.label_sentences')
     first = module.checkpoint_config({'traces': 'plan'}, b'program')
     assert 'base_url' not in first
     assert first == module.checkpoint_config({'traces': 'plan'}, b'program')
@@ -130,7 +130,7 @@ def test_checkpoint_key_binds_traces_program_and_decoding_but_not_the_server(tmp
 
 
 def test_checkpoints_written_with_a_server_address_still_resume(tmp_path):
-    module = importlib.import_module('labeling.annotation_batch')
+    module = importlib.import_module('labeling.label_sentences')
     calls = []
     def classify(batch):
         calls.append(len(batch))

@@ -1,6 +1,6 @@
 # tests/labeling
 
-Tests of `src/labeling` on small synthetic traces: the sentence splitter and its version-1 mapping (`test_splitter_v2.py`), sentence segmentation of cohorts (`test_cohort_segmentation.py`), the stratified sampler (`test_sample_stratified.py`), the judge client and its tolerance to bad answers (`test_batch_judge_client.py`, `test_batch_predictor_failures.py`), resumable labeling and the `--include-traces` relabel (`test_annotation_batch_resume.py`, `test_annotation_include_traces.py`), where the judge's renderer child finds the pinned DSPy copy (`test_renderer.py`), and GEPA (`test_gepaLLMAsJudge.py`).
+Tests of `src/labeling` on small synthetic traces: the sentence splitter and its version-1 mapping (`test_splitter_v2.py`), choosing the sentences of a model's cohorts, the model read from the traces and the new output folder (`test_choose_sentences.py`), the stratified sampler (`test_sample_stratified.py`), the judge client and its tolerance to bad answers (`test_batch_judge_client.py`, `test_batch_predictor_failures.py`), resumable labeling and the `--include-traces` relabel (`test_label_sentences_resume.py`, `test_label_sentences_include_traces.py`), where the judge's renderer child finds the pinned DSPy copy (`test_renderer.py`), and GEPA (`test_gepaLLMAsJudge.py`).
 
 ```bash
 PYTHONPATH=src python -m pytest -q -p no:cacheprovider tests/labeling --ignore=tests/labeling/test_gepaLLMAsJudge.py

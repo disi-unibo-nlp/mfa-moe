@@ -3,12 +3,12 @@ batch.
 
 Input: a trace root `ROOT/<dataset>/traces.jsonl` whose rows name the sentences to label in
 `metadata.sentence_selection` (written by `labeling.sample_stratified` and
-`labeling.sample_cohorts`), and a vLLM server that serves the judge (`start_server $JUDGE_MODEL`, from
-`scripts/slurm/env.sh`).
+`labeling.choose_sentences`), and a vLLM server that serves the judge (`start_server $JUDGE_MODEL`, from
+`scripts/slurm/env.sh`; `scripts/labeling/label_sentences.sbatch TRACE_ROOT OUT_DIR` starts both).
 Output in OUT: `annotations.json` (one record per sentence, in file order), `summary.json` and
 `checkpoints/batch-NNNNNN.json`. A rerun with the same inputs skips the finished batches.
 
-    python -m labeling.annotation_batch --trace-root ROOT --output-dir OUT
+    python -m labeling.label_sentences --trace-root ROOT --output-dir OUT
         --base-url http://127.0.0.1:PORT/v1
 
 With `--include-traces LIST.json` only the listed traces are labelled. Their stored

@@ -8,7 +8,7 @@ The locked test is touched only with `--evaluate-locked-test`, and never in cros
 Output in `--output-dir`: `selected_program_<time>.json` (the judge program that
 `labeling.batch_predictor` loads), the seed and GEPA-optimised prompts and programs, validation
 predictions, `results_<time>.json`, the judge feedback log and `stats.csv`.
-`scripts/labeling/optimize_judge.sh` runs it with the settings of the frozen judge.
+`scripts/labeling/optimize_judge_prompt.sh` runs it with the settings of the frozen judge.
 """
 from __future__ import annotations
 
