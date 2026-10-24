@@ -10,6 +10,8 @@ import sys
 
 import pandas as pd
 
+if len(sys.argv) != 2:
+    sys.exit('usage: python -m routing.lexical_data.build_extras OUT_DIR')
 OUT = Path(sys.argv[1])
 PAR = Path("/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/"
            "routing-control-v1/dense-judge-parity")

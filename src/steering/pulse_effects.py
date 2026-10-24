@@ -482,11 +482,10 @@ def paired(table):
                     out[f'{direction}:{metric}:vs_native'] = np.nan
             for c2 in CLASSES:  # response matrix: targeted vs random on every observed class
                 if ta and ra:
-                    prefix = 'occ_'
                     lower_role, upper_role = ('lower_', 'upper_') if sign > 0 else ('upper_', 'lower_')
-                    out[f'{direction}:response:{c2}'] = sign*(ta[prefix+c2]-ra[prefix+c2])
-                    out[f'{direction}:response:{c2}:lower'] = sign*(ta[prefix+lower_role+c2]-ra[prefix+upper_role+c2])
-                    out[f'{direction}:response:{c2}:upper'] = sign*(ta[prefix+upper_role+c2]-ra[prefix+lower_role+c2])
+                    out[f'{direction}:response:{c2}'] = sign*(ta['occ_'+c2]-ra['occ_'+c2])
+                    out[f'{direction}:response:{c2}:lower'] = sign*(ta['occ_'+lower_role+c2]-ra['occ_'+upper_role+c2])
+                    out[f'{direction}:response:{c2}:upper'] = sign*(ta['occ_'+upper_role+c2]-ra['occ_'+lower_role+c2])
                     out[f'{direction}:response:{c2}'] = (out[f'{direction}:response:{c2}:lower']+
                                                           out[f'{direction}:response:{c2}:upper'])/2
                 else:

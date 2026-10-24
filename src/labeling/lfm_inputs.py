@@ -14,6 +14,8 @@ from labeling.batch_predictor import judge_inputs as sentence_inputs, question_o
 from store import BENCHMARKS, Units, canonical, digest, file_sha, load, publish, require, verified
 
 
+JUDGE_INPUTS = 'source-parity-v1'
+
 def population(binding):
     from store import read_source
     from steering.allocation import seed_for
@@ -180,8 +182,10 @@ def materialize(binding):
     require(len(layouts)==100000,'100000-sentence sampling obligation is incomplete')
     sources.sort(key=lambda r: (r['benchmark'], r['family'], r['question']))
     publish(root/'lfm25/SOURCES.json', {'records': sources, 'profile_sha256': binding['models']['lfm25']['profile_sha256']})
-    publish(bulk/'lfm25/SAMPLED_SENTENCES.json', {'records': layouts})
-    publish(root/'lfm25/ANNOTATION_TASKS.json', {'records': sorted(annotation.values(), key=lambda r: r['uid']), 'sampled_sentences': 100000})
+    # The judge sees the question, one neighbouring unit on each side and the edge sentinels ('source-parity-v1').
+    publish(bulk/'lfm25/SAMPLED_SENTENCES.json', {'records': layouts, 'judge_inputs': JUDGE_INPUTS})
+    publish(root/'lfm25/ANNOTATION_TASKS.json', {'records': sorted(annotation.values(), key=lambda r: r['uid']),
+                                                 'sampled_sentences': 100000, 'judge_inputs': JUDGE_INPUTS})
     return publish(target, {'status': 'complete', 'native_attempts': len(tasks), 'unknown_native': unavailable,
                             'discovery_traces': len(sources), 'sampling_manifest_sha256': digest(manifest),
                             'sampled_sentences': len(layouts), 'unique_contexts': len(annotation)})

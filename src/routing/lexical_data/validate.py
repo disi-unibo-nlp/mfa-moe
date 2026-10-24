@@ -14,6 +14,8 @@ import pandas as pd
 
 from store import ANALYSIS
 
+if len(sys.argv) != 2:
+    sys.exit('usage: python -m routing.lexical_data.validate OUT_DIR')
 OUT = Path(sys.argv[1])
 RECEIPTS = Path("/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/research-campaign-v3-20261014-r6")  # label index, folds
 CAPTURE = ANALYSIS / "campaign-v3"
