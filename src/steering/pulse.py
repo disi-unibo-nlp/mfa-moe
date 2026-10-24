@@ -903,8 +903,7 @@ def parse_shard(text):
 
 def main(argv=None):
     ap = argparse.ArgumentParser(prog='steering.pulse')
-    ap.add_argument('command', choices=['plan', 'run', 'native', 'annotate', 'lfm-replay', 'status', 'plan-strong',
-                                        'lfm-repair-contexts'])
+    ap.add_argument('command', choices=['plan', 'run', 'native', 'annotate', 'lfm-replay', 'status', 'plan-strong'])
     ap.add_argument('--model')
     ap.add_argument('--shard', default='0/1', type=parse_shard)
     ap.add_argument('--max-inflight', type=int, default=64)
@@ -918,11 +917,6 @@ def main(argv=None):
         return
     if args.command == 'status':
         print(json.dumps(status(), indent=1))
-        return
-    if args.command == 'lfm-repair-contexts':
-        from labeling.lfm_inputs import repair_annotation_inputs
-        value = repair_annotation_inputs(binding())
-        log({'event': 'repaired', 'contexts': len(value['records']), 'sha256': value['sha256']})
         return
     require(os.environ.get('SLURM_JOB_ID') and os.environ.get('SLURM_JOB_GPUS'), 'GPU commands require a Slurm GPU allocation')
     deadline = slurm_deadline(ADMISSION_MARGIN_HOURS)

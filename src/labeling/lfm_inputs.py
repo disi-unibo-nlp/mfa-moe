@@ -4,9 +4,8 @@ sample's judge inputs.
 `population` lists the native attempts. `materialize` commits the finished native generations as
 trace files, runs the same stratified sampler as the other seven models
 (`labeling.sample_stratified.build_plan`) and writes the sampled sentences with their judge tasks.
-`repair_annotation_inputs` rebuilds the judge tasks of a build made with other inputs so that they carry the
-source-parity inputs. `materialize` runs as `python -m routing.lfm materialize`, `repair_annotation_inputs` as
-`python -m steering.pulse lfm-repair-contexts`, and `population` feeds `python -m steering.pulse native`.
+`materialize` runs as `python -m routing.lfm materialize`, and `population` feeds
+`python -m steering.pulse native`.
 """
 from collections import defaultdict
 from pathlib import Path
@@ -74,44 +73,6 @@ def judge_inputs(value, units, index):
     the edge sentinels."""
     messages = value.get('generation_messages') or value['metadata'].get('generation_messages')
     return sentence_inputs(question_of(messages, value['prompt']), units, index)
-
-
-def repair_annotation_inputs(binding):
-    """Rebuild the LFM judge tasks of the frozen 100k sample with source-parity inputs (the question, one
-    neighbouring unit on each side and the edge sentinels). Same sentences; new context identities. Tasks that
-    already say `judge_inputs: source-parity-v1` are returned as they are; otherwise the replaced files stay
-    beside the new ones as `*.problem-statement-v0.json`."""
-    from store import read_source
-    from labeling.contexts import context_id
-    from capture.dynamics.classes import saved_layout
-    from schemas import TraceRecord
-    root, bulk = Path(binding['root']), Path(binding['config']['bulk_root'])
-    parent = load(Path(binding['source_campaign'])/'CAMPAIGN.json')
-    tasks_path, sampled_path = root/'lfm25/ANNOTATION_TASKS.json', bulk/'lfm25/SAMPLED_SENTENCES.json'
-    old_tasks, old_sampled = verified(tasks_path), verified(sampled_path)
-    if old_tasks.get('judge_inputs') == 'source-parity-v1':
-        return old_tasks
-    sources = {s['attempt_id']: s for s in verified(root/'lfm25/SOURCES.json')['records']}
-    grouped = defaultdict(list)
-    for r in old_sampled['records']:
-        grouped[r['attempt_id']].append(r)
-    annotation, layouts = {}, []
-    for attempt, rows in grouped.items():
-        value = read_source(sources[attempt]['source_location'])
-        units = saved_layout(TraceRecord(**value))['units']
-        for r in rows:
-            require(units[r['sentence_index']]['text'] == r['text'], 'sampled sentence identity changed')
-            inputs = judge_inputs(value, units, r['sentence_index'])
-            uid = context_id(inputs, parent['annotator'])
-            annotation[uid] = {'uid': uid, 'inputs': inputs, 'model': 'lfm25'}
-            layouts.append({**r, 'annotation_uid': uid})
-    require(len(layouts) == len(old_sampled['records']) == 100000, 'sample size changed')
-    for path in (tasks_path, sampled_path):
-        path.rename(path.with_name(path.stem+'.problem-statement-v0.json'))
-    publish(sampled_path, {'records': layouts, 'judge_inputs': 'source-parity-v1'})
-    return publish(tasks_path, {'records': sorted(annotation.values(), key=lambda r: r['uid']),
-                                'sampled_sentences': 100000, 'judge_inputs': 'source-parity-v1',
-                                'replaces_sha256': old_tasks['sha256']})
 
 
 def materialize(binding):
