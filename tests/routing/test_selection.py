@@ -18,7 +18,7 @@ class ExportTests(unittest.TestCase):
             export(root, Path(tmp)/'out')
             text = (Path(tmp)/'out/selection_coverage.csv').read_bytes().decode()
             self.assertEqual(text, 'model,fold,arm,minimum_class_coverage,test_families,minimum_complete\r\n'
-                                   'gpt,0,state_balanced,0.75,298,True\r\ngpt,0,random,0.5,298,False\r\n')
+                                   'gpt,0,random,0.5,298,False\r\ngpt,0,state_balanced,0.75,298,True\r\n')  # stored keys are sorted
             publish(root/'glm/SELECTION.json', {'campaign_sha256': 'someone else', 'folds': []})
             with self.assertRaises(ValueError):
                 export(root, Path(tmp)/'again')
