@@ -1,6 +1,6 @@
 # scripts/routing
 
-The CPU analyses of native routing, one launcher each. They read finished captures, labels and receipts and submit one or more CPU jobs (`scripts/slurm/cpu.sh`). None of them uses a GPU. An `OUT_DIR` must be a folder that does not exist yet.
+The analyses of native routing, one launcher each. They read finished captures, labels and receipts and submit one or more CPU jobs (`scripts/slurm/cpu.sh`). Only `transition_pairs.sh` also submits GPU jobs, for the judge. An `OUT_DIR` must be a folder that does not exist yet.
 
 | Script | What it does |
 | --- | --- |
@@ -9,6 +9,8 @@ The CPU analyses of native routing, one launcher each. They read finished captur
 | `next_state.sh` | Next-state prediction for all eight models: one 3-hour job per model, then a job that joins them. |
 | `selection.sh OUT_DIR` | The held-out coverage table of the expert-selection figure (`selection_coverage.csv`). |
 | `dynamics.sh OUT_DIR` | State occupancy, dwell and transitions, and expert nominations, of the seven models, one job per model (a few minutes each). |
+| `transition_pairs.sh [SOURCE_CLASSES [SHARDS]]` | Next-sentence labels for the state-transition figure on all eight models: rebuilds Qwen3.6's sentence table, then per model a plan, SHARDS judge jobs (`pairs_judge.sbatch`, 2 GPUs, 4 hours each, about 120,000 contexts for Read and Verify) and a summary, and one job that joins the eight panels. `DRY_RUN=1` prints the sbatch lines. |
+| `pairs_judge.sbatch MODEL I/N [SOURCE_CLASSES]` | One judge shard of `transition_pairs.sh`; a rerun resumes. |
 | `efficiency_link.sh` | The efficiency link for all eight models: its table, the published receipt and the link test on the pulsed-steering cells (1 hour). |
 | `lexical.sh OUT_DIR` | Fits the lexical classifier that labels steered continuations. About 2 hours on 4 CPUs. |
 | `lfm.sh OUT_DIR` | The LFM2.5 analyses: expert selection and nominations first (`derive`), then the readout (about 1.5 hours) and the dynamics, both after `derive` succeeds. The readout writes into the new `OUT_DIR` and checks its inputs against the published receipt, which it never rewrites. |
