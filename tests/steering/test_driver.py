@@ -6,7 +6,7 @@ from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
 from steering import pulse as driver
-from store import WORK, verified
+from store import FAST, WORK, verified
 from steering.stream import Clock
 
 
@@ -276,3 +276,31 @@ class ReviewFixes(unittest.TestCase):
             self.assertEqual(driver.recover_outputs(store, [row]), 1)
             self.assertEqual(store.state(uid)['status'], 'unknown')
             self.assertTrue(store.state(uid)['recovered_after_crash'])
+
+
+class NativeIdCaptureTests(unittest.TestCase):
+    """A native-id row keeps its uint8 ids and float16 weights in AUDIT.npz and only their hashes in the receipt."""
+    def test_the_arrays_are_saved_beside_the_receipt_and_checked_against_it(self):
+        import hashlib
+        import numpy as np
+        ids = np.arange(12, dtype=np.uint8).reshape(3, 4)
+        weights = np.full((3, 4), .25, dtype=np.float16)
+        record = {'tokens': 3, 'native_ids_sha256': hashlib.sha256(ids.tobytes()).hexdigest(),
+                  'native_weights_sha256': hashlib.sha256(weights.tobytes()).hexdigest()}
+        capture = {'capture': {'0': record}, 'stats': {}, 'sha256': 'x', 'native_id_arrays': {'0': (ids, weights)}}
+        with tempfile.TemporaryDirectory(dir=WORK/'tools/tmp') as tmp, \
+                patch('steering.pulse.work_remaining_bytes', return_value=100*2**30):
+            saved = driver.compress_audit_capture(Path(tmp)/'unit', capture)
+            self.assertNotIn('native_id_arrays', saved)
+            self.assertEqual((saved['capture'], saved['full_capture']['format']), ({'0': record}, 'native-ids-uint8-float16'))
+            with np.load(Path(tmp)/'unit/AUDIT.npz') as audit:
+                self.assertTrue(np.array_equal(audit['layer_0_native_ids'], ids))
+                self.assertTrue(np.array_equal(audit['layer_0_native_weights'], weights))
+            capture['native_id_arrays'] = {'0': (ids+1, weights)}
+            with self.assertRaisesRegex(ValueError, 'differs from its receipt'):
+                driver.compress_audit_capture(Path(tmp)/'other', capture)
+
+    def test_free_space_is_the_work_quota_under_work_and_the_filesystem_elsewhere(self):
+        with patch('steering.pulse.work_remaining_bytes', return_value=7):
+            self.assertEqual(driver.free_bytes(WORK/'tools/tmp/not-yet-made'), 7)
+        self.assertGreater(driver.free_bytes(FAST/'not-yet-made'), 0)
