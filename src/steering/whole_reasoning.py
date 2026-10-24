@@ -3,22 +3,25 @@
 A release is a folder report/NAME holding RELEASE.json (sealed by steering.release) and everything its
 stages write. The frozen manifest of each model owns the family order, the original prompts, the doses
 and the seeds; no row is ever redrawn. Run each stage as a Slurm job from the release's code snapshot
-(scripts/steering/launch.sh submits them):
+(scripts/steering/submit_release_jobs.sh submits them):
 
-  python -m steering.whole plan --release R                   what to run: the snapshot and the shards per model
-  python -m steering.whole budget --release R --cpu-hours C --gpu-hours G   refuse jobs that exceed the release's ceilings
-  python -m steering.whole validate --release R               CPU: the unit tests of the snapshot, sealed in CPU_VALIDATION.json
-  python -m steering.whole prepare --release R                CPU: publish the manifests of every model
-  python -m steering.whole canary --release R --model M       GPU: the fluency canary of a base release
-  python -m steering.whole run --release R --model M --shard I/N    GPU: the rows of one shard
-  python -m steering.whole extract --release R --model M      CPU: replay and score the finished rows
-  python -m steering.whole combine --release R                CPU: the bounded analysis of SOURCES.json
+  python -m steering.whole_reasoning plan --release R        what to run, as JSON: the snapshot, the job prefix, the final command, the shards per model
+  python -m steering.whole_reasoning budget --release R --cpu-hours C --gpu-hours G   refuse jobs that exceed the release's ceilings
+  python -m steering.whole_reasoning validate --release R    CPU: the unit tests of the snapshot, sealed in CPU_VALIDATION.json
+  python -m steering.whole_reasoning prepare --release R     CPU: publish the manifests of every model
+  python -m steering.whole_reasoning canary --release R --model M    GPU: the fluency canary of a base release
+  python -m steering.whole_reasoning run --release R --model M --shard I/N    GPU: the rows of one shard
+  python -m steering.whole_reasoning extract --release R --model M    CPU: replay and score the finished rows
+  python -m steering.whole_reasoning combine --release R     CPU: the bounded analysis of SOURCES.json
+
+M is a model's Hugging Face id or its short key.
 """
 from __future__ import annotations
 
 import argparse
 from collections import Counter
 from functools import lru_cache
+import json
 import math
 import os
 from pathlib import Path
@@ -30,12 +33,15 @@ import time
 import numpy as np
 
 from generation.client import slurm_deadline
-from store import CLASSES, REPO, check_files, digest, file_sha, load, locked, publish, require, verified
-from steering import pulse
+from models.roster import HF_IDS
+from store import CLASSES, MODELS as STUDY_MODELS, REPO, check_files, digest, file_sha, load, locked, publish, require, verified
+from steering import pulsed_steering
 from steering.selection import select_pairs
 
-# The models in the order the tables list them.
+# The models in the order the tables list them. It is not the order of store.MODELS, and the combined analysis
+# keeps it in its receipt, so it stays; the check below keeps it the same eight models.
 MODELS = ('gpt', 'qwen36', 'qwen35', 'qwen330b', 'gemma', 'glm', 'nemotron', 'lfm25')
+require(sorted(MODELS) == sorted(STUDY_MODELS), 'whole_reasoning.MODELS and store.MODELS name different models')
 # Steering strength levels as fractions of SteerMoE's published counts ('main' = full).
 DOSES = {'main': 1., 'half': .5, 'quarter': .25}
 # Largest generation of a canary row; GLM decodes about four times slower than the others.
@@ -70,7 +76,7 @@ def link_receipt(root: Path) -> Path:
     for kind in ('RELINK.json', 'CONTINUATION.json'):
         if (root/kind).exists():
             return Path(verified(root/kind)['link'])
-    return pulse.DRIVER/'EFFICIENCY_LINK_PREREG.json'
+    return pulsed_steering.DRIVER/'EFFICIENCY_LINK_PREREG.json'
 
 
 # SteerMoE's published (activated, deactivated) counts: GPT-OSS-20B "faithful"/"unsafe", and
@@ -303,7 +309,7 @@ def build_manifest(model: str, dose: str, nominations: dict, b: dict, natives: l
 def prepare(root: Path) -> dict:
     """Publish the manifests of every model of the release (CPU job), then check the rebuilt nominations."""
     release = verify_release(root)
-    b = pulse.binding()
+    b = pulsed_steering.binding()
     results = {}
     for model in release['models']:
         try:
@@ -344,7 +350,7 @@ def prepare_model(root: Path, b: dict, model: str) -> dict:
     link = link_receipt(root)
     nomination_path = folder/'WHOLE_NOMINATIONS.json'
     nominations = verified(nomination_path) if nomination_path.exists() else derive_whole(b, model, folder)
-    natives = [r for r in verified(pulse.DRIVER/model/'ASSIGNMENTS.json')['records'] if r['arm'] == 'native']
+    natives = [r for r in verified(pulsed_steering.DRIVER/model/'ASSIGNMENTS.json')['records'] if r['arm'] == 'native']
     # Native rosters: 129 families for most models, 128 for Nemotron and Qwen3-30B, 112 for LFM2.5.
     require(natives and len({r['family'] for r in natives}) == len(natives), 'whole native family roster differs')
     inputs = {}
@@ -376,7 +382,7 @@ def topup_manifest(root: Path, model: str, spec: dict) -> dict:
 
     A top-up release reruns nothing: rows with any saved state in the parent store (complete, output or
     partial) stay with the parent, where an unfinished row remains an unknown outcome. The rows keep their
-    parent UIDs, seeds and actions, so whole_effects joins them to the parent release by UID.
+    parent UIDs, seeds and actions, so whole_reasoning_effects joins them to the parent release by UID.
 
     Args:
         root: The folder of this release.
@@ -387,11 +393,11 @@ def topup_manifest(root: Path, model: str, spec: dict) -> dict:
     """
     dose, parent = sweep_doses(root)[model], Path(spec['parent'])
     base = manifest(parent, model, dose)
-    stores = [pulse.Store(parent/'stores'/model/dose/'units')]
+    stores = [pulsed_steering.Store(parent/'stores'/model/dose/'units')]
     for sibling in map(Path, spec.get('siblings', [])):
         require(manifest(sibling, model, dose)['parent_manifest_sha256'] == base['sha256'],
                 'sibling top-up has another parent')
-        stores.append(pulse.Store(sibling/'stores'/model/dose/'units'))
+        stores.append(pulsed_steering.Store(sibling/'stores'/model/dose/'units'))
     families = sorted({row['family'] for row in base['records']})
     failed = set(families) if spec['shards'] == 'all' else {
         family for i, family in enumerate(families) for index, count in spec['shards'] if i % count == index}
@@ -425,7 +431,7 @@ def complement_manifest(root: Path, model: str, spec: dict) -> dict:
     base = manifest(parent, model, dose)
     nominations = verified(parent/model/'WHOLE_NOMINATIONS.json')
     require(nominations['sha256'] == base['nominations_sha256'], 'parent nominations differ from its manifest')
-    profile = pulse.binding()['models'][model]
+    profile = pulsed_steering.binding()['models'][model]
     classes = tuple(c for c in CLASSES if c not in directions(model, link_receipt(root))['suppress'])
     cells = [cell_actions(n, profile, model, dose, 'suppress') for n in nominations['records']
              if n['class'] in classes]
@@ -460,7 +466,7 @@ def resume_manifest(root: Path, model: str, spec: dict) -> dict:
 
     A row interrupted at a job walltime or crash holds only a PARTIAL.json, so its outcome is
     unknown. A resume release continues it from a copy of that file, re-prefilling prompt + saved
-    tokens through the same hooks: UIDs, seeds and actions stay the parent's and nothing is redrawn. The source stores are never written (see seed_resume); whole_effects
+    tokens through the same hooks: UIDs, seeds and actions stay the parent's and nothing is redrawn. The source stores are never written (see seed_resume); whole_reasoning_effects
     joins the outcomes by UID.
 
     Args:
@@ -478,7 +484,7 @@ def resume_manifest(root: Path, model: str, spec: dict) -> dict:
             topup = manifest(source, model, dose)
             require(topup['parent_manifest_sha256'] == base['sha256'],
                     'resume source belongs to another manifest')
-    stores = {str(source): pulse.Store(source/'stores'/model/dose/'units') for source in roots}
+    stores = {str(source): pulsed_steering.Store(source/'stores'/model/dose/'units') for source in roots}
     rows, sources = [], {}
     for row in base['records']:
         states = {where: store.state(row['uid']) for where, store in stores.items()}
@@ -503,14 +509,14 @@ def resume_manifest(root: Path, model: str, spec: dict) -> dict:
     return select_manifest(root, model, value, resume=True)
 
 
-def saved_status(store: pulse.Store, uid: str) -> str | None:
+def saved_status(store: pulsed_steering.Store, uid: str) -> str | None:
     """A row's saved state read from file presence, in Store.state order, without opening any file."""
     folder = store.folder(uid)
     return next((status for name, status in (('RESULT.json', 'complete'), ('OUTPUT.json', 'output'),
                                               ('PARTIAL.json', 'partial')) if (folder/name).exists()), None)
 
 
-def unfinished_rows(base: dict, store: pulse.Store) -> tuple[list[dict], Counter]:
+def unfinished_rows(base: dict, store: pulsed_steering.Store) -> tuple[list[dict], Counter]:
     """Split a manifest's rows by saved state, for a release that continues its parent.
 
     Args:
@@ -531,7 +537,7 @@ def unfinished_rows(base: dict, store: pulse.Store) -> tuple[list[dict], Counter
     return rows, counts
 
 
-def started_families(base: dict, store: pulse.Store) -> set[str]:
+def started_families(base: dict, store: pulsed_steering.Store) -> set[str]:
     """Families of a manifest with any saved state in the store (a shard that started touches its families)."""
     return {row['family'] for row in base['records']
             if row['nomination_status'] == 'nominated' and saved_status(store, row['uid'])}
@@ -544,7 +550,7 @@ def continuation_manifest(root: Path, model: str, spec: dict) -> dict:
     release, and does both jobs in one release. It runs every nominated row of the parent that has no saved
     state and continues every row left PARTIAL, with the parent's UIDs, seeds and actions. The saved tokens
     of a partial are copied into this release's own store (seed_resume); the parent's store is only read.
-    Rows the parent finished, or left as OUTPUT, stay with it; whole_effects joins every outcome to the
+    Rows the parent finished, or left as OUTPUT, stay with it; whole_reasoning_effects joins every outcome to the
     parent's rows by UID.
 
     Args:
@@ -555,7 +561,7 @@ def continuation_manifest(root: Path, model: str, spec: dict) -> dict:
     """
     dose, parent = sweep_doses(root)[model], Path(spec['parent'])
     base = manifest(parent, model, dose)
-    store = pulse.Store(parent/'stores'/model/dose/'units')
+    store = pulsed_steering.Store(parent/'stores'/model/dose/'units')
     rows, counts = unfinished_rows(base, store)
     require(rows, 'continuation has no unfinished rows')
     # Each partial must be this very assignment's, or its saved tokens would continue another draw.
@@ -581,7 +587,7 @@ def manifest(root: Path, model: str, dose: str | None = None) -> dict:
     return verified(manifest_path(model, dose, root))
 
 
-def bound_store(root: Path, model: str, dose: str, canary: bool = False) -> pulse.Store:
+def bound_store(root: Path, model: str, dose: str, canary: bool = False) -> pulsed_steering.Store:
     """Reject any nonempty unbound store before the engine is loaded."""
     value = manifest(root, model, dose)
     release = verified(root/'RELEASE.json')
@@ -597,7 +603,7 @@ def bound_store(root: Path, model: str, dose: str, canary: bool = False) -> puls
         else:
             require(not folder.exists() or not any(folder.iterdir()), 'nonempty unbound whole store')
             publish(folder/'EXECUTION.json', identity)
-    return pulse.Store(folder)
+    return pulsed_steering.Store(folder)
 
 
 def bind_sweep_stores(root: Path) -> None:
@@ -612,7 +618,7 @@ def bind_sweep_stores(root: Path) -> None:
             bound_store(root, model, dose)
 
 
-def check_saved_state(value: dict, rows: list[dict], store: pulse.Store,
+def check_saved_state(value: dict, rows: list[dict], store: pulsed_steering.Store,
                       canary: bool = False) -> None:
     """Refuse a shard that would redraw or overwrite saved work.
 
@@ -641,7 +647,7 @@ def check_saved_state(value: dict, rows: list[dict], store: pulse.Store,
                 f'whole execution is fresh only; preserve partials ({row["uid"]}, {state["status"]})')
 
 
-def seed_resume(root: Path, model: str, value: dict, rows: list[dict], store: pulse.Store,
+def seed_resume(root: Path, model: str, value: dict, rows: list[dict], store: pulsed_steering.Store,
                 shard: tuple) -> dict:
     """Copy each row's source PARTIAL.json into the bound store and publish what was copied.
 
@@ -670,13 +676,13 @@ def seed_resume(root: Path, model: str, value: dict, rows: list[dict], store: pu
     for row in (row for row in rows if row['uid'] in sources):
         uid = row['uid']
         origin = Path(sources[uid])/'stores'/model/value['dose']/'units'
-        path = pulse.Store(origin).folder(uid)/'PARTIAL.json'
+        path = pulsed_steering.Store(origin).folder(uid)/'PARTIAL.json'
         partial = load(path)
         require(partial['uid'] == uid and partial['assignment_sha256'] == digest(row),
                 f'resume source is not this assignment\'s partial: {path}')
         saved = store.state(uid)
         if saved is None:
-            pulse.checkpoint(store.folder(uid)/'PARTIAL.json', partial)
+            pulsed_steering.checkpoint(store.folder(uid)/'PARTIAL.json', partial)
         elif saved['status'] == 'partial':  # a finished row (RESULT or OUTPUT) has no partial left to compare
             keys = ('uid', 'assignment_sha256', 'total_allowance')
             require(all(saved[key] == partial[key] for key in keys) and
@@ -852,31 +858,31 @@ def run(root, model, shard, deadline, *, max_inflight=64, canary=False, dose=Non
             proof = verified(canary_path(root, model, value['dose']))
             require(proof['gate']['passed'] and proof['job'] == selected['canary_job'] and
                     proof['manifest_sha256'] == value['sha256'], 'production canary qualification differs')
-    rows = canary_rows(value, link) if canary else pulse.shard_rows(value['records'], shard)
+    rows = canary_rows(value, link) if canary else pulsed_steering.shard_rows(value['records'], shard)
     store = bound_store(root, model, value['dose'], canary)
     check_saved_state(value, rows, store, canary)
     cutoff = release['cutoff']  # no GPU row starts after this time
     if time.time() >= cutoff:
         # A shard that starts after the science cutoff leaves its rows unknown without loading the model.
-        pulse.log({'event': 'whole-shard-after-cutoff', 'model': model, 'shard': list(shard)})
+        pulsed_steering.log({'event': 'whole-shard-after-cutoff', 'model': model, 'shard': list(shard)})
         return None
     if value.get('design') in RESUMING_DESIGNS and not canary:
         seed_resume(root, model, value, rows, store, shard)
     executable = admission_order([r for r in rows if r['nomination_status'] == 'nominated'], link)
-    b = pulse.binding()
-    llm, _, load_seconds = pulse.hooked_llm(b, model, max_inflight)
+    b = pulsed_steering.binding()
+    llm, _, load_seconds = pulsed_steering.hooked_llm(b, model, max_inflight)
     try:
-        contract = pulse.contract_for(b, model, executable)
+        contract = pulsed_steering.contract_for(b, model, executable)
         reports = llm.collective_rpc('stream_begin', kwargs={'contract': contract})
         require(len(reports) == 2, 'whole requires both tensor-parallel ranks')
         tokenizer = llm.get_tokenizer()
-        engine = pulse.Engine(llm, store, min(deadline, cutoff), hooked=True, max_inflight=max_inflight,
+        engine = pulsed_steering.Engine(llm, store, min(deadline, cutoff), hooked=True, max_inflight=max_inflight,
                                checkpoint_seconds=120, drain_seconds=120)
         # Canary rows share one per-model token cap so the relative gates compare like with like
         # inside the canary walltime; production keeps the full model-card allowance.
-        build = pulse.intervention_builder(b, model, tokenizer, closure(tokenizer, model),
+        build = pulsed_steering.intervention_builder(b, model, tokenizer, closure(tokenizer, model),
                                             limit=CANARY_TOKENS.get(model, 32768) if canary else None)
-        metrics = engine.run(executable, build, pulse.intervention_finisher(store, b, model),
+        metrics = engine.run(executable, build, pulsed_steering.intervention_finisher(store, b, model),
                              stop_execution=lambda: (root/'STOP.json').exists() or (root/model/'STOP.json').exists())
         validation = llm.collective_rpc('stream_validation')
         llm.collective_rpc('stream_end')
@@ -884,7 +890,7 @@ def run(root, model, shard, deadline, *, max_inflight=64, canary=False, dose=Non
         llm.llm_engine.engine_core.shutdown()
     result = {'model': model, 'dose': value['dose'], 'manifest_sha256': value['sha256'],
               'job': os.environ['SLURM_JOB_ID'], 'shard': list(shard), 'load_seconds': load_seconds,
-              'metrics': metrics, 'native_validation': validation[0], **pulse.shard_completion(store, rows)}
+              'metrics': metrics, 'native_validation': validation[0], **pulsed_steering.shard_completion(store, rows)}
     if canary:
         result['gate'] = fluency(store, rows, require_complete=True, censor_unfinished=True)
         publish(canary_path(root, model, value['dose']), result)
@@ -937,32 +943,32 @@ def audit_nominations(root: Path) -> dict:
 
 
 def plan(root: Path) -> None:
-    """Tell the launcher what to submit: the release's code snapshot, the prefix of its Slurm job names, the
-    command that ends the graph (an empty line when the release ends with its extractions, as a capture
-    release does), then 'MODEL SHARDS' for every model with shards to run."""
+    """Tell the launcher what to submit, as JSON: the release's code snapshot (`release_root`), the prefix of its
+    Slurm job names (`job_prefix`), the command that ends the graph (`final`: module and arguments, an empty list
+    when the release ends with its extractions, as a capture release does) and, for every model with shards to
+    run, its short key, Hugging Face id and number of shards (`models`)."""
     release = verified(root/'RELEASE.json')
-    print(release['release_root'])
-    print(release.get('job_prefix', 'whole'))
     if (root/'CAPTURE_NATIVE.json').exists():
-        print('')
+        final = []
     elif (root/'OUTCOME.json').exists() or (root/'OUTCOME_SWEEP.json').exists():
-        print('steering.outcome analyze')
+        final = ['steering.outcome', 'analyze']
     else:
-        print('steering.whole combine')
-    for model in release['models']:
-        if release.get('shards', {}).get(model):
-            print(model, release['shards'][model])
+        final = ['steering.whole_reasoning', 'combine']
+    models = [{'model': model, 'hf_model': HF_IDS[model], 'shards': release['shards'][model]}
+              for model in release['models'] if release.get('shards', {}).get(model)]
+    print(json.dumps({'release_root': release['release_root'], 'job_prefix': release.get('job_prefix', 'whole'),
+                      'final': final, 'models': models}, indent=1))
 
 
 def main(argv=None):
-    parser = argparse.ArgumentParser(prog='steering.whole', description=__doc__.split('\n\n')[0])
+    parser = argparse.ArgumentParser(prog='steering.whole_reasoning', description=__doc__.split('\n\n')[0])
     parser.add_argument('command', choices=('plan', 'budget', 'validate', 'prepare', 'canary', 'run', 'extract', 'combine'))
     parser.add_argument('--release', type=Path, required=True, help='the release folder, report/NAME')
     parser.add_argument('--cpu-hours', type=float, help='budget only: CPU core-hours the jobs may use at most')
     parser.add_argument('--gpu-hours', type=float, help='budget only: GPU-hours the jobs may use at most')
-    parser.add_argument('--model', choices=MODELS)
+    parser.add_argument('--model', type=pulsed_steering.model_key, help='a Hugging Face id or a short key')
     parser.add_argument('--dose', choices=tuple(DOSES), help='canary only; default: the model\'s declared start dose')
-    parser.add_argument('--shard', type=pulse.parse_shard, default=(0, 1))
+    parser.add_argument('--shard', type=pulsed_steering.parse_shard, default=(0, 1))
     args = parser.parse_args(argv)
     root = args.release.resolve()
     if args.command == 'plan':
@@ -975,7 +981,7 @@ def main(argv=None):
         require(validate(root)['passed'], 'the unit tests of this release failed')
     elif args.command == 'prepare':
         validated(root)
-        pulse.log({'event': 'prepare-whole', 'results': prepare(root)})
+        pulsed_steering.log({'event': 'prepare-whole', 'results': prepare(root)})
     elif args.command in ('canary', 'run'):
         require(os.environ.get('SLURM_JOB_GPUS'), 'whole inference requires allocated GPUs')
         deadline = slurm_deadline(120/3600)  # stop admitting 2 minutes before the job ends
@@ -995,12 +1001,12 @@ def main(argv=None):
             raise
     else:
         verify_release(root)
-        from steering import whole_effects
+        from steering import whole_reasoning_effects
         if args.command == 'extract':
-            whole_effects.extract(root, args.model)
+            whole_reasoning_effects.extract(root, args.model)
         else:
             validated(root)
-            whole_effects.combine(root)
+            whole_reasoning_effects.combine(root)
 
 
 if __name__ == '__main__':

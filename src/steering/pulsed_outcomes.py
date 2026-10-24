@@ -10,7 +10,7 @@ import argparse
 import json
 import time
 from store import require
-from steering.pulse import DRIVER, STORES, Store, binding, bulk, design_rows, log
+from steering.pulsed_steering import DRIVER, STORES, Store, binding, bulk, design_rows, log
 
 START, END = '<START OF RESPONSE>', '<END OF RESPONSE>'
 
@@ -151,9 +151,9 @@ def extract(model, shard, design='main'):
 
 def main(argv=None):
     """Extract the saved continuations of one model shard."""
-    from steering.pulse import parse_shard
-    ap = argparse.ArgumentParser(prog='steering.pulse_outcomes')
-    ap.add_argument('--model', required=True)
+    from steering.pulsed_steering import model_key, parse_shard
+    ap = argparse.ArgumentParser(prog='steering.pulsed_outcomes', description=__doc__.split('\n\n')[0])
+    ap.add_argument('--model', required=True, type=model_key, help='a Hugging Face id or a short key')
     ap.add_argument('--shard', default='0/1', type=parse_shard)
     ap.add_argument('--design', choices=sorted(STORES), default='main')
     args = ap.parse_args(argv)

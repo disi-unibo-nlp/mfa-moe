@@ -5,7 +5,7 @@ import unittest
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
-from steering import pulse
+from steering import pulsed_steering as pulse
 from store import FAST, WORK, verified
 from steering.stream import Clock
 
@@ -161,7 +161,7 @@ class EngineTest(unittest.TestCase):
             engine = pulse.Engine(SimpleNamespace(llm_engine=fake, collective_rpc=rpc), store,
                                    time.time()+30, hooked=True, max_inflight=2)
             engine.inflight[uid] = {'progress': {'tokens': [1], 'segments': [{}]}, 'new': 1}
-            with patch('steering.pulse.work_remaining_bytes', return_value=100*2**30):
+            with patch('steering.pulsed_steering.work_remaining_bytes', return_value=100*2**30):
                 with self.assertRaisesRegex(ValueError, 'tensor-parallel captures disagree'):
                     engine.release([uid])
             for rank, expected in enumerate((.5, .50000006)):
@@ -285,7 +285,7 @@ class NativeIdCaptureTests(unittest.TestCase):
                   'native_weights_sha256': hashlib.sha256(weights.tobytes()).hexdigest()}
         capture = {'capture': {'0': record}, 'stats': {}, 'sha256': 'x', 'native_id_arrays': {'0': (ids, weights)}}
         with tempfile.TemporaryDirectory(dir=WORK/'tools/tmp') as tmp, \
-                patch('steering.pulse.work_remaining_bytes', return_value=100*2**30):
+                patch('steering.pulsed_steering.work_remaining_bytes', return_value=100*2**30):
             saved = pulse.compress_audit_capture(Path(tmp)/'unit', capture)
             self.assertNotIn('native_id_arrays', saved)
             self.assertEqual((saved['capture'], saved['full_capture']['format']), ({'0': record}, 'native-ids-uint8-float16'))
@@ -297,7 +297,7 @@ class NativeIdCaptureTests(unittest.TestCase):
                 pulse.compress_audit_capture(Path(tmp)/'other', capture)
 
     def test_free_space_is_the_work_quota_under_work_and_the_filesystem_elsewhere(self):
-        with patch('steering.pulse.work_remaining_bytes', return_value=7):
+        with patch('steering.pulsed_steering.work_remaining_bytes', return_value=7):
             self.assertEqual(pulse.free_bytes(WORK/'tools/tmp/not-yet-made'), 7)
         self.assertGreater(pulse.free_bytes(FAST/'not-yet-made'), 0)
 

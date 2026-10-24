@@ -14,8 +14,8 @@ import argparse
 import json
 from pathlib import Path
 import numpy as np
-from store import BENCHMARKS, CLASSES, MODELS, load, publish, require, verified
-from steering.pulse import DRIVER, STUDY, binding, bulk, log
+from store import BENCHMARKS, CLASSES, load, publish, require, verified
+from steering.pulsed_steering import DRIVER, STUDY, binding, bulk, design_models, log, model_key
 
 PRIMARY = ('activate:first', 'activate:occupancy', 'deactivate:first', 'deactivate:occupancy')
 SEMANTIC_PREFIXES = {
@@ -197,7 +197,7 @@ def analysis_assignments(model: str, design: str) -> list[dict]:
     Returns:
         The assignments as frozen; no new continuation or random draw is created.
     """
-    from steering.pulse import MANIFESTS
+    from steering.pulsed_steering import MANIFESTS
     manifest = verified(DRIVER/model/MANIFESTS[design])
     rows = list(manifest['records'])
     if design == 'main' and manifest.get('unavailable'):
@@ -816,12 +816,13 @@ def efficiency_link(prereg, pairs, boot):
 
 def main(argv=None):
     """Run a fresh analysis of the main or the strong-dose design."""
-    ap = argparse.ArgumentParser(prog='steering.pulse_effects')
-    ap.add_argument('--models', default=','.join(MODELS))
+    ap = argparse.ArgumentParser(prog='steering.pulsed_effects', description=__doc__.split('\n\n')[0])
+    ap.add_argument('--models', help='comma-separated Hugging Face ids or short keys, in the order of the tables '
+                    '(default: every model whose manifest of the design is in the study, in the order of store.MODELS)')
     ap.add_argument('--out', type=Path, required=True)
     ap.add_argument('--design', choices=['main', 'strong'], default='main')
     args = ap.parse_args(argv)
-    models = args.models.split(',')
+    models = [model_key(name) for name in args.models.split(',')] if args.models else design_models(args.design)
     require(models and len(set(models)) == len(models), 'analysis model roster is empty or duplicated')
     value = analyze(models, args.out, args.design)
     log({'event': 'effects', 'primary': value['primary_pooled']})

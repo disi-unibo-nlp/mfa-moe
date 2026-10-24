@@ -35,8 +35,8 @@ The code does not tell you what is running, what is frozen or what was decided. 
 | Labeling | `labeling/sample.sh`, `label.sbatch TRACE_ROOT OUTPUT_DIR`, `optimize_judge.sh` | `labeling/` (spans, samplers, judge client, `gepa/`) |
 | Router capture | `capture/capture.sbatch`, `gate.sh` | `capture/` |
 | Routing analyses | `routing/*.sh` (readout, anticipation, next_state, selection, dynamics, transition_pairs, lfm, efficiency_link, lexical, benchmarks) | `routing/` |
-| Steering | `steering/pulse.sh`, `pulse_analyze.sh`, `whole.sh KIND NAME TESTS`, `launch.sh NAME [JOB...]` | `steering/` (pulse, whole, release, followup, outcome/) |
-| Paper | `paper/export.sh`, `build.sh`, `check.sh` | `paper/` (exporters, build, verifiers; locations in `paper/cl_paths.py`) |
+| Steering | `steering/run_pulsed_steering.sh`, `analyze_pulsed_steering.sh`, `seal_release.sh KIND NAME TESTS`, `submit_release_jobs.sh RELEASE_DIR [JOB...]`, the outcome launchers | `steering/` (pulsed_steering, pulsed_outcomes, pulsed_effects, lfm25_generation, whole_reasoning, whole_reasoning_effects, release, plan_continuation, outcome/) |
+| Paper | `paper/export_paper_tables.sh`, `build_paper_pdf.sh`, `check_writing_rules.sh` | `paper/` (exporters, build, verifiers; locations in `paper/cl_paths.py`) |
 
 The code that came before this layout lives at the git tag `archive/pre-cleanup-20261023`: the old campaigns `research_campaign_*`, `final_routing`, `scripts/experimental_resume`, rescue, and the journaled job graph. Every historical receipt names its own commit, so old results stay traceable.
 
@@ -70,7 +70,7 @@ PYTHONPATH=src PYTHONDONTWRITEBYTECODE=1 $E -m pytest -q -p no:cacheprovider tes
   Always use the model's actually selected experts (`models/router_adapters.py`), so boundary gaps can be negative.
 - **`labeling/spans.py` is the single source of truth** for sentence segmentation, trace digests and offset alignment. Labels and views key off `trace_digest` plus sentence spans, so a change there invalidates existing annotations.
 - **Releases are source-bound.**
-  - `python -m steering.release` (through `scripts/steering/whole.sh`) seals a release: it snapshots the committed tree into `mfa-moe/releases/<commit>` and writes `report/NAME/RELEASE.json`.
+  - `python -m steering.release` (through `scripts/steering/seal_release.sh`; `submit_release_jobs.sh` then submits its jobs) seals a release: it snapshots the committed tree into `mfa-moe/releases/<commit>` and writes `report/NAME/RELEASE.json`.
   - Jobs run from that snapshot, never from the working tree.
   - A correction is a new revision folder that names its predecessor.
   - Never edit or overwrite an older revision, a seal or a historical receipt. Failed jobs stay recorded and charged.
@@ -90,7 +90,7 @@ PYTHONPATH=src PYTHONDONTWRITEBYTECODE=1 $E -m pytest -q -p no:cacheprovider tes
 - **`paper/` is not tracked by this repository** (gitignored since 2026-10-24); it lives on disk next to the code.
 - **`paper/6a510c6db0d9b08aa438c142/`** holds the Computational Linguistics manuscript (`main.tex`) and nothing else: sections, tables, figure PDFs, class, bibliography. It is also a separate Overleaf checkout. Push nothing to Overleaf or any remote without approval, and never put code, data, notes or build output in it.
 - **`paper/manuscript-support/`** holds everything around the manuscript: figure sources and data, notes and author rules, legacy sources, submission material, and `build/` (ignored).
-- **`scripts/paper/export.sh`** writes the tables and figure data from sealed receipts. Never hand-edit its outputs.
-- **`scripts/paper/build.sh`** builds the figures and the PDF with the verified offline tectonic (bounded passes). `pw build` falls back to the system latexmk and renders a stale PDF.
-- **`scripts/paper/check.sh`** runs the writing rules.
+- **`scripts/paper/export_paper_tables.sh STUDY_DIR`** writes the tables and figure data from sealed receipts. Never hand-edit its outputs.
+- **`scripts/paper/build_paper_pdf.sh`** builds the figures and the PDF with the verified offline tectonic (bounded passes). `pw build` falls back to the system latexmk and renders a stale PDF.
+- **`scripts/paper/check_writing_rules.sh`** runs the writing rules.
 - **`report/main.tex`** is the older technical report.

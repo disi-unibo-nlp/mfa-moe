@@ -62,7 +62,7 @@ from routing.labelled_sentence_table import (PAIR_SOURCES, attempt_layout, campa
                                              trace_key, write_table)
 from routing.state_dynamics import trajectories
 from stats import bootstrap_panel
-from steering.pulse import ADMISSION_MARGIN_HOURS, annotate_rows, log, parse_shard
+from steering.pulsed_steering import ADMISSION_MARGIN_HOURS, annotate_rows, log, parse_shard
 from store import CLASSES, MODELS, Units, binding, digest, file_sha, load, publish, require, verified
 
 NEXT_COLUMN = ':next:'

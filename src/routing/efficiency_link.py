@@ -201,7 +201,7 @@ def publish_link(estimator, directory: Path) -> dict:
 
 def driver_test() -> dict:
     """The driver's frozen link test on analysis-final pairs, with the V2 cells (56 instead of 49)."""
-    from steering.pulse_effects import Bootstrap, efficiency_link
+    from steering.pulsed_effects import Bootstrap, efficiency_link
     require(not driver_test_path().exists(), f'{driver_test_path()} exists')
     final = store.DRIVER/'analysis-final'
     pairs = pd.read_parquet(final/'pairs.parquet')

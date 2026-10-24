@@ -1,6 +1,6 @@
 """LFM2.5 router capture: replay the sampled discovery traces through the hooked engine, one .npz per trace.
 
-Started by `python -m steering.pulse lfm-replay` (a GPU job). `rows` are the sampled traces (their saved source line and
+Started by `python -m steering.lfm25_generation replay` (a GPU job). `rows` are the sampled traces (their saved source line and
 attempt id); each capture goes to `<bulk_root>/lfm25/replay/<attempt_id>.npz` and the receipts are returned.
 """
 from pathlib import Path

@@ -1,5 +1,5 @@
 #!/bin/bash
-# Check the manuscript against the paper rules: scripts/paper/check.sh
+# Check the manuscript against the paper rules: scripts/paper/check_writing_rules.sh
 # pw reads paper-rules.md beside main.tex, but the manuscript folder holds only sources, so the manuscript and the
 # rules are symlinked into a temporary folder and checked there.
 set -euo pipefail

@@ -8,7 +8,7 @@ Half B confirms that cell and the class-blind set at its own best delta by the s
 
     python -m steering.outcome pick --effects <half-A>/analysis/EFFECTS_OUTCOME.json --model gpt
 
-The command writes PICK.json next to the half-A receipt; scripts/steering/outcome_pick.sh then seals
+The command writes PICK.json next to the half-A receipt; scripts/steering/pick_and_launch_half_b.sh then seals
 and launches half B with the cells it lists.
 """
 from __future__ import annotations

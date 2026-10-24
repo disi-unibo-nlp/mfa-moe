@@ -15,7 +15,7 @@ import numpy as np
 import pandas as pd
 import torch
 
-from steering import pulse, whole, whole_effects
+from steering import pulsed_steering as pulse, whole_reasoning as whole, whole_reasoning_effects as whole_effects
 from store import WORK, digest, file_sha, load, publish
 from steering.stream import Clock, StreamCapture
 

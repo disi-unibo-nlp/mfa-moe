@@ -32,7 +32,7 @@ Output per trace: `<id>.pt.gz` (selected expert ids, fp16 weights, selection mar
 | `reduce.py` | One raw capture to a packet and a tensor file. |
 | `features.py`, `views.py`, [`dynamics/`](dynamics/README.md) | The reductions (entropy, margin, overlap, geometry; whole, class and position views; trailing-window routing dynamics). |
 | `native_selection.py`, `sentence_schema.py`, `gpt_attention.py`, `hf_chunked_capture.py` | Selector scores and margins; the sentence splitter version of each annotation; bounded gpt-oss attention; chunked gpt-oss replay with a KV cache. |
-| `lfm_replay.py` | LFM2.5 replay, started by `steering.pulse lfm-replay`. |
+| `lfm_replay.py` | LFM2.5 replay, started by `steering.lfm25_generation replay`. |
 
 ## Views
 

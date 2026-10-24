@@ -15,7 +15,7 @@ sbatch -J my-analysis scripts/slurm/run_module_cpu.sbatch routing.expert_selecti
 scripts/slurm/billing_hours_used.sh              # jobs named fr-*, the pulsed-steering jobs
 scripts/slurm/billing_hours_used.sh whole-       # jobs named whole-*, the whole-reasoning releases
 scripts/slurm/gpu_hours_left.sh                  # what is left of the whole quota, in billing hours and GPU hours
-sbatch -t 12:00:00 -J fr-gpt-0 scripts/slurm/run_module_gpu.sbatch steering.pulse run --model gpt --shard 0/2
+sbatch -t 12:00:00 -J fr-gpt-0 scripts/slurm/run_module_gpu.sbatch steering.pulsed_steering run --model openai/gpt-oss-20b --shard 0/2
 ```
 
 The two job scripts take the module name and its arguments; override resources with `sbatch` options before the script path (`-t`, `-c`, `--mem`, `--export=ALL,THREADS=4`). One BLAS thread is used unless `THREADS` is set, because fork pools run far slower with more.

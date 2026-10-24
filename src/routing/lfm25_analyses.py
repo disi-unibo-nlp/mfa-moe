@@ -12,10 +12,9 @@
                                         class occupancy, dwell and next-class panel (needs derive)
 
 STUDY_DIR is the study folder (default: STUDY_DATA_ROOT, else report/final-routing-20261015-r1). `derive` also writes
-the main-design assignments through `steering.pulse.plan`, which reads the study from STUDY_DATA_ROOT, so set that to
-STUDY_DIR as well when it is not the default.
+the main-design assignments of LFM2.5 into STUDY_DIR through `steering.pulsed_steering.plan`.
 `scripts/routing/run_lfm25_analyses.sh STUDY_DIR OUT_DIR` runs derive, then readout (into OUT_DIR) and dynamics. The
-replay itself is the GPU stage `python -m steering.pulse lfm-replay`.
+replay itself is the GPU stage `python -m steering.lfm25_generation replay`.
 """
 from __future__ import annotations
 
@@ -158,11 +157,11 @@ def main(argv=None):
         result = materialize(study)
     elif stage == 'derive':
         from steering.nominations import derive_model
-        from steering.pulse import plan
+        from steering.pulsed_steering import plan
         if not (store.STUDY/'lfm25/DISCOVERY_INPUTS.json').exists():
             discover(study)
         derive_model(study, 'lfm25')
-        result = {'plan': plan(['lfm25'])}
+        result = {'plan': plan(['lfm25'], study=store.STUDY)}
     elif stage == 'readout':
         from routing.lfm_readout import lfm
         value = lfm(study, args.out)

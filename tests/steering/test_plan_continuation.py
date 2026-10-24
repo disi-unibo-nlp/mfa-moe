@@ -10,8 +10,8 @@ import time
 import unittest
 from unittest.mock import patch
 
-from steering import followup, release, whole
-from steering import pulse
+from steering import plan_continuation as continuation, release, whole_reasoning as whole
+from steering import pulsed_steering as pulse
 from store import MODELS, WORK, digest, file_sha, load, publish
 
 TMP = WORK/'tools/tmp'
@@ -49,19 +49,19 @@ class SyntheticComplement(unittest.TestCase):
         # Shard i takes family f<i>: shard 0 finished, shard 1 failed after starting f1 (row 2), shards 2 and 3
         # (f2, f3) ended without touching a row.
         (self.parent/'JOBS.txt').write_text(
-            ''.join(f'whole-run-gemma {i} sbatch -J whole-run-gemma steering.whole run --release R --model gemma '
+            ''.join(f'whole-run-gemma {i} sbatch -J whole-run-gemma steering.whole_reasoning run --release R --model gemma '
                     f'--shard {i}/4\n' for i in range(4))
-            + 'whole-tests 90 sbatch -J whole-tests steering.whole validate --release R\n'
-            + 'whole-extract-gemma 7 sbatch -J whole-extract-gemma steering.whole extract --release R --model gemma\n')
+            + 'whole-tests 90 sbatch -J whole-tests steering.whole_reasoning validate --release R\n'
+            + 'whole-extract-gemma 7 sbatch -J whole-extract-gemma steering.whole_reasoning extract --release R --model gemma\n')
         self.states = dict(zip('0123', ('COMPLETED', 'FAILED', 'FAILED', 'CANCELLED')))
-        patcher = patch.object(followup, 'job_states', side_effect=lambda ids: {i: self.states[i] for i in ids})
+        patcher = patch.object(continuation, 'job_states', side_effect=lambda ids: {i: self.states[i] for i in ids})
         patcher.start()
         self.addCleanup(patcher.stop)
 
 
 class FollowupPlanTests(SyntheticComplement):
     def test_rows_by_state_and_shards_follow_the_parent_capacity(self):
-        plan = followup.plan_followup(self.parent)
+        plan = continuation.plan_continuation(self.parent)
         value = plan['models']['gemma']
         self.assertEqual({k: value[k] for k in ('never_started', 'partial', 'complete', 'output', 'unfinished')},
                          {'never_started': 5, 'partial': 1, 'complete': 1, 'output': 1, 'unfinished': 6})
@@ -71,29 +71,29 @@ class FollowupPlanTests(SyntheticComplement):
         self.assertEqual(value['parent_shards'], {'jobs': 4, 'failed': 3, 'failed_before_start': 2,
                                                    'states': {'COMPLETED': 1, 'FAILED': 2, 'CANCELLED': 1}})
         self.assertEqual((plan['live_parent_jobs'], plan['parent_extraction_jobs']), ([], ['7']))
-        table = followup.format_plan(plan)
+        table = continuation.format_plan(plan)
         self.assertIn('gemma', table)
         self.assertIn('3 (  2) of   4', table)
         self.assertIn('parent extraction jobs', table)
 
     def test_jobs_that_are_not_terminal_are_live(self):
         self.states = dict(zip('0123', ('RUNNING', 'PENDING', 'UNKNOWN', 'TIMEOUT')))
-        self.assertEqual(followup.plan_followup(self.parent)['live_parent_jobs'], ['0', '1', '2'])
+        self.assertEqual(continuation.plan_continuation(self.parent)['live_parent_jobs'], ['0', '1', '2'])
 
     def test_the_gpu_limit_scales_shards_down_and_names_the_rows_left_over(self):
-        plan = followup.plan_followup(self.parent, max_gpu_hours=18.)
+        plan = continuation.plan_continuation(self.parent, max_gpu_hours=18.)
         self.assertEqual((plan['shards'], plan['gpu_ceiling'], plan['rows_beyond_shard_capacity']),
                          ({'gemma': 1}, 18., 4))
         with self.assertRaisesRegex(ValueError, 'exceed'):
-            followup.plan_followup(self.parent, max_gpu_hours=18., shards={'gemma': 2})
+            continuation.plan_continuation(self.parent, max_gpu_hours=18., shards={'gemma': 2})
         with self.assertRaisesRegex(ValueError, 'exactly the models'):
-            followup.plan_followup(self.parent, shards={'glm': 2})
+            continuation.plan_continuation(self.parent, shards={'glm': 2})
 
     def test_only_a_complement_with_unfinished_rows_has_a_follow_up(self):
         publish(self.reports/'base/RELEASE.json', {k: v for k, v in self.release.items()
                                                    if k not in ('sha256', 'complement_sha256')})
         with self.assertRaisesRegex(ValueError, 'not a complement release'):
-            followup.plan_followup(self.reports/'base')
+            continuation.plan_continuation(self.reports/'base')
         store = pulse.Store(self.parent/'stores/gemma/main/units')
         for row in self.rows:
             folder = store.folder(row['uid'])
@@ -101,20 +101,20 @@ class FollowupPlanTests(SyntheticComplement):
                 (folder/name).unlink(missing_ok=True)
             publish(folder/'RESULT.json', {'status': 'complete'})
         with self.assertRaisesRegex(ValueError, 'no unfinished rows'):
-            followup.plan_followup(self.parent)
+            continuation.plan_continuation(self.parent)
 
     def test_fit_shards_keeps_one_per_model_and_never_exceeds_the_limit(self):
         needed = {'a': 27, 'b': 12, 'c': 3, 'd': 1}
-        self.assertEqual(followup.fit_shards(needed, 43), needed)
+        self.assertEqual(continuation.fit_shards(needed, 43), needed)
         for limit in (4, 5, 12, 30, 42):
-            fitted = followup.fit_shards(needed, limit)
+            fitted = continuation.fit_shards(needed, limit)
             self.assertEqual(sum(fitted.values()), limit)
             self.assertTrue(all(1 <= fitted[m] <= needed[m] for m in needed), fitted)
         with self.assertRaisesRegex(ValueError, 'allows 3 shards for 4 models'):
-            followup.fit_shards(needed, 3)
+            continuation.fit_shards(needed, 3)
 
     def test_shard_counts_are_parsed_from_model_colon_count(self):
-        self.assertEqual(followup.parse_shards('gemma:3,glm:12'), {'gemma': 3, 'glm': 12})
+        self.assertEqual(continuation.parse_shards('gemma:3,glm:12'), {'gemma': 3, 'glm': 12})
 
 
 class SubmittedJobsTests(unittest.TestCase):
@@ -124,22 +124,31 @@ class SubmittedJobsTests(unittest.TestCase):
             text.mkdir()
             record.mkdir()
             (text/'JOBS.txt').write_text(
-                'whole-tests 1 sbatch -J whole-tests steering.whole validate --release R\n'
-                'whole-run-glm 2 sbatch -J whole-run-glm run_module_gpu.sbatch steering.whole run --release R --model glm --shard 3/27\n'
-                'whole-extract-glm 3 sbatch -J whole-extract-glm run_module_cpu.sbatch steering.whole extract --release R --model glm\n')
+                'whole-tests 1 sbatch -J whole-tests steering.whole_reasoning validate --release R\n'
+                'whole-run-glm 2 sbatch -J whole-run-glm run_module_gpu.sbatch steering.whole_reasoning run --release R --model glm --shard 3/27\n'
+                'whole-extract-glm 3 sbatch -J whole-extract-glm run_module_cpu.sbatch steering.whole_reasoning extract --release R --model glm\n')
             publish(record/'JOBS.json', {'production': {'glm': [{'id': '2', 'model': 'glm', 'shard': [3, 27]}]},
                                       'extraction': {'glm': {'id': '3'}}})
             expected = {'run': [{'id': '2', 'model': 'glm', 'shard': [3, 27]}],
                         'extract': [{'id': '3', 'model': 'glm', 'shard': None}]}
-            self.assertEqual(followup.submitted_jobs(text), expected)
-            self.assertEqual(followup.submitted_jobs(record), expected)
+            self.assertEqual(continuation.submitted_jobs(text), expected)
+            self.assertEqual(continuation.submitted_jobs(record), expected)
+
+    def test_releases_launched_before_the_module_renames_are_read_too(self):
+        with tempfile.TemporaryDirectory(dir=TMP) as temporary:
+            (Path(temporary)/'JOBS.txt').write_text(  # the module was steering.whole then
+                'whole-run-glm 2 sbatch -J whole-run-glm run_module_gpu.sbatch steering.whole run --release R --model glm --shard 3/27\n'
+                'whole-extract-glm 3 sbatch -J whole-extract-glm run_module_cpu.sbatch steering.whole extract --release R --model glm\n')
+            self.assertEqual(continuation.submitted_jobs(Path(temporary)),
+                             {'run': [{'id': '2', 'model': 'glm', 'shard': [3, 27]}],
+                              'extract': [{'id': '3', 'model': 'glm', 'shard': None}]})
 
     def test_a_job_slurm_no_longer_knows_is_unknown_and_a_cancelled_one_keeps_its_first_word(self):
         answer = SimpleNamespace(stdout='5|COMPLETED\n6|CANCELLED by 133943\n')
-        with patch.object(followup.subprocess, 'run', return_value=answer):
-            self.assertEqual(followup.job_states(['5', '6', '7']),
+        with patch.object(continuation.subprocess, 'run', return_value=answer):
+            self.assertEqual(continuation.job_states(['5', '6', '7']),
                              {'5': 'COMPLETED', '6': 'CANCELLED', '7': 'UNKNOWN'})
-        self.assertEqual(followup.job_states([]), {})
+        self.assertEqual(continuation.job_states([]), {})
 
 
 class ContinuationSealTests(SyntheticComplement):

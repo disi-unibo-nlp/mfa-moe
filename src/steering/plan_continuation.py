@@ -6,7 +6,7 @@ PARTIAL. This module reads the complement's manifests, stores and shard jobs (re
 submitted) and sizes the follow-up under a GPU-hour limit. A shard takes whole question families, so a model
 never needs more shards than it has unfinished families.
 
-    python -m steering.followup report/PARENT [--max-gpu-hours H] [--shards model:N,...]
+    python -m steering.plan_continuation report/PARENT [--max-gpu-hours H] [--shards model:N,...]
 
 It prints, per model, the parent's rows by saved state, the parent's shard jobs by outcome (and how many ended
 before touching a row), and the shards needed and chosen. `steering.release continuation` uses the same plan.
@@ -20,8 +20,9 @@ from pathlib import Path
 import re
 import subprocess
 
-from steering import pulse
-from steering.whole import manifest, started_families, unfinished_rows
+from models.roster import resolve
+from steering import pulsed_steering
+from steering.whole_reasoning import manifest, started_families, unfinished_rows
 from store import load, require, verified
 
 SHARD_GPU_HOURS = 8.  # one 2-GPU shard for its 4-hour walltime
@@ -56,14 +57,14 @@ def fit_shards(needed: dict[str, int], limit: int) -> dict[str, int]:
 def submitted_jobs(root: Path) -> dict[str, list[dict]]:
     """The jobs a release submitted, as {'run': [...], 'extract': [...]} with {id, model, shard} for each.
 
-    Reads JOBS.txt (written by scripts/steering/launch.sh) or, in a release that holds JOBS.json instead,
-    that file.
+    Reads JOBS.txt (written by scripts/steering/submit_release_jobs.sh; releases sealed before the module
+    renames name steering.whole there) or, in a release that holds JOBS.json instead, that file.
     """
     jobs = {'run': [], 'extract': []}
     if (root/'JOBS.txt').exists():
         for line in (root/'JOBS.txt').read_text().splitlines():
             _, job, command = line.split(' ', 2)
-            stage = re.search(r'steering\.whole (run|extract) ', command)
+            stage = re.search(r'steering\.whole(?:_reasoning)? (run|extract) ', command)
             if stage:
                 shard = re.search(r'--shard (\d+)/(\d+)', command)
                 jobs[stage.group(1)].append({'id': job, 'model': re.search(r'--model (\w+)', command).group(1),
@@ -110,7 +111,7 @@ def shard_outcomes(jobs: list[dict], families: list[str], started: set[str]) -> 
             'failed_before_start': len(before_start)}
 
 
-def plan_followup(root: Path, max_gpu_hours: float = APPROVED_GPU_HOURS, shards: dict | None = None) -> dict:
+def plan_continuation(root: Path, max_gpu_hours: float = APPROVED_GPU_HOURS, shards: dict | None = None) -> dict:
     """Count the unfinished rows of a complement release and size the follow-up (read-only).
 
     Args:
@@ -131,7 +132,7 @@ def plan_followup(root: Path, max_gpu_hours: float = APPROVED_GPU_HOURS, shards:
     for model in release['models']:
         dose = release['sweep'][model]
         base = manifest(root, model, dose)
-        store = pulse.Store(root/'stores'/model/dose/'units')
+        store = pulsed_steering.Store(root/'stores'/model/dose/'units')
         rows, counts = unfinished_rows(base, store)
         if not rows:
             continue
@@ -172,23 +173,23 @@ def format_plan(plan: dict) -> str:
                  f'{plan["gpu_ceiling"]:.0f} h of {plan["max_gpu_hours"]:.0f} h allowed; '
                  f'{plan["rows_beyond_shard_capacity"]} rows beyond shard capacity (stay unknown or partial)')
     lines.append(f'parent shard jobs not terminal: {len(plan["live_parent_jobs"])}')
-    lines.append('parent extraction jobs (AFTER="..." when sealing, so the combine waits for them): '
+    lines.append('parent extraction jobs (pass them to submit_release_jobs.sh, so the combine waits for them): '
                  + ' '.join(plan['parent_extraction_jobs']))
     return '\n'.join(lines)
 
 
 def parse_shards(text: str) -> dict[str, int]:
-    """Shard counts from "model:count,model:count"."""
-    return {model: int(count) for model, count in (item.split(':') for item in text.split(',') if item)}
+    """Shard counts from "model:count,model:count", each model a Hugging Face id or a short key."""
+    return {resolve(model): int(count) for model, count in (item.split(':') for item in text.split(',') if item)}
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(prog='steering.followup', description=__doc__.split('\n\n')[0])
+    parser = argparse.ArgumentParser(prog='steering.plan_continuation', description=__doc__.split('\n\n')[0])
     parser.add_argument('parent', type=Path, help='the complement release folder, report/NAME')
     parser.add_argument('--max-gpu-hours', type=float, default=APPROVED_GPU_HOURS)
     parser.add_argument('--shards', type=parse_shards, help='model:count,... instead of the computed sizes')
     args = parser.parse_args()
-    print(format_plan(plan_followup(args.parent.resolve(), args.max_gpu_hours, args.shards)))
+    print(format_plan(plan_continuation(args.parent.resolve(), args.max_gpu_hours, args.shards)))
 
 
 if __name__ == '__main__':

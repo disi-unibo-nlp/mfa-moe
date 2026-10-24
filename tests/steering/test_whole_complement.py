@@ -12,7 +12,7 @@ from unittest.mock import patch
 
 import pandas as pd
 
-from steering import pulse, whole, whole_effects
+from steering import pulsed_steering as pulse, whole_reasoning as whole, whole_reasoning_effects as whole_effects
 from store import CLASSES, WORK, digest, load, publish
 
 TMP = WORK/'tools/tmp'

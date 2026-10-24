@@ -17,7 +17,7 @@ Bash only. Each folder matches a topic in `src/`, and each launcher runs one exp
 Rules that hold for every script:
 
 - Run from the repository root.
-- Files named `*.sbatch` are Slurm jobs: `sbatch scripts/DIR/NAME.sbatch ARGS`. The `.sh` files with a `#SBATCH` header (`slurm/run_module_cpu.sbatch`, `slurm/run_module_gpu.sbatch`, `steering/outcome_next.sh`) are submitted the same way.
+- Files named `*.sbatch` are Slurm jobs: `sbatch scripts/DIR/NAME.sbatch ARGS`.
 - The other `.sh` files run on the login node and only submit jobs, or print, or build the paper. They never start a model.
 - A job refuses to start outside Slurm. Its setup is `slurm/env.sh`, so all jobs look the same: same modules, offline mode, own cache folders.
 - An `OUT_DIR` argument must name a folder that does not exist yet.

@@ -1,7 +1,7 @@
 """Parsing of a raw judge output into a class label: split off the reasoning, then read the label with the
 DSPy parser.
 
-`steering.pulse` builds a bare `Reader` with `Reader.__new__` (no `__init__`) and sets `annotator`, `renderer`
+`steering.pulsed_steering` builds a bare `Reader` with `Reader.__new__` (no `__init__`) and sets `annotator`, `renderer`
 and `tokenizer` on it before calling `parse`.
 """
 from store import CLASSES

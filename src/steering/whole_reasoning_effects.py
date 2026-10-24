@@ -1,12 +1,12 @@
 """Extraction and bounded analysis of whole-reasoning rows.
 
 extract(root, model) replays and scores the finished rows of one model of a release with
-pulse_outcomes.record (GPT token replay, the threaded math_verify helper) and writes
+pulsed_outcomes.record (GPT token replay, the threaded math_verify helper) and writes
 root/MODEL/extraction/. combine(root) joins the extractions of every release listed in
 root/SOURCES.json by family, keeps every planned family and cell, shares all 10,000
 benchmark-stratified bootstrap draws across models and contrasts, and writes
 root/analysis-combined/EFFECTS_WHOLE.json (the paper's whole-reasoning results).
-Run both through python -m steering.whole.
+Run both through python -m steering.whole_reasoning.
 """
 from __future__ import annotations
 
@@ -24,8 +24,8 @@ import numpy as np
 import pandas as pd
 
 from store import CLASSES, digest, load, publish, require, verified
-from steering import pulse
-from steering.whole import (
+from steering import pulsed_steering
+from steering.whole_reasoning import (
     DOSES,
     DRAWS,
     MODELS,
@@ -69,7 +69,7 @@ def unit_bounds(row: dict) -> dict:
 
 def _extract_one(row: dict, *, b: dict, model: str, tokenizer, close, store, inputs):
     """Replay and score one completed draw, recording a per-unit extraction failure."""
-    from steering.pulse_outcomes import record
+    from steering.pulsed_outcomes import record
     try:
         if row.get('nomination_status', 'nominated') != 'nominated':
             return None
@@ -123,7 +123,7 @@ def extract(root: Path, model: str) -> dict:
     from steering.runtime import prompt_prefix
     value = manifest(root, model)
     store = bound_store(root, model, value['dose'])
-    b = pulse.binding()
+    b = pulsed_steering.binding()
     tokenizer = AutoTokenizer.from_pretrained(b['models'][model]['local_path'], local_files_only=True)
     rows = value['records']
     # Every row of a family shares its original prompt; a sweep manifest has no native row to read it from.
@@ -378,7 +378,7 @@ def point_columns(frame: pd.DataFrame) -> list[str]:
 
 def summarize_present(boot, frame: pd.DataFrame, family_name: str) -> dict:
     """Summarize every contrast of a family frame over the families each column ran."""
-    from steering.pulse_effects import summarize
+    from steering.pulsed_effects import summarize
     names = point_columns(frame)
     return summarize(boot, frame, names, family_name, column_masks={name: frame[name].notna() for name in names})
 
@@ -419,7 +419,7 @@ def dose_response(boot, cells: pd.DataFrame) -> dict:
 
 def arm_summaries(boot, table: pd.DataFrame) -> tuple[list, dict]:
     """Summarize arm levels with the shared draws and normalize additive dose counters."""
-    from steering.pulse_effects import summarize
+    from steering.pulsed_effects import summarize
     levels_by_arm, dose_by_arm = [], {}
     table = table[table.get('nomination_status', pd.Series('nominated', index=table.index)) == 'nominated']
     # Arm levels describe the base design; complement cells appear only in the per-cell effects.
@@ -474,8 +474,8 @@ def arm_summaries(boot, table: pd.DataFrame) -> tuple[list, dict]:
 
 def bootstrap():
     """The shared benchmark-stratified family bootstrap of every whole-reasoning interval."""
-    from steering.pulse_effects import Bootstrap
-    benchmarks = {r['family']: r['benchmark'] for r in load(pulse.STUDY/'ALLOCATION.json')['records']}
+    from steering.pulsed_effects import Bootstrap
+    benchmarks = {r['family']: r['benchmark'] for r in load(pulsed_steering.STUDY/'ALLOCATION.json')['records']}
     return Bootstrap(sorted(benchmarks), benchmarks, draws=DRAWS, seed=SEED)
 
 
@@ -498,7 +498,7 @@ def failures(table: pd.DataFrame, sources: list[dict]) -> dict:
 
 def cell_summaries(boot, cells: pd.DataFrame) -> tuple[dict, dict]:
     """Per steered cell: length/accuracy effects and the signed step-type occupancy response."""
-    from steering.pulse_effects import summarize
+    from steering.pulsed_effects import summarize
     effects, mechanism = {}, {}
     for (model, dose, operation, class_name), sub in cells.groupby(['model', 'dose', 'operation', 'class']):
         key = '|'.join((model, dose, operation, class_name))
@@ -535,7 +535,7 @@ def combine(root: Path) -> dict:
         separately declared dose response, per-cell effects and step-type responses at every dose, and
         breakdown (cap rate, repetition) and manipulation checks by model, dose and arm.
     """
-    from steering.pulse_effects import summarize
+    from steering.pulsed_effects import summarize
     folder = root/'analysis-combined'
     require(not folder.exists(), 'combined whole analysis requires a fresh directory')
     link = link_receipt(root)

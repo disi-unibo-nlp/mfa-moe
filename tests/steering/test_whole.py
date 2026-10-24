@@ -1,6 +1,7 @@
 """Focused whole-reasoning contracts, independent of model loading or scientific outcomes."""
 from collections import Counter
 from itertools import groupby
+import json
 import math
 from pathlib import Path
 import socket
@@ -16,11 +17,11 @@ import torch
 from steering.operators import score_override_dual
 from steering.selection import global_pairs, layer_matched_controls
 from store import BENCHMARKS, CLASSES, WORK
-from steering.pulse_effects import Bootstrap, bounded_summary
+from steering.pulsed_effects import Bootstrap, bounded_summary
 from steering.stream import StreamCapture, dose_totals
-from steering.whole import build_manifest, select_pairs
-from steering.whole_effects import unit_bounds, contrast, primary_frame
-from steering import pulse, whole
+from steering.whole_reasoning import build_manifest, select_pairs
+from steering.whole_reasoning_effects import unit_bounds, contrast, primary_frame
+from steering import pulsed_steering as pulse, whole_reasoning as whole
 from store import publish
 
 LINK = pulse.DRIVER/'EFFICIENCY_LINK_PREREG.json'  # the seven-model pre-registration
@@ -210,7 +211,7 @@ class PromptScopeTests(unittest.TestCase):
 
 class AnalysisTests(unittest.TestCase):
     def test_first_endpoints_reject_incomplete_overlap_and_out_of_horizon_sentences(self):
-        from steering.pulse_effects import endpoints
+        from steering.pulsed_effects import endpoints
         outcome = {'pulse_tokens': 4, 'horizon': 8, 'reasoning_end': None, 'generated_tokens': 8,
                    'finish_reason': 'length', 'nonreasoning': []}
         spans = [{'token_start': 0, 'token_end': 3, 'complete': False},
@@ -262,7 +263,7 @@ class AnalysisTests(unittest.TestCase):
         self.assertTrue(result['is_correct'])
 
     def test_gpt_reasoning_count_comes_from_replay_even_when_usage_says_zero(self):
-        from steering.pulse_outcomes import record
+        from steering.pulsed_outcomes import record
         text = ('<|channel|>analysis<|message|>Reason.<|end|><|start|>assistant'
                 '<|channel|>final<|message|>2<|return|>')
         replay = {'completion_token_ids': list(range(len(text))),
@@ -302,7 +303,7 @@ class ManifestTests(unittest.TestCase):
             def cell(nomination, profile, model, dose, operation):
                 return {'fold': nomination['fold'], 'class': nomination['class'], 'operation': operation,
                         'target': [], 'random': [], 'qualified': True}
-            with patch('steering.whole.cell_actions', side_effect=cell):
+            with patch('steering.whole_reasoning.cell_actions', side_effect=cell):
                 value = build_manifest(model, 'main', nominations, {'models': {model: profile}}, natives,
                                        {r['family']: [1, 2] for r in natives}, LINK)
             rows = value['records']
@@ -371,27 +372,31 @@ class ExecutionGateTests(unittest.TestCase):
             with self.assertRaisesRegex(ValueError, 'canary qualification differs'):
                 whole.run(self.root, 'gpt', (0, 1), 0.)
 
-    def test_plan_names_the_snapshot_the_job_prefix_the_final_command_and_the_shards_of_each_model(self):
+    def test_plan_is_json_that_names_the_snapshot_the_job_prefix_the_final_command_and_the_shards_of_each_model(self):
         publish(self.root/'RELEASE.json', {'release_root': '/snapshot', 'models': ['gpt', 'glm', 'qwen36'],
                                            'shards': {'gpt': 3, 'glm': 27}})
 
         def printed():
             with patch('builtins.print') as out:
                 whole.plan(self.root)
-            return [call.args for call in out.call_args_list]
-        self.assertEqual(printed(), [('/snapshot',), ('whole',), ('steering.whole combine',), ('gpt', 3), ('glm', 27)])
+            (call,) = out.call_args_list
+            return json.loads(call.args[0])
+        self.assertEqual(printed(), {
+            'release_root': '/snapshot', 'job_prefix': 'whole', 'final': ['steering.whole_reasoning', 'combine'],
+            'models': [{'model': 'gpt', 'hf_model': 'openai/gpt-oss-20b', 'shards': 3},
+                       {'model': 'glm', 'hf_model': 'zai-org/GLM-4.7-Flash', 'shards': 27}]})
         publish(self.root/'OUTCOME.json', {})
-        self.assertEqual(printed()[2], ('steering.outcome analyze',))
+        self.assertEqual(printed()['final'], ['steering.outcome', 'analyze'])
         (self.root/'OUTCOME.json').unlink()
         publish(self.root/'OUTCOME_SWEEP.json', {})
-        self.assertEqual(printed()[2], ('steering.outcome analyze',))
+        self.assertEqual(printed()['final'], ['steering.outcome', 'analyze'])
         (self.root/'OUTCOME_SWEEP.json').unlink()
-        # A capture release ends with its extractions (an empty command line) and names its jobs oc-*.
+        # A capture release ends with its extractions (no final command) and names its jobs oc-*.
         publish(self.root/'CAPTURE_NATIVE.json', {})
         (self.root/'RELEASE.json').unlink()
         publish(self.root/'RELEASE.json', {'release_root': '/snapshot', 'models': ['gpt'], 'shards': {'gpt': 3},
                                            'job_prefix': 'oc'})
-        self.assertEqual(printed(), [('/snapshot',), ('oc',), ('',), ('gpt', 3)])
+        self.assertEqual((printed()['job_prefix'], printed()['final'], len(printed()['models'])), ('oc', [], 1))
 
     def test_the_link_receipt_comes_from_the_release(self):
         publish(self.root/'RELEASE.json', {'release_root': str(whole.REPO)})
@@ -403,7 +408,7 @@ class ExecutionGateTests(unittest.TestCase):
 
 class ClosedAnalysisTests(unittest.TestCase):
     def test_completed_whole_output_replays_and_extracts_in_worker_scope(self):
-        from steering import whole_effects
+        from steering import whole_reasoning_effects as whole_effects
         text = ('<|channel|>analysis<|message|>Reason.<|end|><|start|>assistant'
                 '<|channel|>final<|message|>2<|return|>')
         tokens = list(range(len(text)))
@@ -432,7 +437,7 @@ class ClosedAnalysisTests(unittest.TestCase):
         self.assertEqual(sentences[0]['sentence_text'], 'Reason.')
 
     def test_extractions_with_every_production_row_missing_still_export_six_bounded_primary_contrasts(self):
-        from steering import whole_effects
+        from steering import whole_reasoning_effects as whole_effects
         models = ('gpt', 'qwen36')
         manifests, allocation = {}, []
         for i, benchmark in enumerate(BENCHMARKS):

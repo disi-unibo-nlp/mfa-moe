@@ -44,14 +44,14 @@ Each paper experiment has one launcher. The launcher submits the job, which call
 
 | Experiment | Launcher (`scripts/`) | Module (`src/`) | Output or receipt | Used in the paper |
 | --- | --- | --- | --- | --- |
-| Trace generation, 8 models | `generation/generate_answers.sbatch HF_MODEL DATASET SHARD NSHARDS OUT_DIR`; `lfm25`: `sbatch slurm/run_module_gpu.sbatch steering.pulse native --shard I/N` | `generation.generate_answers`; `steering.pulse` | `results/correlation_pipeline/card-v3/MODEL/generation/<checkpoint>/<dataset>/traces.jsonl` | Benchmark tables, setup |
+| Trace generation, 8 models | `generation/generate_answers.sbatch HF_MODEL DATASET SHARD NSHARDS OUT_DIR`; `lfm25`: `sbatch slurm/run_module_gpu.sbatch steering.lfm25_generation native --shard I/N` | `generation.generate_answers`; `steering.lfm25_generation` | `results/correlation_pipeline/card-v3/MODEL/generation/<checkpoint>/<dataset>/traces.jsonl` | Benchmark tables, setup |
 | Answer scoring (J1) | `generation/list_rejected_answers.sh TRACES_DIR ITEMS_JSONL`, then `generation/judge_answers.sbatch ITEMS_JSONL VERDICTS_JSONL` | `generation.scoring` (inside generation), `generation.judge_answers` | judge verdicts in `VERDICTS_JSONL` | Accuracy in the benchmark tables |
 | Benchmark accuracy tables | `routing/summarize_benchmark_accuracy.sh OUTCOMES_JSON OUT_DIR`, `routing/inventory_generated_corpora.sh OUT_DIR` | `routing.benchmark_accuracy`, `routing.benchmark_inventory` | `OUT_DIR/*.csv`, the inventory's CSV tables and receipts | Tables `benchmarks`, `benchmark_details` |
 | Judge optimisation (GEPA) | `labeling/optimize_judge_prompt.sh SERVER_URL DATASET_DIR SEED_PROMPT OUT_DIR` | `labeling.gepa.optimize_judge` | `selected_program_*.json` (the frozen judge) | Appendix, external annotation development |
 | Sentence sampling | `labeling/choose_sentences.sh TRACES_DIR OUT_DIR` | `labeling.choose_sentences` | `cohorts.json`, `parts.json`, four label part roots | Appendix, sentence sampling |
 | Sentence labeling | `labeling/label_sentences.sbatch TRACE_ROOT OUT_DIR [JUDGE_PROGRAM]` | `labeling.label_sentences` | `annotations.json`, `summary.json` | Every exhibit that uses states |
 | Router capture | `capture/capture_routers.sbatch MANIFEST OUT_DIR`, then `capture/check_capture_complete.sh MANIFEST_DIR OUT_JSON [CAPTURE_ROOT]` | `capture.capture_routers`, `capture.check_complete` | per-trace packets and tensors, `result.json`, the completeness check's acceptance JSON | Input of all routing results |
-| LFM2.5 replay | `sbatch slurm/run_module_gpu.sbatch steering.pulse lfm-replay --shard I/N` | `steering.pulse`, `capture.lfm_replay` | `lfm25/replay/<attempt>.npz` under the study scratch folder | Input of the LFM2.5 rows |
+| LFM2.5 replay | `sbatch slurm/run_module_gpu.sbatch steering.lfm25_generation replay --shard I/N` | `steering.lfm25_generation`, `capture.lfm_replay` | `lfm25/replay/<attempt>.npz` under the study scratch folder | Input of the LFM2.5 rows |
 
 ### Analyses of native routing
 
@@ -73,21 +73,21 @@ Launchers are in `scripts/steering/`, modules in `src/steering/`.
 
 | Experiment | Launcher | Module | Output or receipt | Used in the paper |
 | --- | --- | --- | --- | --- |
-| Pulsed steering, main and strong doses | `pulse.sh SHARDS HOURS MODEL...`, then `pulse_analyze.sh OUT` | `pulse`, `pulse_outcomes`, `pulse_effects` | `report/final-routing-20261015-r1/driver/analysis-final/EFFECTS.json` and `.../analysis-strong/EFFECTS.json` | Figure `routing`, tables `routing`, `routing_levels`, `routing_strong` |
-| Whole-reasoning steering and dose sweep | `whole.sh KIND NAME TESTS [OPTION...]` (calls `launch.sh`); KIND `continuation` runs what a complement left unfinished | `release`, `whole`, `whole_effects`, `followup` (the continuation's plan) | `report/whole-reasoning-20261021-r20/analysis-combined/EFFECTS_WHOLE.json` | Figures `whole_states`, `whole_dose`; tables `whole`, `whole_cells`, `whole_occupancy`, `whole_levels` |
-| Outcome-selected nudge | `outcome_usage.sh`, `whole.sh outcome ...`, `outcome_next.sh` | `outcome` | `analysis/EFFECTS_OUTCOME.json` in the release | Not in the paper. This is the next line of work. |
-| Outcome steering r2: native attempts with routing, 8 models | `whole.sh capture NAME TESTS ...`, then `outcome_derive.sh NAME MODEL...` | `outcome` (`capture`, `classes`, `select`, `evidence`, `attempts`, `derive`) | `report/outcome-capture-20261023-r2/MODEL/SELECTION_R2.json`, `SIGNAL.json`, `ATTEMPT_SELECTION.json` | Not in the paper. |
-| Outcome steering r2: class-conditioned sweep, then the confirmed cell | `whole.sh sweep NAME TESTS --half A ...`, `outcome_pick.sh HALF_A MODEL NAME TESTS ...` | `outcome` (`manifest`, `analysis`, `pick`) | `analysis/EFFECTS_OUTCOME.json` and `PICK.json` in the release (half A, `report/outcome-steering-20261023-r6`, was stopped before its analysis) | Not in the paper. |
+| Pulsed steering, main and strong doses | `run_pulsed_steering.sh STUDY_DIR HF_MODEL SHARDS HOURS [main\|strong]` (once per model), then `analyze_pulsed_steering.sh STUDY_DIR OUT_DIR` | `pulsed_steering`, `pulsed_outcomes`, `pulsed_effects` | `report/final-routing-20261015-r1/driver/analysis-final/EFFECTS.json` and `.../analysis-strong/EFFECTS.json` | Figure `routing`, tables `routing`, `routing_levels`, `routing_strong` |
+| Whole-reasoning steering and dose sweep | `seal_release.sh KIND NAME TESTS [OPTION...]`, then `submit_release_jobs.sh RELEASE_DIR [JOB...]`; KIND `continuation` runs what a complement left unfinished | `release`, `whole_reasoning`, `whole_reasoning_effects`, `plan_continuation` (the continuation's plan) | `report/whole-reasoning-20261021-r20/analysis-combined/EFFECTS_WHOLE.json` | Figures `whole_states`, `whole_dose`; tables `whole`, `whole_cells`, `whole_occupancy`, `whole_levels` |
+| Outcome-selected nudge | `measure_expert_usage.sh REPORTS_DIR OUT_DIR HF_MODEL...`, `seal_release.sh outcome ...`, `decide_and_launch_next.sbatch EFFECTS NAME TESTS ...` | `outcome` | `analysis/EFFECTS_OUTCOME.json` in the release | Not in the paper. This is the next line of work. |
+| Outcome steering r2: native attempts with routing, 8 models | `seal_release.sh capture NAME TESTS ...` and `submit_release_jobs.sh`, then `derive_outcome_sets.sh RELEASE_DIR HF_MODEL...` | `outcome` (`capture`, `classes`, `select`, `evidence`, `attempts`, `derive`) | `report/outcome-capture-20261023-r2/MODEL/SELECTION_R2.json`, `SIGNAL.json`, `ATTEMPT_SELECTION.json` | Not in the paper. |
+| Outcome steering r2: class-conditioned sweep, then the confirmed cell | `seal_release.sh sweep NAME TESTS --half A ...` and `submit_release_jobs.sh`, then `pick_and_launch_half_b.sbatch HALF_A_DIR HF_MODEL NAME TESTS ...` | `outcome` (`manifest`, `analysis`, `pick`) | `analysis/EFFECTS_OUTCOME.json` and `PICK.json` in the release (half A, `report/outcome-steering-20261023-r6`, was stopped before its analysis) | Not in the paper. |
 
 ### Paper
 
 | Step | Launcher (`scripts/paper/`) | Module (`src/paper/`) | Output |
 | --- | --- | --- | --- |
-| Tables and figure data from receipts | `export.sh [EFFECTS_WHOLE.json]` | `export_routing_results`, `export_whole_results`, `export_cl_exhibits` | table `.tex` files and plotting data in `paper/` |
-| Build the figures and the PDF | `build.sh` | `build_cl_figures`, `build_cl_manuscript` | PDF under `paper/manuscript-support/build` |
-| Check the writing rules | `check.sh` | paper-writer rules | rule report |
+| Tables and figure data from receipts | `export_paper_tables.sh STUDY_DIR [EFFECTS_WHOLE_JSON]` | `export_routing_results`, `export_whole_results`, `export_cl_exhibits` | table `.tex` files and plotting data in `paper/` |
+| Build the figures and the PDF | `build_paper_pdf.sh` | `build_cl_figures`, `build_cl_manuscript` | PDF under `paper/manuscript-support/build` |
+| Check the writing rules | `check_writing_rules.sh` | paper-writer rules | rule report |
 
-Unit tests of the live code: `tests/` (see its README). Every steering release first runs the steering and routing tests in a Slurm job (`python -m steering.whole validate`).
+Unit tests of the live code: `tests/` (see its README). Every steering release first runs the steering and routing tests in a Slurm job (`python -m steering.whole_reasoning validate`).
 
 ## Old code
 

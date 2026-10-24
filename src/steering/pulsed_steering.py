@@ -8,15 +8,15 @@ deadline is checkpointed with all its tokens and resumed in a later job by
 re-prefilling prompt + prefix + generated tokens through the same hooks, so the
 pulse is re-applied at its original positions. Nothing is redrawn.
 
-Commands (python -m steering.pulse ...):
+The engine, the stores and the helpers here are also the base of steering.whole_reasoning and of the judge
+engine that routing.transition_pairs uses (annotate_rows). The LFM2.5 GPU stages are in steering.lfm25_generation.
+The study folder is the one store.STUDY names (STUDY_DATA_ROOT, default report/final-routing-20261015-r1).
+
+Commands (python -m steering.pulsed_steering ...; a model M is a Hugging Face id or a short key):
   plan                          CPU: selection + the main-design manifests for prepared models
   plan-strong --model M,M       CPU: the strong-dose manifests
   run --model M --shard I/N     GPU: assigned continuations of one shard (--design main|strong)
-  native --shard I/N            GPU: LFM native population (unhooked engine)
-  annotate --shard I/N          GPU: LFM discovery judge labels (unhooked engine); annotate_rows judges any other
-                                task list the same way (routing.transition_pairs judge)
-  (the LFM CPU stages materialize | derive | readout | dynamics are `python -m routing.lfm`)
-  lfm-replay --shard I/N        GPU: capture.lfm_replay (Backend.capture_trace)
+  check --model M               login: fail unless the study holds M's manifest of --design; print M's short key
   status                        login: dispositions per model
 """
 from __future__ import annotations
@@ -29,6 +29,7 @@ import tempfile
 import time
 from pathlib import Path
 from generation.client import slurm_deadline
+from models.roster import resolve
 from provenance import code_provenance
 from store import CLASSES, DRIVER, MODELS, STUDY, binding, digest, file_sha, load, private, publish, require, verified
 
@@ -126,18 +127,22 @@ def reduce_rows(rows, chosen):
     return kept, unavailable
 
 
-def plan(models=None):
+def plan(models=None, study=None):
+    """Write driver/MODEL/ASSIGNMENTS.json of each model: the main design, from its full assignments and nominations.
+
+    `study` is the study folder holding them (default: store.STUDY)."""
+    study = Path(study) if study else STUDY
     out = {}
-    for model in models or [m for m in MODELS if (STUDY/m/'ASSIGNMENTS-full.json').exists()]:
-        source = verified(STUDY/model/'ASSIGNMENTS-full.json')
-        nominations = verified(STUDY/model/'COUNT_NOMINATIONS.json')
+    for model in models or [m for m in MODELS if (study/m/'ASSIGNMENTS-full.json').exists()]:
+        source = verified(study/model/'ASSIGNMENTS-full.json')
+        nominations = verified(study/model/'COUNT_NOMINATIONS.json')
         chosen, evidence = select_layers(nominations['records'])
         require(len(chosen) == 35, f'{model}: a fold/class lacks a nominated layer')
         rows, unavailable = reduce_rows(source['records'], chosen)
         arms = {}
         for r in rows:
             arms[r['arm']] = arms.get(r['arm'], 0)+1
-        value = publish(DRIVER/model/'ASSIGNMENTS.json', {
+        value = publish(study/'driver'/model/'ASSIGNMENTS.json', {
             'model': model, 'selector': SELECTOR, 'design': {'dose': 'central', 'arms': arms},
             'selection': [{'fold': f, 'class': c, **v} for (f, c), v in sorted(chosen.items())],
             'selection_evidence': evidence, 'outcomes_used': False,
@@ -203,6 +208,19 @@ def shard_rows(rows, shard):
 def design_rows(model, design, shard):
     """One shard of a model's rows in the main or strong design."""
     return shard_rows(verified(DRIVER/model/MANIFESTS[design])['records'], shard)
+
+
+def model_key(name):
+    """A model given as its Hugging Face id or its short key, as the short key (the type of every --model option)."""
+    try:
+        return resolve(name)
+    except ValueError as error:
+        raise argparse.ArgumentTypeError(str(error)) from None
+
+
+def design_models(design):
+    """The models whose manifest of this design is in the study, in the order of store.MODELS."""
+    return [model for model in MODELS if (DRIVER/model/MANIFESTS[design]).exists()]
 
 
 # ----------------------------------------------------------------------------- engine
@@ -671,27 +689,13 @@ def execute_rows(b, model, rows, store, deadline, *, max_inflight, design, shard
     return receipt
 
 
-# ----------------------------------------------------------------------------- LFM chain
+# ----------------------------------------------------------------------------- judge engine
 
 def plain_llm(kwargs):
     from vllm import LLM
     tick = time.monotonic()
     llm = LLM(**kwargs)
     return llm, kwargs, time.monotonic()-tick
-
-
-def native_kwargs(b, model, max_num_seqs=128):
-    """The model's study engine profile with CUDA graphs; no hooks, so no intervention state exists."""
-    from models.engine import engine_kwargs
-    from store import check_files
-    p = b['models'][model]
-    check_files(p['config_files'])
-    kwargs = engine_kwargs(p, context=p['card']['max_model_len'])
-    kwargs.update(max_num_seqs=max_num_seqs, enable_chunked_prefill=True, max_num_batched_tokens=8192,
-                  enforce_eager=False, gpu_memory_utilization=.88)
-    if model == 'lfm25':
-        kwargs['kv_cache_memory_bytes'] = p['kv_cache_memory_bytes']
-    return kwargs
 
 
 def reader_kwargs(a, max_num_seqs=128):
@@ -701,68 +705,6 @@ def reader_kwargs(a, max_num_seqs=128):
             'enable_prefix_caching': True, 'async_scheduling': False, 'enable_chunked_prefill': True,
             'max_num_batched_tokens': 8192, 'gpu_memory_utilization': .90, 'kv_cache_dtype': 'bfloat16',
             'attention_config': {'backend': 'FLASH_ATTN'}, 'language_model_only': True, 'generation_config': 'vllm'}
-
-
-def lfm_native(shard, deadline):
-    from vllm import SamplingParams
-    from vllm.sampling_params import RequestOutputKind
-    from labeling.lfm_inputs import population
-    from steering.runtime import prompt_prefix, remaining
-    from store import Units
-    b = binding()
-    rows = population(b)['records']
-    rows = [r for i, r in enumerate(sorted(rows, key=lambda r: r['uid'])) if i % shard[1] == shard[0]]
-    p = b['models']['lfm25']
-    store = Store(bulk(b)/'lfm25/native-progress')
-    units = Units(Path(b['config']['bulk_root'])/'lfm25/native')
-    pending = [r for r in rows if units.state(r['uid']) is None]
-    log({'event': 'start', 'stage': 'lfm-native', 'rows': len(rows), 'pending': len(pending)})
-    if not pending:
-        return {'status': 'complete'}
-    llm, kwargs, load_seconds = plain_llm(native_kwargs(b, 'lfm25'))
-    tokenizer = llm.get_tokenizer()
-    sampler = {k: v for k, v in p['sampler'].items() if v is not None}
-
-    def build(row, history, segment):
-        prompt, _, _ = prompt_prefix(b, 'lfm25', row, tokenizer)
-        total = remaining(p, prompt, [])
-        left = total-len(history)
-        if left <= 0:
-            return None
-        # Repetition over prompt|output is the same token set after re-admission; presence/frequency are zero.
-        params = SamplingParams(**sampler, seed=segment_seed(row['seed'], segment), max_tokens=left,
-                                skip_special_tokens=False, detokenize=False, output_kind=RequestOutputKind.DELTA)
-        return {'prompt_ids': prompt+history, 'params': params, 'request': None, 'total': total}
-
-    def finish(row, progress, reason, stop, capture):
-        if progress is None:
-            progress, reason = load(store.folder(row['uid'])/'PARTIAL.json'), 'length'
-        require(units.intent(row, os.environ['SLURM_JOB_ID']), 'native unit claimed twice')
-        raw = units.output(row, {'status': 'complete', 'token_ids': progress['tokens'],
-            'text': tokenizer.decode(progress['tokens'], skip_special_tokens=False), 'finish_reason': reason,
-            'stop_reason': stop, 'segments': progress['segments'], 'cap': progress['total_allowance']})
-        units.commit(row, {'status': 'complete', 'raw_sha256': raw['sha256'], 'stochastic_redraw': False})
-
-    require(sampler.get('presence_penalty', 0) == 0 and sampler.get('frequency_penalty', 0) == 0,
-            'native resume requires history-free penalties')
-    try:
-        metrics = Engine(llm, store, deadline, hooked=False, max_inflight=kwargs['max_num_seqs']).run(pending, build, finish)
-    finally:
-        llm.llm_engine.engine_core.shutdown()
-    receipt = {'stage': 'lfm-native', 'shard': list(shard), 'job': os.environ.get('SLURM_JOB_ID'),
-               'load_seconds': load_seconds, 'metrics': metrics, 'code': code_record()}
-    publish(bulk(b)/'lfm25/jobs'/('native-'+os.environ.get('SLURM_JOB_ID', 'local')+'.json'), receipt)
-    log({'event': 'end', **receipt})
-    return receipt
-
-
-def lfm_annotate(shard, deadline):
-    """Discovery judge labels of LFM2.5 (the 100,000 sampled sentences)."""
-    b = binding()
-    rows = verified(STUDY/'lfm25/ANNOTATION_TASKS.json')['records']
-    return annotate_rows(rows, shard, deadline, units_root=Path(b['config']['bulk_root'])/'reader/annotations',
-                         progress_root=bulk(b)/'reader-progress', jobs_root=bulk(b)/'lfm25/jobs',
-                         stage='lfm-annotate')
 
 
 def annotate_rows(rows, shard, deadline, *, units_root, progress_root, jobs_root, stage):
@@ -843,31 +785,6 @@ def annotate_rows(rows, shard, deadline, *, units_root, progress_root, jobs_root
     return receipt
 
 
-def lfm_replay(shard, deadline):
-    from capture.lfm_replay import replay
-    b = binding()
-    sources = verified(STUDY/'lfm25/SOURCES.json')['records']
-    rows = [s for i, s in enumerate(sources) if i % shard[1] == shard[0]]
-    rows = [s for s in rows if not (Path(b['config']['bulk_root'])/'lfm25/replay'/(s['attempt_id']+'.json')).exists()]
-    log({'event': 'start', 'stage': 'lfm-replay', 'pending': len(rows)})
-    if not rows:
-        return {'status': 'complete'}
-    done = []
-    from steering.runtime import Backend
-    backend = Backend(b, 'lfm25', 1, deadline, replay=True)
-    try:
-        from store import read_source
-        for row in rows:
-            if time.time()+600 > deadline:
-                break
-            done.append(backend.capture_trace(read_source(row['source_location']),
-                                              Path(b['config']['bulk_root'])/'lfm25/replay'/(row['attempt_id']+'.npz')))
-    finally:
-        backend.close()
-    log({'event': 'end', 'stage': 'lfm-replay', 'captured': len(done), 'remaining': len(rows)-len(done)})
-    return {'captured': len(done)}
-
-
 # ----------------------------------------------------------------------------- bookkeeping
 
 def log(value):
@@ -902,32 +819,31 @@ def parse_shard(text):
 
 
 def main(argv=None):
-    ap = argparse.ArgumentParser(prog='steering.pulse')
-    ap.add_argument('command', choices=['plan', 'run', 'native', 'annotate', 'lfm-replay', 'status', 'plan-strong'])
-    ap.add_argument('--model')
+    ap = argparse.ArgumentParser(prog='steering.pulsed_steering', description=__doc__.split('\n\n')[0])
+    ap.add_argument('command', choices=['plan', 'plan-strong', 'run', 'check', 'status'])
+    ap.add_argument('--model', help='plan, run, check: a Hugging Face id or a short key (plan-strong: several, with commas)')
     ap.add_argument('--shard', default='0/1', type=parse_shard)
     ap.add_argument('--max-inflight', type=int, default=64)
     ap.add_argument('--design', choices=sorted(MANIFESTS), default='main')
     args = ap.parse_args(argv)
+    models = [model_key(name) for name in args.model.split(',')] if args.model else None
     if args.command == 'plan':
-        log({'event': 'plan', 'models': plan([args.model] if args.model else None)})
-        return
-    if args.command == 'plan-strong':
-        log({'event': 'plan-strong', 'models': plan_strong(args.model.split(','))})
-        return
-    if args.command == 'status':
+        log({'event': 'plan', 'models': plan(models)})
+    elif args.command == 'plan-strong':
+        require(models, 'plan-strong needs --model')
+        log({'event': 'plan-strong', 'models': plan_strong(models)})
+    elif args.command == 'status':
         print(json.dumps(status(), indent=1))
-        return
-    require(os.environ.get('SLURM_JOB_ID') and os.environ.get('SLURM_JOB_GPUS'), 'GPU commands require a Slurm GPU allocation')
-    deadline = slurm_deadline(ADMISSION_MARGIN_HOURS)
-    if args.command == 'run':
-        run_model(args.model, args.shard, deadline, max_inflight=args.max_inflight, design=args.design)
-    elif args.command == 'native':
-        lfm_native(args.shard, deadline)
-    elif args.command == 'annotate':
-        lfm_annotate(args.shard, deadline)
-    elif args.command == 'lfm-replay':
-        lfm_replay(args.shard, deadline)
+    elif args.command == 'check':
+        require(models and len(models) == 1, 'check needs one --model')
+        require((DRIVER/models[0]/MANIFESTS[args.design]).is_file(),
+                f'{DRIVER/models[0]/MANIFESTS[args.design]} does not exist: plan the {args.design} design of {models[0]} first')
+        print(models[0])
+    else:
+        require(models and len(models) == 1, 'run needs one --model')
+        require(os.environ.get('SLURM_JOB_ID') and os.environ.get('SLURM_JOB_GPUS'), 'GPU commands require a Slurm GPU allocation')
+        run_model(models[0], args.shard, slurm_deadline(ADMISSION_MARGIN_HOURS), max_inflight=args.max_inflight,
+                  design=args.design)
 
 
 if __name__ == '__main__':

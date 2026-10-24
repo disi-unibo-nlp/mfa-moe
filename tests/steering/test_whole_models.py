@@ -9,9 +9,9 @@ from unittest.mock import patch
 import torch
 
 from steering.operators import score_override_dual_masked
-from steering import pulse, whole
+from steering import pulsed_steering as pulse, whole_reasoning as whole
 from store import CLASSES, WORK, digest, publish, verified
-from steering.whole import build_manifest, dose_counts, directions
+from steering.whole_reasoning import build_manifest, dose_counts, directions
 
 LINK = pulse.DRIVER/'EFFICIENCY_LINK_PREREG.json'  # the seven-model pre-registration
 
@@ -131,7 +131,7 @@ def synthetic_manifest(model, families, layers, experts, k, dose='main', sweep=F
                'card': {'max_model_len': 32768, 'max_tokens': None}}
     nominations = {'sha256': 'nomination', 'release_commit': 'abc',
                    'records': [{'fold': f, 'class': c} for f in range(5) for c in CLASSES]}
-    with patch('steering.whole.cell_actions', side_effect=synthetic_cell):
+    with patch('steering.whole_reasoning.cell_actions', side_effect=synthetic_cell):
         return build_manifest(model, dose, nominations, {'models': {model: profile}}, natives,
                               {r['family']: [1, 2] for r in natives}, LINK, sweep=sweep)
 
@@ -245,7 +245,7 @@ class TopUpTests(unittest.TestCase):
 
 class CanaryDeadlineTests(unittest.TestCase):
     def test_rows_running_at_the_deadline_count_as_reaching_the_length_limit(self):
-        from steering import pulse
+        from steering import pulsed_steering as pulse
         from store import digest, publish
         with tempfile.TemporaryDirectory(dir=WORK) as directory:
             store = pulse.Store(Path(directory))

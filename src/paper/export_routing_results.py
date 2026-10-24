@@ -2,6 +2,8 @@
 
 No fitting or resampling happens here. Inputs (report/final-routing-20261015-r1/driver): analysis-final/EFFECTS.json,
 analysis-strong/EFFECTS.json, EFFICIENCY_LINK_PREREG.json, EFFICIENCY_LINK_V2.json and the link test.
+The study folder is the one store.STUDY names (STUDY_DATA_ROOT, default report/final-routing-20261015-r1);
+scripts/paper/export_paper_tables.sh STUDY_DIR sets it.
 Command: python -m paper.export_routing_results
 Outputs:
   figures/journal/data/routing.dat           coordinates of the routing figure
@@ -21,10 +23,9 @@ import math
 
 from paper.cl_models import MODELS, SOURCE_MODELS, TICKS as MODEL_TICKS
 from paper.cl_paths import DATA, FIGURES, PAPER, REPO
-from store import file_sha, verified
+from store import DRIVER, file_sha, verified
 
 TABLES = PAPER / "journal/tables"
-DRIVER = REPO / "report/final-routing-20261015-r1/driver"
 MAIN = DRIVER / "analysis-final/EFFECTS.json"
 LINK_TEST = DRIVER / "analysis-final-link-v2/EFFICIENCY_LINK_TEST.json"
 STRONG = DRIVER / "analysis-strong/EFFECTS.json"
@@ -42,6 +43,14 @@ TABLE_NAMES = {
 PAPER_CLASSES = ("Read", "Analyze", "Explore", "Plan", "Implement", "Verify", "Monitor")
 ARMS = (("native", "Native"), ("target_activate", "Targeted activation"), ("random_activate", "Random activation"),
         ("target_deactivate", "Targeted deactivation"), ("random_deactivate", "Random deactivation"))
+
+
+def shown(path):
+    """A receipt's path as the tables cite it: relative to the repository when it is inside."""
+    try:
+        return str(path.relative_to(REPO))
+    except ValueError:
+        return str(path)
 
 
 def points(v, scale=100.):
@@ -146,8 +155,7 @@ def routing_table(effects, record):
                     ("(b) Accuracy change from native routing (pp)", [column(k) for k in ACCURACY], (-17, 10), "-15,-10,-5,0,5", 1),
                     ("(c) Generated-token change from native routing (\\%)", [column(k) for k in TOKENS], (-42, 33), "-30,-15,0,15,30", 1)])
 
-    table = r"""% Source: report/final-routing-20261015-r1/driver/analysis-final/EFFECTS.json via python -m paper.export_routing_results.
-\begin{table}[tb]
+    table = f"% Source: {shown(MAIN)} via python -m paper.export_routing_results.\n" + r"""\begin{table}[tb]
 \centering\small
 \caption{Effects of brief expert activation and deactivation at the model-specific expert budget, with family-bootstrap simultaneous 95\% confidence intervals as subscripts.
 %
@@ -241,8 +249,7 @@ def strong_table(strong, record):
             srows.append("\\midrule\nAll four models & " + " & ".join(values) + " \\\\")
         else:
             srows.append(" & ".join([TABLE_NAMES[model], *(cid(*c, 2) for c in cells), *["\\textemdash"] * 4]) + " \\\\")
-    (TABLES / "routing_strong.tex").write_text(r"""% Source: report/final-routing-20261015-r1/driver/analysis-strong/EFFECTS.json via python -m paper.export_routing_results.
-\begin{table}[tb]
+    (TABLES / "routing_strong.tex").write_text(f"% Source: {shown(STRONG)} via python -m paper.export_routing_results.\n" + r"""\begin{table}[tb]
 \centering\small
 \caption{Exploratory strong-dose activation, with family-bootstrap simultaneous 95\% confidence intervals as subscripts.
 %
@@ -288,8 +295,7 @@ def link_table(effects):
             entries.append(cid(mean, mean - low, 2, high - mean))
         name = "Eight-model mean" if model == "pooled" else TABLE_NAMES[model]
         link_rows.append(("\\midrule\n" if model == "pooled" else "") + name + " & " + " & ".join(entries) + " \\\\")
-    (TABLES / "efficiency_link.tex").write_text(r"""% Source: report/final-routing-20261015-r1/driver/EFFICIENCY_LINK_V2.json via python -m paper.export_routing_results.
-\begin{table}[tb]
+    (TABLES / "efficiency_link.tex").write_text(f"% Source: {shown(DRIVER / 'EFFICIENCY_LINK_V2.json')} via python -m paper.export_routing_results.\n" + r"""\begin{table}[tb]
 \centering\small
 \caption{Native association between the current reasoning state and the remaining reasoning length, with 95\% family-bootstrap confidence intervals as subscripts.
 %
@@ -336,7 +342,7 @@ def main():
     record["response_matrix"] = effects["response_matrix"]
     record["counts"] = {"continuations": effects["continuations"], "pairs": effects["pairs"],
                         "strong_continuations": strong["continuations"], "strong_pairs": strong["pairs"]}
-    record["sources"] = {str(p.relative_to(REPO)): {"file_sha256": file_sha(p), "receipt_sha256": verified(p)["sha256"]}
+    record["sources"] = {shown(p): {"file_sha256": file_sha(p), "receipt_sha256": verified(p)["sha256"]}
                          for p in (MAIN, STRONG)}
     (DATA / "routing_results.json").write_text(json.dumps(record, indent=1, default=float) + "\n")
     print(json.dumps({"models": len(MODELS), "continuations": effects["continuations"], "pairs": effects["pairs"],
