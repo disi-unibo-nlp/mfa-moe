@@ -23,7 +23,7 @@ import unicodedata
 from store import file_sha
 
 ACCEPTED_REVISION = "4c9d7d44ac68bcaed2f1e300f6122a5f4c558b61"
-AUTHORIZED_REMOVALS = {"tab:historical-interventions"}
+AUTHORIZED_REMOVALS = {"tab:historical-interventions"}  # tables of the accepted revision that the manuscript no longer holds
 CI = re.compile(r"\\(bestcid|secondcid|cid)\{([^}]+)\}\{([^}]+)\}\{([^}]+)\}")
 TABLE = re.compile(r"\\begin\{(table|longtable)\}.*?\\end\{\1\}", re.S)
 MODEL = re.compile(r"\\(?:modelname|benchmarkmodel)\{[^}]+\}\{([^}]+)\}")
@@ -312,7 +312,6 @@ def read_printed_tables(tables: dict, document, auxiliary: str, cached_text=None
         verify_empty_cells(rows, document, label)
         report[label] = {"source": tables[label]["path"], "rows": rows, "group_headings": groups, "column_headers": checked_headers}
     return report
-
 
 
 def verify_empty_cells(rows: list, document, label: str) -> None:

@@ -28,8 +28,8 @@ def expected_labels(root):
     for line in rows[1:]:
         for name, value in zip(names, line.split()):
             table[name].append(float(value))
-    # Node source order may differ from the plotted model order. The explicit
-    # x coordinate binds each annotation to its data row after model reordering.
+    # Node source order may differ from the data row order. The explicit
+    # x coordinate binds each annotation to its data row.
     row_by_coordinate = {value: index for index, value in enumerate(table['x'])}
     column, expected = None, []
     for line in (root / 'routing.tex').read_text().splitlines():

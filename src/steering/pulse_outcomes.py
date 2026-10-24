@@ -1,9 +1,9 @@
-"""CPU outcome extraction for driver continuations: sentences, closure, scoring, token counts.
+"""CPU outcome extraction for the saved pulsed continuations: sentences, closure, scoring, token counts.
 
-Wraps `contexts.build` (exact sentence ownership, judge-equivalent inputs within the
-16·Q75 window plus the first complete sentence, strict scoring with unknown bounds)
-over the driver's durable store. Writes one parquet of sentences and one of
-continuation outcomes per model shard under <bulk>/driver/<model>/outcomes/.
+For each finished continuation it takes the exact sentence ownership, the judge inputs within the
+16·Q75 window plus the first complete sentence, and the strict score with unknown bounds, from the
+store of the pulsed run. Writes one parquet of sentences and one of continuation outcomes per model
+shard under <bulk>/driver/<model>/outcomes/.
 """
 from __future__ import annotations
 import argparse
@@ -16,9 +16,10 @@ START, END = '<START OF RESPONSE>', '<END OF RESPONSE>'
 
 
 def continuation_sentences(trace, replay, prefix, window, finish_reason):
-    """`research_campaign_v3_r6.annotation.sentence_contexts`, except that a reasoning unit straddling the
-    prefix boundary (the continuation does not open a new sentence) is kept, clipped to its continuation
-    tokens and flagged, instead of aborting: it counts toward occupancy but is never the first sentence."""
+    """The sentences of a continuation: those that start inside the window, plus the first complete one.
+
+    A reasoning unit straddling the prefix boundary (the continuation does not open a new sentence) is kept,
+    clipped to its continuation tokens and flagged: it counts toward occupancy but is never the first sentence."""
     from capture.dynamics.classes import saved_layout
     from labeling.spans import reasoning_ranges
     layout = saved_layout(trace)
@@ -47,7 +48,7 @@ def continuation_sentences(trace, replay, prefix, window, finish_reason):
 
 
 def record(b, model, row, raw, tokenizer, close, *, frozen_input=None):
-    """One continuation: exact text, sentence windows, closure, strict score (contexts.build semantics)."""
+    """One continuation: exact text, sentence windows, closure, strict score."""
     from types import SimpleNamespace
     from models.token_replay import make_token_replay
     from generation.scoring import score_completion_detailed
@@ -77,7 +78,7 @@ def record(b, model, row, raw, tokenizer, close, *, frozen_input=None):
                 break
     if row.get('whole') and reasoning_end is not None:
         # A direct final-channel answer has zero reasoning, even though the
-        # legacy layout fallback permits annotating final-only model outputs.
+        # layout fallback permits annotating final-only model outputs.
         reasoning_positions = {p for p in reasoning_positions if p < len(prefix)+reasoning_end}
         nonreasoning = [p-len(prefix) for p in range(len(prefix), len(tokens)) if p not in reasoning_positions]
         sentences = [s for s in sentences if s['token_start'] < reasoning_end]

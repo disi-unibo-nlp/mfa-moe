@@ -1,7 +1,4 @@
-"""Restorable request-aware hooks for the pinned synchronous vLLM runtime.
-
-`PredictionClock` is vendored verbatim from `verification_study.adapters`.
-"""
+"""Restorable request-aware hooks for the pinned synchronous vLLM runtime."""
 from __future__ import annotations
 import inspect
 import re
@@ -184,9 +181,9 @@ class RequestCapture:
                         stats['noop_exact'] &= bool(torch.equal(ids[ix][unchanged], ni[ix][unchanged]) and
                                                     torch.equal(weights[ix][unchanged], nw[ix][unchanged]))
                         if r.get('replay'):
-                            # Main-paper native representations belong to the
-                            # input token (the historical teacher-forced view),
-                            # unlike intervention decisions predicting the next.
+                            # Native representations belong to the input token
+                            # (the teacher-forced view), unlike intervention
+                            # decisions, which predict the next token.
                             keep = [j for j in index if 1 <= self.contexts[j]['output_position'] <= len(r['prefix'])]
                             if keep:
                                 take = torch.tensor(keep, device=logits.device)
@@ -260,29 +257,29 @@ class RequestCapture:
 
 
 class RoutingWorkerExtension:
-    def fr_begin(self, *, contract, requests):
+    def routing_begin(self, *, contract, requests):
         cfg = self.vllm_config
         require(cfg.speculative_config is None and cfg.model_config.enforce_eager and
                 not cfg.cache_config.enable_prefix_caching and not cfg.scheduler_config.async_scheduling,
                 'unqualified scheduling/cache profile')
-        require(getattr(self, '_fr_capture', None) is None, 'capture already attached')
-        self._fr_capture = RequestCapture(self.model_runner, contract, requests)
+        require(getattr(self, '_routing_capture', None) is None, 'capture already attached')
+        self._routing_capture = RequestCapture(self.model_runner, contract, requests)
         return {'status': 'attached', 'requests': len(requests)}
 
-    def fr_bind(self, *, aliases):
-        require(self._fr_capture is not None, 'missing request capture')
-        return self._fr_capture.bind(aliases)
+    def routing_bind(self, *, aliases):
+        require(self._routing_capture is not None, 'missing request capture')
+        return self._routing_capture.bind(aliases)
 
-    def fr_end(self):
-        require(self._fr_capture is not None, 'missing request capture')
+    def routing_end(self):
+        require(self._routing_capture is not None, 'missing request capture')
         try:
-            return self._fr_capture.finish()
+            return self._routing_capture.finish()
         finally:
-            self._fr_capture = None
+            self._routing_capture = None
 
-    def fr_abort(self):
-        capture = getattr(self, '_fr_capture', None)
+    def routing_abort(self):
+        capture = getattr(self, '_routing_capture', None)
         if capture is not None:
             capture.restore()
-        self._fr_capture = None
+        self._routing_capture = None
         return {'status': 'detached'}

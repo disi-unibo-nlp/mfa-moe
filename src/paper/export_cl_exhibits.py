@@ -9,15 +9,15 @@ benchmark attempts.
 
   python -m paper.export_cl_exhibits                 plotting files from the bundled copies
   python -m paper.export_cl_exhibits --capture-lfm   first add the LFM2.5 rows from final-routing-20261015-r1
-  python -m paper.export_cl_exhibits --capture-existing   first freeze the original seven-model copies (done once)
+  python -m paper.export_cl_exhibits --capture-existing   first copy the seven-model estimates from the saved reports
 """
 import argparse
 import csv
 import json
 import shutil
 
-from paper.cl_models import MODELS, ORIGINAL_MODELS
-from paper.cl_paths import DATA, LEGACY, REPO
+from paper.cl_models import MODELS, SEVEN_MODELS
+from paper.cl_paths import DATA, REPO, SAVED_REPORTS
 from paper.export_routing_results import PAPER_CLASSES
 from store import BENCHMARKS, FAST, file_sha, verified
 
@@ -35,15 +35,15 @@ def source(path):
 def capture():
     DATA.mkdir(parents=True, exist_ok=True)
     sources = {}
-    older, review = LEGACY / "generated/best_results_20261009", REPO / "report/model-analysis-review-20261008"
-    for origin in [older / name for name in ("routing_readout.csv", "selection_coverage.csv", "anticipation.csv")] + [
+    saved, review = SAVED_REPORTS / "generated/best_results_20261009", REPO / "report/model-analysis-review-20261008"
+    for origin in [saved / name for name in ("routing_readout.csv", "selection_coverage.csv", "anticipation.csv")] + [
             review / name for name in ("benchmark_cells.csv", "expert_usage_correctness_mean_all.csv")]:
         shutil.copyfile(origin, DATA / origin.name)
         sources[origin.name] = source(origin)
     imported = REPO / "report/research-campaign-v3-20261014-r6/EVIDENCE_IMPORT.json"
     bindings = {r["path"]: r["sha256"] for r in json.loads(imported.read_text())["references"]}
     summaries = {}
-    for model in ORIGINAL_MODELS:
+    for model in SEVEN_MODELS:
         path = REPO / "report/research-campaign-v3-20261014-r5-r2" / model / "NATIVE_DYNAMICS_SUMMARY.json"
         if bindings[str(path)] != file_sha(path):
             raise ValueError("imported dynamics changed: " + model)
@@ -52,7 +52,7 @@ def capture():
     (DATA / "native_dynamics.json").write_text(json.dumps(summaries, indent=2) + "\n")
     fixture = REPO / "report/research-campaign-v3-20261014-r6/PARTIAL_VALIDATION_EVIDENCE.json"
     records = json.loads(fixture.read_text())["models"]
-    if {r["model"] for r in records} != set(ORIGINAL_MODELS):
+    if {r["model"] for r in records} != set(SEVEN_MODELS):
         raise ValueError("native fixture roster changed")
     (DATA / "native_fixtures.json").write_text(json.dumps(records, indent=2) + "\n")
     sources["native_fixtures"] = source(fixture)
@@ -67,7 +67,7 @@ LFM_BULK = FAST / "final-routing-20261015-r1/lfm25"
 def lfm_benchmark_cells():
     """card-v3 cells for LFM2.5 with the source adjudication rule: math_verify True stays correct, a capped
     answer is incorrect, and a finished rejected answer takes its J1 answer-equivalence verdict. Intervals
-    repeat the original 1,000-replicate question bootstrap with seed 0."""
+    use the same 1,000-replicate question bootstrap (seed 0) as the seven-model cells."""
     import numpy as np
     items = {}
     for line in (LFM_BULK / "j1/new_lfm25_items.jsonl").open():
@@ -276,9 +276,9 @@ def dynamics_data():
 
 
 def check_inputs():
-    """The original models each have a native-memory fixture that adds up over workers; every model has 4,647 attempts."""
+    """The seven-model captures each have a native-memory fixture that adds up over workers; every model has 4,647 attempts."""
     fixtures = {r["model"]: r for r in json.loads((DATA / "native_fixtures.json").read_text())}
-    for m in ORIGINAL_MODELS:
+    for m in SEVEN_MODELS:
         if sum(fixtures[m]["native_resident_bytes_by_worker"]) != fixtures[m]["native_resident_bytes_aggregate"]:
             raise ValueError("worker aggregation differs")
     cells = {(r["model"], r["dataset"]): r for r in read_csv("benchmark_cells.csv") if r["corpus"] == "card-v3"}

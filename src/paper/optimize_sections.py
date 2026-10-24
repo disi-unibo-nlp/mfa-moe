@@ -47,8 +47,7 @@ def _complete_response(record: dict) -> bool:
                 'scientific_regressions_B'} if '-judge-' in record['custom_id'] else {'section_id', 'candidate_latex'}
     if not isinstance(parsed, dict) or not required.issubset(parsed):
         return False
-    # A schema-shaped refusal is not a scientific review. This occurred when a
-    # historical model-availability note was mistakenly retained in the rubric.
+    # A schema-shaped refusal or placeholder is not a scientific review.
     if '-judge-' in record['custom_id']:
         values = list(parsed['scores_A'].values()) + list(parsed['scores_B'].values())
         if not any(values) or re.search(r'placeholders?|review (?:not (?:conducted|performed)|blocked)',
@@ -88,8 +87,8 @@ def protected_changes(baseline: str, candidate: str) -> dict:
     if original_keys != proposed_keys:
         changes['citations'] = {'removed': sorted(original_keys - proposed_keys),
                                 'added': sorted(proposed_keys - original_keys)}
-    # Names and URL versions are not numerical measurements. The latest author
-    # amendment explicitly removes hyperlink wrappers and the AMC web footnote.
+    # Hyperlink addresses and comments are not numerical measurements, so they are
+    # left out of the numeric literals.
     original_numbers, proposed_numbers = _numbers(baseline), _numbers(candidate)
     removed_numbers = list((original_numbers - proposed_numbers).elements())
     if removed_numbers:
@@ -136,7 +135,7 @@ class SectionOptimizer:
     """Keep the fixed evidence and complete round artifacts together."""
 
     def __init__(self, run_dir: Path, client: Path, workers: int) -> None:
-        """Load the author-approved run without altering historical responses."""
+        """Load the author-approved run without altering its saved responses."""
         self.root, self.client, self.workers = run_dir, client, workers
         self.protocol = json.loads((run_dir / 'PROTOCOL.json').read_text())
         self.sections = self.protocol['main_sections']
@@ -151,34 +150,34 @@ class SectionOptimizer:
             raise ValueError('This run requires the two author-approved gpt-6-luna judges')
 
     def _context(self, section: str) -> str:
-        """Retain complete source examples and Humanizer guidance with live rules."""
+        """The recorded generator context with complete source examples, plus the live paper rules and brief."""
         template = next(row for row in self.templates
                         if row['custom_id'].startswith(section + '-'))
         context = template['body']['input'][1]['content'].split('(E) CURRENT COMPLETE SECTION:')[0]
         complete_examples = self.root / 'sections' / section / 'examples-complete.md'
         if complete_examples.exists():
-            historical_examples = (complete_examples.parent / 'examples.md').read_text()
-            if historical_examples not in context:
-                raise ValueError('Historical example packet not found in its recorded context')
-            context = context.replace(historical_examples, complete_examples.read_text(), 1)
+            recorded_examples = (complete_examples.parent / 'examples.md').read_text()
+            if recorded_examples not in context:
+                raise ValueError('Example packet not found in its recorded context')
+            context = context.replace(recorded_examples, complete_examples.read_text(), 1)
         if section == 'method':
             supplement = self.root.parent / 'review-revision/method-examples.md'
             context += '\n\nCOMPLETE SUPPLEMENTARY METHOD EXAMPLES\n' + supplement.read_text()
-        # Current local rules supersede historical copies in the original packet.
+        # Current local rules supersede the copies in the recorded packet.
         context += '\n\nCURRENT AUTHOR AMENDMENTS AND PAPER RULES (supersede earlier versions)\n'
         context += (self.notes / 'paper-rules.md').read_text()
         context += '\n\nCURRENT BRIEF\n' + (self.notes / 'writing_brief.md').read_text()
         return context
 
     def _batch(self, round_number: int, role: str, requests: list[dict]) -> dict:
-        """Invoke the maintained ELM client and require complete successful results."""
+        """Invoke the ELM client and require complete successful results."""
         prefix = self.root / f'round-{round_number:02d}-{role}'
         request_path = prefix.with_suffix('.jsonl')
         result_path = self.root / f'round-{round_number:02d}-{role[:-1]}-results.jsonl'
         if not request_path.exists():
             request_path.write_text(''.join(json.dumps(row) + '\n' for row in requests))
         elif read_jsonl(request_path) != requests:
-            raise ValueError(f'Request mismatch at {request_path}; preserve original run inputs')
+            raise ValueError(f'Request mismatch at {request_path}; preserve the recorded run inputs')
         subprocess.run(['bash', str(self.client), 'batch', str(request_path), str(result_path),
                         '--workers', str(self.workers), '--retries', '1', '--timeout', '600'],
                        check=True)

@@ -1,4 +1,4 @@
-"""Ordinary native vLLM loader and per-request durable generation."""
+"""Native vLLM loader and per-request durable generation."""
 from __future__ import annotations
 from pathlib import Path
 import time
@@ -52,7 +52,7 @@ def prompt_prefix(binding, model, row, tokenizer):
 
 def budget_tokens(spec):
     """Prefix of a length-limit row: the first `cut` generated tokens of a finished native run, then the
-    model's closing suffix, so the model only writes its answer (outcome_steering budget arm)."""
+    model's closing suffix, so the model only writes its answer (the length-limit arm of the outcome releases)."""
     from store import file_sha
     require(file_sha(spec['path']) == spec['sha256_file'], 'budget source output changed')
     tokens = load(spec['path'])['token_ids']

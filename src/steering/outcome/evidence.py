@@ -12,7 +12,7 @@ For every class (and the class-blind set) of one model, on the capture release's
   score computed against reasoning length (long minus short attempts). A high value means the score
   mostly tracks length (as Qwen3-30B's did in r1).
 
-It is reported, never used as a gate (D-0006).
+It is reported, never used as a gate.
 """
 from __future__ import annotations
 

@@ -1,5 +1,5 @@
 #!/bin/bash
-# Apply the declared extension rule (ledger D-0003) to a sealed outcome analysis; if it is met, seal and launch the
+# Apply the declared extension rule to a sealed outcome analysis; if it is met, seal and launch the
 # next outcome release. Submitted by hand after the analysis job:
 #   sbatch scripts/steering/outcome_next.sh EFFECTS_OUTCOME.json NAME TESTS --cutoff TIME [OPTION...]
 #   e.g. sbatch ... report/outcome-steering-20261022-r1/analysis/EFFECTS_OUTCOME.json outcome-steering-20261022-r2 125 \

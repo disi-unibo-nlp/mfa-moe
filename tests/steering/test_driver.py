@@ -5,7 +5,7 @@ import unittest
 from pathlib import Path
 from types import SimpleNamespace
 from unittest.mock import patch
-from steering import pulse as driver
+from steering import pulse
 from store import FAST, WORK, verified
 from steering.stream import Clock
 
@@ -17,14 +17,14 @@ class Selection(unittest.TestCase):
                 for d, l, a, s in ((0, 3, .2, .5), (1, 9, .3, .1), (2, 15, .3, .4))]
         noms.append({'status': 'insufficient_support', 'fold': 0, 'class': 'Plan', 'depth_third': 0, 'layer': None,
                      'association': None, 'stability': None})
-        chosen, evidence = driver.select_layers(noms)
+        chosen, evidence = pulse.select_layers(noms)
         self.assertEqual(chosen, {(0, 'Read'): {'depth_third': 2, 'layer': 15}})
         self.assertEqual(len(evidence), 3)
 
-    def test_published_manifests_match_reduced_design(self):
+    def test_published_manifests_match_the_pulsed_design(self):
         total = 0
         for model in ('gpt', 'nemotron', 'qwen35', 'qwen36', 'gemma', 'glm', 'qwen330b'):
-            value = verified(driver.DRIVER/model/'ASSIGNMENTS.json')
+            value = verified(pulse.DRIVER/model/'ASSIGNMENTS.json')
             rows = value['records']
             self.assertFalse(value['outcomes_used'])
             self.assertEqual(len(value['selection']), 35)
@@ -41,13 +41,13 @@ class Selection(unittest.TestCase):
         self.assertEqual(total, 26129)
 
     def test_job_receipts_record_the_code_and_the_python_that_ran(self):
-        record = driver.code_record()
+        record = pulse.code_record()
         self.assertEqual(set(record), {'git_revision', 'source_sha256', 'python'})
         self.assertEqual(record['python'], sys.version.split()[0])
 
     def test_shards_partition_families(self):
-        rows = verified(driver.DRIVER/'gpt'/'ASSIGNMENTS.json')['records']
-        parts = [driver.design_rows('gpt', 'main', (i, 3)) for i in range(3)]
+        rows = verified(pulse.DRIVER/'gpt'/'ASSIGNMENTS.json')['records']
+        parts = [pulse.design_rows('gpt', 'main', (i, 3)) for i in range(3)]
         self.assertEqual(sum(map(len, parts)), len(rows))
         fams = [{r['family'] for r in p} for p in parts]
         self.assertFalse(fams[0] & fams[1] or fams[1] & fams[2] or fams[0] & fams[2])
@@ -119,7 +119,7 @@ class EngineTest(unittest.TestCase):
     def test_cleanup_error_preserves_the_original_engine_error(self):
         uid = '%064x' % 414
 
-        class Broken(driver.Engine):
+        class Broken(pulse.Engine):
             def step(self, finish):
                 raise ValueError('original capture disagreement')
 
@@ -130,9 +130,9 @@ class EngineTest(unittest.TestCase):
             return {'prompt_ids': [1], 'params': SimpleNamespace(seed=1, max_tokens=10), 'total': 10}
 
         with tempfile.TemporaryDirectory(dir=WORK/'tools/tmp') as temporary:
-            engine = Broken(SimpleNamespace(llm_engine=FakeEngine({uid: 10})), driver.Store(Path(temporary)),
+            engine = Broken(SimpleNamespace(llm_engine=FakeEngine({uid: 10})), pulse.Store(Path(temporary)),
                             time.time()+30, hooked=False, max_inflight=2, drain_seconds=0)
-            with patch.object(driver, 'log') as log:
+            with patch.object(pulse, 'log') as log:
                 with self.assertRaisesRegex(ValueError, 'original capture disagreement'):
                     engine.run([{'uid': uid}], build, lambda *args: None)
             self.assertEqual(log.call_args.args[0]['error'], 'secondary cleanup failure')
@@ -150,15 +150,15 @@ class EngineTest(unittest.TestCase):
             reports.append({uid: {**capture, 'sha256': digest(capture)}})
 
         def rpc(method, *, kwargs):
-            self.assertEqual(method, 'fs_release')
+            self.assertEqual(method, 'stream_release')
             calls.append(kwargs['uids'])
             self.assertEqual(len(calls), 1)
             return reports
 
         with tempfile.TemporaryDirectory(dir=WORK/'tools/tmp') as tmp:
-            store = driver.Store(Path(tmp))
+            store = pulse.Store(Path(tmp))
             fake = FakeEngine({uid: 100})
-            engine = driver.Engine(SimpleNamespace(llm_engine=fake, collective_rpc=rpc), store,
+            engine = pulse.Engine(SimpleNamespace(llm_engine=fake, collective_rpc=rpc), store,
                                    time.time()+30, hooked=True, max_inflight=2)
             engine.inflight[uid] = {'progress': {'tokens': [1], 'segments': [{}]}, 'new': 1}
             with patch('steering.pulse.work_remaining_bytes', return_value=100*2**30):
@@ -188,15 +188,15 @@ class EngineTest(unittest.TestCase):
             return {'prompt_ids': prompt+history, 'params': SimpleNamespace(seed=segment, max_tokens=left),
                     'request': None, 'total': 400}
         with tempfile.TemporaryDirectory(dir=WORK/'tools/tmp') as tmp:
-            store = driver.Store(Path(tmp))
+            store = pulse.Store(Path(tmp))
             done = {}
 
             def finish(row, progress, reason, stop, capture):
                 done[row['uid']] = (list(progress['tokens']), reason, len(progress['segments']))
-            e = driver.Engine(llm, store, time.time()+0.25, hooked=False, max_inflight=2, drain_seconds=0)
+            e = pulse.Engine(llm, store, time.time()+0.25, hooked=False, max_inflight=2, drain_seconds=0)
             e.run(rows, build, finish)
             self.assertTrue(e.metrics['drained'] >= 1)
-            e = driver.Engine(llm, store, time.time()+60, hooked=False, max_inflight=2, drain_seconds=0)
+            e = pulse.Engine(llm, store, time.time()+60, hooked=False, max_inflight=2, drain_seconds=0)
             e.run(rows, build, finish)
             self.assertEqual(set(done), set(uids))
             for u in uids:
@@ -208,15 +208,11 @@ class EngineTest(unittest.TestCase):
             self.assertTrue(any(s > 1 for _, _, s in done.values()))
 
 
-if __name__ == '__main__':
-    unittest.main()
-
-
-class ReviewFixes(unittest.TestCase):
-    """Regressions from the 2026-10-17 drain/resume review (P1 seed, P2 drain order, P3 crash recovery)."""
+class DrainAndResume(unittest.TestCase):
+    """Draining and resuming: the seed of a resumed segment, the order of a drain and recovery after a crash."""
 
     def _engine(self, store, fake, deadline):
-        return driver.Engine(SimpleNamespace(llm_engine=fake), store, deadline, hooked=False, max_inflight=2,
+        return pulse.Engine(SimpleNamespace(llm_engine=fake), store, deadline, hooked=False, max_inflight=2,
                              drain_seconds=0)
 
     def test_zero_token_drain_keeps_seed_index(self):
@@ -228,13 +224,13 @@ class ReviewFixes(unittest.TestCase):
                     'request': None, 'total': 50}
         uid = '%064x' % 7
         with tempfile.TemporaryDirectory(dir=WORK/'tools/tmp') as tmp:
-            store = driver.Store(Path(tmp))
+            store = pulse.Store(Path(tmp))
             folder = store.folder(uid)
-            driver.checkpoint(folder/'PARTIAL.json', {'uid': uid, 'tokens': [], 'segments': [
+            pulse.checkpoint(folder/'PARTIAL.json', {'uid': uid, 'tokens': [], 'segments': [
                 {'history': 0}, {'history': 0}], 'total_allowance': 50})
             e = self._engine(store, FakeEngine({uid: 20}), time.time()+30)
             e.admit({'uid': uid}, build)
-            driver.checkpoint(folder/'PARTIAL.json', {'uid': uid, 'tokens': [1, 2, 3], 'segments': [
+            pulse.checkpoint(folder/'PARTIAL.json', {'uid': uid, 'tokens': [1, 2, 3], 'segments': [
                 {'history': 0}, {'history': 0}], 'total_allowance': 50})
             e2 = self._engine(store, FakeEngine({uid: 20}), time.time()+30)
             e2.admit({'uid': uid}, build)
@@ -247,11 +243,11 @@ class ReviewFixes(unittest.TestCase):
             return {'prompt_ids': [0]*4+history, 'params': SimpleNamespace(seed=0, max_tokens=500),
                     'request': None, 'total': 500}
 
-        class Failing(driver.Engine):
+        class Failing(pulse.Engine):
             def release(self, uids):
                 raise RuntimeError('release failed')
         with tempfile.TemporaryDirectory(dir=WORK/'tools/tmp') as tmp:
-            store = driver.Store(Path(tmp))
+            store = pulse.Store(Path(tmp))
             e = Failing(SimpleNamespace(llm_engine=FakeEngine({uid: 10**6})), store, time.time()+30,
                         hooked=False, max_inflight=2, drain_seconds=0)
             e.admit({'uid': uid}, build)
@@ -266,14 +262,14 @@ class ReviewFixes(unittest.TestCase):
         uid = '%064x' % 9
         row = {'uid': uid}
         with tempfile.TemporaryDirectory(dir=WORK/'tools/tmp') as tmp:
-            store = driver.Store(Path(tmp))
+            store = pulse.Store(Path(tmp))
             folder = store.folder(uid)
-            driver.checkpoint(folder/'PARTIAL.json', {'uid': uid, 'tokens': [1], 'segments': [{'history': 0}],
+            pulse.checkpoint(folder/'PARTIAL.json', {'uid': uid, 'tokens': [1], 'segments': [{'history': 0}],
                                                       'total_allowance': 9})
             publish(folder/'OUTPUT.json', {'uid': uid, 'token_ids': [1, 2], 'finish_reason': 'stop',
                                            'segments': [{'history': 0}]})
             self.assertEqual(store.state(uid)['status'], 'output')
-            self.assertEqual(driver.recover_outputs(store, [row]), 1)
+            self.assertEqual(pulse.recover_outputs(store, [row]), 1)
             self.assertEqual(store.state(uid)['status'], 'unknown')
             self.assertTrue(store.state(uid)['recovered_after_crash'])
 
@@ -290,7 +286,7 @@ class NativeIdCaptureTests(unittest.TestCase):
         capture = {'capture': {'0': record}, 'stats': {}, 'sha256': 'x', 'native_id_arrays': {'0': (ids, weights)}}
         with tempfile.TemporaryDirectory(dir=WORK/'tools/tmp') as tmp, \
                 patch('steering.pulse.work_remaining_bytes', return_value=100*2**30):
-            saved = driver.compress_audit_capture(Path(tmp)/'unit', capture)
+            saved = pulse.compress_audit_capture(Path(tmp)/'unit', capture)
             self.assertNotIn('native_id_arrays', saved)
             self.assertEqual((saved['capture'], saved['full_capture']['format']), ({'0': record}, 'native-ids-uint8-float16'))
             with np.load(Path(tmp)/'unit/AUDIT.npz') as audit:
@@ -298,9 +294,13 @@ class NativeIdCaptureTests(unittest.TestCase):
                 self.assertTrue(np.array_equal(audit['layer_0_native_weights'], weights))
             capture['native_id_arrays'] = {'0': (ids+1, weights)}
             with self.assertRaisesRegex(ValueError, 'differs from its receipt'):
-                driver.compress_audit_capture(Path(tmp)/'other', capture)
+                pulse.compress_audit_capture(Path(tmp)/'other', capture)
 
     def test_free_space_is_the_work_quota_under_work_and_the_filesystem_elsewhere(self):
         with patch('steering.pulse.work_remaining_bytes', return_value=7):
-            self.assertEqual(driver.free_bytes(WORK/'tools/tmp/not-yet-made'), 7)
-        self.assertGreater(driver.free_bytes(FAST/'not-yet-made'), 0)
+            self.assertEqual(pulse.free_bytes(WORK/'tools/tmp/not-yet-made'), 7)
+        self.assertGreater(pulse.free_bytes(FAST/'not-yet-made'), 0)
+
+
+if __name__ == '__main__':
+    unittest.main()

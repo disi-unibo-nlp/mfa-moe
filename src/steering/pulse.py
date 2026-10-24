@@ -1,16 +1,16 @@
-"""Reduced final-routing driver: one engine per model shard with continuous admission.
+"""Pulsed steering: one engine per model shard with continuous admission.
 
-Design (debate round 3, 2026-10-17): eight models, five arms, central count, one
-discovery-selected layer per fold/class. Every assigned continuation runs to EOS
-or its original allowance (`runtime.remaining`) in one hooked eager engine that
-admits requests as others finish. A request still running at the allocation
+Design: eight models, five arms, central count, one discovery-selected layer per
+fold and class. Every assigned continuation runs to EOS or its original allowance
+(`runtime.remaining`) in one hooked eager engine that admits requests as others
+finish. A request still running at the allocation
 deadline is checkpointed with all its tokens and resumed in a later job by
 re-prefilling prompt + prefix + generated tokens through the same hooks, so the
 pulse is re-applied at its original positions. Nothing is redrawn.
 
 Commands (python -m steering.pulse ...):
-  plan                          CPU: selection + reduced manifests for prepared models
-  plan-strong --model M,M       CPU: the post-hoc strong-dose manifests
+  plan                          CPU: selection + the main-design manifests for prepared models
+  plan-strong --model M,M       CPU: the strong-dose manifests
   run --model M --shard I/N     GPU: assigned continuations of one shard (--design main|strong)
   native --shard I/N            GPU: LFM native population (unhooked engine)
   annotate --shard I/N          GPU: LFM discovery judge labels (unhooked engine); annotate_rows judges any other
@@ -152,10 +152,10 @@ STORES = {'main': 'units', 'strong': 'strong/units'}
 
 
 def plan_strong(models, seed_tag='strong-dose-v1'):
-    """Post-hoc dose escalation (decided 2026-10-17 after the null pre-registered preview; labelled exploratory).
-    For each (model, family, class): the pre-registered HIGH-count nominated expert sets of all three depth thirds
+    """Strong-dose design (exploratory: chosen after the pre-registered contrasts of the main design were null).
+    For each (model, family, class): the high-count nominated expert sets of all three depth thirds
     (COUNT_NOMINATIONS, training folds only) applied together, held for the whole 16·Q75 window; matched control =
-    the pre-registered high-count control sets of the same layers. Same prefix and seed as the family's native row
+    the high-count control sets of the same layers. Same prefix and seed as the family's native row
     (common random numbers)."""
     out = {}
     for model in models:
@@ -271,7 +271,7 @@ class Engine:
         internal = self.engine.add_request(uid, {'prompt_token_ids': spec['prompt_ids']}, spec['params'])
         require(isinstance(internal, str) and internal, 'vLLM returned no internal ID')
         if self.hooked:
-            reports = self.llm.collective_rpc('fs_add', kwargs={'requests': [spec['request']], 'aliases': {internal: uid}})
+            reports = self.llm.collective_rpc('stream_add', kwargs={'requests': [spec['request']], 'aliases': {internal: uid}})
             require(len(reports) == 2 and len({r['mapping_sha256'] for r in reports}) == 1,
                     'tensor-parallel request maps disagree')
         self.inflight[uid] = {'row': row, 'progress': progress, 'internal': internal, 'new': 0,
@@ -291,9 +291,9 @@ class Engine:
     def release(self, uids):
         if not self.hooked or not uids:
             return {}
-        reports = self.llm.collective_rpc('fs_release', kwargs={'uids': list(uids)})
+        reports = self.llm.collective_rpc('stream_release', kwargs={'uids': list(uids)})
         require(len(reports) == 2, 'routing release lacks both tensor-parallel ranks')
-        # fs_release consumes worker state, including when comparison below fails.
+        # stream_release consumes worker state, including when comparison below fails.
         for uid in uids:
             self.inflight[uid]['capture_released'] = True
         for uid in uids:
@@ -435,7 +435,7 @@ def segment_seed(seed, segment):
 
 
 def sampling(profile, seed, history, cap, *, greedy=False, logprobs=None):
-    """runtime.sampling_parameters with streamed token deltas and no detokenization."""
+    """Sampling parameters of the model's profile with streamed token deltas and no detokenization."""
     from vllm import SamplingParams
     from vllm.sampling_params import RequestOutputKind
     sampler = {k: v for k, v in profile['sampler'].items() if v is not None}
@@ -548,7 +548,7 @@ def free_bytes(folder: Path) -> int:
 
 
 def intervention_finisher(store, b, model):
-    """Bind the existing output publication callback to this model and store."""
+    """The callback that publishes a finished request's output, capture and result in `store`."""
     def finish(row, progress, reason, stop, capture):
         """Commit a completed draw and its agreed routing telemetry atomically by receipt."""
         uid = row['uid']
@@ -625,7 +625,7 @@ def run_model(model, shard, deadline, *, max_inflight=64, design='main'):
 
 
 def execute_rows(b, model, rows, store, deadline, *, max_inflight, design, shard=(0, 1)):
-    """Execute a caller-owned roster with the maintained engine and publication path.
+    """Execute a roster with the hooked engine and the publication path.
 
     Args:
         b: Verified study binding.
@@ -635,7 +635,7 @@ def execute_rows(b, model, rows, store, deadline, *, max_inflight, design, shard
         deadline: Absolute engine deadline.
         max_inflight: Maximum concurrent requests.
         design: Main or strong.
-        shard: Historical shard identity.
+        shard: (index, count) of the roster, logged and written to the job receipt.
 
     Returns:
         Terminal job receipt.
@@ -651,7 +651,7 @@ def execute_rows(b, model, rows, store, deadline, *, max_inflight, design, shard
     llm, kwargs, load_seconds = hooked_llm(b, model, max_inflight)
     try:
         contract = contract_for(b, model, rows)
-        reports = llm.collective_rpc('fs_begin', kwargs={'contract': contract})
+        reports = llm.collective_rpc('stream_begin', kwargs={'contract': contract})
         require(len(reports) == 2, 'study requires two tensor-parallel ranks')
         tokenizer = llm.get_tokenizer()
         engine = Engine(llm, store, deadline, hooked=True, max_inflight=max_inflight)
@@ -659,8 +659,8 @@ def execute_rows(b, model, rows, store, deadline, *, max_inflight, design, shard
              'hook_layers': contract['hook_layers']})
         metrics = engine.run(pending, intervention_builder(b, model, tokenizer, closure(tokenizer, model)),
                              intervention_finisher(store, b, model))
-        validation = llm.collective_rpc('fs_validation')
-        llm.collective_rpc('fs_end')
+        validation = llm.collective_rpc('stream_validation')
+        llm.collective_rpc('stream_end')
     finally:
         llm.llm_engine.engine_core.shutdown()
     receipt = {'model': model, 'shard': list(shard), 'job': os.environ.get('SLURM_JOB_ID'), 'load_seconds': load_seconds,
@@ -695,7 +695,7 @@ def native_kwargs(b, model, max_num_seqs=128):
 
 
 def reader_kwargs(a, max_num_seqs=128):
-    """Reader.__init__ profile with CUDA graphs and a larger running batch."""
+    """The judge reader's engine profile with CUDA graphs and a larger running batch."""
     return {'model': a['path'], 'tokenizer': a['path'], 'tensor_parallel_size': 2, 'dtype': 'bfloat16',
             'max_model_len': a['native_context'], 'max_num_seqs': max_num_seqs, 'enforce_eager': False,
             'enable_prefix_caching': True, 'async_scheduling': False, 'enable_chunked_prefill': True,
@@ -766,7 +766,7 @@ def lfm_annotate(shard, deadline):
 
 
 def annotate_rows(rows, shard, deadline, *, units_root, progress_root, jobs_root, stage):
-    """Judge one shard of `rows` with the original renderer, prompt tokens, decoding and parser.
+    """Judge one shard of `rows` with the judge's renderer, prompt tokens, decoding and parser.
 
     Args:
         rows: Judge tasks, each {'uid', 'inputs', ...}; the shard keeps every row with index % count == shard index.
@@ -805,8 +805,8 @@ def annotate_rows(rows, shard, deadline, *, units_root, progress_root, jobs_root
     def build(row, history, segment):
         prompt = token_ids(parser.tokenizer, renderer.request('render', inputs=row['inputs'])['conversation'], a['config'])
         if len(prompt)+16384 > a['native_context']:
-            # As the original reader inventory: an input that cannot keep the fixed allowance is an unjudged
-            # unknown (e.g. a repetition loop rendered as one giant sentence), never truncated or redrawn.
+            # An input that cannot keep the fixed allowance is an unjudged unknown
+            # (e.g. a repetition loop rendered as one giant sentence), never truncated or redrawn.
             if units.state(row['uid']) is None and units.intent(row, os.environ['SLURM_JOB_ID']):
                 units.commit(row, {'status': 'unknown', 'label': None, 'reason': 'input_exceeds_reader_context',
                                    'input_tokens': len(prompt), 'stochastic_redraw': False})

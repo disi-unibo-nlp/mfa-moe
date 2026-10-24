@@ -6,7 +6,7 @@ Needs no manuscript, receipt or PDF.
 import copy
 import unittest
 
-from paper.cl_models import MODELS, ORIGINAL_MODELS, PLOT_LABELS, SOURCE_MODELS, TICKS
+from paper.cl_models import MODELS, PLOT_LABELS, SEVEN_MODELS, SOURCE_MODELS, TICKS
 from paper.verify_cl_printed_tables import compare_source_tables, parse_table
 from store import MODELS as STORE_MODELS
 
@@ -37,8 +37,8 @@ class ModelOrderTest(unittest.TestCase):
     def test_display_order_keeps_every_source_model(self):
         self.assertEqual(SOURCE_MODELS, STORE_MODELS)
         self.assertEqual(sorted(MODELS), sorted(SOURCE_MODELS))
-        self.assertEqual(ORIGINAL_MODELS, SOURCE_MODELS[:7])
-        self.assertNotIn("lfm25", ORIGINAL_MODELS)
+        self.assertEqual(SEVEN_MODELS, SOURCE_MODELS[:7])
+        self.assertNotIn("lfm25", SEVEN_MODELS)
 
     def test_ticks_follow_the_display_order(self):
         self.assertEqual(TICKS, ",".join(PLOT_LABELS[model] for model in MODELS))

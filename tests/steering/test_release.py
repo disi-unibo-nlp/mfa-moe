@@ -19,14 +19,14 @@ class SealTests(unittest.TestCase):
         temporary = tempfile.TemporaryDirectory(dir=WORK/'tools/tmp')
         self.addCleanup(temporary.cleanup)
         base = Path(temporary.name)
-        self.reports, self.snapshots, old = base/'report', base/'releases', base/'old-snapshot'
-        (old/'configs').mkdir(parents=True)
-        (old/'configs/study.yaml').write_text('seed: 1\n')
+        self.reports, self.snapshots, parent_snapshot = base/'report', base/'releases', base/'parent-snapshot'
+        (parent_snapshot/'configs').mkdir(parents=True)
+        (parent_snapshot/'configs/study.yaml').write_text('seed: 1\n')
         self.link = self.reports/LINK_PATH
         publish(self.link, {'models': list(release.MODELS)})
         self.parent = publish(self.reports/'whole-reasoning-20261021-r18/RELEASE.json', {
-            'release_root': str(old), 'cutoff': 1792814400., 'classifier': {'root': 'c'},
-            'nomination_reference': 'n.json', 'inputs': {str(old/'configs/study.yaml'): file_sha(old/'configs/study.yaml')}})
+            'release_root': str(parent_snapshot), 'cutoff': 1792814400., 'classifier': {'root': 'c'},
+            'nomination_reference': 'n.json', 'inputs': {str(parent_snapshot/'configs/study.yaml'): file_sha(parent_snapshot/'configs/study.yaml')}})
         publish(self.reports/'whole-reasoning-20261021-r18/SOURCES.json',
                 {'sources': [{'model': 'gpt', 'root': 'r8', 'dose': 'half'}]})
         self.config = 'seed: 1\n'
@@ -53,7 +53,7 @@ class SealTests(unittest.TestCase):
         self.assertEqual((sealed['commit'], sealed['release_root']), ('abc123', str(folder)))
         self.assertEqual((sealed['models'], sealed['shards'], sealed['sweep'], sealed['cutoff']),
                          (list(release.MODELS), {}, {}, 1792814400.))
-        self.assertEqual(sealed['parent_release_sha256'], self.parent['sha256'])  # the key the earlier relinks used
+        self.assertEqual(sealed['parent_release_sha256'], self.parent['sha256'])  # the key a relink names its parent by
         self.assertNotIn('template_release_sha256', sealed)
         # The release records what the earlier jobs cost, since its ceilings do not reset the budget.
         usage = verified(root/'PRIOR_USAGE.json')
@@ -72,7 +72,7 @@ class SealTests(unittest.TestCase):
             release.seal('relink', 'whole-reasoning-test', 12, ARGS)
 
     def test_a_failed_seal_leaves_no_release_behind(self):
-        self.config = 'seed: 2\n'  # the snapshot no longer holds the file the parent pinned
+        self.config = 'seed: 2\n'  # the snapshot holds another version of the file the parent pinned
         with self.assertRaisesRegex(ValueError, 'bound input changed'):
             release.seal('relink', 'whole-reasoning-bad', 1, ARGS)
         self.assertFalse((self.reports/'whole-reasoning-bad').exists())
@@ -101,12 +101,13 @@ class OutcomeReleaseTests(unittest.TestCase):
         temporary = tempfile.TemporaryDirectory(dir=WORK/'tools/tmp')
         self.addCleanup(temporary.cleanup)
         base = Path(temporary.name)
-        self.reports, self.snapshots, self.fast, old = base/'report', base/'releases', base/'fast', base/'old-snapshot'
-        (old/'configs').mkdir(parents=True)
-        (old/'configs/study.yaml').write_text('seed: 1\n')
+        self.reports, self.snapshots, self.fast, parent_snapshot = (
+            base/'report', base/'releases', base/'fast', base/'parent-snapshot')
+        (parent_snapshot/'configs').mkdir(parents=True)
+        (parent_snapshot/'configs/study.yaml').write_text('seed: 1\n')
         publish(self.reports/'whole-reasoning-20261021-r7/RELEASE.json', {
-            'release_root': str(old), 'cutoff': 1792814400., 'classifier': {'root': 'c'},
-            'nomination_reference': 'n.json', 'inputs': {str(old/'configs/study.yaml'): file_sha(old/'configs/study.yaml')}})
+            'release_root': str(parent_snapshot), 'cutoff': 1792814400., 'classifier': {'root': 'c'},
+            'nomination_reference': 'n.json', 'inputs': {str(parent_snapshot/'configs/study.yaml'): file_sha(parent_snapshot/'configs/study.yaml')}})
         questions = [f'aime24|a{i}' for i in range(6)]
         families = {q: 'f-'+q for q in questions}
         folds = self.reports/capture.FOLDS
@@ -158,7 +159,7 @@ class OutcomeReleaseTests(unittest.TestCase):
             release.seal('capture', 'outcome-capture-test', 5, self.capture_args())
 
     def test_a_failed_capture_seal_leaves_neither_a_release_nor_a_stores_folder(self):
-        self.config = 'seed: 2\n'  # the snapshot no longer holds the file the template pinned
+        self.config = 'seed: 2\n'  # the snapshot holds another version of the file the template pinned
         with self.assertRaisesRegex(ValueError, 'bound input changed'):
             release.seal('capture', 'outcome-capture-bad', 5, self.capture_args())
         self.assertFalse((self.reports/'outcome-capture-bad').exists())

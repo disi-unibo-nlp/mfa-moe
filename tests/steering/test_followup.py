@@ -11,7 +11,7 @@ import unittest
 from unittest.mock import patch
 
 from steering import followup, release, whole
-from steering import pulse as driver
+from steering import pulse
 from store import MODELS, WORK, digest, file_sha, load, publish
 
 TMP = WORK/'tools/tmp'
@@ -42,9 +42,9 @@ class SyntheticComplement(unittest.TestCase):
             'models': ['gemma'], 'sweep': {'gemma': 'main'}, 'shards': {'gemma': 4}, 'complement_sha256': 'x',
             'cutoff': 1000., 'release_root': '/old/snapshot', 'inputs': {str(self.input_file): file_sha(self.input_file)},
             'classifier': {}, 'nomination_reference': 'n', 'template_release_sha256': 't'})
-        store = driver.Store(self.parent/'stores/gemma/main/units')
+        store = pulse.Store(self.parent/'stores/gemma/main/units')
         publish(store.folder(self.rows[0]['uid'])/'RESULT.json', {'status': 'complete'})
-        driver.checkpoint(store.folder(self.rows[1]['uid'])/'PARTIAL.json', {'uid': self.rows[1]['uid']})
+        pulse.checkpoint(store.folder(self.rows[1]['uid'])/'PARTIAL.json', {'uid': self.rows[1]['uid']})
         publish(store.folder(self.rows[2]['uid'])/'OUTPUT.json', {'token_ids': []})
         # Shard i takes family f<i>: shard 0 finished, shard 1 failed after starting f1 (row 2), shards 2 and 3
         # (f2, f3) ended without touching a row.
@@ -94,7 +94,7 @@ class FollowupPlanTests(SyntheticComplement):
                                                    if k not in ('sha256', 'complement_sha256')})
         with self.assertRaisesRegex(ValueError, 'not a complement release'):
             followup.plan_followup(self.reports/'base')
-        store = driver.Store(self.parent/'stores/gemma/main/units')
+        store = pulse.Store(self.parent/'stores/gemma/main/units')
         for row in self.rows:
             folder = store.folder(row['uid'])
             for name in ('OUTPUT.json', 'PARTIAL.json'):
@@ -120,19 +120,19 @@ class FollowupPlanTests(SyntheticComplement):
 class SubmittedJobsTests(unittest.TestCase):
     def test_both_job_records_give_the_shard_and_extraction_jobs(self):
         with tempfile.TemporaryDirectory(dir=TMP) as temporary:
-            new, old = Path(temporary)/'new', Path(temporary)/'old'
-            new.mkdir()
-            old.mkdir()
-            (new/'JOBS.txt').write_text(
+            text, record = Path(temporary)/'text', Path(temporary)/'record'
+            text.mkdir()
+            record.mkdir()
+            (text/'JOBS.txt').write_text(
                 'whole-tests 1 sbatch -J whole-tests steering.whole validate --release R\n'
                 'whole-run-glm 2 sbatch -J whole-run-glm gpu.sh steering.whole run --release R --model glm --shard 3/27\n'
                 'whole-extract-glm 3 sbatch -J whole-extract-glm cpu.sh steering.whole extract --release R --model glm\n')
-            publish(old/'JOBS.json', {'production': {'glm': [{'id': '2', 'model': 'glm', 'shard': [3, 27]}]},
+            publish(record/'JOBS.json', {'production': {'glm': [{'id': '2', 'model': 'glm', 'shard': [3, 27]}]},
                                       'extraction': {'glm': {'id': '3'}}})
             expected = {'run': [{'id': '2', 'model': 'glm', 'shard': [3, 27]}],
                         'extract': [{'id': '3', 'model': 'glm', 'shard': None}]}
-            self.assertEqual(followup.submitted_jobs(new), expected)
-            self.assertEqual(followup.submitted_jobs(old), expected)
+            self.assertEqual(followup.submitted_jobs(text), expected)
+            self.assertEqual(followup.submitted_jobs(record), expected)
 
     def test_a_job_slurm_no_longer_knows_is_unknown_and_a_cancelled_one_keeps_its_first_word(self):
         answer = SimpleNamespace(stdout='5|COMPLETED\n6|CANCELLED by 133943\n')

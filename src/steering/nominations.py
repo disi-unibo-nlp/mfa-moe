@@ -60,8 +60,8 @@ def finish_assignments(binding,model,result):
 def discovery_inputs(binding, model):
     """Load one model's frozen discovery sources (with folds), class counts and token denominators.
 
-    LFM2.5 was extracted after the seven-model campaign, so its counts live in its own native
-    discovery receipt; every other model reads the source campaign.
+    LFM2.5's counts live in its own native discovery receipt; every other model reads the
+    seven-model source campaign.
 
     Returns:
         sources, counts, tokens and the provenance hashes of those inputs.
@@ -74,7 +74,7 @@ def discovery_inputs(binding, model):
         from store import CLASSES
         data = load(Path(config['root'])/'lfm25/DISCOVERY_INPUTS.json')
         sources = data['sources']
-        # The same archive checks as research_campaign_v3_r6.inputs.counts_for.
+        # The same archive checks as routing.selection.counts_for.
         with np.load(data['counts'], allow_pickle=False) as archive:
             ids, counts, tokens = (archive[k] for k in ('attempt_id', 'counts', 'tokens'))
             require(list(archive['classes']) == list(CLASSES)+['ALL_REASONING', 'ALL_LABELLED'], 'class order mismatch')
@@ -99,7 +99,7 @@ def derive_whole(binding, model, destination):
     """Publish global RD candidates from the same frozen discovery inputs.
 
     Args:
-        binding: Original study binding, used only for discovery data/profile.
+        binding: Study binding, used only for discovery data/profile.
         model: Any study model.
         destination: Fresh whole experiment model directory.
 

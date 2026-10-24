@@ -15,7 +15,7 @@ import numpy as np
 import pandas as pd
 import torch
 
-from steering import pulse as driver, whole, whole_effects
+from steering import pulse, whole, whole_effects
 from store import WORK, digest, file_sha, load, publish
 from steering.stream import Clock, StreamCapture
 
@@ -209,7 +209,7 @@ class ResumeManifestTests(unittest.TestCase):
         row = self.rows[index]
         folder = self.stores[where]/row['uid']
         if kind == 'partial':
-            driver.checkpoint(folder/'PARTIAL.json', {**partial(row, [1, 2, 3]), **changes})
+            pulse.checkpoint(folder/'PARTIAL.json', {**partial(row, [1, 2, 3]), **changes})
         elif kind == 'complete':
             publish(folder/'RESULT.json', {'status': 'complete'})
         elif kind == 'output':
@@ -293,7 +293,7 @@ class SavedStateGateTests(unittest.TestCase):
     def setUp(self):
         self.directory = tempfile.TemporaryDirectory(dir=TMP)
         self.addCleanup(self.directory.cleanup)
-        self.store = driver.Store(Path(self.directory.name)/'units')
+        self.store = pulse.Store(Path(self.directory.name)/'units')
         self.rows = synthetic_rows()
         self.resume = {'design': 'resume', 'records': self.rows}
 
@@ -301,7 +301,7 @@ class SavedStateGateTests(unittest.TestCase):
         row = self.rows[index]
         folder = self.store.folder(row['uid'])
         if kind == 'partial':
-            driver.checkpoint(folder/'PARTIAL.json', {**partial(row, [1, 2]), **changes})
+            pulse.checkpoint(folder/'PARTIAL.json', {**partial(row, [1, 2]), **changes})
         elif kind == 'complete':
             publish(folder/'RESULT.json', {'status': 'complete'})
         elif kind == 'output':
@@ -329,19 +329,19 @@ class SavedStateGateTests(unittest.TestCase):
 
     def test_finished_or_half_finished_rows_are_never_resumed(self):
         # A row this resume release already finished passes: a restarted shard skips it.
-        store = driver.Store(Path(self.directory.name)/'complete')
+        store = pulse.Store(Path(self.directory.name)/'complete')
         publish(store.folder(self.rows[2]['uid'])/'RESULT.json', {'status': 'complete'})
         whole.check_saved_state(self.resume, self.rows, store)
         with self.assertRaisesRegex(ValueError, 'fresh only'):
             whole.check_saved_state({'records': self.rows}, self.rows, store)
-        store = driver.Store(Path(self.directory.name)/'output')
+        store = pulse.Store(Path(self.directory.name)/'output')
         publish(store.folder(self.rows[2]['uid'])/'OUTPUT.json', {'status': 'output'})
         with self.assertRaisesRegex(ValueError, 'fresh only'):
             whole.check_saved_state(self.resume, self.rows, store)
         # A PARTIAL that coexists with an OUTPUT is the output's, never a continuation.
-        store = driver.Store(Path(self.directory.name)/'both')
+        store = pulse.Store(Path(self.directory.name)/'both')
         folder = store.folder(self.rows[3]['uid'])
-        driver.checkpoint(folder/'PARTIAL.json', partial(self.rows[3], [1]))
+        pulse.checkpoint(folder/'PARTIAL.json', partial(self.rows[3], [1]))
         publish(folder/'OUTPUT.json', {'token_ids': [1]})
         with self.assertRaisesRegex(ValueError, 'fresh only'):
             whole.check_saved_state(self.resume, self.rows, store)
@@ -371,10 +371,10 @@ class SeedResumeTests(unittest.TestCase):
             self.rows[1]['uid']: partial(self.rows[1], [8], [{'job': '2', 'history': 0, 'seed': 1, 'max_tokens': 100}]),
             self.rows[2]['uid']: partial(self.rows[2], [], [{'job': '3', 'history': 0, 'seed': 2, 'max_tokens': 100}])}
         for uid, root in self.sources.items():
-            driver.checkpoint(root/'stores/gemma/main/units'/uid/'PARTIAL.json', self.states[uid])
+            pulse.checkpoint(root/'stores/gemma/main/units'/uid/'PARTIAL.json', self.states[uid])
         self.value = {'design': 'resume', 'dose': 'main', 'sha256': 'manifest', 'records': self.rows,
                       'resume_sources': {uid: str(root) for uid, root in self.sources.items()}}
-        self.store = driver.Store(self.root/'stores/gemma/main/units')
+        self.store = pulse.Store(self.root/'stores/gemma/main/units')
 
     def source_files(self):
         paths = [root/'stores/gemma/main/units'/uid/'PARTIAL.json' for uid, root in self.sources.items()]
@@ -404,7 +404,7 @@ class SeedResumeTests(unittest.TestCase):
         state = self.states[uid]
         advanced = {**state, 'tokens': state['tokens']+[9, 9], 'segments': state['segments']+[
             {'job': '4', 'history': 3, 'seed': 99, 'max_tokens': 97}]}
-        driver.checkpoint(self.store.folder(uid)/'PARTIAL.json', advanced)
+        pulse.checkpoint(self.store.folder(uid)/'PARTIAL.json', advanced)
         self.assertEqual(self.seed(), first)
         self.assertEqual(load(self.store.folder(uid)/'PARTIAL.json'), advanced)
 
@@ -412,7 +412,7 @@ class SeedResumeTests(unittest.TestCase):
         self.seed()
         uid = self.rows[0]['uid']
         diverged = {**self.states[uid], 'tokens': [5, 6, 0]}
-        driver.checkpoint(self.store.folder(uid)/'PARTIAL.json', diverged)
+        pulse.checkpoint(self.store.folder(uid)/'PARTIAL.json', diverged)
         with self.assertRaisesRegex(ValueError, 'diverged'):
             self.seed()
         self.assertEqual(load(self.store.folder(uid)/'PARTIAL.json'), diverged)
@@ -429,7 +429,7 @@ class SeedResumeTests(unittest.TestCase):
 
     def test_a_source_of_another_assignment_or_a_non_resume_manifest_is_refused(self):
         row = self.rows[0]
-        driver.checkpoint(self.parent/'stores/gemma/main/units'/row['uid']/'PARTIAL.json',
+        pulse.checkpoint(self.parent/'stores/gemma/main/units'/row['uid']/'PARTIAL.json',
                           {**self.states[row['uid']], 'assignment_sha256': '1'*64})
         with self.assertRaisesRegex(ValueError, 'not this assignment'):
             self.seed(rows=[row])
@@ -449,19 +449,19 @@ class RunWiringTests(unittest.TestCase):
         self.base = publish(whole.manifest_path('gemma', 'main', self.parent), {
             'model': 'gemma', 'dose': 'main', 'scope': 'x', 'records': self.rows})
         self.units = self.parent/'stores/gemma/main/units'
-        driver.checkpoint(self.units/self.rows[1]['uid']/'PARTIAL.json', partial(self.rows[1], [4, 5, 6]))
+        pulse.checkpoint(self.units/self.rows[1]['uid']/'PARTIAL.json', partial(self.rows[1], [4, 5, 6]))
         publish(self.root/'RELEASE.json', {'models': ['gemma'], 'sweep': {'gemma': 'main'}})
         publish(self.root/'PREPARED.json', {})
         self.patches = [patch.object(whole, 'verify_release', return_value={'cutoff': time.time()+1e6}),
                         patch.object(whole, 'bound_store', side_effect=self.bound),
-                        patch.object(driver, 'binding', return_value={}),
-                        patch.object(driver, 'hooked_llm', side_effect=RuntimeError('engine reached'))]
+                        patch.object(pulse, 'binding', return_value={}),
+                        patch.object(pulse, 'hooked_llm', side_effect=RuntimeError('engine reached'))]
         for p in self.patches:
             p.start()
             self.addCleanup(p.stop)
 
     def bound(self, root, model, dose, canary=False):
-        return driver.Store(root/'stores'/model/dose/'units')
+        return pulse.Store(root/'stores'/model/dose/'units')
 
     def test_resume_shard_seeds_its_rows_then_reaches_the_engine(self):
         whole.resume_manifest(self.root, 'gemma', {'parent': str(self.parent), 'sources': [str(self.parent)]})
@@ -479,7 +479,7 @@ class RunWiringTests(unittest.TestCase):
         publish(whole.manifest_path('gemma', 'main', self.root), {**self.base, 'design': 'top-up'})
         publish(self.root/'gemma/SELECTED.json', {'dose': 'main', 'manifest_sha256': load(
             whole.manifest_path('gemma', 'main', self.root))['sha256'], 'canary_job': None, 'sweep': True})
-        driver.checkpoint(self.bound(self.root, 'gemma', 'main').folder(self.rows[1]['uid'])/'PARTIAL.json',
+        pulse.checkpoint(self.bound(self.root, 'gemma', 'main').folder(self.rows[1]['uid'])/'PARTIAL.json',
                           partial(self.rows[1], [1]))
         with self.assertRaisesRegex(ValueError, 'fresh only'):
             whole.run(self.root, 'gemma', (0, 1), 0.)
@@ -501,9 +501,9 @@ class ResumeAnalysisJoinTests(unittest.TestCase):
             planned = publish(whole.manifest_path('gpt', 'half', base), {'records': rows})
             follow_up = publish(whole.manifest_path('gpt', 'half', resume), {
                 'records': rows[1:], 'parent_manifest_sha256': planned['sha256'], 'design': 'resume'})
-            store = driver.Store(base/'stores/gpt/half/units')
+            store = pulse.Store(base/'stores/gpt/half/units')
             publish(store.folder(rows[0]['uid'])/'RESULT.json', {'status': 'complete'})
-            driver.checkpoint(store.folder(rows[1]['uid'])/'PARTIAL.json', partial(rows[1], [1, 2]))
+            pulse.checkpoint(store.folder(rows[1]['uid'])/'PARTIAL.json', partial(rows[1], [1, 2]))
             # The parent's extraction skips the interrupted row: it stays missing there.
             self.assertIsNone(whole_effects._extract_one(rows[1], b={}, model='gpt', tokenizer=None, close=None,
                                                          store=store, inputs={}))

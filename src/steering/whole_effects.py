@@ -24,7 +24,7 @@ import numpy as np
 import pandas as pd
 
 from store import CLASSES, digest, load, publish, require, verified
-from steering import pulse as driver
+from steering import pulse
 from steering.whole import (
     DOSES,
     DRAWS,
@@ -47,7 +47,7 @@ def unit_bounds(row: dict) -> dict:
         row: Assignment joined to extraction; missing outcomes retain their allowance.
 
     Returns:
-        Point compatibility values and separate lower/upper bound components.
+        Point values and separate lower/upper bound components.
     """
     allowance = int(row['total_allowance'])
     observed = row.get('outcome_status') == 'observed'
@@ -123,7 +123,7 @@ def extract(root: Path, model: str) -> dict:
     from steering.runtime import prompt_prefix
     value = manifest(root, model)
     store = bound_store(root, model, value['dose'])
-    b = driver.binding()
+    b = pulse.binding()
     tokenizer = AutoTokenizer.from_pretrained(b['models'][model]['local_path'], local_files_only=True)
     rows = value['records']
     # Every row of a family shares its original prompt; a sweep manifest has no native row to read it from.
@@ -192,7 +192,7 @@ def _extracted(root: Path, model: str, value: dict) -> tuple[pd.DataFrame, pd.Da
     sentences = pd.read_parquet(folder/'sentences.parquet') if (folder/'sentences.parquet').exists() else pd.DataFrame()
     if not sentences.empty:
         frozen = verified(root/'RELEASE.json')['classifier']
-        # Full solutions have far more sentences than the old 512-token windows.
+        # Full solutions have many sentences, so they are labelled in chunks.
         sentences = pd.concat([predict(sentences.iloc[start:start+10000], LEXICAL/'readout-v1', frozen=frozen)
                                for start in range(0, len(sentences), 10000)], ignore_index=True)
     return observed, sentences
@@ -475,7 +475,7 @@ def arm_summaries(boot, table: pd.DataFrame) -> tuple[list, dict]:
 def bootstrap():
     """The shared benchmark-stratified family bootstrap of every whole-reasoning interval."""
     from steering.pulse_effects import Bootstrap
-    benchmarks = {r['family']: r['benchmark'] for r in load(driver.STUDY/'ALLOCATION.json')['records']}
+    benchmarks = {r['family']: r['benchmark'] for r in load(pulse.STUDY/'ALLOCATION.json')['records']}
     return Bootstrap(sorted(benchmarks), benchmarks, draws=DRAWS, seed=SEED)
 
 

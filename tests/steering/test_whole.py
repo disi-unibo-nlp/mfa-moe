@@ -20,10 +20,10 @@ from steering.pulse_effects import Bootstrap, bounded_summary
 from steering.stream import StreamCapture, dose_totals
 from steering.whole import build_manifest, select_pairs
 from steering.whole_effects import unit_bounds, contrast, primary_frame
-from steering import pulse as driver, whole
+from steering import pulse, whole
 from store import publish
 
-LINK = driver.DRIVER/'EFFICIENCY_LINK_PREREG.json'  # the seven-model pre-registration
+LINK = pulse.DRIVER/'EFFICIENCY_LINK_PREREG.json'  # the seven-model pre-registration
 
 
 class NominationTests(unittest.TestCase):
@@ -395,7 +395,7 @@ class ExecutionGateTests(unittest.TestCase):
 
     def test_the_link_receipt_comes_from_the_release(self):
         publish(self.root/'RELEASE.json', {'release_root': str(whole.REPO)})
-        self.assertEqual(whole.link_receipt(self.root), driver.DRIVER/'EFFICIENCY_LINK_PREREG.json')
+        self.assertEqual(whole.link_receipt(self.root), pulse.DRIVER/'EFFICIENCY_LINK_PREREG.json')
         link = publish(self.root/'LINK.json', {'models': ['gpt']})
         publish(self.root/'RELINK.json', {'link': str(self.root/'LINK.json'), 'link_sha256': link['sha256']})
         self.assertEqual(whole.link_receipt(self.root), self.root/'LINK.json')

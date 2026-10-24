@@ -1,4 +1,4 @@
-"""The frozen pick rule (D-0006): which half-A cell is confirmed on half B, applied automatically.
+"""The frozen pick rule: which half-A cell is confirmed on half B, applied automatically.
 
 Among half-A cells (expert set, delta) whose nudge keeps accuracy against unedited routing no worse
 than -5 points (point estimate), take the one with the largest token benefit against the mean of its

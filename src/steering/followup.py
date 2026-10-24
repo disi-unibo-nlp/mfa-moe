@@ -20,13 +20,13 @@ from pathlib import Path
 import re
 import subprocess
 
-from steering import pulse as driver
+from steering import pulse
 from steering.whole import manifest, started_families, unfinished_rows
 from store import load, require, verified
 
 SHARD_GPU_HOURS = 8.  # one 2-GPU shard for its 4-hour walltime
 CEILING_MARGIN = 10.  # GPU-hours above the shards' walltimes, as in the complement release
-APPROVED_GPU_HOURS = 285.  # ceiling the user approved for the follow-up of r18 (ledger F-0012.7)
+APPROVED_GPU_HOURS = 285.  # GPU-hours the follow-up may reserve unless --max-gpu-hours says otherwise
 TERMINAL = ('COMPLETED', 'FAILED', 'CANCELLED', 'TIMEOUT', 'NODE_FAIL', 'OUT_OF_MEMORY', 'PREEMPTED')
 
 
@@ -56,7 +56,8 @@ def fit_shards(needed: dict[str, int], limit: int) -> dict[str, int]:
 def submitted_jobs(root: Path) -> dict[str, list[dict]]:
     """The jobs a release submitted, as {'run': [...], 'extract': [...]} with {id, model, shard} for each.
 
-    Reads JOBS.txt (written by scripts/steering/launch.sh) or, for the releases launched before it, JOBS.json.
+    Reads JOBS.txt (written by scripts/steering/launch.sh) or, in a release that holds JOBS.json instead,
+    that file.
     """
     jobs = {'run': [], 'extract': []}
     if (root/'JOBS.txt').exists():
@@ -130,7 +131,7 @@ def plan_followup(root: Path, max_gpu_hours: float = APPROVED_GPU_HOURS, shards:
     for model in release['models']:
         dose = release['sweep'][model]
         base = manifest(root, model, dose)
-        store = driver.Store(root/'stores'/model/dose/'units')
+        store = pulse.Store(root/'stores'/model/dose/'units')
         rows, counts = unfinished_rows(base, store)
         if not rows:
             continue

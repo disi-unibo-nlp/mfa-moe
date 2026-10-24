@@ -31,7 +31,7 @@ import numpy as np
 
 from generation.client import slurm_deadline
 from store import CLASSES, REPO, check_files, digest, file_sha, load, locked, publish, require, verified
-from steering import pulse as driver
+from steering import pulse
 from steering.selection import select_pairs
 
 # The models in the order the tables list them.
@@ -47,12 +47,12 @@ RESUMING_DESIGNS = ('resume', 'continuation')
 
 
 def manifest_path(model: str, dose: str, root: Path) -> Path:
-    """The frozen manifest of one model and dose; main and half keep their original names."""
+    """The frozen manifest of one model and dose: WHOLE.json for main, WHOLE_<DOSE>.json for the others."""
     return root/model/('WHOLE.json' if dose == 'main' else f'WHOLE_{dose.upper()}.json')
 
 
 def canary_path(root: Path, model: str, dose: str) -> Path:
-    """The canary receipt of one model and dose; main and half keep their original names."""
+    """The canary receipt of one model and dose: CANARY.json for main, CANARY_<DOSE>.json for the others."""
     return root/model/('CANARY.json' if dose == 'main' else f'CANARY_{dose.upper()}.json')
 
 
@@ -64,14 +64,13 @@ def sweep_doses(root: Path) -> dict:
 def link_receipt(root: Path) -> Path:
     """The efficiency-link receipt whose native signs pick the efficiency-directed classes.
 
-    Releases up to r18 use the seven-model pre-registration; a relink or continuation release names the
-    eight-model receipt (routing.efficiency_link) in RELINK.json or CONTINUATION.json, in which LFM2.5 has
-    its own signs.
+    A release with a RELINK.json or CONTINUATION.json names the eight-model receipt (routing.efficiency_link),
+    in which LFM2.5 has its own signs; every other release uses the seven-model pre-registration.
     """
     for kind in ('RELINK.json', 'CONTINUATION.json'):
         if (root/kind).exists():
             return Path(verified(root/kind)['link'])
-    return driver.DRIVER/'EFFICIENCY_LINK_PREREG.json'
+    return pulse.DRIVER/'EFFICIENCY_LINK_PREREG.json'
 
 
 # SteerMoE's published (activated, deactivated) counts: GPT-OSS-20B "faithful"/"unsafe", and
@@ -240,8 +239,8 @@ def build_manifest(model: str, dose: str, nominations: dict, b: dict, natives: l
     Args:
         model, dose: Model identity and steering strength (see DOSES).
         nominations: Discovery-only global risk-difference receipt.
-        b: Original study profile binding.
-        natives: Original main-design native assignments.
+        b: Study profile binding.
+        natives: Native assignments of the main design.
         inputs: Family to original prompt token list.
         link: The efficiency-link receipt that picks the efficiency-directed classes.
         sweep: Strength-sweep manifest: efficiency-directed cells only, no native rows (they are the same
@@ -297,14 +296,14 @@ def build_manifest(model: str, dose: str, nominations: dict, b: dict, natives: l
              'nominations_sha256': nominations['sha256'], 'cells': cells, 'records': rows,
              'planned': expected, 'executable': sum(r['nomination_status'] == 'nominated' for r in rows),
              'audit_units': audit_units, 'outcomes_used_for_selection': False}
-    # Base manifests keep their original keys, so rebuilt r7/r8 manifests stay byte-identical.
+    # A base manifest carries no 'design' key, so rebuilding one reproduces the sealed manifest byte for byte.
     return {**value, 'design': 'efficiency-sweep'} if sweep else value
 
 
 def prepare(root: Path) -> dict:
     """Publish the manifests of every model of the release (CPU job), then check the rebuilt nominations."""
     release = verify_release(root)
-    b = driver.binding()
+    b = pulse.binding()
     results = {}
     for model in release['models']:
         try:
@@ -345,7 +344,7 @@ def prepare_model(root: Path, b: dict, model: str) -> dict:
     link = link_receipt(root)
     nomination_path = folder/'WHOLE_NOMINATIONS.json'
     nominations = verified(nomination_path) if nomination_path.exists() else derive_whole(b, model, folder)
-    natives = [r for r in verified(driver.DRIVER/model/'ASSIGNMENTS.json')['records'] if r['arm'] == 'native']
+    natives = [r for r in verified(pulse.DRIVER/model/'ASSIGNMENTS.json')['records'] if r['arm'] == 'native']
     # Native rosters: 129 families for most models, 128 for Nemotron and Qwen3-30B, 112 for LFM2.5.
     require(natives and len({r['family'] for r in natives}) == len(natives), 'whole native family roster differs')
     inputs = {}
@@ -388,11 +387,11 @@ def topup_manifest(root: Path, model: str, spec: dict) -> dict:
     """
     dose, parent = sweep_doses(root)[model], Path(spec['parent'])
     base = manifest(parent, model, dose)
-    stores = [driver.Store(parent/'stores'/model/dose/'units')]
+    stores = [pulse.Store(parent/'stores'/model/dose/'units')]
     for sibling in map(Path, spec.get('siblings', [])):
         require(manifest(sibling, model, dose)['parent_manifest_sha256'] == base['sha256'],
                 'sibling top-up has another parent')
-        stores.append(driver.Store(sibling/'stores'/model/dose/'units'))
+        stores.append(pulse.Store(sibling/'stores'/model/dose/'units'))
     families = sorted({row['family'] for row in base['records']})
     failed = set(families) if spec['shards'] == 'all' else {
         family for i, family in enumerate(families) for index, count in spec['shards'] if i % count == index}
@@ -426,7 +425,7 @@ def complement_manifest(root: Path, model: str, spec: dict) -> dict:
     base = manifest(parent, model, dose)
     nominations = verified(parent/model/'WHOLE_NOMINATIONS.json')
     require(nominations['sha256'] == base['nominations_sha256'], 'parent nominations differ from its manifest')
-    profile = driver.binding()['models'][model]
+    profile = pulse.binding()['models'][model]
     classes = tuple(c for c in CLASSES if c not in directions(model, link_receipt(root))['suppress'])
     cells = [cell_actions(n, profile, model, dose, 'suppress') for n in nominations['records']
              if n['class'] in classes]
@@ -461,8 +460,7 @@ def resume_manifest(root: Path, model: str, spec: dict) -> dict:
 
     A row interrupted at a job walltime or crash holds only a PARTIAL.json, so its outcome is
     unknown. A resume release continues it from a copy of that file, re-prefilling prompt + saved
-    tokens through the same hooks as the pulsed study did: UIDs, seeds and actions stay the parent's
-    and nothing is redrawn. The source stores are never written (see seed_resume); whole_effects
+    tokens through the same hooks: UIDs, seeds and actions stay the parent's and nothing is redrawn. The source stores are never written (see seed_resume); whole_effects
     joins the outcomes by UID.
 
     Args:
@@ -480,7 +478,7 @@ def resume_manifest(root: Path, model: str, spec: dict) -> dict:
             topup = manifest(source, model, dose)
             require(topup['parent_manifest_sha256'] == base['sha256'],
                     'resume source belongs to another manifest')
-    stores = {str(source): driver.Store(source/'stores'/model/dose/'units') for source in roots}
+    stores = {str(source): pulse.Store(source/'stores'/model/dose/'units') for source in roots}
     rows, sources = [], {}
     for row in base['records']:
         states = {where: store.state(row['uid']) for where, store in stores.items()}
@@ -505,14 +503,14 @@ def resume_manifest(root: Path, model: str, spec: dict) -> dict:
     return select_manifest(root, model, value, resume=True)
 
 
-def saved_status(store: driver.Store, uid: str) -> str | None:
+def saved_status(store: pulse.Store, uid: str) -> str | None:
     """A row's saved state read from file presence, in Store.state order, without opening any file."""
     folder = store.folder(uid)
     return next((status for name, status in (('RESULT.json', 'complete'), ('OUTPUT.json', 'output'),
                                               ('PARTIAL.json', 'partial')) if (folder/name).exists()), None)
 
 
-def unfinished_rows(base: dict, store: driver.Store) -> tuple[list[dict], Counter]:
+def unfinished_rows(base: dict, store: pulse.Store) -> tuple[list[dict], Counter]:
     """Split a manifest's rows by saved state, for a release that continues its parent.
 
     Args:
@@ -533,7 +531,7 @@ def unfinished_rows(base: dict, store: driver.Store) -> tuple[list[dict], Counte
     return rows, counts
 
 
-def started_families(base: dict, store: driver.Store) -> set[str]:
+def started_families(base: dict, store: pulse.Store) -> set[str]:
     """Families of a manifest with any saved state in the store (a shard that started touches its families)."""
     return {row['family'] for row in base['records']
             if row['nomination_status'] == 'nominated' and saved_status(store, row['uid'])}
@@ -543,11 +541,11 @@ def continuation_manifest(root: Path, model: str, spec: dict) -> dict:
     """Publish the never-started and interrupted rows of a parent release as this release's manifest.
 
     The top-up and resume builders read a base release; this one reads any parent, including a complement
-    release, and does both jobs in one release (r11-r17 needed a top-up and a resume per parent). It runs
-    every nominated row of the parent that has no saved state and continues every row left PARTIAL, with
-    the parent's UIDs, seeds and actions. The saved tokens of a partial are copied into this release's own
-    store (seed_resume); the parent's store is only read. Rows the parent finished, or left as OUTPUT, stay
-    with it; whole_effects joins every outcome to the parent's rows by UID.
+    release, and does both jobs in one release. It runs every nominated row of the parent that has no saved
+    state and continues every row left PARTIAL, with the parent's UIDs, seeds and actions. The saved tokens
+    of a partial are copied into this release's own store (seed_resume); the parent's store is only read.
+    Rows the parent finished, or left as OUTPUT, stay with it; whole_effects joins every outcome to the
+    parent's rows by UID.
 
     Args:
         root: The folder of this release.
@@ -557,7 +555,7 @@ def continuation_manifest(root: Path, model: str, spec: dict) -> dict:
     """
     dose, parent = sweep_doses(root)[model], Path(spec['parent'])
     base = manifest(parent, model, dose)
-    store = driver.Store(parent/'stores'/model/dose/'units')
+    store = pulse.Store(parent/'stores'/model/dose/'units')
     rows, counts = unfinished_rows(base, store)
     require(rows, 'continuation has no unfinished rows')
     # Each partial must be this very assignment's, or its saved tokens would continue another draw.
@@ -583,15 +581,15 @@ def manifest(root: Path, model: str, dose: str | None = None) -> dict:
     return verified(manifest_path(model, dose, root))
 
 
-def bound_store(root: Path, model: str, dose: str, canary: bool = False) -> driver.Store:
+def bound_store(root: Path, model: str, dose: str, canary: bool = False) -> pulse.Store:
     """Reject any nonempty unbound store before the engine is loaded."""
     value = manifest(root, model, dose)
     release = verified(root/'RELEASE.json')
     folder = root/'stores'/model/dose/('canary' if canary else 'units')
     identity = {'manifest_sha256': value['sha256'], 'release_sha256': release['sha256'], 'canary': canary}
     # The shards of one model start together. Without the lock a later shard finds the first one's
-    # half-written receipt in the folder and fails as "nonempty unbound" (r15, r16 and r18 each lost
-    # shards this way). The lock file sits beside the folder, so the folder itself stays empty until bound.
+    # half-written receipt in the folder and fails as "nonempty unbound". The lock file sits beside
+    # the folder, so the folder itself stays empty until bound.
     with locked(folder.parent, 'bind-'+folder.name):
         if (folder/'EXECUTION.json').exists():
             require({k: v for k, v in verified(folder/'EXECUTION.json').items() if k != 'sha256'} == identity,
@@ -599,7 +597,7 @@ def bound_store(root: Path, model: str, dose: str, canary: bool = False) -> driv
         else:
             require(not folder.exists() or not any(folder.iterdir()), 'nonempty unbound whole store')
             publish(folder/'EXECUTION.json', identity)
-    return driver.Store(folder)
+    return pulse.Store(folder)
 
 
 def bind_sweep_stores(root: Path) -> None:
@@ -614,7 +612,7 @@ def bind_sweep_stores(root: Path) -> None:
             bound_store(root, model, dose)
 
 
-def check_saved_state(value: dict, rows: list[dict], store: driver.Store,
+def check_saved_state(value: dict, rows: list[dict], store: pulse.Store,
                       canary: bool = False) -> None:
     """Refuse a shard that would redraw or overwrite saved work.
 
@@ -643,7 +641,7 @@ def check_saved_state(value: dict, rows: list[dict], store: driver.Store,
                 f'whole execution is fresh only; preserve partials ({row["uid"]}, {state["status"]})')
 
 
-def seed_resume(root: Path, model: str, value: dict, rows: list[dict], store: driver.Store,
+def seed_resume(root: Path, model: str, value: dict, rows: list[dict], store: pulse.Store,
                 shard: tuple) -> dict:
     """Copy each row's source PARTIAL.json into the bound store and publish what was copied.
 
@@ -672,13 +670,13 @@ def seed_resume(root: Path, model: str, value: dict, rows: list[dict], store: dr
     for row in (row for row in rows if row['uid'] in sources):
         uid = row['uid']
         origin = Path(sources[uid])/'stores'/model/value['dose']/'units'
-        path = driver.Store(origin).folder(uid)/'PARTIAL.json'
+        path = pulse.Store(origin).folder(uid)/'PARTIAL.json'
         partial = load(path)
         require(partial['uid'] == uid and partial['assignment_sha256'] == digest(row),
                 f'resume source is not this assignment\'s partial: {path}')
         saved = store.state(uid)
         if saved is None:
-            driver.checkpoint(store.folder(uid)/'PARTIAL.json', partial)
+            pulse.checkpoint(store.folder(uid)/'PARTIAL.json', partial)
         elif saved['status'] == 'partial':  # a finished row (RESULT or OUTPUT) has no partial left to compare
             keys = ('uid', 'assignment_sha256', 'total_allowance')
             require(all(saved[key] == partial[key] for key in keys) and
@@ -752,8 +750,7 @@ def relative_fluency(observed: list[dict]) -> dict:
               for r, pair in zip(steered, references)]
     ratio = math.exp(float(np.mean(ratios))) if ratios else None
     # Only breakdown blocks a run: rows stuck at the length limit or looping. A longer but fluent
-    # reasoning is the outcome under study, so the length ratio is reported, never gated
-    # (user decision 2026-10-21, before any production outcome).
+    # reasoning is the outcome under study, so the length ratio is reported, never gated.
     failures = []
     if cap_rate is not None and cap_rate-native_cap > .15:
         failures.append('cap')
@@ -840,7 +837,7 @@ def admission_order(rows: list[dict], link: Path) -> list[dict]:
 
 
 def run(root, model, shard, deadline, *, max_inflight=64, canary=False, dose=None):
-    """Run one source-bound shard or canary on the existing hooked engine."""
+    """Run one source-bound shard or canary on the hooked engine."""
     from steering.runtime import closure
     release = verify_release(root)
     verified(root/'PREPARED.json')
@@ -855,39 +852,39 @@ def run(root, model, shard, deadline, *, max_inflight=64, canary=False, dose=Non
             proof = verified(canary_path(root, model, value['dose']))
             require(proof['gate']['passed'] and proof['job'] == selected['canary_job'] and
                     proof['manifest_sha256'] == value['sha256'], 'production canary qualification differs')
-    rows = canary_rows(value, link) if canary else driver.shard_rows(value['records'], shard)
+    rows = canary_rows(value, link) if canary else pulse.shard_rows(value['records'], shard)
     store = bound_store(root, model, value['dose'], canary)
     check_saved_state(value, rows, store, canary)
     cutoff = release['cutoff']  # no GPU row starts after this time
     if time.time() >= cutoff:
         # A shard that starts after the science cutoff leaves its rows unknown without loading the model.
-        driver.log({'event': 'whole-shard-after-cutoff', 'model': model, 'shard': list(shard)})
+        pulse.log({'event': 'whole-shard-after-cutoff', 'model': model, 'shard': list(shard)})
         return None
     if value.get('design') in RESUMING_DESIGNS and not canary:
         seed_resume(root, model, value, rows, store, shard)
     executable = admission_order([r for r in rows if r['nomination_status'] == 'nominated'], link)
-    b = driver.binding()
-    llm, _, load_seconds = driver.hooked_llm(b, model, max_inflight)
+    b = pulse.binding()
+    llm, _, load_seconds = pulse.hooked_llm(b, model, max_inflight)
     try:
-        contract = driver.contract_for(b, model, executable)
-        reports = llm.collective_rpc('fs_begin', kwargs={'contract': contract})
+        contract = pulse.contract_for(b, model, executable)
+        reports = llm.collective_rpc('stream_begin', kwargs={'contract': contract})
         require(len(reports) == 2, 'whole requires both tensor-parallel ranks')
         tokenizer = llm.get_tokenizer()
-        engine = driver.Engine(llm, store, min(deadline, cutoff), hooked=True, max_inflight=max_inflight,
+        engine = pulse.Engine(llm, store, min(deadline, cutoff), hooked=True, max_inflight=max_inflight,
                                checkpoint_seconds=120, drain_seconds=120)
         # Canary rows share one per-model token cap so the relative gates compare like with like
         # inside the canary walltime; production keeps the full model-card allowance.
-        build = driver.intervention_builder(b, model, tokenizer, closure(tokenizer, model),
+        build = pulse.intervention_builder(b, model, tokenizer, closure(tokenizer, model),
                                             limit=CANARY_TOKENS.get(model, 32768) if canary else None)
-        metrics = engine.run(executable, build, driver.intervention_finisher(store, b, model),
+        metrics = engine.run(executable, build, pulse.intervention_finisher(store, b, model),
                              stop_execution=lambda: (root/'STOP.json').exists() or (root/model/'STOP.json').exists())
-        validation = llm.collective_rpc('fs_validation')
-        llm.collective_rpc('fs_end')
+        validation = llm.collective_rpc('stream_validation')
+        llm.collective_rpc('stream_end')
     finally:
         llm.llm_engine.engine_core.shutdown()
     result = {'model': model, 'dose': value['dose'], 'manifest_sha256': value['sha256'],
               'job': os.environ['SLURM_JOB_ID'], 'shard': list(shard), 'load_seconds': load_seconds,
-              'metrics': metrics, 'native_validation': validation[0], **driver.shard_completion(store, rows)}
+              'metrics': metrics, 'native_validation': validation[0], **pulse.shard_completion(store, rows)}
     if canary:
         result['gate'] = fluency(store, rows, require_complete=True, censor_unfinished=True)
         publish(canary_path(root, model, value['dose']), result)
@@ -965,7 +962,7 @@ def main(argv=None):
     parser.add_argument('--gpu-hours', type=float, help='budget only: GPU-hours the jobs may use at most')
     parser.add_argument('--model', choices=MODELS)
     parser.add_argument('--dose', choices=tuple(DOSES), help='canary only; default: the model\'s declared start dose')
-    parser.add_argument('--shard', type=driver.parse_shard, default=(0, 1))
+    parser.add_argument('--shard', type=pulse.parse_shard, default=(0, 1))
     args = parser.parse_args(argv)
     root = args.release.resolve()
     if args.command == 'plan':
@@ -978,14 +975,14 @@ def main(argv=None):
         require(validate(root)['passed'], 'the unit tests of this release failed')
     elif args.command == 'prepare':
         validated(root)
-        driver.log({'event': 'prepare-whole', 'results': prepare(root)})
+        pulse.log({'event': 'prepare-whole', 'results': prepare(root)})
     elif args.command in ('canary', 'run'):
         require(os.environ.get('SLURM_JOB_GPUS'), 'whole inference requires allocated GPUs')
         deadline = slurm_deadline(120/3600)  # stop admitting 2 minutes before the job ends
         if args.command == 'run':
             run(root, args.model, args.shard, deadline)
             return
-        dose = args.dose or ('half' if args.model == 'gpt' else 'main')  # GPT's full dose broke down in its canary
+        dose = args.dose or ('half' if args.model == 'gpt' else 'main')  # GPT's canary runs at half dose: its full dose breaks down
         try:
             run(root, args.model, (0, 1), deadline, canary=True, dose=dose)
         except BaseException as error:

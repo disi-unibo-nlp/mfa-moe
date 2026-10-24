@@ -12,7 +12,7 @@ from unittest.mock import patch
 
 import pandas as pd
 
-from steering import pulse as driver, whole, whole_effects
+from steering import pulse, whole, whole_effects
 from store import CLASSES, WORK, digest, load, publish
 
 TMP = WORK/'tools/tmp'
@@ -48,7 +48,7 @@ class ComplementManifestTests(unittest.TestCase):
         publish(self.root/'RELEASE.json', {'models': ['gemma'], 'sweep': {'gemma': 'main'}})
         self.patches = [patch.object(whole, 'directions', return_value={'suppress': SUPPRESSED}),
                         patch.object(whole, 'cell_actions', side_effect=cell),
-                        patch.object(driver, 'binding', return_value={'models': {'gemma': {}}})]
+                        patch.object(pulse, 'binding', return_value={'models': {'gemma': {}}})]
         for p in self.patches:
             p.start()
             self.addCleanup(p.stop)
@@ -115,14 +115,14 @@ class ContinuationTests(unittest.TestCase):
             publish(root/'RELEASE.json', {'models': ['gemma'], 'sweep': {'gemma': 'main'}, 'release_root': str(whole.REPO)})
         self.patches = [patch.object(whole, 'directions', return_value={'suppress': SUPPRESSED}),
                         patch.object(whole, 'cell_actions', side_effect=cell),
-                        patch.object(driver, 'binding', return_value={'models': {'gemma': {}}})]
+                        patch.object(pulse, 'binding', return_value={'models': {'gemma': {}}})]
         for p in self.patches:
             p.start()
             self.addCleanup(p.stop)
         whole.complement_manifest(self.complement, 'gemma', {'parent': str(self.base_release)})
         self.complement_manifest = load(whole.manifest_path('gemma', 'main', self.complement))
         self.nominated = [r for r in self.complement_manifest['records'] if r['nomination_status'] == 'nominated']
-        self.store = driver.Store(self.complement/'stores/gemma/main/units')
+        self.store = pulse.Store(self.complement/'stores/gemma/main/units')
         # Row 0 finished, row 1 crashed after its output, rows 2 and 3 are partial, the rest never started.
         self.finished, self.crashed, self.partial_rows = self.nominated[0], self.nominated[1], self.nominated[2:4]
         publish(self.store.folder(self.finished['uid'])/'RESULT.json', {'status': 'complete'})
@@ -132,7 +132,7 @@ class ContinuationTests(unittest.TestCase):
         self.never_started = self.nominated[4:]
 
     def save_partial(self, row, tokens, **changes):
-        driver.checkpoint(self.store.folder(row['uid'])/'PARTIAL.json', {
+        pulse.checkpoint(self.store.folder(row['uid'])/'PARTIAL.json', {
             'uid': row['uid'], 'assignment_sha256': digest(row), 'tokens': tokens,
             'segments': [{'job': '1', 'history': 0, 'seed': 7}], 'total_allowance': 100, **changes})
 
@@ -175,7 +175,7 @@ class ContinuationTests(unittest.TestCase):
 
     def test_seeding_copies_the_partials_and_leaves_never_started_rows_fresh(self):
         value = self.continuation()
-        child_store = driver.Store(self.child/'stores/gemma/main/units')
+        child_store = pulse.Store(self.child/'stores/gemma/main/units')
         whole.check_saved_state(value, value['records'], child_store)
         receipt = whole.seed_resume(self.child, 'gemma', value, value['records'], child_store, (0, 1))
         self.assertEqual([r['uid'] for r in receipt['rows']], [r['uid'] for r in self.partial_rows])
@@ -183,7 +183,7 @@ class ContinuationTests(unittest.TestCase):
         self.assertTrue(all(child_store.state(r['uid']) is None for r in self.never_started))
         # A restarted shard passes the gate again; a partial of another assignment does not.
         whole.check_saved_state(value, value['records'], child_store)
-        driver.checkpoint(child_store.folder(self.never_started[0]['uid'])/'PARTIAL.json', {
+        pulse.checkpoint(child_store.folder(self.never_started[0]['uid'])/'PARTIAL.json', {
             'uid': self.never_started[0]['uid'], 'assignment_sha256': '0'*64, 'tokens': [5]})
         with self.assertRaisesRegex(ValueError, 'fresh only'):
             whole.check_saved_state(value, value['records'], child_store)
@@ -217,14 +217,14 @@ class ContinuationTests(unittest.TestCase):
 
     def test_a_shard_starting_after_the_cutoff_exits_cleanly_without_seeding(self):
         value = self.continuation()
-        child_store = driver.Store(self.child/'stores/gemma/main/units')
+        child_store = pulse.Store(self.child/'stores/gemma/main/units')
         publish(self.child/'PREPARED.json', {})
         events = []
         environment = {'SLURM_JOB_ID': '1', 'SLURM_JOB_GPUS': '0,1'}
         with patch.dict(os.environ, environment), patch.object(whole, 'verify_release', return_value={'cutoff': 1.}), \
              patch.object(whole, 'bound_store', return_value=child_store), \
              patch.object(whole, 'slurm_deadline', return_value=0.), \
-             patch.object(driver, 'log', side_effect=events.append):
+             patch.object(pulse, 'log', side_effect=events.append):
             # main returns None, so the job ends with exit code 0 and its dependents are not blocked.
             self.assertIsNone(whole.main(['run', '--release', str(self.child), '--model', 'gemma', '--shard', '0/2']))
         self.assertEqual([e['event'] for e in events], ['whole-shard-after-cutoff'])
@@ -232,7 +232,7 @@ class ContinuationTests(unittest.TestCase):
         self.assertTrue(all(child_store.state(r['uid']) is None for r in value['records']))
 
     def test_the_link_of_a_continuation_comes_from_its_release_file(self):
-        self.assertEqual(whole.link_receipt(self.child), driver.DRIVER/'EFFICIENCY_LINK_PREREG.json')
+        self.assertEqual(whole.link_receipt(self.child), pulse.DRIVER/'EFFICIENCY_LINK_PREREG.json')
         publish(self.child/'CONTINUATION.json', {'models': {}, 'link': '/some/EFFICIENCY_LINK_V2.json'})
         self.assertEqual(whole.link_receipt(self.child), Path('/some/EFFICIENCY_LINK_V2.json'))
 

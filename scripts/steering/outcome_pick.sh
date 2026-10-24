@@ -1,5 +1,5 @@
 #!/bin/bash
-# Apply the frozen pick rule (ledger D-0006) to the analysis of half A of the outcome sweep; if it picks cells, seal and
+# Apply the frozen pick rule to the analysis of half A of the outcome sweep; if it picks cells, seal and
 # launch half B with them. Submit it by hand right after launching half A, behind half A's analysis job:
 #   sbatch --dependency=afterok:ANALYSIS_JOB scripts/steering/outcome_pick.sh HALF_A MODEL NAME TESTS --capture C --shards N --cutoff TIME
 #   e.g. ... outcome-steering-20261023-r6 gpt outcome-steering-20261023-r7 70 --capture outcome-capture-20261023-r2 --shards 2 --cutoff 2026-10-30T23:00

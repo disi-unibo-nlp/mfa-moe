@@ -24,7 +24,7 @@ import pandas as pd
 
 from store import file_sha, publish, require, verified
 
-# The base releases' native and native-repeat rows: the final whole-reasoning table, next to this release.
+# The base releases' native and native-repeat rows: the combined whole-reasoning table, next to this release.
 NATIVES = 'whole-reasoning-20261021-r17/analysis-combined'
 METRICS = (('log_reasoning', 'tokens'), ('accuracy', 'accuracy'))
 COUNTERS = ('active_positions', 'native_shift_members', 'executed_shift_members',
@@ -196,7 +196,7 @@ def analyze(root: Path) -> dict:
 
 
 # ---------------------------------------------------------------------------------------------
-# r2: one half of the class-conditioned sweep (OUTCOME_SWEEP.json releases, D-0006)
+# r2: one half of the class-conditioned sweep (OUTCOME_SWEEP.json releases)
 # ---------------------------------------------------------------------------------------------
 #
 # Each family is a capture question. Its unedited arm is the mean of its six capture attempts (each

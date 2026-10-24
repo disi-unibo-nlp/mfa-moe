@@ -39,13 +39,13 @@ def figure_root(paper):
 
 
 MODELS = ("gpt", "nemotron", "qwen35", "qwen36", "gemma", "glm", "qwen330b")
-PLANNED_MODEL = "lfm25"
-DISPLAY_MODELS = (*MODELS, PLANNED_MODEL)
-PENDING = r"\textemdash"
+LFM_MODEL = "lfm25"
+DISPLAY_MODELS = (*MODELS, LFM_MODEL)
+DASH = r"\textemdash"
 LABELS = dict(zip(("GPT-OSS-20B", "Nemotron-3.5-Lightning-30B-A3B",
                    "Qwen3.5-35B-A3B", "Qwen3.6-35B-A3B", "Gemma-4-26B-A4B",
                    "GLM-4.7-Flash (30B-A3B)", "Qwen3-30B-A3B"), MODELS))
-LABELS["LFM2.5-24B-A2B"] = PLANNED_MODEL
+LABELS["LFM2.5-24B-A2B"] = LFM_MODEL
 LABELS["Nemotron-3.5 30B-A3B"] = "nemotron"
 LABELS["Nemotron-3.5-Lightning 30B-A3B"] = "nemotron"
 BENCHMARKS = ("aime24", "aime25", "amc23", "math500", "minerva", "olympiad")
@@ -110,34 +110,18 @@ def check_ci(text, values, precision, context, mark="ci"):
     require(ci_cells(text) == [(mark + "d", signed_deviations(values, precision))], context + ": mean/printed CI deviations or rank differs")
 
 
-
-
-
-
-
-
-
 def read_csv(path):
     with path.open(newline="") as stream:
         return list(csv.DictReader(stream))
-
-
 
 
 def clean_cell(text):
     return text.split(r"\\", 1)[0].strip()
 
 
-def pending_cells(columns, context):
-    require(all(clean_cell(cell) == PENDING for cell in columns), context + ": pending data were filled or concealed")
-
-
-
-
-
-
-
-
+def dash_cells(columns, context):
+    """Cells without an estimate print a dash and nothing else."""
+    require(all(clean_cell(cell) == DASH for cell in columns), context + ": a cell without an estimate holds a value")
 
 
 ROUTING_STATES = ("activate:occupancy", "deactivate:occupancy", "activate:first", "deactivate:first")
@@ -185,7 +169,7 @@ def verify_routing(paper, texts):
     # Family counts live in the saved evidence; the author excludes count inventories from captions.
     require(record["lfm25"]["levels"]["native"]["cells"] == 112,
             "routing evidence lost the LFM2.5 family count")
-    require("Dashes" not in texts["routing.tex"] and r"\textemdash" not in texts["routing.tex"], "routing table contains pending cells")
+    require("Dashes" not in texts["routing.tex"] and r"\textemdash" not in texts["routing.tex"], "routing table contains cells without an estimate")
     checked = [("routing.tex", (len(seen) + 1) * len(cells), source, {"rank_scope": "none; paired contrasts with model-specific simultaneous intervals"})]
 
     levels = {}
@@ -216,7 +200,7 @@ def verify_routing(paper, texts):
         require(len(columns) == 7, model + ": strong-dose columns differ")
         for cell, key in zip(columns[1:3], ("occupancy", "first")):
             symmetric_cell(cell, *record["strong"][model][key], 2, model + "/strong/" + key)
-        pending_cells(columns[3:], model + "/strong efficiency")
+        dash_cells(columns[3:], model + "/strong efficiency")
     require(len(strong) == len(STRONG_MODELS) and set(strong) == set(STRONG_MODELS), "strong-dose model coverage differs")
     pooled = [line for line in texts["routing_strong.tex"].splitlines() if line.startswith("All four models & ")]
     require(len(pooled) == 1, "strong-dose pooled row missing or duplicated")
@@ -257,8 +241,6 @@ def verify_routing(paper, texts):
     return checked
 
 
-
-
 def exporter_writes_only_data(paper):
     """Run export_cl_exhibits on a temporary copy of the tables and data; only files below figures/journal/data may change."""
     with tempfile.TemporaryDirectory() as temporary:
@@ -279,8 +261,6 @@ def exporter_writes_only_data(paper):
         written = {str(p.relative_to(root)) for p in root.rglob("*") if p.is_file() and p.stat().st_mtime_ns != 0}
     elsewhere = sorted(name for name in written if not name.startswith("figures/journal/data/"))
     require(written and not elsewhere, "the exporter wrote outside figures/journal/data: " + ", ".join(elsewhere))
-
-
 
 
 def verify_current_benchmarks(paper):
@@ -337,7 +317,7 @@ def verify(paper):
         for name, count, source, extra in verify_routing(paper, texts)
     ]
     style = re.sub(r"\s+", "", (paper / "journal/style.tex").read_text())
-    require(r"\fp_compare:nTF{#1>#2}{\pm#1}{\pm#2}" in style, "CI printer no longer preserves maximum original margin")
+    require(r"\fp_compare:nTF{#1>#2}{\pm#1}{\pm#2}" in style, "CI printer does not preserve the maximum original margin")
     result["uncertainty_contract"] = "Both original deviations checked; printed plus/minus is their maximum."
     return result
 
