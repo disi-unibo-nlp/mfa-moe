@@ -25,13 +25,15 @@ def code_hashes(*paths):
     return {str(path): file_sha(path) for path in sorted(files)}
 
 
-def freeze(out, name, spec):
+def freeze(out, name, spec, check_first_run=True):
     """Write the run spec `name` into the new folder `out`.
 
-    Its inputs must equal those of the first run (HISTORICAL/name); only the code hashes, and so the seal, may
-    differ. A spec already in `out` must be identical, so a resumed run keeps its checkpoints."""
-    first = HISTORICAL / name
-    if first.exists():
+    Its inputs must equal those of the first run (HISTORICAL/name), which must exist; only the code hashes, and so the
+    seal, may differ. A spec already in `out` must be identical, so a resumed run keeps its checkpoints.
+    `check_first_run=False` is for tests only."""
+    if check_first_run:
+        first = HISTORICAL / name
+        require(first.exists(), f'the first run\'s spec is missing: {first}')
         inputs = lambda value: {k: v for k, v in value.items() if k not in ('code', 'sha256')}
         require(inputs(load(first)) == inputs(spec), f'inputs differ from the first run: {first}')
     out.mkdir(parents=True, exist_ok=True)

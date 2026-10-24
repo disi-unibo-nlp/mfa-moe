@@ -3,11 +3,13 @@
     python -m routing.lfm materialize   sampled sentences, judge inputs and annotation tasks
     python -m routing.lfm derive        class counts, class trajectories, expert-selection coverage, nominations
                                         and the main-design assignments (the replay and labels must exist)
-    python -m routing.lfm readout       present-state readout of routing, five folds and five nulls (about 1.5 h, 4 CPUs)
+    python -m routing.lfm readout --out DIR
+                                        present-state readout of routing, five folds and five nulls (about 1.5 h, 4 CPUs);
+                                        DIR must be new, the receipt published in the study folder is not rewritten
     python -m routing.lfm dynamics      class occupancy, dwell and next-class panel (needs derive)
 
-The study folder is STUDY_DATA_ROOT (default report/final-routing-20261015-r1). `scripts/routing/lfm.sh` runs
-derive, then readout and dynamics. The replay itself is the GPU stage `python -m steering.pulse lfm-replay`.
+The study folder is STUDY_DATA_ROOT (default report/final-routing-20261015-r1). `scripts/routing/lfm.sh OUT_DIR`
+runs derive, then readout (into OUT_DIR) and dynamics. The replay itself is the GPU stage `python -m steering.pulse lfm-replay`.
 """
 from __future__ import annotations
 
@@ -138,7 +140,10 @@ def discover(binding):
 def main(argv=None):
     parser = argparse.ArgumentParser(prog='python -m routing.lfm', description='LFM2.5 analyses that need no GPU.')
     parser.add_argument('stage', choices=('materialize', 'derive', 'readout', 'dynamics'))
-    stage = parser.parse_args(argv).stage
+    parser.add_argument('--out', type=Path, help='readout only: new folder for the fits and READOUT_RESULTS.json')
+    args = parser.parse_args(argv)
+    stage = args.stage
+    require(args.out or stage != 'readout', 'readout needs --out, a new folder')
     study = store.binding()
     if stage == 'materialize':
         from labeling.lfm_inputs import materialize
@@ -152,7 +157,7 @@ def main(argv=None):
         result = {'plan': plan(['lfm25'])}
     elif stage == 'readout':
         from routing.lfm_readout import lfm
-        value = lfm(study)
+        value = lfm(study, args.out)
         result = {'sha256': value['sha256'], **{mode: {k: r[k] for k in ('routing', 'routing_excess_over_lexical_null')}
                                                  for mode, r in value['models']['lfm25'].items()}}
     else:
