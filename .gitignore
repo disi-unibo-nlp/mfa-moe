@@ -344,17 +344,12 @@ TSWLatexianTemp*
 
 .hermes/
 local_codex/
-tests/*
-!tests/test_labels_export.py
-!tests/test_native_source_generate.py
 sbatch/*
 !sbatch/native_forward_debug.sbatch
 !sbatch/native_forward_cpu_tests.sbatch
 
-!tests/test_qwen_quantized.py
 
 # Routing dynamics implementation and resource proposals.
-!tests/test_routing_dynamics.py
 !sbatch/routing_dynamics_label.sbatch
 !sbatch/routing_dynamics_replay.sbatch
 
@@ -363,7 +358,6 @@ report/
 .codex_sql_db/
 
 # Reviewable routing-steering implementation, tests and bounded reports.
-!tests/test_routing_steering.py
 !sbatch/routing_steering_size.sbatch
 !sbatch/routing_steering_extract.sbatch
 !sbatch/routing_steering_extract_packed.sbatch
@@ -378,11 +372,6 @@ report/routing-steering-audit-20260928/*
 !report/routing-steering-audit-20260928/frozen-baselines.md
 
 # Versioned experimental resume code, protocols, and bounded evidence receipts.
-!tests/test_routing_control.py
-!tests/experimental_resume/
-!tests/experimental_resume/**
-tests/experimental_resume/**/__pycache__/
-tests/experimental_resume/**/*.pyc
 !report/experimental-resume-v1/
 !report/experimental-resume-v1/**
 
@@ -423,8 +412,6 @@ paper/6a510c6db0d9b08aa438c142/*
 !report/verification-study-v3/**
 
 # Private expert-memory harness: tests and bounded protocol/closeout receipts.
-!tests/expert_memory_study/
-!tests/expert_memory_study/*.py
 !report/expert-memory-study-v1/
 report/expert-memory-study-v1/*
 !report/expert-memory-study-v1/CAMPAIGN.json
@@ -460,14 +447,6 @@ report/expert-memory-study-v1/exhibits-r1/*
 *.p12
 *.key
 
-# Preserve all authored regression tests, including sealed campaign versions.
-!tests/*.py
-!tests/old/
-!tests/old/*.py
-!tests/research_campaign_v[123]/
-!tests/research_campaign_v[123]/*.py
-!tests/research_campaign_v3_r3/
-!tests/research_campaign_v3_r3/*.py
 
 # Bounded cache-retirement plans, accepted allocation and per-path receipts.
 !report/storage-recovery-20261011-r1/
@@ -623,17 +602,6 @@ report/research-campaign-v[123]-*/submissions/*
 report/research-campaign-v[123]-*/submissions/*/*
 !report/research-campaign-v[123]-*/submissions/*/*.json
 
-# Preserve authored continuation tests; cached and runtime test data stay ignored.
-!tests/research_campaign_v3_r4/
-!tests/research_campaign_v3_r4/*.py
-!tests/research_campaign_v3_r5/
-!tests/research_campaign_v3_r5/*.py
-!tests/research_campaign_v3_r5_r2/
-!tests/research_campaign_v3_r5_r2/*.py
-!tests/research_campaign_v3_r6/
-!tests/research_campaign_v3_r6/*.py
-!tests/research_campaign_v3_r6_validation_r2/
-!tests/research_campaign_v3_r6_validation_r2/*.py
 
 # Per-campaign manuscript mirrors also contain bulk analysis copies. Keep their
 # compact JSON provenance and figures eligible; omit full execution/cell banks.
@@ -661,8 +629,6 @@ report/**/publication/**/*.git-index
 !report/research-campaign-v3-20261014-r6/manual_publication_holds/*.json
 
 # Separately bound r6 operations tests and compact ownership receipts.
-!tests/research_campaign_v3_r6_ops_r1/
-!tests/research_campaign_v3_r6_ops_r1/*.py
 !report/research-campaign-v3-20261014-r6/ops_r1/
 report/research-campaign-v3-20261014-r6/ops_r1/*
 !report/research-campaign-v3-20261014-r6/ops_r1/*.json
@@ -692,8 +658,6 @@ report/research-campaign-v3-20261014-r6/ops_r1/milestone/*
 paper/6a510c6db0d9b08aa438c142/.paper-review/
 
 # Approved eight-model final-routing sources, contracts and compact receipts.
-!tests/final_routing/
-!tests/final_routing/*.py
 !report/final-routing-20261015-r1/
 report/final-routing-20261015-r1/**
 !report/final-routing-20261015-r1/*.json
@@ -713,20 +677,11 @@ report/final-routing-20261015-r1/**
 !report/final-routing-20261015-r1/exports/*/MANUSCRIPT_REPLACEMENT_MAP.json
 
 # Final-routing operational repair tests and compact registry receipts.
-!tests/final_routing_ops_r1/
-!tests/final_routing_ops_r1/*.py
 !report/final-routing-20261015-r1/ops_r1/
 report/final-routing-20261015-r1/ops_r1/*
 !report/final-routing-20261015-r1/ops_r1/*.json
 
-# Maintained study entrypoints, tests and compact release records.
-!tests/study/
-!tests/study/*.py
-!tests/study/README.md
 # Outcome-selected gentle steering (F-0004): tests mirror src/moe_exp/outcome_steering.
-!tests/outcome_steering/
-!tests/outcome_steering/*.py
-!tests/outcome_steering/README.md
 !report/final-routing-20261015-r1/study/
 report/final-routing-20261015-r1/study/**
 !report/final-routing-20261015-r1/study/*/
