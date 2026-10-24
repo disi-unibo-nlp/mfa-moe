@@ -717,5 +717,6 @@ paper/manuscript-support/*
 !paper/manuscript-support/notes/
 !paper/manuscript-support/notes/**
 
-# The paper (manuscript, wiki, figure sources) is not tracked by the code repository; it lives in its own Overleaf checkout under paper/.
+# The paper (manuscript in its own Overleaf git checkout, figure sources, notes) is not tracked by the code repository.
+# The research wiki moved to docs/wiki.
 /paper/
