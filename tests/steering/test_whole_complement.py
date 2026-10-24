@@ -223,7 +223,7 @@ class ContinuationTests(unittest.TestCase):
         environment = {'SLURM_JOB_ID': '1', 'SLURM_JOB_GPUS': '0,1'}
         with patch.dict(os.environ, environment), patch.object(whole, 'verify_release', return_value={'cutoff': 1.}), \
              patch.object(whole, 'bound_store', return_value=child_store), \
-             patch.object(driver, 'deadline_from_slurm', return_value=0.), \
+             patch.object(whole, 'slurm_deadline', return_value=0.), \
              patch.object(driver, 'log', side_effect=events.append):
             # main returns None, so the job ends with exit code 0 and its dependents are not blocked.
             self.assertIsNone(whole.main(['run', '--release', str(self.child), '--model', 'gemma', '--shard', '0/2']))

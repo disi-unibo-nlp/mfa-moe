@@ -48,6 +48,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+from generation.client import slurm_deadline
 from labeling.contexts import context_id
 from labeling.lfm_inputs import judge_inputs
 from routing.dynamics import trajectories
@@ -55,7 +56,7 @@ from routing.sentence_table import (CAMPAIGN, PAIR_SOURCES, attempt_layout, camp
                                     original_label_records, pairs_dir, receipt_dir, sentence_extent, trace_key,
                                     usable_labels)
 from stats import bootstrap_panel
-from steering.pulse import annotate_rows, deadline_from_slurm, log, parse_shard
+from steering.pulse import ADMISSION_MARGIN_HOURS, annotate_rows, log, parse_shard
 from store import CLASSES, MODELS, STUDY, Units, binding, digest, file_sha, load, publish, require, verified
 
 NEXT_COLUMN = ':next:'
@@ -289,7 +290,7 @@ def judge(model: str, shard: tuple[int, int], classes: tuple[str, ...] = PAIR_SO
             'judging requires a Slurm GPU allocation')
     folder = pairs_dir(model)
     tasks = verified(folder/variant(classes)/'PAIR_TASKS.json')['records']
-    return annotate_rows(tasks, shard, deadline_from_slurm(), units_root=folder/'annotations',
+    return annotate_rows(tasks, shard, slurm_deadline(ADMISSION_MARGIN_HOURS), units_root=folder/'annotations',
                          progress_root=folder/'progress', jobs_root=folder/'jobs', stage='pair-judge-'+model)
 
 

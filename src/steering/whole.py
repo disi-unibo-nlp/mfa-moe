@@ -29,6 +29,7 @@ import time
 
 import numpy as np
 
+from generation.client import slurm_deadline
 from store import CLASSES, REPO, check_files, digest, file_sha, load, locked, publish, require, verified
 from steering import pulse as driver
 from steering.selection import select_pairs
@@ -969,7 +970,7 @@ def main(argv=None):
         driver.log({'event': 'prepare-whole', 'results': prepare(root)})
     elif args.command in ('canary', 'run'):
         require(os.environ.get('SLURM_JOB_GPUS'), 'whole inference requires allocated GPUs')
-        deadline = driver.deadline_from_slurm(margin=120)
+        deadline = slurm_deadline(120/3600)  # stop admitting 2 minutes before the job ends
         if args.command == 'run':
             run(root, args.model, args.shard, deadline)
             return

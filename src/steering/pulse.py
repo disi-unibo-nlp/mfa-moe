@@ -27,6 +27,7 @@ import sys
 import tempfile
 import time
 from pathlib import Path
+from generation.client import slurm_deadline
 from provenance import code_provenance
 from store import CLASSES, DRIVER, MODELS, STUDY, binding, digest, file_sha, load, private, publish, require, verified
 
@@ -225,12 +226,8 @@ class Store:
         return None
 
 
-def deadline_from_slurm(margin=420):
-    import subprocess
-    end = subprocess.run(['squeue', '-h', '-j', os.environ['SLURM_JOB_ID'], '-o', '%e'], capture_output=True,
-                         text=True, check=True).stdout.strip()
-    from datetime import datetime
-    return datetime.strptime(end, '%Y-%m-%dT%H:%M:%S').timestamp()-margin
+# No new request is admitted this long before the job ends (it is read with generation.client.slurm_deadline).
+ADMISSION_MARGIN_HOURS = 420/3600
 
 
 class Engine:
@@ -901,7 +898,7 @@ def main(argv=None):
         log({'event': 'repaired', 'contexts': len(value['records']), 'sha256': value['sha256']})
         return
     require(os.environ.get('SLURM_JOB_ID') and os.environ.get('SLURM_JOB_GPUS'), 'GPU commands require a Slurm GPU allocation')
-    deadline = deadline_from_slurm()
+    deadline = slurm_deadline(ADMISSION_MARGIN_HOURS)
     if args.command == 'run':
         run_model(args.model, args.shard, deadline, max_inflight=args.max_inflight, design=args.design)
     elif args.command == 'native':
