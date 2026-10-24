@@ -1,3 +1,48 @@
+**F-0012 jobs queued — 2026-10-23 20:45 Rome (Claude, repo-a1):**
+- Fig. 6 (snapshot releases/ee85fa9): Qwen3.6 table rebuild 62004522; plans 62004524-62004532; judge 62004533-62004553
+  (Read+Verify successors, 119,556 contexts, 16 x 2 GPUs x 4 h); panels 62004558-62004567; collect 62004568 ->
+  driver/TRANSITION_PAIRS.read-verify.json; Qwen3.6 original-only panel 62004556. Plan/Explore/Monitor successors
+  (+70 GPU-h) would leave only LFM Plan without an interval: awaiting the user.
+- Strong dose (snapshot releases/37506fb): GLM shards 1-5/6 62004628-62004633 afterok the GLM test 61969953 (look at
+  the test for breakdown when it ends; cancel the rest if it broke down); outcomes 62004635-62004638; eight-model
+  effects 62004640 -> driver/analysis-strong-eight/.
+- r21 (Fig. 9 follow-up) is NOT scheduled: after the r18 whole-run jobs end (cancel r18 shards still pending after
+  06:00 first), run `scripts/study/whole_complement.sh whole-reasoning-20261021-r21 122 --continue-from
+  whole-reasoning-20261021-r18 --cutoff 2026-10-27T06:00` from a clean tree (plan first with --plan).
+
+**Outcome steering r2: class-conditioned selection, captures on all eight models — 2026-10-23 20:00 Rome (user-approved plan; Claude, ledger F-0013, F-0014, D-0006):**
+- Code on branch `outcome/r2` (worktree `.claude/worktrees/outcome-r2`), not in this checkout: native-id capture in
+  study/stream.py, per-row token cap, job-name prefix WHOLE_JOB_PREFIX, locked store binding, and
+  src/moe_exp/outcome_steering/{capture,classes,evidence,attempts,derive,pick}.py. The polishing session ports it.
+- Capture release `report/outcome-capture-20261023-r1` (commit c68b233, stores on FAST
+  `campaign-runs/outcome-capture-20261023-r1/stores`): 300 shared questions x 6 native attempts x 8 models, 32,768-token
+  cap, routing ids saved. Jobs `oc-*`: validate 61994112, 55 GPU shards (gpt 3, nemotron 4, qwen330b 4, gemma 5,
+  qwen36 7, qwen35 8, lfm25 9, glm 15; ceiling 450 GPU-h), extraction per model, monitor 61994431. Cutoff 2026-10-30 23:00.
+- CPU chain `oc-derive-<model>` 61996452-61996486 (afterok each extraction; snapshot releases/51e548d) writes
+  SELECTION_R2.json, SIGNAL.json, ATTEMPT_SELECTION.json under report/outcome-capture-20261023-r1/<model>/. Expert sets: up to
+  10 pairs in the layers at depth 1/2, 2/3, 5/6, sized to 1.2% of their gate weight (Beyond the Trace's definition, ELM check
+  in mfa-moe/r/claude-review/outcome-r2-grounding-20261023/).
+- GPT-OSS vertical: os-launch-A 61996489 (afterok gpt derive) seals half A `report/outcome-steering-20261023-r2`
+  (15 shards) from the worktree HEAD, then analysis and os-pick, which seals half B `report/outcome-steering-20261023-r3`
+  (2 shards). STOP after half B: the user reviews the GPT-OSS receipt before any sweep on the other seven models.
+- Job names are oc-/os-, never whole-*. Keep the outcome/r2 worktree clean and committed until half B is sealed
+  (os-launch-A and os-pick seal from its HEAD). r18 pending-shard cancellation after 06:00 was handed to repo-a1.
+
+**Every paper exhibit on all eight models — 2026-10-23 16:00 Rome (user request; Claude, ledger F-0012):**
+- Audit: Fig. 6 n/e cells (LFM Read row: no AMC23 Read sentence has a labelled successor; LFM Verify persistence;
+  Qwen3.6's three intervals, its dynamics table cut to 509 of 1,486 families by a token-cache mismatch), strong-dose
+  arm on 4 models, probes on 3, old global-steering table on 2, Qwen3.6-only historical interventions.
+- User choices: Qwen3.6 table rebuild from its existing labels + narrow next-sentence labels (successors of Read and
+  Verify sentences, all eight models, ~40 GPU-h); strong dose for qwen35/qwen36/glm/lfm25 (~110 GPU-h); Fig. 9
+  follow-up release after r18's cutoff (up to ~285 GPU-h); remove the global-steering table and the Qwen3.6-only
+  study (queued to the Codex paper session); probes stay at three models.
+- Strong dose: STRONG.json planned for the four models from snapshot `mfa-moe/releases/37506fb...`; jobs qwen35
+  61969933/61969946, qwen36 61969945/61969948, lfm25 61969950-61969952 (8 h, 2 GPUs), GLM test shard 0/6 61969953.
+  Inspect the GLM test for breakdown before submitting GLM shards 1-5/6. Outcomes and the 8-model analysis-strong
+  (fresh dir) are not chained yet.
+- r18 (Fig. 9 complement): 1/75 shards ran by 15:30; shards that start after 2026-10-24 06:00 exit without rows. The
+  follow-up must be sealed after the r18 whole-run jobs end (top-up of a complement parent is a new code path).
+
 **Next-state prediction for all eight models (Fig. 7 redo) — 2026-10-23 14:00 Rome (user request; Claude):**
 - `moe_exp.study.next_state` predicts the state of the next labelled sentence from the current one for all eight
   models: markov (current state only, Fig. 6), text (+ token bag, absolute position, length), routing (+ routing of
