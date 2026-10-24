@@ -143,6 +143,7 @@ def write(model: str, gen_root: Path, out: Path, chosen, excluded, line_hashes) 
                          label_total=LABEL_TOTAL, per_b=PER_B, floor=FLOOR,
                          traces_sha256=hashlib.sha256("".join(line_hashes).encode()).hexdigest())
     manifest_sha = hashlib.sha256(json.dumps(manifest_core, sort_keys=True).encode()).hexdigest()
+    # "campaign-v3" and "card-v3" are the names stored in the sentence selections and the cohort file.
     base_sel = dict(schema_version=SCHEMA_VERSION, manifest_sha256=manifest_sha, selection="campaign-v3")
     cohort_rows = []
     for r in chosen["cohort_a"] + chosen["cohort_b"]:

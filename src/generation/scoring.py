@@ -84,8 +84,8 @@ def shutdown_scoring_pool() -> None:
 def _math_verify(model_text: str, gold_answer: str) -> tuple[bool | None, str]:
     """Thread-safe math_verify: direct in the main thread, else in a helper process.
 
-    math_verify's timeouts use signal.alarm, which raises in non-main threads; the
-    previous implementation therefore silently fell back on every threaded call.
+    math_verify's timeouts use signal.alarm, which raises in non-main threads, so a threaded call would
+    otherwise fall back silently on the normalized match.
     """
     if threading.current_thread() is threading.main_thread():
         return _math_verify_direct(model_text, gold_answer)

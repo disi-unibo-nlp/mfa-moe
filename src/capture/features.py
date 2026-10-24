@@ -55,9 +55,8 @@ def compute_layer_features(
 ) -> dict[str, float]:
     """Reduce per-token router/hidden tensors to per-trace scalar features.
 
-    The reduction is deliberately performed before serialization in the
-    correlation forward stage. This keeps the statistics used by the analysis
-    without retaining the large ``layers x tokens x width`` tensors.
+    The reduction is performed before serialization, which keeps the statistics used by the
+    analysis without retaining the large ``layers x tokens x width`` tensors.
     """
     if router_logits.ndim != 3 or router_logits.numel() == 0:
         raise ValueError(f"Expected non-empty 3D router logits, got {tuple(router_logits.shape)}")
@@ -155,8 +154,8 @@ def compute_layer_features(
         layer_values = {
             "router_entropy": _mean_or_nan(entropy),
             "router_confidence": _mean_or_nan(confidence),
-            # Kept for continuity with the pilot table; the three top-k-aware
-            # features below are the prespecified confidence measures.
+            # The plain gap between the two most probable experts; the three top-k-aware features below
+            # measure the experts that were really selected.
             "router_margin": _mean_or_nan(margin),
             "router_selected_mass": _mean_or_nan(selected_mass),
             "router_boundary_margin": _mean_or_nan(boundary_margin),

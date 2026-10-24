@@ -4,8 +4,8 @@ sample's judge inputs.
 `population` lists the native attempts. `materialize` commits the finished native generations as
 trace files, runs the same stratified sampler as the other seven models
 (`labeling.sample_stratified.build_plan`) and writes the sampled sentences with their judge tasks.
-`repair_annotation_inputs` rebuilds the judge tasks of an earlier build with the source-parity
-inputs. `materialize` runs as `python -m routing.lfm materialize`, `repair_annotation_inputs` as
+`repair_annotation_inputs` rebuilds the judge tasks of a build made with other inputs so that they carry the
+source-parity inputs. `materialize` runs as `python -m routing.lfm materialize`, `repair_annotation_inputs` as
 `python -m steering.pulse lfm-repair-contexts`, and `population` feeds `python -m steering.pulse native`.
 """
 from collections import defaultdict
@@ -62,8 +62,8 @@ def trace_record(binding, row, raw, tokenizer):
     value = {k: v for k, v in example.items() if k not in ('generation_messages', 'metadata')}
     value.update(model_id=p['checkpoint'], cot_text=text, model_answer=score.get('model_answer') or '',
                  # Sampling parity with the seven source models: a trace without a submitted answer (cap or
-                 # unclosed reasoning) is strictly incorrect and eligible, as in their original sampling.
-                 # Native estimands below keep it as an unknown bound.
+                 # unclosed reasoning) is strictly incorrect and eligible, as in their sampling. Native
+                 # estimands below keep it as an unknown bound.
                  is_correct=score.get('is_correct') if answer is not None else False, metadata=metadata)
     return TraceRecord(**value).model_dump()
 
@@ -71,14 +71,16 @@ def trace_record(binding, row, raw, tokenizer):
 def judge_inputs(value, units, index):
     """Judge inputs exactly as the seven source models' labelling built them: the user message(s) of
     the generation prompt (falling back to the bare prompt), one neighbouring unit on each side and
-    the original edge sentinels."""
+    the edge sentinels."""
     messages = value.get('generation_messages') or value['metadata'].get('generation_messages')
     return sentence_inputs(question_of(messages, value['prompt']), units, index)
 
 
 def repair_annotation_inputs(binding):
-    """Rebuild the LFM judge tasks of the frozen 100k sample with source-parity inputs (2026-10-17 audit A7:
-    the first build used the bare question and empty edges). Same sentences; new context identities."""
+    """Rebuild the LFM judge tasks of the frozen 100k sample with source-parity inputs (the question, one
+    neighbouring unit on each side and the edge sentinels). Same sentences; new context identities. Tasks that
+    already say `judge_inputs: source-parity-v1` are returned as they are; otherwise the replaced files stay
+    beside the new ones as `*.problem-statement-v0.json`."""
     from store import read_source
     from labeling.contexts import context_id
     from capture.dynamics.classes import saved_layout
@@ -113,7 +115,7 @@ def repair_annotation_inputs(binding):
 
 
 def materialize(binding):
-    """Commit exact native lines and run the unchanged 100k stratified sampler."""
+    """Commit exact native lines and run the 100k stratified sampler."""
     from transformers import AutoTokenizer
     from generation.generate import _model_slug
     from labeling.sample_stratified import build_plan
@@ -214,7 +216,7 @@ def materialize(binding):
     expected_questions = set(load(Path(binding['source_campaign'])/'FOLDS.json')['question_families'])
     require(len(sources) == 1547 and {s['question'] for s in sources} == expected_questions,
             'designated discovery population incomplete; retain native unknowns without replacement')
-    require(len(layouts)==100000,'original 100000-sentence sampling obligation is incomplete')
+    require(len(layouts)==100000,'100000-sentence sampling obligation is incomplete')
     sources.sort(key=lambda r: (r['benchmark'], r['family'], r['question']))
     publish(root/'lfm25/SOURCES.json', {'records': sources, 'profile_sha256': binding['models']['lfm25']['profile_sha256']})
     publish(bulk/'lfm25/SAMPLED_SENTENCES.json', {'records': layouts})

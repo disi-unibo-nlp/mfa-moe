@@ -29,7 +29,7 @@ from schemas import TraceRecord
 from store import CLASSES
 
 # The features every capture must have for every routed layer.
-LEGACY = ('router_entropy', 'router_confidence', 'router_margin', 'router_selected_mass',
+REQUIRED_FEATURES = ('router_entropy', 'router_confidence', 'router_margin', 'router_selected_mass',
           'router_boundary_margin', 'router_topk_non_topk_gap', 'router_switch_rate',
           'router_topk_overlap', 'hidden_norm', 'hidden_step_distance', 'hidden_router_geometry')
 
@@ -124,8 +124,8 @@ def reduce_capture(row, data, backend, manifest):
         raise ValueError('Incomplete native signals')
     gaps = require_native_boundary(scores, ids)
     values = json_safe_features(compute_layer_features(router, hidden, ids, max_geometry_tokens=128, layer_indices=layers))
-    if any(values.get(f'{metric}_l{layer:02d}') is None for layer in layers for metric in LEGACY):
-        raise ValueError('Missing legacy metric')
+    if any(values.get(f'{metric}_l{layer:02d}') is None for layer in layers for metric in REQUIRED_FEATURES):
+        raise ValueError('Missing required feature')
     features = dict(schema_version=FEATURE_SCHEMA_VERSION, config={'max_geometry_tokens': 128},
                     token_count=row['completion_tokens'], layer_indices=layers, num_layers=len(layers),
                     num_experts=experts, top_k=ids.shape[-1], values=values)

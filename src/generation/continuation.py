@@ -1,10 +1,10 @@
-"""Continue length-capped historical traces from their exact saved token IDs.
+"""Continue the length-capped traces of the 32,768-token corpus from their exact saved token IDs.
 
 The continuation prompt is the saved prompt_token_ids + completion_token_ids, sent to
-/v1/completions with the trace's own historical sampler (temperature/top_p/top_k; the
-historical runs used no presence/frequency/repetition penalty), so each branch extends
-the same conditional sampling law to a larger cumulative budget. Only the suffix is
-stored; outcomes are parsed from the combined original+suffix token sequence.
+/v1/completions with the trace's own sampler (temperature/top_p/top_k; those runs used no
+presence/frequency/repetition penalty), so each branch extends the same conditional sampling
+law to a larger cumulative budget. Only the suffix is stored; outcomes are parsed from the
+combined saved+suffix token sequence.
 
   python -m generation.continuation plan  --model qwen36 --out DIR
   python -m generation.continuation run   --model qwen36 --out DIR --base-url URL
@@ -27,7 +27,8 @@ from generation.client import complete_tokens, slurm_deadline
 from generation.model_profiles import CARD_PROFILES, load_tokenizer
 
 RESULTS = Path("/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/results/correlation_pipeline")
-HISTORICAL = {
+# Trace roots of the 32,768-token generation, whose capped traces are continued.
+TRACES_32K = {
     "gpt": RESULTS / "gpt-oss-20b/generation/openai--gpt-oss-20b",
     "glm": RESULTS / "glm-4.7-flash/generation/zai-org--GLM-4.7-Flash",
     "gemma": RESULTS / "gemma-nvfp4-nf4/generation/nvidia--Gemma-4-26B-A4B-NVFP4",
@@ -53,7 +54,7 @@ def key_of(row: dict) -> str:
 def iter_parents(model: str):
     """Genuine length-capped parents: stop reason 'length' at exactly the request cap."""
     for dataset in DATASETS:
-        path = HISTORICAL[model] / dataset / "traces.jsonl"
+        path = TRACES_32K[model] / dataset / "traces.jsonl"
         with path.open() as handle:
             for line_index, line in enumerate(handle):
                 record = json.loads(line)
@@ -69,7 +70,7 @@ def iter_parents(model: str):
                     sample_id=record.get("sample_id"), line_index=line_index,
                     gold_answer=record.get("gold_answer"), seed=config.get("seed"),
                     temperature=config["temperature"], top_p=config["top_p"],
-                    top_k=config.get("top_k", 0), historical_max_tokens=config["max_tokens"],
+                    top_k=config.get("top_k", 0), historical_max_tokens=config["max_tokens"],  # key as stored in plan.json
                     prompt_len=len(prompt_ids or []), completion_len=len(completion_ids or []),
                     exclusion=None)
                 if not prompt_ids or not completion_ids:
@@ -127,7 +128,7 @@ def run(args) -> None:
     eligible = [p for p in manifest["parents"] if p["exclusion"] is None]
     if args.pilot:
         # validation subset: the longest parent (context/KV stress) plus the first others in
-        # the fixed shuffled order; accepted pilot branches are reused by the main run
+        # the fixed shuffled order; the branches it completes are reused by the full run
         longest = max(eligible, key=lambda p: p["prompt_len"] + p["completion_len"])
         eligible = [longest] + [p for p in eligible if p is not longest][:args.pilot - 1]
     todo = [p for p in eligible if key_of(p) not in done]
@@ -235,7 +236,7 @@ def score(args) -> None:
 def main(argv=None) -> None:
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("command", choices=["plan", "run", "score"])
-    ap.add_argument("--model", required=True, choices=sorted(HISTORICAL))
+    ap.add_argument("--model", required=True, choices=sorted(TRACES_32K))
     ap.add_argument("--out", required=True)
     ap.add_argument("--base-url")
     ap.add_argument("--workers", type=int, default=16)

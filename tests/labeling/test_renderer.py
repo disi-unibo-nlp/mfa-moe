@@ -21,11 +21,11 @@ def run_child(monkeypatch, *arguments):
     return sys.path
 
 
-def test_the_renderer_hands_the_child_the_pinned_copy_its_campaign_names(monkeypatch, tmp_path):
+def test_the_renderer_hands_the_child_the_pinned_copy_its_parent_record_names(monkeypatch, tmp_path):
     monkeypatch.setenv('TMPDIR', str(tmp_path))
-    campaign = {'renderer': {'files': {}, 'path': PINNED}, 'annotator': {'program': 'program.json'}}
+    parent = {'renderer': {'files': {}, 'path': PINNED}, 'annotator': {'program': 'program.json'}}
     with patch.object(renderer.subprocess, 'Popen') as popen:
-        renderer.Renderer(campaign)
+        renderer.Renderer(parent)
     assert popen.call_args.args[0][-3:] == ['labeling.renderer_child', 'program.json', PINNED]
 
 

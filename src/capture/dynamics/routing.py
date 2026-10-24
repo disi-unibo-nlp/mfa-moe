@@ -160,7 +160,7 @@ class RoutingReducer:
 
 def reduce_arrays(selected, *, layers, model, probabilities_array=None, weights=None,
                   selection_scores=None, semantics=None, config=None, token_indices=None):
-    """Bounded scratch memory even when existing extractors supply whole-trace tensors."""
+    """Bounded scratch memory even when the caller supplies whole-trace tensors."""
     def numpy(x):
         return x.detach().float().cpu().numpy() if hasattr(x, "detach") else np.asarray(x)
     config = {**DEFAULT_CONFIG, **(config or {})}

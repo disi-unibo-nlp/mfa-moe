@@ -1,7 +1,7 @@
 #!/bin/bash
-# Billing ledger of the jobs whose names start with PREFIX (default fr-, the reduced final-routing driver; whole-
-# for the whole-reasoning releases) since 2026-10-17, against the billing-hour cap (CAP, default 6000). Running jobs
-# are charged their elapsed time so far plus the rest of their time limit (outstanding commitment). Login node only.
+# Billing ledger of the jobs whose names start with PREFIX (default fr-, the pulsed-steering jobs; whole- for the
+# whole-reasoning releases) since 2026-10-17, against the billing-hour cap (CAP, default 6000). Running jobs are
+# charged their elapsed time so far plus the rest of their time limit (outstanding commitment). Login node only.
 #   scripts/slurm/ledger.sh [PREFIX]
 set -euo pipefail
 CAP=${CAP:-6000}

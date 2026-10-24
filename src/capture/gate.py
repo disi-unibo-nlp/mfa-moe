@@ -30,7 +30,7 @@ def gate(manifest_dir, captures=None):
     root = Path(manifest_dir)
     ready = json.loads((root / 'ready.json').read_text())
     if ready.get('status') != 'ready' or not ready.get('shards'):
-        raise ValueError('Production capture planning is incomplete')
+        raise ValueError('Capture planning is incomplete')
     expected = {str(s['index']) for s in ready['shards']}
     if len(expected) != len(ready['shards']):
         raise ValueError('Duplicate ready shard indices')
@@ -65,7 +65,7 @@ def gate(manifest_dir, captures=None):
         total_tokens += tokens
         inputs[str(result_path)] = file_sha(result_path)
     if len(ids) != len(set(ids)) or len(ids) != ready['attempts'] or total_tokens != ready['tokens']:
-        raise ValueError('Campaign cohort coverage mismatch')
+        raise ValueError('Cohort coverage mismatch')
     return dict(status='complete', attempts=len(ids), tokens=total_tokens,
                 ready_sha256=file_sha(root / 'ready.json'), results=inputs)
 
@@ -77,7 +77,7 @@ def main():
     parser.add_argument('--captures', type=Path)
     args = parser.parse_args()
     if not os.environ.get('SLURM_JOB_ID'):
-        raise RuntimeError('Production capture gate requires a Slurm CPU allocation')
+        raise RuntimeError('The capture gate requires a Slurm CPU allocation')
     result = gate(args.manifest_dir, args.captures)
     if args.output.exists():
         saved = json.loads(args.output.read_text())

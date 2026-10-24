@@ -1,6 +1,8 @@
 """Offline vLLM engine settings of the study profiles and the reasoning-closure marker.
 
-Vendored verbatim from `verification_study.registry.engine_kwargs` and `verification_study.backend.closure_sequences`.
+`engine_kwargs` turns a model contract (its local checkpoint, native context limit, extra server flags and
+attention backend) into the arguments of an offline two-GPU engine; `closure_sequences` gives the token ids of
+the marker where a model's reasoning closes.
 """
 from __future__ import annotations
 

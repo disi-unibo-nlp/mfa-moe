@@ -1,4 +1,4 @@
-"""Version 2 splitter: targeted fix of the stray single-`$` merge, v1 kept for mapping."""
+"""Version 2 sentence splitter: a stray single `$` does not merge prose; version 1 units map onto version 2."""
 from __future__ import annotations
 
 import re
@@ -16,19 +16,19 @@ from labeling.spans import (
 )
 from schemas import TraceRecord  # noqa: E402
 
-LEGACY_PATTERN = re.compile(
+V1_PATTERN = re.compile(
     r"\$\$.*?\$\$|\\\[.*?\\\]|\\\(.*?\\\)"
     r"|(?<!\\)\$(?:(?:\\.|[^$\\])*?\$|(?:\\.|[^$\\])*\\\$)",
     flags=re.DOTALL,
 )
-LEGACY_BOUNDARY = re.compile(r"(?<=[.!?])[^\S\n]+|\n+")
+V1_BOUNDARY = re.compile(r"(?<=[.!?])[^\S\n]+|\n+")
 OPENING_CONTEXT = "([{=,;:"
 
 
-def legacy_reference_protection(text: str) -> list[tuple[int, int]]:
-    """The verified prototype: frozen v1 matches minus the suspicious single-`$` spans."""
+def reference_protection(text: str) -> list[tuple[int, int]]:
+    """The v1 matches minus the suspicious single-`$` spans (a direct statement of the version 2 rule)."""
     spans = []
-    for match in LEGACY_PATTERN.finditer(text):
+    for match in V1_PATTERN.finditer(text):
         span_text = match.group(0)
         if span_text.startswith("$") and not span_text.startswith("$$"):
             previous = text[match.start() - 1] if match.start() > 0 else ""
@@ -37,7 +37,7 @@ def legacy_reference_protection(text: str) -> list[tuple[int, int]]:
                 previous
                 and not previous.isspace()
                 and previous not in OPENING_CONTEXT
-                and (len(inner) > 1000 or len(LEGACY_BOUNDARY.findall(inner)) >= 2)
+                and (len(inner) > 1000 or len(V1_BOUNDARY.findall(inner)) >= 2)
             ):
                 continue
         spans.append(match.span())
@@ -65,7 +65,7 @@ def unit_texts(text: str) -> list[str]:
 
 
 class ScannerEquivalenceTests(unittest.TestCase):
-    def test_scanner_matches_the_verified_prototype_on_edge_cases(self):
+    def test_scanner_matches_the_direct_statement_of_the_rule_on_edge_cases(self):
         samples = [
             "",
             "Plain prose. Another sentence.",
@@ -83,11 +83,11 @@ class ScannerEquivalenceTests(unittest.TestCase):
         ]
         for text in samples:
             with self.subTest(text=text[:40]):
-                self.assertEqual(sorted(math_protection_spans(text)), sorted(legacy_reference_protection(text)))
+                self.assertEqual(sorted(math_protection_spans(text)), sorted(reference_protection(text)))
 
 
 class StrayDelimiterTests(unittest.TestCase):
-    def test_stray_closing_dollar_no_longer_merges_prose(self):
+    def test_stray_closing_dollar_does_not_merge_prose(self):
         text = "Value is 5$ First sentence here. Second sentence here. And $x^{2}$ is the formula."
         self.assertEqual(
             unit_texts(text),
@@ -97,7 +97,7 @@ class StrayDelimiterTests(unittest.TestCase):
                 "And $x^{2}$ is the formula.",
             ],
         )
-        # The frozen splitter hid both inner sentence boundaries, which is exactly the bug.
+        # Version 1 hides both inner sentence boundaries in one unit.
         self.assertEqual(len(sentence_spans_v1(trace(text))), 1)
 
     def test_real_inline_math_stays_protected(self):
@@ -119,9 +119,9 @@ class StrayDelimiterTests(unittest.TestCase):
     def test_oversized_single_dollar_span_splits(self):
         inner = "Sentence number here. " * 900
         text = "Result 5$" + inner + "final$ tail."
-        legacy = sentence_spans_v1(trace(text))
+        first = sentence_spans_v1(trace(text))
         current = sentence_spans(trace(text))
-        self.assertEqual(len(legacy), 1)
+        self.assertEqual(len(first), 1)
         self.assertGreater(len(current), 100)
         self.assertEqual(current[0]["text"], "Result 5$Sentence number here.")
         self.assertTrue(current[-1]["text"].endswith("tail."))
@@ -131,12 +131,12 @@ class MappingTests(unittest.TestCase):
     def test_map_selection_to_v2_expands_merged_units(self):
         text = "Intro. Value is 5$ First sentence here. Second sentence here. And $x^{2}$ is the formula. Done."
         item = trace(text)
-        legacy = sentence_spans_v1(item)
+        first = sentence_spans_v1(item)
         current = sentence_spans(item)
-        merged = [index for index, unit in enumerate(legacy) if unit["text"].startswith("Value is 5$")]
+        merged = [index for index, unit in enumerate(first) if unit["text"].startswith("Value is 5$")]
         self.assertEqual(len(merged), 1)
         mapped = map_selection_to_v2(item, merged)
-        self.assertEqual([unit["text"] for unit in legacy], ["Intro.", "Value is 5$ First sentence here. Second sentence here. And $x^{2}$ is the formula.", "Done."])
+        self.assertEqual([unit["text"] for unit in first], ["Intro.", "Value is 5$ First sentence here. Second sentence here. And $x^{2}$ is the formula.", "Done."])
         self.assertEqual(mapped, [1, 2, 3])
         self.assertEqual(
             [current[index]["text"] for index in mapped],
@@ -148,7 +148,7 @@ class MappingTests(unittest.TestCase):
         )
         # Every v1 index that is not inside the merged unit maps onto itself.
         self.assertEqual(map_selection_to_v2(item, [0]), [0])
-        self.assertEqual(map_selection_to_v2(item, [len(legacy) - 1]), [len(current) - 1])
+        self.assertEqual(map_selection_to_v2(item, [len(first) - 1]), [len(current) - 1])
 
     def test_map_selection_rejects_out_of_range_indices(self):
         with self.assertRaises(ValueError):

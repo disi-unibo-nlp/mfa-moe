@@ -1,8 +1,5 @@
 import importlib
 import json
-import tempfile
-from pathlib import Path
-import unittest
 
 
 def items(n):
@@ -87,7 +84,7 @@ def test_unknown_outcome_is_persisted_and_resumes_without_requests(tmp_path):
     assert resumed == result
 
 
-def test_all_valid_run_keeps_the_legacy_record_and_summary_shape(tmp_path):
+def test_all_valid_run_has_label_only_records_and_no_unknown_count(tmp_path):
     module = importlib.import_module('labeling.annotation_batch')
     calls = []
 
@@ -132,28 +129,14 @@ def test_checkpoint_key_binds_traces_program_and_decoding_but_not_the_server(tmp
     assert module.run_part(items(3), first, output_dir=root, classify=never_called) == result
 
 
-if __name__ == '__main__':
-    root = Path('/leonardo_scratch/large/userexternal/lmolfett/mfa-moe/gpt-oss-20b-qwen38-b64-mtp3-100k-all-attempts-v2/runtime')
-    root.mkdir(parents=True, exist_ok=True)
-    suite = unittest.TestSuite()
-    for name, fn in list(globals().items()):
-        if name.startswith('test_') and callable(fn):
-            def run(fn=fn):
-                with tempfile.TemporaryDirectory(dir=root) as directory:
-                    fn(Path(directory))
-            suite.addTest(unittest.FunctionTestCase(run, description=name))
-    outcome = unittest.TextTestRunner(verbosity=2).run(suite)
-    raise SystemExit(not outcome.wasSuccessful())
-
-
 def test_checkpoints_written_with_a_server_address_still_resume(tmp_path):
     module = importlib.import_module('labeling.annotation_batch')
     calls = []
     def classify(batch):
         calls.append(len(batch))
         return labels('Analyze', len(batch))
-    old = {'contract': 1, 'base_url': 'http://127.0.0.1:61003/v1'}
-    first = module.run_part(items(104), old, output_dir=tmp_path / 'part', classify=classify)
+    with_server = {'contract': 1, 'base_url': 'http://127.0.0.1:61003/v1'}
+    first = module.run_part(items(104), with_server, output_dir=tmp_path / 'part', classify=classify)
     (tmp_path / 'part/annotations.json').unlink()
     (tmp_path / 'part/checkpoints/batch-000001.json').unlink()
     calls.clear()

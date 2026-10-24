@@ -108,21 +108,24 @@ class NativeHook:
             fused = bool(envs.VLLM_USE_FUSED_MOE_GROUPED_TOPK and router_logits.is_cuda and bias is not None)
         selection = selection_scores(router_logits.detach(), bias.detach() if bias is not None else None,
                                      scoring='sigmoid' if sigmoid else 'softmax', fused_grouped=fused).float().cpu()
-        old = raw.sigmoid() if sigmoid else raw.clone()
+        plain = raw.sigmoid() if sigmoid else raw.clone()
         if bias is not None:
-            old = old + bias.detach().float().cpu()
+            plain = plain + bias.detach().float().cpu()
         native_ids = ids.detach().cpu()
-        old_gaps = boundary_gaps(old, native_ids)
-        new_gaps = boundary_gaps(selection, native_ids)
-        # One example per layer and kind (mismatch of the old arithmetic, of the corrected one, or none) is kept.
+        plain_gaps = boundary_gaps(plain, native_ids)
+        kernel_gaps = boundary_gaps(selection, native_ids)
+        # Two reconstructions of the selection scores are compared with the dispatched experts: the plain one
+        # (float sigmoid, then the bias) and the one that follows the selector's own arithmetic. One example per
+        # layer and kind is kept; the stored kinds are 'old_mismatch' (the plain scores disagree with the dispatch),
+        # 'corrected_mismatch' (the selector-arithmetic scores disagree) and 'sample' (neither).
         for i, entry in enumerate(self.owner['frame']):
             if entry is None:
                 continue
             key, pos = entry
             request = self.owner['requests'][key]
             diagnostics = request.setdefault('selector_diagnostics', {})
-            kind = ('old_mismatch' if float(old_gaps[i]) < -1e-6
-                    else 'corrected_mismatch' if float(new_gaps[i]) < -1e-6 else 'sample')
+            kind = ('old_mismatch' if float(plain_gaps[i]) < -1e-6
+                    else 'corrected_mismatch' if float(kernel_gaps[i]) < -1e-6 else 'sample')
             label = f'{self.layer}/{kind}'
             if label not in diagnostics:
                 other = selection[i].clone()
@@ -134,8 +137,8 @@ class NativeHook:
                     score_dtype=str(router_logits.dtype), bias_dtype=str(bias.dtype) if bias is not None else None,
                     raw_logits=raw[i].tolist(),
                     bias=bias.detach().float().cpu().tolist() if bias is not None else None,
-                    competing_expert=competitor, old_boundary_discrepancy=float(old_gaps[i]),
-                    corrected_boundary_discrepancy=float(new_gaps[i]), fused_grouped=fused,
+                    competing_expert=competitor, old_boundary_discrepancy=float(plain_gaps[i]),
+                    corrected_boundary_discrepancy=float(kernel_gaps[i]), fused_grouped=fused,
                     selection_arithmetic=('device_float_tanh_sigmoid_cast_then_bias' if fused and sigmoid
                                           else 'native_dtype_activation_then_bias'))
         self.pending = (ids, weights, signal, selection)

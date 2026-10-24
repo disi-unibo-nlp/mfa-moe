@@ -116,8 +116,9 @@ def sentence_spans(trace: Any) -> list[dict[str, Any]]:
 
 
 def sentence_spans_v1(trace: Any) -> list[dict[str, Any]]:
-    """Frozen version 1 segmentation, kept only to map stored v1 selections to v2."""
-    return _index_units(trace.cot_text, reasoning_ranges(trace), legacy_math_protection_spans)
+    """Version 1 segmentation (without the single-`$` limits). Stored `sentence_selection` indices and the
+    annotations made with it refer to its units; `map_selection_to_v2` maps them to version 2."""
+    return _index_units(trace.cot_text, reasoning_ranges(trace), math_protection_spans_v1)
 
 
 def _index_units(
@@ -164,8 +165,8 @@ def _split_with_protection(
     return units
 
 
-def legacy_math_protection_spans(text: str) -> list[tuple[int, int]]:
-    """Frozen version 1 protected spans (regex over the whole text)."""
+def math_protection_spans_v1(text: str) -> list[tuple[int, int]]:
+    """Version 1 protected spans (one regex over the whole text)."""
     return [match.span() for match in _V1_MATH_PATTERN.finditer(text)]
 
 
@@ -277,17 +278,17 @@ def math_protection_spans(text: str) -> list[tuple[int, int]]:
 def map_selection_to_v2(trace: Any, indices: Iterable[int]) -> list[int]:
     """Map stored version 1 unit indices onto the version 2 sub-units they contain.
 
-    The fix only ever splits a version 1 unit further, so one stored v1 index can expand
-    into several v2 indices but never into characters outside the old unit's span.
+    Version 2 only ever splits a version 1 unit further, so one stored v1 index can expand
+    into several v2 indices but never into characters outside the v1 unit's span.
     """
-    legacy = sentence_spans_v1(trace)
+    first = sentence_spans_v1(trace)
     current = sentence_spans(trace)
     starts = [unit["start"] for unit in current]
     mapped: list[int] = []
     for index in indices:
-        if type(index) is not int or not 0 <= index < len(legacy):
+        if type(index) is not int or not 0 <= index < len(first):
             raise ValueError(f"version 1 unit index out of range: {index!r}")
-        left, right = legacy[index]["start"], legacy[index]["end"]
+        left, right = first[index]["start"], first[index]["end"]
         position = bisect_left(starts, left)
         while position < len(current) and current[position]["end"] <= right:
             mapped.append(current[position]["index"])
@@ -360,40 +361,25 @@ def validate_annotation(trace: Any, annotation: dict[str, Any]) -> None:
 
 
 def token_layout(trace: Any, tokenizer: Any) -> dict[str, Any]:
-    """Align with the jointly tokenized prompt+completion used by inference.
+    """Assign the completion tokens of a trace to its sentence units.
 
-    A token belongs to the unit with greatest character overlap (earlier unit
-    wins ties). Whitespace-only gaps attach to the preceding unit. Every token
-    overlapping reasoning is owned exactly once; tags/final answers are excluded.
-    Fast tokenizer offsets are required; approximate retokenization is unsafe.
+    The tokens and their character offsets are the trace's saved `token_replay`. A token belongs to the
+    unit with greatest character overlap (earlier unit wins ties). Whitespace-only gaps attach to the
+    preceding unit. Every token overlapping reasoning is owned exactly once; tags/final answers are excluded.
     """
-    # Imported lazily so unit segmentation and its tests do not need the torch stack.
-    from models.inference import _find_prompt_length, _format_prompt
+    from models.token_replay import validate_token_replay
 
     replay = trace.metadata.get("token_replay")
-    if replay is not None:
-        from models.token_replay import validate_token_replay
-        validate_token_replay(replay, tokenizer, trace.cot_text)
-        offsets = replay["completion_offsets"]
-        prompt, prompt_len = "", 0
-    else:
-        prompt = _format_prompt(tokenizer, trace.prompt, trace.system_prompt, trace.generation_messages)
-        full_text = prompt + trace.cot_text
-        try:
-            encoded = tokenizer(full_text, return_offsets_mapping=True, return_tensors="pt")
-            offsets = encoded["offset_mapping"][0].tolist()
-        except (KeyError, NotImplementedError, TypeError) as error:
-            raise ValueError(
-                "Reasoning views require a tokenizer with exact character offsets"
-            ) from error
-        prompt_len = _find_prompt_length(tokenizer, prompt, full_text)
+    if replay is None:
+        raise ValueError("Token layout requires the saved token replay of the trace")
+    validate_token_replay(replay, tokenizer, trace.cot_text)
+    offsets = replay["completion_offsets"]
     units = sentence_spans(trace)
     ranges = reasoning_ranges(trace)
     owners = [[] for _ in units]
     reasoning_tokens = []
     unit_index = 0
-    for token, (left, right) in enumerate(offsets[prompt_len:]):
-        left, right = left - len(prompt), right - len(prompt)
+    for token, (left, right) in enumerate(offsets):
         if right <= left or not any(right > start and left < end for start, end in ranges):
             continue
         if not units:
@@ -413,7 +399,7 @@ def token_layout(trace: Any, tokenizer: Any) -> dict[str, Any]:
             owner = max(0, unit_index - int(units[unit_index]["start"] >= right))
         owners[owner].append(token)
     return {
-        "token_count": len(offsets) - prompt_len,
+        "token_count": len(offsets),
         "units": units,
         "unit_tokens": owners,
         "reasoning_tokens": reasoning_tokens,

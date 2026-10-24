@@ -1,5 +1,5 @@
-"""The child process of `labeling.renderer.Renderer`: the exact original DSPy program, prompt
-renderer and parser.
+"""The child process of `labeling.renderer.Renderer`: the frozen DSPy program, its prompt renderer and its
+parser.
 
 Run as `python -m labeling.renderer_child PROGRAM [RENDERER_DIR]`. It reads one JSON request per line on
 stdin (`render` an input into a conversation, `parse` a completion into a label) and answers on stdout.

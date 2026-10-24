@@ -72,8 +72,8 @@ class FewShotSentence:
 
 
 # Three deliberately unambiguous examples per class. The examples form contrastive
-# neighborhoods around the recurrent Read/Analyze, Analyze/Verify,
-# Analyze/Implement, Plan/Monitor, and Explore/Analyze errors.
+# neighborhoods around the confusable pairs Read/Analyze, Analyze/Verify,
+# Analyze/Implement, Plan/Monitor, and Explore/Analyze.
 CURATED_CONTRASTIVE_EXAMPLES = (
     FewShotSentence(
         "read-given-value",

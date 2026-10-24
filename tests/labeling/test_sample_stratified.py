@@ -296,8 +296,8 @@ if __name__ == "__main__":
 
 # --- reasoning-length metric resolution -------------------------------------
 # vLLM's gpt-oss harmony path reports a constant reasoning_tokens=0 while still
-# parsing reasoning_content, which silently collapsed that corpus into a single
-# length stratum. The resolver falls back to the saved token replay.
+# parsing reasoning_content, so length strata built on that field would collapse
+# into one. The resolver falls back to the saved token replay.
 
 
 def _replay_trace(
@@ -368,7 +368,7 @@ def test_no_metric_at_all_is_unavailable() -> None:
 
 
 def test_constant_reasoning_length_is_rejected(tmp_path: Path) -> None:
-    """The guard that would have caught the gpt-oss corpus."""
+    """A corpus whose traces all report the same reasoning length cannot be stratified."""
     generation = tmp_path / "generation"
     root = generation / "test"
     rows = []

@@ -15,7 +15,7 @@ def test_sampling_fields_send_what_the_card_sets():
         "temperature": 1.0, "top_p": 0.95, "top_k": -1, "presence_penalty": 1.5, "seed": 7, "stream": False}
 
 
-def test_an_explicit_none_top_k_is_sent_as_null_like_before():
+def test_an_explicit_none_top_k_is_sent_as_null():
     fields = client._sampling_fields({"temperature": 0.6, "top_p": 0.95, "top_k": None}, 1)
     assert fields["top_k"] is None
 

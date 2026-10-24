@@ -6,8 +6,7 @@ from pydantic import BaseModel, Field
 
 
 class StepLabels(BaseModel):
-    # Gold first-error step from datasets like ProcessBench/PRM800K.
-    # None when no ground-truth is available.
+    # Gold first-error step, when the data provide one (None otherwise).
     first_error_step: int | None = None
     # Earliest heuristic-detected reasoning event (backtracking or contradiction).
     # This is where the model SIGNALS an issue, not necessarily where the error occurs.
@@ -15,15 +14,14 @@ class StepLabels(BaseModel):
     contradiction_steps: list[int] = Field(default_factory=list)
     backtracking_steps: list[int] = Field(default_factory=list)
     self_correction_steps: list[int] = Field(default_factory=list)
-    # Exact lexical triggers used for automatic labels.  This is empty in
-    # legacy result files and makes new heuristic annotations auditable.
+    # Exact lexical triggers used for automatic labels, so that heuristic annotations are auditable.
     backtracking_evidence: list[str] = Field(default_factory=list)
     contradiction_evidence: list[str] = Field(default_factory=list)
     final_answer_reversal: bool = False
 
 
 class ModelLogs(BaseModel):
-    """Populated in Experiment 2+. Empty for Experiment 1."""
+    """Where saved router tensors live and which layers they cover (empty unless tensors were saved)."""
 
     hidden_states: str | None = None       # path to saved tensor file
     router_logits: str | None = None
@@ -41,13 +39,10 @@ class TraceRecord(BaseModel):
     source_problem_id: str | None = None
     sample_id: int = 0
     prompt: str
-    # System prompt used at generation time (None = the default SYSTEM_PROMPT).
-    # Downstream teacher-forced passes (Exp2/Exp3/event_routing) must rebuild the
-    # prompt with this same value or the routing is conditioned on the wrong context.
+    # System prompt used at generation time (None when the prompt is a single user message). It is part of
+    # `trace_digest`.
     system_prompt: str | None = None
-    # Exact OpenAI-compatible messages used by external generators such as
-    # llama.cpp.  When present, teacher-forced extraction replays these instead
-    # of reconstructing a legacy system/user prompt pair.
+    # Exact OpenAI-compatible messages sent at generation time.
     generation_messages: list[dict[str, str]] | None = None
     gold_answer: str
     model_id: str
@@ -59,5 +54,5 @@ class TraceRecord(BaseModel):
     model_logs: ModelLogs = Field(default_factory=ModelLogs)
     scoring_method: str | None = None
     metadata: dict[str, Any] = Field(default_factory=dict)
-    # Distinguishes direct math reasoning from meta-reasoning (e.g. ProcessBench)
+    # Kind of task: every generated trace is "reasoning"; "meta_reasoning" marks traces that judge a given solution.
     task_type: Literal["reasoning", "meta_reasoning"] = "reasoning"

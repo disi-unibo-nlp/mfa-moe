@@ -14,7 +14,7 @@ MIB = 1024 ** 2
 GIB = 1024 ** 3
 MAX_WORKER_BYTES = 100 * GIB  # Two TP workers plus engine/headroom in a 240G job.
 MAX_TRANSIENT_BYTES = 96 * GIB
-# Where captures may be written: the scratch campaign root, the job folders and the campaign folder of the project.
+# Where captures may be written: the scratch capture root, the job folders and the capture folder of the project.
 # store.private is not used: it accepts all of WORK and HOME, far wider than a capture should be allowed to write.
 CAPTURE_ROOTS = (Path('/leonardo_scratch/fast/IscrC_MIOSR/lmolfett/mfa-moe/campaign-v3'),
                  WORK / 'mfa-moe' / 'r', WORK / 'mfa-moe' / 'campaign-v3')

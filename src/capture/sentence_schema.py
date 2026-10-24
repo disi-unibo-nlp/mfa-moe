@@ -1,8 +1,8 @@
 """Sentence segmentation that follows the version each saved annotation was made with.
 
-Older annotations were made with the first sentence splitter. `install()` replaces `labeling.spans.sentence_spans` by a
-function that uses the splitter named in the trace metadata (`measurement_sentence_schema`, default the current one);
-`infer_schema` finds which one an annotation matches exactly.
+A saved annotation was made with sentence splitter version 1 or 2 (`labeling.spans`). `install()` replaces
+`labeling.spans.sentence_spans` by a function that uses the splitter named in the trace metadata
+(`measurement_sentence_schema`, default version 2); `infer_schema` finds which one an annotation matches exactly.
 """
 import sys
 
@@ -13,13 +13,13 @@ def install():
     if getattr(spans.sentence_spans, '_measurement_versioned', False):
         return
     current = spans.sentence_spans
-    legacy = spans.sentence_spans_v1
+    first = spans.sentence_spans_v1
 
     def versioned(trace):
         version = trace.metadata.get('measurement_sentence_schema', 2)
         if version not in (1, 2):
             raise ValueError('Unknown bound sentence schema')
-        return legacy(trace) if version == 1 else current(trace)
+        return first(trace) if version == 1 else current(trace)
 
     versioned._measurement_versioned = True
     spans.sentence_spans = versioned
@@ -41,4 +41,4 @@ def infer_schema(trace, annotation):
                and all(u.get(k) == v for k, v in expected[u['index']].items()) for u in units):
             trace.metadata['measurement_sentence_schema'] = version
             return version
-    raise ValueError('Saved annotation offsets/text match neither exact current nor frozen legacy spans')
+    raise ValueError('Saved annotation offsets/text match neither the version 2 nor the version 1 sentence spans')

@@ -4,7 +4,7 @@ The judge (Qwen3.8-27B, card thinking sampler) compares the model's FINAL answer
 reference answer; it is not asked to solve the problem. Three independent votes per item,
 three-state output (EQUIVALENT / NOT_EQUIVALENT / UNCERTAIN), per-item checkpoints.
 
-  build-hist  CPU: residual items from the historical corpus + rescored table
+  build-hist  CPU: residual items of the 32,768-token corpus, with the rescored table
   audit       CPU: freeze the stratified 100-item audit set (before any judging)
   run         GPU client: judge an items file against a running server
 """
@@ -30,7 +30,7 @@ JUDGE_SAMPLER = dict(temperature=1.0, top_p=0.95, top_k=20, min_p=0.0, presence_
                      repetition_penalty=1.0)  # Qwen3.8-27B README.md:252 (thinking mode)
 VOTES = 3
 PROMPT_VERSION = 1
-PARSER_VERSION = 2  # v2: regex verdict extraction (LaTeX backslashes make "reason" invalid JSON)
+PARSER_VERSION = 2  # regex verdict extraction (LaTeX backslashes make "reason" invalid JSON)
 SYSTEM = (
     "You check whether a candidate's final answer to a math or science problem is equivalent "
     "to the reference answer. Do not re-solve the problem and do not judge the reasoning; "
@@ -47,6 +47,15 @@ SYSTEM = (
     'Reply with a JSON object only: {"verdict": "EQUIVALENT|NOT_EQUIVALENT|UNCERTAIN", '
     '"reason": "<one sentence>"}'
 )
+
+
+# Corpus name stored in the items of the 32,768-token corpus; it is hashed into their item_id.
+CORPUS_32K = "historical"
+
+
+def table_model(name: str) -> str:
+    """The model key of a row of the rescored table (which names Qwen3.5 "qwen35gptq")."""
+    return "qwen35" if name == "qwen35gptq" else name
 
 
 def _sha(payload) -> str:
@@ -70,14 +79,14 @@ def build_item(*, corpus, model, dataset, problem_id, sample_id, problem, gold, 
 
 
 def build_hist(args) -> None:
-    """Residual finished-but-rejected historical answers (strict math_verify False, stop)."""
+    """Residual finished-but-rejected answers of the 32,768-token corpus (strict math_verify False, stop)."""
     import pandas as pd
-    from generation.continuation import DATASETS, HISTORICAL
+    from generation.continuation import DATASETS, TRACES_32K
     rescored = pd.read_parquet(args.rescored)
     wanted = rescored[(rescored.mv_correct == False) & (rescored.finish_reason != "length")]  # noqa: E712
-    keys = {(r.model if r.model != "qwen35gptq" else "qwen35", r.problem_id) for r in wanted.itertuples()}
+    keys = {(table_model(r.model), r.problem_id) for r in wanted.itertuples()}
     items = []
-    for model, root in HISTORICAL.items():
+    for model, root in TRACES_32K.items():
         for dataset in DATASETS:
             with (root / dataset / "traces.jsonl").open() as handle:
                 for line in handle:
@@ -86,7 +95,7 @@ def build_hist(args) -> None:
                         continue
                     meta = record["metadata"]
                     items.append(build_item(
-                        corpus="historical", model=model, dataset=dataset,
+                        corpus=CORPUS_32K, model=model, dataset=dataset,
                         problem_id=record["problem_id"], sample_id=record.get("sample_id"),
                         problem=record.get("prompt"), gold=record.get("gold_answer"),
                         answer_text=meta.get("assistant_content") or record.get("cot_text")))
@@ -97,7 +106,7 @@ def build_hist(args) -> None:
 
 
 def build_corpus(args) -> None:
-    """Residual finished-but-rejected answers of a card-v3 corpus (strict False, not capped)."""
+    """Residual finished-but-rejected answers of a generation root (strict False, not capped)."""
     items = []
     root = Path(args.gen_root)
     for dataset in ("math500", "aime24", "aime25", "olympiad", "amc23", "minerva"):
@@ -118,7 +127,7 @@ def build_corpus(args) -> None:
 
 def build_cont(args) -> None:
     """Residual continuation branches: finished reasoning, answer present, strict False."""
-    from generation.continuation import HISTORICAL, DATASETS
+    from generation.continuation import TRACES_32K, DATASETS
     scored = {}
     for line in open(Path(args.cont_dir) / "scored.jsonl"):
         row = json.loads(line)
@@ -127,7 +136,7 @@ def build_cont(args) -> None:
             scored[(row["dataset"], row["problem_id"])] = row
     problems = {}
     for dataset in DATASETS:
-        for line in (HISTORICAL[args.model] / dataset / "traces.jsonl").open():
+        for line in (TRACES_32K[args.model] / dataset / "traces.jsonl").open():
             record = json.loads(line)
             if (dataset, record["problem_id"]) in scored:
                 problems[(dataset, record["problem_id"])] = (record.get("prompt"), record.get("gold_answer"))
@@ -142,9 +151,9 @@ def build_cont(args) -> None:
 
 
 def audit(args) -> None:
-    """Freeze a stratified 100-item audit set BEFORE judging (blind agent adjudication)."""
+    """Freeze a stratified 100-item audit set BEFORE judging (for blind adjudication)."""
     import pandas as pd
-    from generation.continuation import DATASETS, HISTORICAL
+    from generation.continuation import DATASETS, TRACES_32K
     items = [json.loads(line) for line in open(args.items)]
     excluded = set()
     for path in args.exclude or []:
@@ -164,11 +173,11 @@ def audit(args) -> None:
     wrong = wrong[wrong.boxed.str.fullmatch(r"\s*-?\d+\s*") & wrong.gold.str.fullmatch(r"\s*-?\d+\s*")]
     control_keys = {}
     for name, frame, n in (("mv_positive_control", pos, 15), ("clear_wrong_control", wrong, 10)):
-        frame = frame[[(("qwen35" if m == "qwen35gptq" else m), p) not in excluded
+        frame = frame[[(table_model(m), p) not in excluded
                        for m, p in zip(frame.model, frame.problem_id)]]
         for r in frame.sample(n, random_state=args.seed).itertuples():
-            control_keys[(r.model if r.model != "qwen35gptq" else "qwen35", r.problem_id)] = name
-    for model, root in HISTORICAL.items():
+            control_keys[(table_model(r.model), r.problem_id)] = name
+    for model, root in TRACES_32K.items():
         for dataset in DATASETS:
             for line in (root / dataset / "traces.jsonl").open():
                 record = json.loads(line)
@@ -176,7 +185,7 @@ def audit(args) -> None:
                 if stratum:
                     meta = record["metadata"]
                     chosen.append(build_item(
-                        corpus="historical", model=model, dataset=dataset,
+                        corpus=CORPUS_32K, model=model, dataset=dataset,
                         problem_id=record["problem_id"], sample_id=record.get("sample_id"),
                         problem=record.get("prompt"), gold=record.get("gold_answer"),
                         answer_text=meta.get("assistant_content") or record.get("cot_text"),
@@ -271,7 +280,7 @@ def main(argv=None) -> None:
     ap.add_argument("command", choices=["build-hist", "build-corpus", "build-cont", "audit", "run"])
     ap.add_argument("--cont-dir")
     ap.add_argument("--seed", type=int, default=20260925)
-    ap.add_argument("--exclude", nargs="*", help="earlier audit files whose items must not recur")
+    ap.add_argument("--exclude", nargs="*", help="audit files whose items must not recur")
     ap.add_argument("--gen-root")
     ap.add_argument("--corpus", default="card-v3")
     ap.add_argument("--model")

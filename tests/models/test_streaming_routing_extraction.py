@@ -1,4 +1,4 @@
-"""Memory-safe extraction must preserve the existing full-context signals."""
+"""Memory-safe extraction must give the signals of a full forward pass over the saved token ids."""
 
 from types import SimpleNamespace
 
@@ -6,24 +6,38 @@ import pytest
 import torch
 
 from models.inference import extract_logs_single_pass
+from models.token_replay import tokenizer_fingerprint
+
+ALPHABET = "PROMTacot"  # the characters of the prompt "PROMPT" and of the completions below
 
 
 class CharacterTokenizer:
-    def apply_chat_template(self, messages, **kwargs):
-        return "PROMPT"
+    """One token per character; the token id is the position of the character in ALPHABET."""
+
+    def get_vocab(self):
+        return {char: index for index, char in enumerate(ALPHABET)}
 
     def __call__(self, text, **kwargs):
-        encoding = {"input_ids": torch.tensor([[ord(c) % 31 for c in text]])}
-        if kwargs.get("return_offsets_mapping"):
-            encoding["offset_mapping"] = torch.tensor([[(i, i + 1) for i in range(len(text))]])
-        return encoding
+        return {"input_ids": torch.tensor([[ALPHABET.index(c) for c in text]])}
+
+    def decode(self, ids, **kwargs):
+        return "".join(ALPHABET[i] for i in ids)
+
+
+def replay_of(tokenizer, cot):
+    """The saved token replay of the prompt "PROMPT" followed by the completion `cot`."""
+    completion = tokenizer(cot)["input_ids"][0].tolist()
+    return {"schema_version": 1, "tokenizer_sha256": tokenizer_fingerprint(tokenizer),
+            "prompt_token_ids": tokenizer("PROMPT")["input_ids"][0].tolist(),
+            "completion_token_ids": completion,
+            "completion_offsets": [[i, i + 1] for i in range(len(completion))]}
 
 
 @pytest.fixture
 def tiny_qwen(monkeypatch):
     modeling = pytest.importorskip("transformers.models.qwen3_5_moe.modeling_qwen3_5_moe")
-    # Exercise the same PyTorch linear-attention fallback as the reported OOM,
-    # without downloading weights or requiring CUDA/optional fused kernels.
+    # Exercise the PyTorch linear-attention fallback, without downloading weights
+    # or requiring CUDA/optional fused kernels.
     # 5.17 exposes callable PyTorch fallbacks directly; replacing them with
     # None would disable the computation instead of disabling optional kernels.
     if hasattr(modeling, "FusedRMSNormGated"):
@@ -73,6 +87,7 @@ def test_streamed_qwen_matches_hf_full_capture(
     # Cross multiple linear-attention chunks and include a partial final chunk.
     cot = "a" * 131
     inputs = tokenizer("PROMPT" + cot)
+    inputs["attention_mask"] = torch.ones_like(inputs["input_ids"])
     backbone = tiny_qwen.model
     with torch.inference_mode():
         reference = backbone(
@@ -113,7 +128,7 @@ def test_streamed_qwen_matches_hf_full_capture(
     before = _hook_counts(tiny_qwen)
     try:
         result = extract_logs_single_pass(
-            tiny_qwen, tokenizer, "problem", cot,
+            tiny_qwen, tokenizer, cot, replay_of(tokenizer, cot),
             extract_hidden_states=extract_hidden_states, layer_indices=layer_indices,
         )
         assert _hook_counts(tiny_qwen) == before
@@ -168,12 +183,14 @@ def test_streaming_hooks_support_keyword_inputs_and_are_removed_on_failure(fail_
                 hidden = layer(hidden_states=hidden)
 
     model = Backbone()
+    tokenizer = CharacterTokenizer()
+    replay = replay_of(tokenizer, "cot")
     before = _hook_counts(model)
     if fail_forward:
         with pytest.raises(RuntimeError, match="simulated forward failure"):
-            extract_logs_single_pass(model, CharacterTokenizer(), "p", "cot", True)
+            extract_logs_single_pass(model, tokenizer, "cot", replay, True)
     else:
-        router, hidden = extract_logs_single_pass(model, CharacterTokenizer(), "p", "cot", True)
+        router, hidden = extract_logs_single_pass(model, tokenizer, "cot", replay, True)
         assert router.shape == (2, 3, 4)
         torch.testing.assert_close(hidden[0], torch.zeros((3, 4)))
         torch.testing.assert_close(hidden[1], torch.ones((3, 4)))
@@ -208,6 +225,7 @@ def test_a_model_without_backbone_is_asked_for_the_last_token_logits_only():
             seen["logits_to_keep"] = logits_to_keep
             self.layers[0](torch.zeros(1, input_ids.shape[1], 4))
 
-    router = extract_logs_single_pass(Model(), CharacterTokenizer(), "p", "cot")
+    tokenizer = CharacterTokenizer()
+    router = extract_logs_single_pass(Model(), tokenizer, "cot", replay_of(tokenizer, "cot"))
     assert seen["logits_to_keep"] == 1
     assert router.shape == (1, 3, 4)

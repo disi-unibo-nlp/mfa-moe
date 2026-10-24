@@ -50,7 +50,7 @@ def vllm_version() -> str:
 
 
 def _model_slug(model: str) -> str:
-    return _SAFE_FILENAME.sub("--", model).strip("-") or "local-llamacpp"
+    return _SAFE_FILENAME.sub("--", model).strip("-") or "model"
 
 
 def _digest(payload: Any) -> str:

@@ -1,7 +1,8 @@
-"""The frozen reader's parsing of a raw judge output into a class label.
+"""Parsing of a raw judge output into a class label: split off the reasoning, then read the label with the
+DSPy parser.
 
-`driver.lfm_annotate` builds a bare `Reader` (no `__init__`) and sets `annotator`, `renderer` and
-`tokenizer` on it before calling `parse`.
+`steering.pulse` builds a bare `Reader` with `Reader.__new__` (no `__init__`) and sets `annotator`, `renderer`
+and `tokenizer` on it before calling `parse`.
 """
 from store import CLASSES
 

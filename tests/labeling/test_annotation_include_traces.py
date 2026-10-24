@@ -196,7 +196,7 @@ class IncludeTracesTests(unittest.TestCase):
             def dying_classify(batch):
                 calls.append(len(batch))
                 if len(calls) > 1:
-                    raise RuntimeError("client killed by the stalled-write watchdog")
+                    raise RuntimeError("client killed")
                 return [{"label": "Analyze"}] * len(batch)
 
             with self.assertRaises(RuntimeError):
