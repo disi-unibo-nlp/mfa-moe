@@ -36,7 +36,7 @@ ENTRY_POINTS = [
     'routing.lexical_data.validate', 'routing.lexical_data.lfm_table',
     'paper.build_cl_figures', 'paper.build_cl_manuscript', 'paper.cl_paths', 'paper.export_cl_exhibits',
     'paper.export_routing_results', 'paper.export_whole_results', 'paper.format_cl_sentences', 'paper.optimize_sections', 'paper.package_cl_manuscript',
-    'paper.prepare_cl_review', 'paper.verify_cl_author_style', 'paper.verify_cl_bibliography_offline', 'paper.verify_cl_figure_labels', 'paper.verify_cl_tables',
+    'paper.prepare_cl_review', 'paper.verify_cl_author_style', 'paper.verify_cl_bibliography_offline', 'paper.verify_cl_figure_labels', 'paper.verify_cl_printed_tables', 'paper.verify_cl_tables',
 ]
 
 # (importer, imported) pairs that are known not to resolve.
