@@ -7,4 +7,4 @@ PYTHONPATH=src python -m pytest -q -p no:cacheprovider tests/routing/test_store.
 PYTHONPATH=src python -B -m unittest discover -s tests/routing -t tests/routing                                      # all, vLLM environment
 ```
 
-`test_readout.py` and `test_lexical.py` need scipy, so run them in the vLLM environment (16 tests, a few seconds). `test_transition_pairs.py` (14 tests) also runs in the light environment. Set `TMPDIR` to a folder you own.
+`test_readout.py` and `test_lexical.py` need scipy, so run them in the vLLM environment (15 tests, under a minute). `test_store.py`, `test_expert_selection.py`, `test_state_dynamics.py` and `test_next_sentence_labels.py` (32 tests) also run in the light environment. Set `TMPDIR` to a folder you own.

@@ -10,7 +10,7 @@ native text (for Rogan-Gladen sensitivity analyses).
 
     python -m routing.lexical --tables LEXICAL_DIR --out DIR [--budget SECONDS]
                                                                   fit the five fold classifiers (about 2 h on 4 CPUs)
-    predict(sentence_table, DIR)                                  read continuation sentences with them
+    predict(sentences, DIR)                                       read continuation sentences with them
 
 LEXICAL_DIR holds the native_<model>.parquet tables of the captured models (default LEXICAL, the deployed tables).
 """
