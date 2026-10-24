@@ -1,17 +1,17 @@
-# D-0002: Whole-reasoning routing efficiency
+# steering: decisions
+
+## whole-reasoning-design: Whole-reasoning routing efficiency
 - status: active
-- date: 2026-10-20
-- decided_by: user
-- supersedes: D-0001
-- scope: Whole-reasoning GPT/Qwen efficiency experiment and corrected main/strong CPU analyses.
-- not_scope: Further 512-token rescue work, manuscript edits, pushes, outcome-driven tuning.
+- decided by: user (2026-10-20)
+- applies to: Whole-reasoning GPT/Qwen efficiency experiment and corrected main/strong CPU analyses.
+- not to: Further 512-token rescue work, manuscript edits, pushes, outcome-driven tuning.
 - chosen: Alignment v3 control-feasible global sign-stable RD nomination with exact layer/quintile/role controls at both doses; original prompts, dual score override at epsilon 0.01, prompt and reasoning steering until closure, native and native_repeat. Continuous 64-slot admission with native and efficiency cells before other promote cells. Relative full-allowance canaries, two GPT and seven Qwen shards, immutable releases, fresh stores and six simultaneous bounded contrasts. Monitor deadlines/errors never stop production; actual CPU usage remains bounded separately.
 - rejected: Full-top-k promotion, new 512-token generation, routine dose sweeps, mixed doses per model, treating the exploratory sign-transfer link as a preregistered replication.
 - evidence: User's Alignment v2, 2026-10-20: "This message replaces that plan and the 2026-10-20 'final implementation plan'." Exact endpoints, debate, gates and authorization are recorded in report/whole-reasoning-20261020/README.md. New-work ceiling 72 GPU-hours plus retained r3 engineering 0.346111; CPU ceiling 16 core-hours. Science cutoff 2026-10-23 05:30 Europe/Rome.
 - keywords: whole, efficiency, routing, bootstrap, nomination, SteerMoE, rescue
-- paths: src/steering, tests/steering, scripts/steering
+- supersedes: rescue-population
 
-## Alignment v3 amendments (user, before any whole GPU outcome)
+### Alignment v3 amendments (user, before any whole GPU outcome)
 
 User: "adopt your control-feasible nomination. Do not use tertiles" and "This
 session is the only owner and submitter." Keep all v2 scientific parameters
@@ -63,7 +63,7 @@ remains zero. The exploratory link uses shared 10,000 draws/seed20261015, which
 differs from the preregistered 2,000/20261017. Corrected main analysis records
 every bounded activate:log_total row and its reason.
 
-## Frozen endpoints (user, verbatim)
+### Frozen endpoints (user, verbatim)
 
 **Predeclared efficiency-directed cells** (declared 2026-10-20 before any whole-arm outcome; only the promote side
 derives from the pre-registration; the suppress side is a new hypothesis):
@@ -133,3 +133,33 @@ substituted. This evidence limitation does not block the authorized canaries.
   - pooled about 4% and 1.7 pp.
 - These transport from main-study data, so mark them SUSPECTED.
 
+## gentle-routing-nudge: Outcome-selected gentle routing nudge
+- status: superseded by class-conditioned-outcome-design
+- decided by: user (2026-10-22)
+- applies to: The outcome-steering experiment (outcome-steering-r1) on gpt, qwen330b and nemotron; extension to the other models with cohort-B captures only if the three-model result is positive.
+- not to: Changes to the finished whole-reasoning releases r7-r17 or their analysis; manuscript claims before a sealed receipt.
+- chosen: Select experts by outcome on campaign-v3 cohort B (per-attempt usage per reasoning token, z-scored within question, mean wrong-minus-right over mixed-outcome questions, sign stable under leave-one-question-out). Exclude the shared core (top 5% native frequency per layer) and the most execution-specific experts (union over folds of the top 10% positive Implement/Analyze risk differences). Take stable positive pairs until 1.2% of native routing mass (5 to 40 pairs; fill to 5 by score with an unstable_fill flag if needed). Families whose question is in cohort B use the set selected without that question. Subtract delta in {0.4, 0.8, 1.6} from the selected experts' router logits at every prompt and reasoning token, keeping native top-k and renormalisation. Matched random controls with the same layers, frequency quintiles and exclusions. Reuse the base releases' native and native_repeat rows. Length-limit baseline: cut each family's native reasoning at 50/70/85% of its length, append the closing suffix and generate only the answer (allowance min(2048, remaining)).
+- rejected: Class-risk-difference nomination (the 87-cell whole design found no helpful experts); forced on/off membership; excluding every expert with any positive Implement/Analyze link (empties the control pools); fresh native reruns.
+- evidence: User answers 2026-10-22 (3 models first, length-limit baseline, three strengths 0.4/0.8/1.6, top-10% execution protection, reuse natives); analysis in /leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/r/claude-review/why-steering-20261022/; chen2026beyond ("Beyond the Trace") reports shorter and more accurate GPT-OSS-20B output with five outcome-selected experts at a -0.8 logit shift.
+- keywords: outcome, nudge, steering, budget, early-exit, routing
+
+### Extension rule (declared 2026-10-22, before any nudge outcome)
+
+The user asked to extend to every model if the three-model result is good, and to schedule every
+step automatically. A CPU job after the r1 analysis applies `moe_exp.outcome_steering.decide`: extend
+when some first-wave model and delta is shorter than matched random experts (bounded simultaneous
+token interval above zero) with accuracy against unedited routing not below -1 point, or more
+accurate than random experts (accuracy interval above zero). If met, it launches
+outcome-steering-20261022-r2 for gemma, glm, qwen35 and qwen36 (LFM2.5 has no cohort-B captures),
+GLM with more shards because it decodes about four times slower.
+
+## class-conditioned-outcome-design: Class-conditioned outcome steering design (r2)
+- status: active
+- decided by: user (2026-10-23)
+- applies to: The second outcome-steering campaign (outcome-steering-r2, attempt-selection-by-routing): native captures on all eight models, class-conditioned expert selection, the GPT-OSS nudge sweep on question half A, the automatic pick and its confirmation on half B, and the attempt-selection analysis. The other seven models' sweeps are decided jointly after the GPT-OSS half-B receipt.
+- not to: Release r1 and its analysis (kept unchanged, reported as the broad-edit test); the whole-reasoning releases r7-r20; GPT-OSS low/high reasoning effort (a later GPT-only extension); manuscript claims before a sealed receipt.
+- chosen: Captures: the same 300 questions for every model (aime24 30, aime25 30, amc23 40, olympiad 100, minerva 50, math500 50; digest-ranked within benchmark, one question per family, no outcome read), 6 native attempts each, medium effort, original prompt tokens, 32,768-token completion cap on every row of r2, native top-k ids and weights of every reasoning token at every routed layer. Labels: lexical readout v1 (TF-IDF), out-of-fold by FOLDS.json; no judge. Score per class c: within-question z-scored usage on tokens labelled c, mean of wrong minus mean of right, over questions with both outcomes; capped or unknown attempts excluded. Sets: one per class (7) plus a class-blind set (GPT-OSS: Beyond the Trace's five pairs L12-E23, L12-E12, L12-E24, L16-E11, L20-E0; other models: the plain outcome set). Set rule from related work: candidates only in the three routed layers at relative depth 1/2, 2/3, 5/6 (n//2, 2n//3, 5n//6; 12/16/20 on GPT-OSS, Beyond the Trace); best positive pairs until they carry 1.2% of those layers' native gate weight per reasoning token, at most 10 pairs (the paper's own definition, confirmed by the ELM grounding check of 2026-10-23: "1.2% of the gated mass across the three recorded layers", gate weight accumulated over routed assignments; the slot share is reported beside it); committee experts (top 5% native use per layer, Illusion of Specialization) and the top-10% Implement/Analyze experts never nudged; logit shift with native top-k and renormalisation (SteerMoE-style operator). Each evaluation family uses sets selected without its own question. Arms: target nudge and two disjoint matched random draws (same layer, native-frequency quintile) per set and shift; shifts 0.4, 0.8, 1.2 at every prompt and reasoning token; unedited arm = the 6 capture attempts; stop-early baseline at 50/70/85% of a native attempt. Halves: the 300 questions split by a benchmark-stratified digest into A and B. Pick rule (frozen now): among half-A cells with accuracy against native no worse than -5 points (point estimate) take the most negative tokens-against-mean-random point estimate; if none qualifies, the best accuracy-against-random estimate. Half B confirms that cell and the class-blind set at its best shift. Primary reported contrast: tokens against the mean of the two random draws with accuracy against native noninferior within 5 points, on half B; every half-A cell is exploration; no success threshold gates anything. Attempt selection on the captures: routing consensus, outcome-profile and class-mix scores against majority vote, random, shortest and longest.
+- rejected: r1's all-layer set of 20-40 experts (acts like a random edit); the leave-one-question-out stability filter (passes as many pairs under shuffled labels as under real ones); cohort B as selection data (37 or fewer questions); the 'middle third' window (excludes two of the paper's five experts); a slot-share target (the paper's five carry 5.35% of their layers' top-k slots and 0.67% of all slots on cohort B; the paper measures gate weight, so the slot share is only reported); a judge pass on the captures; an automatic gate before the other seven models.
+- evidence: User answers in the grilling session of 2026-10-23 (Q1-Q25) and the plan approval of the same day; ELM grounding check /leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/r/claude-review/outcome-r2-grounding-20261023/report.md (Beyond the Trace App. A.6: gate-weight share in layers 12/16/20, Low effort for selection and edit, 12 evaluation problems not stated to be held out, shifts 0.3/0.8 at every token, equal-dose random sham; SteerMoE, RICE, Illusion of Specialization, Command A+ modularity and causal-audit designs tabulated); paper/wiki/OUTCOME_STEERING_REVIEW.md; footprint check on /leonardo_scratch/fast/IscrC_MIOSR/lmolfett/mfa-moe/campaign-runs/outcome-steering/gpt/USAGE.npz (paper's five: 0.0535 of window slots, 0.0067 of all slots).
+- keywords: outcome, nudge, steering, class, capture, attempt selection, Beyond the Trace
+- supersedes: gentle-routing-nudge

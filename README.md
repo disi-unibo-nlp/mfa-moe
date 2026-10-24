@@ -18,7 +18,7 @@ The eight models, with the short names used in every command: `gpt` (GPT-OSS-20B
 | `report/` | Receipts: small JSON files that record what a finished run read and produced, each with a hash of its own content. Whether a stage passed is decided by its receipt, not by a log or a job state. |
 | `paper/` | Not tracked here: the manuscript (an Overleaf checkout), and the support files around it sit in this folder on disk. The research wiki is in `docs/wiki/`. The code in `src/paper` reads and writes it. |
 | `configs/`, `data/`, `requirements/` | The frozen design of the eight-model study, small input data, the lock file of the judge-client environment. |
-| `docs/ledger/` | Decisions and plans. `AGENTS.md` is the dated log of what is running now. |
+| `TODO.md`, `scripts/<topic>/{TODO,DECISIONS,WALKTHROUGH}.md` | Plans, decisions and walkthroughs, each under a plain label; the root `TODO.md` lists the open work. `AGENTS.md` is the dated log of what is running now. |
 
 Every folder under `scripts/`, `src/` and `tests/` has its own README. Start there when you work on one part.
 
