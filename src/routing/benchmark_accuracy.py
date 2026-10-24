@@ -1,11 +1,12 @@
-"""Outcome-only analyses of campaign v3 (no routing captures needed).
+"""Outcome-only analyses of the seven generated corpora (no routing captures needed).
 
-Reads the outcome sidecar v3 (pointer or parquet) and writes, under --out:
+Reads the outcome sidecar (pointer or parquet) and writes, under --out:
   accuracy.csv       model x dataset x corpus: attempts, capped rate, strict / adjudicated /
                      Minerva-tolerance accuracy (question-clustered bootstrap 95% CI for adjudicated),
                      accuracy among finished attempts, median completion tokens
-  budget.csv         per model: 32k historical vs 131k card-sampler accuracy, and the historical
-                     accuracy after continuing its truncations to 131k cumulative tokens
+  budget.csv         per model: accuracy at the 32k budget (corpus `historical`) vs the 131k card-sampler
+                     budget (corpus `card-v3`), and the 32k accuracy after continuing its truncations to
+                     131k cumulative tokens
   continuation.csv   per model: truncated parents, share that finish within 131k, their accuracy
   errors.csv         per model x corpus: share of errors that are truncations
   length_gap.csv     within-question (AIME/AMC, >=2 correct and >=2 wrong) median log length gap
@@ -35,7 +36,7 @@ def load(path):
         if file_sha(path) != pointer["sha256"]:
             raise ValueError("outcome sidecar does not match its pointer")
     table = pd.read_parquet(path)
-    table["model"] = table["model"].replace({"qwen35gptq": "qwen35"})
+    table["model"] = table["model"].replace({"qwen35gptq": "qwen35"})  # the sidecar names Qwen3.5 by its checkpoint
     for column in ("strict_correct", "adjudicated_correct", "minerva_tolerance_correct"):
         table[column] = table[column].astype("float")
     table["capped"] = table["termination"].eq("length")
@@ -71,7 +72,7 @@ def accuracy_table(table):
 
 
 def budget_table(table):
-    """32k historical vs 131k card-v3, and historical with continued truncations."""
+    """Accuracy at the 32k budget, at the 131k card-sampler budget, and at 32k with truncations continued."""
     hist = table[table["corpus"] == "historical"].copy()
     cont = table[table["corpus"] == "continuation"]
     key = ["model", "dataset", "problem_id"]
@@ -147,7 +148,7 @@ def main():
         frame.to_csv(out / f"{name}.csv", index=False)
     (out / "provenance.json").write_text(json.dumps(dict(outcomes=provenance, rows=len(table),
                                                          by_corpus=table["corpus"].value_counts().to_dict()), indent=1))
-    lines = ["# Campaign v3 outcome-only results", "", f"Outcome sidecar `{provenance['sha256'][:16]}`, {len(table)} rows.", ""]
+    lines = ["# Outcome-only results of the seven models", "", f"Outcome sidecar `{provenance['sha256'][:16]}`, {len(table)} rows.", ""]
     for name in ("budget", "continuation", "errors", "length_gap"):
         lines += [f"## {name}", "", tables[name].round(3).to_markdown(index=False), ""]
     pivot = tables["accuracy"].pivot_table(index=["model", "dataset"], columns="corpus", values="adjudicated")

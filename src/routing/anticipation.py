@@ -1,13 +1,14 @@
 """Does routing predict the next reasoning state beyond the past text? GPT-OSS and Qwen3.6, with noise controls.
 
-Clean past-text and class-history controls, out-of-fold class estimates and matched noise, from the existing K2
-raw caches and A1 histograms only. Missing cells stay incomplete; no tensor producer is run, and the fixed grid and
+Past-text and class-history controls, out-of-fold class estimates and matched noise, from the saved K2 window
+caches and A1 pair histograms only. Missing cells stay incomplete; no tensor producer is run, and the fixed grid and
 windows are never searched or widened. About 21 hours on 4 CPUs (84 core-hours).
 
     python -m routing.anticipation --out DIR [--workers 4]
 
 DIR must be new: it gets FROZEN.anticipation.json (the run's inputs and the code that ran), the fold checkpoints
-and anticipation-results.json. The inputs are compared with the first run's spec in HISTORICAL.
+and anticipation-results.json. The inputs are compared with the published run's spec in PUBLISHED_RUN
+(routing.readout_analysis).
 """
 from __future__ import annotations
 
@@ -80,7 +81,7 @@ def configure_blocks(K, F, C, Softmax, T, folds):
             if key == 'prefix_class':
                 if key not in self._cache:
                     raw = np.full((d.n, 7), np.nan)
-                    # Fixed lambda=1 was declared before execution; no outcome-driven tuning.
+                    # Fixed lambda=1; no outcome-driven tuning.
                     # Training-row predictions themselves are grouped out of fold.
                     inner = folds(d.groups[self.tr], 3, SEED + 777)
                     for fold in range(3):
@@ -233,14 +234,9 @@ def run(workers, out):
     import pandas as pd
     from scipy import sparse
     from routing.dynrt import common as D, cv as C
-    D.RESULTS = ANALYSIS / 'dynamics-routing/results'
     from routing.dynrt import data as Data, d3a_pairs as P, d3a_text as T, features as F, d3a_softmax as Softmax
     from routing.rkin import common as RK
-    RK.DATA = ANALYSIS / 'reasoning-kinematics/rk2/data'
     from routing.rkin import k2 as K
-    K.DATA = RK.DATA
-    K.K2DATA = RK.DATA / 'k2'
-    K.OUTER = 5
     _, qf = question_families()
     split = D.load_split()
     folds = lambda qs, n, seed: family_folds(qs, n, seed if seed>=SEED else SEED*1000+seed, qf)
@@ -280,7 +276,7 @@ def run(workers, out):
     for model in ('gpt','qwen36'):
         pairs_all = pd.read_parquet(K.K2DATA/model/'pairs.parquet')
         keep = np.array([split[q] in ('dev','tune') for q in pairs_all['question']])
-        # Prepared K2 already excluded B; verify rather than relying on that history.
+        # The prepared K2 pairs already exclude cohort B; check it here.
         reserved = set(pd.read_parquet(D.V3R2/model/'B/attempts.parquet',columns=['question'])['question'])
         keep &= ~pairs_all['question'].isin(reserved).to_numpy()
         rows = np.flatnonzero(keep)

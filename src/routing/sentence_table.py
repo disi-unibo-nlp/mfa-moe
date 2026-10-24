@@ -1,4 +1,4 @@
-"""A campaign-v3 model's labelled-sentence table, rebuilt from its saved traces and original judge labels.
+"""A captured model's labelled-sentence table, rebuilt from its saved traces and original judge labels.
 
 The dynamics tables behind the paper's state-transition figure
 (`dynamics-routing/results/<model>/A/sentences.parquet`) hold one row per judge-labelled sentence that owns
@@ -12,10 +12,11 @@ This module reads the traces and the 4 x 25,000-sentence judge records of one mo
 rules of the extraction (a record counts only when its offsets equal the current sentence, an invalid label
 is skipped and a conflicting one removed), writes the table with the extraction's columns and checks it in two
 ways: per attempt, the class token totals equal the nine saved class counts, and for every attempt that the
-old table also holds, the rows are equal.
+saved table also holds, the rows are equal.
 
-Inputs: `report/research-campaign-v3-20261014-r5-r2/<model>/SOURCES.json` and `CAMPAIGN.json` (saved inputs),
-the four `campaign-v3/labels/<model>/part-*/annotations.json` of `store.ANALYSIS`, and the saved traces.
+Inputs: `report/research-campaign-v3-20261014-r5-r2/<model>/SOURCES.json` and `CAMPAIGN.json` (the record of the
+seven-model capture and its saved inputs), the four `campaign-v3/labels/<model>/part-*/annotations.json` of
+`store.ANALYSIS`, and the saved traces.
 
     sbatch -J pairs-table scripts/slurm/cpu.sh routing.sentence_table rebuild --model qwen36   (8 CPUs, about 1 minute)
     python -m routing.sentence_table rebuild --model qwen36 --limit 8 --output PATH            (small debug run)
@@ -44,7 +45,7 @@ from labeling.spans import reasoning_ranges, trace_digest
 from schemas import TraceRecord
 from store import ANALYSIS, CLASSES, STUDY, binding, file_sha, load, publish, read_source, require, write_once
 
-# Next to the final-routing report (not under the code tree, so a source snapshot finds it too).
+# The record of the seven-model capture sits next to the study report, outside the code tree.
 CAMPAIGN = STUDY.parent/'research-campaign-v3-20261014-r5-r2'
 PAIR_SOURCES = ('Read', 'Verify')
 # Absolute reasoning-token position bins of the extraction: 0-1k, 1-2k, 2-4k, 4-8k, 8-16k, 16k+ (1k = 1024).
@@ -63,14 +64,14 @@ def pairs_dir(model: str) -> Path:
 
 
 def receipt_dir(model: str) -> Path:
-    """Compact receipts of this model's transition-pair work, inside the final-routing campaign report."""
+    """Compact receipts of this model's transition-pair work, inside the study report."""
     return STUDY/'transition-pairs'/model
 
 
 def campaign_sources(model: str) -> list[dict]:
-    """The 1,547 attempts (source trace location, trace digest, family, completion length) of a campaign-v3 model."""
+    """The 1,547 attempts (source trace location, trace digest, family, completion length) of a captured model."""
     sources = load(CAMPAIGN/model/'SOURCES.json')['records']
-    require(len(sources) == 1547, f'{model}: expected 1,547 campaign attempts')
+    require(len(sources) == 1547, f'{model}: expected 1,547 attempts')
     return sources
 
 
@@ -80,7 +81,7 @@ def trace_key(source: dict) -> tuple:
 
 
 def label_files(model: str) -> list[Path]:
-    """The four judge-record files (25,000 sentences each) of a campaign-v3 model."""
+    """The four judge-record files (25,000 sentences each) of a captured model."""
     return sorted((ANALYSIS/'campaign-v3/labels'/model).glob('part-*/annotations.json'))
 
 
@@ -192,7 +193,7 @@ def as_frame(rows: list[dict]) -> pd.DataFrame:
 
 
 def campaign() -> dict:
-    """The campaign-v3 binding that names every saved input of the seven models."""
+    """The CAMPAIGN.json record that names every saved input of the seven models."""
     return load(CAMPAIGN/'CAMPAIGN.json')
 
 
@@ -226,9 +227,9 @@ def compare_with_existing(frame: pd.DataFrame, model: str) -> dict:
     """Rows of the attempts that the extraction's own table also holds must be identical."""
     existing = pd.read_parquet(campaign()['saved_inputs'][model]['sentences'])
     shared = frame[frame.attempt_id.isin(set(existing.attempt_id))].reset_index(drop=True)
-    old = existing.sort_values(['attempt_id', 'sentence_index'], ignore_index=True)
-    equal = shared.shape == old.shape and all(
-        shared[c].to_numpy().tolist() == old[c].to_numpy().tolist() for c in COLUMNS)
+    saved = existing.sort_values(['attempt_id', 'sentence_index'], ignore_index=True)
+    equal = shared.shape == saved.shape and all(
+        shared[c].to_numpy().tolist() == saved[c].to_numpy().tolist() for c in COLUMNS)
     return {'attempts_in_existing_table': int(existing.attempt_id.nunique()), 'rows_in_existing_table': len(existing),
             'rows_rebuilt_for_those_attempts': len(shared), 'identical': bool(equal)}
 
@@ -237,7 +238,7 @@ def rebuild(model: str, workers: int, limit: int | None = None, output: Path | N
     """Rebuild a model's labelled-sentence table for all of its attempts and publish the receipt.
 
     Args:
-        model: A campaign-v3 model key.
+        model: A captured model key.
         workers: Processes reading traces and laying out sentences (the work is CPU-bound per trace).
         limit: Debug only: the first `limit` attempts; no receipt is published and no count check is made.
         output: Parquet path; defaults to this model's private transition-pairs directory.

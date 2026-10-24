@@ -7,15 +7,15 @@ from store import WORK, publish
 
 
 class NativeAccuracyTests(unittest.TestCase):
-    def test_a_new_out_recomputes_the_native_accuracy_instead_of_reusing_the_campaigns(self):
+    def test_a_new_out_recomputes_the_native_accuracy_instead_of_reusing_the_capture_records(self):
         with tempfile.TemporaryDirectory(dir=WORK/'tools/tmp') as tmp:
             root, out = Path(tmp)/'campaign', Path(tmp)/'out'
             for name in ('NATIVE_ESTIMANDS.json', 'NATIVE_ACCURACY.json'):
                 publish(root/'gpt'/name, {'exact_attempt_metadata': True})
             campaign = {'root': str(root), 'outcomes': str(Path(tmp)/'missing.parquet')}
-            with self.assertRaises(FileNotFoundError):  # it went to the outcomes: nothing of the campaign was read
+            with self.assertRaises(FileNotFoundError):  # it went to the outcomes: nothing of the capture record was read
                 dynamics.native_accuracy(campaign, 'gpt', out)
-            estimands, _ = dynamics.native_accuracy(campaign, 'gpt', root)  # without --out the campaign folder is the output
+            estimands, _ = dynamics.native_accuracy(campaign, 'gpt', root)  # without --out the capture record's folder is the output
             self.assertTrue(estimands['exact_attempt_metadata'])
 
 

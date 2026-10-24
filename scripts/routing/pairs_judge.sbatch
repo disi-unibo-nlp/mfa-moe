@@ -6,7 +6,7 @@
 #   sbatch scripts/routing/pairs_judge.sbatch MODEL I/N [SOURCE_CLASSES]
 source scripts/slurm/env.sh || exit 1
 # As scripts/steering/gpu.sh (the LFM2.5 labels): a few BLAS threads next to the engine. The renderer child finds DSPy
-# in the pinned copy the campaign names (labeling.renderer); the judge-client environment is not put on PYTHONPATH, where
+# in the pinned copy the study names (labeling.renderer); the judge-client environment is not put on PYTHONPATH, where
 # its openai and pydantic would shadow the vLLM environment's.
 T=$((SLURM_CPUS_PER_TASK < 4 ? SLURM_CPUS_PER_TASK : 4))
 export OMP_NUM_THREADS=$T OPENBLAS_NUM_THREADS=$T MKL_NUM_THREADS=$T

@@ -1,10 +1,10 @@
 """Build steered_<study>.parquet from the generated-dense steering runs (Qwen3.6 continuations).
 
-Read-only on all sources. Writes only under OUT. Usage: build_steered.py <A|B|C|FRESH>
+Read-only on all sources. Writes only under OUT_DIR.
+Usage: python -m routing.lexical_data.build_steered A|B|C|FRESH OUT_DIR
 """
 from __future__ import annotations
 
-import collections
 import glob
 import hashlib
 import json
@@ -15,12 +15,12 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+from store import ANALYSIS
+
 RUNS = Path("/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1")
 MAN = Path("/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1")
-R6 = Path("/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/research-campaign-v3-20261014-r6")
-CV3 = Path("/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/campaign-v3")
-OUT = Path("/scratch_local/claude-133943/-leonardo-work-IscrC-MIOSR-lmolfett-mfa-moe-repo/"
-           "88d89532-1e37-4900-bace-03c5cfadb6b4/scratchpad/lexicon/data")
+RECEIPTS = Path("/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/research-campaign-v3-20261014-r6")  # folds
+CAPTURE = ANALYSIS / "campaign-v3"   # saved cohorts of the seven-model capture
 STUDIES = {
     "A": ("generated-dense/dense-generated-v1-9b714fe1091f-8e0bff870bed", "OVERNIGHT_DISCOVERY_A_MANIFEST_v1.json"),
     "B": ("generated-dense/dense-generated-v1-9c3dc95fda9c-8e0bff870bed", "OVERNIGHT_DISCOVERY_B_MANIFEST_v1.json"),
@@ -38,7 +38,7 @@ def sha(text: str) -> str:
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
 
-def main(study: str) -> None:
+def main(study: str, out: Path) -> None:
     t0 = time.time()
     rundir, manifest_name = STUDIES[study]
     d = RUNS / rundir
@@ -57,9 +57,9 @@ def main(study: str) -> None:
     print(f"[{study}] loaded arm_map {len(arm_map['records'])} frame {len(inputs)} labels {len(labels)} "
           f"batches {nbatch} ({time.time() - t0:.0f}s)", flush=True)
 
-    folds = json.load(open(R6 / "FOLDS.json"))
+    folds = json.load(open(RECEIPTS / "FOLDS.json"))
     qfam, fold_of = folds["question_families"], folds["folds"]
-    coh = json.load(open(CV3 / "cohorts/qwen36/cohorts.json"))["rows"]
+    coh = json.load(open(CAPTURE / "cohorts/qwen36/cohorts.json"))["rows"]
     native_digests = {r["trace_sha256"] for r in coh}
     native_q = {f"{r['dataset']}|{r['source_problem_id']}" for r in coh}
     native_fam = {qfam[q] for q in native_q}
@@ -185,11 +185,11 @@ def main(study: str) -> None:
                 judge_protocol="dense-v1 (direct vLLM chat, T=0, effort low, max 1024)",
             ))
     df = pd.DataFrame(rows)
-    OUT.mkdir(parents=True, exist_ok=True)
-    df.to_parquet(OUT / f"steered_{study}.parquet", compression="zstd", index=False)
-    pd.DataFrame(conts).to_parquet(OUT / f"_cont_{study}.parquet", compression="zstd", index=False)
+    out.mkdir(parents=True, exist_ok=True)
+    df.to_parquet(out / f"steered_{study}.parquet", compression="zstd", index=False)
+    pd.DataFrame(conts).to_parquet(out / f"_cont_{study}.parquet", compression="zstd", index=False)
     pd.DataFrame([dict(problem_sha=k, dataset=v[0], source_problem_id=v[1], problem_statement=v[2])
-                  for k, v in problems.items()]).to_parquet(OUT / f"_problems_steered_{study}.parquet",
+                  for k, v in problems.items()]).to_parquet(out / f"_problems_steered_{study}.parquet",
                                                            compression="zstd", index=False)
     print(f"[{study}] DONE rows={len(df)} labelled={int(df.is_labelled.sum())} "
           f"unknown={(df.label_status == 'unknown').sum()} conts={df.uid.nunique()} ({time.time() - t0:.0f}s)",
@@ -197,4 +197,4 @@ def main(study: str) -> None:
 
 
 if __name__ == "__main__":
-    main(sys.argv[1])
+    main(sys.argv[1], Path(sys.argv[2]))

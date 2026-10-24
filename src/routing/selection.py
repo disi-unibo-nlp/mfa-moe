@@ -7,8 +7,8 @@ functions rank experts per class and layer, nominate one layer per depth third a
     python -m routing.selection export OUT_DIR [--campaign DIR]
 
 `export` writes OUT_DIR/selection_coverage.csv, the table behind the manuscript's selection figure: for each of the
-seven campaign models, fold and selector, the minimum class coverage on the held-out families. It reads the stored
-SELECTION.json receipts of the expert-memory campaign (default report/expert-memory-study-v1).
+seven captured models, fold and selector, the minimum class coverage on the held-out families. It reads the stored
+SELECTION.json receipts of the seven-model expert selection (default report/expert-memory-study-v1).
 """
 from __future__ import annotations
 
@@ -20,7 +20,7 @@ import numpy as np
 
 from store import CLASSES, MODELS, SEED, WORK, digest, file_sha, require, seal, verified
 
-CAMPAIGN = WORK / 'mfa-moe/repo/report/expert-memory-study-v1'  # reports are untracked and live in the main checkout
+RECEIPTS = WORK / 'mfa-moe/repo/report/expert-memory-study-v1'  # reports are not tracked in git; they live in the main checkout
 
 
 def family_folds(families, n=5):
@@ -276,7 +276,7 @@ def export(campaign_dir, output):
     campaign_dir, output = Path(campaign_dir), Path(output)
     campaign = verified(campaign_dir / 'CAMPAIGN.json')
     rows = []
-    for model in MODELS[:-1]:  # the seven campaign models; LFM2.5 has its own SELECTION_COVERAGE.json
+    for model in MODELS[:-1]:  # the seven captured models; LFM2.5 has its own SELECTION_COVERAGE.json
         path = campaign_dir / model / 'SELECTION.json'
         if path.exists():
             receipt = verified(path)
@@ -299,7 +299,7 @@ def main(argv=None):
     parser = argparse.ArgumentParser(prog='python -m routing.selection', description='Selection coverage table for the paper.')
     parser.add_argument('command', choices=('export',))
     parser.add_argument('output', type=Path, help='new folder')
-    parser.add_argument('--campaign', type=Path, default=CAMPAIGN)
+    parser.add_argument('--campaign', type=Path, default=RECEIPTS)
     args = parser.parse_args(argv)
     print(export(args.campaign, args.output), flush=True)
 

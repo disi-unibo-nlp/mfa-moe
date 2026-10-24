@@ -1,4 +1,4 @@
-"""Hashed text features for P-A1 (deterministic; no fitted state until `TextTransform.fit`).
+"""Hashed text features (deterministic; no fitted state until `TextTransform.fit`).
 
 One shared hash space of 2^18 buckets. Word tokens (`\\w+` runs and single punctuation marks, lower-cased)
 give unigrams and bigrams; the whitespace-normalised lower-cased text gives character 3-, 4- and 5-grams.

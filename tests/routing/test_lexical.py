@@ -38,7 +38,7 @@ def text_transform(n_active, scale):
 
 
 class FoldPickleTests(unittest.TestCase):
-    def test_pickles_with_the_old_module_names_still_load(self):
+    def test_pickles_with_the_stored_module_names_load(self):
         featurizer = lexical.Featurizer()
         featurizer.tc = text_transform(3, 0.5)
         model = lexical.LR()

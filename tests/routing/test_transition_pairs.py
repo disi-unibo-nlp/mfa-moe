@@ -209,10 +209,10 @@ class Rebuild(unittest.TestCase):
             first = self.rebuild(root, 'Plan')
             table = root/'bulk/sentences.parquet'
             before = table.read_bytes()
-            # The receipt was written by an older version of the module.
-            old = store.seal({**{k: v for k, v in first.items() if k != 'sha256'}, 'module_sha256': 'older'})
-            (root/'receipts/SENTENCES.json').write_bytes(store._dump(old)+b'\n')
-            self.assertEqual(self.rebuild(root, 'Plan'), old)
+            # The receipt on disk was written by another version of the module.
+            written = store.seal({**{k: v for k, v in first.items() if k != 'sha256'}, 'module_sha256': 'other'})
+            (root/'receipts/SENTENCES.json').write_bytes(store._dump(written)+b'\n')
+            self.assertEqual(self.rebuild(root, 'Plan'), written)
             self.assertEqual(table.read_bytes(), before)
             with self.assertRaisesRegex(ValueError, 'conflicting immutable data file'):
                 self.rebuild(root, 'Verify')

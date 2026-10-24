@@ -1,13 +1,16 @@
-"""Union of labelled steered rows, merged native problems table, judge parity table. Writes only under OUT."""
+"""Union of labelled steered rows, merged native problems table, judge parity table. Writes only under OUT_DIR.
+
+Usage: python -m routing.lexical_data.build_extras OUT_DIR   (the folder the builders wrote into)
+"""
 from __future__ import annotations
 
 import json
 from pathlib import Path
+import sys
 
 import pandas as pd
 
-OUT = Path("/scratch_local/claude-133943/-leonardo-work-IscrC-MIOSR-lmolfett-mfa-moe-repo/"
-           "88d89532-1e37-4900-bace-03c5cfadb6b4/scratchpad/lexicon/data")
+OUT = Path(sys.argv[1])
 PAR = Path("/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/"
            "routing-control-v1/dense-judge-parity")
 MODELS = "gpt nemotron qwen35 qwen36 gemma glm qwen330b".split()
@@ -39,7 +42,7 @@ print("problems native", len(nat), "steered", len(st), "steered problem texts al
 for p in OUT.glob("_problems_*.parquet"):
     p.unlink()
 
-# 3) same-input judge-protocol pairs (historical GEPA/DSPy label vs dense-v1 label)
+# 3) same-input judge-protocol pairs (GEPA/DSPy label vs dense-v1 label)
 fx = json.load(open(PAR / "FIXTURES.json"))["fixtures"]
 pr = json.load(open(PAR / "results-8e939bee-2341bac1/PARITY.json"))["records"]
 rows = []

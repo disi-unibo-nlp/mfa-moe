@@ -1,6 +1,6 @@
-"""store.py and stats.py reproduce the numbers of the modules they replaced (receipts.py and the longer stats.py).
+"""store.py and stats.py reproduce the pinned numbers of the stored receipts: canonical digests and the family bootstrap.
 
-The expected hashes were computed with the removed `receipts.digest` and the removed `bootstrap_panel` options.
+The expected hashes are those the stored receipts carry (digests of the values below, and one bootstrap panel).
 """
 import hashlib
 import json
@@ -14,8 +14,8 @@ import pandas as pd
 import stats
 import store
 
-# receipts.digest of these values, before receipts.py was merged into store.py
-OLD_DIGESTS = {
+# the digest of these values, as the stored receipts record it
+PINNED_DIGESTS = {
     'plain': ({'a': 1, 'b': [1, 2.5, 'x'], 'c': {'d': None, 'e': True}},
               'b49c69dfdb8de1b7097bdf9a8079d3d9d33f9aae72e54e8eac51cc2545c85dda'),
     'tuples and int keys': ({1: (1, 2), 2: [(3, 4)], 'z': ()},
@@ -59,8 +59,8 @@ def panel_rows():
 
 
 class DigestTests(unittest.TestCase):
-    def test_digest_matches_the_removed_receipts_module(self):
-        for name, (value, expected) in OLD_DIGESTS.items():
+    def test_digest_matches_the_pinned_values(self):
+        for name, (value, expected) in PINNED_DIGESTS.items():
             with self.subTest(name):
                 self.assertEqual(store.digest(value), expected)
 
@@ -90,17 +90,17 @@ class DigestTests(unittest.TestCase):
     def test_a_rerun_with_other_provenance_is_accepted_and_anything_else_is_refused(self):
         with tempfile.TemporaryDirectory(dir=store.WORK/'tools/tmp') as tmp:
             path = Path(tmp)/'R.json'
-            first = store.publish(path, {'counts': [1, 2], 'module_sha256': 'old'}, provenance=('module_sha256',))
-            again = store.publish(path, {'counts': [1, 2], 'module_sha256': 'new'}, provenance=('module_sha256',))
+            first = store.publish(path, {'counts': [1, 2], 'module_sha256': 'first'}, provenance=('module_sha256',))
+            again = store.publish(path, {'counts': [1, 2], 'module_sha256': 'second'}, provenance=('module_sha256',))
             self.assertEqual(again, first)  # the receipt on disk is kept as it is
-            self.assertEqual(store.verified(path)['module_sha256'], 'old')
+            self.assertEqual(store.verified(path)['module_sha256'], 'first')
             with self.assertRaises(ValueError):  # a different result is still a conflict
-                store.publish(path, {'counts': [1, 3], 'module_sha256': 'old'}, provenance=('module_sha256',))
+                store.publish(path, {'counts': [1, 3], 'module_sha256': 'first'}, provenance=('module_sha256',))
             with self.assertRaises(ValueError):  # and so is other provenance when it was not declared
-                store.publish(path, {'counts': [1, 2], 'module_sha256': 'new'})
+                store.publish(path, {'counts': [1, 2], 'module_sha256': 'second'})
             with self.assertRaises(ValueError):  # a receipt whose own hash does not hold is never accepted
-                path.write_text(path.read_text().replace('"old"', '"edited"'))
-                store.publish(path, {'counts': [1, 2], 'module_sha256': 'new'}, provenance=('module_sha256',))
+                path.write_text(path.read_text().replace('"first"', '"edited"'))
+                store.publish(path, {'counts': [1, 2], 'module_sha256': 'second'}, provenance=('module_sha256',))
 
     def test_write_once_accepts_the_same_bytes_and_refuses_others(self):
         with tempfile.TemporaryDirectory(dir=store.WORK/'tools/tmp') as tmp:
@@ -114,7 +114,7 @@ class DigestTests(unittest.TestCase):
 
 
 class StatsTests(unittest.TestCase):
-    def test_bootstrap_panel_matches_the_longer_version_it_replaced(self):
+    def test_bootstrap_panel_matches_the_pinned_hash(self):
         result = stats.bootstrap_panel(panel_rows(), ['x', 'y', 'z'], panel='unit-test')
         blob = json.dumps(result, sort_keys=True, separators=(',', ':'), allow_nan=False)
         self.assertEqual(hashlib.sha256(blob.encode()).hexdigest(),

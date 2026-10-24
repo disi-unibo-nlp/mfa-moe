@@ -1,6 +1,6 @@
 """Class dynamics and expert nominations from saved labelled sentences.
 
-`derive(campaign, model)` is the saved-data analysis of one campaign-v3 model. From its labelled sentences it writes
+`derive(campaign, model)` is the saved-data analysis of one captured model. From its labelled sentences it writes
   DYNAMICS.json                 class runs, transitions and re-entries (gaps in the labelling stay censored)
   native_dynamics_estimands.parquet, NATIVE_DYNAMICS_SUMMARY.json
                                 per attempt: class occupancy, dwell tokens, re-entry and next-class rates, then a
@@ -13,9 +13,10 @@
 
     python -m routing.dynamics CAMPAIGN_DIR MODEL [MODEL ...] [--out NEW_ROOT]
 
-CAMPAIGN_DIR holds CAMPAIGN.json (report/research-campaign-v3-20261014-r5-r2). With --out everything is recomputed
-into NEW_ROOT and the campaign folder is only read; without it the outputs are written into the campaign folder
-(an existing nomination file there is kept and only the summaries are redone).
+CAMPAIGN_DIR holds CAMPAIGN.json, the record of the seven-model capture (report/research-campaign-v3-20261014-r5-r2).
+With --out everything is recomputed into NEW_ROOT and CAMPAIGN_DIR is only read; without it the outputs are written
+into CAMPAIGN_DIR (when its CAMPAIGN.json names a `resume_from` parent and a NOMINATIONS.json is already there, the
+nominations are kept and only the summaries are redone).
 """
 from __future__ import annotations
 
@@ -35,7 +36,7 @@ DEPTH_PATHS = ANALYSIS/'depth-paths/results/part1'
 
 
 def trajectories(rows):
-    """Original sentence index and segment must both establish adjacency."""
+    """Two sentences are adjacent only when their sentence indices are consecutive and they lie in the same segment."""
     ordered = sorted(rows, key=lambda r: (r["attempt_id"], r["sentence_index"]))
     transitions, runs, reentries = [], [], []
     previous, run, seen = None, None, set()
@@ -140,7 +141,7 @@ def joined_accuracy(outcomes, metadata, qf):
 def native_accuracy(campaign, model, out):
     """Strict accuracy with unknown bounds of one model: kept if `out` already holds it, else computed into `out`.
 
-    With a new `out` the campaign's own NATIVE_ESTIMANDS.json and NATIVE_ACCURACY.json are never reused."""
+    With a new `out` the NATIVE_ESTIMANDS.json and NATIVE_ACCURACY.json in the capture record are never reused."""
     import pandas as pd
     from schemas import TraceRecord
     from labeling.spans import trace_digest
@@ -198,9 +199,8 @@ def fold_nominations(model, fold, counts, tokens, sources, contract, sentence_ro
     other_rate, other_support = inclusion_statistics(other_counts, other_tokens, sources, train)
     excess = rates[:7] - other_rate
     excess[(support[:7] < 2) | (other_support < 2)] = np.nan
-    # State-informed saliency is the mean of supported class inclusion rates,
-    # the same class balancing as the earlier state-balanced score. Global
-    # unequal allocation uses this unchanged score per byte.
+    # State-informed saliency is the mean of the supported class inclusion rates (every class weighs
+    # the same). Global unequal allocation uses this score per byte.
     supported = np.isfinite(rates[:7])
     state = np.divide(np.nansum(rates[:7], axis=0), supported.sum(0),
                       out=np.full_like(rates[7], np.nan), where=supported.sum(0) > 0)
@@ -252,7 +252,7 @@ def fold_nominations(model, fold, counts, tokens, sources, contract, sentence_ro
 
 
 def derive(campaign, model, out=None):
-    """All derived outputs of one model. Inputs are read from the campaign root; outputs go to `out` (default: the root)."""
+    """All derived outputs of one model. Inputs are read from the capture record's root; outputs go to `out` (default: the root)."""
     import pandas as pd
     root = Path(campaign["root"])
     resume = out is None and campaign.get("resume_from") and (root/model/"NOMINATIONS.json").exists()
@@ -297,8 +297,7 @@ def derive(campaign, model, out=None):
     atlas_file["rows"] = len(atlas)
     nomination_file = publish(out/model/"NOMINATIONS.json", {"records": nominations,
         "outcomes_used": False, "layers": contract["layers"], "folds_sha256": digest(folds)})
-    # Strict native fields are used uniformly beside historically adjudicated
-    # descriptive estimates. No candidate-verification/J1 judge is restarted.
+    # Native accuracy is the strict score with unknown bounds; no judge is run here.
     _, accuracy = native_accuracy(campaign, model, out)
     return publish(out/model/"DERIVED.json", {"status": "complete", "scores": score_file,
         "atlas": atlas_file, "nominations_sha256": nomination_file["sha256"],
@@ -327,7 +326,7 @@ def dynamics_summary(binding):
 
 def main(argv=None):
     parser = argparse.ArgumentParser(prog='python -m routing.dynamics',
-                                     description='Recompute the native dynamics and nominations of campaign-v3 models.')
+                                     description='Recompute the native dynamics and nominations of the captured models.')
     parser.add_argument('campaign', type=Path, help='directory holding CAMPAIGN.json')
     parser.add_argument('models', nargs='+')
     parser.add_argument('--out', type=Path, help='new folder for all outputs, recomputed from the campaign inputs')

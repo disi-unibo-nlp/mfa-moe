@@ -52,8 +52,8 @@ def routing_row(source, ids, weights, positions):
 def discover(binding):
     """Class counts, sentence table, trajectories, selection coverage and prefixes from the replay and the labels.
 
-    The LFM2.5 counterpart of the saved-data analysis of the seven campaign models. Writes DISCOVERY_INPUTS.json
-    last, so its presence means every other output exists.
+    The LFM2.5 counterpart of the saved-data analysis of the seven captured models (`routing.dynamics`). Writes
+    DISCOVERY_INPUTS.json last, so its presence means every other output exists.
     """
     import pandas as pd
     from schemas import TraceRecord

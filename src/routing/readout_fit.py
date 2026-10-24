@@ -1,4 +1,8 @@
-"""Frozen readout mathematics, with explicit model seed and family ownership."""
+"""Readout mathematics of the LFM2.5 readout and next-state prediction, with explicit model seed and family ownership.
+
+Its numerical helpers (token hashing, path features, randomized PCA, softmax fit, bootstrap) have the bodies of the
+seven-model readout's in `routing.dp.s3_readout`; tests/routing/test_readout.py pins them to the code the published
+seven-model run recorded."""
 from __future__ import annotations
 from dataclasses import dataclass
 import time
@@ -119,7 +123,7 @@ def path_variant(md: ModelData, top1: np.ndarray) -> PathVariant:
 
 
 def null_paths(md: ModelData, draw: int) -> np.ndarray:
-    """Token paths permuted among tokens of the same token id x absolute-position bin (B1 strata)."""
+    """Token paths permuted among tokens of the same token id x absolute-position bin."""
     n = len(md.tokid)
     stratum = md.tokid * 8 + md.tok_abs
     base = np.argsort(stratum, kind="stable")
@@ -177,7 +181,7 @@ def randomized_pca(x: sparse.csr_matrix, k: int, seed: int, n_iter: int = PCA_IT
 
 
 class BagTransform:
-    """In-fold tf-idf of the token-id bag (the dynamics-routing A1 TextTransform on N_BUCKETS columns)."""
+    """In-fold tf-idf of the token-id bag (the transform of `readout_text` on N_BUCKETS columns)."""
 
     def __init__(self, counts: sparse.csr_matrix, train: np.ndarray, scale: float = BAG_SCALE):
         x = counts[train]
@@ -247,7 +251,7 @@ def _log_softmax(z: np.ndarray) -> np.ndarray:
 
 def fit_softmax(xd: np.ndarray, xs: sparse.csr_matrix, y: np.ndarray, w: np.ndarray, lam: float,
                 theta0: np.ndarray | None = None, maxiter: int = 400) -> SoftmaxFit:
-    """Weighted multinomial ridge, objective sum w nll / sum w + lam/2 |B|^2 (dynamics-routing d3a_softmax)."""
+    """Weighted multinomial ridge, objective sum w nll / sum w + lam/2 |B|^2 (as `dynrt.d3a_softmax`)."""
     n, pd_ = xd.shape
     ps = xs.shape[1]
     wn = w / w.sum()

@@ -1,7 +1,7 @@
-"""Weighted multinomial ridge (softmax) with dense + sparse blocks, on the C8 mean-loss penalty scale.
+"""Weighted multinomial ridge (softmax) with dense + sparse blocks; the penalty is on the mean-loss scale.
 
 Objective:  sum_i w_i nll_i / sum_i w_i + (lam / 2) (|B_dense|^2 + |B_sparse|^2); intercepts unpenalised.
-(The C8 logistic penalty `lam * sum(w)` on the summed loss is the same scale.) L-BFGS-B, warm-startable.
+L-BFGS-B, warm-startable.
 """
 from __future__ import annotations
 

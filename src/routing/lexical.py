@@ -1,12 +1,11 @@
-"""Lexical state readout for intervention continuations (CPU; replaces judge relabelling).
+"""Lexical state readout for intervention continuations (CPU; no judge relabelling).
 
-Classifier (validated on 2026-10-17 by the L1-L4 analyses, scratchpad/lexicon): judge-equivalent text
-inputs only (sentence, previous sentence, next sentence; no position), hashed word 1-2-grams and character
-3-5-grams of the sentence (`readout_text`), hashed word 1-2-grams of the neighbours at block scale 0.5,
-fold-fitted sublinear tf-idf, nine standardised format features at scale 0.3, multinomial L2 logistic
-regression (C=10, L-BFGS). Trained on judge-labelled native discovery sentences pooled over models, and
-CROSS-FITTED by the frozen family folds: continuations of fold f are read by a classifier that never saw a
-family of fold f. Per-class sensitivity/false-positive rates come from the same out-of-fold predictions on
+Classifier: judge-equivalent text inputs only (sentence, previous sentence, next sentence; no position),
+hashed word 1-2-grams and character 3-5-grams of the sentence (`readout_text`), hashed word 1-2-grams of the
+neighbours at block scale 0.5, fold-fitted sublinear tf-idf, nine standardised format features at scale 0.3,
+multinomial L2 logistic regression (C=10, L-BFGS). Trained on judge-labelled native discovery sentences pooled
+over models, and CROSS-FITTED by the frozen family folds: continuations of fold f are read by a classifier that
+never saw a family of fold f. Per-class sensitivity/false-positive rates come from the same out-of-fold predictions on
 native text (for Rogan-Gladen sensitivity analyses).
 
     python -m routing.lexical --out DIR [--budget SECONDS]       fit the five fold classifiers (about 2 h on 4 CPUs)
@@ -204,8 +203,9 @@ def fit_folds(models, out, budget):
 
 
 class _Unpickler(pickle.Unpickler):
-    """Reads the fold pickles. Fits made with `python -m routing.lexical` stored Featurizer and LR under
-    `__main__`, and the first fits stored the text transform under its old module name."""
+    """Reads the stored fold pickles. They name Featurizer and LR under `__main__` (the fits ran as
+    `python -m routing.lexical`) and the text transform under `moe_exp.study.readout_text`; both are mapped to this
+    package."""
 
     def find_class(self, module, name):
         if module == '__main__' and name in ('Featurizer', 'LR'):
@@ -216,17 +216,17 @@ class _Unpickler(pickle.Unpickler):
 
 
 def artifact_binding(root: Path) -> dict:
-    """Verify the deployed C10 READOUT and every fold before loading pickles.
+    """Verify the deployed READOUT (C = 10) and every fold before loading pickles.
 
     Args:
-        root: Deployed readout directory; candidate artifacts are not substituted.
+        root: Deployed readout directory.
 
     Returns:
         Physical-file binding suitable for an immutable cohort descriptor.
     """
     root = root.resolve()
     receipt = verified(root/'READOUT.json')
-    require(receipt['spec'] == SPEC, 'deployed C10 readout specification differs')
+    require(receipt['spec'] == SPEC, 'deployed readout specification differs')
     folds = receipt['folds']
     require(len(folds) == 5 and {row['fold'] for row in folds} == set(range(5)),
             'readout requires exactly five valid fold models')
@@ -278,7 +278,7 @@ def main(argv=None):
     ap.add_argument('--out', required=True, help='new directory; the deployed one is LEXICAL/readout-v1')
     ap.add_argument('--budget', type=float, default=2400, help='wall-clock seconds allowed per fold fit')
     args = ap.parse_args(argv)
-    value = fit_folds(list(MODELS[:-1]), Path(args.out), args.budget)  # the seven campaign models, not lfm25
+    value = fit_folds(list(MODELS[:-1]), Path(args.out), args.budget)  # the seven captured models, not lfm25
     print(json.dumps({k: v for k, v in value['native_out_of_fold'].items()
                       if k == 'pooled'} | {'folds': value['folds']}, default=str)[:3000])
 
