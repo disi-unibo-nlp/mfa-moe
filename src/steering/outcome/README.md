@@ -13,7 +13,7 @@ things, following "Beyond the Trace" (`chen2026beyond`):
 2. How strongly: their router logit is lowered by a small `delta` (0.4, 0.8 or 1.6). The router
    still picks its own top-k, so no expert is forced in or out.
 
-The base releases are the finished whole-reasoning releases in `report/`: `whole-reasoning-20261021-r7` for every model except GPT-OSS (`-r8`), with their top-ups and resumes, and `-r17/analysis-combined` for the final table of native and steered continuations. Ledger: feature F-0004, decision D-0003.
+The base releases are the finished whole-reasoning releases in `report/`: `whole-reasoning-20261021-r7` for every model except GPT-OSS (`-r8`), with their top-ups and resumes, and `-r17/analysis-combined` for the final table of native and steered continuations. Ledger: task `outcome-steering-r1`, decision `gentle-routing-nudge`.
 
 ## Data flow
 
@@ -54,7 +54,7 @@ length-limit prefix lives in `steering.runtime.budget_tokens`.
 
 ## Second campaign (r2): experts chosen inside each reasoning class
 
-Ledger F-0013 and F-0014, decision D-0006. r1 nudged 20-40 experts over every layer, chosen from 37 or
+Ledger: tasks `outcome-steering-r2` and `attempt-selection-by-routing`, decision `class-conditioned-outcome-design`. r1 nudged 20-40 experts over every layer, chosen from 37 or
 fewer questions, and behaved like a random edit. r2 keeps the outcome idea and changes the rest:
 
 1. **Fresh data** (`capture.py`). Every model answers the same 300 questions six times with unedited

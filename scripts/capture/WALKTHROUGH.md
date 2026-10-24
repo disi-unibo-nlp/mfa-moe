@@ -1,15 +1,16 @@
 # capture: walkthroughs
 
 ## capture-trace: Capture, one saved GPT-OSS packet
-- commit: 610ed2a6b1f5089b828de755c0eb951df4df7e08
-- source: /leonardo_scratch/fast/IscrC_MIOSR/lmolfett/mfa-moe/campaign-v3: manifests/gpt/A/0.json (binding 120fe778), capture/gpt/A/0/9c56fb4509d14ce5960d184c2fe9a45606ccf4be932c02f0d4aabf33f88213ce.{complete.json,json.gz,pt.gz} and result.json (sha256 ba0330c3), and the accepted cohort in /leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/campaign-v3/acceptance/capture-gpt-A.json; every value below comes from a run on 2026-10-24 of the code at this commit on those files
-- code: src/capture/manifest.py, src/capture/reduce.py, src/capture/gate.py, src/capture/dynamics/classes.py, src/models/router_adapters.py, scripts/capture/gate.sh, tests/capture/test_capture_reduce.py, tests/models/test_streaming_routing_extraction.py
+- commit: e63f4d8dc28cc751351c09cdb329d323de567c6b
+- source: /leonardo_scratch/fast/IscrC_MIOSR/lmolfett/mfa-moe/campaign-v3: manifests/gpt/A/0.json (binding 120fe778), capture/gpt/A/0/9c56fb4509d14ce5960d184c2fe9a45606ccf4be932c02f0d4aabf33f88213ce.{complete.json,json.gz,pt.gz} and result.json (sha256 ba0330c3), and the accepted cohort in /leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/campaign-v3/acceptance/capture-gpt-A.json; every value below comes from a run on 2026-10-25 of the code at this commit on those files (the completeness check ran as Slurm job 62189027)
+- code: src/capture/manifest.py, src/capture/reduce.py, src/capture/check_complete.py, src/capture/dynamics/classes.py, src/models/router_adapters.py, scripts/capture/check_capture_complete.sh, tests/capture/test_capture_reduce.py, tests/models/test_streaming_routing_extraction.py
 
-**Input:** The cohort-A capture of the trace that the two earlier walkthroughs followed (generation-trace generated it,
-labeling-trace labelled it): GPT-OSS-20B on MATH-500 `algebra/1004`, 263 completion tokens, capture id
+**Input:** The cohort-A capture of the trace that generation-trace followed through generation and labeling-trace
+through labeling: GPT-OSS-20B on MATH-500 `algebra/1004`, 263 completion tokens, capture id
 9c56fb4509d14ce5960d184c2fe9a45606ccf4be932c02f0d4aabf33f88213ce. The capture itself needs two GPUs
-(`sbatch scripts/capture/capture.sbatch gpt MANIFEST OUTPUT_DIR`, `python -m capture.run`) and its files are dated
-2026-09-27; this walkthrough reads what it left, rebuilds what can be rebuilt on a CPU, and runs the acceptance gate.
+(`sbatch scripts/capture/capture_routers.sbatch MANIFEST OUT_DIR`, `python -m capture.capture_routers`) and its files
+are dated 2026-09-27; this walkthrough reads what it left, rebuilds what can be rebuilt on a CPU, and runs the
+completeness check.
 
 ### 1. Manifest (`manifest.load_manifest`, `manifest.read_location`)
 
@@ -58,15 +59,17 @@ character overlap, so each reasoning token is counted once.
 GPT-OSS is captured with Hugging Face transformers (`backend: hf` in the packet), with the forward pass in
 native eager attention, query chunks of 128 (`attention_execution: native_eager_query_chunked`). The hooks read
 the experts the router dispatched, not a top-k of raw scores, and keep the absolute layer index; the packet's
-`native_dispatch` audit is True for layers 0 to 23. `tests/models` (the streaming extraction against the full
-forward pass on a tiny model): 15 passed in 88.6 s. `tests/capture`: 45 passed, 22 skipped (they need torch).
+`native_dispatch` audit is True for layers 0 to 23. `tests/models/test_streaming_routing_extraction.py` (the
+streaming extraction against the full forward pass on a tiny model, torch environment): 15 passed in 21.9 s.
+`tests/capture` in the light environment: 46 passed, 22 skipped (they need torch); with torch, 68 passed in 18.1 s.
 
-### 6. Gate (`gate.gate`, run as `scripts/capture/gate.sh MANIFEST_DIR OUTPUT.json`)
+### 6. Completeness check (`check_complete.check_complete`, run as `scripts/capture/check_capture_complete.sh MANIFEST_DIR OUT_JSON [CAPTURE_ROOT]`)
 
-The gate checks the cohort as a whole: the shard list equals `ready.json`, the verification receipt passed,
+The check looks at the cohort as a whole: the shard list equals `ready.json`, the verification receipt passed,
 every trace has its two files with matching sizes and hashes, no trace is missing or double, and the shard
-`result.json` agrees with the markers and with the planned totals. On the login node it hashed the 3.2 GB of
-GPT cohort A in 12.9 s:
+`result.json` agrees with the markers and with the planned totals. As a CPU job (1 CPU, `python -m capture.check_complete`
+through `scripts/slurm/run_module_cpu.sbatch`) it hashed the 3,370,976,653 bytes of GPT cohort A artifacts and
+finished in 18 s of job time, 8.0 s of CPU:
 
 | Field | Rebuilt | Accepted result of 2026-09-27 |
 |---|---|---|
@@ -75,18 +78,20 @@ GPT cohort A in 12.9 s:
 | `ready_sha256` | ab012743… | ab012743… |
 | `result.json` sha256 | ba0330c3… | ba0330c3… |
 
-The saved acceptance has one more key, `imports`, from the frozen bundle that made it; today's gate writes
-`code` (the commit and the hash of `src/`) instead. Every other field is equal.
+The saved acceptance has one more key, `imports`, the hashes of the frozen code bundle that made it; the check
+writes `code` instead: the git revision (e63f4d8d…) and the hash of `src/` of the checkout it ran from. Every other
+field is equal.
 
 ### Worth noticing
 
 - The packet is trusted through a chain of hashes (manifest binding, marker, two file hashes, the cohort
-  result, the gate), not because it can be recomputed: the reduction of features, windows and views cannot be
+  result, the completeness check), not because it can be recomputed: the reduction of features, windows and views cannot be
   replayed without a new GPU capture.
 - The 263 replayed tokens are exactly the 263 tokens generation-trace saved; only 88 of them are reasoning, the other
   175 (closing markers and the final answer) lie outside the views.
 - One more reason for the checks: a layer-0 weight vector sums to 0.999, not 1, because weights are stored in fp16.
-- The gate is cheap (13 s for 3.2 GB) but refuses to run outside Slurm as a command (`python -m capture.gate`
-  checks `SLURM_JOB_ID`); the function was called directly here.
-- The capture code of the repository is the last version of the bundles that ran; `src/capture/README.md` notes
-  that a rerun records a `capture_code_sha256` that differs from the historical receipts.
+- The check is cheap (an 18 s job, 8.0 s of CPU, for 3.37 GB) and runs only inside Slurm (`python -m
+  capture.check_complete` stops without `SLURM_JOB_ID`).
+- The packet records the code that made it in `forward_provenance.code` (git revision 9f16c555…, source hash
+  b26433a6…), which is not this commit; a rerun of the capture records the revision and `src/` hash of its own
+  checkout, so its code hash differs from the saved receipts (`src/capture/README.md`).
