@@ -19,7 +19,7 @@ SRC = REPO / 'src'
 # Modules started by `python -m`, by a job script, by a vLLM engine string or loaded by file path.
 ENTRY_POINTS = [
     'steering.pulse', 'steering.pulse_outcomes', 'steering.pulse_effects', 'steering.whole',
-    'steering.whole_effects', 'steering.release',
+    'steering.whole_effects', 'steering.release', 'steering.followup',
     'routing.efficiency_link', 'routing.lexical', 'routing.lfm',
     'steering.stream', 'steering.observer', 'steering.fast_penalties', 'steering.penalties',
     'labeling.renderer_child',
@@ -29,7 +29,8 @@ ENTRY_POINTS = [
     'labeling.gepa.run',
     'capture.run', 'capture.gate', 'capture.vllm_capture',
     'routing.readout', 'routing.anticipation', 'routing.next_state', 'routing.selection',
-    'routing.dynamics', 'routing.benchmark_accuracy', 'routing.benchmark_inventory',
+    'routing.dynamics', 'routing.sentence_table', 'routing.transition_pairs',
+    'routing.benchmark_accuracy', 'routing.benchmark_inventory',
     'routing.efficiency_link_prereg',
     'routing.lexical_data.build_native', 'routing.lexical_data.build_extras',
     'routing.lexical_data.build_steered', 'routing.lexical_data.make_readme',
