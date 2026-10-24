@@ -39,6 +39,8 @@ scripts/steering/whole.sh complement NAME TESTS --cutoff 2026-10-24T06:00   # se
 DRY_RUN=1 scripts/steering/launch.sh NAME                                   # look at the jobs first
 ```
 
+A complement whose shards could not all start before its cutoff gets a continuation that runs what is left. Read its plan first; `AFTER` names the parent's extraction jobs, which the plan lists:
+
 ```bash
 python -m steering.followup report/whole-reasoning-20261021-r18          # plan of the follow-up of a complement: rows by state, shards, GPU ceiling
 AFTER="JOB ..." scripts/steering/whole.sh continuation whole-reasoning-20261021-r21 TESTS --parent whole-reasoning-20261021-r18 --cutoff 2026-10-27T06:00

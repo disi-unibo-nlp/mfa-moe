@@ -275,6 +275,7 @@ def seal(kind: str, name: str, tests: int, args: argparse.Namespace) -> Path:
 
 
 def main() -> None:
+    """Seal the release the command line names and print its code snapshot."""
     parser = argparse.ArgumentParser(prog='steering.release', description=__doc__.split('\n\n')[0])
     parser.add_argument('kind', choices=sorted(KINDS))
     parser.add_argument('name')
