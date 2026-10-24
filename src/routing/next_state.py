@@ -15,7 +15,10 @@ family-cluster intervals, with the next state as the target. Every sentence of a
 whatever its length, and relative progress is left out because it needs the completed trace length.
 The population is the 522 questions of the present-state readout, for all eight models.
 
-    scripts/routing/next_state.sh                                    (one CPU job per model, then the collection)
+    python -m routing.next_state run --study STUDY_DIR --model HF_MODEL    STUDY_DIR/<model>/NEXT_STATE.json
+    python -m routing.next_state collect --study STUDY_DIR                 the eight receipts in driver/NEXT_STATE.json
+
+`scripts/routing/predict_next_state.sh STUDY_DIR [HF_MODEL...]` submits one CPU job per model, then the collection.
 """
 from __future__ import annotations
 
@@ -28,9 +31,10 @@ import pandas as pd
 from scipy import sparse
 
 import store
+from models.roster import resolve
 from store import CLASSES, MODELS, digest, file_sha, load, publish, require, verified
 from routing import readout_analysis, readout_fit as sr
-from routing.dp import common as cm, s3_readout
+from routing.depth_paths import common as cm, s3_readout
 
 # The seven-model present-state readout: its frozen population and the token caches its loader reads
 # (routing/readout.py binds the same files).
@@ -191,13 +195,15 @@ def collect() -> dict:
 
 
 def main(argv=None) -> None:
-    parser = argparse.ArgumentParser(prog='python -m routing.next_state')
+    parser = argparse.ArgumentParser(prog='python -m routing.next_state', description=__doc__.split('\n\n')[0])
     parser.add_argument('command', choices=('run', 'collect'))
-    parser.add_argument('--model', choices=MODELS)
+    parser.add_argument('--study', type=Path, default=store.STUDY, help='the study folder; its receipts are written here')
+    parser.add_argument('--model', help='run: the model, as its Hugging Face id (or short key)')
     args = parser.parse_args(argv)
+    store.STUDY, store.DRIVER = args.study, args.study/'driver'
     if args.command == 'run':
         require(args.model, 'run needs --model')
-        print(run(args.model)['sha256'], flush=True)
+        print(run(resolve(args.model))['sha256'], flush=True)
     else:
         print(collect()['sha256'], flush=True)
 

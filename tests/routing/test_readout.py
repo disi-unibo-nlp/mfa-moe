@@ -4,13 +4,16 @@ import hashlib
 import json
 import os
 from pathlib import Path
+import sys
 import tempfile
+import types
 from types import SimpleNamespace
 import unittest
 from unittest import mock
 import numpy as np
+import store
 from routing import readout_analysis, readout_fit as new
-from routing.readout_analysis import PUBLISHED_RUN, code_hashes, family_folds, freeze
+from routing.readout_analysis import CACHE_READERS, PUBLISHED_RUN, code_hashes, family_folds, freeze, use_analysis_dir
 from store import WORK, file_sha, publish
 
 MODELS = ('gemma', 'glm', 'gpt', 'nemotron', 'qwen330b', 'qwen35', 'qwen36', 'lfm25', 'lfm25-engineering')
@@ -99,11 +102,39 @@ class ReadoutTests(unittest.TestCase):
                     freeze(tmp/'c', 'FROZEN.json', {**first, 'inputs': {'/x': 'changed'}})
 
     def test_the_fits_refuse_an_interactive_shell_but_not_a_batch_job_on_the_serial_partition(self):
-        from routing import anticipation, readout
-        for run in (readout.run, anticipation.run):
+        from routing import next_state_anticipation, present_state_readout
+        for run in (present_state_readout.run, next_state_anticipation.run):
             for environment in ({}, {'SLURM_JOB_ID': '1'}):  # nothing, or the shell salloc starts on a login node
                 with mock.patch.dict(os.environ, environment, clear=True), self.assertRaisesRegex(ValueError, 'batch job'):
                     run(1, WORK/'tools/tmp/never-created')
+
+    def test_the_analysis_folder_is_set_before_the_helper_packages_read_it(self):
+        elsewhere = Path('/elsewhere/analysis')
+        with mock.patch.object(store, 'ANALYSIS', store.ANALYSIS), \
+                mock.patch.object(readout_analysis, 'PUBLISHED_RUN', PUBLISHED_RUN), \
+                mock.patch.dict(sys.modules):
+            default = store.ANALYSIS
+            for name in CACHE_READERS:
+                sys.modules.pop(name, None)
+            self.assertEqual(use_analysis_dir(default), default)  # the default folder: nothing changes
+            self.assertEqual(readout_analysis.PUBLISHED_RUN, PUBLISHED_RUN)
+            self.assertEqual(use_analysis_dir(elsewhere), elsewhere)  # the helpers have not been imported yet
+            self.assertEqual((store.ANALYSIS, readout_analysis.PUBLISHED_RUN),
+                             (elsewhere, elsewhere/'forum/tests/r3_context'))
+            sys.modules[CACHE_READERS[0]] = types.ModuleType(CACHE_READERS[0])  # now one has read the folder
+            self.assertEqual(use_analysis_dir(elsewhere), elsewhere)
+            with self.assertRaisesRegex(ValueError, 'imported before'):
+                use_analysis_dir(default)
+
+    def test_the_helper_packages_name_the_captured_models_in_the_orders_the_frozen_runs_used(self):
+        from models.roster import CAPTURED, READOUT_ORDER
+        from routing import benchmark_inventory
+        from routing.depth_paths import common
+        # The null seeds of the readout index into this alphabetical list; the inventory walks the study order.
+        self.assertEqual(common.MODELS, ('gemma', 'glm', 'gpt', 'nemotron', 'qwen330b', 'qwen35', 'qwen36'))
+        self.assertEqual(benchmark_inventory.MODELS, ['gpt', 'nemotron', 'qwen35', 'qwen36', 'gemma', 'glm', 'qwen330b'])
+        self.assertEqual(benchmark_inventory.MODELS, list(CAPTURED))
+        self.assertEqual(sorted(READOUT_ORDER), sorted(common.MODELS))
 
     def test_the_lfm_readout_compares_the_inputs_but_not_the_code_with_its_published_receipt(self):
         from routing import lfm_readout

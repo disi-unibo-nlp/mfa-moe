@@ -15,7 +15,8 @@ was built for the lexical readout). This module
 LFM's signs are estimated after its interventions ran; the receipt records that. The estimator, draws
 and seed are the pre-registered ones and the seven pre-registered models are unchanged.
 
-    scripts/routing/efficiency_link.sh
+    python -m routing.efficiency_link table|publish|driver-test|all --study STUDY_DIR
+    scripts/routing/estimate_efficiency_link.sh STUDY_DIR
 """
 from __future__ import annotations
 
@@ -31,12 +32,22 @@ import pandas as pd
 
 import store
 from models.roster import CAPTURED
-from store import DRIVER, MODELS, REPO, STUDY, clean, file_sha, load, publish, require, verified
+from store import MODELS, REPO, clean, file_sha, load, publish, require, verified
 
 FROZEN_SCRIPT = REPO/'src/routing/efficiency_link_prereg.py'
-PREREG = DRIVER/'EFFICIENCY_LINK_PREREG.json'
-LINK = DRIVER/'EFFICIENCY_LINK_V2.json'
-DRIVER_TEST = DRIVER/'analysis-final-link-v2/EFFICIENCY_LINK_TEST.json'
+
+
+# The receipts live in the driver folder of the study (`store.STUDY`, which `--study` sets).
+def prereg_path() -> Path:
+    return store.DRIVER/'EFFICIENCY_LINK_PREREG.json'
+
+
+def link_path() -> Path:
+    return store.DRIVER/'EFFICIENCY_LINK_V2.json'
+
+
+def driver_test_path() -> Path:
+    return store.DRIVER/'analysis-final-link-v2/EFFICIENCY_LINK_TEST.json'
 
 
 def frozen():
@@ -52,7 +63,10 @@ def frozen():
     spec = importlib.util.spec_from_file_location('efficiency_link_prereg', FROZEN_SCRIPT)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
-    require(file_sha(FROZEN_SCRIPT) == verified(PREREG)['script']['sha256'], 'frozen estimator script changed')
+    # The script names the study's bulk folder (where the native tables are) itself; take it from the study binding.
+    module.STUDY = Path(store.binding()['config']['bulk_root'])
+    module.LEXICAL = module.STUDY/'lexical'
+    require(file_sha(FROZEN_SCRIPT) == verified(prereg_path())['script']['sha256'], 'frozen estimator script changed')
     return module
 
 
@@ -91,7 +105,7 @@ def build_table(estimator) -> Path:
     process), and the sentence inclusion probability is selected / supply sentences of the sampling
     cell (only the 1/p sensitivity variant reads it).
     """
-    report = STUDY/'lfm25'
+    report = store.STUDY/'lfm25'
     labels = pd.read_parquet(estimator.LEXICAL/'native_lfm25.parquet')
     sampled = verified(estimator.STUDY/'lfm25/SAMPLED_SENTENCES.json')['records']
     require(labels.context_hash.tolist() == [r['annotation_uid'] for r in sampled], 'LFM labels and samples differ')
@@ -140,7 +154,7 @@ def publish_link(estimator, directory: Path) -> dict:
     The frozen main() refuses to publish anything but the seven-model receipt, so its MODELS is
     widened and its publish/atomic_text are captured; the estimation itself runs unchanged.
     """
-    require(not LINK.exists(), f'{LINK} exists')
+    require(not link_path().exists(), f'{link_path()} exists')
     captured = CapturedReceipt()
     estimator.MODELS = MODELS
     estimator.publish = captured
@@ -153,7 +167,7 @@ def publish_link(estimator, directory: Path) -> dict:
         finally:
             sys.argv = saved
     payload = captured.payload
-    prereg = verified(PREREG)
+    prereg = verified(prereg_path())
     registered = {(c['model'], c['class']): c for c in prereg['cells']}
     for cell in payload['cells']:
         if cell['model'] != 'lfm25':
@@ -163,7 +177,7 @@ def publish_link(estimator, directory: Path) -> dict:
         require(payload['inputs']['native_parquet_sha256'][model] == sha, f'pre-registered {model} table changed')
     payload.update({
         'kind': 'efficiency_link_eight_models', 'version': 2, 'models': list(MODELS), 'unavailable_models': [],
-        'created_utc': estimator.now_utc(), 'predecessor': {'path': str(PREREG), 'sha256': prereg['sha256']},
+        'created_utc': estimator.now_utc(), 'predecessor': {'path': str(prereg_path()), 'sha256': prereg['sha256']},
         'lfm25_estimated_after_interventions': True,
         'note': 'Frozen estimator, draws and seed of the pre-registration. The cells of the seven '
                 'pre-registered models equal the predecessor\'s (checked to float rounding); LFM2.5 (no native '
@@ -174,13 +188,13 @@ def publish_link(estimator, directory: Path) -> dict:
                                  'pooled': payload['estimator_spec']['pooled'].replace('seven', 'eight')}
     payload['test'] = {**payload['test'], 'unit_of_analysis': 'cell = (model, class) with a nominated layer '
                        'set and a native estimate: at most 8 models x 7 classes = 56 cells'}
-    receipt = publish(LINK, payload)
+    receipt = publish(link_path(), payload)
     text = estimator.markdown(payload, MODELS).replace('mean of the seven models', 'mean of the eight models').replace(
         'at least 5 of 7 models', 'at least 5 of 8 models').replace(
         '- lfm25 has no native lexicon table: its cells have no prediction.',
         '- lfm25 is estimated after its interventions ran (no native table existed at pre-registration);\n'
         '  the seven other models are identical to EFFICIENCY_LINK_PREREG.json.')
-    LINK.with_suffix('.md').write_text(text.replace('# Efficiency link pre-registration (outcome-blind)',
+    link_path().with_suffix('.md').write_text(text.replace('# Efficiency link pre-registration (outcome-blind)',
                                                     '# Efficiency link, eight models (v2)'))
     return receipt
 
@@ -188,22 +202,22 @@ def publish_link(estimator, directory: Path) -> dict:
 def driver_test() -> dict:
     """The driver's frozen link test on analysis-final pairs, with the V2 cells (56 instead of 49)."""
     from steering.pulse_effects import Bootstrap, efficiency_link
-    require(not DRIVER_TEST.exists(), f'{DRIVER_TEST} exists')
-    final = DRIVER/'analysis-final'
+    require(not driver_test_path().exists(), f'{driver_test_path()} exists')
+    final = store.DRIVER/'analysis-final'
     pairs = pd.read_parquet(final/'pairs.parquet')
     families = sorted(pd.read_parquet(final/'continuations.parquet', columns=['family']).family.unique())
-    benchmarks = {r['family']: r['benchmark'] for r in load(STUDY/'ALLOCATION.json')['records']}
+    benchmarks = {r['family']: r['benchmark'] for r in load(store.STUDY/'ALLOCATION.json')['records']}
     boot = Bootstrap(families, benchmarks)
     # analysis-final holds the plain link test with its own bootstrap intervals. The current code must
     # reproduce every point estimate of the pre-registration exactly; the 49-cell test is recomputed with the
     # current Bootstrap draws so that the 49- and 56-cell tests compare like for like.
     published = verified(final/'EFFECTS.json')['efficiency_link']
-    reproduced = clean(efficiency_link(verified(PREREG), pairs, boot))
+    reproduced = clean(efficiency_link(verified(prereg_path()), pairs, boot))
     require(same(point_estimates(reproduced), point_estimates(published)),
             'driver link test does not reproduce the point estimates of analysis-final')
-    result = clean(efficiency_link(verified(LINK), pairs, boot))
-    DRIVER_TEST.parent.mkdir(mode=0o700)
-    return publish(DRIVER_TEST, {**result, 'prereg_sha256': verified(LINK)['sha256'],
+    result = clean(efficiency_link(verified(link_path()), pairs, boot))
+    driver_test_path().parent.mkdir(mode=0o700)
+    return publish(driver_test_path(), {**result, 'prereg_sha256': verified(link_path())['sha256'],
                                  'preregistered_cells_same_code': reproduced,
                                  'pairs': str(final/'pairs.parquet'),
                                  'effects_sha256': verified(final/'EFFECTS.json')['sha256']})
@@ -219,7 +233,9 @@ def point_estimates(test: dict) -> dict:
 def main(argv=None) -> None:
     parser = argparse.ArgumentParser(prog='python -m routing.efficiency_link')
     parser.add_argument('command', choices=('table', 'publish', 'driver-test', 'all'))
+    parser.add_argument('--study', type=Path, default=store.STUDY, help='the study folder (BINDING.json, driver/ receipts)')
     args = parser.parse_args(argv)
+    store.STUDY, store.DRIVER = args.study, args.study/'driver'
     estimator = frozen()
     if args.command in ('table', 'all'):
         print('table', build_table(estimator), flush=True)

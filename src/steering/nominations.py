@@ -9,7 +9,7 @@ def derive_model(binding, model):
     import numpy as np
     import pandas as pd
     from steering.selection import nominate
-    from routing.selection import counts_for
+    from routing.expert_selection import counts_for
     config = binding['config']
     root, source = Path(config['root']), Path(config['source_campaign'])
     if (root/model/'COUNT_NOMINATIONS.json').exists():
@@ -70,11 +70,11 @@ def discovery_inputs(binding, model):
     import pandas as pd
     config = binding['config']
     if model == 'lfm25':
-        from routing.selection import validate_counts
+        from routing.expert_selection import validate_counts
         from store import CLASSES
         data = load(Path(config['root'])/'lfm25/DISCOVERY_INPUTS.json')
         sources = data['sources']
-        # The same archive checks as routing.selection.counts_for.
+        # The same archive checks as routing.expert_selection.counts_for.
         with np.load(data['counts'], allow_pickle=False) as archive:
             ids, counts, tokens = (archive[k] for k in ('attempt_id', 'counts', 'tokens'))
             require(list(archive['classes']) == list(CLASSES)+['ALL_REASONING', 'ALL_LABELLED'], 'class order mismatch')
@@ -84,7 +84,7 @@ def discovery_inputs(binding, model):
         validate_counts(counts, tokens, binding['models'][model]['native_k'])
         return sources, counts, tokens, {'discovery_inputs_sha256': data['sha256'],
                                          'counts_sha256_file': file_sha(data['counts'])}
-    from routing.selection import counts_for
+    from routing.expert_selection import counts_for
     source = Path(config['source_campaign'])
     parent = load(source/'CAMPAIGN.json')
     folds = load(source/'FOLDS.json')

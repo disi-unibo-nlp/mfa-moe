@@ -1,6 +1,6 @@
 # src
 
-Python only. Each folder is a topic with its own README. Run everything from the repository root with `PYTHONPATH=src`, for example `python -m routing.selection export OUT_DIR`. Launchers for these modules are in `scripts/` under the same topic name.
+Python only. Each folder is a topic with its own README. Run everything from the repository root with `PYTHONPATH=src`, for example `python -m routing.expert_selection export CAMPAIGN_DIR OUT_DIR`. Launchers for these modules are in `scripts/` under the same topic name.
 
 | Folder | What it does |
 | --- | --- |

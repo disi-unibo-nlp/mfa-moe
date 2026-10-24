@@ -4,7 +4,7 @@ It runs the same fits as the seven-model readout (readout_fit, readout_analysis)
 its 522 readout questions, twice: token identity only, and with the judge's previous/current/next sentence text.
 The population is the one frozen in PUBLISHED_RUN/FROZEN.readout.v3.json (the seven-model run's inputs).
 
-    python -m routing.lfm readout --out DIR      (about 1.5 h on 4 CPUs); result: DIR/READOUT_RESULTS.json
+    python -m routing.lfm25_analyses readout --out DIR      (about 1.5 h on 4 CPUs); result: DIR/READOUT_RESULTS.json
 
 DIR must be new. The receipt published in the study folder (lfm25/READOUT_RESULTS.json, which the paper reads) is
 never rewritten: a run must have the same inputs as the ones it records, and only its code hashes may differ.
@@ -68,7 +68,7 @@ def lfm(binding, out):
     sent['row'] = sent.attempt_id.map(row_of)
     top, tsent, tokid, tabs, adjacency = [], [], [], [], []
     # Context slots read every sampled unit of the attempt, unknown labels included, as
-    # `dynrt.d3a_pairs.load_unit_texts` does; only sentences without any sampled unit stay '<missing>'.
+    # `dynamics_routing.d3a_pairs.load_unit_texts` does; only sentences without any sampled unit stay '<missing>'.
     attempts = set(sent.attempt_id)
     text_lookup = {(r['attempt_id'], r['sentence_index']): r['text'] for r in verified(sampled_path)['records']
                    if r['attempt_id'] in attempts}

@@ -1,14 +1,36 @@
 """Family folds, run-spec freezing and the family-grouped fit loop shared by the readout analyses."""
 from pathlib import Path
 import json
+import sys
 import time
+import store
 from store import ANALYSIS, WORK, digest, file_sha, load, require, seal, verified
 
 # The published seven-model run: its frozen specs fix the inputs a rerun must reproduce, and the LFM readout binds its files.
 PUBLISHED_RUN = ANALYSIS / 'forum/tests/r3_context'
+# The helper packages that read the saved caches; each takes its folder from store.ANALYSIS when first imported.
+CACHE_READERS = ('routing.depth_paths.common', 'routing.dynamics_routing.common', 'routing.dynamics_routing.d3a_pairs',
+                 'routing.reasoning_kinematics.common')
 # Reports are not tracked in git; they live in the main checkout.
 FAMILY_FREEZE = WORK / 'mfa-moe/repo/report/experimental-resume-v1/family-freeze.json'
 SEED = 20260929
+
+
+def use_analysis_dir(analysis_dir):
+    """The folder of saved analysis caches that a seven-model driver reads (a Path); `store.ANALYSIS` by default.
+
+    The helper packages take their input folders from `store.ANALYSIS` when they are first imported, so a folder
+    other than the one they have seen must be chosen before that; a late change is refused. The frozen specs of the
+    published runs name their inputs by absolute path, so only the default folder reproduces them: `freeze` stops a
+    run on any other path.
+    """
+    global PUBLISHED_RUN
+    analysis = Path(analysis_dir)
+    require(analysis == store.ANALYSIS or not any(name in sys.modules for name in CACHE_READERS),
+            'a helper package was imported before --analysis-dir was set')
+    store.ANALYSIS = analysis
+    PUBLISHED_RUN = analysis / 'forum/tests/r3_context'
+    return analysis
 
 
 def question_families():
