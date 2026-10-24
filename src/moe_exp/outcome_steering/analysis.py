@@ -303,10 +303,14 @@ def analyze_sweep() -> dict:
     from moe_exp.study.whole import MODELS, ROOT, manifest
     from moe_exp.study.whole_effects import DRAWS as WHOLE_DRAWS, SEED as WHOLE_SEED, summarize_present
     spec = verified(ROOT/'OUTCOME_SWEEP.json')
+    # The analysis waits for any end of extraction; refuse a release whose shards never ran.
+    require((ROOT/'CPU_VALIDATION.json').exists() and verified(ROOT/'CPU_VALIDATION.json')['passed'],
+            'allocated validation did not pass: no sweep row ran')
     frames, models, benchmarks = [], {}, {}
     for model in MODELS:
         entry = spec['models'][model]
         ours = release_rows(model)
+        require((ours.outcome_status == 'observed').any(), f'no sweep row of {model} finished')
         natives = capture_natives(Path(entry['capture']), model, set(entry['questions']))
         frame = sweep_family_frame(model, ours, natives)
         frames.append(frame.set_index('family'))

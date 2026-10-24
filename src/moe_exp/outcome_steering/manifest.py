@@ -248,7 +248,8 @@ def sweep_manifest(model: str, spec: dict) -> dict:
     value = publish(manifest_path(model, dose), {
         'model': model, 'dose': dose, 'design': 'outcome-sweep', 'scope': 'prompt-and-generated-reasoning',
         'half': spec['half'], 'selection_sha256': selection['sha256'], 'capture': str(capture),
-        'cells': spec['cells'], 'records': rows, 'planned': len(rows),
+        # 'cells' is the whole-reasoning cell list that validation audits; a sweep has none of those.
+        'cells': [], 'sweep_cells': spec['cells'], 'records': rows, 'planned': len(rows),
         'executable': sum(r['nomination_status'] == 'nominated' for r in rows), 'audit_units': 0,
         'outcomes_used_for_selection': 'capture attempts; each question uses sets selected without it'})
     publish(ROOT/model/'SELECTED.json', {'dose': dose, 'manifest_sha256': value['sha256'], 'canary_job': None,

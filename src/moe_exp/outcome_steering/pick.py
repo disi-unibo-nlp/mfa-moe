@@ -14,11 +14,12 @@ import os
 from pathlib import Path
 import subprocess
 
-from moe_exp.final_routing.common import publish, verified
+from moe_exp.final_routing.common import publish, require, verified
 
 from .select import BLIND
 
 NONINFERIORITY = -.05
+MIN_COMPLETED = .8          # share of half-A nudge rows that must have finished before a pick is made
 
 
 def cells(effects: dict, model: str) -> list[dict]:
@@ -49,6 +50,9 @@ def best(candidates: list[dict]) -> dict | None:
 def pick(effects_path: str, model: str) -> dict:
     """PICK.json body: the picked cell, the class-blind cell, and every candidate."""
     effects = verified(effects_path)
+    levels = [r for r in effects['models'][model]['levels'] if r['arm'] != 'budget']
+    completed = sum(r['completed'] for r in levels)/max(1, sum(r['rows'] for r in levels))
+    require(completed >= MIN_COMPLETED, f'only {completed:.0%} of half-A nudge rows finished; no pick')
     candidates = cells(effects, model)
     picked = best(candidates)
     blind = best([c for c in candidates if c['set'] == BLIND])
