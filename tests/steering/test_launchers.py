@@ -13,7 +13,7 @@ from unittest.mock import patch
 
 from steering import lfm25_generation, pulsed_effects, pulsed_steering
 from steering.outcome import __main__ as outcome_cli
-from store import MODELS, REPO, WORK, publish
+from store import CLASSES, MODELS, REPO, WORK, publish, verified
 
 PY = Path('/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/envs/vllm-cu129/bin/python')
 
@@ -70,6 +70,19 @@ class StudyRoster(unittest.TestCase):
             pulsed_effects.main(['--out', str(self.driver/'y'), '--design', 'strong'])
             pulsed_effects.main(['--out', str(self.driver/'z'), '--models', 'nvidia/Gemma-4-26B-A4B-NVFP4,gpt'])
         self.assertEqual(seen, [(['gpt', 'gemma', 'glm'], 'main'), (['gpt', 'gemma'], 'strong'), (['gemma', 'gpt'], 'main')])
+
+
+class PlanInAStudy(unittest.TestCase):
+    def test_plan_reads_and_writes_the_study_it_is_given_not_the_one_the_store_names(self):
+        with tempfile.TemporaryDirectory(dir=WORK/'tools/tmp') as temporary:
+            study = Path(temporary)
+            publish(study/'gpt/ASSIGNMENTS-full.json', {'records': []})
+            publish(study/'gpt/COUNT_NOMINATIONS.json', {'records': [
+                {'status': 'nominated', 'fold': fold, 'class': name, 'depth_third': 0, 'layer': 3, 'association': .5,
+                 'stability': .5} for fold in range(5) for name in CLASSES]})
+            result = pulsed_steering.plan(['gpt'], study=study)
+            self.assertEqual((result['gpt']['executable'], result['gpt']['unavailable']), (0, 0))
+            self.assertEqual(verified(study/'driver/gpt/ASSIGNMENTS.json')['model'], 'gpt')
 
 
 class Lfm25Stages(unittest.TestCase):

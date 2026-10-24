@@ -5,9 +5,9 @@ Cuts reasoning into sentences, picks which sentences to label, and labels them w
 | File | What it does |
 | --- | --- |
 | `spans.py` | The sentence units of a reasoning text and their offsets into the exact tokens the model saw. |
-| `sample_cohorts.py` | Picks the sentences to label for one model: cohorts A and B, in four parts. |
+| `choose_sentences.py` | Picks the sentences to label for one model: cohorts A and B, in four parts. |
 | `sample_stratified.py` | Picks 100,000 sentences stratified by correctness and reasoning length (used for LFM2.5). |
-| `annotation_batch.py` | Labels the selected sentences of one part with the judge, 64 at a time, resuming after each batch. |
+| `label_sentences.py` | Labels the selected sentences of one part with the judge, 64 at a time, resuming after each batch. |
 | `batch_predictor.py` | The judge client: builds the prompt from the frozen GEPA program and reads the answers. |
 | `contexts.py`, `renderer.py`, `renderer_child.py`, `reader.py` | The judge's inputs (the question, the sentence and one neighbour on each side) and the process that renders and parses with the original DSPy program. The process loads DSPy from the pinned copy the campaign names (`campaign['renderer']['path']`, `.research-runtime/original-renderer` in the main checkout, which git ignores), so it also works from a worktree or a release snapshot. |
 | `lfm_inputs.py` | The LFM2.5 side: its native task list, its sampled sentences and the judge inputs for them. |
@@ -15,15 +15,15 @@ Cuts reasoning into sentences, picks which sentences to label, and labels them w
 
 ## Sentences
 
-`spans.py` defines the sentence segmentation for the whole project. It splits on punctuation and newlines, keeps LaTeX and decimal points whole, and records exact character offsets. Labels, sampling plans and captures all key off these units and the `trace_digest` of the text, so its output is frozen. A change to the segmentation invalidates every existing label set: bump the version of every consumer first. The first splitter (version 1) is still used to read older annotations (`capture/sentence_schema.py`), and `annotation_batch --include-traces` relabels the traces that the version 2 fix changed.
+`spans.py` defines the sentence segmentation for the whole project. It splits on punctuation and newlines, keeps LaTeX and decimal points whole, and records exact character offsets. Labels, sampling plans and captures all key off these units and the `trace_digest` of the text, so its output is frozen. A change to the segmentation invalidates every existing label set: bump the version of every consumer first. The first splitter (version 1) is still used to read older annotations (`capture/sentence_schema.py`), and `label_sentences --include-traces` relabels the traces that the version 2 fix changed.
 
 ## Choose the sentences
 
 ```bash
-scripts/labeling/sample.sh gpt          # CPU job; python -m labeling.sample_cohorts --model gpt --gen-root ... --out ...
+scripts/labeling/choose_sentences.sh TRACES_DIR OUT_DIR     # CPU job; python -m labeling.choose_sentences --traces-dir TRACES_DIR --out OUT_DIR
 ```
 
-Input: the finished traces of one model (`--gen-root`, the folder holding `<dataset>/traces.jsonl`). Output in `--out`: `cohorts.json`, `parts.json` and four part roots `labels/part-0X/generation/<checkpoint>/<dataset>/traces.jsonl`, where each trace line lists its chosen sentences in `metadata.sentence_selection`.
+Input: the finished traces of one model (`--traces-dir`, the folder holding `<dataset>/traces.jsonl`; the model is read from `metadata.generation_config.profile`, and every trace must name the same one). Output in `--out`, a folder that must not exist yet: `cohorts.json`, `parts.json` and four part roots `labels/part-0X/generation/<checkpoint>/<dataset>/traces.jsonl`, where each trace line lists its chosen sentences in `metadata.sentence_selection`.
 
 - Cohort A: one attempt per question, drawn uniformly at random, labelled with a shared budget of sentences (every sentence of an attempt is equally likely, with a floor per attempt). Most analyses of native routing use it.
 - Cohort B: AIME 2024, AIME 2025 and AMC 2023 questions that have at least two successes and two failures, with up to four of each, and a fixed number of labelled sentences per attempt. It supports analyses that compare right and wrong attempts of one question.
@@ -41,14 +41,14 @@ It keeps one completion per source problem, splits each benchmark into four equa
 ## Label
 
 ```bash
-sbatch scripts/labeling/label.sbatch TRACE_ROOT OUT_DIR       # one part; python -m labeling.annotation_batch ...
+sbatch scripts/labeling/label_sentences.sbatch TRACE_ROOT OUT_DIR       # one part; python -m labeling.label_sentences ...
 ```
 
 The judge is Qwen3.8-27B, served by `scripts/serve/serve_model.sh` (`start_server $JUDGE_MODEL`), with the frozen program `results/gepaLLMAsJudge/qwen3.8-27b-medium-final-s42-v3/selected_program_20260827_173300.json`. Thinking is on with low reasoning effort, temperature 1.0, top-p 0.95, top-k 20, up to 16,384 new tokens. Each sentence is judged with its question and one neighbouring sentence on each side.
 
 Output in `OUT_DIR`: `annotations.json` (one record per sentence, in file order), `summary.json` and `checkpoints/batch-NNNNNN.json`. A rerun with the same inputs skips the finished batches. A changed judge setting changes the checkpoint key, so stale labels are recomputed rather than reused. An answer that cannot be read is stored as `unknown` with its raw text; it never drops its neighbours.
 
-`python -m labeling.annotation_batch --plan-only ...` prints what would be labelled and stops.
+`python -m labeling.label_sentences --plan-only ...` prints what would be labelled and stops.
 
 Paper use: the labels define the states in the readout, selection, occupancy, transition, anticipation and steering exhibits. The sampling is described in the appendix on native sentence sampling and token alignment.
 

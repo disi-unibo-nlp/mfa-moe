@@ -127,18 +127,22 @@ def reduce_rows(rows, chosen):
     return kept, unavailable
 
 
-def plan(models=None):
+def plan(models=None, study=None):
+    """Write driver/MODEL/ASSIGNMENTS.json of each model: the main design, from its full assignments and nominations.
+
+    `study` is the study folder holding them (default: store.STUDY)."""
+    study = Path(study) if study else STUDY
     out = {}
-    for model in models or [m for m in MODELS if (STUDY/m/'ASSIGNMENTS-full.json').exists()]:
-        source = verified(STUDY/model/'ASSIGNMENTS-full.json')
-        nominations = verified(STUDY/model/'COUNT_NOMINATIONS.json')
+    for model in models or [m for m in MODELS if (study/m/'ASSIGNMENTS-full.json').exists()]:
+        source = verified(study/model/'ASSIGNMENTS-full.json')
+        nominations = verified(study/model/'COUNT_NOMINATIONS.json')
         chosen, evidence = select_layers(nominations['records'])
         require(len(chosen) == 35, f'{model}: a fold/class lacks a nominated layer')
         rows, unavailable = reduce_rows(source['records'], chosen)
         arms = {}
         for r in rows:
             arms[r['arm']] = arms.get(r['arm'], 0)+1
-        value = publish(DRIVER/model/'ASSIGNMENTS.json', {
+        value = publish(study/'driver'/model/'ASSIGNMENTS.json', {
             'model': model, 'selector': SELECTOR, 'design': {'dose': 'central', 'arms': arms},
             'selection': [{'fold': f, 'class': c, **v} for (f, c), v in sorted(chosen.items())],
             'selection_evidence': evidence, 'outcomes_used': False,

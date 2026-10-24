@@ -44,28 +44,28 @@ Each paper experiment has one launcher. The launcher submits the job, which call
 
 | Experiment | Launcher (`scripts/`) | Module (`src/`) | Output or receipt | Used in the paper |
 | --- | --- | --- | --- | --- |
-| Trace generation, 8 models | `generation/generate.sbatch MODEL DATASET SHARD NSHARDS`; `lfm25`: `sbatch slurm/run_module_gpu.sbatch steering.lfm25_generation native --shard I/N` | `generation.generate`; `steering.lfm25_generation` | `results/correlation_pipeline/card-v3/MODEL/generation/<checkpoint>/<dataset>/traces.jsonl` | Benchmark tables, setup |
-| Answer scoring (J1) | `generation/score.sbatch ITEMS OUT` | `generation.scoring` (inside generation), `generation.answer_equivalence` | judge verdicts in `OUT` | Accuracy in the benchmark tables |
-| Benchmark accuracy tables | `routing/benchmarks.sh OUT_DIR` | `routing.benchmark_accuracy`, `routing.benchmark_inventory` | `OUT_DIR/accuracy/*.csv`, `OUT_DIR/inventory` | Tables `benchmarks`, `benchmark_details` |
-| Judge optimisation (GEPA) | `labeling/optimize_judge.sh API_BASE OUT_DIR` | `labeling.gepa.run` | `selected_program_*.json` (the frozen judge) | Appendix, external annotation development |
-| Sentence sampling | `labeling/sample.sh MODEL` | `labeling.sample_cohorts` | `cohorts.json`, `parts.json`, four label part roots | Appendix, sentence sampling |
-| Sentence labeling | `labeling/label.sbatch TRACE_ROOT OUT_DIR` | `labeling.annotation_batch` | `annotations.json`, `summary.json` | Every exhibit that uses states |
-| Router capture | `capture/capture.sbatch MODEL MANIFEST OUT_DIR [verify]`, then `capture/gate.sh MANIFEST_DIR OUT.json` | `capture.run`, `capture.gate` | per-trace packets and tensors, `result.json`, the gate's acceptance JSON | Input of all routing results |
+| Trace generation, 8 models | `generation/generate_answers.sbatch HF_MODEL DATASET SHARD NSHARDS OUT_DIR`; `lfm25`: `sbatch slurm/run_module_gpu.sbatch steering.lfm25_generation native --shard I/N` | `generation.generate_answers`; `steering.lfm25_generation` | `results/correlation_pipeline/card-v3/MODEL/generation/<checkpoint>/<dataset>/traces.jsonl` | Benchmark tables, setup |
+| Answer scoring (J1) | `generation/list_rejected_answers.sh TRACES_DIR ITEMS_JSONL`, then `generation/judge_answers.sbatch ITEMS_JSONL VERDICTS_JSONL` | `generation.scoring` (inside generation), `generation.judge_answers` | judge verdicts in `VERDICTS_JSONL` | Accuracy in the benchmark tables |
+| Benchmark accuracy tables | `routing/summarize_benchmark_accuracy.sh OUTCOMES_JSON OUT_DIR`, `routing/inventory_generated_corpora.sh OUT_DIR` | `routing.benchmark_accuracy`, `routing.benchmark_inventory` | `OUT_DIR/*.csv`, the inventory's CSV tables and receipts | Tables `benchmarks`, `benchmark_details` |
+| Judge optimisation (GEPA) | `labeling/optimize_judge_prompt.sh SERVER_URL DATASET_DIR SEED_PROMPT OUT_DIR` | `labeling.gepa.optimize_judge` | `selected_program_*.json` (the frozen judge) | Appendix, external annotation development |
+| Sentence sampling | `labeling/choose_sentences.sh TRACES_DIR OUT_DIR` | `labeling.choose_sentences` | `cohorts.json`, `parts.json`, four label part roots | Appendix, sentence sampling |
+| Sentence labeling | `labeling/label_sentences.sbatch TRACE_ROOT OUT_DIR [JUDGE_PROGRAM]` | `labeling.label_sentences` | `annotations.json`, `summary.json` | Every exhibit that uses states |
+| Router capture | `capture/capture_routers.sbatch MANIFEST OUT_DIR`, then `capture/check_capture_complete.sh MANIFEST_DIR OUT_JSON [CAPTURE_ROOT]` | `capture.capture_routers`, `capture.check_complete` | per-trace packets and tensors, `result.json`, the completeness check's acceptance JSON | Input of all routing results |
 | LFM2.5 replay | `sbatch slurm/run_module_gpu.sbatch steering.lfm25_generation replay --shard I/N` | `steering.lfm25_generation`, `capture.lfm_replay` | `lfm25/replay/<attempt>.npz` under the study scratch folder | Input of the LFM2.5 rows |
 
 ### Analyses of native routing
 
 | Experiment | Launcher (`scripts/routing/`) | Module (`src/routing/`) | Output or receipt | Used in the paper |
 | --- | --- | --- | --- | --- |
-| Present-state readout, 7 models | `readout.sh OUT_DIR` | `readout` | `readout-results.v3.json` | Figure `readout`, table `readout` |
-| Present-state readout, LFM2.5 | `lfm.sh OUT_DIR` | `lfm` (`derive`, `readout`, `dynamics`) | `report/final-routing-20261015-r1/lfm25/READOUT_RESULTS.json` (a rerun writes `OUT_DIR/READOUT_RESULTS.json`) | Same figure and table |
-| Anticipation (GPT-OSS, Qwen3.6) | `anticipation.sh OUT_DIR` | `anticipation` | `anticipation-results.json` | Figure `next_state`, table `next_state` |
-| Next state, 8 models | `next_state.sh` | `next_state` | `report/final-routing-20261015-r1/driver/NEXT_STATE.json` | Not in the paper yet (it will replace the anticipation figure) |
-| Expert selection coverage | `selection.sh OUT_DIR` (LFM2.5: `lfm.sh OUT_DIR`) | `selection`, `lfm` | `selection_coverage.csv` | Figure `selection`, tables `selection`, `selection_folds` |
-| Occupancy and transitions | `dynamics.sh OUT_DIR` (LFM2.5: `lfm.sh OUT_DIR`) | `dynamics`, `lfm` | `NATIVE_DYNAMICS_SUMMARY.json` per model | Figures `occupancy`, `state_transitions`, `transition_summary`; tables `occupancy`, `state_transitions` |
-| Next-sentence labels for the transitions, 8 models | `transition_pairs.sh [SOURCE_CLASSES [SHARDS]]` (judge shards on GPU) | `sentence_table`, `transition_pairs` | `report/final-routing-20261015-r1/driver/TRANSITION_PAIRS.<variant>.json`, `.../transition-pairs/<model>/<variant>/NATIVE_DYNAMICS_SUMMARY.json` | Figure `state_transitions`, table `state_transitions`: fills the Read and Verify rows that have no labelled successor (the exporter still reads `dynamics`; switching it is open) |
-| Efficiency link | `efficiency_link.sh` | `efficiency_link` | `report/final-routing-20261015-r1/driver/EFFICIENCY_LINK_V2.json` | Table `efficiency_link`; picks the experts of whole-reasoning steering |
-| Lexical classifier | `lexical.sh OUT_DIR` | `lexical` | five fold classifiers in `OUT_DIR` | Appendix, lexical reading of continuations |
+| Present-state readout, 7 models | `readout_present_state.sh ANALYSIS_DIR OUT_DIR` | `present_state_readout` | `readout-results.v3.json` | Figure `readout`, table `readout` |
+| Present-state readout, LFM2.5 | `run_lfm25_analyses.sh STUDY_DIR OUT_DIR` | `lfm25_analyses` (`derive`, `readout`, `dynamics`) | `report/final-routing-20261015-r1/lfm25/READOUT_RESULTS.json` (a rerun writes `OUT_DIR/READOUT_RESULTS.json`) | Same figure and table |
+| Anticipation (GPT-OSS, Qwen3.6) | `anticipate_next_state.sh ANALYSIS_DIR OUT_DIR` | `next_state_anticipation` | `anticipation-results.json` | Figure `next_state`, table `next_state` |
+| Next state, 8 models | `predict_next_state.sh STUDY_DIR [HF_MODEL...]` | `next_state` | `report/final-routing-20261015-r1/driver/NEXT_STATE.json` | Not in the paper yet (it will replace the anticipation figure) |
+| Expert selection coverage | `export_selection_coverage.sh CAMPAIGN_DIR OUT_DIR` (LFM2.5: `run_lfm25_analyses.sh STUDY_DIR OUT_DIR`) | `expert_selection`, `lfm25_analyses` | `selection_coverage.csv` | Figure `selection`, tables `selection`, `selection_folds` |
+| Occupancy and transitions | `compute_state_dynamics.sh CAMPAIGN_DIR OUT_DIR [HF_MODEL...]` (LFM2.5: `run_lfm25_analyses.sh STUDY_DIR OUT_DIR`) | `state_dynamics`, `lfm25_analyses` | `NATIVE_DYNAMICS_SUMMARY.json` per model | Figures `occupancy`, `state_transitions`, `transition_summary`; tables `occupancy`, `state_transitions` |
+| Next-sentence labels for the transitions, 8 models | `label_next_sentences.sh STUDY_DIR [SOURCE_CLASSES [SHARDS]]` (judge shards on GPU) | `labelled_sentence_table`, `next_sentence_labels` | `report/final-routing-20261015-r1/driver/TRANSITION_PAIRS.<variant>.json`, `.../transition-pairs/<model>/<variant>/NATIVE_DYNAMICS_SUMMARY.json` | Figure `state_transitions`, table `state_transitions`: fills the Read and Verify rows that have no labelled successor (the exporter still reads `state_dynamics`; switching it is open) |
+| Efficiency link | `estimate_efficiency_link.sh STUDY_DIR` | `efficiency_link` | `report/final-routing-20261015-r1/driver/EFFICIENCY_LINK_V2.json` | Table `efficiency_link`; picks the experts of whole-reasoning steering |
+| Lexical classifier | `fit_lexical_classifier.sh LEXICAL_DIR OUT_DIR` | `lexical` | five fold classifiers in `OUT_DIR` | Appendix, lexical reading of continuations |
 
 ### Routing interventions
 

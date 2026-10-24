@@ -24,7 +24,7 @@ from labeling.gepa.prompts import (
     build_few_shot_instructions,
     select_few_shot_sentences,
 )
-from labeling.gepa.run import (
+from labeling.gepa.optimize_judge import (
     _append_stats,
     _call_lm,
     _save_program,

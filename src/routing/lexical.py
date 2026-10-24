@@ -8,8 +8,11 @@ over models, and CROSS-FITTED by the frozen family folds: continuations of fold 
 never saw a family of fold f. Per-class sensitivity/false-positive rates come from the same out-of-fold predictions on
 native text (for Rogan-Gladen sensitivity analyses).
 
-    python -m routing.lexical --out DIR [--budget SECONDS]       fit the five fold classifiers (about 2 h on 4 CPUs)
-    predict(sentence_table, DIR)                                  read continuation sentences with them
+    python -m routing.lexical --tables LEXICAL_DIR --out DIR [--budget SECONDS]
+                                                                  fit the five fold classifiers (about 2 h on 4 CPUs)
+    predict(sentences, DIR)                                       read continuation sentences with them
+
+LEXICAL_DIR holds the native_<model>.parquet tables of the captured models (default LEXICAL, the deployed tables).
 """
 from __future__ import annotations
 import argparse
@@ -148,25 +151,27 @@ class LR:
         return E/E.sum(1, keepdims=True)
 
 
-def training_table(models, cap=SPEC['per_model_cap'], seed=20261017):
+def training_table(models, tables=LEXICAL, cap=SPEC['per_model_cap'], seed=20261017):
     import pandas as pd
     cols = ['model', 'context_hash', 'n_rows_with_context', 'label', 'sentence_text', 'prev_sentence',
             'next_sentence', 'family_id', 'fold_campaign']
     rng = np.random.default_rng(seed)
     parts = []
     for m in models:
-        d = pd.read_parquet(LEXICAL/f'native_{m}.parquet', columns=cols)
+        d = pd.read_parquet(tables/f'native_{m}.parquet', columns=cols)
         d = d[d.label.isin(CLASSES)].drop_duplicates('context_hash')
         d = d.iloc[np.sort(rng.permutation(len(d))[:cap])]
         parts.append(d)
     return pd.concat(parts, ignore_index=True)
 
 
-def fit_folds(models, out, budget):
-    """Cross-fitted classifiers (one per held-out fold) and out-of-fold native confusion per model."""
+def fit_folds(models, out, budget, tables=LEXICAL):
+    """Cross-fitted classifiers (one per held-out fold) and out-of-fold native confusion per model.
+
+    `tables` is the folder of the native_<model>.parquet files."""
     require(not (out/'READOUT.json').exists() and not list(out.glob('fold-*.pkl')),
             f'{out} already holds a fit; its files are hash-bound, use a new --out')
-    table = training_table(models)
+    table = training_table(models, tables)
     b = blocks(table.sentence_text.fillna('').tolist(), table.prev_sentence.fillna('').tolist(),
                table.next_sentence.fillna('').tolist())
     y = table.label.map(CIDX).to_numpy()
@@ -199,7 +204,7 @@ def fit_folds(models, out, budget):
                       'false_positive_rate': dict(zip(CLASSES, fpr.tolist())),
                       'youden_j': dict(zip(CLASSES, (sens-fpr).tolist()))}
     return publish(out/'READOUT.json', {'spec': SPEC, 'models': models, 'folds': receipts, 'native_out_of_fold': quality,
-                   'inputs': {m: file_sha(LEXICAL/f'native_{m}.parquet') for m in models},
+                   'inputs': {m: file_sha(tables/f'native_{m}.parquet') for m in models},
                    'judge_relabelling_of_interventions': False})
 
 
@@ -276,10 +281,11 @@ def predict(sentences, root, *, frozen=None):
 
 def main(argv=None):
     ap = argparse.ArgumentParser(prog='routing.lexical', description='Fit the cross-fitted lexical state readout.')
+    ap.add_argument('--tables', type=Path, default=LEXICAL, help='folder of the native_<model>.parquet tables')
     ap.add_argument('--out', required=True, help='new directory; the deployed one is LEXICAL/readout-v1')
     ap.add_argument('--budget', type=float, default=2400, help='wall-clock seconds allowed per fold fit')
     args = ap.parse_args(argv)
-    value = fit_folds(list(CAPTURED), Path(args.out), args.budget)  # not lfm25
+    value = fit_folds(list(CAPTURED), Path(args.out), args.budget, args.tables)  # not lfm25
     print(json.dumps({k: v for k, v in value['native_out_of_fold'].items()
                       if k == 'pooled'} | {'folds': value['folds']}, default=str)[:3000])
 

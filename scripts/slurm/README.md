@@ -11,7 +11,7 @@ The parts every other launcher shares.
 | `gpu_hours_left.sh` | Prints the billing hours and the GPU hours left on the account quota, read from CINECA's `saldo -b` (one GPU bills 8 hours per hour on the Booster), and the hours consumed this month. Login node only. |
 
 ```bash
-sbatch -J my-analysis scripts/slurm/run_module_cpu.sbatch routing.selection export /path/to/new/folder   # python -m routing.selection ...
+sbatch -J my-analysis scripts/slurm/run_module_cpu.sbatch routing.expert_selection export CAMPAIGN_DIR /path/to/new/folder   # python -m routing.expert_selection ...
 scripts/slurm/billing_hours_used.sh              # jobs named fr-*, the pulsed-steering jobs
 scripts/slurm/billing_hours_used.sh whole-       # jobs named whole-*, the whole-reasoning releases
 scripts/slurm/gpu_hours_left.sh                  # what is left of the whole quota, in billing hours and GPU hours

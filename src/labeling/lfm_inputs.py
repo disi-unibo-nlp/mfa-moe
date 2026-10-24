@@ -5,7 +5,7 @@ sample's judge inputs.
 trace files, runs the same stratified sampler as the other seven models
 (`labeling.sample_stratified.build_plan`) and writes the sampled sentences with their judge tasks.
 `materialize` runs as `python -m routing.lfm materialize`, and `population` feeds
-`python -m steering.pulse native`.
+`python -m steering.lfm25_generation native`.
 """
 from collections import defaultdict
 from pathlib import Path
@@ -80,7 +80,7 @@ def judge_inputs(value, units, index):
 def materialize(binding):
     """Commit exact native lines and run the 100k stratified sampler."""
     from transformers import AutoTokenizer
-    from generation.generate import _model_slug
+    from generation.generate_answers import _model_slug
     from labeling.sample_stratified import build_plan
     from capture.dynamics.classes import saved_layout
     from labeling.spans import trace_digest

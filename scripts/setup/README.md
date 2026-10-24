@@ -8,4 +8,4 @@ scripts/setup/build_judge_client_env.sh
 
 The environment lives in `/leonardo_scratch/large/userexternal/lmolfett/mfa-moe/qwen-fp-fa-smoke/envs/`. It has DSPy and GEPA but not torch or scipy. The launchers that label sentences or optimise the judge add the `vllm-cu129` packages to `PYTHONPATH` for the rest (`scripts/slurm/env.sh` exports the folder as `$DSPY`).
 
-`judge_client_env_path.sh` is the one place that says where the environment is: it computes the folder from the lock file's hash and sets `DSPY`. The build script and `scripts/slurm/env.sh` source it (from the repository root), and so does `scripts/labeling/optimize_judge.sh`. A new lock file therefore moves every user to the new folder at once.
+`judge_client_env_path.sh` is the one place that says where the environment is: it computes the folder from the lock file's hash and sets `DSPY`. The build script and `scripts/slurm/env.sh` source it (from the repository root), and so does `scripts/labeling/optimize_judge_prompt.sh`. A new lock file therefore moves every user to the new folder at once.

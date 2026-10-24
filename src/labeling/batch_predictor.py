@@ -56,7 +56,7 @@ def load_program_and_adapter(judge_program: str) -> tuple[Any, Any]:
     """Load the saved GEPA program's predictor and the adapter DSPy would use for it."""
     from dspy.adapters.chat_adapter import ChatAdapter
 
-    from labeling.gepa.run import EpisodeJudge
+    from labeling.gepa.optimize_judge import EpisodeJudge
 
     program = EpisodeJudge()
     program.load(judge_program)

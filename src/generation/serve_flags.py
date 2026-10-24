@@ -1,7 +1,7 @@
 """The `vllm serve` command line of every model server, built from one table.
 
 A model's own flags (revision or local weights, reasoning parser, attention backend, context, speculation) are the
-server settings of its card profile in model_profiles.py, the same values generate.py records in every trace's
+server settings of its card profile in model_profiles.py, the same values generate_answers.py records in every trace's
 contract; the judge's are below. The flags every server shares come from SHARED. scripts/serve/serve_model.sh runs
 what this prints:
 
