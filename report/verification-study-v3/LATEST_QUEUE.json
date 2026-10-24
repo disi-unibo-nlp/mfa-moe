@@ -1,0 +1,14 @@
+{
+  "active_workload": "seven retained discovery measurements and one retained shared J1 grader price measurement, each with afterany callback",
+  "autonomy_receipt_path": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/verification-study-v3/AUTONOMY_RECEIPT-r1.json",
+  "campaign_sha256": "57df4a026a7be4c909ece85ac1ebe3dc47c3f27bb53ffcab88e3aa9d82bfbb3b",
+  "health_status_path": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/verification-study-v3/HEALTH_STATUS.json",
+  "next_action": "Persistent Goal consumes every immutable health event, advances finite measured discovery cards, preserves all seven and source closure; no user wake-up prompt required.",
+  "observed_epoch": 1791392820.1779246,
+  "qualification": "ALL_SEVEN_PASS_14_OF_14",
+  "queue": "59631963|PENDING|cv3-run-gpt|(Priority)\n59631988|PENDING|cv3-run-gemma|(Priority)\n59631970|PENDING|cv3-run-qwen36|(Priority)\n59631966|PENDING|cv3-run-qwen35|(Priority)\n59631964|PENDING|cv3-run-nemotron|(Priority)\n59631990|PENDING|cv3-run-qwen330b|(Priority)\n59631989|PENDING|cv3-run-glm|(Priority)\n59637448|RUNNING|cv3x-j1-audit-gpt|lrdn0586\n59637465|PENDING|cv3-health-gpt|(Dependency)\n59633933|PENDING|cv3-health-qwen330b|(Dependency)\n59633930|PENDING|cv3-health-glm|(Dependency)\n59633927|PENDING|cv3-health-gemma|(Dependency)\n59633916|PENDING|cv3-health-qwen36|(Dependency)\n59633896|PENDING|cv3-health-qwen35|(Dependency)\n59633879|PENDING|cv3-health-nemotron|(Dependency)\n59633851|PENDING|cv3-health-gpt|(Dependency)",
+  "schema": "verification-queue-observation-v3",
+  "scientific_results": "SEMANTIC_EFFECT_AND_UTILITY_NOT_MEASURED",
+  "sha256": "e44d1eda8a4dd9d1fb2afbe12c743bacde6e67952326efc3efbaad8899124485",
+  "shared_J1_ledger_path": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/verification-study-v3/J1_JOBS-r2.json"
+}

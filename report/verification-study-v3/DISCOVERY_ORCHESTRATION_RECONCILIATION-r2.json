@@ -1,0 +1,11 @@
+{
+  "campaign_sha256": "57df4a026a7be4c909ece85ac1ebe3dc47c3f27bb53ffcab88e3aa9d82bfbb3b",
+  "native_source_closure_unchanged": true,
+  "previous_actual_submissions": 0,
+  "previous_submission_intents": 0,
+  "reason": "Native measured_seconds sums work dict entries in iteration order. Persisted sorted JSON changed floating addition order and card digest. Version2 compiles from persisted canonical requests before binding card hashes. Scientific source and budgets unchanged.",
+  "replacement_plan_sha256": "243570cdc52f85d4fb14a0b308b4e0ad83fe4f5910725e87d52ce8780af61b13",
+  "schema": "verification-discovery-orchestration-reconciliation-v3",
+  "sha256": "429151024db8f6d21285bd0db21f09ed9ca90407cd2e894b92655b6b15112fb8",
+  "unsubmitted_previous_plan_sha256": "1eca0efacf17064f708ee0c0c67cb685e4b2c88d3b8eea037bc5bbfc9e2dee87"
+}

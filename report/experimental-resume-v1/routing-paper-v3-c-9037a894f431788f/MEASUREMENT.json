@@ -1,0 +1,142 @@
+{
+ "schema": "routing-paper-measurement-v3",
+ "stage": "C",
+ "source_sha256": "9037a894f431788f8e4a9f63bbd3c3d2b09dcd9c7bfbd2b82b4afff354207304",
+ "arm_summary": {
+  "native": {
+   "assigned": 26,
+   "gradeable": 26,
+   "reader_pair_valid": 25,
+   "both_positive": 14,
+   "at_least_one_positive": 15,
+   "reader_disagreement": 0,
+   "reasoning_closed": 3,
+   "hit_cap": 26,
+   "emitted_tokens": 6656,
+   "statuses": {
+    "cap": 25,
+    "unscored": 1
+   }
+  },
+  "native_duplicate": {
+   "assigned": 26,
+   "gradeable": 26,
+   "reader_pair_valid": 25,
+   "both_positive": 17,
+   "at_least_one_positive": 19,
+   "reader_disagreement": 2,
+   "reasoning_closed": 4,
+   "hit_cap": 26,
+   "emitted_tokens": 6656,
+   "statuses": {
+    "cap": 25,
+    "unscored": 1
+   }
+  },
+  "bias": {
+   "assigned": 26,
+   "gradeable": 26,
+   "reader_pair_valid": 26,
+   "both_positive": 14,
+   "at_least_one_positive": 17,
+   "reader_disagreement": 3,
+   "reasoning_closed": 4,
+   "hit_cap": 26,
+   "emitted_tokens": 6656,
+   "statuses": {
+    "cap": 26
+   }
+  },
+  "random_bias": {
+   "assigned": 26,
+   "gradeable": 26,
+   "reader_pair_valid": 23,
+   "both_positive": 14,
+   "at_least_one_positive": 16,
+   "reader_disagreement": 1,
+   "reasoning_closed": 3,
+   "hit_cap": 26,
+   "emitted_tokens": 6656,
+   "statuses": {
+    "cap": 23,
+    "unscored": 3
+   }
+  },
+  "force": {
+   "assigned": 26,
+   "gradeable": 26,
+   "reader_pair_valid": 26,
+   "both_positive": 14,
+   "at_least_one_positive": 18,
+   "reader_disagreement": 4,
+   "reasoning_closed": 2,
+   "hit_cap": 26,
+   "emitted_tokens": 6656,
+   "statuses": {
+    "cap": 26
+   }
+  },
+  "random_force": {
+   "assigned": 26,
+   "gradeable": 26,
+   "reader_pair_valid": 26,
+   "both_positive": 16,
+   "at_least_one_positive": 16,
+   "reader_disagreement": 0,
+   "reasoning_closed": 3,
+   "hit_cap": 26,
+   "emitted_tokens": 6656,
+   "statuses": {
+    "cap": 26
+   }
+  },
+  "reweight": {
+   "assigned": 26,
+   "gradeable": 26,
+   "reader_pair_valid": 24,
+   "both_positive": 15,
+   "at_least_one_positive": 19,
+   "reader_disagreement": 3,
+   "reasoning_closed": 3,
+   "hit_cap": 26,
+   "emitted_tokens": 6656,
+   "statuses": {
+    "cap": 24,
+    "unscored": 2
+   }
+  },
+  "random_reweight": {
+   "assigned": 26,
+   "gradeable": 26,
+   "reader_pair_valid": 25,
+   "both_positive": 13,
+   "at_least_one_positive": 15,
+   "reader_disagreement": 2,
+   "reasoning_closed": 3,
+   "hit_cap": 26,
+   "emitted_tokens": 6656,
+   "statuses": {
+    "cap": 25,
+    "unscored": 1
+   }
+  }
+ },
+ "available_sensitivity_fields": [
+  "either_reader_sensitivity",
+  "missing_measurement_sensitivity",
+  "strict_veto_sensitivity"
+ ],
+ "accuracy_change": {
+  "status": "NOT_MEASURED_BY_CONTINUATION_STUDY"
+ },
+ "utility_16k": {
+  "status": "SEPARATE_ORIGINAL_PROMPT_STUDY_PENDING"
+ },
+ "gate_weight_trajectory": {
+  "status": "NOT_SAVED; ROUTE_ARRAYS_CONTAIN_EXPERT_IDS"
+ },
+ "historical_confirm_exposure": "Previously exposed; retain original disclosure",
+ "population_status": "C",
+ "no_new_fits": true,
+ "sha256": "18517a7b67d3feae79bf0f1e5f3fcce75cb8d8fd4a4609fce2983403cc7e1c83"
+}

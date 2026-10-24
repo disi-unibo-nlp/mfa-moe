@@ -1,0 +1,127 @@
+{
+ "schema": "routing-study-NLL-closeout-audit-v1",
+ "X2_status": "COMPLETE_NO_RERUN",
+ "native_NLL": {
+  "path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/native-nll/2f10f3dbaefd0839c3ec16d0768581e0863c26ee18e70911de40f1643b4feebe/ec9661af160f42d145a09756925d2bc26a3f36360a25be772a41730a0e03c515/native-nll.json",
+  "file_sha256": "0f83c9a9ae7bcdac191397f21b67b43c4cb4ebdc701cc9db623ce4b25f4939a6",
+  "sha256": null
+ },
+ "assigned_sequences": 3354,
+ "validation": {
+  "tf1": {
+   "baseline_logprobs_bitwise": false,
+   "metrics": {
+    "mean_abs": {
+     "baseline": 0.019465408709300556,
+     "limit": 0.024332760886625695,
+     "pass": true,
+     "test": 0.019254245184556488
+    },
+    "p99_abs": {
+     "baseline": 0.27778925895690143,
+     "limit": 0.3472375736961268,
+     "pass": true,
+     "test": 0.2617773914337135
+    }
+   },
+   "n_positions": 17525,
+   "pass": true,
+   "rule": "Q3 native logprob repeat rule (mean and p99), no fallback"
+  },
+  "tf8": {
+   "baseline_logprobs_bitwise": false,
+   "metrics": {
+    "mean_abs": {
+     "baseline": 0.01874071838345619,
+     "limit": 0.023426897979320238,
+     "pass": true,
+     "test": 0.020375203191881453
+    },
+    "p99_abs": {
+     "baseline": 0.27035644531249825,
+     "limit": 0.3379465566406228,
+     "pass": true,
+     "test": 0.29946641921997014
+    }
+   },
+   "n_positions": 17525,
+   "pass": true,
+   "rule": "Q3 native logprob repeat rule (mean and p99), no fallback"
+  }
+ },
+ "prior_completion": {
+  "path": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/X2_COMPLETION_AUDIT_v1.json",
+  "file_sha256": "5c39e7e14c8c93b398624e00e5e4b5cec992bc48c731232e602b0603096dd6c5",
+  "sha256": "c060025098d4c575307f5574854e6614c6f9902630ad6ab93f16922393f0124f"
+ },
+ "counterfactual_score_API_status": "FAILED_QUALIFICATION_DEFERRED",
+ "preserved_failures": [
+  {
+   "task": "counterfactual-routing-loss-qualification-v2",
+   "artifact": {
+    "path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/counterfactual-qualification-b7c4c5273ab6fdc7/QUALIFICATION.json",
+    "file_sha256": "75dfa88dfc91665853b63ab7f14909f5489501c47ecf5c4186a5c7cc75b59958",
+    "sha256": "ea54e5e8d6f72e0e655707e5492513f3ac13b0167d7bf38ded4fd2805f6c9ff3"
+   },
+   "job_id": "59189255",
+   "assigned": 148,
+   "completed": 148,
+   "numerical_checks": null,
+   "allocated_GPU_hours": 0.4527777777777778
+  },
+  {
+   "task": "score-api-calibration-v3",
+   "artifact": {
+    "path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/score-api-calibration-b4aa1c878c25fe32/QUALIFICATION.json",
+    "file_sha256": "bd718e0e68c107e9ce83c0e68836f895b98012ab291ec7f2b6d1d47c19f2460a",
+    "sha256": "fde88301fdf5208ed030da27e4f6dba223af16dc12da35883c79e22177176283"
+   },
+   "job_id": "59196354",
+   "assigned": 80,
+   "completed": 80,
+   "numerical_checks": {
+    "mean_abs": {
+     "limit": 0.00046813614975157916,
+     "pass": false,
+     "repeat_baseline": 0.0003737089198012633,
+     "test": 0.0006745892434207867
+    },
+    "p99_abs": {
+     "limit": 0.006182267332976856,
+     "pass": false,
+     "repeat_baseline": 0.004945013866381485,
+     "test": 0.009022116722917414
+    }
+   },
+   "allocated_GPU_hours": 0.4572222222222222
+  },
+  {
+   "task": "score-api-calibration-v4-serial",
+   "artifact": {
+    "path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/score-api-serial-e7554bd7efceb410/QUALIFICATION.json",
+    "file_sha256": "19797336ca42f76dfd9d5e1c0ed0e13b5e0d6032f3fe327a901d956483f43ffc",
+    "sha256": "0542e122ae619e728b6a56cc10e47890e6feaec7ae75462808d105b0f00d5b2a"
+   },
+   "job_id": "59198795",
+   "assigned": 80,
+   "completed": 80,
+   "numerical_checks": {
+    "mean_abs": {
+     "limit": 0.0004445794520474268,
+     "pass": false,
+     "repeat_baseline": 0.0003548635616379414,
+     "test": 0.0005673611007090962
+    },
+    "p99_abs": {
+     "limit": 0.005949504689513354,
+     "pass": false,
+     "repeat_baseline": 0.004758803751610683,
+     "test": 0.0076437758958491
+    }
+   },
+   "allocated_GPU_hours": 0.44555555555555554
+  }
+ ],
+ "claim_limit": "The Q3 repeat-rule pass is scoped to the legacy native-NLL measurement. It does not qualify a different counterfactual score API or establish engine equivalence.",
+ "sha256": "c1b43b70473c016d6979a9822684f35d3e83b4fa08cad6f920b77f9d2b77a746"
+}

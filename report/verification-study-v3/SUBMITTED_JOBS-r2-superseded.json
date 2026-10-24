@@ -1,0 +1,97 @@
+{
+  "campaign_sha256": "4360749a06639b8cf13581a7f4b252e7d6f3a1525ea649815ecf441d79ae0539",
+  "jobs": [
+    {
+      "current_queue": "59616013|PENDING|cv3-qualify-gpt|(Priority)",
+      "gpus": 2,
+      "job_card_sha256": "c160cd298b1993675c5b6d88a44428260c28b2dc499a20766e92ffd7a5303402",
+      "job_id": "59616013",
+      "model": "gpt",
+      "receipt_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007/submissions/c160cd298b1993675c5b6d88a44428260c28b2dc499a20766e92ffd7a5303402/SUBMISSION.json",
+      "stage": "qualify",
+      "submission_sha256": "6d2c1266253e1794431ef9c8a1073a58afe829291c426f2bc9d9ca6a51bbafc1",
+      "walltime_seconds": 7200
+    },
+    {
+      "current_queue": "59616052|PENDING|cv3-qualify-nemotron|(Priority)",
+      "gpus": 2,
+      "job_card_sha256": "8cb90590c1c47fc633da22162fc1a1082d150e41b95f93a4aa359e41a7245d3c",
+      "job_id": "59616052",
+      "model": "nemotron",
+      "receipt_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007/submissions/8cb90590c1c47fc633da22162fc1a1082d150e41b95f93a4aa359e41a7245d3c/SUBMISSION.json",
+      "stage": "qualify",
+      "submission_sha256": "4a88494fbdf1bc93875962c65ca6b67ea3b52f0c20b6b0b012e1a08bfb6e1547",
+      "walltime_seconds": 7200
+    },
+    {
+      "current_queue": "59616056|PENDING|cv3-qualify-qwen35|(Priority)",
+      "gpus": 2,
+      "job_card_sha256": "d8e092a746d3d88ee24f9095bf7c16e1823d747b5b03cf41e484eb92878da997",
+      "job_id": "59616056",
+      "model": "qwen35",
+      "receipt_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007/submissions/d8e092a746d3d88ee24f9095bf7c16e1823d747b5b03cf41e484eb92878da997/SUBMISSION.json",
+      "stage": "qualify",
+      "submission_sha256": "f2e76a0cc9f60a1ad29a7d7a2b7c6619793ead5fcb41c4bbf355cd32c152556c",
+      "walltime_seconds": 7200
+    },
+    {
+      "current_queue": "59616060|PENDING|cv3-qualify-qwen36|(Priority)",
+      "gpus": 2,
+      "job_card_sha256": "59fe8e7915e34e935fbefcfbd8cf493849292f6686fb95d239106c27ef5a81e5",
+      "job_id": "59616060",
+      "model": "qwen36",
+      "receipt_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007/submissions/59fe8e7915e34e935fbefcfbd8cf493849292f6686fb95d239106c27ef5a81e5/SUBMISSION.json",
+      "stage": "qualify",
+      "submission_sha256": "8f07fb4eb73fa1bb9c07f9ccadf2117192965806692cea295babd69cdd4cb74a",
+      "walltime_seconds": 7200
+    },
+    {
+      "current_queue": "59616063|PENDING|cv3-qualify-gemma|(Priority)",
+      "gpus": 2,
+      "job_card_sha256": "c6fed0890d682afe4f76993d4c38984b74b0a665ee1ee8ad5666e89fcef456e9",
+      "job_id": "59616063",
+      "model": "gemma",
+      "receipt_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007/submissions/c6fed0890d682afe4f76993d4c38984b74b0a665ee1ee8ad5666e89fcef456e9/SUBMISSION.json",
+      "stage": "qualify",
+      "submission_sha256": "2a49f0e4ae698d61a2c937d7a9e52922b75651635458dc0e50ce64f7fa3eb250",
+      "walltime_seconds": 7200
+    },
+    {
+      "current_queue": "59616066|PENDING|cv3-qualify-glm|(Priority)",
+      "gpus": 2,
+      "job_card_sha256": "0e12dc902bec3a822b98f461db7ea07dc26877fb3aa859d87b67ffb3b11cd9c5",
+      "job_id": "59616066",
+      "model": "glm",
+      "receipt_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007/submissions/0e12dc902bec3a822b98f461db7ea07dc26877fb3aa859d87b67ffb3b11cd9c5/SUBMISSION.json",
+      "stage": "qualify",
+      "submission_sha256": "f296dd6df85c9a87dd9b3b4842085913c23d3111fdc7836b351b1dd7cce2a819",
+      "walltime_seconds": 7200
+    },
+    {
+      "current_queue": "59616070|PENDING|cv3-qualify-qwen330b|(Priority)",
+      "gpus": 2,
+      "job_card_sha256": "99431ef2cb8405a2d087e8a3f888cc9a28a1519bb392916526ef5c19f5c889d1",
+      "job_id": "59616070",
+      "model": "qwen330b",
+      "receipt_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007/submissions/99431ef2cb8405a2d087e8a3f888cc9a28a1519bb392916526ef5c19f5c889d1/SUBMISSION.json",
+      "stage": "qualify",
+      "submission_sha256": "853b26b73ad667cd5aaaca29f7cbf3f64efad2a6fb300a78168a789f4f85e868",
+      "walltime_seconds": 7200
+    },
+    {
+      "current_queue": "59616075|PENDING|cv3-evidence-all-seven|(Dependency)",
+      "gpus": 0,
+      "job_card_sha256": "f33c88ecaaafbe890c1ba88770fdc7f6107730a29ca4fa81e868e07becd82e62",
+      "job_id": "59616075",
+      "model": "all-seven",
+      "receipt_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007/submissions/f33c88ecaaafbe890c1ba88770fdc7f6107730a29ca4fa81e868e07becd82e62/SUBMISSION.json",
+      "stage": "evidence",
+      "submission_sha256": "855d8d3d364f0a3b508d001a979cbde696a0bd4b80f47fe66d3065ba99183c39",
+      "walltime_seconds": 1800
+    }
+  ],
+  "qualification_billing_core_hours_max": 224,
+  "schema": "verification-submitted-job-ledger-v3",
+  "scientific_outcomes": "NOT_YET_MEASURED",
+  "sha256": "3b2002d7da1103a820253ed7169fe1889d6f0ceaa920435dd495b12f700bcd01"
+}

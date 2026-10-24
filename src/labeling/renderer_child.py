@@ -1,0 +1,40 @@
+"""The child process of `labeling.renderer.Renderer`: the exact original DSPy program, prompt
+renderer and parser.
+
+Run as `python -m labeling.renderer_child PROGRAM [RENDERER_DIR]`. It reads one JSON request per line on
+stdin (`render` an input into a conversation, `parse` a completion into a label) and answers on stdout.
+RENDERER_DIR is the pinned copy of the DSPy packages (`.research-runtime/original-renderer`, which is
+gitignored and exists only in the main checkout); without it the copy next to this checkout is used.
+"""
+import json
+import sys
+from pathlib import Path
+
+
+def main():
+    repo=Path(__file__).resolve().parents[2]
+    sys.path.insert(0,sys.argv[2] if len(sys.argv)>2 else str(repo/".research-runtime/original-renderer"))
+    sys.path.insert(0,str(repo/"src"))
+    from labeling.batch_predictor import (
+        load_program_and_adapter,
+        render_conversation,
+        parse_completion,
+        parse_failure_types,
+    )
+    predict,adapter=load_program_and_adapter(sys.argv[1])
+    for line in sys.stdin:
+        item=json.loads(line)
+        try:
+            if item["operation"]=="render":
+                value={"conversation":render_conversation(adapter,predict,item["inputs"])}
+            elif item["operation"]=="parse":
+                value={"label":parse_completion(adapter,predict,item["content"])}
+            else:
+                raise ValueError("unknown renderer operation")
+        except parse_failure_types() as exc:
+            value={"label":None,"parse_error":str(exc)[:1000]}
+        print(json.dumps(value,ensure_ascii=False),flush=True)
+
+
+if __name__=="__main__":
+    main()

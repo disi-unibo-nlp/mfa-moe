@@ -1,0 +1,1 @@
+{"accounting": {"elapsed_seconds": 11770, "start": "2026-09-25T11:23:14", "state": "COMPLETED"}, "estimated_allocated_bytes": 94216192, "job_id": "58624419_1", "path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/campaign-v3/runtime/gen-qwen35-58624419_1/triton", "sha256": "bc1df06b726b461b031c82397cb86734885f90633e0521fea841ad5e90e0b6a4"}

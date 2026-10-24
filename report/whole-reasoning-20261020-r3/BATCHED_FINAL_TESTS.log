@@ -1,0 +1,20 @@
+test_batch_matches_reference_dose_and_full_audit_for_prefill_decode_and_reordering (test_stream_batch.WholeBatchTests.test_batch_matches_reference_dose_and_full_audit_for_prefill_decode_and_reordering) ... ok
+test_dynamic_full_graph_preserves_operator_and_dose (test_stream_batch.WholeBatchTests.test_dynamic_full_graph_preserves_operator_and_dose) ... ok
+test_growing_buffer_preserves_prior_counters_and_refreshes_live_views (test_stream_batch.WholeBatchTests.test_growing_buffer_preserves_prior_counters_and_refreshes_live_views) ... ok
+test_masked_operator_matches_individual_roles_and_inactive_bits (test_stream_batch.WholeBatchTests.test_masked_operator_matches_individual_roles_and_inactive_bits) ... ok
+test_chunked_prefill_recompute_closure_and_generated_capture_zero (test_whole.PromptScopeTests.test_chunked_prefill_recompute_closure_and_generated_capture_zero) ... ok
+test_original_prompt_runtime_allows_empty_prefix_only_when_flagged (test_whole.PromptScopeTests.test_original_prompt_runtime_allows_empty_prefix_only_when_flagged) ... ok
+test_real_unix_socket_binds_short_work_path (test_whole.PromptScopeTests.test_real_unix_socket_binds_short_work_path) ... ok
+test_accounting_carries_all_earlier_terminal_costs (test_whole.ExecutionGateTests.test_accounting_carries_all_earlier_terminal_costs) ... ok
+test_failed_validation_never_queues_empty_extraction_or_analysis (test_whole.ExecutionGateTests.test_failed_validation_never_queues_empty_extraction_or_analysis) ... ok
+test_nonempty_unbound_store_rejects_before_any_engine_load (test_whole.ExecutionGateTests.test_nonempty_unbound_store_rejects_before_any_engine_load) ... ok
+test_only_fluency_failure_selects_the_one_half_dose_fallback (test_whole.ExecutionGateTests.test_only_fluency_failure_selects_the_one_half_dose_fallback) ... ok
+test_passing_canaries_submit_nine_unheld_shards_and_dependent_cpu_work (test_whole.ExecutionGateTests.test_passing_canaries_submit_nine_unheld_shards_and_dependent_cpu_work) ... ok
+test_quarter_pair_projection_cancels_exact_remaining_shards_above_ceiling (test_whole.ExecutionGateTests.test_quarter_pair_projection_cancels_exact_remaining_shards_above_ceiling) ... ok
+test_shard_admission_charges_failures_and_allocation_maxima_before_submission (test_whole.ExecutionGateTests.test_shard_admission_charges_failures_and_allocation_maxima_before_submission) ... ok
+test_software_failure_never_becomes_a_dose_failure (test_whole.ExecutionGateTests.test_software_failure_never_becomes_a_dose_failure) ... ok
+
+----------------------------------------------------------------------
+Ran 15 tests in 30.759s
+
+OK

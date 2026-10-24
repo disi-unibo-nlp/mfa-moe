@@ -1,0 +1,17 @@
+{
+ "schema": "overnight-submit-attempt-v1",
+ "name": "legacy-lengths",
+ "binding": {
+  "operations_sha256": "b61bc98be974f5848da96c8c0bdcfd6faa0466dd696ba14f82a006438599f71e",
+  "phase": "legacy",
+  "extra": {}
+ },
+ "arguments": [
+  "--job-name=operator-panel-legacy-lengths",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/operator_panel_cpu_v1.sbatch"
+ ],
+ "time_ns": 1791202111768417993,
+ "dispatcher_job_id": null,
+ "removed_parent_environment_keys": [],
+ "sha256": "690199876ac261e007ab6d361bc3b2046f5aa4c3e5e046dda6121522bbf8d2e7"
+}

@@ -1,0 +1,421 @@
+{
+ "schema": "within-sentence-qwen-start-comparison-v1",
+ "frame_sha256": "ed8522b7ade8e926a3b9d9d7e7d4b9065896017ef9ef4ac823af9479f9ab1e45",
+ "early_binding_sha256": "797395f9844301cea7da071ed6d96b84ed6686f9d72bfd70bcabb646388ce287",
+ "early_summary_sha256": "121859f9931276390e3f91e84ce1c5d261e1bb442c10e7c8719e4fd1966b147c",
+ "early_batch_sha256s": [
+  "3507ced529c13a515a9d207f3adff15547eca51d0d04602fd9550ef8a50a83a0",
+  "1cf482f479c7247098a7ce8ab9dec1d4af6a287b28df1ec17ecb6dd9af40120b",
+  "c3204cc44373b0d87464bb9017c0c781bc54c4fb919e8f5d094553c2085c53ec"
+ ],
+ "timing_inventory_sha256": "d11bf2e712ac2d5579d33c0948f901d29c8d974f891d32624c448483c76c0fbe",
+ "fullprefix_agreement_sha256": "f15c5b8e283daf24b77ec72a910f013c0c47deb355628b42275891e56cefb43e",
+ "driver_sha256": "6df8661541ce91f8e7aa45c98ef29747a2f169b64c0887c27aaec422742a0bc8",
+ "counts": {
+  "meaningful_ge4_tokens|rows": 31,
+  "meaningful_ge4_tokens|full_rejected|early_rejected": 21,
+  "meaningful_ge4_tokens|full_accepted|early_rejected": 5,
+  "meaningful_ge4_tokens|full_split|early_rejected": 1,
+  "meaningful_ge4_tokens|full_unresolved|early_rejected": 1,
+  "meaningful_ge4_tokens|full_unresolved|early_accepted": 2,
+  "meaningful_ge4_tokens|full_unresolved|early_split": 1,
+  "short_gap_control|rows": 12,
+  "short_gap_control|full_unresolved|early_accepted": 2,
+  "short_gap_control|full_unresolved|early_rejected": 1,
+  "short_gap_control|full_rejected|early_rejected": 6,
+  "short_gap_control|full_accepted|early_rejected": 2,
+  "short_gap_control|full_accepted|early_accepted": 1
+ },
+ "records": [
+  {
+   "uid": "2388413f7d75527d43c2342e916984b7b623b153fd3ad671dd9500b6cd7cc185",
+   "family": "9494cd0594ccab56a7cae7dd6cdd09e81704a31333e2be8bb7958a4f1c31c6c8",
+   "role": "meaningful_ge4_tokens",
+   "token_headroom": 16,
+   "trailing_chars_in_original_sentence": 62,
+   "full_sentence_qwen_status": "rejected",
+   "earlier_cut_qwen_status": "rejected"
+  },
+  {
+   "uid": "510442a7894dd0f0d7fb044e464d5b90366a21bb8e2908f56fcc2687dc77a57b",
+   "family": "1b8c3e7cc03eb4055ad504c782b763336ba17da040b85c2a115dc7eb1d23f714",
+   "role": "meaningful_ge4_tokens",
+   "token_headroom": 24,
+   "trailing_chars_in_original_sentence": 73,
+   "full_sentence_qwen_status": "accepted",
+   "earlier_cut_qwen_status": "rejected"
+  },
+  {
+   "uid": "933e9483cac87949a84b33719e3e6791cd9bf3244227b576537621f37c4fc7fe",
+   "family": "3367fc3d3cb10721c5ca4d2dab40e29e369042f3e801709985eb83b35caffac1",
+   "role": "meaningful_ge4_tokens",
+   "token_headroom": 6,
+   "trailing_chars_in_original_sentence": 16,
+   "full_sentence_qwen_status": "split",
+   "earlier_cut_qwen_status": "rejected"
+  },
+  {
+   "uid": "8d90f26bdb93b69aaefde03f7dd62d14233c0699e7058b1908e33c9081273817",
+   "family": "27d2363267233b2ce6ff74234da783dc554b6edc7cf44024de5238dc9f067586",
+   "role": "meaningful_ge4_tokens",
+   "token_headroom": 19,
+   "trailing_chars_in_original_sentence": 52,
+   "full_sentence_qwen_status": "rejected",
+   "earlier_cut_qwen_status": "rejected"
+  },
+  {
+   "uid": "9efd8c60323c7a478b18be4b8b482adbe6ce5001ec661d359f6788f8c2e10c10",
+   "family": "6332f3952a4d310f59b492e2d5cfbe5d42d4d7b9eea81a06bdeec6ad10bcd2db",
+   "role": "meaningful_ge4_tokens",
+   "token_headroom": 18,
+   "trailing_chars_in_original_sentence": 30,
+   "full_sentence_qwen_status": "unresolved",
+   "earlier_cut_qwen_status": "rejected"
+  },
+  {
+   "uid": "6a3b538e7f9d1ce76da4bcc67c475d363e6f284e206db1e99248db4ead6593fb",
+   "family": "96e6320e8bd05cc4d7234ffd23d2a4fd8f73c35fb306da771c9867fefda0559b",
+   "role": "meaningful_ge4_tokens",
+   "token_headroom": 4,
+   "trailing_chars_in_original_sentence": 3,
+   "full_sentence_qwen_status": "accepted",
+   "earlier_cut_qwen_status": "rejected"
+  },
+  {
+   "uid": "abe31d958b1a51cb90b145b1b202d47e4860e30e56831979c80a4205dc516f63",
+   "family": "993ff5562af5067431c46cead82efa65621fb037fe68a0426235776c12fe5add",
+   "role": "meaningful_ge4_tokens",
+   "token_headroom": 7,
+   "trailing_chars_in_original_sentence": 10,
+   "full_sentence_qwen_status": "unresolved",
+   "earlier_cut_qwen_status": "accepted"
+  },
+  {
+   "uid": "d65256cd2634f45cd335a1243c24ed79d10acf36b4881946cd3a460f6f87d213",
+   "family": "7369e53b0447dbc9969dba9a7bbcc91d3597bb083f6862bbe7480086ef0e6603",
+   "role": "meaningful_ge4_tokens",
+   "token_headroom": 5,
+   "trailing_chars_in_original_sentence": 14,
+   "full_sentence_qwen_status": "rejected",
+   "earlier_cut_qwen_status": "rejected"
+  },
+  {
+   "uid": "6caf6ee9b5e687a3c50997d98314b1d3f148c5366030ca33ffff6de29a6f840d",
+   "family": "9d9ec1487c5d634f86ae97fca43b0f72a814c369baa2f2384aa88dec35978f5c",
+   "role": "meaningful_ge4_tokens",
+   "token_headroom": 11,
+   "trailing_chars_in_original_sentence": 19,
+   "full_sentence_qwen_status": "rejected",
+   "earlier_cut_qwen_status": "rejected"
+  },
+  {
+   "uid": "0fbe3dce345bc168576040a54e5a3f56944e80dc2741c7281063bf4b2218acc7",
+   "family": "59493910d6f987ddb5f17d95ecc9e7e0d23bd36f856c8200153b8e53128d4490",
+   "role": "meaningful_ge4_tokens",
+   "token_headroom": 12,
+   "trailing_chars_in_original_sentence": 20,
+   "full_sentence_qwen_status": "rejected",
+   "earlier_cut_qwen_status": "rejected"
+  },
+  {
+   "uid": "6e090ba4d5532bfad5910aa6f1ae835be97301c4383e743011db26842fdea575",
+   "family": "96e6320e8bd05cc4d7234ffd23d2a4fd8f73c35fb306da771c9867fefda0559b",
+   "role": "meaningful_ge4_tokens",
+   "token_headroom": 8,
+   "trailing_chars_in_original_sentence": 27,
+   "full_sentence_qwen_status": "rejected",
+   "earlier_cut_qwen_status": "rejected"
+  },
+  {
+   "uid": "a70345249ee9b0af96d5bc76e6bf4b65eeec1ead149ca72d9f1a308e1322e390",
+   "family": "421df3311b63519148633d7f05bf01edde6ac27c0dd0af1360ea511ec72f8fc1",
+   "role": "meaningful_ge4_tokens",
+   "token_headroom": 20,
+   "trailing_chars_in_original_sentence": 57,
+   "full_sentence_qwen_status": "rejected",
+   "earlier_cut_qwen_status": "rejected"
+  },
+  {
+   "uid": "b43b3b3c1b0133f9612e3631abf6beb79d3f545279ec7abd5c1cfccd95f097a7",
+   "family": "fe413656eb88bcd59b91fafc8491dfc9b6106bd5eeeead02398d8ee95f45c3f8",
+   "role": "meaningful_ge4_tokens",
+   "token_headroom": 22,
+   "trailing_chars_in_original_sentence": 33,
+   "full_sentence_qwen_status": "accepted",
+   "earlier_cut_qwen_status": "rejected"
+  },
+  {
+   "uid": "369f8e9d4f340243c01a903c6b2198f216b6ee2ff215914f12e78e88fb27b468",
+   "family": "a7b8df19041f966b35b0f2daad20092af03a86a7423d19c37b9bc61adc476fd6",
+   "role": "meaningful_ge4_tokens",
+   "token_headroom": 30,
+   "trailing_chars_in_original_sentence": 47,
+   "full_sentence_qwen_status": "rejected",
+   "earlier_cut_qwen_status": "rejected"
+  },
+  {
+   "uid": "ac3e6fede52cd38cfad155d39325f9b1ae69a8d73841578ba11df6f6c5cd0de6",
+   "family": "a7b8df19041f966b35b0f2daad20092af03a86a7423d19c37b9bc61adc476fd6",
+   "role": "meaningful_ge4_tokens",
+   "token_headroom": 14,
+   "trailing_chars_in_original_sentence": 20,
+   "full_sentence_qwen_status": "rejected",
+   "earlier_cut_qwen_status": "rejected"
+  },
+  {
+   "uid": "5c3a8dfd1ce968fe7f65a6135fc36bcb93a5f89b84bc6474c6058e48460c7882",
+   "family": "681f70af1260cf260825f9322b492adad415ab0a4cdff83393ec14a6dfd165dd",
+   "role": "meaningful_ge4_tokens",
+   "token_headroom": 28,
+   "trailing_chars_in_original_sentence": 52,
+   "full_sentence_qwen_status": "rejected",
+   "earlier_cut_qwen_status": "rejected"
+  },
+  {
+   "uid": "8ce2627c597c842f407fc31ae3b5e10aa3b8315ca1ccac3afc09152e823c101d",
+   "family": "681f70af1260cf260825f9322b492adad415ab0a4cdff83393ec14a6dfd165dd",
+   "role": "meaningful_ge4_tokens",
+   "token_headroom": 16,
+   "trailing_chars_in_original_sentence": 29,
+   "full_sentence_qwen_status": "unresolved",
+   "earlier_cut_qwen_status": "split"
+  },
+  {
+   "uid": "e5f1888c39e10ce6d1719b8e524ab1c7e9535d0447debaa2762d183f86fb5df9",
+   "family": "59493910d6f987ddb5f17d95ecc9e7e0d23bd36f856c8200153b8e53128d4490",
+   "role": "meaningful_ge4_tokens",
+   "token_headroom": 11,
+   "trailing_chars_in_original_sentence": 16,
+   "full_sentence_qwen_status": "rejected",
+   "earlier_cut_qwen_status": "rejected"
+  },
+  {
+   "uid": "ce9a7e010670ab4225e38a715b74a2e88534034a2498a32217b701cd6c1314db",
+   "family": "7369e53b0447dbc9969dba9a7bbcc91d3597bb083f6862bbe7480086ef0e6603",
+   "role": "meaningful_ge4_tokens",
+   "token_headroom": 16,
+   "trailing_chars_in_original_sentence": 21,
+   "full_sentence_qwen_status": "rejected",
+   "earlier_cut_qwen_status": "rejected"
+  },
+  {
+   "uid": "07b923400be5aa03efa6f5015c551e54f7239aba46c3a740eeee5efda465264e",
+   "family": "4f5f62a271804f66bfa38042e820f38f7a0b5f2b9b7a87ff62cdb58b07ead678",
+   "role": "meaningful_ge4_tokens",
+   "token_headroom": 12,
+   "trailing_chars_in_original_sentence": 15,
+   "full_sentence_qwen_status": "rejected",
+   "earlier_cut_qwen_status": "rejected"
+  },
+  {
+   "uid": "c5eafa30a009f74bc9108ff672b40150434514ccad3bc9e28138f0e663ace8db",
+   "family": "fe413656eb88bcd59b91fafc8491dfc9b6106bd5eeeead02398d8ee95f45c3f8",
+   "role": "meaningful_ge4_tokens",
+   "token_headroom": 23,
+   "trailing_chars_in_original_sentence": 35,
+   "full_sentence_qwen_status": "accepted",
+   "earlier_cut_qwen_status": "rejected"
+  },
+  {
+   "uid": "cb1273f60897dff9ea964bb341734823e4aff34c3f2d620ec1cf303ce21358cd",
+   "family": "f5f2880171dac17ac29f10527d0398d26e859c729d70eaa39445d71e5299825e",
+   "role": "meaningful_ge4_tokens",
+   "token_headroom": 19,
+   "trailing_chars_in_original_sentence": 39,
+   "full_sentence_qwen_status": "rejected",
+   "earlier_cut_qwen_status": "rejected"
+  },
+  {
+   "uid": "2ef5d44b4d41aa216122a5204196ee01e8a42fee55232deeb3a0d4bad7c577a9",
+   "family": "4f5f62a271804f66bfa38042e820f38f7a0b5f2b9b7a87ff62cdb58b07ead678",
+   "role": "meaningful_ge4_tokens",
+   "token_headroom": 6,
+   "trailing_chars_in_original_sentence": 24,
+   "full_sentence_qwen_status": "rejected",
+   "earlier_cut_qwen_status": "rejected"
+  },
+  {
+   "uid": "8c38fed8be8b6e78a784dbb144f2f1c67583dcf9ec68dcc3a2002b35cbf0d8b9",
+   "family": "6825f10257492d7a05d15e1947436b04b8e0801eb0dc71a1d69baa492d8bd982",
+   "role": "meaningful_ge4_tokens",
+   "token_headroom": 30,
+   "trailing_chars_in_original_sentence": 45,
+   "full_sentence_qwen_status": "accepted",
+   "earlier_cut_qwen_status": "rejected"
+  },
+  {
+   "uid": "0fd1ae461e07f86b58c17086b6e4f794d06e3a75d997b679ae86c682864c89f7",
+   "family": "67928e1673c5c7b82613df7d95a765e72dd694296f41d4eb5bd77fa6a549196b",
+   "role": "meaningful_ge4_tokens",
+   "token_headroom": 4,
+   "trailing_chars_in_original_sentence": 4,
+   "full_sentence_qwen_status": "unresolved",
+   "earlier_cut_qwen_status": "accepted"
+  },
+  {
+   "uid": "ada1e638ca4c3e5c82794cc3c67043bff27b914367a8919f3989f22ea5ddb3e1",
+   "family": "681f70af1260cf260825f9322b492adad415ab0a4cdff83393ec14a6dfd165dd",
+   "role": "meaningful_ge4_tokens",
+   "token_headroom": 29,
+   "trailing_chars_in_original_sentence": 71,
+   "full_sentence_qwen_status": "rejected",
+   "earlier_cut_qwen_status": "rejected"
+  },
+  {
+   "uid": "0048ebdb722c0ea197d6c4ff32a213865ef67f06f0109eba906d939fe69b1801",
+   "family": "ab015c38c561307237f1d9f12b40aac5bc6b79d7838cc302e16a59c01effc212",
+   "role": "meaningful_ge4_tokens",
+   "token_headroom": 10,
+   "trailing_chars_in_original_sentence": 14,
+   "full_sentence_qwen_status": "rejected",
+   "earlier_cut_qwen_status": "rejected"
+  },
+  {
+   "uid": "6432e64806071a23a4ebb0d718aa239bc4785c4da78e662c8386e22230cc8c70",
+   "family": "fff0f7ae0efb38815249ca8438b8d015ad1348e758b06f5a91ccf288fb481337",
+   "role": "meaningful_ge4_tokens",
+   "token_headroom": 5,
+   "trailing_chars_in_original_sentence": 15,
+   "full_sentence_qwen_status": "rejected",
+   "earlier_cut_qwen_status": "rejected"
+  },
+  {
+   "uid": "fd000f64e993cbbca95a52f921c8539b29cbab8be60821df45a54b6acb3b3f1e",
+   "family": "f29be5e1006c6e1dd939dee3b790fdde598a51f41761a18a4ff5edfd80f3df07",
+   "role": "meaningful_ge4_tokens",
+   "token_headroom": 11,
+   "trailing_chars_in_original_sentence": 18,
+   "full_sentence_qwen_status": "rejected",
+   "earlier_cut_qwen_status": "rejected"
+  },
+  {
+   "uid": "9ce30fb85295ba838b68505669b0df2f907058db957e04a4f085e97540b839ae",
+   "family": "cb29cac11a2366d8754b75ac881c7b2786645be6cf34d6d23d5b5f43bd8e8d04",
+   "role": "meaningful_ge4_tokens",
+   "token_headroom": 9,
+   "trailing_chars_in_original_sentence": 16,
+   "full_sentence_qwen_status": "rejected",
+   "earlier_cut_qwen_status": "rejected"
+  },
+  {
+   "uid": "87bca5e95bef0d189c57e14c60fa42642d0c31c2f880ba8955387f9b244f46f2",
+   "family": "800c81574401f7a6b104c7902f4030f5ab324217b6520736cfc73d7c09a06f8a",
+   "role": "meaningful_ge4_tokens",
+   "token_headroom": 11,
+   "trailing_chars_in_original_sentence": 18,
+   "full_sentence_qwen_status": "rejected",
+   "earlier_cut_qwen_status": "rejected"
+  },
+  {
+   "uid": "f2f36a0901863c2051a570bab6707d2315dc51175c1b8e0da4d829b563f1173d",
+   "family": "b2fbed68b5770889117d45148541a367c98d2a8c1b6c5f73fe5f7e3eda952ac2",
+   "role": "short_gap_control",
+   "token_headroom": 1,
+   "trailing_chars_in_original_sentence": 1,
+   "full_sentence_qwen_status": "unresolved",
+   "earlier_cut_qwen_status": "accepted"
+  },
+  {
+   "uid": "2eb1910dc6a95d6115461c0e2218106e74e5caaa252ee7ffd752f4b745cd7b90",
+   "family": "f94a4ce465e54b537ef463ea6e3b8fe0148b5cbdb437b3ca294c9cdc099e341a",
+   "role": "short_gap_control",
+   "token_headroom": 2,
+   "trailing_chars_in_original_sentence": 1,
+   "full_sentence_qwen_status": "unresolved",
+   "earlier_cut_qwen_status": "rejected"
+  },
+  {
+   "uid": "ec20b6275dbcaf2f61f98eaeb10460f8fb2c045c37125fbebd0865c07804b2e8",
+   "family": "74254b23b19519bf3cdeef518ee196f773cfe00e19b2ac5d58fb5f4511cee707",
+   "role": "short_gap_control",
+   "token_headroom": 1,
+   "trailing_chars_in_original_sentence": 0,
+   "full_sentence_qwen_status": "rejected",
+   "earlier_cut_qwen_status": "rejected"
+  },
+  {
+   "uid": "9186e9071c2b613c754b37a6ae0274d6880c3c19064fcc2d45c873baabc5055e",
+   "family": "550fd432263445b7a658cbf3f7b32ad019cc13b611f7f4df5094527f0a938047",
+   "role": "short_gap_control",
+   "token_headroom": 3,
+   "trailing_chars_in_original_sentence": 1,
+   "full_sentence_qwen_status": "accepted",
+   "earlier_cut_qwen_status": "rejected"
+  },
+  {
+   "uid": "2ff7b39490d1a728f8bd88e72bd8f69dbe3941483342e6a31731afa0af698220",
+   "family": "72e0c2d09051061648ed7d5706bca4e2ce52798d1530a39e2befa0c6076eeb7b",
+   "role": "short_gap_control",
+   "token_headroom": 1,
+   "trailing_chars_in_original_sentence": 1,
+   "full_sentence_qwen_status": "rejected",
+   "earlier_cut_qwen_status": "rejected"
+  },
+  {
+   "uid": "374167cf6d3e6b7a61e539a892c0ea6cd3f9908422276fdf583cc53970245c4f",
+   "family": "98d7c0cffaf8664a6014dd716307b620be6f01d17a3c98014465cc1df0250e35",
+   "role": "short_gap_control",
+   "token_headroom": 2,
+   "trailing_chars_in_original_sentence": 1,
+   "full_sentence_qwen_status": "accepted",
+   "earlier_cut_qwen_status": "accepted"
+  },
+  {
+   "uid": "010b6682b835ab10996b15c06d9dc2cb6ee55d62f974aafd7b7e10669049e96e",
+   "family": "7e97810d4ff8730d30541a719c4ccc4b5f7dc9862da5c3c812d6705efc43110d",
+   "role": "short_gap_control",
+   "token_headroom": 2,
+   "trailing_chars_in_original_sentence": 1,
+   "full_sentence_qwen_status": "rejected",
+   "earlier_cut_qwen_status": "rejected"
+  },
+  {
+   "uid": "e2c2c532e4edc7d85f9c39574e137f389697ebbe39d5f600c0deddb91ad34ed9",
+   "family": "29cc45551546f60dfdd6c11bb74844950c5c81bb611825509d86bd244697ef37",
+   "role": "short_gap_control",
+   "token_headroom": 2,
+   "trailing_chars_in_original_sentence": 0,
+   "full_sentence_qwen_status": "rejected",
+   "earlier_cut_qwen_status": "rejected"
+  },
+  {
+   "uid": "225aa23526952b95a7094a4c60151f7f7d816155ddd73115703426ac585c18f7",
+   "family": "707ab7621174d1305ed9fb7370a65a7984a70d929ccb758a88557e35c8364c4f",
+   "role": "short_gap_control",
+   "token_headroom": 2,
+   "trailing_chars_in_original_sentence": 1,
+   "full_sentence_qwen_status": "unresolved",
+   "earlier_cut_qwen_status": "accepted"
+  },
+  {
+   "uid": "327ad7783ccbd3610ed6cf83b7a25cd6a914e239959af705eb7eac6488703a93",
+   "family": "52543cd453052b5d707943b34a1ec31df532d3be7c1a15dbcb51f49e99028f61",
+   "role": "short_gap_control",
+   "token_headroom": 2,
+   "trailing_chars_in_original_sentence": 1,
+   "full_sentence_qwen_status": "rejected",
+   "earlier_cut_qwen_status": "rejected"
+  },
+  {
+   "uid": "7363f6f6a93de4f3b4a38a13d53406c40434d96ed9fb607cc15f359685908016",
+   "family": "ec47e896ec807987bdd073e3f44aca15adb1f4e475208ba011b62aa0b06c2c6c",
+   "role": "short_gap_control",
+   "token_headroom": 2,
+   "trailing_chars_in_original_sentence": 0,
+   "full_sentence_qwen_status": "accepted",
+   "earlier_cut_qwen_status": "rejected"
+  },
+  {
+   "uid": "b91c612e7a68933050f6352773a01a4dc2148564e415b74236c2db111f5843e0",
+   "family": "eee15807710ee7873a219abd0c07a9f2075da668d35575207b6b945f13305137",
+   "role": "short_gap_control",
+   "token_headroom": 1,
+   "trailing_chars_in_original_sentence": 1,
+   "full_sentence_qwen_status": "rejected",
+   "earlier_cut_qwen_status": "rejected"
+  }
+ ],
+ "primary_endpoint": "original triggered sentence excluded; unchanged",
+ "interpretation": "Paired LLM start-rating sensitivity at a previously frozen earlier native-token cut, not causal steering or human truth. A rejected full sentence becoming an accepted fragment supports only measurement/timing feasibility.",
+ "sha256": "d1da20d469c4205784a397cfb98f09fc38b2c39ce872524bada8658b810f9a2b"
+}

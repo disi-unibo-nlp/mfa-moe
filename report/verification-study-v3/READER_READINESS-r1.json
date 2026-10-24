@@ -1,0 +1,25 @@
+{
+  "behavior": "unchanged pinned r4 Reader; original full-frame SHA, role, seeds, prompts and two draws",
+  "campaign_sha256": "57df4a026a7be4c909ece85ac1ebe3dc47c3f27bb53ffcab88e3aa9d82bfbb3b",
+  "health_version_for_reader": "r3; separate source seal, queued r2 observers preserved",
+  "outcome_price_path": "discovery-only OUTCOME_PRICE_FRAME.json/outcome-price-ratings; final reader remains priced",
+  "reader_executor": {
+    "campaign_sha256": "57df4a026a7be4c909ece85ac1ebe3dc47c3f27bb53ffcab88e3aa9d82bfbb3b",
+    "code_files": {
+      "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/verification_study_v3_reader_r1.py": "5843c4adab8c3f61c42db1149861ee4d2ae39432833b17a71f7066f67b707277",
+      "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/verification_study_v3_reader_r1.sbatch": "2088e68b1533b5efc62d4dab5f6c1344e4ff9dc69d8090072193b51b36c7262a"
+    },
+    "reader_behavior": "unchanged r4 Reader.rate; two draws, original full-frame identities and canonical filenames",
+    "reader_contract_sha256": "afca8cdde2519bc72c92e98efd008303c10571a28c57487ede48c3d11b77d4a3",
+    "runtime_sha256": "cf2c62e9759a8c91a44df26a9ac1861148032e58e489eee8f70d5ae33af7d815",
+    "schema": "verification-reader-executor-v3",
+    "scientific_executor_sha256": "0b781c4c404b34827628b3837ebe83b6318aa53ed114e247f07ae44ed162e2e1",
+    "sha256": "d0f2b65869ab917c1eec3bc9f472c34f4e7d0275c668ee26ae77fc70680cf335"
+  },
+  "required_before_actual_dispatch": "observed frame/gates, concrete sealed request, first role measurement or measured price/context, native preflight and exact submission readback",
+  "schema": "verification-reader-extension-readiness-v3",
+  "sha256": "d689129a7b9582b2453554fac7f233b985594ab9cbd90d141653a462208220b7",
+  "slice_and_resume": "before-load provenance; preserve canonical runtime; per-invocation loads; exact missing draws only",
+  "static_review": "GPT6.1Sol/xhigh final review: no definite remaining blocker in reader_r1, health_r3, health_status",
+  "status": "CPU_CONTRACTS_PASS; NO_READER_ALLOCATION_YET"
+}

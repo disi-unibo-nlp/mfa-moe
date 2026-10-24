@@ -1,0 +1,89 @@
+{
+ "schema": "r3e-b4-calibrated-precision-price-v1",
+ "status": "READY_SMOKE",
+ "population": {
+  "assigned_questions": 509,
+  "assigned_families": 496,
+  "scored_questions": 508,
+  "scored_families": 495
+ },
+ "freeze_sha256": "c7750aac95dccfdfefe8ec3ffc6d4f36677537c862beccbe425f3e47833fb67c",
+ "driver_sha256": "de1f2563de3298fd6b7fa1f57ad1bd17d7e1ffca8030556c20ac30c932411afd",
+ "input_sha256": {
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/resume-v1/r3e-b4-features-v2/FEATURES_FROZEN_B4.json": "4afd28988517cc68511973eb7ac97890143f0ff1a4baf3803d6465344d1f3e75",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/resume-v1/r3e-b4-features-v2/features_A.npz": "ff499049c73704959e7ab5e71c81ddd72b8cb0b939dffe27987f493425b968eb",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/resume-v1/r3e-cv-clean-v1/full.json": "f1308f3574e3a7ca566a7f1c92e083a885fe3b6f1044aaef3fa27cc11a5e2dce",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/resume-v1/r3e-cv-clean-v1/full-predictions.npz": "4214ab38f207b0787323e559127bb59c2c443ac274fa43383bd29ad2a57328e0",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/R3E_CLEAN_PREFLIGHT_v1.json": "6ed95266bde65543a7763d8870005c07248df0e22c1c9fbf5df6206d41c95a41",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/R3E_RESOURCE_AND_METHODS_AMENDMENT_v0.2.md": "71c12cd46819897a6aafbe57636c8cbd29a718d8cb94ec1700708d1c6118fa5f",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/family-freeze.json": "0835287393adf5e144ef43531f7f245ea7fd30c3f23765d1576e811b7b9a67e9",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/manifests/split-v1.json": "635990b85e2e1b67d6c85422e2d2dfd4b5c6363358aed1c9b8988c7975c3446b",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/v3_analysis/results-r2/gpt/A/attempts.parquet": "9df93457c8104d8fef0caca0be876d1f2b41bfe231fc4208ede4eb56a0427c09",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/dynamics-routing/results/gpt/A/sentences.parquet": "01f486affe43b20f5ef196709f7fc97410720ab152c60d825fd6997c5bcaed72",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/dynamics-routing/results/gpt/A/hist.npz": "45909dbb46f6e171639e6a1a9e9eda245c0c3baf17a3742f1c65953e66bb8271",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/r3e_clean_v2/dynrt/cv.py": "a7664b17d5808d842d84cbc9ea48d2a2d4511e59cd3ddfea50b88d179044d823",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/r3e_clean_v2/dynrt/d3c_cv.py": "8069425a310a4f7b534a93da6d55be49f19b3c0c871e0b10c1360f23d8f8c030",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/r3e_clean_v2/dynrt/d3c_features.py": "1edf734969028152c016b0963816558166db8951749dff5ffffa650ceef56586",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/r3e_clean_v2/dynrt/d3c_freeze.py": "54f9c466e4d224b003ada735aa8b795e2bcc9d654bbd500e002e5dce1582cdf0",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/r3e_clean_v2/dynrt/controls.py": "9f83942ac49d52caaf553fdb46a8681663cae0104f58df9e721d535d41ff3f0c",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/r3e_clean_v2/dynrt/common.py": "a7b502dd0207e5ff21bf2cbee30b1c3b9bf42932be888f2b3b0596e0c1f23875",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/r3e_clean_v2/dynrt/data.py": "82e870bd05ea0dce534b8e3007e41b11e33086826faf586c4724455e2fd144bc",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/r3e_clean_v2/dynrt/features.py": "1a15eb3c5560a082621a1f05548dba338179ab3c0a9f95023c41944702ee5e87",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/r3e_clean_v2/dynrt/extract.py": "0b01714996c8db9825bb54785a596b67216b77e7a7fa07073cc7ef6f94c35701"
+ },
+ "design": {
+  "targets_oracle_KL_nats_per_question": [
+   0,
+   0.001,
+   0.003,
+   0.005,
+   0.01
+  ],
+  "replicates_per_target": 200,
+  "total_replicates": 1000,
+  "bootstrap_per_replicate": 1000,
+  "models": [
+   "C+28",
+   "C+28+PA+PAlex+PA_sd",
+   "C+28+three iid noise columns"
+  ],
+  "estimator": "frozen five-repeat five-outer three-inner duplicate-family CV",
+  "generator": "five-fold original-outcome cross-fitted Bernoulli baseline; in-fold PA residualized signal and target KL calibration; conditionally independent question outcomes",
+  "no_heldout_original_outcomes_in_generator": true
+ },
+ "stages": {
+  "smoke": {
+   "ids": [
+    0,
+    1,
+    2,
+    3,
+    4
+   ],
+   "cpus": 8,
+   "memory": "64G",
+   "wall_seconds": 1800,
+   "max_core_hours": 4
+  },
+  "shards": {
+   "count": 20,
+   "ids_after_smoke": 995,
+   "cpus_each": 8,
+   "memory_each": "64G",
+   "wall_seconds_each": 1800,
+   "max_core_hours": 80,
+   "requires_smoke_pass": true
+  }
+ },
+ "total_max_core_hours": 84,
+ "reprice_rule": "After exact smoke, if 50 replicates plus 4x overhead cannot fit 30 minutes, stop and amend before shards.",
+ "slurm": {
+  "account": "iscrc_miosr",
+  "partition": "boost_usr_prod",
+  "qos": "normal",
+  "gpus": 0
+ },
+ "output": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/resume-v1/r3e-b4-precision-v1",
+ "interpretation": "Power and interval calibration of this tested estimator only; no causal steering or equivalence from non-rejection.",
+ "sha256": "4d6bcd39e1f4669b77a5573b24e3dc028dac04b830464d985b38629a8646a8a7"
+}

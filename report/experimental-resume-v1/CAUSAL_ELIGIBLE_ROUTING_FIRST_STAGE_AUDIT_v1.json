@@ -1,0 +1,487 @@
+{
+ "schema": "eligible-routing-first-stage-audit-v1",
+ "runs": [
+  {
+   "kind": "positive",
+   "manifest_sha256": "320ecca116c7ab6397740876fb680ad666b3df9696adc2ec8a30e1fc9154f052",
+   "arm_map_sha256": "7216160e0f725309c54a67ce3a83a3685cd7a66f394832957004dd127f10c59d",
+   "rows": 156,
+   "table": [
+    {
+     "transition": "approach_to_commit",
+     "arm": "native",
+     "assigned": 10,
+     "dose_receipts": 0,
+     "mean_dose": {},
+     "mean_emitted_tokens": 256.0,
+     "reasoning_closed": 0,
+     "measurement_statuses": [
+      "gradeable"
+     ]
+    },
+    {
+     "transition": "approach_to_commit",
+     "arm": "native_duplicate",
+     "assigned": 10,
+     "dose_receipts": 0,
+     "mean_dose": {},
+     "mean_emitted_tokens": 256.0,
+     "reasoning_closed": 0,
+     "measurement_statuses": [
+      "gradeable"
+     ]
+    },
+    {
+     "transition": "approach_to_commit",
+     "arm": "random_bias0.5",
+     "assigned": 10,
+     "dose_receipts": 10,
+     "mean_dose": {
+      "active_rows": 512.0,
+      "actual_target_hits": 45.7,
+      "native_target_hits": 26.4,
+      "membership_changes": 19.3,
+      "target_mass": 6.839510869979859,
+      "weight_l1": 7.1673823595047,
+      "membership_change_rate": 0.0376953125,
+      "target_hit_delta_rate": 0.0376953125,
+      "target_mass_per_active_row": 0.013358419667929411,
+      "weight_l1_per_active_row": 0.013998793670907617
+     },
+     "mean_emitted_tokens": 256.0,
+     "reasoning_closed": 0,
+     "measurement_statuses": [
+      "gradeable"
+     ]
+    },
+    {
+     "transition": "approach_to_commit",
+     "arm": "random_bias1",
+     "assigned": 10,
+     "dose_receipts": 10,
+     "mean_dose": {
+      "active_rows": 512.0,
+      "actual_target_hits": 68.5,
+      "native_target_hits": 25.4,
+      "membership_changes": 43.1,
+      "target_mass": 12.233001899719238,
+      "weight_l1": 18.235364198684692,
+      "membership_change_rate": 0.0841796875,
+      "target_hit_delta_rate": 0.0841796875,
+      "target_mass_per_active_row": 0.023892581835389136,
+      "weight_l1_per_active_row": 0.03561594570055604
+     },
+     "mean_emitted_tokens": 256.0,
+     "reasoning_closed": 0,
+     "measurement_statuses": [
+      "gradeable"
+     ]
+    },
+    {
+     "transition": "approach_to_commit",
+     "arm": "target_bias0.5",
+     "assigned": 10,
+     "dose_receipts": 10,
+     "mean_dose": {
+      "active_rows": 512.0,
+      "actual_target_hits": 71.0,
+      "native_target_hits": 17.9,
+      "membership_changes": 53.1,
+      "target_mass": 7.924297118186951,
+      "weight_l1": 12.227392196655273,
+      "membership_change_rate": 0.1037109375,
+      "target_hit_delta_rate": 0.1037109375,
+      "target_mass_per_active_row": 0.015477142808958889,
+      "weight_l1_per_active_row": 0.02388162538409233
+     },
+     "mean_emitted_tokens": 256.0,
+     "reasoning_closed": 0,
+     "measurement_statuses": [
+      "gradeable"
+     ]
+    },
+    {
+     "transition": "approach_to_commit",
+     "arm": "target_bias1",
+     "assigned": 10,
+     "dose_receipts": 10,
+     "mean_dose": {
+      "active_rows": 512.0,
+      "actual_target_hits": 163.8,
+      "native_target_hits": 17.6,
+      "membership_changes": 146.2,
+      "target_mass": 20.957088661193847,
+      "weight_l1": 38.33904056549072,
+      "membership_change_rate": 0.285546875,
+      "target_hit_delta_rate": 0.285546875,
+      "target_mass_per_active_row": 0.04093181379139423,
+      "weight_l1_per_active_row": 0.07488093860447406
+     },
+     "mean_emitted_tokens": 256.0,
+     "reasoning_closed": 0,
+     "measurement_statuses": [
+      "gradeable"
+     ]
+    },
+    {
+     "transition": "candidate_to_verify",
+     "arm": "native",
+     "assigned": 16,
+     "dose_receipts": 0,
+     "mean_dose": {},
+     "mean_emitted_tokens": 256.0,
+     "reasoning_closed": 4,
+     "measurement_statuses": [
+      "gradeable"
+     ]
+    },
+    {
+     "transition": "candidate_to_verify",
+     "arm": "native_duplicate",
+     "assigned": 16,
+     "dose_receipts": 0,
+     "mean_dose": {},
+     "mean_emitted_tokens": 256.0,
+     "reasoning_closed": 4,
+     "measurement_statuses": [
+      "gradeable"
+     ]
+    },
+    {
+     "transition": "candidate_to_verify",
+     "arm": "random_bias0.5",
+     "assigned": 16,
+     "dose_receipts": 16,
+     "mean_dose": {
+      "active_rows": 428.125,
+      "actual_target_hits": 47.125,
+      "native_target_hits": 30.0,
+      "membership_changes": 17.125,
+      "target_mass": 8.028021335601807,
+      "weight_l1": 7.558954402804375,
+      "membership_change_rate": 0.04452772757307214,
+      "target_hit_delta_rate": 0.04452772757307214,
+      "target_mass_per_active_row": 0.020868856415548708,
+      "weight_l1_per_active_row": 0.0196253244058146
+     },
+     "mean_emitted_tokens": 256.0,
+     "reasoning_closed": 4,
+     "measurement_statuses": [
+      "gradeable"
+     ]
+    },
+    {
+     "transition": "candidate_to_verify",
+     "arm": "random_bias1",
+     "assigned": 16,
+     "dose_receipts": 16,
+     "mean_dose": {
+      "active_rows": 413.5,
+      "actual_target_hits": 74.9375,
+      "native_target_hits": 30.0625,
+      "membership_changes": 44.875,
+      "target_mass": 14.309094332158566,
+      "weight_l1": 20.339006662368774,
+      "membership_change_rate": 0.10558321886446886,
+      "target_hit_delta_rate": 0.10558321886446886,
+      "target_mass_per_active_row": 0.03734508437388526,
+      "weight_l1_per_active_row": 0.051921062084893964
+     },
+     "mean_emitted_tokens": 256.0,
+     "reasoning_closed": 4,
+     "measurement_statuses": [
+      "gradeable"
+     ]
+    },
+    {
+     "transition": "candidate_to_verify",
+     "arm": "target_bias0.5",
+     "assigned": 16,
+     "dose_receipts": 16,
+     "mean_dose": {
+      "active_rows": 429.0,
+      "actual_target_hits": 61.4375,
+      "native_target_hits": 36.5,
+      "membership_changes": 24.9375,
+      "target_mass": 9.486812174320221,
+      "weight_l1": 9.126124247908592,
+      "membership_change_rate": 0.08110476762820512,
+      "target_hit_delta_rate": 0.08110476762820512,
+      "target_mass_per_active_row": 0.03634553681760549,
+      "weight_l1_per_active_row": 0.03143222545772098
+     },
+     "mean_emitted_tokens": 256.0,
+     "reasoning_closed": 4,
+     "measurement_statuses": [
+      "gradeable"
+     ]
+    },
+    {
+     "transition": "candidate_to_verify",
+     "arm": "target_bias1",
+     "assigned": 16,
+     "dose_receipts": 16,
+     "mean_dose": {
+      "active_rows": 432.5,
+      "actual_target_hits": 107.4375,
+      "native_target_hits": 40.5,
+      "membership_changes": 66.9375,
+      "target_mass": 18.901249408721924,
+      "weight_l1": 26.704361379146576,
+      "membership_change_rate": 0.16780598958333331,
+      "target_hit_delta_rate": 0.16780598958333331,
+      "target_mass_per_active_row": 0.061581317972879676,
+      "weight_l1_per_active_row": 0.07861356935574718
+     },
+     "mean_emitted_tokens": 256.0,
+     "reasoning_closed": 3,
+     "measurement_statuses": [
+      "gradeable"
+     ]
+    }
+   ]
+  },
+  {
+   "kind": "deactivation",
+   "manifest_sha256": "85b7f90ae7295d854d32aa3bee935a5feeb53ee8810cc6657b34ce40028eeb3d",
+   "arm_map_sha256": "faf4dbe84aa4420a04edeaf18dcddff0f27f789e7d26ff9b454f7b5b8c7cc421",
+   "rows": 156,
+   "table": [
+    {
+     "transition": "approach_to_commit",
+     "arm": "native",
+     "assigned": 10,
+     "dose_receipts": 0,
+     "mean_dose": {},
+     "mean_emitted_tokens": 256.0,
+     "reasoning_closed": 0,
+     "measurement_statuses": [
+      "gradeable"
+     ]
+    },
+    {
+     "transition": "approach_to_commit",
+     "arm": "native_duplicate",
+     "assigned": 10,
+     "dose_receipts": 0,
+     "mean_dose": {},
+     "mean_emitted_tokens": 256.0,
+     "reasoning_closed": 0,
+     "measurement_statuses": [
+      "gradeable"
+     ]
+    },
+    {
+     "transition": "approach_to_commit",
+     "arm": "random_bias_minus1",
+     "assigned": 10,
+     "dose_receipts": 10,
+     "mean_dose": {
+      "active_rows": 512.0,
+      "actual_target_hits": 4.6,
+      "native_target_hits": 25.8,
+      "membership_changes": 21.2,
+      "target_mass": 0.32803370000000004,
+      "weight_l1": 5.6664288,
+      "membership_change_rate": 0.04140625,
+      "target_hit_delta_rate": -0.04140625,
+      "target_mass_per_active_row": 0.0006406908203125001,
+      "weight_l1_per_active_row": 0.01106724375
+     },
+     "mean_emitted_tokens": 256.0,
+     "reasoning_closed": 0,
+     "measurement_statuses": [
+      "gradeable"
+     ]
+    },
+    {
+     "transition": "approach_to_commit",
+     "arm": "random_force_off",
+     "assigned": 10,
+     "dose_receipts": 10,
+     "mean_dose": {
+      "active_rows": 512.0,
+      "actual_target_hits": 0.0,
+      "native_target_hits": 25.7,
+      "membership_changes": 25.7,
+      "target_mass": 0.0,
+      "weight_l1": 6.143065299999999,
+      "membership_change_rate": 0.0501953125,
+      "target_hit_delta_rate": -0.0501953125,
+      "target_mass_per_active_row": 0.0,
+      "weight_l1_per_active_row": 0.011998174414062498
+     },
+     "mean_emitted_tokens": 256.0,
+     "reasoning_closed": 0,
+     "measurement_statuses": [
+      "gradeable"
+     ]
+    },
+    {
+     "transition": "approach_to_commit",
+     "arm": "target_bias_minus1",
+     "assigned": 10,
+     "dose_receipts": 10,
+     "mean_dose": {
+      "active_rows": 512.0,
+      "actual_target_hits": 0.2,
+      "native_target_hits": 18.3,
+      "membership_changes": 18.1,
+      "target_mass": 0.0165673,
+      "weight_l1": 3.632500099999999,
+      "membership_change_rate": 0.0353515625,
+      "target_hit_delta_rate": -0.0353515625,
+      "target_mass_per_active_row": 3.23580078125e-05,
+      "weight_l1_per_active_row": 0.007094726757812498
+     },
+     "mean_emitted_tokens": 256.0,
+     "reasoning_closed": 0,
+     "measurement_statuses": [
+      "gradeable"
+     ]
+    },
+    {
+     "transition": "approach_to_commit",
+     "arm": "target_force_off",
+     "assigned": 10,
+     "dose_receipts": 10,
+     "mean_dose": {
+      "active_rows": 512.0,
+      "actual_target_hits": 0.0,
+      "native_target_hits": 17.6,
+      "membership_changes": 17.6,
+      "target_mass": 0.0,
+      "weight_l1": 3.5814576000000002,
+      "membership_change_rate": 0.034375,
+      "target_hit_delta_rate": -0.034375,
+      "target_mass_per_active_row": 0.0,
+      "weight_l1_per_active_row": 0.0069950343750000005
+     },
+     "mean_emitted_tokens": 256.0,
+     "reasoning_closed": 0,
+     "measurement_statuses": [
+      "gradeable"
+     ]
+    },
+    {
+     "transition": "candidate_to_verify",
+     "arm": "native",
+     "assigned": 16,
+     "dose_receipts": 0,
+     "mean_dose": {},
+     "mean_emitted_tokens": 256.0,
+     "reasoning_closed": 4,
+     "measurement_statuses": [
+      "gradeable"
+     ]
+    },
+    {
+     "transition": "candidate_to_verify",
+     "arm": "native_duplicate",
+     "assigned": 16,
+     "dose_receipts": 0,
+     "mean_dose": {},
+     "mean_emitted_tokens": 256.0,
+     "reasoning_closed": 5,
+     "measurement_statuses": [
+      "gradeable"
+     ]
+    },
+    {
+     "transition": "candidate_to_verify",
+     "arm": "random_bias_minus1",
+     "assigned": 16,
+     "dose_receipts": 16,
+     "mean_dose": {
+      "active_rows": 432.0,
+      "actual_target_hits": 7.8125,
+      "native_target_hits": 33.875,
+      "membership_changes": 26.0625,
+      "target_mass": 0.68398075,
+      "weight_l1": 8.297536312499998,
+      "membership_change_rate": 0.06459477250316932,
+      "target_hit_delta_rate": -0.06459477250316932,
+      "target_mass_per_active_row": 0.0017821572852006248,
+      "weight_l1_per_active_row": 0.020732886530317327
+     },
+     "mean_emitted_tokens": 256.0,
+     "reasoning_closed": 5,
+     "measurement_statuses": [
+      "gradeable"
+     ]
+    },
+    {
+     "transition": "candidate_to_verify",
+     "arm": "random_force_off",
+     "assigned": 16,
+     "dose_receipts": 16,
+     "mean_dose": {
+      "active_rows": 450.75,
+      "actual_target_hits": 0.0,
+      "native_target_hits": 35.0625,
+      "membership_changes": 35.0625,
+      "target_mass": 0.0,
+      "weight_l1": 9.827873375000001,
+      "membership_change_rate": 0.08101293591485507,
+      "target_hit_delta_rate": -0.08101293591485507,
+      "target_mass_per_active_row": 0.0,
+      "weight_l1_per_active_row": 0.022744839513275588
+     },
+     "mean_emitted_tokens": 256.0,
+     "reasoning_closed": 3,
+     "measurement_statuses": [
+      "gradeable"
+     ]
+    },
+    {
+     "transition": "candidate_to_verify",
+     "arm": "target_bias_minus1",
+     "assigned": 16,
+     "dose_receipts": 16,
+     "mean_dose": {
+      "active_rows": 435.0,
+      "actual_target_hits": 7.75,
+      "native_target_hits": 35.6875,
+      "membership_changes": 27.9375,
+      "target_mass": 0.7664038750000001,
+      "weight_l1": 7.8866591249999995,
+      "membership_change_rate": 0.08265412159455128,
+      "target_hit_delta_rate": -0.08265412159455128,
+      "target_mass_per_active_row": 0.004865435321514424,
+      "weight_l1_per_active_row": 0.029875883823492592
+     },
+     "mean_emitted_tokens": 256.0,
+     "reasoning_closed": 3,
+     "measurement_statuses": [
+      "gradeable"
+     ]
+    },
+    {
+     "transition": "candidate_to_verify",
+     "arm": "target_force_off",
+     "assigned": 16,
+     "dose_receipts": 16,
+     "mean_dose": {
+      "active_rows": 413.375,
+      "actual_target_hits": 0.0,
+      "native_target_hits": 40.375,
+      "membership_changes": 40.375,
+      "target_mass": 0.0,
+      "weight_l1": 11.325741999999998,
+      "membership_change_rate": 0.155178405931418,
+      "target_hit_delta_rate": -0.155178405931418,
+      "target_mass_per_active_row": 0.0,
+      "weight_l1_per_active_row": 0.04836278650339791
+     },
+     "mean_emitted_tokens": 256.0,
+     "reasoning_closed": 4,
+     "measurement_statuses": [
+      "gradeable"
+     ]
+    }
+   ]
+  }
+ ],
+ "interpretation": "Descriptive assigned-request routing dose only; no semantic or utility effect is inferred.",
+ "sha256": "87aea9ad1b1dc57c8353a0844f366910e219dd5b356f2251969e3e3f66b12fec"
+}

@@ -1,0 +1,17 @@
+{
+ "schema": "utility-prerequisite-resolution-v4",
+ "proposal_sha256": "ce86e4bcaa9c5c4a12f9c9456f118662dccdb57ed355f952cabc9617a83152fa",
+ "manifest_sha256": "6b5aa286e46cb818969c939346f448a6577b307779041ec2d35d7fce0562f074",
+ "accounting": "59351437|PENDING|0:0\n",
+ "decisions": [
+  {
+   "kind": "reader_dispatch",
+   "job_id": "59351437",
+   "state": "PENDING",
+   "exit_code": "0:0",
+   "decision": "RETAIN_ACTIVE_AFTEROK_EDGE",
+   "sealed_artifacts": {}
+  }
+ ],
+ "sha256": "5252a3ac984d158f5578a59e5559b16736171f189c335e3a7e40c09093d72f32"
+}

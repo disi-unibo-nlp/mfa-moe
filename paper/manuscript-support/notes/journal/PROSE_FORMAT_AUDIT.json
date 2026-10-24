@@ -1,0 +1,64 @@
+{
+  "revision": "2026-10-15 formal prose and one-sentence-per-line LaTeX",
+  "author_rules": [
+    "LOC-032",
+    "LOC-033",
+    "LOC-034"
+  ],
+  "statistical_definition_retained_in_setup": true,
+  "caption_correction_scopes_and_missing_value_keys_retained": true,
+  "editorial_caveats_removed": true,
+  "sentence_format": {
+    "status": "pass",
+    "files_checked": 19,
+    "active_prose_files_compared_to_snapshot": 18,
+    "pending_formatting_changes": 0,
+    "separator": "\\n%\\n",
+    "inserted_sentence_separators": 811,
+    "joined_prose_line_breaks": 1093,
+    "source_before_unwrap": ".paper-review/source-round-32",
+    "token_preservation_checked": true,
+    "paragraph_preservation_checked": true,
+    "formatter": "scripts/paper/format_cl_sentences.py",
+    "formatter_sha256": "7de0b73cb89e602e54c14cb2e210d05e22bdc932eb7f7debc1a4031480f516d1",
+    "appendix_readout_sentence_single_line": true
+  },
+  "build": {
+    "exit_code": 0,
+    "offline": true,
+    "source_snapshot": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/paper/6a510c6db0d9b08aa438c142/.paper-review/source-round-33",
+    "page_count": 38,
+    "pdf_sha256": "b9046f9c16c2ceb4a5840d95fd31cd087bd42256f27435fa18299ba07be265b9"
+  },
+  "pdf_readback": {
+    "status": "pass",
+    "page_count": 38,
+    "prose_unwrap_all_page_text_equal": true,
+    "prose_unwrap_all_page_renders_equal": true,
+    "pm_displays_verified": 337,
+    "missing_pm_displays": {},
+    "figure_sources_and_data_unchanged_since_prior_build": true,
+    "pdf_sha256": "b9046f9c16c2ceb4a5840d95fd31cd087bd42256f27435fa18299ba07be265b9"
+  },
+  "table_check": {
+    "ordered_cells": 466,
+    "negative_controls": 24,
+    "status": "pass",
+    "checker": "scripts/paper/verify_cl_tables.py",
+    "checker_sha256": "1760079d6ef0ae44054de2c44d34369aa8f06258dc3fa8bf1bad2153e5fa1a25",
+    "caption_qualification_check_ignores_whitespace": true
+  },
+  "independent_review": {
+    "round": 2,
+    "new_prose_verdicts": 45,
+    "new_caption_verdicts": 12,
+    "unchanged_local_verdicts_retained": 25,
+    "judge_items": 82,
+    "failures": 0,
+    "first_round_failure_receipts_preserved": true,
+    "evidence_directory": ".paper-review/prose-format-20261015/round-2",
+    "native_verification_receipt": ".paper-review/prose-format-20261015/COMPLETE.json"
+  },
+  "scientific_computation": false,
+  "commits_or_pushes": false
+}

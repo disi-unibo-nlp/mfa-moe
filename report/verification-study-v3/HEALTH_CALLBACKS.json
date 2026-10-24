@@ -1,0 +1,106 @@
+{
+  "agent_continuation": "native persistent Goal; observer emits facts, Goal alone dispatches successors",
+  "callbacks": [
+    {
+      "health_card_sha256": "b8bdc9f400b1b04f9347d42e040e24c538e50ac0fbd7a830325db95d9c567d38",
+      "job_id": "59633848",
+      "model": "gpt",
+      "predecessor_job_id": "59626370",
+      "predecessor_stage": "qualify",
+      "predecessor_submission_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/submissions/d07f62780558ac2baf41560180f457c3e1756c0fc803fb7b2be01f41383c4d22/SUBMISSION.json",
+      "preflight_sha256": "400ae289f2927836e9e9f40eeba4785db393b02e903f0bcf236d21c34e45ff98",
+      "read_back": "JobId=59633848 JobName=cv3-health-gpt\n   UserId=lmolfett(133943) GroupId=interactive(25200) MCS_label=N/A\n   Priority=133570 Nice=0 Account=iscrc_miosr QOS=normal\n   JobState=PENDING Reason=None Dependency=(null)\n   Requeue=0 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0\n   RunTime=00:00:00 TimeLimit=00:10:00 TimeMin=N/A\n   SubmitTime=2026-10-07T17:40:44 EligibleTime=2026-10-07T17:40:44\n   AccrueTime=2026-10-07T17:40:44\n   StartTime=Unknown EndTime=Unknown Deadline=N/A\n   SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-10-07T17:40:44 Scheduler=Main\n   Partition=lrd_all_serial AllocNode:Sid=login05-interconnect-1:538975\n   ReqNodeList=(null) ExcNodeList=(null)\n   NodeList=\n   NumNodes=1-1 NumCPUs=1 NumTasks=1 CPUs/Task=1 ReqB:S:C:T=0:0:*:*\n   ReqTRES=cpu=1,mem=4G,node=1,billing=1,gres/tmpfs=10737418240\n   AllocTRES=(null)\n   Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=*\n   MinCPUsNode=1 MinMemoryNode=4G MinTmpDiskNode=0\n   Features=(null) DelayBoot=00:00:00\n   OverSubscribe=OK Contiguous=0 Licenses=(null) LicensesAlloc=(null) Network=(null)\n   Command=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/verification_study_v3_health_r2.sbatch\n   WorkDir=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo\n   Comment=cv3h:b8bdc9f400b1b04f9347d42e040e24c538e50ac0fbd7a830325db95d9c567d38 \n   StdErr=/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/health/logs/cv3-health-gpt-59633848.err\n   StdIn=/dev/null\n   StdOut=/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/health/logs/cv3-health-gpt-59633848.out\n   TresPerNode=gres/tmpfs:10g\n   TresPerTask=cpu=1",
+      "schema": "verification-health-submission-v3",
+      "sha256": "204bf08600d5f7d875044172150270b7d8c2e2be7cf350e06adc8b555f70cee8"
+    },
+    {
+      "health_card_sha256": "c91ca19499d74f8a12132b5367a2077d809320089ad3caf50795dc0947c647ca",
+      "job_id": "59633851",
+      "model": "gpt",
+      "predecessor_job_id": "59631963",
+      "predecessor_stage": "run",
+      "predecessor_submission_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/submissions/dbfd8ea93e887b031e2795f30b0b0e16f2f3534aa363c2cebb235f48de750fe1/SUBMISSION.json",
+      "preflight_sha256": "f806d84bf6fe27979f658b4b64595f8544aac7ed707c2dd1d5532f76ac603941",
+      "read_back": "JobId=59633851 JobName=cv3-health-gpt\n   UserId=lmolfett(133943) GroupId=interactive(25200) MCS_label=N/A\n   Priority=133570 Nice=0 Account=iscrc_miosr QOS=normal\n   JobState=PENDING Reason=Dependency Dependency=afterany:59631963(unfulfilled)\n   Requeue=0 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0\n   RunTime=00:00:00 TimeLimit=00:10:00 TimeMin=N/A\n   SubmitTime=2026-10-07T17:40:49 EligibleTime=Unknown\n   AccrueTime=Unknown\n   StartTime=Unknown EndTime=Unknown Deadline=N/A\n   SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-10-07T17:40:49 Scheduler=Main\n   Partition=lrd_all_serial AllocNode:Sid=login05-interconnect-1:538975\n   ReqNodeList=(null) ExcNodeList=(null)\n   NodeList=\n   NumNodes=1-1 NumCPUs=1 NumTasks=1 CPUs/Task=1 ReqB:S:C:T=0:0:*:*\n   ReqTRES=cpu=1,mem=4G,node=1,billing=1,gres/tmpfs=10737418240\n   AllocTRES=(null)\n   Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=*\n   MinCPUsNode=1 MinMemoryNode=4G MinTmpDiskNode=0\n   Features=(null) DelayBoot=00:00:00\n   OverSubscribe=OK Contiguous=0 Licenses=(null) LicensesAlloc=(null) Network=(null)\n   Command=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/verification_study_v3_health_r2.sbatch\n   WorkDir=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo\n   Comment=cv3h:c91ca19499d74f8a12132b5367a2077d809320089ad3caf50795dc0947c647ca \n   StdErr=/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/health/logs/cv3-health-gpt-59633851.err\n   StdIn=/dev/null\n   StdOut=/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/health/logs/cv3-health-gpt-59633851.out\n   TresPerNode=gres/tmpfs:10g\n   TresPerTask=cpu=1",
+      "schema": "verification-health-submission-v3",
+      "sha256": "088b12319489baef23c3cf23d9153be5b4968465a399fb3dfc39c46de2a7f612"
+    },
+    {
+      "health_card_sha256": "a4a99b9490950733a4f6c32c3803da7ab4c707564c0fa7257817de0dd45a7956",
+      "job_id": "59633879",
+      "model": "nemotron",
+      "predecessor_job_id": "59631964",
+      "predecessor_stage": "run",
+      "predecessor_submission_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/submissions/bb8d79771cd3814b6749d82321b7e866a0fb66bb5b24daccdd39ea95f49adc2a/SUBMISSION.json",
+      "preflight_sha256": "070a6b286d1bc716fcdd2db7b12851386b10fb0d1e7b990eaef5edcdbb0548e7",
+      "read_back": "JobId=59633879 JobName=cv3-health-nemotron\n   UserId=lmolfett(133943) GroupId=interactive(25200) MCS_label=N/A\n   Priority=133570 Nice=0 Account=iscrc_miosr QOS=normal\n   JobState=PENDING Reason=Dependency Dependency=afterany:59631964(unfulfilled)\n   Requeue=0 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0\n   RunTime=00:00:00 TimeLimit=00:10:00 TimeMin=N/A\n   SubmitTime=2026-10-07T17:40:55 EligibleTime=Unknown\n   AccrueTime=Unknown\n   StartTime=Unknown EndTime=Unknown Deadline=N/A\n   SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-10-07T17:40:55 Scheduler=Main\n   Partition=lrd_all_serial AllocNode:Sid=login05-interconnect-1:538975\n   ReqNodeList=(null) ExcNodeList=(null)\n   NodeList=\n   NumNodes=1-1 NumCPUs=1 NumTasks=1 CPUs/Task=1 ReqB:S:C:T=0:0:*:*\n   ReqTRES=cpu=1,mem=4G,node=1,billing=1,gres/tmpfs=10737418240\n   AllocTRES=(null)\n   Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=*\n   MinCPUsNode=1 MinMemoryNode=4G MinTmpDiskNode=0\n   Features=(null) DelayBoot=00:00:00\n   OverSubscribe=OK Contiguous=0 Licenses=(null) LicensesAlloc=(null) Network=(null)\n   Command=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/verification_study_v3_health_r2.sbatch\n   WorkDir=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo\n   Comment=cv3h:a4a99b9490950733a4f6c32c3803da7ab4c707564c0fa7257817de0dd45a7956 \n   StdErr=/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/health/logs/cv3-health-nemotron-59633879.err\n   StdIn=/dev/null\n   StdOut=/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/health/logs/cv3-health-nemotron-59633879.out\n   TresPerNode=gres/tmpfs:10g\n   TresPerTask=cpu=1",
+      "schema": "verification-health-submission-v3",
+      "sha256": "51170b011cf61c531b628e574cd84d0ab2212ccd8e54302e6a86d03bd2e64f21"
+    },
+    {
+      "health_card_sha256": "f691cef4076039dff6f12d02e5923fb3161d0664ea8886359d3395ed479be148",
+      "job_id": "59633896",
+      "model": "qwen35",
+      "predecessor_job_id": "59631966",
+      "predecessor_stage": "run",
+      "predecessor_submission_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/submissions/2e5f4f3d4538cbca252adf1813772490f68c541cfe483478e3b0ee9faa22b967/SUBMISSION.json",
+      "preflight_sha256": "6eda709b0841c252a6d72e7086065b9a8072f4c513bdf6c8896fbd56cf41542d",
+      "read_back": "JobId=59633896 JobName=cv3-health-qwen35\n   UserId=lmolfett(133943) GroupId=interactive(25200) MCS_label=N/A\n   Priority=133570 Nice=0 Account=iscrc_miosr QOS=normal\n   JobState=PENDING Reason=Dependency Dependency=afterany:59631966(unfulfilled)\n   Requeue=0 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0\n   RunTime=00:00:00 TimeLimit=00:10:00 TimeMin=N/A\n   SubmitTime=2026-10-07T17:41:01 EligibleTime=Unknown\n   AccrueTime=Unknown\n   StartTime=Unknown EndTime=Unknown Deadline=N/A\n   SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-10-07T17:41:01 Scheduler=Main\n   Partition=lrd_all_serial AllocNode:Sid=login05-interconnect-1:538975\n   ReqNodeList=(null) ExcNodeList=(null)\n   NodeList=\n   NumNodes=1-1 NumCPUs=1 NumTasks=1 CPUs/Task=1 ReqB:S:C:T=0:0:*:*\n   ReqTRES=cpu=1,mem=4G,node=1,billing=1,gres/tmpfs=10737418240\n   AllocTRES=(null)\n   Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=*\n   MinCPUsNode=1 MinMemoryNode=4G MinTmpDiskNode=0\n   Features=(null) DelayBoot=00:00:00\n   OverSubscribe=OK Contiguous=0 Licenses=(null) LicensesAlloc=(null) Network=(null)\n   Command=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/verification_study_v3_health_r2.sbatch\n   WorkDir=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo\n   Comment=cv3h:f691cef4076039dff6f12d02e5923fb3161d0664ea8886359d3395ed479be148 \n   StdErr=/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/health/logs/cv3-health-qwen35-59633896.err\n   StdIn=/dev/null\n   StdOut=/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/health/logs/cv3-health-qwen35-59633896.out\n   TresPerNode=gres/tmpfs:10g\n   TresPerTask=cpu=1",
+      "schema": "verification-health-submission-v3",
+      "sha256": "d1258969bb3010ebda6397f7baf6e3ff4ccd4abfbb4a45444ad52137d8c41107"
+    },
+    {
+      "health_card_sha256": "a05aa446d0460dda3733eb4fc3b37714455e0e6543da54cf35d6f082ff8207be",
+      "job_id": "59633916",
+      "model": "qwen36",
+      "predecessor_job_id": "59631970",
+      "predecessor_stage": "run",
+      "predecessor_submission_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/submissions/5951369b7bb0046db6338605569bca162175fa2399a9ff008d24c1fcea6977a9/SUBMISSION.json",
+      "preflight_sha256": "eb47e37ec814c180aa74be43e81514a3d9da4065b68046c1cf875e506fe671f2",
+      "read_back": "JobId=59633916 JobName=cv3-health-qwen36\n   UserId=lmolfett(133943) GroupId=interactive(25200) MCS_label=N/A\n   Priority=133570 Nice=0 Account=iscrc_miosr QOS=normal\n   JobState=PENDING Reason=Dependency Dependency=afterany:59631970(unfulfilled)\n   Requeue=0 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0\n   RunTime=00:00:00 TimeLimit=00:10:00 TimeMin=N/A\n   SubmitTime=2026-10-07T17:41:05 EligibleTime=Unknown\n   AccrueTime=Unknown\n   StartTime=Unknown EndTime=Unknown Deadline=N/A\n   SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-10-07T17:41:05 Scheduler=Main\n   Partition=lrd_all_serial AllocNode:Sid=login05-interconnect-1:538975\n   ReqNodeList=(null) ExcNodeList=(null)\n   NodeList=\n   NumNodes=1-1 NumCPUs=1 NumTasks=1 CPUs/Task=1 ReqB:S:C:T=0:0:*:*\n   ReqTRES=cpu=1,mem=4G,node=1,billing=1,gres/tmpfs=10737418240\n   AllocTRES=(null)\n   Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=*\n   MinCPUsNode=1 MinMemoryNode=4G MinTmpDiskNode=0\n   Features=(null) DelayBoot=00:00:00\n   OverSubscribe=OK Contiguous=0 Licenses=(null) LicensesAlloc=(null) Network=(null)\n   Command=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/verification_study_v3_health_r2.sbatch\n   WorkDir=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo\n   Comment=cv3h:a05aa446d0460dda3733eb4fc3b37714455e0e6543da54cf35d6f082ff8207be \n   StdErr=/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/health/logs/cv3-health-qwen36-59633916.err\n   StdIn=/dev/null\n   StdOut=/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/health/logs/cv3-health-qwen36-59633916.out\n   TresPerNode=gres/tmpfs:10g\n   TresPerTask=cpu=1",
+      "schema": "verification-health-submission-v3",
+      "sha256": "be508acc2e9bc3f0e5ad18e06ad2508ade49286731980f006559021f65505107"
+    },
+    {
+      "health_card_sha256": "5ea3907bc87b26af33dbf34ed58e5d6be819e4625b6944fe4acfd22b40cb6285",
+      "job_id": "59633927",
+      "model": "gemma",
+      "predecessor_job_id": "59631988",
+      "predecessor_stage": "run",
+      "predecessor_submission_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/submissions/a1f263fd079dbf2e84e61ab06feaac1d5423331ced3158f6c0540ea267828245/SUBMISSION.json",
+      "preflight_sha256": "3b44198bd87a9bb7e1617db439c5b9fdda46f3d3001b5a93748792c49ec6cdac",
+      "read_back": "JobId=59633927 JobName=cv3-health-gemma\n   UserId=lmolfett(133943) GroupId=interactive(25200) MCS_label=N/A\n   Priority=133570 Nice=0 Account=iscrc_miosr QOS=normal\n   JobState=PENDING Reason=Dependency Dependency=afterany:59631988(unfulfilled)\n   Requeue=0 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0\n   RunTime=00:00:00 TimeLimit=00:10:00 TimeMin=N/A\n   SubmitTime=2026-10-07T17:41:09 EligibleTime=Unknown\n   AccrueTime=Unknown\n   StartTime=Unknown EndTime=Unknown Deadline=N/A\n   SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-10-07T17:41:09 Scheduler=Main\n   Partition=lrd_all_serial AllocNode:Sid=login05-interconnect-1:538975\n   ReqNodeList=(null) ExcNodeList=(null)\n   NodeList=\n   NumNodes=1-1 NumCPUs=1 NumTasks=1 CPUs/Task=1 ReqB:S:C:T=0:0:*:*\n   ReqTRES=cpu=1,mem=4G,node=1,billing=1,gres/tmpfs=10737418240\n   AllocTRES=(null)\n   Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=*\n   MinCPUsNode=1 MinMemoryNode=4G MinTmpDiskNode=0\n   Features=(null) DelayBoot=00:00:00\n   OverSubscribe=OK Contiguous=0 Licenses=(null) LicensesAlloc=(null) Network=(null)\n   Command=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/verification_study_v3_health_r2.sbatch\n   WorkDir=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo\n   Comment=cv3h:5ea3907bc87b26af33dbf34ed58e5d6be819e4625b6944fe4acfd22b40cb6285 \n   StdErr=/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/health/logs/cv3-health-gemma-59633927.err\n   StdIn=/dev/null\n   StdOut=/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/health/logs/cv3-health-gemma-59633927.out\n   TresPerNode=gres/tmpfs:10g\n   TresPerTask=cpu=1",
+      "schema": "verification-health-submission-v3",
+      "sha256": "caf52bb302bfba973cd786b8402001471122724cdb282f46616942b1937be3aa"
+    },
+    {
+      "health_card_sha256": "315ae3d60fddf2cdc9b843386e6fddec203f275552a1e27acebe8709ae2d396c",
+      "job_id": "59633930",
+      "model": "glm",
+      "predecessor_job_id": "59631989",
+      "predecessor_stage": "run",
+      "predecessor_submission_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/submissions/b591545fc0060b4d9680df8e61ced038e9e15a898c8561bf7f84ca12fa38f666/SUBMISSION.json",
+      "preflight_sha256": "d3a7e1c7bfa36a918ee6c6d0cc2bc0669744bbc6d78349bf06159ea88a98342d",
+      "read_back": "JobId=59633930 JobName=cv3-health-glm\n   UserId=lmolfett(133943) GroupId=interactive(25200) MCS_label=N/A\n   Priority=133570 Nice=0 Account=iscrc_miosr QOS=normal\n   JobState=PENDING Reason=Dependency Dependency=afterany:59631989(unfulfilled)\n   Requeue=0 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0\n   RunTime=00:00:00 TimeLimit=00:10:00 TimeMin=N/A\n   SubmitTime=2026-10-07T17:41:12 EligibleTime=Unknown\n   AccrueTime=Unknown\n   StartTime=Unknown EndTime=Unknown Deadline=N/A\n   SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-10-07T17:41:12 Scheduler=Main\n   Partition=lrd_all_serial AllocNode:Sid=login05-interconnect-1:538975\n   ReqNodeList=(null) ExcNodeList=(null)\n   NodeList=\n   NumNodes=1-1 NumCPUs=1 NumTasks=1 CPUs/Task=1 ReqB:S:C:T=0:0:*:*\n   ReqTRES=cpu=1,mem=4G,node=1,billing=1,gres/tmpfs=10737418240\n   AllocTRES=(null)\n   Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=*\n   MinCPUsNode=1 MinMemoryNode=4G MinTmpDiskNode=0\n   Features=(null) DelayBoot=00:00:00\n   OverSubscribe=OK Contiguous=0 Licenses=(null) LicensesAlloc=(null) Network=(null)\n   Command=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/verification_study_v3_health_r2.sbatch\n   WorkDir=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo\n   Comment=cv3h:315ae3d60fddf2cdc9b843386e6fddec203f275552a1e27acebe8709ae2d396c \n   StdErr=/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/health/logs/cv3-health-glm-59633930.err\n   StdIn=/dev/null\n   StdOut=/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/health/logs/cv3-health-glm-59633930.out\n   TresPerNode=gres/tmpfs:10g\n   TresPerTask=cpu=1",
+      "schema": "verification-health-submission-v3",
+      "sha256": "e69ae0f821f9ed35176dbabd8e4688cfe3f52bea1a5c263e2d4d859f691455a7"
+    },
+    {
+      "health_card_sha256": "c6249e0b23a4478d686cfafa1e93e7138c02b94701b954efc3567cd78a23b851",
+      "job_id": "59633933",
+      "model": "qwen330b",
+      "predecessor_job_id": "59631990",
+      "predecessor_stage": "run",
+      "predecessor_submission_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/submissions/1c714d9862ef222e836a2be8bd14dec8cd956955d7e55c5ee5b623e9a414e125/SUBMISSION.json",
+      "preflight_sha256": "0b1b72f57c65240c78cb972fbf3cb1b82715162214ad084034b0a6d2bde9fb6c",
+      "read_back": "JobId=59633933 JobName=cv3-health-qwen330b\n   UserId=lmolfett(133943) GroupId=interactive(25200) MCS_label=N/A\n   Priority=133570 Nice=0 Account=iscrc_miosr QOS=normal\n   JobState=PENDING Reason=Dependency Dependency=afterany:59631990(unfulfilled)\n   Requeue=0 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0\n   RunTime=00:00:00 TimeLimit=00:10:00 TimeMin=N/A\n   SubmitTime=2026-10-07T17:41:15 EligibleTime=Unknown\n   AccrueTime=Unknown\n   StartTime=Unknown EndTime=Unknown Deadline=N/A\n   SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-10-07T17:41:15 Scheduler=Main\n   Partition=lrd_all_serial AllocNode:Sid=login05-interconnect-1:538975\n   ReqNodeList=(null) ExcNodeList=(null)\n   NodeList=\n   NumNodes=1-1 NumCPUs=1 NumTasks=1 CPUs/Task=1 ReqB:S:C:T=0:0:*:*\n   ReqTRES=cpu=1,mem=4G,node=1,billing=1,gres/tmpfs=10737418240\n   AllocTRES=(null)\n   Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=*\n   MinCPUsNode=1 MinMemoryNode=4G MinTmpDiskNode=0\n   Features=(null) DelayBoot=00:00:00\n   OverSubscribe=OK Contiguous=0 Licenses=(null) LicensesAlloc=(null) Network=(null)\n   Command=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/verification_study_v3_health_r2.sbatch\n   WorkDir=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo\n   Comment=cv3h:c6249e0b23a4478d686cfafa1e93e7138c02b94701b954efc3567cd78a23b851 \n   StdErr=/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/health/logs/cv3-health-qwen330b-59633933.err\n   StdIn=/dev/null\n   StdOut=/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/health/logs/cv3-health-qwen330b-59633933.out\n   TresPerNode=gres/tmpfs:10g\n   TresPerTask=cpu=1",
+      "schema": "verification-health-submission-v3",
+      "sha256": "6a1dc5430ae390b0f995d177d9a86a102fe016ee210a78fb52f6a6b85a12aa84"
+    }
+  ],
+  "campaign_sha256": "57df4a026a7be4c909ece85ac1ebe3dc47c3f27bb53ffcab88e3aa9d82bfbb3b",
+  "observer_version": "r2",
+  "resources_each": "serial normal; 1CPU4G10min; no GPU or new scientific allocation in callback",
+  "schema": "verification-health-callbacks-v3",
+  "sha256": "70efe9e6b1f652baa64491fd82f7bca8aeeac1d6ae4138f0563f966cc698d36e"
+}

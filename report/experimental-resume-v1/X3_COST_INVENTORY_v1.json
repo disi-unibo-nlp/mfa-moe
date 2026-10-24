@@ -1,0 +1,55 @@
+{
+ "schema": "legacy-X3-cost-inventory-v1",
+ "status": "HOLD_COMPLETE_PRICE_AND_PRIORITY",
+ "eligibility_sha256": "bf1425d987cbea417115574928ee5a2ece46c3c194f1e0d6280cf6ae53381508",
+ "registered_selection_sha256": "0ecb13095d5ef60fd83270d2017150c6cdcd7a5c2cc3b79b1dd126ebf7cfd122",
+ "historical_cost_model_file_sha256": "6573e656cc0598817f65b34977a064c0b4498f72b6247dce622b1e4f4e5b2372",
+ "original_X3_ceiling_GPUh": 12.0,
+ "scenarios": [
+  {
+   "signs": 1,
+   "arms_per_firing_question": 3,
+   "assigned_questions": 96,
+   "firing_questions": 77,
+   "retained_nonfire_questions": 19,
+   "requests": 462,
+   "maximum_prefill_tokens_without_cache_reuse": 2479554,
+   "maximum_decode_tokens": 8429442,
+   "historical_generation_GPUh_including_one_838s_cold_load": 7.9786002640177145,
+   "historical_prefill_GPUh": 0.07008168057050555,
+   "historical_generation_plus_prefill_GPUh": 8.04868194458822,
+   "native_NLL_GPUh": null,
+   "semantic_labeling_GPUh": null,
+   "grading_GPUh": null,
+   "retries_and_shutdown_GPUh": null,
+   "status": "HOLD_CONTEXT_MATCHED_COMPLETE_PRICE"
+  },
+  {
+   "signs": 2,
+   "arms_per_firing_question": 5,
+   "assigned_questions": 96,
+   "firing_questions": 77,
+   "retained_nonfire_questions": 19,
+   "requests": 770,
+   "maximum_prefill_tokens_without_cache_reuse": 4132590,
+   "maximum_decode_tokens": 14049070,
+   "historical_generation_GPUh_including_one_838s_cold_load": 12.98729673632582,
+   "historical_prefill_GPUh": 0.1168028009508426,
+   "historical_generation_plus_prefill_GPUh": 13.104099537276664,
+   "native_NLL_GPUh": null,
+   "semantic_labeling_GPUh": null,
+   "grading_GPUh": null,
+   "retries_and_shutdown_GPUh": null,
+   "status": "HOLD_CONTEXT_MATCHED_COMPLETE_PRICE"
+  }
+ ],
+ "required_next_measurements": [
+  "context-matched 32k generation/prefill runtime",
+  "semantic-labeling and grading runtime",
+  "native-NLL scope/cost if required",
+  "bounded retries and shutdown",
+  "new-study priority gate"
+ ],
+ "interpretation": "historical throughput does not certify a complete-stage budget; versioned resource amendment required if all-in total exceeds 12 GPUh",
+ "sha256": "12113e3d16e70f57786e7585e40b2cfc0c94f70e5a2e274e4d447dbd58b0ed0c"
+}

@@ -1,0 +1,18 @@
+{
+  "all_seven_remaining_assignments": 329,
+  "campaign_sha256": "57df4a026a7be4c909ece85ac1ebe3dc47c3f27bb53ffcab88e3aa9d82bfbb3b",
+  "canonical_persisted_cards_recompiled": 29,
+  "code_files": {
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/verification_study_v3_discovery_continue_r2.py": "cd78185a2dec3e8bdba8b0346acbed0fd47a68dd508a5b45216bf203ee7dc237",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/verification_study_v3_discovery_dispatch_r1.py": "fff78a83c0ba07d2e6c8caea020706caa937892145053310f00f5544d1f5bb63",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/tests/experimental_resume/test_verification_discovery_continue_v3.py": "ad84fe89380d12fd5963107c62e324d12afe6a012e7565bcc4efee05774b6ec6",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/tests/experimental_resume/test_verification_discovery_dispatch_v3.py": "b366141310815ba24341dbf20966ccac870d3d72b784365cdfc1d92c5a585986"
+  },
+  "focused_cpu_contracts_passed": 9,
+  "parent35_source_files_unchanged": true,
+  "plan_sha256": "243570cdc52f85d4fb14a0b308b4e0ad83fe4f5910725e87d52ce8780af61b13",
+  "schema": "verification-discovery-continuation-readiness-v3",
+  "scientific_scope": "original48discoveryfamilies/model; no semantic or causal claim",
+  "serial_scheduler_limit": "implicitlrd_all_serialQoS MaxJobsPU2 MaxSubmitJobsPU10; defer remaining callbacks using same exact predecessors",
+  "sha256": "3baba520a096a474df7aca7c94fe16cbe0536fad0550650423df105b3f5ff71a"
+}

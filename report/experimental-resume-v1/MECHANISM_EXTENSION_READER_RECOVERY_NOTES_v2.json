@@ -1,0 +1,52 @@
+{
+  "schema": "mechanism-extension-reader-recovery-notes-v2",
+  "status": "READY_CPU_PREFLIGHT_NOT_SUBMITTED_BY_REVIEW_AGENT",
+  "cause": "Transformers BatchEncoding is a Mapping, not a dict; v1 tokenizer_ids rejected valid prompt IDs before model construction.",
+  "preserved_prior_job": "59273283",
+  "preserved_attempt": {
+    "prior_manifest": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/MECHANISM_EXTENSION_READER_QUAL_MANIFEST_v1.json",
+    "prior_manifest_sha256": "beb73ba42fe5cbc14844751bd88355806345c8b7cbe0521efe57de7abbea856a",
+    "prior_attempt": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/dense-mechanism-extension-220/ratings-v1-a7a9ea5d1e59cf76/qualification/ATTEMPT.json",
+    "prior_attempt_sha256": "4d7534fdd29edda2256cba615c1fec292d1344ed64c329e92aba4ed9913806ef",
+    "prior_job_id": "59273283",
+    "change": "Accept collections.abc.Mapping token containers; preserve exact token IDs, prompt, seeds, model and caps."
+  },
+  "source_stage_GPU_h": 51.44301365508358,
+  "qualification_projected_GPU_h": 1.1514420363864837,
+  "qualification_requested_GPU_h": 2.0,
+  "CPU_preflight": {
+    "wrapper": "scripts/experimental_resume/preflight_mechanism_extension_reader_v2.sbatch",
+    "resources": "2 CPU,8GB,30min; no GPU",
+    "output": "report/experimental-resume-v1/MECHANISM_EXTENSION_READER_CPU_PREFLIGHT_v2.json",
+    "checks": [
+      "All758 frozen starts x2 prompt kinds",
+      "Mapping/single-prompt normalization preserves exact ID hash",
+      "Exact source prompt-length totals and min/max",
+      "All IDs+1024 decode fit49152 context",
+      "Same frozen16-start batches repriced into<=7200sec shards with extra cold loads/recovery loads/shutdown"
+    ]
+  },
+  "execution_order": [
+    "CPU preflight",
+    "12-rating GPU qualification; wrapper rebinds pricev3 only on pass",
+    "rate_mechanism_extension_readers_v2.sbatch --array=0..parallel_shards-1 afterok qualification",
+    "seal_mechanism_extension_readers_v2.sbatch afterok full array"
+  ],
+  "qualification_source": "7282cfffb75ebb53d7b4c58435b529036b2a140c490f79ab1486f8640fdbc13a",
+  "verification": {
+    "unittest": "4 tests passed in0.364s",
+    "shell_syntax": "all4 wrappers passed bash-n",
+    "diff_whitespace": "passed"
+  },
+  "file_sha256s": {
+    "mechanism_extension_reader_contract_v2.py": "3d2626b288501896da3c008794592a13fcb3977de5bba809cf6ed36f1f2d04bb",
+    "rate_mechanism_extension_start_readers_v2.py": "ae8c6d13e6fef63a204e445f1d2c8689747c5cab9c60067e437a2e726696fb36",
+    "seal_mechanism_extension_reader_v2.py": "693860c034b02ab0fa88f5946bd1b316da301da111b02e901a98330e77708ed7",
+    "preflight_mechanism_extension_reader_v2.py": "8a88ee5051900591705c2187e7904f76d0e79c2b65cc3b1aae7fc38ffdb5de21",
+    "preflight_mechanism_extension_reader_v2.sbatch": "20bdd74b26a02b94e8de4b6f70010354a8164a97f561e124bfc8375d6b06da1b",
+    "qualify_mechanism_extension_reader_v2.sbatch": "160e14a76ea69dcc5a15c7bddb28c8b443545abedbfc1c35214894bc85f83578",
+    "rate_mechanism_extension_readers_v2.sbatch": "91385d4039cf03223ee0ce114e550c5e10da1e00255a9daebe073579aca5ca79",
+    "seal_mechanism_extension_readers_v2.sbatch": "85e4a92ea24f0b376747a5c9c039f2177e3dcca02e3d8a3151873bfd0dd9298a"
+  },
+  "scope": "Start eligibility audit for frozen220-family exploratory extension. Does not imply expert steering or rescue original128-family feasibility. Preserve invalid/capped reader records and separate strict-veto sensitivity. No v1 code, manifest, receipt or output modified."
+}

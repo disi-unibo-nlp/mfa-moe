@@ -1,16 +1,17 @@
-\section{Correlation Pipeline}
+\section{Qwen Correlation Pipeline}
 
 \subsection{Statistical measures and literature basis}
 \label{sec:qwen-corr-metrics}
 
-The analysis selects the association measure from the outcome scale and
-unit of analysis, as summarized in Table~\ref{tab:qwen-corr-metrics}.
-The detailed Qwen results below use the six-benchmark run: 4,647 attempts, including token-limit completions, with full-reasoning,
-class, and position views. The 100 complete avg@32 groups support
-repeated-attempt analysis. Classes use sampled labelled attempts; full and
-position views use all reasoning tokens.
-Section~\ref{sec:multimodel} adds the completed Gemma and GPT-OSS runs,
-with model-specific class coverage and annotation protocols.
+The corrected analysis selects the association measure from the scale of the
+outcome and the unit of analysis, as summarized in
+Table~\ref{tab:qwen-corr-metrics}.  The numerical results below use the
+September 10, 2026 vLLM untagged analysis snapshot and supersede the earlier
+tables. Generation/replay coverage and full-reasoning/position analysis are
+complete for the six executed math benchmarks, but the token-budget audit
+still flags frequent truncation. Consequently,
+these are fixed-budget observational results, not uncensored reasoning-length
+estimates or evidence that a routing intervention improves correctness.
 
 \begin{table*}[t]
 \centering
@@ -84,8 +85,8 @@ whole source problems, keeping attempts from the same problem together.  Xu et
 al. provide relevant precedent for bootstrap intervals and use 10,000
 resamples in one category--feature analysis~\cite{xu-etal-2025-conceptual}; the
 resample count in this pipeline remains explicit and configurable rather than
-being justified by that number alone.  Benjamini--Hochberg adjusted $p$-values (stored as $q$-values)
-\cite{benjamini1995fdr} are computed separately within each declared dataset/scope, target, aggregation,
+being justified by that number alone.  Benjamini--Hochberg $q$-values are
+computed separately within each declared dataset/scope, target, aggregation,
 or cross-feature family.  Naive trace-level $p$-values are retained only as
 diagnostics when a dataset contains repeated attempts, and layerwise and
 expert-identity screens remain exploratory.

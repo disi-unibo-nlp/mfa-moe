@@ -1,0 +1,60 @@
+{
+ "schema": "utility-production-verification-v1",
+ "status": "PASS_NO_SUBMIT_CHECKS",
+ "hostname": "login01.leonardo.local",
+ "checks": [
+  {
+   "command": [
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/envs/correlation-client-3.11/bin/python",
+    "-B",
+    "-m",
+    "unittest",
+    "discover",
+    "-s",
+    "tests/experimental_resume",
+    "-p",
+    "test_utility_production_v1.py",
+    "-v"
+   ],
+   "exit_code": 0,
+   "stdout": "INCOMPLETE_SHARD 2 / 4\n",
+   "stderr": "test_committed_errors_are_never_retried_and_uncommitted_attempt_requires_recovery (test_utility_production_v1.ProductionTests.test_committed_errors_are_never_retried_and_uncommitted_attempt_requires_recovery) ... ok\ntest_complete_price_partitions_376_without_reusing_pilot_and_accounts_recovery_and_measurement (test_utility_production_v1.ProductionTests.test_complete_price_partitions_376_without_reusing_pilot_and_accounts_recovery_and_measurement) ... ok\ntest_failed_and_unallocated_array_tasks_are_accounted_without_fabricated_cost (test_utility_production_v1.ProductionTests.test_failed_and_unallocated_array_tasks_are_accounted_without_fabricated_cost) ... ok\ntest_generator_failure_commits_error_keeps_remaining_missing_and_blocks_unpriced_restart (test_utility_production_v1.ProductionTests.test_generator_failure_commits_error_keeps_remaining_missing_and_blocks_unpriced_restart) ... ok\ntest_live_budget_counts_compressed_arrays_and_gpu_billing (test_utility_production_v1.ProductionTests.test_live_budget_counts_compressed_arrays_and_gpu_billing) ... ok\ntest_pilot_import_preserves_all_eight_canonical_ids_and_original_receipt_paths (test_utility_production_v1.ProductionTests.test_pilot_import_preserves_all_eight_canonical_ids_and_original_receipt_paths) ... ok\ntest_reconciliation_keeps_all_384_missing_and_charges_failed_loads (test_utility_production_v1.ProductionTests.test_reconciliation_keeps_all_384_missing_and_charges_failed_loads) ... ok\ntest_runtime_profile_charges_nonfire_queries_and_holds_when_side_work_is_unmeasured (test_utility_production_v1.ProductionTests.test_runtime_profile_charges_nonfire_queries_and_holds_when_side_work_is_unmeasured) ... ok\n\n----------------------------------------------------------------------\nRan 8 tests in 0.537s\n\nOK\n"
+  },
+  {
+   "command": [
+    "bash",
+    "-n",
+    "scripts/experimental_resume/run_utility_production_v1.sbatch",
+    "scripts/experimental_resume/dispatch_utility_production_v1.sbatch"
+   ],
+   "exit_code": 0,
+   "stdout": "",
+   "stderr": ""
+  },
+  {
+   "command": [
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/envs/vllm-cu129/bin/python",
+    "-B",
+    "scripts/experimental_resume/run_utility_production_v1.py",
+    "--help"
+   ],
+   "exit_code": 0,
+   "stdout": "usage: run_utility_production_v1.py [-h] --manifest MANIFEST --out OUT\n                                    --config CONFIG --shard-index SHARD_INDEX\n                                    --deadline-epoch DEADLINE_EPOCH\n                                    [--recovery-manifest RECOVERY_MANIFEST]\n\nRun one immutable utility shard using the unchanged qualified v2 backend.\n\noptions:\n  -h, --help            show this help message and exit\n  --manifest MANIFEST\n  --out OUT\n  --config CONFIG\n  --shard-index SHARD_INDEX\n  --deadline-epoch DEADLINE_EPOCH\n  --recovery-manifest RECOVERY_MANIFEST\n",
+   "stderr": ""
+  }
+ ],
+ "production_source_files": {
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/utility_production_v1.py": "1cfff9953cf71bc7337f5f55a2e28f0718a44f63845bef89a490a9ff0ee343dc",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/run_utility_production_v1.py": "1dc625437869eabb023d9c5f942b18a5ba527e997eb287b719bed01ca36ff970",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/dispatch_utility_production_v1.py": "11fac1b1fe97b156cfae28c7c512396a48d8b25d5afd4eb00675f8e6485f8c6b",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/run_utility_production_v1.sbatch": "10ecc628560ed7de54102aa8d52225f0d5dd7f6747d511a0a4a185766f672b5c",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/dispatch_utility_production_v1.sbatch": "c44b51774bf644ae4b9196f5cbf55dc266a9b86d541b45aab17b5cf7e8f7436a",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/dispatch_overnight_readers_v1.py": "0c142175df5db52fdf00a85d0e8dd46099209a76c5161994b4279332d6c84a10"
+ },
+ "test_file_sha256": "8c1096bcf6c6a9c1c23f7d926037dfae79998f8b36ecc8d1a92437e2dfe5f767",
+ "scientific_source_count": 208,
+ "scientific_source_mismatches": [],
+ "gpu_model_loaded": false,
+ "slurm_submissions": [],
+ "sha256": "2add5ff8313a39ea4c41ec66e158155f2f14ea50745aee0fb4b6cbec5880f319"
+}

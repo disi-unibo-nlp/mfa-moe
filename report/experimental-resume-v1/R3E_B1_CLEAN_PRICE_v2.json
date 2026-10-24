@@ -1,0 +1,30 @@
+{
+ "schema": "r3e-clean-b1-price-v2",
+ "status": "READY_CPU_ONE_RECOVERY",
+ "source_price_sha256": "dfbeb78e186fb5a1061cd1bafd36affab4da5a05a8fca306ce1b1ee07bd39bc9",
+ "preflight_seal": "379936ac93c90f7ebc119c5fee69ac8548c2f152defa458c28c921b583bbd610",
+ "failed_job": {
+  "job_id": "59187838",
+  "state": "FAILED",
+  "exit_code": "1:0",
+  "elapsed_seconds": 22,
+  "cpus": 8,
+  "charged_core_hours_upper_bound": 0.04888888888888889,
+  "cause": "copied estimator package default OUT_GPT resolves to absent frozen-code/results path; no fit began"
+ },
+ "corrected_driver_sha256": "7e7c40902e751eb52bf8873d86997bd038e621b72b61eef448942fafbaa0e066",
+ "corrected_sbatch_sha256": "67241759c64bb8d912d6b2360df0677f4481ef60e6a6c9f51a07c4453f67229e",
+ "corrected_token_cache": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/dynamics-routing/results/B1/tokens",
+ "new_job": {
+  "cpus": 8,
+  "memory": "64G",
+  "gpus": 0,
+  "wall_seconds": 1800,
+  "max_core_hours": 4.0
+ },
+ "amended_total_ceiling_core_hours": 4.1,
+ "amended_total_ceiling_GPU_hours": 0.0,
+ "scientific_specification": "unchanged clean population, frozen family folds, B1 estimator and diagnostics",
+ "resubmission_rule": "one recovery; a later attempt needs a new receipt",
+ "sha256": "34b3375c12e871fc55038a299e3d7b4bfd38e83ee28b6a8ff693781af20be732"
+}

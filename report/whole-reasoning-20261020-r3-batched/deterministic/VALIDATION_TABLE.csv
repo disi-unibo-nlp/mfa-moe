@@ -1,0 +1,14 @@
+check,status,evidence
+full_study_suite,PASS,190 tests; 73.767s; CPU61581053 COMPLETED0:0
+D1_DP_control_feasibility,PASS,70/70 GPT promote target/control matches; 210/210 cells qualified
+B1_continuous_admission,PASS,64 across families; refill before longest row; primary tier precedes other promote
+B2_relative_fluency,PASS,historically long native passes equal steering; relative cap/length/repetition fail only at thresholds
+B3_monitor_survival,PASS,own deadline and transient accounting/quota errors neither STOP nor cancel; readback retry submits once
+B3_allocation_budget,PASS,71.5 base maxima; failures and committed maxima charged at admission
+B4_paired_noise_formula,PASS,repeat-minus-native noise and driver accuracy regression
+B4_historical_paired_noise,UNAVAILABLE,zero main-study native_repeat pairs; SUSPECTED; no science gate
+S1_exclude_non_nominations,PASS,dropped promote leaves primary unchanged; missing efficiency cell rejects design
+S2_extraction_visibility,PASS,Worker-local tokenizer initialization inspected; extraction-failure count regression passes
+S3_closed_reasoning_at_cap,PASS,reasoning point-observed if closed; fixed-budget accuracy remains zero
+S4_sentence_coverage,PASS,failed coverage bounds one unit and preserves other observed unit
+CUDA_tensor_parallel_capture_GPT,FAIL,canary61581237; three complete units before a capture disagreement; production withheld

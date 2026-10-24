@@ -1,0 +1,13 @@
+{
+ "schema": "operator-panel-start-v1",
+ "operations_sha256": "b61bc98be974f5848da96c8c0bdcfd6faa0466dd696ba14f82a006438599f71e",
+ "prepare_job": "59400756",
+ "legacy_job": "59400758",
+ "pilot_jobs": [
+  "59400762",
+  "59400764"
+ ],
+ "price_job": "59400766",
+ "live_sha256": "08ee2db91ca35ec316b8c3cb619a822d9d5dd1ba0d7fae0d2d8cbe34ad7fc94b",
+ "sha256": "defabc0cfb4ce5133ded640cca4c4a8d5727ae434b7c8cfb3362e55613999981"
+}

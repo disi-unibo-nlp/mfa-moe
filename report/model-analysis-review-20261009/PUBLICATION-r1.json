@@ -1,0 +1,18 @@
+{
+  "schema": "paper-publication-v1",
+  "observed_utc": "2026-10-09T17:05:44.225593+00:00",
+  "local_commit": "e7d443d1ca3702806e5d37e22ba50f834e0ac1fc",
+  "branch": "main",
+  "working_tree_clean": true,
+  "paper_repository": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/paper/6a510c6db0d9b08aa438c142",
+  "destination": "Overleaf",
+  "push_attempted": true,
+  "push_exit_code": 128,
+  "push_accepted": false,
+  "remote_hash_verified": false,
+  "failure": "No stored credential; Git cannot read Password for https://git@git.overleaf.com with terminal prompts disabled.",
+  "closeout_path": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/model-analysis-review-20261009/BEST_RESULTS_CLOSEOUT-r1.json",
+  "closeout_sha256": "93a127b814fe8e31509ba94d9a43ac4ed1f4f84eabbe7060d4451cd31ae6d10e",
+  "no_force_push": true,
+  "outer_repository_committed_or_pushed": false
+}

@@ -1,0 +1,26 @@
+{
+ "schema": "micro-blind-semantic-debug-slice-price-v2.2",
+ "complete_price_sha256": "1e56570b050828e3145c09620e47400f155aff3b3d502fa6feef55a22969715b",
+ "frame_sha256": "8e9032b19a8ad9cae7559ad289a8057020c4455f05b0bd16d62af9bb2d6bb304",
+ "rating_driver_sha256": "ee339bec443efbf79eb4ff0d3a53e06af416d219d472e3a476f2333c7fe923d2",
+ "price_driver_sha256": "4c43084da9a78c2f0027301a7b21421e8c57344646aa489e9bf2b75b070a2185",
+ "ratings_total": 104,
+ "batches_total": 10,
+ "max_ratings_in_two_target_batches": 24,
+ "max_decode_tokens_two_target_batches": 24576,
+ "max_prompt_tokens_two_target_batches": 194520,
+ "two_batch_conservative_components_seconds": {
+  "decode": 702.8140013726836,
+  "prefill": 49.48107448107448,
+  "cold_load": 599.2464979086071,
+  "shutdown": 196.0
+ },
+ "two_batch_projected_seconds": 1547.5415737623653,
+ "debug_walltime_seconds": 1800,
+ "debug_GPU_h_ceiling_per_slice": 1.0,
+ "five_slice_GPU_h_ceiling": 5.0,
+ "deadline_guard": "stop before next batch if <440s remain before Slurm end minus120s",
+ "status": "PASS_TWO_COMPLETE_TARGET_BATCHES_PER_SLICE",
+ "interpretation": "Bounded same-manifest checkpoint/resume; actual slices may cover more batches when observed judge outputs are shorter.",
+ "sha256": "77ed050a5db022271f743104abe7b138ec09e9979519b82ed75a3443f33e8b97"
+}

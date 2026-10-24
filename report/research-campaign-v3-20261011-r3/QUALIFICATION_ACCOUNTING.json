@@ -1,0 +1,1 @@
+{"billing_hours":0.3811111111111111,"comment":"mfa-v3-r3-qualification-20261011","cpus":"4","elapsed_seconds":343,"exit_code":"0:0","job_id":"59974537","sha256":"deaa2b69a42f9feb5349d90af1127cf1bc83d60dd32df63704b39b7f83d8ab82","start":"2026-10-11T11:57:57","state":"COMPLETED","terminal":true,"tres":"billing=4,cpu=4,gres/tmpfs=10737418240,mem=24G,node=1"}

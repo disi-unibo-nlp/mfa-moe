@@ -1,0 +1,22 @@
+{
+ "schema": "overnight-submit-attempt-v1",
+ "name": "fresh-generation-dispatch",
+ "binding": {
+  "stage": "FRESH",
+  "preparation_job": "59345113",
+  "phase": "generation",
+  "files": {
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/dispatch_overnight_stage_v2.sbatch": "af3304131d6517f3c99793f812524ae8f743309a6100ae44d39bbdd46eefbe55",
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/dispatch_overnight_stage_v2.py": "c57592c89ff11fbe2cc387f533b2e64bfd4ee5e7de704104e425a095e8adc1fa",
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/prepare_overnight_operator_stage_v2.py": "a936c3f059412d26a385d5211d4c1cb047a72ffd1aa073a82fe402c70feee711"
+  }
+ },
+ "arguments": [
+  "--dependency=afterok:59345113",
+  "--job-name=st-overnight-FRESH-launch-v2",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/dispatch_overnight_stage_v2.sbatch"
+ ],
+ "time_ns": 1791147345631372257,
+ "dispatcher_job_id": null,
+ "sha256": "dbf8ed03d6989c910e7c123944cc195fc162cf2de02d2e101bfe10752988d9e7"
+}

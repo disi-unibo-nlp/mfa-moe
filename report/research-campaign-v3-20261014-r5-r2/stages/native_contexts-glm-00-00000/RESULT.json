@@ -1,0 +1,1 @@
+{"detail":{"contexts_sha256":"dec567e7547e225cb4a553617bb8ce444b381b37059574e00fa8827661a725a6","status":"complete"},"failure_scope":null,"job_id":"60456271","model":"glm","seconds":271.38170196674764,"sha256":"a92a71538ea8ea632d94fe3c06c29835aa35d62cf2d0823073e5754ed84f12ba","shard_index":0,"stage":"native_contexts","status":"complete","threshold_index":0}

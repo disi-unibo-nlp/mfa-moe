@@ -1,119 +1,162 @@
-\section{Synthesis and Limitations}
+\section{Analysis}
 
-The frozen Qwen3.8 judge retains the 40-example seed because the optimized
-candidate fails the per-class recall gate. Its NVFP4 deployment reaches
-0.710 accuracy on 407 reused validation units under both low and medium
-effort, while changing 10.1\% of labels between settings. Neither prompt
-selection nor this deployment check establishes annotation accuracy on the
-generated benchmark traces. Gemma and GPT-OSS now share a stratified 100,000-sentence sampling
-protocol and judge configuration, with 99,999 and 100,000 valid labels
-respectively. Their selected cohorts remain model-specific; Qwen uses a
-different sampling protocol and judge deployment.
+\subsection{Conclusions supported so far}
 
-All three models retain prospective episode information on held-out
-responses from the released SAT corpus. Five response-disjoint outer folds
-with inner-validation layer selection give macro-AUROC 0.852 ([0.838,0.868])
-for Qwen, 0.780 ([0.761,0.797]) for GPT-OSS, and 0.788 ([0.772,0.805]) for Gemma.
-Each exceeds its two-feature prefix-position baseline. These 95\% intervals
-resample responses conditional on the saved folds and fits. The study
-strengthens same-corpus generalization evidence but leaves external transfer,
-richer shortcut controls, and online detector validity unresolved.
-The original sentence-split scores and routing-layer choices retain their
-overlap and test-selection limitations. Qwen's external 581-unit inspection has 50.3\%
-primary and 60.8\% compatible agreement under a provisional hybrid review;
-it is neither independent human validation nor evidence for the other encoders.
+\begin{enumerate}
+\item The static-reward, context-aware GEPA study reaches 0.650 cross-validated
+macro-F1 with the light budget.  The advantage over balanced-accuracy
+selection is small and the heavy search is worse.  In the separate completed
+same-model LLM-judge final fit, development-set balanced accuracy rises from
+0.677 to 0.777 and macro-F1 from 0.613 to 0.727, primarily through reduced
+Monitor overprediction.  This establishes successful prompt optimization on
+the development distribution, not held-out generalization.  The final
+Qwen3.8-27B alignment does not reproduce that gain: balanced accuracy falls
+from 0.740 for the imported seed to 0.729 for the GEPA candidate, and the
+prespecified recall gate correctly retains the seed.
+\item The boundary probes show substantial sentence-split decodability of
+upcoming Schoenfeld episodes, with selected-layer AUROC of 0.835--0.934 and
+the strongest thresholded performance for Implement, Verify, and Read.  This
+establishes accessible prefix-state signal within familiar responses, not
+generalization to unseen reasoning traces.  External application is best
+interpreted as coarse phase inspection: a provisional pragmatic review gives
+50.3\% strict and 60.8\% compatible agreement, with 187/581 multi-label units.
+Implement is strongest (F1 0.729), while the remaining labels are incomplete
+external tags.  ProcessBench Verify predictions identify review-heavy
+post-error passages but do not identify correctness.
+\item The September 10 vLLM correlation analysis completes 4,647 attempts
+from 1,547 problems on six math benchmarks. All-attempt accuracy is
+$3,588/4,647=0.772$, with 371 unparseable answers counted as incorrect.
+Confidence has positive correctness associations with pointwise intervals
+excluding zero on MATH-500, both AIME sets, and OlympiadBench; AMC and
+Minerva remain uncertain. The 394 token-limit hits account for 393 of 1,059
+errors. Among non-limit traces, confidence remains moderately positive on
+AIME ($0.233$ and $0.207$), is near zero on MATH-500, OlympiadBench, and
+Minerva, and is negative on AMC ($-0.352$). Complete-problem confidence
+associations survive BH adjustment on both AIME datasets but not AMC.
+Correct attempts within mixed-outcome problems have higher confidence yet
+are 8,251--16,563 tokens shorter. New fixed-position views show early negative
+and later positive confidence coefficients on AIME and AMC, while coverage
+shrinks. Expert-rate maxima remain exploratory pooled-ID candidates.
+\end{enumerate}
 
-The three correlation corpora each cover 4,647 attempts, 1,547 problems,
-and 100 complete avg@32 groups. Associations depend on model, benchmark,
-and aggregation level. For Qwen, whole-continuation confidence correlates
-with avg@32 at $\rho=0.632$ on AIME24 and $0.705$ on AIME25,
-whereas AMC23 gives $-0.200$ with an interval containing zero.
-These estimates do not control length, termination, or difficulty.
-Problem-respecting bootstrap intervals address repeated attempts for the
-reported primary features; naive attempt-level significance screens remain
-exploratory. Class coverage now spans all six benchmarks for Gemma and GPT-OSS.
-Sparse class/outcome cells and unmatched problem cohorts still limit
-comparisons; equal sentence budgets do not balance benchmark or class shares.
-No common causal interpretation of router confidence follows from these data.
+\subsection{What has not been established}
 
-The stratified class analysis also shows benchmark-dependent signs. For
-Gemma's Implement-labelled tokens, confidence correlates with correctness
-at $r=0.498$ on AIME24 (30 attempts) and $-0.367$ on AMC23 (40 attempts).
-For GPT-OSS, the corresponding coefficients are $0.164$ and $-0.098$.
-These are descriptive estimates on different model-specific cohorts,
-not paired tests of model differences. Gemma's AMC23 Plan, Explore, and
-Monitor cohorts contain only correct attempts, so their correctness
-correlations are undefined despite nonzero label coverage.
+Neither GEPA final fit provides an unbiased test estimate.  The earlier run selects
+among 145 candidates on the same six-response validation set, has only one
+optimization seed, and leaves the locked 336-unit test unevaluated.  The result
+does not establish that the expanded 40-demonstration prompt transfers to new
+responses or that the same-model reward is an independent evaluator.  The
+Qwen3.8 alignment reuses that selected prompt as its seed, optimizes and
+selects on the same validation partition, and also leaves the locked test
+untouched; retaining the seed is evidence that this search found no safe
+development-set improvement, not evidence of generalization.
 
-After consistent offline rescoring, no complete intervention establishes
-a beneficial accuracy direction using the reported 95\% interval criterion.
-Qwen fixed positive strength $+2$ loses $2.80$ attempt-weighted points
-($[-5.16,-0.72]$); GPT-OSS fixed positive strength $+2$ loses $3.30$
-($[-6.16,-0.93]$). GPT-OSS paper-style suppression loses $2.22$ points
-($[-4.16,-0.43]$), and positive/negative paper-style promotion loses
-$61.65$ and $59.57$ points with intervals well below zero.
-All stochastic margin intervals contain zero: Qwen concurrency 25 gives
-$+0.93$ points ($[0.00,+1.86]$), while GPT-OSS gives $-0.86$
-($[-2.87,+1.15]$). Equal-problem weighting removes the below-zero
-intervals for fixed strength $+2$ and paper-style suppression, but
-paper-style promotion remains strongly negative. The earlier positive
-OSS secondary intervals and greedy Qwen margin interval do not survive
-rescoring. These exploratory intervals remain conditional on saved
-attempts and frozen policies and are not adjusted for multiple comparisons.
+The boundary-probe run does not establish response-grouped generalization,
+calibrated seven-way episode classification, or the cognitive states of Qwen's
+own generations.  It uses Qwen to encode teacher-forced DeepSeek-R1 text,
+shares all 38 response IDs between train and test, and selects layers on the
+reported test set.  Its external argmax outputs have no authoritative human or
+benchmark episode ground truth.  Agreement with the provisional hybrid review
+is diagnostic and should not be called validated transfer accuracy.
 
-The Qwen paper-style positive intervention was interrupted after 494 of
-1,395 attempts. On those same completed IDs, baseline accuracy is 70.45\%
-and guided accuracy is 0.81\%; all 494 guided outputs hit the 32,768-token
-limit. This subset covers all AIME24 attempts and part of AIME25 only,
-so it does not estimate the full evaluation effect
-(Section~\ref{sec:partial-qwen-paper}). Each effect uses
-its own matched baseline, generated or reused after compatibility and
-output-hash checks. Calibration excludes unscored traces and selects targets
-from observational associations; Qwen also transfers across quantizations.
-Margin manipulation changes expert membership in finite precision. Strong
-paper steering retains our selection estimator and is not a full replication
-of the paper. The evaluated controllers do not use online episode
-predictions: annotations and probes support measurement and target exploration.
-The qualitative sample in Section~\ref{sec:paper-failure-inspection}
-contains direct repetition examples in capped and normally ended outputs,
-an arithmetic error, and two equivalent final answers rejected by the saved
-scorer. These descriptions are conditional on a small stratified sample;
-they establish neither population failure-mode frequencies nor a causal
-mechanism. The documented formatting discrepancies motivated the completed offline
-rescoring pass; the 22-case inspection retains its original sampling frame.
-These findings test the actionability of routing associations, without
-establishing a portable policy or isolating identity from mixture-weight
-changes. Intervals are conditional on saved runs, omit independent seed
-variation, and are not adjusted for multiple comparisons. Objective and
-strength selection require an independent evaluation design.
+The correlation results do not establish a dataset-invariant routing
+predictor or a causal mechanism. No length-conditioned or dataset-adjusted
+model has been fit, and the 32,768-token budget censors 8.5\% of traces.
+Repeated-attempt comparisons control question identity but not length,
+termination, or token content. The current run excludes GPQA-Diamond and
+MMLU-Pro. Raw pooled coefficients mix datasets with different accuracy,
+length, and routing baselines. Non-limit sensitivity checks select on
+termination; late-position views select on reaching the window. Neither is
+an unbiased correction for these confounds. The untagged views contain no
+Schoenfeld class evidence. Layerwise and expert maxima are selected on the
+analyzed data, and numeric expert IDs are pooled across distinct layer-local
+modules. Family-specific BH adjustment does not supply held-out validation
+or correct selection across position views. Across all three workflows,
+correlation and linear decodability should not be read as causal evidence.
 
+\section{Discussion}
 
-The full-diagnostics GPT-OSS rerun additionally tests a fixed-cache proxy
-(Section~\ref{sec:oss-cache-diagnostics}). Target-expert coverage increases
-from $5.08\%$ to $35.17\%$, with a rescored accuracy change of $+0.14$
-points ($[-2.37,+2.37]$). Yet a calibration-frequency cache already covers
-$36.87\%$ before bias, and guided outputs are $4.88\%$ longer on average.
-Greater target reuse therefore does not by itself establish fewer expert
-loads or faster inference. A modest accuracy loss may be useful if offset
-by sufficient speed, but the accuracy--latency trade-off remains unmeasured.
+The completed GEPA final fit demonstrates that same-model informative feedback
+can guide a large prompt toward the development labels: it fixes 49 seed
+errors while introducing 14 regressions and improves every validation
+response.  Its optimization trace also shows the central risk.  The prompt
+expands from 21 to 40 demonstrations and is selected after 145 candidate
+evaluations on those same six responses.  The next defensible test is therefore
+to freeze and ablate or compress the prompt, quantify response-level
+uncertainty, and evaluate it once on genuinely unseen responses.
 
+The Qwen3.8 alignment is an important negative result.  Although its internal
+same-model reward increases, exact corpus-label metrics decline and Plan
+recall breaches the prespecified 0.10 safety threshold.  Its shorter optimized
+instruction also contains conflicting guidance for phrases such as ``Let me
+compute that,'' plausibly contributing to more Plan-to-Monitor errors.  The
+safety gate therefore performs its intended role: optimization reward alone
+is insufficient evidence for deployment, and the byte-identical selected seed
+should now be frozen rather than optimized further on this validation set.
 
+The episode probes add a complementary representation-level result: the
+prefix before a sentence often encodes the phase likely to follow, and the
+signal is strongest in middle-to-late layers rather than at the final model
+output.  The current split cannot determine whether this reflects a portable
+episode representation, trace-specific transition regularities, position, or
+formatting.  A response-grouped nested evaluation should select both layer
+and regularization on inner folds, evaluate once on unseen responses, repeat
+over seeds, and report response-bootstrap intervals.  Standardized or
+norm-matched features and simple position, previous-unit, and formatting
+baselines are needed to separate hidden-state information from layer scale and
+trace structure.
 
-The completed Gemma fixed-bias $+1$ evaluation gives $87.67\%$ baseline
-and $87.60\%$ guided accuracy, a $-0.07$-point change
-($[-1.15,+1.00]$). Across both diagnostic sessions, target coverage rises
-from $0.64\%$ to $5.03\%$, still far below the $41.81\%$ pre-bias
-frequency-cache coverage. The interrupted-session counters include
-execution work beyond the final scored outputs.
+For external use, the probe outputs should be treated as abstaining phase
+suggestions rather than annotations.  Abbreviation- and LaTeX-aware
+segmentation should precede evaluation; independent one-versus-rest scores
+should either be calibrated on a common multiclass validation set or retain
+multiple labels.  The pragmatic review confirms substantial ambiguity and
+only 60.8\% compatible agreement.  Independent human annotators should resolve
+the 37 low-confidence units and assess inter-annotator agreement before any
+transfer-accuracy claim.  Cross-model recognition, as studied here, should
+also be separated from Qwen's own generation by running the protocol on
+Qwen-generated traces.
 
-The matched 100-problem ordered-cache experiments
-(Section~\ref{sec:multimodel-cache-100}) reveal model-dependent effects.
-Rescored accuracy changes are $-1$ point for OSS and Qwen and zero for
-Gemma, with all intervals including zero. Qwen reduces loads per token
-by $5.20$--$6.82\%$, with intervals below zero, and has promising
-$6.20$--$7.81\%$ reductions in observed loads per answer whose intervals
-still include zero. Gemma target pinning increases loads per answer by
-$10.32\%$ at 16 slots ($[+2.69,+18.68]\%$), while guided LRU avoids most
-of that cost. OSS's longer outputs offset its 16-slot per-token savings.
-These results distinguish routing locality, pinning policy and total
-answer cost; none measures actual SSD traffic or offloaded-inference speed.
+The new replay narrows the correlation interpretation. Negative length
+associations recur across all six datasets, but supported positive confidence
+associations occur in four, and the non-limit check leaves moderate positive
+coefficients only on AIME. AMC has a negative non-limit confidence coefficient,
+a positive within-question difference, and an uncertain negative
+problem-level coefficient. These results concern different populations and
+aggregation levels. Fixed-position windows further reveal early negative
+and later positive coefficients while progressively excluding shorter traces.
+A whole-trace confidence mean therefore cannot be interpreted as a uniform
+signal throughout reasoning.
+
+The next analysis should prespecify treatment of budget failures, jointly
+examine length, termination, token composition, and dataset, compare windows
+on common cohorts, and validate selected predictors on held-out problems.
+Simply discarding limited traces or comparing late windows to early windows
+with different membership does not resolve selection bias. Layer-qualified
+expert rates are needed before the pooled-ID screen can motivate a particular
+expert intervention. GPQA-Diamond and MMLU-Pro require separate execution
+under the current generation/replay configuration to extend coverage.
+
+\section{Conclusion}
+
+The three active workflows support deliberately limited claims.  GEPA improves
+the earlier same-model-judge development result substantially, but the final
+Qwen3.8 alignment finds no safe improvement over that imported prompt and
+neither run has been tested on an untouched response set.  The boundary probes reveal strong within-split
+linear access to upcoming episode labels, especially for Implement, Verify,
+and Read, but their sentence split leaks every response across train and test
+and their external outputs collapse toward a coarse setup, execution, and
+review taxonomy. The six-benchmark correlation study supports AIME
+confidence/margin associations at both trace and problem levels, but the
+results vary with benchmark, termination, aggregation, and token position.
+Token-limit failures remain substantial, and later position windows select
+longer traces. Expanded metric-pair, expert-rate, and reasoning-view screens
+provide hypotheses for controlled evaluation without establishing an
+independent or causal routing mechanism.
+
+The immediate evidential requirements are a frozen-prompt GEPA evaluation on
+unseen responses, response-grouped nested boundary probes with independently
+validated external labels, a prespecified response to remaining generation
+censoring, extension of the current run to GPQA-Diamond and MMLU-Pro, and
+length-/termination-aware and common-cohort position analyses with
+problem-respecting validation before routing interventions are evaluated.

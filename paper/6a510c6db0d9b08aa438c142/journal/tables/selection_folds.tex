@@ -1,0 +1,61 @@
+% Multipage longtable: retained outside adjustbox so page breaks remain available.
+% Compact 2pt intercolumn spacing fits the full model identities without text scaling.
+% Adapted from SPSD tab:main-results and SYNCO tab:mainRes.
+\begingroup\small
+\setlength{\tabcolsep}{2pt}
+\begin{longtable}{lrrrrr}
+\caption{Per-fold weakest-state coverage (WSC) of native selected slots (\%) at 75\% retention.
+%
+These are diagnostic fold estimates, without estimated confidence intervals: test families are disjoint and training sets overlap.
+%
+Bold and underline mark the highest and second-highest selector values within each model and fold.}\label{tab:selection-folds}\\
+\toprule
+Model & Fold & Families & Balanced & Frequency & Random \\
+\midrule\endfirsthead
+\multicolumn{6}{l}{\textit{Continued}}\\
+\toprule
+Model & Fold & Families & Balanced & Frequency & Random \\
+\midrule\endhead
+\bottomrule\endfoot
+\modelname{openai}{GPT-OSS-20B} & 1 & 298 & \textbf{96.756} & \underline{95.051} & 77.033 \\ 
+\modelname{openai}{GPT-OSS-20B} & 2 & 297 & \textbf{96.811} & \underline{95.093} & 77.034 \\ 
+\modelname{openai}{GPT-OSS-20B} & 3 & 297 & \textbf{96.794} & \underline{94.914} & 77.181 \\ 
+\modelname{openai}{GPT-OSS-20B} & 4 & 297 & \textbf{96.600} & \underline{94.783} & 77.213 \\ 
+\modelname{openai}{GPT-OSS-20B} & 5 & 297 & \textbf{96.934} & \underline{95.197} & 77.222 \\ 
+\modelname{nvidia}{\shortstack[l]{Nemotron-3.5-Lightning\\30B-A3B}} & 1 & 298 & \textbf{83.325} & \underline{78.331} & 75.351 \\ 
+\modelname{nvidia}{\shortstack[l]{Nemotron-3.5-Lightning\\30B-A3B}} & 2 & 297 & \textbf{82.961} & \underline{79.018} & 75.281 \\ 
+\modelname{nvidia}{\shortstack[l]{Nemotron-3.5-Lightning\\30B-A3B}} & 3 & 297 & \textbf{83.205} & \underline{78.514} & 75.264 \\ 
+\modelname{nvidia}{\shortstack[l]{Nemotron-3.5-Lightning\\30B-A3B}} & 4 & 297 & \textbf{83.373} & \underline{78.099} & 75.369 \\ 
+\modelname{nvidia}{\shortstack[l]{Nemotron-3.5-Lightning\\30B-A3B}} & 5 & 297 & \textbf{83.215} & \underline{79.195} & 75.321 \\ 
+\modelname{qwen}{Qwen3.5-35B-A3B} & 1 & 298 & \underline{91.667} & \textbf{92.965} & 75.046 \\ 
+\modelname{qwen}{Qwen3.5-35B-A3B} & 2 & 297 & \underline{91.632} & \textbf{92.975} & 75.099 \\ 
+\modelname{qwen}{Qwen3.5-35B-A3B} & 3 & 297 & \underline{91.511} & \textbf{92.913} & 75.171 \\ 
+\modelname{qwen}{Qwen3.5-35B-A3B} & 4 & 297 & \underline{91.571} & \textbf{92.907} & 75.070 \\ 
+\modelname{qwen}{Qwen3.5-35B-A3B} & 5 & 297 & \underline{91.716} & \textbf{93.066} & 75.069 \\ 
+\modelname{qwen}{Qwen3.6-35B-A3B} & 1 & 298 & \underline{93.281} & \textbf{93.687} & 74.864 \\ 
+\modelname{qwen}{Qwen3.6-35B-A3B} & 2 & 297 & \underline{93.262} & \textbf{93.782} & 74.955 \\ 
+\modelname{qwen}{Qwen3.6-35B-A3B} & 3 & 297 & \underline{93.221} & \textbf{93.826} & 74.855 \\ 
+\modelname{qwen}{Qwen3.6-35B-A3B} & 4 & 297 & \underline{93.197} & \textbf{93.572} & 74.896 \\ 
+\modelname{qwen}{Qwen3.6-35B-A3B} & 5 & 297 & \underline{93.194} & \textbf{94.037} & 74.904 \\ 
+\modelname{gemma}{Gemma-4-26B-A4B} & 1 & 298 & \textbf{99.432} & \underline{99.158} & 74.539 \\ 
+\modelname{gemma}{Gemma-4-26B-A4B} & 2 & 297 & \textbf{99.371} & \underline{99.222} & 74.518 \\ 
+\modelname{gemma}{Gemma-4-26B-A4B} & 3 & 297 & \textbf{99.407} & \underline{99.186} & 74.535 \\ 
+\modelname{gemma}{Gemma-4-26B-A4B} & 4 & 297 & \textbf{99.452} & \underline{99.250} & 74.534 \\ 
+\modelname{gemma}{Gemma-4-26B-A4B} & 5 & 297 & \textbf{99.426} & \underline{99.202} & 74.526 \\ 
+\modelname{zhipu}{GLM-4.7-Flash (30B-A3B)} & 1 & 298 & \textbf{89.531} & \underline{86.017} & 74.096 \\ 
+\modelname{zhipu}{GLM-4.7-Flash (30B-A3B)} & 2 & 297 & \textbf{89.231} & \underline{86.745} & 74.070 \\ 
+\modelname{zhipu}{GLM-4.7-Flash (30B-A3B)} & 3 & 297 & \textbf{89.265} & \underline{86.449} & 74.047 \\ 
+\modelname{zhipu}{GLM-4.7-Flash (30B-A3B)} & 4 & 297 & \textbf{89.319} & \underline{86.860} & 74.010 \\ 
+\modelname{zhipu}{GLM-4.7-Flash (30B-A3B)} & 5 & 297 & \textbf{89.069} & \underline{86.387} & 73.994 \\ 
+\modelname{qwen}{Qwen3-30B-A3B} & 1 & 298 & \textbf{98.772} & \underline{98.208} & 73.364 \\ 
+\modelname{qwen}{Qwen3-30B-A3B} & 2 & 297 & \textbf{98.818} & \underline{98.209} & 73.371 \\ 
+\modelname{qwen}{Qwen3-30B-A3B} & 3 & 297 & \textbf{98.761} & \underline{98.139} & 73.407 \\ 
+\modelname{qwen}{Qwen3-30B-A3B} & 4 & 297 & \textbf{98.813} & \underline{98.109} & 73.379 \\ 
+\modelname{qwen}{Qwen3-30B-A3B} & 5 & 297 & \textbf{98.807} & \underline{98.365} & 73.369 \\ 
+\modelname{liquid}{LFM2.5-24B-A2B} & 1 & 298 & \textbf{92.852} & \underline{89.241} & 74.391 \\ 
+\modelname{liquid}{LFM2.5-24B-A2B} & 2 & 297 & \textbf{92.166} & \underline{88.667} & 74.550 \\ 
+\modelname{liquid}{LFM2.5-24B-A2B} & 3 & 297 & \textbf{92.483} & \underline{89.297} & 74.587 \\ 
+\modelname{liquid}{LFM2.5-24B-A2B} & 4 & 297 & \textbf{92.265} & \underline{88.626} & 74.477 \\ 
+\modelname{liquid}{LFM2.5-24B-A2B} & 5 & 297 & \textbf{93.012} & \underline{89.668} & 74.596 \\ 
+\end{longtable}
+\endgroup

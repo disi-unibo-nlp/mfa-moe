@@ -1,0 +1,27 @@
+% Adapted from SPSD tab:main-results and SYNCO tab:mainRes.
+\begin{table}[htb]
+\centering\small
+\caption{Anticipatory routing gain (ARG): past-text/history baseline cross-entropy minus routing-augmented cross-entropy (nats per adjacent pair), with 95\% confidence intervals as subscripts.
+%
+Intervals retain the original six-comparison family-bootstrap correction.
+%
+Bold and underline mark the larger and second-largest mean gains within each source-length condition.
+%
+The length column gives the minimum source-sentence length in tokens.
+%
+Both use source-owned tokens.}
+\label{tab:next-state}
+\setlength{\tabcolsep}{2.5pt}
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{@{}llrrc@{}}
+\toprule
+Model & Length & Questions & Pairs & ARG (nats) $\uparrow$ \\
+\midrule
+\modelname{openai}{GPT-OSS-20B} & None & 509 & 10,209 & \secondcid{0.02073}{0.00472}{0.00475} \\ 
+\modelname{openai}{GPT-OSS-20B} & 32 & 308 & 797 & \secondcid{0.01570}{0.00923}{0.01005} \\ 
+\modelname{qwen}{Qwen3.6-35B-A3B} & None & 494 & 2,492 & \bestcid{0.05570}{0.01417}{0.01374} \\ 
+\modelname{qwen}{Qwen3.6-35B-A3B} & 32 & 160 & 213 & \bestcid{0.03438}{0.01427}{0.01489} \\ 
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}

@@ -1,0 +1,210 @@
+{
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/model-analysis-review-20261008/build_inventory.py": {
+    "sha256": "523e6d83dec4390618a8c7833c5352742568d4228b6be2f4050bb0a32706cf49",
+    "bytes": 13636
+  },
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/outcomes_analysis.py": {
+    "sha256": "9bb3109484207b9701637104934cf144773f4e044a145af86d122b9265a5c153",
+    "bytes": 8565
+  },
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/campaign-v3/acceptance/j1.json": {
+    "sha256": "0de36d463b3553f72db9dd199921e0861962b97e2c3eb9c1c4df44fe7eef423b",
+    "bytes": 1231
+  },
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/campaign-v3/outcomes/outcomes_v3-99bf8d59506e2893.manifest.json": {
+    "sha256": "158cb33c3288817bedd322683bb9ac8ea976983fa1cec9dc21da2fb1361f7bfe",
+    "bytes": 979
+  },
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/results-v3/outcomes-99bf8d59506e2893/provenance.json": {
+    "sha256": "c146861fdec7c6c78daa697704ad621d220fd4f5c3e65dca1a0a7b31c1c54915",
+    "bytes": 346
+  },
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/src/moe_exp/correlation_pipeline/model_profiles.py": {
+    "sha256": "56646e711aa238ef38554f9a3d0930dbca5edfe10b445761ab14a7847812c4ed",
+    "bytes": 11850
+  },
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/campaign-v3/outcomes/outcomes_v3-99bf8d59506e2893.parquet": {
+    "sha256": "99bf8d59506e2893218fd070d264d1fca4a1e4330052c11c347b727b3802e9ee",
+    "bytes": 2603832
+  },
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/results-v3/outcomes-99bf8d59506e2893/accuracy.csv": {
+    "sha256": "4d8aa8420f83caa9581328577e631c901696a162a9a5be665110925597c1ed33",
+    "bytes": 10954
+  },
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/results-v3/outcomes-99bf8d59506e2893/budget.csv": {
+    "sha256": "4b50df2b9ed2f20902ad55d57df3593375e15f6e2edaf44059e95c382d81ad07",
+    "bytes": 875
+  },
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/results-v3/outcomes-99bf8d59506e2893/continuation.csv": {
+    "sha256": "a4b7ebd36c819feb1f5bb01f7759b0646c748ff7500378ef8cab56a69a932c2e",
+    "bytes": 614
+  },
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/results-v3/outcomes-99bf8d59506e2893/errors.csv": {
+    "sha256": "d1f4b7074c642b6d433f8a1c7efe09de625743d068384a13a38606ae45ac3558",
+    "bytes": 570
+  },
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/results-v3/outcomes-99bf8d59506e2893/length_gap.csv": {
+    "sha256": "961d5c5cbfb5d9de2fa224cedca3cea721509d6b9aa595157ac2649a10686719",
+    "bytes": 837
+  },
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/forum/tests/r3_context/readout-results.v3.json": {
+    "sha256": "3f0999ac12c6ffaccb611edd9e5af195238dad94f9418a508bf3b1c3001be3d3",
+    "bytes": 25382
+  },
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/forum/tests/r3_context/anticipation-results.json": {
+    "sha256": "da24f7f7f7b1910bfafd13830562783095f7ec4a8179b86dda8a57b6784f5d89",
+    "bytes": 36585
+  },
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/v3_analysis/results-r2/gpt/A/attempts.parquet": {
+    "sha256": "9df93457c8104d8fef0caca0be876d1f2b41bfe231fc4208ede4eb56a0427c09",
+    "bytes": 1121441
+  },
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/v3_analysis/results-r2/gpt/B/attempts.parquet": {
+    "sha256": "6342b2cdc6a42ab08d617d476bf6425f2a7644383c52884ba1f3b648f30ec5b8",
+    "bytes": 219817
+  },
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/v3_analysis/results-r2/gpt/A/provenance.json": {
+    "sha256": "b606f86aa0b8cc535bb4c249d29586e8050e94faf7b352dcbd3eb34414740b35",
+    "bytes": 5470
+  },
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/v3_analysis/results-r2/gpt/A/E_class_experts.csv": {
+    "sha256": "a539ed7df7e9920c7783839660e25814b6695c75a97bbd6c34f1403512c26f0d",
+    "bytes": 89910
+  },
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/v3_analysis/results-r2/gpt/A/E_expert_usage_associations.csv": {
+    "sha256": "74aaabdcbdb3d6e53d5c3637a356ae976171eae71f5f3482dab9a54b161464c1",
+    "bytes": 3030219
+  },
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/v3_analysis/results-r2/nemotron/A/attempts.parquet": {
+    "sha256": "839730b1ef725609ebdadd175d1a3c2fe7d2b323e8bc47435fe893babdcd30c7",
+    "bytes": 1162300
+  },
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/v3_analysis/results-r2/nemotron/B/attempts.parquet": {
+    "sha256": "414be9b056c5e3b8d4de01fdc962da09e7a1c1c4b0d7af99040601c3a9745ade",
+    "bytes": 98504
+  },
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/v3_analysis/results-r2/nemotron/A/provenance.json": {
+    "sha256": "a3e70c0b1817ca94beee22c68b4eab203e9bec2fa88e3de2df1c6f6701665065",
+    "bytes": 5361
+  },
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/v3_analysis/results-r2/nemotron/A/E_class_experts.csv": {
+    "sha256": "955085666a608a52fd786e54b883c68acd1caea0230f9907ad2715d572145162",
+    "bytes": 47345
+  },
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/v3_analysis/results-r2/nemotron/A/E_expert_usage_associations.csv": {
+    "sha256": "d0e3a44af28fbece68f579f36573e08ed8e19cd015376e7a050451cf30815f45",
+    "bytes": 1890850
+  },
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/v3_analysis/results-r2/qwen35/A/attempts.parquet": {
+    "sha256": "bd235bfc491374f70a276f775a8c44ea5447be4f83fbc9edb34561323b9f4791",
+    "bytes": 1189351
+  },
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/v3_analysis/results-r2/qwen35/B/attempts.parquet": {
+    "sha256": "80ec262332427499f5e8d2f0b181111031974e004c2aff4b9a705b8840c2dcb7",
+    "bytes": 61950
+  },
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/v3_analysis/results-r2/qwen35/A/provenance.json": {
+    "sha256": "604b772a4588c7ef4a3dfb097e93095d52528fda9c2febe75a0a5b30a765b6b5",
+    "bytes": 5404
+  },
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/v3_analysis/results-r2/qwen35/A/E_class_experts.csv": {
+    "sha256": "a65c10addff6d4ed7700a43aaf7f2d3e4b89da8205ce249d6b4b6484d0b02228",
+    "bytes": 106525
+  },
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/v3_analysis/results-r2/qwen35/A/E_expert_usage_associations.csv": {
+    "sha256": "e8904ed67b717710c254dfe3e252e9bd265345d338fc039c2bef7cce0fa602d8",
+    "bytes": 3390547
+  },
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/v3_analysis/results-r2/qwen36/A/attempts.parquet": {
+    "sha256": "0bb74888589d634de44bdbcc285019dd1ec95d99b0df55a3224f1b2d1e4f37e3",
+    "bytes": 1193621
+  },
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/v3_analysis/results-r2/qwen36/B/attempts.parquet": {
+    "sha256": "94210db3a2b552fc508acacbc4c63a0c51072cee65e6415d8dacfa1407cf2150",
+    "bytes": 60982
+  },
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/v3_analysis/results-r2/qwen36/A/provenance.json": {
+    "sha256": "bda9813d53435d2fe37252eafebd44f100d122b96285a060b91e6a9569a574d3",
+    "bytes": 5392
+  },
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/v3_analysis/results-r2/qwen36/A/E_class_experts.csv": {
+    "sha256": "17883ea71a3f26b1fc8f621e0c87688f71873a034b7aae56c368e58af1fd4ac1",
+    "bytes": 111484
+  },
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/v3_analysis/results-r2/qwen36/A/E_expert_usage_associations.csv": {
+    "sha256": "a097afd3a0136de7a982c330e106ba3339d6479410a00cda95c58a90818caf72",
+    "bytes": 3448567
+  },
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/v3_analysis/results-r2/gemma/A/attempts.parquet": {
+    "sha256": "68e674dca5218a0459c2b6567723aae2aa3532fef769d61eb9adca8f66285802",
+    "bytes": 1171497
+  },
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/v3_analysis/results-r2/gemma/B/attempts.parquet": {
+    "sha256": "9389c82594cf9ce9301ce3f75a74806159f53315e0e66af55cb48896bc95f8ed",
+    "bytes": 108621
+  },
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/v3_analysis/results-r2/gemma/A/provenance.json": {
+    "sha256": "da9c4c814b79f172fa06c778f2d529a523ca9e7531d11615d8e46f3953d104f0",
+    "bytes": 5315
+  },
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/v3_analysis/results-r2/gemma/A/E_class_experts.csv": {
+    "sha256": "3706c3a8f9bbeb2e27d3127e1109ac54895eeba4b3715e44cbd7ce18e78d68b3",
+    "bytes": 106431
+  },
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/v3_analysis/results-r2/gemma/A/E_expert_usage_associations.csv": {
+    "sha256": "e289c097463a583524d5cdf40f9709da3a5558d552c6fec1dfc96da205a1578a",
+    "bytes": 3196139
+  },
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/v3_analysis/results-r2/glm/A/attempts.parquet": {
+    "sha256": "8cda683d9475425df5e81a09a70f852a90d0d88701208d36ffab80493c018d41",
+    "bytes": 1193281
+  },
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/v3_analysis/results-r2/glm/B/attempts.parquet": {
+    "sha256": "3a0c04f5da22172b42741f6a24922954a210addbac7c2e60644f1d96a8747053",
+    "bytes": 113049
+  },
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/v3_analysis/results-r2/glm/A/provenance.json": {
+    "sha256": "2f0c5a72364c6ad14395c418bbaed004d902d2648a6690a31f81c5945a67038a",
+    "bytes": 5382
+  },
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/v3_analysis/results-r2/glm/A/E_class_experts.csv": {
+    "sha256": "f6c16e19c22f7158f1c62000545c659c9807fff4a0b31aab1824d5c42f690d2a",
+    "bytes": 158375
+  },
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/v3_analysis/results-r2/glm/A/E_expert_usage_associations.csv": {
+    "sha256": "acb7a9c93d60b92f8c24cdd5260f1797ad610591feac727a2a241f51679a62d8",
+    "bytes": 4641046
+  },
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/v3_analysis/results-r2/qwen330b/A/attempts.parquet": {
+    "sha256": "ea9581d14a2ec3d6ef56eac8054e421eb2315063b8df89d4fa756cea339be544",
+    "bytes": 1143520
+  },
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/v3_analysis/results-r2/qwen330b/B/attempts.parquet": {
+    "sha256": "a5ad6f05a6b251f991f5bd686448b9a057655d05bbc622d29c7d36c0b9e4111f",
+    "bytes": 183835
+  },
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/v3_analysis/results-r2/qwen330b/A/provenance.json": {
+    "sha256": "c03b06fb4d9b1e98334d896fe96f8a139ad92fef59d3a80bdc11c2ef57387e5a",
+    "bytes": 5466
+  },
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/v3_analysis/results-r2/qwen330b/A/E_class_experts.csv": {
+    "sha256": "039e7abd152733b9462a823081d4199afdb5f35ca1bfacc916e478330dc65de9",
+    "bytes": 163496
+  },
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/v3_analysis/results-r2/qwen330b/A/E_expert_usage_associations.csv": {
+    "sha256": "d1c88ee997001d4bd5f1863fa874c2e0f236461f275f7935cac1a5ffa147ad11",
+    "bytes": 5896818
+  },
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/R3E_B4_PRECISION_READOUT_v1.md": {
+    "sha256": "c80294ad7736f921d4bb83e52a66bb9f73f0780775956a30a9c4edcec1728e09",
+    "bytes": 3622
+  },
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/v3_analysis/results-r2/cross-4/F_A_across_meta.csv": {
+    "sha256": "c1feb9ccb6a75360f1e3d3f43cdb8232f5d0e7ca4e5484d99977046bd8172f49",
+    "bytes": 389170
+  },
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/v3_analysis/results-r2/cross-4/F_summary.md": {
+    "sha256": "a327773e49e955f548ca390b35bb3bb3e5d407c5caa3e43c0726611b6f589e24",
+    "bytes": 48685
+  }
+}

@@ -1,0 +1,43 @@
+{
+ "schema": "ordered-qualification-recovery-proposal-v2",
+ "recorded_UTC": "2026-10-01T14:49:18.164523+00:00",
+ "prior_binding": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/ordered-qualification-v1/PREPARED.cpu-recovery.json",
+ "prior_failed_job": "59103206",
+ "prior_failure": "DeadlineExceeded: cold load plus both fixed qualification batches: 880s left, 950s needed",
+ "driver": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/addenda/ordered/07fdb389a00d8c99/qualify_ordered.py",
+ "driver_sha256": "07fdb389a00d8c99d2000d60e13e9464c8a57cc671fc10e9866d604a5f3c35e3",
+ "fixtures": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/ordered-qualification-v1/CPU_PREFIXES.json",
+ "fixture_seal": "9ba30cff0ae8dd0bbad108b38f4030b78eec887f25994e08b6f33f15f521bb5c",
+ "maximum_requests": 17,
+ "maximum_decode_tokens": 16512,
+ "prefill_tokens": 37472,
+ "criteria_change": false,
+ "worker_change": false,
+ "selection_change": false,
+ "code_change": "move unchanged 950-second allowance before fingerprint/import; record setup and fingerprint timings",
+ "budget": {
+  "current_stage_ceiling_GPUh": 0.9,
+  "verified_stage_spent_GPUh": 0.27222222222222225,
+  "requested_additional_GPUh": 0.2,
+  "proposed_stage_ceiling_GPUh": 1.1,
+  "GPU_count": 2,
+  "wall_limit_minutes": 20,
+  "observed_shutdown_allowance_seconds": 196,
+  "maximum_new_allocation_including_shutdown_GPUh": 0.7755555555555556,
+  "maximum_stage_total_GPUh": 1.0477777777777777,
+  "proposed_contingency_GPUh": 0.05222222222222228,
+  "cold_import_load_and_fixed_batches_allowance_seconds": 950,
+  "all_preparation_prefill_decoding_recovery_failure_and_teardown_charged": true,
+  "no_allocation_transfer": true,
+  "no_further_retry_authorized": true
+ },
+ "status": "PREPARED_AWAITING_NEW_USER_AUTHORIZATION",
+ "does_not_qualify": [
+  "semantic transition detector",
+  "behavioral enrollment",
+  "original-prompt controller",
+  "complete discovery/mechanism/utility stage prices"
+ ],
+ "sha256": "45a929d9d970a6cfc05cf31d7ef02e9dbaa87ef282d0bd75223960934c6eae4d",
+ "private_full_binding": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/ordered-qualification-v1/PREPARED.cpu-recovery-v2.json"
+}

@@ -1,0 +1,194 @@
+{
+ "schema": "fresh-veto-outcome-sensitivity-plan-envelope-v2",
+ "frozen_utc": "2026-10-04T22:01:17.392171+00:00",
+ "binding": {
+  "schema": "fresh-veto-outcome-sensitivity-plan-v2",
+  "prior_draft_plan_sha256": "39ced6b2382f54b29e1edf592dc2491dcbd2357df2e176af3d1f36f407f3ce98",
+  "version_change": "Exact UID joins accommodate the runner deterministic transition/hash ordering; no scientific or enrollment change.",
+  "code_files": {
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/analyze_fresh_veto_sensitivity_v2.py": "40295338e09c8714b7b0a2b0d79c34fb5c3aaa67faf2c43e235e0cb986e5b545",
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/analyze_overnight_semantics_v2.py": "900a814038de6bf284902e480e9f5979ee58d7a23988b9ea272a786e785e12c5",
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/build_overnight_blind_frame_v2.py": "890195c3afb4880d7c8d61404357b39a8714bfb8da822641b60e0855dfcd7646",
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/rate_overnight_semantics_v2.py": "44dccecd8e1e315a256d49e278efa4e87086c5b27be3fd0d9bf06c2445bfecd4",
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/dispatch_overnight_readers_v1.py": "0c142175df5db52fdf00a85d0e8dd46099209a76c5161994b4279332d6c84a10",
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/adjudicate_extension_veto_format_v1.py": "09d7e72b56f383ee78415a6d0070fee7afdff1ecc948c24eca06101615a7b47d",
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/analyze_fresh_veto_sensitivity_v2.sbatch": "e7a4b5088ec10df383963a835eac23422a164218a46faf4429a47beb92300c1e",
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/submit_fresh_veto_sensitivity_v2.py": "660121ee3e2c70f897cb1296a26e6866cf25f0c1a5e1a2e13df27f869a2634de",
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/submit_fresh_veto_sensitivity_v2.sbatch": "757f70895fffb9bd9a4984f1e911492dc20eebfb12749e7277efce424e87a3e5",
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/dispatch_generated_dense_v1.py": "b4492b353f8a88b1262720f8459b9a736040e0f95260be2d088da20608a171bb"
+  },
+  "definitions_sha256": "3f5a7d9e2b35126c6372cb72fa54819e2c64c2247575bc78b1aa07c0e3ecdd6f",
+  "protocol_sha256": "2864678d94e44bb7d9d105ea8af780db36a4e9bdf6c60d458180f4f550f3c80f",
+  "format_result_sha256": "29b86bbe7ccbfc07131e6caa0d4a9df91a4a70bc5a7111d828634b718a1af3a0",
+  "enrollment_sha256": "7190b1dc34f8cc6e9aeac337dc66f993cd91ce139972112333f076887d4cb5ee",
+  "source_primary_analysis": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/OVERNIGHT_FRESH_COMPARISON_ANALYSIS_v2",
+  "primary_contrasts": [
+   {
+    "transition": "candidate_to_verify",
+    "a": "bias",
+    "b": "native"
+   },
+   {
+    "transition": "candidate_to_verify",
+    "a": "bias",
+    "b": "random_bias"
+   },
+   {
+    "transition": "candidate_to_verify",
+    "a": "force",
+    "b": "native"
+   },
+   {
+    "transition": "candidate_to_verify",
+    "a": "force",
+    "b": "random_force"
+   },
+   {
+    "transition": "candidate_to_verify",
+    "a": "reweight",
+    "b": "native"
+   },
+   {
+    "transition": "candidate_to_verify",
+    "a": "reweight",
+    "b": "random_reweight"
+   },
+   {
+    "transition": "candidate_to_verify",
+    "a": "force",
+    "b": "bias"
+   },
+   {
+    "transition": "candidate_to_verify",
+    "a": "reweight",
+    "b": "bias"
+   },
+   {
+    "transition": "candidate_to_verify",
+    "a": "repeat",
+    "b": "native"
+   },
+   {
+    "transition": "candidate_to_verify",
+    "a": "repeat",
+    "b": "random_repeat"
+   },
+   {
+    "transition": "candidate_to_verify",
+    "a": "repeat",
+    "b": "bias"
+   },
+   {
+    "transition": "candidate_to_verify",
+    "a": "expert189",
+    "b": "native"
+   },
+   {
+    "transition": "candidate_to_verify",
+    "a": "expert189",
+    "b": "random_expert189"
+   },
+   {
+    "transition": "candidate_to_verify",
+    "a": "expert9",
+    "b": "native"
+   },
+   {
+    "transition": "candidate_to_verify",
+    "a": "expert9",
+    "b": "random_expert9"
+   },
+   {
+    "transition": "candidate_to_verify",
+    "a": "bias",
+    "b": "expert189"
+   },
+   {
+    "transition": "candidate_to_verify",
+    "a": "bias",
+    "b": "expert9"
+   },
+   {
+    "transition": "approach_to_commit",
+    "a": "bias",
+    "b": "native"
+   },
+   {
+    "transition": "approach_to_commit",
+    "a": "bias",
+    "b": "random_bias"
+   },
+   {
+    "transition": "approach_to_commit",
+    "a": "force",
+    "b": "native"
+   },
+   {
+    "transition": "approach_to_commit",
+    "a": "force",
+    "b": "random_force"
+   },
+   {
+    "transition": "approach_to_commit",
+    "a": "reweight",
+    "b": "native"
+   },
+   {
+    "transition": "approach_to_commit",
+    "a": "reweight",
+    "b": "random_reweight"
+   },
+   {
+    "transition": "approach_to_commit",
+    "a": "force",
+    "b": "bias"
+   },
+   {
+    "transition": "approach_to_commit",
+    "a": "reweight",
+    "b": "bias"
+   },
+   {
+    "transition": "approach_to_commit",
+    "a": "repeat",
+    "b": "native"
+   },
+   {
+    "transition": "approach_to_commit",
+    "a": "repeat",
+    "b": "random_repeat"
+   },
+   {
+    "transition": "approach_to_commit",
+    "a": "repeat",
+    "b": "bias"
+   }
+  ],
+  "bootstrap_replicates": 50000,
+  "analysis_seed": 20261004,
+  "horizon": 1024,
+  "seeds": [
+   0,
+   1
+  ],
+  "freeze_state": "Frozen before fresh generated outcomes or primary analysis were read. Native veto format results are known and explicitly bound.",
+  "population": "Known strict starts among the same fixed 134 native starts: both stopped veto readers valid and false after format adjudication. Unknown veto ratings remain unknown; no replacement enrollment.",
+  "multiplicity": "All 28 frozen contrasts remain in the semantic sensitivity family; continuation tokens have their own 28-contrast secondary family. Neither family replaces the original primary family.",
+  "resources": {
+   "analysis": {
+    "CPU_cores": 2,
+    "memory_GiB": 8,
+    "wall_seconds": 1800,
+    "CPU_core_hour_ceiling": 1.0,
+    "GPU_hours": 0.0
+   },
+   "maximum_two_one_shot_attachments": {
+    "CPU_cores": 2,
+    "wall_seconds_each": 600,
+    "CPU_core_hour_ceiling": 0.6666666666666666,
+    "GPU_hours": 0.0
+   }
+  }
+ },
+ "sha256": "18134429066bc9f83ab86a184a84166caca940d552c0be31dfffd6e76d7216b7"
+}

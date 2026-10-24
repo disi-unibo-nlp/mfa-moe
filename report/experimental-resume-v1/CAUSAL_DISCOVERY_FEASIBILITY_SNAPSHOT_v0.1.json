@@ -1,0 +1,28 @@
+{
+ "schema": "routing-discovery-feasibility-snapshot-v0.1",
+ "status": "PRETREATMENT_SUPPORT_ONLY_THIRD_AUDIT_PENDING",
+ "fullprefix_agreement_sha256": "f15c5b8e283daf24b77ec72a910f013c0c47deb355628b42275891e56cefb43e",
+ "qwen_selected_pool_sha256": "457e6eb3586f37393115b9d4e68655eb11972d46a7e51fb3b42925bc7d6efdb2",
+ "driver_sha256": "ac5a06dced707e2a2654a48919241e23b00fbbacf51e81cf5a27d6a5980f2e07",
+ "registered_maximum_discovery_families": 48,
+ "qwen_only_selected_counts": {
+  "candidate_to_verify": 12,
+  "approach_to_commit": 10,
+  "failed_check_to_revise": 1
+ },
+ "qwen_only_selected_candidate_priority_globally_disjoint": 21,
+ "qwen_and_native_both_accept_counts": {
+  "candidate_to_verify": 8,
+  "approach_to_commit": 6,
+  "failed_check_to_revise": 0
+ },
+ "qwen_and_native_candidate_priority_globally_disjoint": 13,
+ "priority_if_both_actions_qualified": [
+  "candidate_to_verify",
+  "approach_to_commit"
+ ],
+ "failed_check_status": "omitted: zero jointly Qwen/native accepted discovery families",
+ "next_gate": "independent GPT-OSS full-prefix start audit with prospectively fixed rule, then seal exact IDs and distinct-family enrollment before interventions",
+ "limits": "13 is pretreatment high-agreement support, not a completed 48-family discovery stage; no mechanism128, utility96, causal efficacy, human truth or validation claim",
+ "sha256": "581736f0d5bf3eb2344ae36d1db77fe730e28d4e491844780254f904b6c484e9"
+}

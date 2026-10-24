@@ -1,0 +1,19 @@
+{
+ "schema": "operator-panel-implementation-verification-v1",
+ "operations_sha256": "b61bc98be974f5848da96c8c0bdcfd6faa0466dd696ba14f82a006438599f71e",
+ "test_files": {
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/tests/experimental_resume/test_operator_panel_orchestration_v1.py": "c9432fb571c3921c96967f4fa97ceae0c6400a8361d698868d915df9444b0fb0",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/tests/experimental_resume/test_operator_panel_v1.py": "54f78e53e9a6aa83d9983ae1e45e9d0df81e889cb40aa3824b4e33ec5c3e3d80"
+ },
+ "passed_tests": 13,
+ "native_entry_import_check": "PASS_WITHOUT_MODEL_LOAD",
+ "wrappers_bash_n": "PASS",
+ "submission_resource_acceptance": "PASS_IN_SBATCH_TEST_ONLY_AND_EXACT_SCONTROL_RECEIPTS",
+ "preserved_scientific_sources": 208,
+ "pilot_import_and_grading": "Test fixtures excluded from scientific outcomes",
+ "terminal_cpu_jobs": [
+  "59400756",
+  "59400758"
+ ],
+ "sha256": "54c1f3783cdeeb9e85febb7279b8fcf731f5a589cb7d36d218debb5183f36aed"
+}

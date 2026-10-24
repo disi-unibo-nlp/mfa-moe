@@ -1,0 +1,47 @@
+% Native GoM grouped-bar recipe in compact MoM-style metric panels.
+% Source: plot-gom-signed-bars.tex; plot-mom-ablation.tex panel organization.
+% Positive gains exactly negate saved loss contrasts; CI sides are exchanged.
+\begin{tikzpicture}
+\begin{axis}[journalaxis,scale only axis,width=154pt,height=88pt,anchor=outer south west,at={(0pt,0)},
+ybar=0pt,bar width=8pt,xmin=.5,xmax=8.5,enlarge x limits=false,ymin=0,ymax=.205,
+ytick={0,.05,.10,.15,.20},scaled y ticks=false,
+yticklabel style={/pgf/number format/fixed,/pgf/number format/precision=2},
+xtick={1,2,3,4,5,6,7,8},
+xticklabels={{\plotmodel{openai}{}{20B}},{\plotmodel{nvidia}{3.5}{30B}},{\plotmodel{qwen}{3.5}{35B}},{\plotmodel{qwen}{3.6}{35B}},{\plotmodel{gemma}{4}{26B}},{\plotmodel{zhipu}{4.7}{30B}},{\plotmodel{qwen}{3}{30B}},{\plotmodel{liquid}{2.5}{24B}}},
+xticklabel style={rotate=0,anchor=north,align=center,font=\fontsize{7}{8}\selectfont},
+title={\textbf{(a) Routing information gain}},title style={font=\fontsize{8}{9}\selectfont}]
+\addplot[shading=gombluegradient,draw=black,line width=.35pt,journalerror]
+table[x=x,y expr=-\thisrow{text},y error minus expr={max(\thisrow{textplus},\thisrow{textminus})},y error plus expr={max(\thisrow{textplus},\thisrow{textminus})}]
+{figures/journal/data/readout.dat};
+\node[anchor=south,inner sep=.3pt,font=\fontsize{7}{8}\selectfont] at (axis cs:1,0.10466878042562168) {0.079};
+\node[anchor=south,inner sep=.3pt,font=\fontsize{7}{8}\selectfont] at (axis cs:2,0.16528287233129557) {0.137};
+\node[anchor=south,inner sep=.3pt,font=\fontsize{7}{8}\selectfont] at (axis cs:3,0.16258938028668599) {0.141};
+\node[anchor=south,inner sep=.3pt,font=\fontsize{7}{8}\selectfont] at (axis cs:4,0.16176229393558605) {0.139};
+\node[anchor=south,inner sep=.3pt,font=\fontsize{7}{8}\selectfont] at (axis cs:5,0.1703561915651558) {0.149};
+\node[anchor=south,inner sep=.3pt,font=\fontsize{7}{8}\selectfont] at (axis cs:6,0.16202262924201496) {0.137};
+\node[anchor=south,inner sep=.3pt,font=\fontsize{7}{8}\selectfont] at (axis cs:7,0.11828574961030323) {0.094};
+\node[anchor=south,inner sep=.3pt,font=\fontsize{7}{8}\selectfont] at (axis cs:8,0.18011824607341556) {0.138};
+\end{axis}
+\begin{axis}[journalaxis,scale only axis,width=154pt,height=88pt,anchor=outer south west,at={(194pt,0)},
+ybar=0pt,bar width=8pt,xmin=.5,xmax=8.5,enlarge x limits=false,ymin=0,ymax=.205,
+ytick={0,.05,.10,.15,.20},scaled y ticks=false,
+yticklabel style={/pgf/number format/fixed,/pgf/number format/precision=2},
+xtick={1,2,3,4,5,6,7,8},
+xticklabels={{\plotmodel{openai}{}{20B}},{\plotmodel{nvidia}{3.5}{30B}},{\plotmodel{qwen}{3.5}{35B}},{\plotmodel{qwen}{3.6}{35B}},{\plotmodel{gemma}{4}{26B}},{\plotmodel{zhipu}{4.7}{30B}},{\plotmodel{qwen}{3}{30B}},{\plotmodel{liquid}{2.5}{24B}}},
+xticklabel style={rotate=0,anchor=north,align=center,font=\fontsize{7}{8}\selectfont},
+title={\textbf{(b) Alignment gain}},title style={font=\fontsize{8}{9}\selectfont}]
+\addplot[shading=gomorangegradient,draw=black,line width=.35pt,journalerror]
+table[x=x,y expr=-\thisrow{null},y error minus expr={max(\thisrow{nullplus},\thisrow{nullminus})},y error plus expr={max(\thisrow{nullplus},\thisrow{nullminus})}]
+{figures/journal/data/readout.dat};
+\node[anchor=south,inner sep=.3pt,font=\fontsize{7}{8}\selectfont] at (axis cs:1,0.0989921272500186) {0.081};
+\node[anchor=south,inner sep=.3pt,font=\fontsize{7}{8}\selectfont] at (axis cs:2,0.1614641446930582) {0.140};
+\node[anchor=south,inner sep=.3pt,font=\fontsize{7}{8}\selectfont] at (axis cs:3,0.17155148818773805) {0.154};
+\node[anchor=south,inner sep=.3pt,font=\fontsize{7}{8}\selectfont] at (axis cs:4,0.16874220512257665) {0.151};
+\node[anchor=south,inner sep=.3pt,font=\fontsize{7}{8}\selectfont] at (axis cs:5,0.15337462477659927) {0.133};
+\node[anchor=south,inner sep=.3pt,font=\fontsize{7}{8}\selectfont] at (axis cs:6,0.1359349292293424) {0.116};
+\node[anchor=south,inner sep=.3pt,font=\fontsize{7}{8}\selectfont] at (axis cs:7,0.12419074666478463) {0.107};
+\node[anchor=south,inner sep=.3pt,font=\fontsize{7}{8}\selectfont] at (axis cs:8,0.1672083454354204) {0.130};
+\end{axis}
+\node[anchor=north,yshift=-8pt,font=\fontsize{8.5}{9.5}\selectfont]
+at (current bounding box.south) {Gain (nats/sentence); higher is better};
+\end{tikzpicture}

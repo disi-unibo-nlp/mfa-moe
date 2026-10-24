@@ -1,0 +1,84 @@
+{
+ "schema": "routing-paper-measurement-v3",
+ "stage": "LEGACY",
+ "source_sha256": "104ee9fbd9387320dac669fa74a5697c7c5f9b584a63f7b1e7aa9bb75e95d618",
+ "arm_summary": {
+  "native": {
+   "assigned": 190,
+   "gradeable": 190,
+   "reader_pair_valid": 160,
+   "both_positive": 114,
+   "reader_disagreement": 16,
+   "reasoning_closure": 23,
+   "cap_1024": 184,
+   "emitted_tokens": 193079,
+   "statuses": {
+    "cap": 154,
+    "unscored": 30,
+    "early_finish": 6
+   }
+  },
+  "native_duplicate": {
+   "assigned": 190,
+   "gradeable": 190,
+   "reader_pair_valid": 160,
+   "both_positive": 117,
+   "reader_disagreement": 14,
+   "reasoning_closure": 21,
+   "cap_1024": 177,
+   "emitted_tokens": 191339,
+   "statuses": {
+    "unscored": 30,
+    "cap": 148,
+    "early_finish": 12
+   }
+  },
+  "target_bias1": {
+   "assigned": 190,
+   "gradeable": 190,
+   "reader_pair_valid": 155,
+   "both_positive": 110,
+   "reader_disagreement": 12,
+   "reasoning_closure": 27,
+   "cap_1024": 181,
+   "emitted_tokens": 192161,
+   "statuses": {
+    "cap": 147,
+    "unscored": 35,
+    "early_finish": 8
+   }
+  },
+  "random_bias1": {
+   "assigned": 190,
+   "gradeable": 190,
+   "reader_pair_valid": 157,
+   "both_positive": 109,
+   "reader_disagreement": 15,
+   "reasoning_closure": 20,
+   "cap_1024": 181,
+   "emitted_tokens": 192582,
+   "statuses": {
+    "cap": 148,
+    "unscored": 33,
+    "early_finish": 9
+   }
+  }
+ },
+ "available_sensitivity_fields": [
+  "at_least_one_reader_sensitivity",
+  "position_sensitivity"
+ ],
+ "accuracy_change": {
+  "status": "NOT_MEASURED_BY_CONTINUATION_STUDY"
+ },
+ "utility_16k": {
+  "status": "SEPARATE_ORIGINAL_PROMPT_STUDY_PENDING"
+ },
+ "gate_weight_trajectory": {
+  "status": "NOT_SAVED; ROUTE_ARRAYS_CONTAIN_EXPERT_IDS"
+ },
+ "historical_confirm_exposure": "Previously exposed; retain original disclosure",
+ "population_status": "exploratory_accepted_family_subset",
+ "no_new_fits": true,
+ "sha256": "76eb89e77ce81a75d92a4a2c84f12e3406d4dfda835e865046716c469583b94f"
+}

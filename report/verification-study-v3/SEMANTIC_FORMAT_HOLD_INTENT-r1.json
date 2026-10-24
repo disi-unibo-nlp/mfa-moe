@@ -1,0 +1,32 @@
+{
+  "campaign_sha256": "57df4a026a7be4c909ece85ac1ebe3dc47c3f27bb53ffcab88e3aa9d82bfbb3b",
+  "experimental_jobs": "all native discovery, audit and raw reader allocations continue unchanged",
+  "handoff_sha256": "23d8c1674c082fa713070d64cefc15a29c1991eaabb7eeef5e05182d52b70656",
+  "reason": "prospective versioned semantic JSON-fence interpretation before nomination or treatment",
+  "schema": "verification-semantic-format-hold-intent-v3",
+  "sha256": "e338413c6cb909da6e59c7fd210425cd805954a34c53588ec4e079912eb912b9",
+  "source_file_sha256": "67885d5c12555248bfb56fee8b58c39a31f5e353d1311ed6938843af4de95d1d",
+  "targets": [
+    {
+      "controller_card_sha256": "7afc44fb9955738f350666fb1cc313f8043f5834b09150689649e4f6fb3bd304",
+      "job_id": "59662113",
+      "prearm_sha256": "bc86143616353df92bee99a8c2810f75711933c2194dd0d98e6b3c9bc61133da",
+      "slot": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/automation/submissions/7afc44fb9955738f350666fb1cc313f8043f5834b09150689649e4f6fb3bd304",
+      "submission_sha256": "ec94935041d70419e3d835b4cd03978d6c6d978d800ad47dc48e8409582cddda"
+    },
+    {
+      "controller_card_sha256": "26ede64a83e47fce68fa11dcacc707a40571e5c9f031ed7e2c914b0295f1f142",
+      "job_id": "59662139",
+      "prearm_sha256": "b8d63a37e674c3bdce2641eb63096866b0dccadf4bdd1eeb032f05e255a39a3b",
+      "slot": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/automation/submissions/26ede64a83e47fce68fa11dcacc707a40571e5c9f031ed7e2c914b0295f1f142",
+      "submission_sha256": "e139ed23090541367638581f80846e947ff48bcead95bdd6c29196be07cf6acf"
+    },
+    {
+      "controller_card_sha256": "362c59e260b711b9942fbef976db785345177cc26b1b02e53999c79f0701dfce",
+      "job_id": "59662142",
+      "prearm_sha256": "569689d9e0d3c1e224a205431b797a064dce01752298a70bd5276c70424a93ef",
+      "slot": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/automation/submissions/362c59e260b711b9942fbef976db785345177cc26b1b02e53999c79f0701dfce",
+      "submission_sha256": "0ed3f2478e18448e95bee46e030c99c72aa98398d59eb3aed534afd4a788e404"
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+# D-0005: Leave review comment resolution to the author
+- status: active
+- date: 2026-10-22
+- decided_by: user
+- scope: Agent responses to the author's Overleaf review comments.
+- not_scope: The author's own decisions to resolve, reopen or delete comments.
+- chosen: After an actual fix is implemented, verified and delivered, reply in its original thread with an explanation of the change. Retain the original discussion and leave its resolution state unchanged. TODO-only items remain pending and do not receive false solved replies.
+- rejected: Automatically resolving or deleting addressed comments: the author explicitly reserves the final judgement.
+- evidence: User: "When addressing the comments, in the end, do not resolve/delete the comment. Add a subcommnt telling how u sovle it. And leave it there. So I can later judge and possibly solve it myself". LOC-044 and source-clone PRC-014 record this preference. DELIVERY.json verifies all 56 original threads, messages and open states unchanged after delivery.
+- keywords: overleaf, comments, replies, resolve, review, todos
+- paths: paper/manuscript-support/notes

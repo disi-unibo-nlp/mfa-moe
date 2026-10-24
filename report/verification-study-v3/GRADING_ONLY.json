@@ -1,0 +1,712 @@
+{
+  "generator_reader_access": "FORBIDDEN",
+  "public_catalog_sha256": "981c4f084b0ab32dacab1eb8012a128078a12a7ed47576f227614997205d952f",
+  "questions": {
+    "aime24|aime24_65": {
+      "family": "348d9687a043c916ed7d09f2b566c0d74893f0743b9fa825bf161208be593804",
+      "gold": "104"
+    },
+    "aime24|aime24_67": {
+      "family": "f5f2880171dac17ac29f10527d0398d26e859c729d70eaa39445d71e5299825e",
+      "gold": "25"
+    },
+    "aime25|aime25_7": {
+      "family": "f29be5e1006c6e1dd939dee3b790fdde598a51f41761a18a4ff5edfd80f3df07",
+      "gold": "77"
+    },
+    "amc23|amc23_28": {
+      "family": "fe413656eb88bcd59b91fafc8491dfc9b6106bd5eeeead02398d8ee95f45c3f8",
+      "gold": "50"
+    },
+    "amc23|amc23_32": {
+      "family": "7369e53b0447dbc9969dba9a7bbcc91d3597bb083f6862bbe7480086ef0e6603",
+      "gold": "11"
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|algebra|1074": {
+      "family": "7e1ce2097cffa5b5589b936bb5c286ad9768e4cef314b11797f8fd8fc769c071",
+      "solution": "We know $x$ can be in the domain of $f(x)$ only if $x^2$ is an element of the set $\\{0,1,2,3,4,5,6,7,8,9\\}$. There are $19$ values of $x$ for which this is true: $$x=0, \\pm 1, \\pm\\sqrt2, \\pm\\sqrt3, \\pm 2, \\pm\\sqrt 5, \\pm\\sqrt 6, \\pm\\sqrt 7, \\pm\\sqrt 8, \\pm 3.$$ Therefore, the domain of $f(x)$ contains at most $\\boxed{19}$ points."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|algebra|108": {
+      "family": "eafdf6c6088c41870d692d50a2861ecf0bb21ca9fa81c77fceccc7e31399f35d",
+      "solution": "Let's write the first sentence as an equation: \\begin{align*}\n\\frac{x}{y} &= \\frac{1}{2}, \\\\\n2x &= y.\n\\end{align*}\n\nNow, we can substitute this into the given equation to find $x$: \\begin{align*}\n2x &= 4x - 36, \\\\\n36 &= 2x, \\\\\n\\boxed{18} &= x.\n\\end{align*}"
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|algebra|109": {
+      "family": "0962428f37d4b494be4e628a7a467a860d2d3211d55694be6bd2250630f960b0",
+      "solution": "We begin by rewriting the equation as $2x^2y^3 - 3x^2 + 4y^3 = 149$. We can then use Simon's Favorite Factoring Trick and subtract 6 from both sides of the equation to get $2x^2y^3 - 3x^2 + 4y^3 -6 = 143$. This can be factored into $$(x^2 + 2)(2y^3 - 3) = 143$$Since we know that the prime factorization of $143 = 11 \\cdot 13$, we have that $2y^3 - 3$ must equal $\\pm1, \\pm11, \\pm13$ or $\\pm143$. The only possible values of $y$ are $1$ and $2.$ For $y = 1,$ there are no solutions. For $y = 2,$ we have $x = 3.$ Therefore, $x + y = \\boxed{5}$."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|algebra|1098": {
+      "family": "04da61ee23920f3fd5b09ec6bf47b76c840dab49266afc510c3c4fdd7888810f",
+      "solution": "Call the three terms $a$, $a+d$, and $a+2d$, in increasing order. We are told that the largest and smallest terms differ by 14, so $(a+2d)-a=2d=14$ or $d=7$.\n\nAfter adding half the smallest term to each term, they become $\\frac32a$, $\\frac32a+7$, and $\\frac32a+14$. Their sum is $\\frac92a+21=120$, which gives $\\frac92a=99$ or $a=\\boxed{22}$."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|algebra|1100": {
+      "family": "e7ecfbda33f5c781aa53c5df180097c1c222547a17c26a70e1814e26cc1d5735",
+      "solution": "Cross-multiplication gives  \\[x-9=2x+2.\\]Simplifying this expression tells us  \\[x=\\boxed{-11}.\\]"
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|algebra|1151": {
+      "family": "8c39095b7e337969a6ef958e5ce8822d98ce06d7094746e8fc96ad0e42f12cb9",
+      "solution": "The minimum value of $x^2$ is 0, which occurs when $x=0$.  Therefore, the minimum possible value of $y=x^2-7$ is $\\boxed{-7}$, which occurs when $x=0$."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|algebra|1167": {
+      "family": "05d7d9c91cf7c2d41f33a37bda3e9e17d13aa5b69d7e2d93ae077817d466d23c",
+      "solution": "Notice that by the logarithmic identity $\\log(x) - \\log(y) = \\log\\frac{x}{y}$, the equations are equivalent to $\\log\\frac{x}{y}=a$, $\\log\\frac{y}{z}=15$, and $\\log\\frac{z}{x}=-7$ respectively. Adding all three equations together yields $\\log\\frac{x}{y} + \\log\\frac{y}{z} + \\log\\frac{z}{x} = a + 15 - 7$. From the identity $\\log (x) + \\log (y) = \\log (xy)$, we obtain $\\log\\left(\\frac{x}{y}\\cdot\\frac{y}{z}\\cdot\\frac{z}{x}\\right) = a + 8$. Cancelations result in $\\log(1) = a + 8$. Since $\\log(1) = 0$, we find $a = \\boxed{-8}$."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|algebra|253": {
+      "family": "82329f8990e6348a1dc7b069ca88a02ff0761fa0f6100ff561c6c9ac724315bb",
+      "solution": "According to the order of operations, first perform the operation indicated in the parentheses.\n\n$6 \\ast 8 = \\cfrac{6+8}{2}$ or 7. Then $3 \\ast (6 \\ast 8) = 3 \\ast 7 = \\cfrac{3+7}{2}$ or $\\boxed{5}$."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|algebra|286": {
+      "family": "0052d6d035721a6736db5508433cc2a09160eb1e757b1d253ddcde573102a8e0",
+      "solution": "We can rewrite the problem as the system of equations: \\begin{align*}\nN+x &= 97\\\\\nN+5x &= 265\n\\end{align*}Subtracting these gives: \\begin{align*}\n4x &= 265-97=168\\\\\nx &= 42.\n\\end{align*}So now $N = 97-42= 55$. So the charge for a two-hour repair job is $N+2x = \\$ 55+2\\cdot \\$ 42 = \\boxed{\\$ 139}$."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|algebra|302": {
+      "family": "a24ace68d1cb4b223b29cf1181f267ccd04407a2bf1e576e1b9df94c9bcb4b66",
+      "solution": "Multiply all three equations to find that  \\begin{align*}\n\\frac{a}{b}\\cdot\\frac{b}{c}\\cdot\\frac{c}{d}&=\\frac{3}{5}\\cdot\\frac{15}{6}\\cdot\\frac{6}{1} \\implies \\\\\n\\frac{a}{d}&=\\boxed{9}.\n\\end{align*}"
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|algebra|308": {
+      "family": "1aea054ece110a1d1ca978c27ab2f14a498d9ccb0b7f72eb94887d0e59a149de",
+      "solution": "Note that $-16x^4+x^2+2x+1=(x+1)^2-(4x^2)^2=\\boxed{(-4x^2+x+1)(4x^2+x+1)}$, where we have used the difference of squares identity for the second equality."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|algebra|313": {
+      "family": "ebc067ab3101b620eedee2e06fbc3e81a2e0c25ff0674bc42c3729d1029b1234",
+      "solution": "From the first equation, we can see that $x = \\frac{5}{2}y$. Substituting for $x$ in the second equation, we obtain $3\\left(\\frac{5}{2}y\\right) - 4y = 7$, which reduces to $y = 2$. Solving for $x$, we find that $x = 5$. Therefore, $Z = (5, 2)$ and our answer is $5 + 2 = \\boxed{7}$."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|algebra|33": {
+      "family": "bb69df4206ecfd919645ba9eb1b68b85361a7c2b9e602e75102feb145ffd4f08",
+      "solution": "If we have two points $(x_1,y_1)$ and $(x_2,y_2)$ on a line, we can find the slope of the line by using the formula $\\dfrac{y_1-y_2}{x_1-x_2}.$ So, for the line we are given, the slope is $\\dfrac{(-5)-(-14)}{2-p}=\\dfrac{9}{2-p},$ and the slope is also $\\dfrac{(-14)-(-17)}{p-(p+2)}=\\dfrac{3}{-2}.$ Setting these values equal, we get $$\\dfrac{9}{2-p}=-\\dfrac{3}{2}.$$ Multiplying both sides by the product of the denominators and simplifying gives \\begin{align*}\n(2-p)(3)&=(-2)(9)\\\\\n6-3p&=-18 \\\\\np&=8.\n\\end{align*} Now we need to find $q.$ Using the same strategy as above, we find that \\begin{align*}\n\\frac{q-(-5)}{13-2}&=\\frac{3}{-2} \\\\\n(11)(3)&=(-2)(q+5)\\\\\n33&=-2q-10 \\\\\nq&=-21.5.\\\\\n\\end{align*} Therefore, $p+q=8+(-21.5)=\\boxed{-13.5}.$"
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|algebra|368": {
+      "family": "cf38b377f574114567fd1c626fc1bc0732926f5766242d8c3a9bd6d2ad9357cb",
+      "solution": "We have the system of equations:\n\n\\begin{align*}\nx + y &= 153 \\\\\n\\frac{x}{y} &= 0.7 \\\\\n\\end{align*}\n\nFrom the second equation, multiplying both sides by $y$ gives $x=.7y$. Next, substituting the second equation into the first to eliminate $x$ gives $.7y+y=153$, or $y=90$. Plugging in this value into the first equation in the original system of equations gives $x+90=153$ or $x=63$. Thus, $y-x=90-63=\\boxed{27}$."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|algebra|369": {
+      "family": "c4f49692c6c0e996a0080a705d7375c8ba8fd1cbfa482d5d0f0aeb1c3df30051",
+      "solution": "Suppose that the dimensions of the rectangular prism are given by $x$, $y$, and $z$, such that $xy = 30, yz = 180,$ and $zx = 24$. If we multiply all three equations together, we get that $xy \\cdot yz \\cdot zx = (xyz)^2 = 30 \\cdot 180 \\cdot 24$. Using prime factorizations, we find that the right-hand side is equal to $(2 \\cdot 3 \\cdot 5) \\times (2^2 \\cdot 3^2 \\cdot 5) \\times (2^3 \\cdot 3) = 2^6 \\cdot 3^4 \\cdot 5^2$. Thus, $(xyz)^2 = (2^3 \\cdot 3^2 \\cdot 5)^2$, so $xyz = \\boxed{360}$. This is the formula for the volume of the box."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|algebra|418": {
+      "family": "6b83489d88ba86adf6af966a2bd05c549d36164f0ecc2febecb1ebb5143ddaa1",
+      "solution": "Letting $v$ denote speed, $x$ denote distance, and $t$ denote time, we have $v=\\frac{x}{t}$. In our problem, we're given that $v=9\\ \\text{m/s}$ and $t=12\\ \\text{s}$. Solving for the distance, we find that $x=vt=\\boxed{108}\\ \\text{m}$."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|algebra|471": {
+      "family": "60fe310efefe0bc7a8f13744f696b3df987ce06e5a64add252f909fe8ee8337b",
+      "solution": "Since 6 cookies cost the same as 2 brownies, 18 cookies will cost the same as 6 brownies.  Similarly, 4 brownies cost the same as 10 cupcakes, so 6 brownies will cost the same as $10\\cdot \\frac{6}{4} = 15$ cupcakes.  Therefore, 18 cookies have the same price as $\\boxed{15}$ cupcakes."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|algebra|474": {
+      "family": "c9e6230a8bbb995fbe3710514ea1b715d64a9fac5f1801018f97d49c7500bcbb",
+      "solution": "First, we note  \\[x^3-y^3 = (x-y)(x^2 +xy +y^2) = 6(24+xy),\\] so we just need to find $xy$ now.  Squaring both sides of $x-y=6$ gives  $$x^2 - 2xy + y^2 = 36.$$ Since $x^2 + y^2 = 24$, we have $24-2xy = 36$, so $xy = -6$, from which we have  \\[x^3-y^3 = 6(24 +xy) = 6(24 - 6) = 6(18) = \\boxed{108}.\\]"
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|algebra|532": {
+      "family": "8ba9449f55ae72638e8fc5ef43870f5810d7940e069751623e3a2c9cf472f316",
+      "solution": "We want to find the sum $1 + 2 + \\dots + 12$.  This sum is equal to the average of the first and last term, multiplied by the total number of terms, which is \\[\\frac{1 + 12}{2} \\cdot 12 = \\boxed{78}.\\]"
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|algebra|54": {
+      "family": "738fbf56d0b58efe72783027259488562e0435e3b78e0565f4678b3903d4b629",
+      "solution": "Letting $t$ equal the number of tickets sold in a single order, we get the following inequality: \\begin{align*} 4200&<(70-(t-60))(t)\n\\\\4200&<(130-t)(t)\n\\\\4200&<130t-t^2\n\\\\\\Rightarrow\\qquad t^2-130t+4200&<0\n\\\\\\Rightarrow\\qquad (t-60)(t-70)&<0\n\\end{align*}Since the two roots of the left-hand side are 60 and 70, the inequality must change sign at these two points. For $t<60$, both factors of the inequality are negative, thus making it positive. For $60<t<70$, only $t-70$ is negative, so the inequality is negative. Finally, for $t>70$, both factors are positive, making the inequality positive once again. This tells us that the range of $t$ that will result in a profit greater than $\\$4200$ is $(60,70)$. Since the number of tickets purchased in one order must be an integer, the largest number of tickets which brings a profit greater than $\\$4200$ is $t=\\boxed{69}$."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|algebra|594": {
+      "family": "d07c3ebf7af76c2fa25e444e2be206d0b7caa7b67c3a1eb455146327a2a6433e",
+      "solution": "Since these equations look symmetric, at least on the left-hand side, we add all three together.  This gives us  \\begin{align*}\n&a(x+1+y)+b(y+x+1)+c(1+y+x)\\\\\n&\\qquad\\qquad=x+7+2x+6y+4x+y.\n\\end{align*} We then factor out $(1+x+y)$ on the left and simplify the right side to get \\begin{align*}\n(1+x+y)(a+b+c)&=7x+7y+7, \\text{ so}\\\\\n(1+x+y)(a+b+c)&=7(1+x+y).\n\\end{align*}\n\nSince $x+y\\neq -1$, we know $x+y+1\\neq 0$, so we can divide both sides by that term and find that $a+b+c=\\boxed{7}$."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|algebra|602": {
+      "family": "11253e83e93e6a7e78d7d863808b9e743711c16f0d642733c7b4f607500a8c99",
+      "solution": "We make the variable $x$ the number of adult patrons and $y$ the number of children patrons. Since the movie theater is full and seats $100$, $x+y=100$.\n\nAdult tickets sell for $\\$9.00$ each, so a total of $9x$ dollars were collected from adults. Children tickets sell for $\\$5.00$ each, so a total of $5y$ dollars were collected from children. A total of $\\$640$ were collected, so $9x+5y=640$.\n\nWe now have two equations, $x+y=100$ and $9x+5y=640$. We now solve for $y$.\n\nWe multiply the first equation by $9$ so that we can eliminate the $x$ term: $9x+9y=900$. Then, we subtract the second equation from it to get $9x+9y-(9x+5y)=900-640 \\rightarrow 4y=260 \\rightarrow y=65$.\n\nTherefore, $\\boxed{65 \\text{ children tickets }}$ were sold."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|algebra|635": {
+      "family": "b926f601b6d5fe063214b3dc322beea4b0748e887ef90ee91b91ab3c729d68fa",
+      "solution": "Since $f$ has a degree of $2$, the degree of $(f(x))^3$ is $6$. Also, since $g$ has a degree of $3$, the degree of $(g(x))^2$ is $6$. Furthermore, as $f$ and $g$ both have a leading coefficient of $1$, then $(f(x))^3$ and $(g(x))^2$ both have a leading coefficient of $1$. Hence, when subtracting $(f(x))^3 - (g(x))^2$, the leading terms cancel, and so $(f(x))^3 - (g(x))^2$ has a maximum degree of $5$. We can see that a degree of $\\boxed{5}$ can be achieved by taking $f(x) = x^2 + x$ and $g(x) = x^3$, for example."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|algebra|706": {
+      "family": "9716b35d40baa00d23c5b2371a8e810266cafd3ac7ab89db86e057bd09dc69f1",
+      "solution": "Cancel some factors of 2 before subtracting: \\begin{align*}\n\\frac{2^{10}-2^8}{2^7-2^6}&=\\frac{2^8(2^{2}-1)}{2^6(2^1-1)} \\\\\n&=2^2\\left(\\frac{3}{1}\\right) \\\\\n&=\\boxed{12}.\n\\end{align*}"
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|algebra|716": {
+      "family": "4f8c03b6204a970cc343994583f823e0b693a948c008cb5ecf9b2614cda811c7",
+      "solution": "$(i/4)^4 = (i^4)/(4^4) = (1)/256 = \\boxed{\\frac{1}{256}}$"
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|algebra|74": {
+      "family": "8fdb9aa8a8cf4cb7b46ee94fad11a6446331cdb2b8384700a6e345c1af1844fe",
+      "solution": "First we divide both sides by 2 to get $x(x-10)=-25$. Expanding the left side and bringing the constant over, we get $x^2-10x+25=0$. We can factor this into $(x-5)(x-5)$, so the only possible value for $x$ is $\\boxed{5}$, which is also our answer."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|algebra|778": {
+      "family": "dd3bbfee671e08edb58e1f9a1cecc4aefee430683398c2b8bb2e1748e34bb935",
+      "solution": "We begin by using the quadratic formula $x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}$ to find the values of the two roots. From this, we get that $x = \\frac{-5 \\pm \\sqrt{25 + 12a}}{2a}$. Then, we can find $$x_1 - x_2 = \\frac{-5 + \\sqrt{25 + 12a}}{2a} - \\frac{-5 - \\sqrt{25 + 12a}}{2a} = \\frac{\\sqrt{25 + 12a}}{a}.$$Hence,\n\\[\\frac{\\sqrt{12a + 25}}{a} = \\frac{\\sqrt{61}}{3}.\\]Squaring both sides, we get\n\\[\\frac{12a + 25}{a^2} = \\frac{61}{9},\\]which simplifies to $61a^2 - 108a - 225 = 0$.  This equation factors as $(a - 3)(61a + 75) = 0$.  Since $a$ is positive, $a = \\boxed{3}$."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|algebra|876": {
+      "family": "54172017e5a60aa2575a53ab6dbcc71ace037e8acf061b80e6c4e2b929fd0b7c",
+      "solution": "In slope-intercept form, the given equation becomes $y=\\frac{5}{4}x-5$.  The slope of this line is $\\frac{5}{4}$, so the slope of a line perpendicular to this one is the negative of the reciprocal of $\\frac{5}{4}$, or $\\boxed{-\\frac{4}{5}}.$"
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|algebra|881": {
+      "family": "1504f2d18696d5ca374b32740fbb9da5e72ab6e9fb23cc6bcd01e0817ed89773",
+      "solution": "From $x^2-mx+n=0$, we get $k+t=m$ and $kt=n$. Since $n$ is prime, one of $k$ and $t$ is $n$ and the other is 1. $k>t$, so $k=n$ and $t=1$. Then $m=n+1$. $m$ is also prime, so we have two consecutive integers that are prime. Since one of every two consecutive integers is even, and the only even prime is 2, we must have $n=2$ and $m=3$. Therefore, $m^n+n^m+k^t+t^k= 3^2+2^3+2^1+1^2=9+8+2+1=\\boxed{20}$."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|algebra|93": {
+      "family": "e24351051d2015621aa69120518b4feddfc5b42bdb60389768f681363c6ad272",
+      "solution": "We can rephrase the problem as the system of equations: \\begin{align*}\n\\frac{a+2b}{2} &= 7\\\\\n\\frac{a+2c}{2} &= 8\n\\end{align*} Adding these gives: \\begin{align*}\n\\frac{a+2b}{2}+\\frac{a+2c}{2} &= 7+8\\\\\n\\frac{2a+2b+2c}{2} &= 15\\\\\na+b+c &= 15\\\\\n\\frac{a+b+c}{3} &= \\frac{15}{3} = \\boxed{5}\n\\end{align*}"
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|counting_and_probability|113": {
+      "family": "26a4f22d50faa3a60367768ee4fc84a0c5da9f5daef11ea0a4aaf623b43929a9",
+      "solution": "Combining like terms, we want to find the value of $(1)!\\div(1)!$, which is just $\\boxed{1}$."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|counting_and_probability|194": {
+      "family": "7e19c4cbf28c042eb76e9208cc53ba6e5cc3df28bd1f387da704f0439d36dd83",
+      "solution": "It takes 2 additional segments to create an additional triangle after the first. Since Figure $n$ has $n$ triangles, Figure 25 has 25 triangles. It takes 3 segments to create the first triangle and $2\\cdot24=48$ segments to create the 24 additional triangles, for a total of $3+48=\\boxed{51}$ segments."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|counting_and_probability|216": {
+      "family": "edf1da12def31098ea8e155bdbeca57e98e26fc37426c9541d61ed900dd0bc06",
+      "solution": "The probability of flipping exactly two heads and one tail is ${3 \\choose 2}\\left(\\frac{3}{5}\\right)^2 \\cdot \\frac{2}{5} = \\frac{54}{125}$. The probability of flipping exactly three heads and no tails is $\\left(\\frac{3}{5}\\right)^3 = \\frac{27}{125}$. So these are the two cases for having more heads than tails, and their sum is $\\frac{54+27}{125} = \\boxed{\\frac{81}{125}}$."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|counting_and_probability|288": {
+      "family": "92cc4c277df23701d31593ecb7fcb4177a6fd46dd438e248c01390dfea7584a2",
+      "solution": "There are $250-25+1 = 226$ numbers in the list $25, 26, \\ldots, 250$.  We can find four perfect cubes in the list, namely $3^3,\\ldots,6^3$.  So the number of non-perfect-cubes in the list is $226-4=\\boxed{222}$."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|counting_and_probability|313": {
+      "family": "9f4436dfeab0bcf7054958949047af342f46512b4559b97cb5a288df5763db7b",
+      "solution": "If a red marble is chosen first ($\\frac{12}{18}=\\frac{2}{3}$ chance), then there is a $\\frac{6}{17}$ chance that a blue marble will be chosen second. If a blue marble is chosen first ($\\frac{6}{18}=\\frac{1}{3}$ chance), then there is a $\\frac{12}{17}$ chance that a red marble will be chosen second. The total probability that one red and one blue marble will be chosen is $\\frac{2}{3}\\cdot\\frac{6}{17}+\\frac{1}{3}\\cdot\\frac{12}{17}=\\boxed{\\frac{8}{17}}$."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|counting_and_probability|314": {
+      "family": "ed82a6131efa1a24c43d199d91c37ffca252e8b190b6ca53f51a9b74e61ae7c4",
+      "solution": "There are 3 possible prime numbers which can be rolled (2, 3, and 5), and two possible composite numbers which can be rolled (4 and 6). Each number has a $\\dfrac{1}{6}$ chance of being rolled. So, the expected value of Beth's winnings is $$\\frac{3}{6}(1)+\\frac{2}{6}(-1)+\\frac{1}{6}(0)=\\boxed{\\frac{1}{6}}$$"
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|counting_and_probability|34": {
+      "family": "229dce05c8278fc67a496415a00205de0969cc7df2900f665d5216812f28823b",
+      "solution": "We first count the even terms of the sequence. Subtract $2$ from the list to get $4,$ $8,$ $12,$ $\\ldots,$ $92,$ $96,$ and then divide by $4$ to get $1,$ $2,$ $3,$ $\\ldots,$ $23,$ $24.$ So this list has ${24}$ numbers.\n\nWe then count the odd terms of the sequence. Subtract $3$ from the list to get $4,$ $8,$ $12,$ $\\ldots,$ $92,$ then divide by $4$ to get $1,$ $2,$ $3,$ $\\ldots,$ $23.$ So this list has ${23}$ numbers.\n\nNow we sum up the above two numbers, which yield a total $24+23=\\boxed{47}$ numbers."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|counting_and_probability|381": {
+      "family": "6630be8e8aa3c32391fa70600fea5c08210110388cad7683ee3d4b3135127a68",
+      "solution": "There are a total of $2^6=64$ equally likely sequences of heads and tails coin flips.  Each toss corresponds to a movement clockwise or counterclockwise, so each sequence of coin tosses corresponds to a sequence of six movements, $L$ or $R$.  If the man gets six consecutive heads or tails, corresponding to $RRRRRR$ or $LLLLLL$, then he will return to the starting point.  But, the man could also flip three heads and three tails in some order, corresponding to a sequence like $RRLRLL$.  There are a total of $\\binom{6}{3}=20$ sequences of moves that include three moves counterclockwise, and three clockwise.  The probability that the man ends up where he started is: $$\\frac{20+1+1}{64}=\\boxed{\\frac{11}{32}}$$"
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|counting_and_probability|408": {
+      "family": "febc90b1d9ad2fd05120e8b7156b8f7c4559547c65f74b359c6557ce4e2ccbbc",
+      "solution": "The best way to approach this problem is to use complementary counting. We already know that there are $20 \\times 19 \\times 18$ ways to choose the 3 officers if we ignore the restriction about Alex and Bob.  So now we want to count the number of ways that both Alex and Bob serve as officers.\n\nFor this, we will use constructive counting.  We need to pick an office for Alex, then pick an office for Bob, then put someone in the last office.  We have 3 choices for an office for Alex, either President, VP, or Treasurer.  Once we pick an office for Alex, we have 2 offices left from which to choose an office for Bob.\n\nOnce we have both Alex and Bob installed in offices, we have 18 members left in the club to pick from for the remaining vacant office.  So there are $3 \\times 2 \\times 18$ ways to pick officers such that Alex and Bob are both in an office.  Remember that these are the cases that we want to exclude, so to finish the problem we subtract these cases from the total number of cases.  Hence the answer is: $$ (20 \\times 19 \\times 18) - (3 \\times 2 \\times 18) = ((20 \\times 19)-6) \\times 18 = 374 \\times 18 = \\boxed{6732}. $$"
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|counting_and_probability|429": {
+      "family": "fe8f687711f8f437512ce7d15a03f13cfd0a495c231c9c05689c967e15f8ed52",
+      "solution": "The only one-digit integer divisible by $4$ that we can construct is $4$.\n\nWe can construct $3$ two-digit integers divisible by $4$: $12$, $32$, and $24$.\n\nAn integer is divisible by $4$ if its rightmost two digits are divisible by $4$.  Thus we can append either or both of the remaining two digits to any of these two-digit integers and preserve divisibility by $4$.  For each, there are $2$ ways to choose one digit to append, and $2$ ways to order the digits if we append both of them.  Thus we get $4$ more integers for each, or $12$ total.\n\nThe full number is $12+3+1=\\boxed{16}$ integers."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|counting_and_probability|43": {
+      "family": "4400a1a906d76851d409bb7d81c0c31ab86c30907d29cac304e9070a006cf0c0",
+      "solution": "Note that the only even prime is 2. The probabilty of rolling a 2 is $\\frac{1}{6}$, so the probabilty of not rolling a 2 is $1-\\frac{1}{6} = \\boxed{\\frac{5}{6}}$."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|counting_and_probability|44": {
+      "family": "ece85caab9f250a8a63abfc19f5fe1ab20a594a83309dafbe0c3cff106a23ee7",
+      "solution": "When we expand this out, we get a bunch of terms with $\\sqrt7$ in them. To avoid painful estimation, we do the following trick: Add $(5-2\\sqrt7)^4$ to this expression. We know that $(5-2\\sqrt7)^4$ is small, since $2\\sqrt7=\\sqrt{28}$ is close to $5=\\sqrt{25}$, at least compared to $6=\\sqrt{36}$. When we add these together, the $\\sqrt7$ terms magically cancel out. By the Binomial Theorem, $$(5+2\\sqrt7)^4=5^4+4\\cdot5^3\\cdot(2\\sqrt7)+6\\cdot5^2\\cdot(2\\sqrt7)^2+4\\cdot5\\cdot(2\\sqrt7)^3+(2\\sqrt7)^4$$ whereas $$(5-2\\sqrt7)^4=5^4-4\\cdot5^3\\cdot(2\\sqrt7)+6\\cdot5^2\\cdot(2\\sqrt7)^2-4\\cdot5\\cdot(2\\sqrt7)^3+(2\\sqrt7)^4.$$ Therefore, their sum is $$2(5^4+6\\cdot5^2(2\\sqrt7)^2+(2\\sqrt7)^4)=2(625+4200+784)=11218.$$ Since the term we added, $(5-2\\sqrt7)^4$, is less than a half (actually, it's less than .01), $\\boxed{11218}$ is the closest integer to $(5+2\\sqrt7)^4$."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|counting_and_probability|73": {
+      "family": "be59484c4085f4b5fe8b27beefc5cc203622b6004d90b86f3130b418ab90ca63",
+      "solution": "The probability that two particular dice will show 1's, two particular dice will show 2's, and the other two dice will show neither of those is $\\left(\\dfrac{1}{6}\\right)^2\\left(\\dfrac{1}{6}\\right)^2\\left(\\dfrac{4}{6}\\right)^2=\\dfrac{1}{2916}$. There are $\\binom{6}{2}=15$ ways to select two out of the 6 dice to be 1's and $\\binom{4}{2}=6$ to select two dice out of the remaining four to show 2's, which means that there are a total of $15\\cdot6=90$ ways of selecting which dice will be 1's and 2's. Multiplying this by the probability that any particular one of these arrangements will be rolled gives us our final answer of $90\\cdot\\dfrac{1}{2916}=\\boxed{\\dfrac{5}{162}}$."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|geometry|102": {
+      "family": "0687d07a70423e54227df2309f2c62a588f6222bb073ace4cedd940b5774c1ea",
+      "solution": "Let $x$ denote the measure of each of the two equal sides.  Then the remaining side has measure $20-2x$ units.  By the triangle inequality, the third side must be shorter than the two equal sides combined.  In other words, $x+x>20-2x$.  Solving this inequality, we find $x>5$.  Also, the third side length has to be positive, so $20-2x>0$ which implies $x<10$.  Therefore, the $\\boxed{4}$ integers strictly between 5 and 10 are the possible integer values of $x$."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|geometry|217": {
+      "family": "b472fa3126b7774e35ba08b1ee185ea99ae4ac418ec98210980fbe18b15488c2",
+      "solution": "Since the volume of a sphere is directly proportional to its diameter cubed, the ratio of the volume of the ball with a diameter of 4 cm to the volume of the ball with a diameter of 3 cm is $(4/3)^3\n= 64/27$.  Since all of the rubber bands have the same volume, it follows that the number of rubber bands in the ball with diameter 4 is \\[ (4/3)^3 \\cdot 54 = \\frac{64}{27} \\cdot 54 = 64 \\cdot 2 = 128. \\]Therefore the number of rubber bands that Alana needs to add to the ball is $128 - 54 = \\boxed{74}$."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|geometry|281": {
+      "family": "c3f4a5b285718e8594dce41c6168ba7c066e82bd318cc2df5659a2392fab6576",
+      "solution": "Using the Triangle Inequality, we see that $x > 1$ and $x < 11,$ so $x$ can be any integer from $2$ to $10,$ inclusive. The sum can be calculated in several ways, but regardless, $2 + 3 + 4 + 5 + 6 + 7 + 8 + 9 + 10 = \\boxed{54}.$"
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|geometry|282": {
+      "family": "3e6edb6ebe265af8f53a3fa5f966aa530192acedb78598fc0f4458ea55cc2e93",
+      "solution": "A cylinder with radius $r$ and height $h$ has volume $\\pi r^2 h$; a cone with the same height and radius has volume $(1/3)\\pi r^2 h$.  Thus we see the cone has $1/3$ the volume of the cylinder, so the space between the cylinder and cone has $2/3$ the volume of the cylinder, which is $(2/3)(72\\pi) = \\boxed{48\\pi}$."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|geometry|286": {
+      "family": "1d479320e3c3c957b8146ff7bd00e73e78defff37e369438ee09d5c0e5fde65a",
+      "solution": "The angles opposite the equal sides of $\\triangle ABC$ are congruent, so $\\angle BCA=30^\\circ$. Since $\\angle BCA$ and $\\angle XCA$ are supplementary, we have \\begin{align*}\n\\angle XCA &= 180^\\circ - \\angle BCA\\\\\n&= (180-30)^\\circ \\\\\n&= 150^\\circ.\n\\end{align*} Since $\\triangle ACX$ is isosceles with $AC=CX$, the angles $\\angle XAC$ and $\\angle AXC$ are congruent. Let each of them be $x^\\circ$. Then the sum of angles in $\\triangle ACX$ is $180^\\circ$, so $$x + x + 150 = 180,$$ yielding $x=15$. That is, $\\angle AXC = \\boxed{15}$ degrees."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|geometry|308": {
+      "family": "bee4c1ec9e16e9fe21734d3b80e4be995e31ff668a5bae3723e9a32ea330acb8",
+      "solution": "The center of the disk lies in a region $R$, consisting of all points within 1 unit of both $A$ and $B$. Let $C$ and $D$ be the points of intersection of the circles of radius 1 centered at $A$ and $B$. Because $\\triangle ABC$ and $\\triangle ABD$ are equilateral, arcs $CAD$ and $CBD$ are each $120^{\\circ}$. Thus the sector bounded by $\\overline{BC}$, $\\overline{BD}$, and arc $CAD$ has area $\\pi/3$, as does the sector bounded by $\\overline{AC}$, $\\overline{AD}$, and arc $CBD$. The intersection of the two sectors, which is the union of the two triangles, has area $\\sqrt{3}/2$, so the area of $R$ is \\[\n\\frac{2\\pi}{3}-\\frac{\\sqrt{3}}{2}.\n\\][asy]\nunitsize(3cm);\nlabel(\"Region $R$\",(-0.87,0.5),NW);\ndraw((-0.87,0.5)..(-0.5,0.87)--(-1,0)..cycle,linewidth(0.7));\ndraw((-0.87,-0.5)..(-0.5,-0.87)--(-1,0)..cycle,linewidth(0.7));\ndraw((-0.13,0.5)..(-0.5,0.87)--(0,0)..cycle,linewidth(0.7));\ndraw((-0.13,-0.5)..(-0.5,-0.87)--(0,0)..cycle,linewidth(0.7));\ndraw((-1,0)--(0,0),linewidth(0.7));\nlabel(\"1\",(-0.5,0),N);\nlabel(\"$A$\",(-1,0),W);\nlabel(\"$B$\",(0,0),E);\nlabel(\"$C$\",(-0.5,0.87),N);\nlabel(\"$D$\",(-0.5,-0.87),S);\n[/asy]\n\nThe region $S$ consists of all points within 1 unit of $R$. In addition to $R$ itself, $S$ contains two $60^\\circ$ sectors of radius 1 and two $120^\\circ$ annuli of outer radius 2 and inner radius 1. The area of each sector is $\\pi/6$, and the area of each annulus is \\[\n\\frac{\\pi}{3}(2^{2}-1^{2})=\\pi.\n\\]Therefore the area of $S$ is \\[\n\\left(\\frac{2\\pi}{3}-\\frac{\\sqrt{3}}{2}\\right) + 2\\left(\\frac{\\pi}{6}+\\pi \\right)= \\boxed{3\\pi-\\frac{\\sqrt{3}}{2}}.\n\\][asy]\nunitsize(1cm);\ndraw((-0.87,0.5)..(-0.5,0.87)--(-1,0)..cycle,linewidth(0.7));\ndraw((-0.87,-0.5)..(-0.5,-0.87)--(-1,0)..cycle,linewidth(0.7));\ndraw((-0.13,0.5)..(-0.5,0.87)--(0,0)..cycle,linewidth(0.7));\ndraw((-0.13,-0.5)..(-0.5,-0.87)--(0,0)..cycle,linewidth(0.7));\ndraw((-1,0)--(0,0),linewidth(0.7));\nlabel(\"1\",(-0.5,0),N);\nlabel(\"$A$\",(-1,0),W);\nlabel(\"$B$\",(0,0),E);\nlabel(\"$C$\",(-0.4,0.87),NE);\nlabel(\"$D$\",(-0.4,-0.87),SE);\ndraw(Circle((-0.5,0),1.8),linewidth(0.7));\ndraw((0,0)--(-1,1.73),linewidth(0.7));\ndraw((0,0)--(-1,-1.73),linewidth(0.7));\ndraw((-1,0)--(0,1.73),linewidth(0.7));\nlabel(\"Region $S$\",(-2.3,0),W);\ndraw((-1,0)--(0,-1.73),linewidth(0.7));\n[/asy]"
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|geometry|32": {
+      "family": "aa8f9c3ec60bb9ef99e386150ae9cd858c5dae40dc2d2787c40fdfc92c4b1512",
+      "solution": "The overlap of the two squares is a smaller square with side length 2, so the area of the region covered by the squares is $2(4\\times 4)-(2\\times\n2)=32-4=28$. The diameter of the circle has length $\\sqrt{2^2+2^2}=\\sqrt{8}$, the length of the diagonal of the smaller square. The shaded area created by removing the circle from the squares is $28-\\pi\\left(\\frac{\\sqrt{8}}{2}\\right)^2=\\boxed{28-2\\pi}$."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|geometry|376": {
+      "family": "449a8b7f21f695ac9ffe96aa2be5ffd236d3118b7db3a34b9541a5c7ac85fba7",
+      "solution": "The triangle is shown below:\n\n[asy]\npair A,B,C;\nA = (0,0);\nB = (10,0);\nC = (10,15);\ndraw(A--B--C--A);\ndraw(rightanglemark(C,B,A,26));\nlabel(\"$A$\",A,SW);\nlabel(\"$B$\",B,SE);\nlabel(\"$C$\",C,N);\n[/asy]\n\nWe have $\\sin A = \\frac{BC}{AC}$ and $\\cos A = \\frac{AB}{AC}$, so $2\\sin A = 3\\cos B$ gives us $2\\cdot \\frac{BC}{AC} = 3\\cdot\\frac{AB}{AC}$.  Multiplying both sides by $AC$ gives $2BC = 3AB$, so $\\frac{BC}{AB} = \\frac{3}{2}$.  Finally, we have $\\tan A = \\frac{BC}{AB} = \\boxed{\\frac{3}{2}}$.\n\nWe also could have noted that $2\\sin A = 3\\cos A$ gives us $\\sin A = \\frac32\\cos A$, so $\\tan A = \\frac{\\sin A}{\\cos A} = \\frac{(3/2)\\cos A}{\\cos A } =\\boxed{\\frac32}$."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|geometry|411": {
+      "family": "689bdb1a1a50e0bd0adf2d14cb7812886e872dc4831266e615e826149ede2845",
+      "solution": "[asy]\nimport graph;\nsize(300);\nLabel f;\nf.p=fontsize(6);\nxaxis(-2,6, Ticks(f,1.0));\nyaxis(-9,9, Ticks(f,1.0));\ndot((-1,0));\nlabel(\"$A$\",(-1,0),W);\ndot((2,4));\nlabel(\"$B$\",(2,4),N);\ndot((2,-4));\nlabel(\"$C$\",(2,-4),S);\ndot((5,0));\nlabel(\"$D_1$\",(5,0),E);\ndot((-1,-8));\nlabel(\"$D_2$\",(-1,-8),S);\ndot((-1,8));\nlabel(\"$D_3$\",(-1,8),N);\n[/asy]\n\nThe three given points are labeled $A$, $B$, and $C$. The three possible values of the fourth point in the parallelogram are labelled $D_1$, $D_2$, and $D_3$, with $D_1$ being the opposite point of $A$, $D_2$ the opposite point of $B$, and $D_3$ the opposite point of $C$. The parallelogram $AD_3BC$ has the same perimeter as the parallelogram $ABCD_2$ by symmetry, so we disregard point $D_3$.\n\nWe will find the perimeter of $ABCD_2$. To calculate where point $D_2$ is, we notice that $AD_2$ must be parallel to the vertical segment $BC$, so the $x$ value of point $D_2$ must be $-1$. In addition, the length $AD_2$ must be equal to the length $BC$, which is 8. Thus, the $y$ value of point $D_2$ must be $-8$. So point $D_2$ is at $(-1,-8)$. The vertical segments of parallelogram $ABCD_2$ have length 8. To find the length of the diagonal segments $AB$ and $CD_2$, we use the distance formula between points $A$ and $B$: $AB=\\sqrt{(-1-2)^2+(0-4)^2}=5$. Thus, the perimeter of this parallelogram is $8+8+5+5=26$.\n\nWe will find the perimeter of $ABD_1C$. To calculate where point $D_1$ is, we note that since figure $ABC$ is symmetric about the $x$-axis, $D_1$ must lie on the $x$-axis, so its $y$ value is 0. We also know that the diagonals in a parallelogram bisect each other, so in order for diagonal $AD_1$ to bisect $BC$ (which crosses the $x$-axis at $x=2$), the $x$ value of $D_1$ must be 5. So point $D_1$ is at $(5,0)$. In finding the perimeter, we note that all the sides are equal in length. Since we already found side $AB$ to have length 5, the entire perimeter is $5\\cdot4=20$.\n\nThus, the positive difference between the greatest perimeter and the smallest is $26-20=\\boxed{6}$ units."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|geometry|425": {
+      "family": "409490bde25067cbe477e6800ec51ad1b6f90bfdab4ff113e47b70b7895b95ce",
+      "solution": "After travelling $13$ km north and $6$ km south, he has effectively traveled $7$ km north. In addition, he has traveled a total of $24$ km east. Applying the Pythagorean theorem, Bruce has ended up $\\sqrt{7^2+24^2} = \\boxed{25 \\, \\text{km}}$ from his origin."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|geometry|66": {
+      "family": "3dd23c3d0b4408bd73652c0956a3ce3ca81623196a3fd78ade700957e8eca7ee",
+      "solution": "Let $\\theta = \\angle ABC$. The base of the cylinder is a circle with circumference 6, so the radius of the base is $6/(2\\pi)=3/\\pi$. The height of the cylinder is the altitude of the rhombus, which is $6\\sin \\theta$. Thus the volume of the cylinder is \\[\n6=\\pi\\left(\\frac{3}{\\pi}\\right)^2\\left(6\\sin \\theta \\right)\n=\\frac{54}{\\pi}\\sin \\theta,\n\\] so $\\sin \\theta=\\boxed{\\frac{\\pi}{9}}$."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|geometry|97": {
+      "family": "effaa8a1e27f203065a14dbcdc87dd7430e3f4a2881c307f60ae62f5628dfe6b",
+      "solution": "Let $s$ be the side length of the cube. Then $s^3$ is the volume, so $s^3 = .027$. Taking the cube root of both sides gives $s = .3$. The area of one face of the cube is thus $s^2 = .09$. There are six faces, so the surface area is $6(.09) = \\boxed{0.54}$ square meters."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|intermediate_algebra|136": {
+      "family": "70ae90b71e47b5897b1588c6363260950c55079fcaaf90f0b9efbc7c20eaacde",
+      "solution": "Note that $(x + 1)^2 \\ge 0$ for all $x.$  For the remaining part of the expression, we can build a sign chart.\n\n\\[\n\\begin{array}{c|ccc}\n& x < 0 & 0 < x < 7 & 7 < x \\\\ \\hline\nx & - & + & + \\\\\nx - 7 & - & - & + \\\\\n\\frac{x(x + 1)^2}{x - 7} & + & - & +\n\\end{array}\n\\]Also, $\\frac{x(x + 1)^2}{x - 7} = 0$ at $x = 0$ and $x = -1.$  Thus, the solution is $x \\in \\boxed{\\{-1\\} \\cup [0,7)}.$"
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|intermediate_algebra|166": {
+      "family": "0fec794bb47221c2b6ed2ab49ce21075ab3b768f25a9336196721cf3836ea481",
+      "solution": "To put this equation in standard form, we complete the square in each variable: \\[\\begin{aligned} (x^2-4x) + 3(y^2+10y) &= 2 \\\\ (x^2-4x+4) + 3(y^2+10y+25) &= 2 + 4 + 3(25) \\\\ (x-2)^2 + 3(y+5)^2 &= 81. \\end{aligned}\\]Dividing through by $81$ yields the standard form of the ellipse:\\[ \\frac{(x-2)^2}{81} + \\frac{(y+5)^2}{27} = 1.\\]It follows that the semiminor axis has length $\\sqrt{27} = 3\\sqrt{3},$ so the minor axis has length $2 \\cdot 3\\sqrt{3} = \\boxed{6\\sqrt3}.$"
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|intermediate_algebra|180": {
+      "family": "e9b0a950c7c3a1d46a18194236f7ba257d733d023c6ea2fe5fbcacec5ef62947",
+      "solution": "Let the two common roots be $a$ and $b.$  Let the roots of the first cubic be $a,$ $b,$ and $c,$ and let the roots of the second cubic be $a,$ $b,$ and $d.$  Subtracting the cubics, we get\n\\[4x^2 + (q - r) = 0.\\]The roots of this quadratic are $a$ and $b,$ so $a + b = 0.$\n\nThen by Vieta's formulas, $a + b + c = -5$ and $a + b + d = -1.$  Then $c = -5$ and $d = -1,$ so $c + d = \\boxed{-6}.$"
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|intermediate_algebra|206": {
+      "family": "8d69f24efe707f6041346b026e44cc9fa739434185180d0902aef1360b20c410",
+      "solution": "Let $a = x,$ $b = y,$ and $c = -z.$  Then $x = a,$ $y = b,$ and $z = -c,$ so the given equations become\n\\begin{align*}\na + b + c &= 0, \\\\\n-ac - ab - bc &= 27, \\\\\n-abc &= 54.\n\\end{align*}We re-write these as\n\\begin{align*}\na + b + c &= 0, \\\\\nab + ac + bc &= -27, \\\\\nabc &= -54.\n\\end{align*}Then by Vieta's formulas, $a,$ $b,$ and $c$ are the roots of\n\\[t^3 - 27t + 54 = 0,\\]which factors as $(t - 3)^2 (t + 6) = 0.$  Therefore, $a,$ $b,$ $c$ are equal to 3, 3, and $-6,$ in some order.\n\nThis leads to the solutions $(x,y,z) = (3,3,6),$ $(3,-6,-3),$ $(-6,3,-3),$ for a total of $\\boxed{3}$ solutions."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|intermediate_algebra|241": {
+      "family": "a23c32466da59f5a48910058c5d4ad4043f45e0bd9d1d9d0e9dfdb021f9a5271",
+      "solution": "Let $r = a_2.$  Then the first few terms are\n\\begin{align*}\na_1 &= 1, \\\\\na_2 &= r, \\\\\na_3 &= \\frac{a_2^2}{a_1} = r^2, \\\\\na_4 &= 2a_3 - a_2 = 2r^2 - r = r(2r - 1), \\\\\na_5 &= \\frac{a_4^2}{a_3} = \\frac{r^2 (2r - 1)^2}{r^2} = (2r - 1)^2, \\\\\na_6 &= 2a_5 - a_4 = (2r - 1)^2 - r(2r - 1) = (2r - 1)(3r - 2), \\\\\na_7 &= \\frac{a_6^2}{a_5} = \\frac{(2r - 1)^2 (3r - 2)^2}{(2r - 1)^2} = (3r - 2)^2, \\\\\na_8 &= 2a_7 - a_6 = 2(3r - 2)^2 - (2r - 1)(3r - 2) = (3r - 2)(4r - 3), \\\\\na_9 &= \\frac{a_8^2}{a_7} = \\frac{(3r - 2)^2 (4r - 3)^2}{(3r - 2)^2} = (4r - 3)^2, \\\\\na_{10} &= 2a_9 - a_8 = 2(4r - 3)^2 - (3r - 2)(4r - 3) = (4r - 3)(5r - 4).\n\\end{align*}and so on.\n\nMore generally, we can prove by induction that\n\\begin{align*}\na_{2k} &= [(k - 1)r - (k - 2)][kr - (k - 1)], \\\\\na_{2k + 1} &= [kr - (k - 1)]^2\n\\end{align*}for any positive integer $k.$\n\nThen $(4r - 3)^2 + (4r - 3)(5r - 4) = 646.$  This simplifies to $36r^2 - 55r - 625 = 0,$ which factors as $(r - 5)(36r + 125) = 0.$  Hence, $r = 5.$\n\nThen using the formulas above, we can compute that $a_{16} = 957$ and $a_{17} = 1089,$ so the final answer is $16 + 957 = \\boxed{973}.$"
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|intermediate_algebra|247": {
+      "family": "5c9be95e798f61b022b8e3cd0601b6af521dacf91a282e5fbc0e3cfaccbc0cff",
+      "solution": "We have $x \\ge \\lfloor x \\rfloor > x-1,$ so \\[x^2 + x \\ge 75 > x^2 + x - 1.\\]That is, \\[75 \\le x^2 + x < 76.\\]The function $f(x) = x^2+x$ is strictly decreasing for $x \\le -1/2$; since $f(-10) = 90$ and $f(-9) = 72,$ it follows that any solution with $x \\le -1/2$ must lie in the interval $(-10, -9).$ Similarly, since $f(8) = 72$ and $f(9) = 90,$ any solution with $x \\ge -1/2$ must lie in the interval $(8, 9).$\n\nTherefore, $\\lfloor x \\rfloor$ can only be $-10$ or $8.$ If $\\lfloor x \\rfloor = -10,$ then $x^2 = 75 - (-10) = 85,$ so $x = -\\sqrt{85},$ which indeed satisfies $\\lfloor x \\rfloor = -10.$ If $\\lfloor x \\rfloor = 8,$ then $x^2 = 75 - 8 = 67,$ so $x = \\sqrt{67},$ which indeed satisfies $\\lfloor x \\rfloor = 67.$\n\nTherefore, the two solutions to the equation are $x = \\boxed{\\sqrt{67}, -\\sqrt{85}}.$"
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|intermediate_algebra|251": {
+      "family": "2dadbccc0e6259a3b59cc3e55b4cf43c61a66ca17054d397212dfd4b3b8801cd",
+      "solution": "Since $z_1 = 0$, it follows that $c_0 = P(0) = 0$. The nonreal zeros of $P$ must occur in conjugate pairs, so $\\sum_{k=1}^{2004} b_k = 0$ and $\\sum_{k=1}^{2004} a_k = 0$ also. The coefficient $c_{2003}$ is the sum of the zeros of $P$, which is \\[\n\\sum_{k=1}^{2004}z_k = \\sum_{k=1}^{2004}a_k + i\\sum_{k=1}^{2004} b_k = 0.\n\\]Finally, since the degree of $P$ is even, at least one of $z_2, \\ldots, z_{2004}$ must be real, so at least one of $b_2, \\ldots, b_{2004}$ is 0 and consequently $b_2 b_3 \\dotsm b_{2004}=0$. Thus the quantities in $\\textbf{(A)}$, $\\textbf{(B)}$, $\\textbf{(C)}$, and $\\textbf{(D)}$ must all be 0.\n\nNote that the polynomial \\[\nP(x) = x(x-2)(x-3)\\cdots(x-2003)\\displaystyle\\left(x + \\sum_{k=2}^{2003} k\\displaystyle\\right)\n\\]satisfies the given conditions, and $\\sum_{k=1}^{2004} c_k = P(1) \\ne 0$. That means our answer is $\\boxed{\\text{E}}$."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|intermediate_algebra|270": {
+      "family": "a5048b3aa101dfe1de1bc3d52f73d1fd71d46b3701761a502ce4f16d0e71318a",
+      "solution": "We have $$|{-324 + 243i}|=|81(-4+3i)| = 81|{-4+3i}| = 81\\sqrt{(-4)^2+3^2} = 81(5) = \\boxed{405}.$$"
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|intermediate_algebra|338": {
+      "family": "c1d0e3f510819b8b145da7e6c9c380ec92cb8ab8c2335f38d6bd1ddc1328fcf5",
+      "solution": "Since $2i$ is a root,\n\\[(2i)^4 + a(2i)^3 + 5(2i)^2 - i(2i) - 6 = 0.\\]Solving, we find $a = i,$ so the polynomial is\n\\[z^4 + iz^3 + 5z^2 - iz - 6 = 0.\\]We can take out a factor of $z - 2i,$ to get\n\\[(z - 2i)(z^3 + 3iz^2 - z - 3i) = 0.\\]We can check that $z = 1$ and $z = -1$ are solutions of the cubic, so we can take out factors of $z - 1$ and $z + 1,$ to get\n\\[(z - 2i)(z - 1)(z + 1)(z + 3i) = 0.\\]Therefore, the other roots are $\\boxed{1,-1,-3i}.$"
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|intermediate_algebra|385": {
+      "family": "548c62766366ce60ae3b8b4a668834f1b3c599f92f281cb93e5d8a935da6bdf9",
+      "solution": "Let $y = \\frac{x^2 + 4x}{x - 1}.$  Then we can write the given equation as\n\\[y + \\frac{72}{y} - 18 = 0,\\]so $y^2 - 18y + 72 = 0.$  This factors $(y - 6)(y - 12) = 0,$ so $y = 6$ or $y = 12.$\n\nIf $\\frac{x^2 + 4x}{x - 1} = 6,$ then $x^2 + 4x = 6x - 6,$ or $x^2 - 2x + 6 = 0.$  This quadratic has no real solutions.\n\nIf $\\frac{x^2 + 4x}{x - 1} = 12,$ then $x^2 + 4x = 12x - 12,$ or $x^2 - 8x + 12 = 0.$  This factors as $(x - 2)(x - 6) = 0,$ so the solutions are $\\boxed{2,6}.$"
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|intermediate_algebra|448": {
+      "family": "12b805591abb79a48d3f1d59f4cc4fefa2d17c3fd3295205e5f832f3d1340255",
+      "solution": "Suppose $xy$ is negative.  If we flip the sign of $y,$ then we flip the sign of $xy,$ which makes it positive.  This increases by the value of $x^6 + y^6 + xy,$ so if $x^6 + y^6 + xy$ is minimized, then $xy$ must be positive.  We may assume that both $x$ and $y$ are positive.\n\nBy AM-GM,\n\\[\\frac{x^6 + y^6 + 27 + 27 + 27 + 27}{6} \\ge \\sqrt[6]{(x^6)(y^6)(27^4)} = 9xy,\\]which simplifies to $x^6 + y^6 - 54xy \\ge -108.$\n\nEquality occurs when $x^6 = y^6 = 27,$ which leads to $x = y = \\sqrt{3}.$  Therefore, the minimum value is $\\boxed{-108}.$"
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|intermediate_algebra|581": {
+      "family": "ee4e0725b8c1e695e9a3f78865b08d2299bcd0d3e0a0b25047aaed15f5c105b0",
+      "solution": "Taking the absolute value of both sides, we get\n\\[|z^3| = |2 + 2i| = 2 \\sqrt{2}.\\]Then $|z|^3 = 2 \\sqrt{2},$ so $|z| = \\sqrt{2}.$\n\nLet $w = \\frac{z + \\overline{z}}{2},$ so the possible values of $w$ are $a_1,$ $a_2,$ and $a_3.$  Then\n\\[w^3 = \\frac{z^3 + 3z^2 \\overline{z} + 3z \\overline{z}^2 + \\overline{z}^3}{8}.\\]We know that $z^3 = 2 + 2i.$  Taking the conjugate, we get $\\overline{z^3} = \\overline{2 + 2i},$ so $\\overline{z}^3 = 2 - 2i.$  Also,\n\\[3z^2 \\overline{z} + 3z \\overline{z} = 3z \\overline{z} (z + \\overline{z}) = 6|z|^2 w = 12w,\\]so\n\\[w^3 = \\frac{2 + 2i + 12w + 2 - 2i}{8} = \\frac{4 + 12w}{8} = \\frac{3}{2} w + \\frac{1}{2}.\\]Then\n\\[w^3 - \\frac{3}{2} w - \\frac{1}{2} = 0.\\]By Vieta's formulas, $a_1 a_2 a_3 = \\boxed{\\frac{1}{2}}.$"
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|intermediate_algebra|609": {
+      "family": "443c9267d9fe26b84fc906bced156af6dc8113540467047da0f108f1c6327322",
+      "solution": "We compute the first few terms:\n\\[\n\\begin{array}{c|c}\nn & a_n \\\\ \\hline\n0 & 2 \\\\\n1 & 5 \\\\\n2 & 8 \\\\\n3 & 5 \\\\\n4 & 6 \\\\\n5 & 10 \\\\\n6 & 7 \\\\\n7 & 4 \\\\\n8 & 7 \\\\\n9 & 6 \\\\\n10 & 2 \\\\\n11 & 5 \\\\\n12 & 8\n\\end{array}\n\\]Since $a_{10} = a_0,$ $a_{11} = a_1,$ $a_{12} = a_2,$ and each term depends only on the previous three terms, the sequence becomes periodic at this point, with period 10.  Therefore,\n\\[a_{2018} a_{2020} a_{2022} = a_8 a_0 a_2 = 7 \\cdot 2 \\cdot 8 = \\boxed{112}.\\]"
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|intermediate_algebra|629": {
+      "family": "ed55a6446e8fd2b13d9ff37182bbcbf44f2ec85936091d82f922c18ad02365fb",
+      "solution": "We can write\n\\[a + \\frac{1}{b(a - b)} = (a - b) + b + \\frac{1}{b(a - b)}.\\]By AM-GM,\n\\[(a - b) + b + \\frac{1}{b(a - b)} \\ge 3 \\sqrt[3]{(a - b)b \\cdot \\frac{1}{b(a - b)}} = 3.\\]Equality occurs when $a = 2$ and $b = 1,$ so the minimum value is $\\boxed{3}.$"
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|intermediate_algebra|707": {
+      "family": "c0e9222b140c1915ffe8510ee13572c3fa64c6e74eeb7debea5c62138f374242",
+      "solution": "To get the radical conjugate, we replace the radical part of the number with its negative. So, the radical conjugate of $\\sqrt{11}-1$ is $\\boxed{-\\sqrt{11}-1}.$"
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|intermediate_algebra|709": {
+      "family": "5adc830ab41dd18e12f4a47de39cfc19d69f945d7e0aa1de29dddce23fa13609",
+      "solution": "Let $p,$ $q,$ $r$ be positive constants.  Then by AM-GM,\n\\begin{align*}\na^2 + p^2 &\\ge 2pa, \\\\\nb^3 + b^3 + q^3 &\\ge 3qb^2, \\\\\nc^4 + c^4 + c^4 + r^4 &\\ge 4rc^3.\n\\end{align*}Hence,\n\\begin{align*}\na^2 + p^2 &\\ge 2pa, \\\\\n2b^3 + q^3 &\\ge 3qb^2, \\\\\n3c^4 + r^4 &\\ge 4rc^3.\n\\end{align*}Multiplying these inequalities by 6, 3, 2, respectively, we get\n\\begin{align*}\n6a^2 + 6p^2 &\\ge 12pa, \\\\\n6b^3 + 3q^3 &\\ge 9qb^2, \\\\\n6c^4 + 2r^4 &\\ge 8rc^3.\n\\end{align*}Hence,\n\\[6(a^2 + b^3 + c^4) + 6p^2 + 3q^3 + 2r^4 \\ge 12pa + 9qb^2 + 8rc^3. \\quad (*)\\]We want to choose constants $p,$ $q,$ and $r$ so that $12pa + 9qb^2 + 8rc^3$ is a multiple of $a + b^2 + c^3.$  In other words, we want\n\\[12p = 9q = 8r.\\]Solving in terms of $p,$ we get $q = \\frac{4}{3} p$ and $r = \\frac{3}{2} p.$  Also, equality holds in the inequalities above only for $a = p,$ $b = q,$ and $c = r,$ so we want\n\\[p + q^2 + r^3 = \\frac{325}{9}.\\]Hence,\n\\[p + \\frac{16}{9} p^2 + \\frac{27}{8} p^3 = \\frac{325}{9}.\\]This simplifies to $243p^3 + 128p^2 + 72p - 2600 = 0,$ which factors as $(p - 2)(243p^2 + 614p + 1300) = 0.$  The quadratic factor has no positive roots, so $p = 2.$  Then $q = \\frac{8}{3}$ and $r = 3,$ so $(*)$ becomes\n\\[6(a^2 + b^3 + c^4) + \\frac{2186}{9} \\ge 24(a + b^2 + c^3).\\]which leads to\n\\[a^2 + b^3 + c^4 \\ge \\frac{2807}{27}.\\]Equality occurs when $a = 2,$ $b = \\frac{8}{3},$ and $c = 3,$ so the minimum value of $a^2 + b^3 + c^4$ is $\\boxed{\\frac{2807}{27}}.$"
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|intermediate_algebra|790": {
+      "family": "a71bf9e66d43177743ac1fe39bf29e5817ffa98fb36c24a4a97dd4b827aa1e0f",
+      "solution": "Setting $x = y = 1,$ we get\n\\[f(1) = f(1)^2,\\]so $f(1) = 0$ or $f(1) = 1.$\n\nThe function $f(x) = 0$ shows that $f(1)$ can be 0, and the function $f(x) = x$ (and the function $f(x) = 1$) shows that $f(1)$ can be 1.  Thus, the possible values of $f(1)$ are $\\boxed{0,1}.$"
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|intermediate_algebra|81": {
+      "family": "076cfa796d29ab7f9643bf689fd6eb09c9dc9cbb3df08736efc5dda71545cafa",
+      "solution": "For a rational function, when the degree of the numerator is smaller than the degree of the denominator, the denominator grows at a faster rate than the numerator. In this case, the numerator has a degree of 2 while the denominator has a degree of 3. Thus, the function approaches the asymptote $y=\\boxed{0}$."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|intermediate_algebra|842": {
+      "family": "d3928a0c1dcf16455b0cedc2cd8b7ecce2d6d49cb49bd8199c323deaab269a4b",
+      "solution": "Since $f(-1)=\\frac{a}{1-(-1)}=\\frac a2$, we can simplify the second expression to  \\[\\frac a2=f^{-1}(4a+1).\\]This is equivalent to  \\[f\\left(\\frac a2\\right)=4a+1.\\]Since we know $f$, we can evaluate this as  \\[\\frac a{1-\\frac a2}=4a+1.\\]or \\[\\frac {2a}{2-a}=4a+1.\\]Assuming $a \\ne 2$, cross multiplication gives  \\[2a=(4a+1)(2-a)= -4a^2 + 7a + 2,\\]so $4a^2 - 5a - 2 = 0$.  We note that $a = 2$ is not a solution to this equation.  By Vieta's formulas, the product of the roots of the quadratic equation $ax^2 + bx + c = 0$ is $c/a$, so in this case, the product of the roots is $-2/4 = \\boxed{-\\frac{1}{2}}$."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|intermediate_algebra|85": {
+      "family": "59614bba0e04fe6d2bfe88539551ec91cd74305277dc30996cfc3384e3bcd797",
+      "solution": "The two vertical lines have equations of the form $x=m$ and $x=M,$ where $m$ and $M$ are the least and greatest possible $x-$coordinates for a point on the ellipse. Similarly, the horizontal lines have equations of the form $y=n$ and $y=N,$ where $n$ and $N$ are the least and greatest possible $y-$coordinates for a point on the ellipse. Therefore, we want to find the range of possible $x-$ and $y-$coordinates over all points on the ellipse.\n\nSubtracting $5$ from both sides, we can write the equation of the ellipse as a quadratic with $x$ as the variable: \\[x^2 - (2y)x + (3y^2-5) =0.\\]For a point $(x, y)$ to lie on the ellipse, this equation must have a real solution for $x.$ Therefore, the discriminant of the quadratic must be nonnegative: \\[(2y)^2 - 4(3y^2 - 5) \\ge 0,\\]or $-8y^2 + 20 \\ge 0.$ Solving for $y$ gives $-\\tfrac{\\sqrt{10}}2 \\le y \\le \\tfrac{\\sqrt{10}}2.$ Therefore, the equations of the two horizontal lines are $y = -\\tfrac{\\sqrt{10}}2$ and $y=\\tfrac{\\sqrt{10}}2.$\n\nWe can do the same, with the roles of the variables reversed, to find all possible values for $x.$ We write the equation of the ellipse as a quadratic in $y$, giving \\[3y^2 - (2x)y + (x^2-5) = 0.\\]The discriminant of this equation must be nonnegative, so we have \\[(2x)^2 - 4 \\cdot 3 \\cdot (x^2-5) \\ge 0,\\]or $-8x^2 + 60 \\ge 0.$ Solving for $x$ gives $-\\tfrac{\\sqrt{30}}2 \\le x \\le \\tfrac{\\sqrt{30}}2.$ Therefore, the equations of the two vertical lines are $x=-\\tfrac{\\sqrt{30}}2$ and $x=\\tfrac{\\sqrt{30}}2.$\n\nIt follows that the side lengths of the rectangle are $2 \\cdot \\tfrac{\\sqrt{10}}2 = \\sqrt{10}$ and $2 \\cdot \\tfrac{\\sqrt{30}}2 = \\sqrt{30},$ so the area of the rectangle is \\[\\sqrt{10}\\cdot \\sqrt{30} = \\boxed{10\\sqrt3}.\\]"
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|intermediate_algebra|863": {
+      "family": "769d1e80820cb38bac5f849d45daac6fb8ee1e8caf6f0e78a02c381ec4f8703e",
+      "solution": "Each pair of consecutive terms makes 1 (for example, $100-99=1$). Since there are $100/2=50$ such pairs, the entire expression is equal to $1\\cdot50=\\boxed{50}$."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|intermediate_algebra|864": {
+      "family": "59e44636308169f47277965d3d866c3393089ce7df8df5a9a4ea4a4833482520",
+      "solution": "We expand the left-hand side and then subtract $9$ from both sides, giving \\[\\frac{x^2-9(4x^2-4x+1)}{4x^2-4x+1} = \\frac{-35x^2 + 36x - 9}{4x^2-4x+1}  \\le 0 \\]or $\\frac{35x^2-36x+9}{4x^2-4x+1} \\ge 0.$ Factoring top and bottom gives \\[ \\frac{(5x-3)(7x-3)}{(2x-1)^2} \\ge 0.\\]Letting $f(x)$ denote the left-hand side, we produce a sign table as follows: \\begin{tabular}{c|ccc|c} &$5x-3$ &$7x-3$ &$(2x-1)^2$ &$f(x)$ \\\\ \\hline$x<\\frac{3}{7}$ &$-$&$-$&$+$&$+$\\\\ [.1cm]$\\frac{3}{7}<x<\\frac{1}{2}$ &$-$&$+$&$+$&$-$\\\\ [.1cm]$\\frac{1}{2}<x<\\frac{3}{5}$ &$-$&$+$&$+$&$-$\\\\ [.1cm]$x>\\frac{3}{5}$ &$+$&$+$&$+$&$+$\\\\ [.1cm]\\end{tabular}We see that $f(x) > 0$ when $x < \\tfrac37$ or $x > \\tfrac35.$ Also, $f(x) = 0$ when $x = \\tfrac37$ or $x = \\tfrac35.$ Hence, the solution set to $f(x) \\ge 0$ is \\[x \\in \\boxed{(-\\infty, \\tfrac37] \\cup [\\tfrac35, \\infty) }\\, .\\]"
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|number_theory|156": {
+      "family": "52c29789f21bee2601483a1d1b96740194ad94eaef16693558d747ebe97a4c32",
+      "solution": "An integer congruent to $7 \\pmod{19}$ can be written as $19n+7$. Therefore, we have the inequality $$100 \\le 19n+7 \\le 999.$$We solve for the inequality by subtracting each term by $7$ and then dividing by $19$ to get  $$93\\le 19n \\le 992 \\implies \\frac{93}{19} \\le n \\le \\frac{992}{19}.$$The smallest integer greater than $\\frac{93}{19}$ is $5$ and the largest integer less than $\\frac{992}{19}$ is $52$. There are $52-4=\\boxed{48}$ integers from $5$ to $52$ inclusive."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|number_theory|196": {
+      "family": "2e939b5dab6e602ff76af97f31d573e5666c3cae339ff1f4ffaad645286c821f",
+      "solution": "Instead of adding up the sum and finding the residue, we can find the residue of each number to make computation easier.\n\nEach group of 6 numbers would have the sum of residues $1+2+3+4+5+0 \\equiv 15 \\equiv 3 \\pmod6$.\n\nThere are $\\left\\lfloor\\frac{100}{6}\\right\\rfloor=16$ sets of $6$ numbers. This leaves the numbers $97,98,99,$ and $100$, which have the residues $1,2,3,$ and $4$. Adding together all the residues, we have $3 \\cdot 16 + 1+2+3+4 \\equiv 58 \\equiv \\boxed{4} \\pmod6$."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|number_theory|198": {
+      "family": "bf0aa383a568940ed8b405ce62e6f619936970fc3c61b494a688e93339df7f67",
+      "solution": "First of all, we notice that $11 = 1 + 10,$ and so we write $11^n$ as follows: $$(1 + 10)^n = \\binom{n}{0} \\cdot 1^n + \\binom{n}{1} \\cdot 1^{n-1} \\cdot 10^{1} + \\binom{n}{2} \\cdot 1^{n-2} \\cdot 10^{2} + \\cdots$$ We can see that every term after the first two in our expansion has at least two powers of $10,$ therefore they will not contribute to the tens digit of anything. Meanwhile, the first term is always $1,$ and the second term can be simplified to $10n.$\n\nTherefore, we have: \\begin{align*}\n&11^1 + 11^2 + 11^3 + \\cdots + 11^9 \\\\\n&\\qquad\\equiv (1 + 10) + (1 + 20) + \\cdots + (1 + 90) \\pmod{100}. \\\\\n&\\qquad\\equiv 459 \\equiv 59 \\pmod{100}.\n\\end{align*} Thus, the tens digit must be $\\boxed{5}.$"
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|number_theory|209": {
+      "family": "f733151a3cd5a27dc6c56a2da1ff6e99afc540adb7755f2f8c158e4aa859542f",
+      "solution": "Since at least one of $a$ or $a-1$ must be even, then the modular inverse of at least one of $a$ or $a-1$ does not exist. Thus, there are $\\boxed{0}$ possible values of $a$."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|number_theory|22": {
+      "family": "41077f03d1c87cb84f28a1f2ac7f4919d3b4c12729e2e78ab0d8ba3d22a4726a",
+      "solution": "We have $4000=2^5\\cdot5^3$. Any factor of 4000 is in the form $2^a\\cdot5^b$ for $0\\le a\\le5$ and $0\\le b\\le3$. Since $100=2^2\\cdot5^2$, we must count the factors of 4000 that have $a\\ge2$ and $b\\ge2$. That gives $(5-2+1)(3-2+1)=4\\cdot2=\\boxed{8}$ factors."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|number_theory|358": {
+      "family": "cac06738e46c85eb2a51ca907d0787d40d76684e1f43370b2a5094bc3a2a38dd",
+      "solution": "We look for the two largest prime numbers less than 40 and find that they are 37 and 31. The product of these two numbers is $37\\times31=\\boxed{1147}$."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|number_theory|367": {
+      "family": "80601a4cb27bf95ad88657f725b9ffd8a24f124fd641f5421eecc0b30fdfd136",
+      "solution": "We see that $8^4=4096$ is the largest power of 8 less than 8888, and that it can go into the given number 2 times, leaving us with $8888-(2)(4096)=696$. The next largest power of 8, $8^3=512$, can only go into 696 once, giving us the remainder $696-512=184$. Since the largest multiple of $8^2=64$ less than 184 is $2\\cdot64=128$, we are then left with $184-128=56$. $8^1=8$ goes into 56 exactly 7 times, leaving us with a remainder of $56-56=0$ and subsequently a coefficient of 0 for the $8^0$ term. So $8888_{10}=2\\cdot8^4+1\\cdot8^3+2\\cdot8^2+7\\cdot{8^1}+0\\cdot8^0=21270_8$, and the sum of the digits is $2+1+2+7+0=\\boxed{12}$."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|number_theory|408": {
+      "family": "30c87e8c133cbf37b97731ddc22f97ac94e728f234006c8e52c39101392b9178",
+      "solution": "$634_7 = 6\\cdot7^2 + 3\\cdot7^1 + 4\\cdot7^0 = 294 + 21 + 4 = \\boxed{319}.$"
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|number_theory|420": {
+      "family": "30f00fbd8237fe254389db130b652e29cc63ebba2fc7cb4f5cde3f8daf6b218b",
+      "solution": "We wish to solve for $41324_{5}-2345_{6}$.\n\n$2345_{6} = 5\\cdot6^{0}+4\\cdot6^{1}+3\\cdot6^{2}+2\\cdot6^{3} = 5+24+108+432 = 569_{10}$\n\n$41324_{5} = 4\\cdot5^{0}+2\\cdot5^{1}+3\\cdot5^{2}+1\\cdot5^{3}+4\\cdot5^{4} = 4+10+75+125+2500 = 2714_{10}$\n\nSo, the pirate is now $2714-569= \\boxed{2145}$ dollars in debt."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|number_theory|458": {
+      "family": "56ab570feea8a227f6c6ea8f3a7865660aa66a0f3cbb7a777a3b4111298e577f",
+      "solution": "By the Euclidean algorithm for computing greatest common factors, we have  \\[\n\\text{gcf}(1001,2431)=\\text{gcf}(1001,2431-2\\cdot 1001) = \\text{gcf}(1001,429).\n\\]Applying the Euclidean algorithm again, we get \\[\n\\text{gcf}(1001,429)=\\text{gcf}(429,1001-2\\cdot 429)= \\text{gcf}(429,143).\n\\]Recognizing 429 as $3\\times 143$, we conclude that the greatest common factor of 1001 and 2431 is $\\boxed{143}.$"
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|number_theory|481": {
+      "family": "52179d14b1e51967ae57145b0dc8fba9846ee774791ec3737f499222deb942f2",
+      "solution": "We prime factor the given product as $2^{10}\\cdot 3^2\\cdot5.$ Recall that a number is a perfect square if and only if all of its prime factors are raised to an even power; so $f$ is a factor if and only if $f = 2^{2a}\\cdot 3^{2b}$ for $0\\leq 2a\\leq 10$ and $0\\leq 2b\\leq 2.$ So we have $6$ choices for $a$ and $2$ choices for $b,$ leading to a total of $6\\cdot 2 = \\boxed{12}$ possibilities."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|number_theory|509": {
+      "family": "4690c9d1a6cde5430fc3b38204d5577ab449c7d8737c0f7834ec010ef36fcb8a",
+      "solution": "Because $3^6=729<2007<2187=3^7$, it is convenient to begin by counting the number of base-3 palindromes with at most 7 digits. There are two palindromes of length 1, namely 1 and 2.  There are also two palindromes of length 2, namely 11 and 22.  For $n\\geq 1$, each palindrome of length $2n+1$ is obtained by inserting one of the digits $0$, $1$,  or $2$ immediately after the $n\\text{th}$ digit in a palindrome of length $2n$.  Each palindrome of length $2n+2$ is obtained by similarly inserting one of the strings $00$, $11$,  or $22$.  Therefore there are 6 palindromes of each of the lengths 3 and 4, 18 of each of the lengths 5 and 6, and 54 of length 7. Because the base-3 representation of 2007 is 2202100, that integer is less than each of the palindromes 2210122, 2211122, 2212122, 2220222, 2221222, and 2222222.  Thus the required total is $2+2+6+6+18+18+54-6=\\boxed{100}$."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|number_theory|511": {
+      "family": "031cc963bf9d930d45af6b6064eb5dc44937284b89e33d8273f0e0ad8485bf75",
+      "solution": "We can see that \\begin{align*}\n1_2 + 10_2 + 100_2 + \\cdots + 100000000_2 &= 111111111_2 \\\\\n&= 1000000000_2 - 1\\\\\n& = 2^9 - 1.\n\\end{align*}We can factor $2^9 - 1 = 8^3 - 1$ as a difference of cubes to make our task easier: $$ 8^3 - 1 = (8 - 1)(8^2 + 8 + 1) = 7 \\cdot 73. $$Since $\\boxed{73}$ is prime, it is the largest prime divisor of the sum."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|number_theory|99": {
+      "family": "028c78c0fe1bd5cc86bc0c243c8e9fe99938c7883d3a09f135e8c86453301e5d",
+      "solution": "The largest three-digit base 14 integer is 1 less than the smallest four-digit base 14 integer, which is $$ 1000_{14} = 1 \\cdot 14^3 = 2744. $$Thus, the largest three-digit base 14 integer is $2744 - 1 = \\boxed{2743}$."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|prealgebra|104": {
+      "family": "57dc33a46ec54e7193865459a220c0710ff572f16c84aa3bcea3bc7bce78e003",
+      "solution": "This is what the paper should look like after Ezekiel writes his final number: \\begin{tabular}{l|l}\n1 & 1\\\\\n2 & 1 \\\\\n3 & 1, 2\\\\\n4 & 1, 3\\\\\n6 & 1, 5\\\\\n12 & 1, 5, 7, 11\n\\end{tabular} The left-hand column contains the positive factors of $12$ and the right-hand column contains Ezekiel's numbers. We see that Ezekiel wrote $\\boxed{12}$ numbers.\n\nNote: Notice that the number of numbers Ezekiel ends up with is the same as Delilah's number. Will this always happen? Suppose Delilah starts with $n.$ Will Ezekiel end up with $n$ numbers?"
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|prealgebra|12": {
+      "family": "9a9399f322b44962d9e61ddbe042a65858b61bac7efe598c186843c25a450e08",
+      "solution": "The tip was $15 - 12 = 3$ dollars, which is $\\boxed{25}$ percent of 12."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|prealgebra|223": {
+      "family": "e72001afc676dca30647bcc1a0d9768469047a85a563ca4d95d94e6ee3b4051e",
+      "solution": "The area of the original circle is $\\pi \\cdot 2^2=4\\pi$ square inches. After doubling the radius to $2\\cdot2=4$ inches, the area increases to $\\pi \\cdot 4^2=16\\pi$ square inches. So the increase is $16\\pi-4\\pi=\\boxed{12\\pi}$ square inches."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|prealgebra|237": {
+      "family": "77a467f437e31259c8baa58ace57a09eefc02e58fbec447c4c6e99a2c008e91c",
+      "solution": "Multiplying by 7, we have $\\frac{21}{5}<x<\\frac{49}{9}$. Note that $\\frac{21}{5}$ is between $\\frac{20}{5}=4$ and $\\frac{25}{5}=5$, while $\\frac{49}{9}$ is between $\\frac{45}{9}=5$ and $\\frac{54}{9}=6$.  Thus, the only integer between $\\frac{21}{5}$ and $\\frac{49}{9}$ is $\\boxed{5}$."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|prealgebra|254": {
+      "family": "3b08c47f192e81068ea842c5e03113d566e477cb7adf2f0e50cebcfa7280364a",
+      "solution": "Simplifying both sides gives \\[11x - 3 = 11x - 7 + \\boxed{\\phantom{2}}.\\] Subtracting $11x$ from both sides gives \\[-3 = -7 + \\boxed{\\phantom{2}}.\\] If the number in the box is anything but 4, then the equation cannot be true, and the original equation has no solutions.  If the number in the box is $\\boxed{4}$, then the two sides of the original equation are equivalent, and all values of $x$ are solutions to the equation."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|prealgebra|261": {
+      "family": "6a8c30a6f44dc3b861e0abd90109583bdb357d98b00b9849860db8e0ef4bedcc",
+      "solution": "First we factor each of these numbers: \\[\\sqrt{5\\cdot10\\cdot14\\cdot21\\cdot15\\cdot20}=\\sqrt{5\\cdot(5\\cdot2)(2\\cdot7)(7\\cdot3)(3\\cdot5)(5\\cdot4)}.\\]Next we notice that this expression contains a lot of squares, so is equal to  \\[\\sqrt{5^2\\cdot2^2\\cdot7^2\\cdot3^2\\cdot5^2\\cdot2^2}.\\]Since the square root of a product is the product of the square roots this is equal to  \\[\\sqrt{5^2}\\cdot\\sqrt{2^2}\\cdot\\sqrt{7^2}\\cdot\\sqrt{3^2}\\cdot\\sqrt{5^2}\\cdot\\sqrt{2^2}=5\\cdot2\\cdot7\\cdot3\\cdot5\\cdot2.\\]Multiplying this out gives \\[5\\cdot2\\cdot7\\cdot3\\cdot5\\cdot2=10\\cdot21\\cdot10=\\boxed{2100}.\\]"
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|prealgebra|270": {
+      "family": "280a9f0ed91084f8afe3db15ef57d33cb6c7dcbb5d41d1b6f9d4fd7b34fff647",
+      "solution": "Since $91 = 13\\cdot 7$, we find that \\[1391 = 1300 + 91 = 13\\cdot 100 + 13\\cdot 7 = 13(100+7) = 13\\cdot 107.\\]Since 107 is prime, the largest prime factor of 1391 is $\\boxed{107}$."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|prealgebra|326": {
+      "family": "e3bd2179cd225f7b494d963535d3b9668f7ee689807d6f14e361e5f3daae5e14",
+      "solution": "Let the side length of one of the squares be $x$. Looking at the right triangle with hypotenuse $AB$, we have the equation $x^2+(2x)^2=(2\\sqrt{5})^2$ from the Pythagorean Theorem.  Simplifying this equation gives $x^2=4$. Looking at the right triangle with hypotenuse $AC$, we have the equation $x^2+(3x)^2=AC^2 \\Rightarrow AC^2=10x^2=40$. Thus, $AC=\\sqrt{40}=\\boxed{2\\sqrt{10}}$ centimeters."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|prealgebra|344": {
+      "family": "288c6a75d0b7d4da5f075d62535df858badf96e660edf739a4446f981832bc47",
+      "solution": "Let $M$ be the smallest multiple of 6 greater than 115. $M$ is both a multiple of 2, which means its units digit must be even, and a multiple of 3, which means the sum of its digits is a multiple of 3.  By the first condition, consider multiples of 2 in increasing order: 116, 118, 120, 122, etc. 116 and 118 are not multiples of 3 (since 1+1+6=8 and 1+1+8=10), but 120 is a multiple of 3. Therefore, $M=\\boxed{120}$."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|prealgebra|37": {
+      "family": "684737e421ddf1d2a152a964d723c5af24e88f6c1af9d648832d85aead34c808",
+      "solution": "Since there were four teams in each group, they each must have played each other once, meaning that at first glance, there seem to be $4 \\cdot 3 = 12$ pairs of teams. However, that counts each match twice, so we must divide by $2$ and we have $\\boxed{6},$ our answer."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|prealgebra|395": {
+      "family": "a9c9a2371ac3f2e88a6563fe732293f3cd85464c7756ece7bff05464edbbebae",
+      "solution": "The easiest approach is to consider how many times $6$ can appear in the units place and how many times in the tens place. If we put a $6$ in the units place, there are $10$ choices for the tens place. Likewise, if we put a $6$ in the tens place, there are $10$ choices for the units place. So, there are $\\boxed{20}$ appearances of the digit $6.$\n\nNote: Read the question carefully. There are $19$ numbers that include $6,$ but $6$ appears $20$ times. Always answer the question that is asked."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|prealgebra|461": {
+      "family": "9bbfa1ab4ab68672d89eb69275f5bf84982f26b32893f87fdaf8add07218c6af",
+      "solution": "First, we note that $(-a)^2 = a^2$ for any number $a$, so we have \\[\\left(-\\sqrt{5321}\\right)^2 = \\left(\\sqrt{5321}\\right)^2.\\] Next, for any nonnegative number $n$, the value of $\\sqrt{n}$ is the number whose square is $n$.  So, when we square $\\sqrt{n}$, we get $n$.  Therefore, $\\left(\\sqrt{5321}\\right)^2 = \\boxed{5321}$."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|prealgebra|49": {
+      "family": "bdc509b65f40febf57e4b277cda1049f61f7eb551f689613597cda43fe59e38c",
+      "solution": "First, we label the diagram:\n\n[asy]\nimport olympiad;\ndraw((0,0)--(sqrt(3),0)--(0,sqrt(3))--cycle);\ndraw((0,0)--(-3,0)--(0,sqrt(3))--cycle);\nlabel(\"8\",(-3/2,sqrt(3)/2),NW);\nlabel(\"$x$\",(sqrt(3)/2,sqrt(3)/2),NE);\ndraw(\"$45^{\\circ}$\",(1.4,0),NW);\ndraw(\"$30^{\\circ}$\",(-2.4,0),NE);\ndraw(rightanglemark((0,sqrt(3)),(0,0),(sqrt(3),0),5));\nlabel(\"$A$\",(0,0),S);\nlabel(\"$B$\",(-3,0),W);\nlabel(\"$C$\",(sqrt(3),0),E);\nlabel(\"$D$\",(0,sqrt(3)),N);\n[/asy]\n\nTriangle $ABD$ is a 30-60-90 triangle, so $AD = BD/2 = 4$.\n\nTriangle $ACD$ is a 45-45-90 triangle, so $CD = AD \\sqrt{2} = \\boxed{4\\sqrt{2}}$."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|prealgebra|496": {
+      "family": "69dcf5d0b73b36231147430cf90b6c950f140b7acdceb599d2681a34d44be04c",
+      "solution": "The least common denominator of these two fractions is 9, so we must rewrite $\\frac{1}{3}$ with 9 on the bottom. We can rewrite one third as $\\frac{1}{3} \\cdot \\frac{3}{3} = \\frac{3}{9}$.  Then, we have $\\frac{1}{3} - \\frac{2}{9} = \\frac{3}{9} - \\frac{2}{9} = \\frac{3-2}{9} = \\boxed{\\frac{1}{9}}$."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|prealgebra|508": {
+      "family": "2ddb0359099e4fdfa024ba450cfcad7e84098411d5dab03383ac8f7cfef01aae",
+      "solution": "We expand $7!$: $$\\sqrt{7\\cdot6\\cdot5\\cdot4\\cdot3\\cdot2\\cdot1}$$Factoring out the $4$ and the $6\\cdot3\\cdot2=36$ gives $$\\boxed{12\\sqrt{35}}.$$This can't be simplified any more because 35 has no square factors."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|prealgebra|516": {
+      "family": "5a0dc7a56c162f4328dcd2701c5c4c9bafb7e6696651da65dcf2de72b3dd6023",
+      "solution": "Remembering that \"of\" means \"times,\" the number of aliens with 3 eyes is $\\frac{17}{40} \\cdot 160$.  This equals $\\frac{17 \\cdot 160}{40}$, which can be rewritten as $17 \\cdot \\frac{160}{40}$.  Because $160$ divided by $40$ equals $4$, the expression above is the same as $17 \\cdot 4$, which equals $\\boxed{68}$."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|prealgebra|546": {
+      "family": "11d0657365a38effd29319900899ca93bb5961b8465328f6f0ed354f0ba3fda1",
+      "solution": "First, we label the diagram:\n\n[asy]\nimport olympiad;\ndraw((0,0)--(sqrt(3),0)--(0,sqrt(3))--cycle);\ndraw((0,0)--(-3,0)--(0,sqrt(3))--cycle);\nlabel(\"$2\\sqrt{3}$\",(-3/2,sqrt(3)/2),NW);\nlabel(\"$x$\",(sqrt(3)/2,sqrt(3)/2),NE);\ndraw(\"$45^{\\circ}$\",(1.4,0),NW);\ndraw(\"$30^{\\circ}$\",(-2.4,0),NE);\ndraw(rightanglemark((0,sqrt(3)),(0,0),(sqrt(3),0),5));\nlabel(\"$A$\",(0,0),S);\nlabel(\"$B$\",(-3,0),W);\nlabel(\"$C$\",(sqrt(3),0),E);\nlabel(\"$D$\",(0,sqrt(3)),N);\n[/asy]\n\nTriangle $ABD$ is a 30-60-90 triangle, so $AD = BD/2 = \\sqrt{3}$.\n\nTriangle $ACD$ is a 45-45-90 triangle, so $CD = AC \\sqrt{2} = \\sqrt{3}\\cdot \\sqrt{2} =\\boxed{\\sqrt{6}}$."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|prealgebra|55": {
+      "family": "f1f4fe08e2959322b42d782d3e61c9d51ffbe3358f10de558e88b40a03983537",
+      "solution": "Since the diameter of a circle is twice its radius, we know that $3x+5=2(x+6)$, or $3x+5=2x+12$. Subtracting $2x+5$ from both sides gives $x=7$. The circumference of a circle is $\\pi$ times its diameter, so the circumference is $(3x+5)\\pi=(3\\cdot7+5)\\pi=(21+5)\\pi=\\boxed{26\\pi}$."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|prealgebra|559": {
+      "family": "43c1aa9f5b31fac9a2d1596b7bad702b39751a49f18298c4468f7fd85265c3e7",
+      "solution": "We divide the shape into two rectangles, $A$ and $B,$ by constructing the dotted line segment of length $2$ units shown. The area of rectangle $A$ is $2\\times3=6$ square units. The length of rectangle $B$ is $6$ units plus the length of the dotted line segment, or $6+2=8.$ Thus, the area of rectangle $B$ is $8\\times5=40$ square units. The area of the entire figure is the sum of the areas of rectangles $A$ and $B,$ or $6+40=\\boxed{46}$ square units. [asy]\ndraw((0,0)--(8,0)--(8,5)--(2,5)--(2,8)--(0,8)--cycle,linewidth(1));\ndraw((.5,0)--(.5,.5)--(0,.5),linewidth(1));\ndraw((7.5,0)--(7.5,.5)--(8,.5),linewidth(1));\ndraw((8,4.5)--(7.5,4.5)--(7.5,5),linewidth(1));\ndraw((0,7.5)--(.5,7.5)--(.5,8),linewidth(1));\ndraw((1.5,8)--(1.5,7.5)--(2,7.5),linewidth(1));\nlabel(\"2\",(1,8),N);\nlabel(\"5\",(8,2.5),E);\nlabel(\"6\",(5,5),N);\nlabel(\"3\",(2,6.5),E);\n\ndraw((0,5)--(2,5),dashed+linewidth(1));\nlabel(\"A\",(1,6.5));\nlabel(\"B\",(4,2.5));\n[/asy]"
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|prealgebra|783": {
+      "family": "339ad30bed1ab055b8deac2311591db6ef66dd579cf3a45455cfd2f01e42258b",
+      "solution": "The reciprocal of $\\frac{5}{6}$ is $\\frac{6}{5}$.  The reciprocal of the reciprocal  of $\\frac{5}{6}$ must then be the reciprocal of $\\frac{6}{5}$, which is $\\frac{5}{6}$.  Thus, the reciprocal of $\\frac{5}{6}$ divided by the reciprocal of the reciprocal of $\\frac{5}{6}$ is $\\frac{6}{5}\\div\\frac{5}{6}=\\frac{6}{5}\\cdot\\frac{6}{5}=\\boxed{\\frac{36}{25}}$."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|prealgebra|80": {
+      "family": "ee551b89789ab8cf48358a46674b6dc3a1cb728d5ffabff67346957dc0d4ff1b",
+      "solution": "We have 8 choices for the President, 7 choices for the Vice-President, and 6 choices for the Treasurer, for a total of $8\\times 7\\times 6=\\boxed{336}$ choices."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|prealgebra|843": {
+      "family": "1ce002225b574bd84c9cb2aed0a92562676be6dc2771f6269649179ab26905fa",
+      "solution": "The sum of the numbers is $5(10.6)=53$.  The sum of the four given numbers is $10+4+5+20=39$.  So the fifth number is $53-39=\\boxed{14}$."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|prealgebra|98": {
+      "family": "36685a3adfd2468a0ee48dc97d8a3a8d1f59b0efa91a9ea01ab6fa908726e40c",
+      "solution": "We check the sum of the two smallest distinct perfect squares and find our answer: $1^2+2^2=1+4=\\boxed{5}$, a prime."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|precalculus|116": {
+      "family": "db8d3c28a239524c23337756b763ea15968900aa821d5d6d335d942de49e348f",
+      "solution": "Note that\n\\[\nP(x) = x + 2x^2 + 3x^3 + \\cdots + 24x^{24} + 23x^{25} + 22x^{26} + \\cdots + 2x^{46} + x^{47},\n\\]and \\[\nxP(x) = x^2 + 2x^3 + 3x^4 + \\cdots + 24x^{25} + 23x^{26} + \\cdots + 2x^{47} + x^{48},\n\\]so\n\\begin{align*}\n(1-x)P(x) &= x+x^2+\\cdots + x^{24} - (x^{25} + x^{26} + \\cdots +x^{47} + x^{48}) \\\\\n&=(1-x^{24})(x+x^2+\\cdots +x^{24}).\n\\end{align*}Then, for $x\\ne1$, \\begin{align*}\nP(x) &={{x^{24}-1}\\over{x-1}} \\cdot x(1+x+\\cdots +x^{23})\\\\\n&=x\\Bigl({{x^{24}-1}\\over{x-1}}\\Bigr)^2\\; .&(*)\n\\end{align*}One zero of $P(x)$ is 0, which does not contribute to the requested sum.  The remaining zeros of $P(x)$ are the same as those of $(x^{24}-1)^2$, excluding 1. Because $(x^{24}-1)^2$ and $x^{24}-1$ have the same distinct zeros, the remaining zeros of $P(x)$ can be expressed as $z_k= {\\rm cis}\\,15k^{\\circ}$ for $k =\n1,2,3,\\dots,23$.\n\nThe squares of the zeros are therefore of the form ${\\rm cis}\\,30k^{\\circ}$, and the requested sum is $$\\sum_{k=1}^{23}|\\sin30k^{\\circ}|=\n4\\sum_{k=1}^{5}|\\sin30k^{\\circ}| =4\\left( 2 \\cdot \\frac{1}{2} + 2 \\cdot \\frac{\\sqrt{3}}{2} + 1 \\right) = \\boxed{8+4\\sqrt3}.$$Note: The expression $(*)$ can also be obtained using the identity $$(1+x+x^2+\\cdots +x^{n})^2 =\n1+2x+3x^2+\\cdots+(n+1)x^{n}+\\cdots+3x^{2n-2}+2x^{2n-1}+x^{2n}.$$"
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|precalculus|170": {
+      "family": "4550fd358accbcfc2d40fb243a49b5e9dd657a21a82f8ee10beec674b3aa49bf",
+      "solution": "The projection of $\\mathbf{a}$ onto $\\mathbf{b}$ is given by\n\\[\\frac{\\mathbf{a} \\cdot \\mathbf{b}}{\\mathbf{b} \\cdot \\mathbf{b}} \\mathbf{b} = \\frac{2}{1^2 + (-3)^2} \\begin{pmatrix} 1 \\\\ -3 \\end{pmatrix} = \\boxed{\\begin{pmatrix} 1/5 \\\\ -3/5 \\end{pmatrix}}.\\]"
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|precalculus|189": {
+      "family": "906af5c00a0c14aef0f58dc354f7044ac6563696958a0d72d210e71331cd4e19",
+      "solution": "Let $S = w + 2w^2 + 3w^3 + \\dots + 9w^9.$  Then\n\\[wS = w^2 + 2w^3 + 3w^4 + \\dots + 9w^{10}.\\]Subtracting these equations, we get\n\\[(1 - w) S = w + w^2 + w^3 + \\dots + w^9 - 9w^{10}.\\]Note that $w^9 = \\cos 360^\\circ + i \\sin 360^\\circ = 1,$ so $w^9 - 1 = 0.$  This factors as\n\\[(w - 1)(w^8 + w^7 + \\dots + w + 1) = 0.\\]Since $w \\neq 1,$\n\\[w^8 + w^7 + \\dots + w + 1 = 0.\\]Hence,\n\\begin{align*}\n(1 - w) S &= w + w^2 + w^3 + \\dots + w^9 - 9w^{10} \\\\\n&= w(1 + w + w^2 + \\dots + w^8) - 9w \\\\\n&= -9w,\n\\end{align*}so\n\\[S = -\\frac{9w}{1 - w}.\\]Now,\n\\begin{align*}\n\\frac{1}{1 - w} &= \\frac{1}{1 - \\cos 40^\\circ - i \\sin 40^\\circ} \\\\\n&= \\frac{1 - \\cos 40^\\circ + i \\sin 40^\\circ}{(1 - \\cos 40^\\circ)^2 + \\sin^2 40^\\circ} \\\\\n&= \\frac{1 - \\cos 40^\\circ + i \\sin 40^\\circ}{2 - 2 \\cos 40^\\circ} \\\\\n&= \\frac{2 \\sin^2 20^\\circ + 2i \\sin 20^\\circ \\cos 20^\\circ}{4 \\sin^2 20^\\circ} \\\\\n&= \\frac{\\sin 20^\\circ + i \\cos 20^\\circ}{2 \\sin 20^\\circ} \\\\\n&= \\frac{\\cos 70^\\circ + i \\sin 70^\\circ}{2 \\sin 20^\\circ} \\\\\n\\end{align*}Then\n\\begin{align*}\n\\frac{1}{|S|} &= \\left| \\frac{1 - w}{9w} \\right| \\\\\n&= \\frac{2 \\sin 20^\\circ}{9 |\\cos 70^\\circ + i \\sin 70^\\circ|} \\\\\n&= \\frac{2}{9} \\sin 20^\\circ.\n\\end{align*}The final answer is $2 + 9 + 20 = \\boxed{31}.$"
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|precalculus|206": {
+      "family": "a4e3204b89fb6054cfc165b7c2193c71f765a4404c314ef50c74f0e5098785bc",
+      "solution": "The direction vectors of the lines are $\\begin{pmatrix} 2 \\\\ 1 \\\\ 1 \\end{pmatrix}$ and $\\begin{pmatrix} 1 \\\\ -1 \\\\ 2 \\end{pmatrix}.$  The cosine of the angle between them is then\n\\[\\frac{\\begin{pmatrix} 2 \\\\ 1 \\\\ 1 \\end{pmatrix} \\cdot \\begin{pmatrix} 1 \\\\ -1 \\\\ 2 \\end{pmatrix}}{\\left\\| \\begin{pmatrix} 2 \\\\ 1 \\\\ 1 \\end{pmatrix} \\right\\| \\left\\| \\begin{pmatrix} 1 \\\\ -1 \\\\ 2 \\end{pmatrix} \\right\\|} = \\frac{3}{\\sqrt{6} \\sqrt{6}} = \\frac{1}{2}.\\]Hence, $\\theta = \\boxed{60^\\circ}.$"
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|precalculus|265": {
+      "family": "25546847e531aea7f728ee1c8a6c3f65325e4b9559fa16f2607c52608be013b6",
+      "solution": "Note that\n\\[x^2 - y^2 = \\left( t + \\frac{1}{t} \\right)^2 - \\left( t - \\frac{1}{t} \\right)^2 = \\left( t^2 + 2 + \\frac{1}{t^2} \\right) - \\left( t^2 - 2 + \\frac{1}{t^2} \\right) = 4,\\]so\n\\[\\frac{x^2}{4} - \\frac{y^2}{4} = 1.\\]Thus, all the plotted points lie on a hyperbola.  The answer is $\\boxed{\\text{(E)}}.$"
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|precalculus|286": {
+      "family": "c1f6fd2a10be9a4b445747bb95ab4a71af0c2f59e4a87807a5cbdfa193fb365e",
+      "solution": "We have that $\\det (\\mathbf{A} \\mathbf{B}) = (\\det \\mathbf{A})(\\det \\mathbf{B}) = (4)(-5) = \\boxed{-20}.$"
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|precalculus|324": {
+      "family": "6d3bcfa46ac0d713862064356aece11030b298ab65dd68c28e6cb2c99f24ec27",
+      "solution": "From the angle addition formula,\n\\begin{align*}\n\\tan 60^\\circ &= \\tan (20^\\circ + 40^\\circ) \\\\\n&= \\frac{\\tan 20^\\circ + \\tan 40^\\circ}{1 - \\tan 20^\\circ \\tan 40^\\circ},\n\\end{align*}so\n\\begin{align*}\n\\tan 20^\\circ + \\tan 40^\\circ + \\sqrt{3} \\tan 20^\\circ \\tan 40^\\circ &= \\tan 60^\\circ (1 - \\tan 20^\\circ \\tan 40^\\circ) + \\sqrt{3} \\tan 20^\\circ \\tan 40^\\circ \\\\\n&= \\sqrt{3} (1 - \\tan 20^\\circ \\tan 40^\\circ) + \\sqrt{3} \\tan 20^\\circ \\tan 40^\\circ \\\\\n&= \\boxed{\\sqrt{3}}.\n\\end{align*}"
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|precalculus|354": {
+      "family": "8d7ce7578605954a2abeb798a226723f5a14be2e6f98fea782c232f25a9e60b1",
+      "solution": "The graph $\\cos x$ has period $2 \\pi,$ the graph of $\\cos 2x$ has period $\\pi,$ and the graph of $\\cos 3x$ has period $\\frac{2 \\pi}{3}.$  This means that all three functions repeat after an interval of $2 \\pi,$ but this does not necessarily show that the period is $2 \\pi.$\n\nLet $f(x) = \\cos x + \\cos 2x + \\cos 3x.$   Note that $\\cos x \\le 1,$ $\\cos 2x \\le 1,$ and $\\cos 3x \\le 1$ for all $x,$ so\n\\[f(x) = \\cos x + \\cos 2x + \\cos 3x \\le 3\\]for all $x.$  Furthermore, $f(x) = 3$ if and only if $\\cos x = \\cos 2x = \\cos 3x = 1.$  Note that $\\cos x = 1$ if and only if $x$ is a multiple of $2 \\pi,$ and if $x$ is a multiple of $2 \\pi,$ then $f(x) = 3.$  Therefore,  the graph of $y = \\cos x + \\cos 2x + \\cos 3x$ repeats with period $\\boxed{2 \\pi}.$\n\nThe graph of $y = \\cos x + \\cos 2x + \\cos 3x$ is shown below:\n\n[asy]import TrigMacros;\n\nsize(400);\n\nreal g(real x)\n{\n\treturn cos(x) + cos(2*x) + cos(3*x);\n}\n\ndraw(graph(g,-3*pi,3*pi,n=700,join=operator ..),red);\ntrig_axes(-3*pi,3*pi,-2,4,pi/2,1);\nlayer();\nrm_trig_labels(-5, 5, 2);\n[/asy]"
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|precalculus|404": {
+      "family": "f7a42cd5371b632c9fb57e8d70bca253d922d4230188670ca58281aba41fac22",
+      "solution": "From $\\mathbf{w} + \\mathbf{w} \\times \\mathbf{u} = \\mathbf{v},$\n\\[\\mathbf{w} \\times \\mathbf{u} = \\mathbf{v} - \\mathbf{w}.\\]Then\n\\begin{align*}\n\\|\\mathbf{w} \\times \\mathbf{u}\\|^2 &= \\|\\mathbf{v} - \\mathbf{w}\\|^2 \\\\\n&= \\|\\mathbf{v}\\|^2 - 2 \\mathbf{v} \\cdot \\mathbf{w} + \\|\\mathbf{w}\\|^2 \\\\\n&= 1 - 2 \\mathbf{v} \\cdot \\mathbf{w} + \\|\\mathbf{w}\\|^2.\n\\end{align*}Hence,\n\\[\\mathbf{v} \\cdot \\mathbf{w} = \\frac{1 +\\|\\mathbf{w}\\|^2 - \\|\\mathbf{w} \\times \\mathbf{u}\\|^2}{2}. \\quad (*)\\]Also from $\\mathbf{w} + \\mathbf{w} \\times \\mathbf{u} = \\mathbf{v},$ we can take the dot product with $\\mathbf{v},$ to get\n\\[\\mathbf{w} \\cdot \\mathbf{v} + (\\mathbf{w} \\times \\mathbf{u}) \\cdot \\mathbf{v} = \\mathbf{v} \\cdot \\mathbf{v} = 1.\\]By the scalar triple product, $(\\mathbf{w} \\times \\mathbf{u}) \\cdot \\mathbf{v} = (\\mathbf{u} \\times \\mathbf{v}) \\cdot \\mathbf{w},$ so\n\\[(\\mathbf{u} \\times \\mathbf{v}) \\cdot \\mathbf{w} = 1 - \\mathbf{v} \\cdot \\mathbf{w}.\\]From equation $(*),$\n\\begin{align*}\n(\\mathbf{u} \\times \\mathbf{v}) \\cdot \\mathbf{w} &= 1 - \\frac{1 +\\|\\mathbf{w}\\|^2 - \\|\\mathbf{w} \\times \\mathbf{u}\\|^2}{2} \\\\\n&= \\frac{1}{2} - \\frac{1}{2} \\|\\mathbf{w}\\|^2 + \\frac{1}{2} \\|\\mathbf{w} \\times \\mathbf{u}\\|^2.\n\\end{align*}Let $\\theta$ be the angle between $\\mathbf{u}$ and $\\mathbf{w}.$  Then\n\\begin{align*}\n(\\mathbf{u} \\times \\mathbf{v}) \\cdot \\mathbf{w} &= \\frac{1}{2} - \\frac{1}{2} \\|\\mathbf{w}\\|^2 + \\frac{1}{2} \\|\\mathbf{w} \\times \\mathbf{u}\\|^2 \\\\\n&= \\frac{1}{2} - \\frac{1}{2} \\|\\mathbf{w}\\|^2 + \\frac{1}{2} \\|\\mathbf{u}\\|^2 \\|\\mathbf{w}\\|^2 \\sin^2 \\theta \\\\\n&= \\frac{1}{2} - \\frac{1}{2} \\|\\mathbf{w}\\|^2 + \\frac{1}{2} \\|\\mathbf{w}\\|^2 \\sin^2 \\theta \\\\\n&= \\frac{1}{2} - \\frac{1}{2} \\|\\mathbf{w}\\|^2 \\cos^2 \\theta \\\\\n&\\le \\frac{1}{2}.\n\\end{align*}Equality occurs when $\\mathbf{u} = \\begin{pmatrix} 1 \\\\ 0 \\\\ 0 \\end{pmatrix},$ $\\mathbf{v} = \\begin{pmatrix} 0 \\\\ 1 \\\\ 0 \\end{pmatrix},$ and $\\mathbf{w} = \\begin{pmatrix} 0 \\\\ 1/2 \\\\ 1/2 \\end{pmatrix},$ so the largest possible value of $(\\mathbf{u} \\times \\mathbf{v}) \\cdot \\mathbf{w}$ is $\\boxed{\\frac{1}{2}}.$"
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|precalculus|405": {
+      "family": "4c1687d9fd3ffe628cd6cba0087bcf770c477c480241cf468498c5b1eb2d91a8",
+      "solution": "From the product-to-sum formula, $\\cos 50^\\circ \\cos 70^\\circ = \\frac{1}{2} (\\cos 120^\\circ + \\cos 20^\\circ),$ so\n\\begin{align*}\n\\cos 10^\\circ \\cos 30^\\circ \\cos 50^\\circ \\cos 70^\\circ &= \\cos 10^\\circ \\cdot \\frac{\\sqrt{3}}{2} \\cdot \\frac{1}{2} (\\cos 120^\\circ + \\cos 20^\\circ) \\\\\n&= \\frac{\\sqrt{3}}{4} \\cos 10^\\circ (\\cos 120^\\circ + \\cos 20^\\circ) \\\\\n&= \\frac{\\sqrt{3}}{4} (\\cos 10^\\circ \\cos 120^\\circ + \\cos 10^\\circ \\cos 20^\\circ) \\\\\n&= \\frac{\\sqrt{3}}{4} \\left( -\\frac{1}{2} \\cos 10^\\circ + \\cos 10^\\circ \\cos 20^\\circ \\right).\n\\end{align*}Applying the product-to-sum formula again, we get\n\\begin{align*}\n\\frac{\\sqrt{3}}{4} \\left( -\\frac{1}{2} \\cos 10^\\circ + \\cos 10^\\circ \\cos 20^\\circ \\right) &= \\frac{\\sqrt{3}}{4} \\left( -\\frac{1}{2} \\cos 10^\\circ + \\frac{\\cos 30^\\circ + \\cos 10^\\circ}{2} \\right) \\\\\n&= \\frac{\\sqrt{3}}{8} \\cos 30^\\circ \\\\\n&= \\boxed{\\frac{3}{16}}.\n\\end{align*}"
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|precalculus|461": {
+      "family": "6a7218632187da1400a636ec2c6a72a3fe5710cc8165ff13c8c4aad271293762",
+      "solution": "From the equation $\\begin{pmatrix} 4 & 3 \\\\ -1 & 0 \\end{pmatrix} = \\mathbf{P}^{-1} \\begin{pmatrix} 1 & 0 \\\\ 0 & 3 \\end{pmatrix} \\mathbf{P},$ we can multiply both sides by $\\mathbf{P}$ on the left, to get\n\\[\\mathbf{P} \\begin{pmatrix} 4 & 3 \\\\ -1 & 0 \\end{pmatrix} = \\begin{pmatrix} 1 & 0 \\\\ 0 & 3 \\end{pmatrix} \\mathbf{P}.\\]Then\n\\[\\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix} \\begin{pmatrix} 4 & 3 \\\\ -1 & 0 \\end{pmatrix} = \\begin{pmatrix} 1 & 0 \\\\ 0 & 3 \\end{pmatrix} \\begin{pmatrix} a & b \\\\ c & d \\end{pmatrix},\\]so\n\\[\\begin{pmatrix} 4a - b & 3a \\\\ 4c - d & 3c \\end{pmatrix} = \\begin{pmatrix} a & b \\\\ 3c & 3d \\end{pmatrix}.\\]Comparing entries, we get $4a - b = a,$ $3a = b,$ $4c - d = 3c,$ and $3c = 3d.$  These reduce to $b = 3a$ and $c = d,$ so\n\\[|a| + |b| + |c| + |d| = |a| + |3a| + |c| + |d| = 4|a| + 2|d|.\\]Since $a,$ $b,$ $c,$ and $d$ are all nonzero integers, we minimize this by taking $a = \\pm 1$ and $d = \\pm 1,$ in which case $4|a| + 2|d| = \\boxed{6}.$"
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|precalculus|50": {
+      "family": "4e585f8f642d2bf1e1738e3d42356ff5a670e3a4db445bc9a5b74c54339a1028",
+      "solution": "Let $P = (a, -a + 1, 0)$ be a point on the first line, and let $Q = (b, 0, -2b + 1)$ be a point on the second line.\n\n[asy]\nimport three;\n\nsize(250);\ncurrentprojection = perspective(6,3,2);\n\ndraw((-1,2,0)--(2,-1,0),red);\ndraw((3/2,0,-2)--(-1/2,0,2),blue);\ndraw((-2,0,0)--(2,0,0));\ndraw((0,-2,0)--(0,2,0));\ndraw((0,0,-2)--(0,0,2));\n\nlabel(\"$x$\", (2.2,0,0));\nlabel(\"$y$\", (0,2.2,0));\nlabel(\"$z$\", (0,0,2.2));\nlabel(\"$y = -x + 1$\", (-1,2,0), E, red);\nlabel(\"$z = -2x + 1$\", (3/2,0,-2), S, blue);\n[/asy]\n\nThen\n\\begin{align*}\nPQ^2 &= (a - b)^2 + (-a + 1)^2 + (-2b + 1)^2 \\\\\n&= 2a^2 - 2ab + 5b^2 - 2a - 4b + 2 \\\\\n&= 2a^2 - (2b + 2) a + 5b^2 - 4b + 2.\n\\end{align*}If $b$ is fixed, then this quadratic in $a$ is minimized when $a = \\frac{2b + 2}{4} = \\frac{b + 1}{2}.$  Then\n\\begin{align*}\nPQ^2 &= 2 \\left( \\frac{b + 1}{2} \\right)^2 - (2b + 2) \\cdot \\frac{b + 1}{2} + 5b^2 - 4b + 2 \\\\\n&= \\frac{9}{2} b^2 - 5b + \\frac{3}{2}.\n\\end{align*}This is minimized when $b = \\frac{5}{9}.$  When $b = \\frac{5}{9},$\n\\[PQ^2 = \\frac{9}{2} \\left( \\frac{5}{9} \\right)^2 - 5 \\cdot \\frac{5}{9} + \\frac{3}{2} = \\frac{1}{9},\\]so the minimum value of $PQ$ is $\\boxed{\\frac{1}{3}}.$"
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|precalculus|529": {
+      "family": "2e02a42cfab15cc656a1cf36b460acc7faa1dff932eab072eb29cb057665bec1",
+      "solution": "[asy]\npair L,M,N;\nN = (0,0);\nM = (2,0);\nL = (2,-sqrt(21));\ndraw(L--M--N--L);\ndraw(rightanglemark(L,M,N,10));\nlabel(\"$M$\",M,NE);\nlabel(\"$L$\",L,SE);\nlabel(\"$N$\",N,NW);\nlabel(\"$2$\",(N+M)/2,NW);\nlabel(\"$\\sqrt{21}$\",(M+L)/2,E);\n[/asy]\n\nBecause this is a right triangle, $\\sin L = \\frac{MN}{LN}.$\n\nUsing the Pythagorean Theorem, we find that $$LN = \\sqrt{MN^2 + LM^2} = \\sqrt{4 + 21} = 5.$$Then $\\sin L = \\boxed{\\frac{2}{5}}$."
+    },
+    "math-full|21a5633873b6a120296cce3e2df9d5550074f4a3|precalculus|9": {
+      "family": "541148e3c9877b1046fa6878b3b3bd16f8c2636a91f12534e1096ca6975b43c8",
+      "solution": "Let $\\theta = \\angle CBA.$  Since $\\angle DBC = 2 \\theta,$ $\\angle DBA = 3 \\theta.$\n\n[asy]\nunitsize(1 cm);\n\npair A, B, C, D;\n\nA = (0,0);\nB = (5,0);\nC = (0,1);\nD = (0,37/11);\n\ndraw(A--B--D---cycle);\ndraw(B--C);\n\nlabel(\"$A$\", A, SW);\nlabel(\"$B$\", B, SE);\nlabel(\"$C$\", C, W);\nlabel(\"$D$\", D, NW);\nlabel(\"$1$\", (A + C)/2, W);\nlabel(\"$5$\", (A + B)/2, S);\n[/asy]\n\nNote that $\\tan \\theta = \\frac{1}{5}.$  By the triple angle formula,\n\\[\\tan 3 \\theta = \\frac{3 \\tan \\theta - \\tan^3 \\theta}{1 - 3 \\tan^2 \\theta} = \\frac{3 (\\frac{1}{5}) - (\\frac{1}{5})^3}{1 - 3 (\\frac{1}{5})^2} = \\frac{37}{55}.\\]Therefore,\n\\[AD = AB \\tan 3 \\theta = 5 \\cdot \\frac{37}{55} = \\boxed{\\frac{37}{11}}.\\]"
+    },
+    "math500|math500_test/algebra/1837.json": {
+      "family": "59493910d6f987ddb5f17d95ecc9e7e0d23bd36f856c8200153b8e53128d4490",
+      "gold": "5"
+    },
+    "math500|math500_test/algebra/2486.json": {
+      "family": "730298a853730be798458e327441b4ee24174b92cb5dba0f74230a87955bee4c",
+      "gold": "\\left(\\frac{3}{5},\\frac{8}{3}\\right]"
+    },
+    "math500|math500_test/algebra/251.json": {
+      "family": "6494e4f831e13dddbce16e0998f963598de7e9e907149cc29baadf62d22c5834",
+      "gold": "2"
+    },
+    "math500|math500_test/algebra/2570.json": {
+      "family": "6332f3952a4d310f59b492e2d5cfbe5d42d4d7b9eea81a06bdeec6ad10bcd2db",
+      "gold": "2107"
+    },
+    "math500|math500_test/intermediate_algebra/1126.json": {
+      "family": "98d7c0cffaf8664a6014dd716307b620be6f01d17a3c98014465cc1df0250e35",
+      "gold": "16"
+    },
+    "math500|math500_test/intermediate_algebra/591.json": {
+      "family": "d6ae4ef46b2c4f3b62f45bc6e349fd688412934445ba76de81f0f3bf15ada027",
+      "gold": "24"
+    },
+    "math500|math500_test/prealgebra/1251.json": {
+      "family": "fff0f7ae0efb38815249ca8438b8d015ad1348e758b06f5a91ccf288fb481337",
+      "gold": "8"
+    },
+    "math500|math500_test/prealgebra/153.json": {
+      "family": "b2fbed68b5770889117d45148541a367c98d2a8c1b6c5f73fe5f7e3eda952ac2",
+      "gold": "\\frac 59"
+    },
+    "math500|math500_test/prealgebra/1807.json": {
+      "family": "3367fc3d3cb10721c5ca4d2dab40e29e369042f3e801709985eb83b35caffac1",
+      "gold": "120"
+    },
+    "math500|math500_test/prealgebra/1865.json": {
+      "family": "27d2363267233b2ce6ff74234da783dc554b6edc7cf44024de5238dc9f067586",
+      "gold": "12"
+    },
+    "math500|math500_test/precalculus/1105.json": {
+      "family": "f94a4ce465e54b537ef463ea6e3b8fe0148b5cbdb437b3ca294c9cdc099e341a",
+      "gold": "-\\frac{\\pi}{6}"
+    },
+    "minerva|minerva_76": {
+      "family": "eee15807710ee7873a219abd0c07a9f2075da668d35575207b6b945f13305137",
+      "gold": "\\frac{\\cos (2 t)}{15}+C_{1} e^{t}+C_{2} e^{-t}+C_{3} \\cos (t)+C_{4} \\sin (t)"
+    },
+    "olympiad|olympiad_1675": {
+      "family": "681f70af1260cf260825f9322b492adad415ab0a4cdff83393ec14a6dfd165dd",
+      "gold": "k=1"
+    },
+    "olympiad|olympiad_1845": {
+      "family": "9f6de64123e79af466d77c24675abb4fa45f391964e54f226f7508115cd1b66d",
+      "gold": "\\frac{4}{9}"
+    },
+    "olympiad|olympiad_1854": {
+      "family": "1b8c3e7cc03eb4055ad504c782b763336ba17da040b85c2a115dc7eb1d23f714",
+      "gold": "2 n"
+    },
+    "olympiad|olympiad_2126": {
+      "family": "a7b8df19041f966b35b0f2daad20092af03a86a7423d19c37b9bc61adc476fd6",
+      "gold": "180180"
+    },
+    "olympiad|olympiad_2203": {
+      "family": "29cc45551546f60dfdd6c11bb74844950c5c81bb611825509d86bd244697ef37",
+      "gold": "(0,1,1),(0,-1,-1),(1,0,1),(-1,0,-1),(1,1,0)$,$(-1,-1,0),\\left(\\frac{1}{\\sqrt{3}}, \\frac{1}{\\sqrt{3}}, \\frac{1}{\\sqrt{3}}\\right)$,$\\left(-\\frac{1}{\\sqrt{3}},-\\frac{1}{\\sqrt{3}},-\\frac{1}{\\sqrt{3}}\\right)"
+    },
+    "olympiad|olympiad_2334": {
+      "family": "67928e1673c5c7b82613df7d95a765e72dd694296f41d4eb5bd77fa6a549196b",
+      "gold": "\\frac{41}{12}"
+    },
+    "olympiad|olympiad_2339": {
+      "family": "421df3311b63519148633d7f05bf01edde6ac27c0dd0af1360ea511ec72f8fc1",
+      "gold": "8"
+    },
+    "olympiad|olympiad_2351": {
+      "family": "00bfb4aac61f3d15220bc24ec149bff7d52daae64328216584692a8974416e86",
+      "gold": "1000"
+    },
+    "olympiad|olympiad_2442": {
+      "family": "6825f10257492d7a05d15e1947436b04b8e0801eb0dc71a1d69baa492d8bd982",
+      "gold": "-900"
+    },
+    "olympiad|olympiad_2445": {
+      "family": "4f5f62a271804f66bfa38042e820f38f7a0b5f2b9b7a87ff62cdb58b07ead678",
+      "gold": "10^{3},10"
+    },
+    "olympiad|olympiad_2489": {
+      "family": "7c51cc705eaaa49e75c76878c8a6b8d02d4518391cb71779a4fe5fba7852d941",
+      "gold": "12"
+    },
+    "olympiad|olympiad_2493": {
+      "family": "550fd432263445b7a658cbf3f7b32ad019cc13b611f7f4df5094527f0a938047",
+      "gold": "\\frac{11}{18}"
+    },
+    "olympiad|olympiad_2506": {
+      "family": "e0d8227ee3fb089454d992e1065a282f9fd8a39a32e7fd0bec4827eae8ca1446",
+      "gold": "\\frac{7}{5}"
+    },
+    "olympiad|olympiad_2601": {
+      "family": "52543cd453052b5d707943b34a1ec31df532d3be7c1a15dbcb51f49e99028f61",
+      "gold": "10"
+    },
+    "olympiad|olympiad_2653": {
+      "family": "b2b7f6c88970465e284c37b9fdec74e0588f38a406110c4f7f36a615ebfaf5da",
+      "gold": "25"
+    },
+    "olympiad|olympiad_2725": {
+      "family": "993ff5562af5067431c46cead82efa65621fb037fe68a0426235776c12fe5add",
+      "gold": "\\frac{67 \\pi}{3}"
+    },
+    "olympiad|olympiad_2727": {
+      "family": "ec47e896ec807987bdd073e3f44aca15adb1f4e475208ba011b62aa0b06c2c6c",
+      "gold": "184"
+    },
+    "olympiad|olympiad_2735": {
+      "family": "72e0c2d09051061648ed7d5706bca4e2ce52798d1530a39e2befa0c6076eeb7b",
+      "gold": "2302"
+    },
+    "olympiad|olympiad_2746": {
+      "family": "707ab7621174d1305ed9fb7370a65a7984a70d929ccb758a88557e35c8364c4f",
+      "gold": "\\frac{1}{6084}"
+    },
+    "olympiad|olympiad_2777": {
+      "family": "ab015c38c561307237f1d9f12b40aac5bc6b79d7838cc302e16a59c01effc212",
+      "gold": "23"
+    },
+    "olympiad|olympiad_2792": {
+      "family": "9d9ec1487c5d634f86ae97fca43b0f72a814c369baa2f2384aa88dec35978f5c",
+      "gold": "4096"
+    },
+    "olympiad|olympiad_2798": {
+      "family": "5454cf7129ec92c7698315f2e0146ed667e3895beec0d805905cfe3caf8e153c",
+      "gold": "75"
+    },
+    "olympiad|olympiad_2799": {
+      "family": "49ec3c017e319d5cd2434f5e06b4ac2f238fc41bb7c50ed90a99481328187dc6",
+      "gold": "37"
+    },
+    "olympiad|olympiad_2839": {
+      "family": "45cb78a1df75e9c0052ca94e400d2007351ead1d91a9f1e3042e806639cb8670",
+      "gold": "\\frac{9}{17}"
+    },
+    "olympiad|olympiad_2841": {
+      "family": "7e97810d4ff8730d30541a719c4ccc4b5f7dc9862da5c3c812d6705efc43110d",
+      "gold": "-10"
+    },
+    "olympiad|olympiad_2907": {
+      "family": "96e6320e8bd05cc4d7234ffd23d2a4fd8f73c35fb306da771c9867fefda0559b",
+      "gold": "80"
+    },
+    "olympiad|olympiad_2914": {
+      "family": "800c81574401f7a6b104c7902f4030f5ab324217b6520736cfc73d7c09a06f8a",
+      "gold": "2-\\sqrt{3}"
+    },
+    "olympiad|olympiad_2962": {
+      "family": "cb29cac11a2366d8754b75ac881c7b2786645be6cf34d6d23d5b5f43bd8e8d04",
+      "gold": "0"
+    },
+    "olympiad|olympiad_3037": {
+      "family": "9494cd0594ccab56a7cae7dd6cdd09e81704a31333e2be8bb7958a4f1c31c6c8",
+      "gold": "40"
+    },
+    "olympiad|olympiad_3079": {
+      "family": "ae67a99c9c6ecc2d48874f9e193fe42078abe04a9eb42201d47df1b95312881c",
+      "gold": "253"
+    },
+    "olympiad|olympiad_3082": {
+      "family": "74254b23b19519bf3cdeef518ee196f773cfe00e19b2ac5d58fb5f4511cee707",
+      "gold": "\\frac{9}{2}"
+    }
+  },
+  "schema": "verification-grading-catalog-v3",
+  "sha256": "3ac764529e958656180310c690ead45c167ba8a2b3e8479c5d1a5a1fab4f3f8a"
+}

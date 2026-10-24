@@ -1,0 +1,1 @@
+{"cpu_core_hour_ceiling":60.0,"cutoff":1792789200.0,"models":["gpt","qwen330b","nemotron"],"new_gpu_hour_ceiling":82.0,"no_budget_reset":true,"sha256":"7cd8ece151719383254ca9cf478c47ffac10fd725227677493a29336f0590dda","shards":{"gpt":3,"nemotron":3,"qwen330b":3}}

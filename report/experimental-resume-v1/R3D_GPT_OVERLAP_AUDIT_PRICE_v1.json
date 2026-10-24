@@ -1,0 +1,21 @@
+{
+ "schema": "r3d-gpt-overlap-audit-price-v1",
+ "status": "READY",
+ "driver_sha256": "bd31ab327a4ac8b0b144d1490d6de2779883b8a523bfe916f0753c54312d139b",
+ "verifier_sha256": "918ae0100429020abc5564a7fbce3aadfe380912ccf35fd62d654608e00d2eba",
+ "source_fits": 300,
+ "canonical_overlap_max_fits": 300,
+ "cpus": 2,
+ "memory": "16G",
+ "wall_seconds": 1200,
+ "gpus": 0,
+ "max_core_hours": 0.6666666666666666,
+ "slurm": {
+  "account": "iscrc_miosr",
+  "partition": "boost_usr_prod",
+  "qos": "normal"
+ },
+ "output": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/R3D_GPT_OVERLAP_AUDIT_v1.json",
+ "scope": "read-only overlap numeric/fold/hash comparison; does not stop canonical or merge",
+ "sha256": "bb837ee338b7f81ffd373eaac119da5748baccbf6a3739faac627bf9cfc4740e"
+}

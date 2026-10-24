@@ -1,0 +1,1 @@
+{"effective":null,"requested":"afterok:61583800","satisfied_purged_conditions":[{"id":"61583800","native":{"cpus":4,"elapsed":170,"end":"2026-10-21T00:40:16","exit_code":"0:0","start":"2026-10-21T00:37:26","state":"COMPLETED","tres":"billing=4,cpu=4,mem=24G,node=1"}}],"sha256":"31cf57e391bf00ad3f59ebe00c9eaaad6ef0f9f90f846bfa69ca834cc61537ed"}

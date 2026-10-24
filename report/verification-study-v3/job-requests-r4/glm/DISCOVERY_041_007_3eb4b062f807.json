@@ -1,0 +1,66 @@
+{
+  "arguments": [
+    "--model",
+    "glm",
+    "--qualification",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/glm/qualification/QUALIFICATION.json",
+    "--manifest",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/verification-study-v3/glm/DISCOVERY_ASSIGNMENTS.json",
+    "--output",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/glm/discovery",
+    "--root",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4",
+    "--begin",
+    "41",
+    "--count",
+    "7",
+    "--prices",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/glm/prices-by-event/315ae3d60fddf2cdc9b843386e6fddec203f275552a1e27acebe8709ae2d396c.json"
+  ],
+  "artifact": "glm: complete original48-family native discovery receipts and all-layer capture for audit and nomination",
+  "claim": "C2: qualify substantive-verification support and nominate a frozen singleton for this required model",
+  "decision_if_failure": "retain all committed assignments; reconcile exact failed identity and bounded attempts; report unsupported or imprecise cells, never a causal null",
+  "finite_assignments": 7,
+  "measurement_pilot": false,
+  "missing_cell": "glm remaining discovery family support; no audit freeze or target qualification from the single pilot",
+  "model": "glm",
+  "orchestration_file_sha256": "34878f39292769443b67e834e6d5d122d2f044736dc9afe1116afdc8ee1ae39a",
+  "population": "discovery",
+  "prerequisites": [
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/glm/qualification/QUALIFICATION.json",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/health/events/315ae3d60fddf2cdc9b843386e6fddec203f275552a1e27acebe8709ae2d396c.json"
+  ],
+  "price_event_sha256": "92c400c733daf31f3373093c5919cfd272fe4835a2859ed4e48a2b1b37f84005",
+  "price_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/glm/prices-by-event/315ae3d60fddf2cdc9b843386e6fddec203f275552a1e27acebe8709ae2d396c.json",
+  "priced_work": {
+    "capture": 40.40443896424168,
+    "closeout": 40.40443896424168,
+    "generation": 131072,
+    "generator_load": 2,
+    "prefill": 8
+  },
+  "resources": {
+    "billing_core_hours_max": 146.4,
+    "cpus": 16,
+    "gpus": 2,
+    "memory_gb": 120,
+    "partition": "boost_usr_prod",
+    "price_basis": "actual source-compatible role maxima; every assignment cap16384, one full capped retry and second load, cap-scaled capture/closeout,1.25 factor plus600seconds",
+    "qos": "normal",
+    "walltime_seconds": 32940
+  },
+  "reuse": "retained first discovery assignment, frozen original48 manifest and source-qualified native executor",
+  "schema": "verification-task-request-v3",
+  "selected_uids": [
+    "fe80a5083a3b926b5eca4b2b10cc041e11d4660a5c957ba70314e9ba6ab37fe7",
+    "c00756aa78faff10daefd354e07a2540d343223599769f6a04acec816128941a",
+    "dbc37e0260f4e34aab42e36ed78457f8a41d37b242625eb13831282d858b0830",
+    "96c3f704e4b563cddf33ce7a427b73d7b7879bf1073708fe5debc9e5a98951ef",
+    "3b6728c9612e6bb716456b6b3eadce79c21321867613a17f040685421ec7884c",
+    "a66747f53a25f93594bdbd88a8d0c75cfb6cb684782ecdefe7cfff9313f46dd9",
+    "35773ea7803221e72f2ed08f3fb3c9290b0f05564a355ac36a487b2a29663bce"
+  ],
+  "sha256": "3f34712dd683898b440a72bee9d708aba0c2afb6f6df96670ecf01a7d1189b9a",
+  "stage": "run",
+  "storage_bound_bytes": 397246464
+}

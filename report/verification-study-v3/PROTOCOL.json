@@ -1,0 +1,78 @@
+{
+  "accuracy_loss_margin": null,
+  "apparent_precision": 0.7,
+  "arms": [
+    "native",
+    "target",
+    "matched_random"
+  ],
+  "audit_family_split": [
+    36,
+    12
+  ],
+  "audit_prefix_cap": 128,
+  "automatic_assignment_retries": 1,
+  "bootstrap_draws": 50000,
+  "bootstrap_unit": "shared family; seeds averaged first",
+  "calibration_bisections": 12,
+  "calibration_bracket_expansions": 8,
+  "candidate_kinds": [
+    "intermediate",
+    "complete"
+  ],
+  "closure": "competing event; pulse stops at native reasoning closure",
+  "conditional_cap": 1024,
+  "conditional_population": "first eligible native seed-0 prefix per final family",
+  "cost": "generator_output_tokens + controller_output_tokens",
+  "discovery_families": 48,
+  "dispatch": "source-bound qualification and exact role prices required",
+  "event": "substantive_verification",
+  "final_effect_based_expansion": false,
+  "final_families": 96,
+  "headline_simultaneous_contrasts": 42,
+  "inclusion_tolerance": 0.025,
+  "models": [
+    "gpt",
+    "nemotron",
+    "qwen35",
+    "qwen36",
+    "gemma",
+    "glm",
+    "qwen330b"
+  ],
+  "native_exposure_tolerance": 0.025,
+  "native_source_seed": 0,
+  "negative_or_null_advancement_gate": false,
+  "operator": "native_logit_selection_bias",
+  "pulse_tokens": 256,
+  "recognizer_support_families": 10,
+  "relative_weight_displacement_mismatch": 0.2,
+  "schema": "verification-protocol-v3",
+  "scope_changes": [
+    "candidate-specific eligibility",
+    "verification-only recognizer",
+    "short conditional assay",
+    "one nominated action",
+    "three-arm policy ITT",
+    "validation for qualification",
+    "intervention-layer scientific capture"
+  ],
+  "seeds": [
+    0,
+    1
+  ],
+  "semantic_contrasts": 14,
+  "sha256": "afb978b506009b3ad870c388b6ce67bf1e82569ff1c6be0cacb18ff5fb39e557",
+  "source_seed_fallback": false,
+  "supersedes": "unrun v2 screens only; historical artifacts remain under original contracts",
+  "target": "specific unchecked numeric or symbolic candidate against an original problem constraint",
+  "target_inclusion_increment": 0.25,
+  "targets_per_model": 1,
+  "utility_cap": 16384,
+  "utility_contrasts": 28,
+  "utility_population": "all original-prompt assignments including no-fire and failures",
+  "validation_families": 32,
+  "validation_role": "pipeline qualification; no favorable-effect selection",
+  "veto_call_cap": 16,
+  "veto_output_cap": 1024
+}

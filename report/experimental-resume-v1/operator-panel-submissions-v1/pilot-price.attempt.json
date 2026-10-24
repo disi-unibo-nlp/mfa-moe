@@ -1,0 +1,18 @@
+{
+ "schema": "overnight-submit-attempt-v1",
+ "name": "pilot-price",
+ "binding": {
+  "operations_sha256": "b61bc98be974f5848da96c8c0bdcfd6faa0466dd696ba14f82a006438599f71e",
+  "phase": "price",
+  "extra": {}
+ },
+ "arguments": [
+  "--dependency=afterany:59400762:59400764",
+  "--job-name=operator-panel-pilot-price",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/operator_panel_cpu_v1.sbatch"
+ ],
+ "time_ns": 1791202114788507768,
+ "dispatcher_job_id": null,
+ "removed_parent_environment_keys": [],
+ "sha256": "cfcc1e74f50e5d4bfce57e5d67628c1c08405bdff18989ca1aa88ad89f7614d9"
+}

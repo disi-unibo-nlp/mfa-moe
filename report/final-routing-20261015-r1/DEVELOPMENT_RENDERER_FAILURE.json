@@ -1,0 +1,10 @@
+{
+  "status": "failed_development_fixture",
+  "allocated": false,
+  "scientific_draws": 0,
+  "gpu_allocations": 0,
+  "error": "original renderer child response timed out",
+  "original_response_timeout_seconds": 45,
+  "resolution": "New final-routing wrapper supervises the first unchanged renderer response for at most 180 seconds; later responses retain 45 seconds. Sealed original sources and reader instrument are unchanged.",
+  "release_requires": "complete fresh stable-source validation"
+}

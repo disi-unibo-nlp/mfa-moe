@@ -1,0 +1,14 @@
+% CL resets appendix counters and uses starred headings. Give those objects
+% unique PDF destinations while preserving its printed headings and numbering.
+\makeatletter
+\renewcommand*{\theHsection}{appendix.\Alph{section}}
+\renewcommand*{\theHsubsection}{\theHsection.\arabic{subsection}}
+\renewcommand*{\theHsubsubsection}{\theHsubsection.\arabic{subsubsection}}
+\renewcommand*{\theHtable}{\theHsection.\arabic{table}}
+\renewcommand*{\theHfigure}{\theHsection.\arabic{figure}}
+\renewcommand*{\theHequation}{\theHsection.\arabic{equation}}
+\renewcommand{\journalappendix}[2]{\appendixsection{#1}%
+  \setcounter{subsection}{0}\setcounter{subsubsection}{0}%
+  \phantomsection
+  \protected@edef\@currentlabel{\Alph{section}}\label{#2}}
+\makeatother

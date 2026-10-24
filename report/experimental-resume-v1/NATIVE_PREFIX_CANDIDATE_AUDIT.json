@@ -1,0 +1,3959 @@
+{
+ "schema": "native-prefix-candidate-audit-v1",
+ "job_id": "59111185",
+ "family_freeze_sha256": "592a71b1fa2223a29168ee29afae73de406b3a4d4408d38b69080bee152143f6",
+ "stages": {
+  "discovery": {
+   "families": 48,
+   "with_trace": 48,
+   "with_preclosure_candidate": 13,
+   "with_candidate_and_256_native_tokens": 10,
+   "with_candidate_and_1024_native_tokens": 6,
+   "records": [
+    {
+     "family": "6825f10257492d7a05d15e1947436b04b8e0801eb0dc71a1d69baa492d8bd982",
+     "question": "olympiad|olympiad_2442",
+     "status": "AUDITED",
+     "attempt_id": "ffd7ef3696c3c16174a6d03603b4ee7a2e2d9d610d0478ede42feb76f26f208a",
+     "reasoning_tokens": 12613,
+     "candidate_events": []
+    },
+    {
+     "family": "fe413656eb88bcd59b91fafc8491dfc9b6106bd5eeeead02398d8ee95f45c3f8",
+     "question": "amc23|amc23_28",
+     "status": "AUDITED",
+     "attempt_id": "ff22803339f10a15af4d9d27467e901d90f46d1eb4d8716304f7db6382595c60",
+     "reasoning_tokens": 10250,
+     "candidate_events": [
+      {
+       "kind": "answer_is",
+       "recognition_token": 7994,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      }
+     ]
+    },
+    {
+     "family": "800c81574401f7a6b104c7902f4030f5ab324217b6520736cfc73d7c09a06f8a",
+     "question": "olympiad|olympiad_2914",
+     "status": "AUDITED",
+     "attempt_id": "ce2bc137edf983b53944b39ea82752b636dcc10f0c5e07bb9c5f6528e4cd80f0",
+     "reasoning_tokens": 39042,
+     "candidate_events": []
+    },
+    {
+     "family": "5454cf7129ec92c7698315f2e0146ed667e3895beec0d805905cfe3caf8e153c",
+     "question": "olympiad|olympiad_2798",
+     "status": "AUDITED",
+     "attempt_id": "988dfad68c74bf94d5399ef169a616ea4f5e466d0445988c255acaba9b5c4383",
+     "reasoning_tokens": 14269,
+     "candidate_events": []
+    },
+    {
+     "family": "6332f3952a4d310f59b492e2d5cfbe5d42d4d7b9eea81a06bdeec6ad10bcd2db",
+     "question": "math500|math500_test/algebra/2570.json",
+     "status": "AUDITED",
+     "attempt_id": "8844b5dc8a1542ec4b140f3675f4ec269c2d890fc4c5c957adf772c1f3f1e14c",
+     "reasoning_tokens": 1950,
+     "candidate_events": [
+      {
+       "kind": "boxed",
+       "recognition_token": 1581,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      },
+      {
+       "kind": "boxed",
+       "recognition_token": 1855,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": false,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      }
+     ]
+    },
+    {
+     "family": "ae67a99c9c6ecc2d48874f9e193fe42078abe04a9eb42201d47df1b95312881c",
+     "question": "olympiad|olympiad_3079",
+     "status": "AUDITED",
+     "attempt_id": "7117f30047943c8e11692731394b4abe4bb0273d59e06cd1514f44871f497e3f",
+     "reasoning_tokens": 26957,
+     "candidate_events": []
+    },
+    {
+     "family": "74254b23b19519bf3cdeef518ee196f773cfe00e19b2ac5d58fb5f4511cee707",
+     "question": "olympiad|olympiad_3082",
+     "status": "AUDITED",
+     "attempt_id": "882999d0649161365811240be6b13ce2066576873a1cc2397a6a140d002c86cc",
+     "reasoning_tokens": 34408,
+     "candidate_events": []
+    },
+    {
+     "family": "4f5f62a271804f66bfa38042e820f38f7a0b5f2b9b7a87ff62cdb58b07ead678",
+     "question": "olympiad|olympiad_2445",
+     "status": "AUDITED",
+     "attempt_id": "da22b88e56732d177fc9505ea0e09b7847138bae0422b72c55a629191aecd851",
+     "reasoning_tokens": 2482,
+     "candidate_events": []
+    },
+    {
+     "family": "ec47e896ec807987bdd073e3f44aca15adb1f4e475208ba011b62aa0b06c2c6c",
+     "question": "olympiad|olympiad_2727",
+     "status": "AUDITED",
+     "attempt_id": "0c89b9acd25dcfbdf344645ec9afc0e9a6dac6e18b8e29500bdda95f565f3cee",
+     "reasoning_tokens": 7204,
+     "candidate_events": []
+    },
+    {
+     "family": "f5f2880171dac17ac29f10527d0398d26e859c729d70eaa39445d71e5299825e",
+     "question": "aime24|aime24_67",
+     "status": "AUDITED",
+     "attempt_id": "b614437c05503757442d59927fad6dce4ed41d3a3a0d4b9f19c87d20a8c732d9",
+     "reasoning_tokens": 14190,
+     "candidate_events": []
+    },
+    {
+     "family": "00bfb4aac61f3d15220bc24ec149bff7d52daae64328216584692a8974416e86",
+     "question": "olympiad|olympiad_2351",
+     "status": "AUDITED",
+     "attempt_id": "da22823392c760e12e631c86d8badc5026624bac7524f3f3e0617f643c8d1953",
+     "reasoning_tokens": 2410,
+     "candidate_events": [
+      {
+       "kind": "boxed",
+       "recognition_token": 2410,
+       "before_closure": false,
+       "at_least_256_native_reasoning_tokens_remain": false,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      }
+     ]
+    },
+    {
+     "family": "98d7c0cffaf8664a6014dd716307b620be6f01d17a3c98014465cc1df0250e35",
+     "question": "math500|math500_test/intermediate_algebra/1126.json",
+     "status": "AUDITED",
+     "attempt_id": "1302e2b5b1b83f8ae4162a530da292145782bf2a91b6113902ced4344b97ebaa",
+     "reasoning_tokens": 3629,
+     "candidate_events": []
+    },
+    {
+     "family": "707ab7621174d1305ed9fb7370a65a7984a70d929ccb758a88557e35c8364c4f",
+     "question": "olympiad|olympiad_2746",
+     "status": "AUDITED",
+     "attempt_id": "2fe85b3c507dfcbd9e89acbe8ce1563926ed726b8a5685daa20b97e49c1eedbe",
+     "reasoning_tokens": 4906,
+     "candidate_events": [
+      {
+       "kind": "boxed",
+       "recognition_token": 4691,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": false,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      },
+      {
+       "kind": "boxed",
+       "recognition_token": 4702,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": false,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      }
+     ]
+    },
+    {
+     "family": "27d2363267233b2ce6ff74234da783dc554b6edc7cf44024de5238dc9f067586",
+     "question": "math500|math500_test/prealgebra/1865.json",
+     "status": "AUDITED",
+     "attempt_id": "72a9f31f1604024b1c1dd5a82423b31c247c0785f6073e88f632c30971a8692e",
+     "reasoning_tokens": 9879,
+     "candidate_events": []
+    },
+    {
+     "family": "59493910d6f987ddb5f17d95ecc9e7e0d23bd36f856c8200153b8e53128d4490",
+     "question": "math500|math500_test/algebra/1837.json",
+     "status": "AUDITED",
+     "attempt_id": "1068ad447bcb4be648fe1aa5619e19df731d7a97834459a18afdd1296bdd187a",
+     "reasoning_tokens": 9733,
+     "candidate_events": []
+    },
+    {
+     "family": "96e6320e8bd05cc4d7234ffd23d2a4fd8f73c35fb306da771c9867fefda0559b",
+     "question": "olympiad|olympiad_2907",
+     "status": "AUDITED",
+     "attempt_id": "5e505fac70411ac7ef24fd427ee745184ae1ea6e452412c52ac56e277ffd3854",
+     "reasoning_tokens": 2625,
+     "candidate_events": []
+    },
+    {
+     "family": "3367fc3d3cb10721c5ca4d2dab40e29e369042f3e801709985eb83b35caffac1",
+     "question": "math500|math500_test/prealgebra/1807.json",
+     "status": "AUDITED",
+     "attempt_id": "4a3a4d88d8fa9bc4775f5d78cc30be7b854e8a76edc9a121b4489faea9427e45",
+     "reasoning_tokens": 3573,
+     "candidate_events": []
+    },
+    {
+     "family": "52543cd453052b5d707943b34a1ec31df532d3be7c1a15dbcb51f49e99028f61",
+     "question": "olympiad|olympiad_2601",
+     "status": "AUDITED",
+     "attempt_id": "8f8e721e02edd3fd717d50307aa158f523549f2e8ddf8b8a6da60fb2fc63b834",
+     "reasoning_tokens": 7185,
+     "candidate_events": []
+    },
+    {
+     "family": "7c51cc705eaaa49e75c76878c8a6b8d02d4518391cb71779a4fe5fba7852d941",
+     "question": "olympiad|olympiad_2489",
+     "status": "AUDITED",
+     "attempt_id": "d5a5cd17f253bf612f93c16da832341ae4e0905f5288ff7007037c00aea4dd98",
+     "reasoning_tokens": 20235,
+     "candidate_events": []
+    },
+    {
+     "family": "550fd432263445b7a658cbf3f7b32ad019cc13b611f7f4df5094527f0a938047",
+     "question": "olympiad|olympiad_2493",
+     "status": "AUDITED",
+     "attempt_id": "dd82bc87b55400d7a48213ab7f1d6fc745e1860c5e1442548764296612c240c6",
+     "reasoning_tokens": 3615,
+     "candidate_events": []
+    },
+    {
+     "family": "9494cd0594ccab56a7cae7dd6cdd09e81704a31333e2be8bb7958a4f1c31c6c8",
+     "question": "olympiad|olympiad_3037",
+     "status": "AUDITED",
+     "attempt_id": "09780fcbfefd350e09178ffacf131f6f90c9b2dc9470d1e87577992b93601802",
+     "reasoning_tokens": 22750,
+     "candidate_events": []
+    },
+    {
+     "family": "ab015c38c561307237f1d9f12b40aac5bc6b79d7838cc302e16a59c01effc212",
+     "question": "olympiad|olympiad_2777",
+     "status": "AUDITED",
+     "attempt_id": "935bccb2a5ed9f26b4261cacd1f2d6f28b56f34d6ebd95d2a143570f27452a2a",
+     "reasoning_tokens": 1750,
+     "candidate_events": [
+      {
+       "kind": "answer_is",
+       "recognition_token": 1329,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      },
+      {
+       "kind": "boxed",
+       "recognition_token": 1711,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": false,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      }
+     ]
+    },
+    {
+     "family": "d6ae4ef46b2c4f3b62f45bc6e349fd688412934445ba76de81f0f3bf15ada027",
+     "question": "math500|math500_test/intermediate_algebra/591.json",
+     "status": "AUDITED",
+     "attempt_id": "52e26f40927b15f5edd9ce76bb2a8dc14e3fbc5bbb53c86a9f71a9f792293ff1",
+     "reasoning_tokens": 13613,
+     "candidate_events": [
+      {
+       "kind": "answer_is",
+       "recognition_token": 12066,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      }
+     ]
+    },
+    {
+     "family": "7e97810d4ff8730d30541a719c4ccc4b5f7dc9862da5c3c812d6705efc43110d",
+     "question": "olympiad|olympiad_2841",
+     "status": "AUDITED",
+     "attempt_id": "acd549a2ed0835c61429863237e07ea277e85d56ce0c6c298a9ca7e9184820e8",
+     "reasoning_tokens": 7835,
+     "candidate_events": [
+      {
+       "kind": "answer_is",
+       "recognition_token": 7762,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": false,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      }
+     ]
+    },
+    {
+     "family": "f29be5e1006c6e1dd939dee3b790fdde598a51f41761a18a4ff5edfd80f3df07",
+     "question": "aime25|aime25_7",
+     "status": "AUDITED",
+     "attempt_id": "a73dcaf82fb5e8b2a9ec449fab259221170a750c941c121ec519ac050173ec75",
+     "reasoning_tokens": 16695,
+     "candidate_events": []
+    },
+    {
+     "family": "1b8c3e7cc03eb4055ad504c782b763336ba17da040b85c2a115dc7eb1d23f714",
+     "question": "olympiad|olympiad_1854",
+     "status": "AUDITED",
+     "attempt_id": "0c57d5d853d8a2d4d8397dfc16aba7fb007c19933f159d0ede1c0c83f3f657e5",
+     "reasoning_tokens": 66816,
+     "candidate_events": [
+      {
+       "kind": "answer_is",
+       "recognition_token": 60269,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      }
+     ]
+    },
+    {
+     "family": "b2b7f6c88970465e284c37b9fdec74e0588f38a406110c4f7f36a615ebfaf5da",
+     "question": "olympiad|olympiad_2653",
+     "status": "AUDITED",
+     "attempt_id": "2269936cf0f0140e22b5ab74dcd928e0da6ccc6a70a662dc337b5138bdedb627",
+     "reasoning_tokens": 6861,
+     "candidate_events": []
+    },
+    {
+     "family": "72e0c2d09051061648ed7d5706bca4e2ce52798d1530a39e2befa0c6076eeb7b",
+     "question": "olympiad|olympiad_2735",
+     "status": "AUDITED",
+     "attempt_id": "d431e199c893de5540111a0a81ad3fb8d2e9f384adec277721ca30aa9d4ef579",
+     "reasoning_tokens": 16151,
+     "candidate_events": []
+    },
+    {
+     "family": "fff0f7ae0efb38815249ca8438b8d015ad1348e758b06f5a91ccf288fb481337",
+     "question": "math500|math500_test/prealgebra/1251.json",
+     "status": "AUDITED",
+     "attempt_id": "3e9dddf8e27c8819a20f177428d3120e772e99a00f9bf306f4b5e93d5736ad4f",
+     "reasoning_tokens": 5274,
+     "candidate_events": [
+      {
+       "kind": "answer_is",
+       "recognition_token": 3749,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_is",
+       "recognition_token": 4252,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      }
+     ]
+    },
+    {
+     "family": "f94a4ce465e54b537ef463ea6e3b8fe0148b5cbdb437b3ca294c9cdc099e341a",
+     "question": "math500|math500_test/precalculus/1105.json",
+     "status": "AUDITED",
+     "attempt_id": "15e7f3997fa444fd6a2e5c9413da4c9050209cfec2aef7da3d4583e8a109cdee",
+     "reasoning_tokens": 1206,
+     "candidate_events": []
+    },
+    {
+     "family": "9f6de64123e79af466d77c24675abb4fa45f391964e54f226f7508115cd1b66d",
+     "question": "olympiad|olympiad_1845",
+     "status": "AUDITED",
+     "attempt_id": "ddc39e73318305da0c56e8884bd2fa6acb3208df0d88669e60efb1cce64d2758",
+     "reasoning_tokens": 67692,
+     "candidate_events": [
+      {
+       "kind": "answer_math",
+       "recognition_token": 20588,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_math",
+       "recognition_token": 28353,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_math",
+       "recognition_token": 29664,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_math",
+       "recognition_token": 31233,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_math",
+       "recognition_token": 32737,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_math",
+       "recognition_token": 34451,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_math",
+       "recognition_token": 34561,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_math",
+       "recognition_token": 41186,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_math",
+       "recognition_token": 47646,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_math",
+       "recognition_token": 48020,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_math",
+       "recognition_token": 48183,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_math",
+       "recognition_token": 49761,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_math",
+       "recognition_token": 49832,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_math",
+       "recognition_token": 52074,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_math",
+       "recognition_token": 52619,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_math",
+       "recognition_token": 53326,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_math",
+       "recognition_token": 54331,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_math",
+       "recognition_token": 54679,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_math",
+       "recognition_token": 54724,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_math",
+       "recognition_token": 54764,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_math",
+       "recognition_token": 55270,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_math",
+       "recognition_token": 55564,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_math",
+       "recognition_token": 57303,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_math",
+       "recognition_token": 57609,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_math",
+       "recognition_token": 57707,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_math",
+       "recognition_token": 58866,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_math",
+       "recognition_token": 58954,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_math",
+       "recognition_token": 60777,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_math",
+       "recognition_token": 60795,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_math",
+       "recognition_token": 60804,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_math",
+       "recognition_token": 60896,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_math",
+       "recognition_token": 60917,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_math",
+       "recognition_token": 60990,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_math",
+       "recognition_token": 61568,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_math",
+       "recognition_token": 61579,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_math",
+       "recognition_token": 61679,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_math",
+       "recognition_token": 61712,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_math",
+       "recognition_token": 62268,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_math",
+       "recognition_token": 65830,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_math",
+       "recognition_token": 66271,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_math",
+       "recognition_token": 66398,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_math",
+       "recognition_token": 66554,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_math",
+       "recognition_token": 66722,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      },
+      {
+       "kind": "answer_math",
+       "recognition_token": 66756,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      },
+      {
+       "kind": "answer_math",
+       "recognition_token": 66996,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      },
+      {
+       "kind": "answer_math",
+       "recognition_token": 67461,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": false,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      },
+      {
+       "kind": "answer_math",
+       "recognition_token": 67682,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": false,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      }
+     ]
+    },
+    {
+     "family": "45cb78a1df75e9c0052ca94e400d2007351ead1d91a9f1e3042e806639cb8670",
+     "question": "olympiad|olympiad_2839",
+     "status": "AUDITED",
+     "attempt_id": "e293d79aca116f8cea5c4caad284d5e74f9a67cc8eb596fc753bd820409ad585",
+     "reasoning_tokens": 14208,
+     "candidate_events": []
+    },
+    {
+     "family": "348d9687a043c916ed7d09f2b566c0d74893f0743b9fa825bf161208be593804",
+     "question": "aime24|aime24_65",
+     "status": "AUDITED",
+     "attempt_id": "0d8c92eb6e42a072de51419a33a4761b2b01e04e00d5a1bf5c60e3b9368d9263",
+     "reasoning_tokens": 20275,
+     "candidate_events": []
+    },
+    {
+     "family": "eee15807710ee7873a219abd0c07a9f2075da668d35575207b6b945f13305137",
+     "question": "minerva|minerva_76",
+     "status": "AUDITED",
+     "attempt_id": "3432eef49e9f243735b11c6026306f9951c72da2d1c687cb8a7661846d98997f",
+     "reasoning_tokens": 23062,
+     "candidate_events": []
+    },
+    {
+     "family": "993ff5562af5067431c46cead82efa65621fb037fe68a0426235776c12fe5add",
+     "question": "olympiad|olympiad_2725",
+     "status": "AUDITED",
+     "attempt_id": "f47fe69646868adff4ea174b1d89a1b7feee23d31e24f0730b2b75b297b4122d",
+     "reasoning_tokens": 18331,
+     "candidate_events": []
+    },
+    {
+     "family": "a7b8df19041f966b35b0f2daad20092af03a86a7423d19c37b9bc61adc476fd6",
+     "question": "olympiad|olympiad_2126",
+     "status": "AUDITED",
+     "attempt_id": "9c0e95124fbf0dfa62d8f89d2dc4b76fe6234e8e13261ed7b1a05aa93a60838c",
+     "reasoning_tokens": 38753,
+     "candidate_events": []
+    },
+    {
+     "family": "9d9ec1487c5d634f86ae97fca43b0f72a814c369baa2f2384aa88dec35978f5c",
+     "question": "olympiad|olympiad_2792",
+     "status": "AUDITED",
+     "attempt_id": "3f1fd0f6c8637642b63cea2471fb697ad7e2488ace4c44d22343bec0ba23ec2f",
+     "reasoning_tokens": 24835,
+     "candidate_events": []
+    },
+    {
+     "family": "681f70af1260cf260825f9322b492adad415ab0a4cdff83393ec14a6dfd165dd",
+     "question": "olympiad|olympiad_1675",
+     "status": "AUDITED",
+     "attempt_id": "9253f3582421ef34f9b97aca23f3a04f876ed28c32c60f53f6445477567a3551",
+     "reasoning_tokens": 52766,
+     "candidate_events": []
+    },
+    {
+     "family": "67928e1673c5c7b82613df7d95a765e72dd694296f41d4eb5bd77fa6a549196b",
+     "question": "olympiad|olympiad_2334",
+     "status": "AUDITED",
+     "attempt_id": "61ee3489ac5a0bdb49b9803e39856cf85950369fdd9e52f428c9ec5c90ff0772",
+     "reasoning_tokens": 10606,
+     "candidate_events": []
+    },
+    {
+     "family": "e0d8227ee3fb089454d992e1065a282f9fd8a39a32e7fd0bec4827eae8ca1446",
+     "question": "olympiad|olympiad_2506",
+     "status": "AUDITED",
+     "attempt_id": "e6d97cf4d7adc734f6280472eaae101c8da506e80d710de216f6d3aec9e660e9",
+     "reasoning_tokens": 9293,
+     "candidate_events": []
+    },
+    {
+     "family": "b2fbed68b5770889117d45148541a367c98d2a8c1b6c5f73fe5f7e3eda952ac2",
+     "question": "math500|math500_test/prealgebra/153.json",
+     "status": "AUDITED",
+     "attempt_id": "ec77de5e16a774356ae2e16c012724c38a0ff7cd9a4cfbef7e73e5635408d0ad",
+     "reasoning_tokens": 1806,
+     "candidate_events": []
+    },
+    {
+     "family": "cb29cac11a2366d8754b75ac881c7b2786645be6cf34d6d23d5b5f43bd8e8d04",
+     "question": "olympiad|olympiad_2962",
+     "status": "AUDITED",
+     "attempt_id": "cce848395f6355a7e00e7d04daa9a22f1bd56c12f04a25f7ec6b299f58cd807e",
+     "reasoning_tokens": 15629,
+     "candidate_events": [
+      {
+       "kind": "answer_is",
+       "recognition_token": 8257,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_is",
+       "recognition_token": 12923,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_is",
+       "recognition_token": 13198,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_is",
+       "recognition_token": 14292,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_is",
+       "recognition_token": 14504,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_is",
+       "recognition_token": 14673,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      }
+     ]
+    },
+    {
+     "family": "730298a853730be798458e327441b4ee24174b92cb5dba0f74230a87955bee4c",
+     "question": "math500|math500_test/algebra/2486.json",
+     "status": "AUDITED",
+     "attempt_id": "74a175209c4bc60312132b32a3c2850d329592babbcc115a7d4d47dbe903972d",
+     "reasoning_tokens": 2240,
+     "candidate_events": []
+    },
+    {
+     "family": "7369e53b0447dbc9969dba9a7bbcc91d3597bb083f6862bbe7480086ef0e6603",
+     "question": "amc23|amc23_32",
+     "status": "AUDITED",
+     "attempt_id": "3e17ade299f46cf79c31370a963c374e7b357894c9f50b9b6a3bba167ef0659a",
+     "reasoning_tokens": 75934,
+     "candidate_events": []
+    },
+    {
+     "family": "421df3311b63519148633d7f05bf01edde6ac27c0dd0af1360ea511ec72f8fc1",
+     "question": "olympiad|olympiad_2339",
+     "status": "AUDITED",
+     "attempt_id": "eaa0bdfaeccdff1ca42c7a9931f4f4f9533f71dc477d2769f8ae4764906925b7",
+     "reasoning_tokens": 2089,
+     "candidate_events": [
+      {
+       "kind": "answer_is",
+       "recognition_token": 1689,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      },
+      {
+       "kind": "boxed",
+       "recognition_token": 2074,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": false,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      }
+     ]
+    },
+    {
+     "family": "49ec3c017e319d5cd2434f5e06b4ac2f238fc41bb7c50ed90a99481328187dc6",
+     "question": "olympiad|olympiad_2799",
+     "status": "AUDITED",
+     "attempt_id": "5c6fb0290a184763ffaaed600209ee742647864afbcd9c8b32f2766286f0cd6c",
+     "reasoning_tokens": 3856,
+     "candidate_events": [
+      {
+       "kind": "answer_is",
+       "recognition_token": 3765,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": false,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      }
+     ]
+    },
+    {
+     "family": "6494e4f831e13dddbce16e0998f963598de7e9e907149cc29baadf62d22c5834",
+     "question": "math500|math500_test/algebra/251.json",
+     "status": "AUDITED",
+     "attempt_id": "4fa482a9770668a57ff57c92709a838230050b565d2d3e251d28dc23d0e651aa",
+     "reasoning_tokens": 1110,
+     "candidate_events": [
+      {
+       "kind": "boxed",
+       "recognition_token": 422,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      },
+      {
+       "kind": "boxed",
+       "recognition_token": 641,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      },
+      {
+       "kind": "boxed",
+       "recognition_token": 822,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      },
+      {
+       "kind": "boxed",
+       "recognition_token": 1013,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": false,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      }
+     ]
+    },
+    {
+     "family": "29cc45551546f60dfdd6c11bb74844950c5c81bb611825509d86bd244697ef37",
+     "question": "olympiad|olympiad_2203",
+     "status": "AUDITED",
+     "attempt_id": "4a88d011bcd13aa1d6117be651905d4135584d523c7b3e218bc9e68e76dcbcf7",
+     "reasoning_tokens": 14244,
+     "candidate_events": []
+    }
+   ]
+  },
+  "mechanism": {
+   "families": 128,
+   "with_trace": 128,
+   "with_preclosure_candidate": 42,
+   "with_candidate_and_256_native_tokens": 37,
+   "with_candidate_and_1024_native_tokens": 27,
+   "records": [
+    {
+     "family": "6d196ba31a84d09bdee62bfee9e16859f73257671cd6a6445701628d3a0fca1f",
+     "question": "math500|math500_test/prealgebra/2037.json",
+     "status": "AUDITED",
+     "attempt_id": "3e436f8a555780aa341258dbc32e1a2d9a6e664c99b505c56d2aa7d58c1adb28",
+     "reasoning_tokens": 705,
+     "candidate_events": [
+      {
+       "kind": "boxed",
+       "recognition_token": 623,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": false,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      }
+     ]
+    },
+    {
+     "family": "b1920476885d794ef593331c3d1d9d0122845ee9abe4006752e08776d0a66dc3",
+     "question": "olympiad|olympiad_1697",
+     "status": "AUDITED",
+     "attempt_id": "477afa257f4435a4ce10f8bd7928ed16eeed81633ebb3eab34fe91b4bc179bbf",
+     "reasoning_tokens": 80364,
+     "candidate_events": [
+      {
+       "kind": "answer_is",
+       "recognition_token": 8856,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      }
+     ]
+    },
+    {
+     "family": "73d9a9f1e22a6ce3132e1b91a8966a2c5cbce68bf53c85719c8f25816c422b1f",
+     "question": "olympiad|olympiad_1782",
+     "status": "AUDITED",
+     "attempt_id": "faee79241e329aaf293111f837b0386db029362e7831c8d29f7dffea6f90232c",
+     "reasoning_tokens": 40616,
+     "candidate_events": [
+      {
+       "kind": "answer_is",
+       "recognition_token": 15768,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      }
+     ]
+    },
+    {
+     "family": "7c92c36319266ffdd7aa1e171cc827f9176b99071636c0ec03d77e4379cab175",
+     "question": "olympiad|olympiad_1879",
+     "status": "AUDITED",
+     "attempt_id": "c5189b252ac764b58e928cc7a4cc0b6f58836c7c52a1b2caff6fd40c959417e1",
+     "reasoning_tokens": 26632,
+     "candidate_events": []
+    },
+    {
+     "family": "6e401c27b9e126d63a1c551aab1343443d373e1a552872d3f8adcd850f3ca3ed",
+     "question": "math500|math500_test/intermediate_algebra/515.json",
+     "status": "AUDITED",
+     "attempt_id": "141905a0f8d8d1446c61121377b9fbe799e4807d9370d73f761db3e447d5112d",
+     "reasoning_tokens": 2688,
+     "candidate_events": []
+    },
+    {
+     "family": "ac655706ea8c1441b8c371648e7ae297231efd64e89f0a11d49d6818242e4482",
+     "question": "minerva|minerva_127",
+     "status": "AUDITED",
+     "attempt_id": "8f13ab5cf727c4f0fbf325cc511aef967ebde9c0056a70264660457c4a96a79b",
+     "reasoning_tokens": 6809,
+     "candidate_events": []
+    },
+    {
+     "family": "e5e198e4a5eded3dd510ae02e6ef86612f5ded912882a55bf20ca519fee63954",
+     "question": "olympiad|olympiad_3010",
+     "status": "AUDITED",
+     "attempt_id": "f7fdcb5c595c995088ccd75c81e4dc4be20209312545ec28e37df67f9afdc1ed",
+     "reasoning_tokens": 23092,
+     "candidate_events": []
+    },
+    {
+     "family": "5870a32a75ef2e67c551f0933cb28f6228ecb95113ffde87813accece5ea4624",
+     "question": "math500|math500_test/algebra/621.json",
+     "status": "AUDITED",
+     "attempt_id": "edff3a275ecedd4eefd562620f4d50171c6c44c5dbf757a4aabbaeafe280e50b",
+     "reasoning_tokens": 2206,
+     "candidate_events": []
+    },
+    {
+     "family": "3f5a34a7437b01b01ed526a846fb842df1c9a4997f8287651ca8e8eb343ee2b0",
+     "question": "olympiad|olympiad_1614",
+     "status": "AUDITED",
+     "attempt_id": "2274f3cabc71507be89ecbc56f7308864dcc3f48bbc14359c7ef4963c3e42ce2",
+     "reasoning_tokens": 63864,
+     "candidate_events": [
+      {
+       "kind": "answer_is",
+       "recognition_token": 1780,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      }
+     ]
+    },
+    {
+     "family": "99d80b1fb8a113ccffb9f8dec77ca53b116ac148d7a0563e25da728eeb39d2c0",
+     "question": "olympiad|olympiad_2651",
+     "status": "AUDITED",
+     "attempt_id": "a74d68b9f028deac09f075a957446df2d74559115df0f269b74a3078f34fd934",
+     "reasoning_tokens": 1721,
+     "candidate_events": []
+    },
+    {
+     "family": "cbf8eae27bcc2e841c47b5cbe180df8b959c74b12bc88bb0ac7bc321679c6393",
+     "question": "minerva|minerva_229",
+     "status": "AUDITED",
+     "attempt_id": "7a3f7a6de16712a7e5e9631ad2d8f19379083df99ab2600bbe21dbda5fd5d36f",
+     "reasoning_tokens": 5505,
+     "candidate_events": [
+      {
+       "kind": "boxed",
+       "recognition_token": 4080,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "boxed",
+       "recognition_token": 4087,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      }
+     ]
+    },
+    {
+     "family": "1ca4d3d11e259eb5ce1c1acb23b11cb547239fd13634bc997a35176d5a5b8208",
+     "question": "math500|math500_test/intermediate_algebra/662.json",
+     "status": "AUDITED",
+     "attempt_id": "0faa16174303a1efc6a92cd2814b4482b6ee87d354a967e87da3096d7e4cde2b",
+     "reasoning_tokens": 12155,
+     "candidate_events": []
+    },
+    {
+     "family": "d80332f5a3d4b81f86d9c92323d0623298c47a91f98a92d35d41165d868ab417",
+     "question": "olympiad|olympiad_3101",
+     "status": "AUDITED",
+     "attempt_id": "b064590d2655448aa4f647de5e6eb7f4147c239402a5543d834a16d748f11a26",
+     "reasoning_tokens": 507,
+     "candidate_events": []
+    },
+    {
+     "family": "e5a9f29d2dc47669b6c16a890a88d4fc3b2a29384e94af33e3e549890580eca5",
+     "question": "olympiad|olympiad_2570",
+     "status": "AUDITED",
+     "attempt_id": "d9d8aab861ee83e8de8804f4d173723d337ddd0baf3274581b8d1f2eba7bb431",
+     "reasoning_tokens": 3231,
+     "candidate_events": []
+    },
+    {
+     "family": "1374c82dbfc8dd41ba77d4f04b62dbeadd91ac54cb1fac8642dbe5e3cc77c6f4",
+     "question": "olympiad|olympiad_2661",
+     "status": "AUDITED",
+     "attempt_id": "27837e8ffe545c7f03c3a5001c5a5500a2c1f1c5b893510a5c4f5fd2c9aa1425",
+     "reasoning_tokens": 1431,
+     "candidate_events": []
+    },
+    {
+     "family": "29adbb330ba0014ea2cb58a6780415b4f0e08ae767ff6e79ac44379f6cb292cb",
+     "question": "olympiad|olympiad_1838",
+     "status": "AUDITED",
+     "attempt_id": "119e9f8c69144c3620312d8f731be929ab6ae35e2c6491ad0a132840a31664bd",
+     "reasoning_tokens": 106749,
+     "candidate_events": [
+      {
+       "kind": "answer_is",
+       "recognition_token": 89874,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_is",
+       "recognition_token": 93963,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_is",
+       "recognition_token": 99221,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_is",
+       "recognition_token": 101433,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      }
+     ]
+    },
+    {
+     "family": "7812e548c75a46cba1678be234cc9998725248d2dc45f5f9f04d39e7b8d1cd97",
+     "question": "olympiad|olympiad_3015",
+     "status": "AUDITED",
+     "attempt_id": "72a3a1bbb23098f5e78f3e16a4bcf3d43210fa5fadf6849147641d32bb8717b2",
+     "reasoning_tokens": 29433,
+     "candidate_events": []
+    },
+    {
+     "family": "173d7b2b9a4d5cd8987c41e7b6a8be1d18a507ea052c1b93cc546f8ba5f5cb82",
+     "question": "math500|math500_test/geometry/483.json",
+     "status": "AUDITED",
+     "attempt_id": "41d80c809b1bb37e7d0d1ea34a615f0cadb8fc57b211b84ee154d6d1e35f70a2",
+     "reasoning_tokens": 2613,
+     "candidate_events": [
+      {
+       "kind": "boxed",
+       "recognition_token": 2603,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": false,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      }
+     ]
+    },
+    {
+     "family": "ea91e88dea3fa533eaf969d0ab0580799fed308d3bbd03f3d6ce2ac1cc361749",
+     "question": "olympiad|olympiad_2744",
+     "status": "AUDITED",
+     "attempt_id": "401e4b7c372470c1820c07bfc4d2a0c93980fa13100c113b65ae7ec259b8f006",
+     "reasoning_tokens": 22527,
+     "candidate_events": []
+    },
+    {
+     "family": "f52b18ea8a1d5c4911829dc876b675ea99e9a63dc88641a04cde8547b2b568df",
+     "question": "olympiad|olympiad_3097",
+     "status": "AUDITED",
+     "attempt_id": "b129791ad283ff0320b6e3d1ce44041b6df1289769c2d240806d9ab55adb660a",
+     "reasoning_tokens": 5568,
+     "candidate_events": [
+      {
+       "kind": "answer_is",
+       "recognition_token": 3318,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      }
+     ]
+    },
+    {
+     "family": "696fc27a610762024825e9ad89ba64f7f3e740fcd5b2af6facf1de8179252c8b",
+     "question": "olympiad|olympiad_2553",
+     "status": "AUDITED",
+     "attempt_id": "916162dbb59a14a7feda3d76c0b8c9f557c8a8db4e5e9f9bd819dc928a1cff1e",
+     "reasoning_tokens": 7228,
+     "candidate_events": []
+    },
+    {
+     "family": "db7c09e159b3cb2f46a25745fa481aa6a017d7ed9cc1d021b3e9b3ac52e2d567",
+     "question": "math500|math500_test/intermediate_algebra/991.json",
+     "status": "AUDITED",
+     "attempt_id": "4fbf823b73f6c4c6ee67f3919c3609085afcb6eb3fd2d89b0413e5de1d6381a3",
+     "reasoning_tokens": 10062,
+     "candidate_events": [
+      {
+       "kind": "answer_is",
+       "recognition_token": 6630,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_is",
+       "recognition_token": 6639,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      }
+     ]
+    },
+    {
+     "family": "b7f3b6c21ee955207e33012a176e8682de7b1b7571d5994337037abc57d8d1b5",
+     "question": "aime25|aime25_21",
+     "status": "AUDITED",
+     "attempt_id": "9d21c22955d6762723bdef9d587738ca27f38404ec8a628250fa9b75141805c0",
+     "reasoning_tokens": 17027,
+     "candidate_events": []
+    },
+    {
+     "family": "88fdc72538d0a6a2d692ad86fd01b90b94aa982d41ec79b9ffd21ff3a7acb360",
+     "question": "math500|math500_test/prealgebra/1558.json",
+     "status": "AUDITED",
+     "attempt_id": "b0828d6bc885b90071fc61007f2d22365f2035f43062ecfd35c2703fcd3a710b",
+     "reasoning_tokens": 3679,
+     "candidate_events": [
+      {
+       "kind": "answer_math",
+       "recognition_token": 1606,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      }
+     ]
+    },
+    {
+     "family": "cacaf73d7b198c0b64caa22686400bd9d1071d23c9132db9018871af819b1291",
+     "question": "olympiad|olympiad_2440",
+     "status": "AUDITED",
+     "attempt_id": "e551256b34bb1c12a8b09c9eea6d9d169ef34e2afd4215649833d37422891dcc",
+     "reasoning_tokens": 1794,
+     "candidate_events": [
+      {
+       "kind": "boxed",
+       "recognition_token": 1513,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      }
+     ]
+    },
+    {
+     "family": "d8c9b2885e230f7f3ab2932b3176f1f2187a92aeb46c905529a1be49be227fc2",
+     "question": "minerva|minerva_2",
+     "status": "AUDITED",
+     "attempt_id": "3ffba55e7bdf778a0d7551211587d8adb79ea59529a0f54d703c9d4b1d8ef82a",
+     "reasoning_tokens": 6098,
+     "candidate_events": [
+      {
+       "kind": "boxed",
+       "recognition_token": 4120,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_is",
+       "recognition_token": 5914,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": false,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      }
+     ]
+    },
+    {
+     "family": "13473832de87cba0ebca22a3d207c4d39ceb0af7ae89d6a5692d954537f0e04b",
+     "question": "aime24|aime24_66",
+     "status": "AUDITED",
+     "attempt_id": "4c9806fa823cb05969967ed9c19fd786bc97337fe174a5a57ff7998b6168ba6a",
+     "reasoning_tokens": 32215,
+     "candidate_events": []
+    },
+    {
+     "family": "7042018c5073efffa1f5fdf10ae9d47db2bca691f75a65681e3cf6e7e7f47882",
+     "question": "minerva|minerva_250",
+     "status": "AUDITED",
+     "attempt_id": "fbf58b496be7b4dfc0c9c3aa20b0e8367e99701906d256bcc42004c731099eec",
+     "reasoning_tokens": 2766,
+     "candidate_events": []
+    },
+    {
+     "family": "081f9b6230de10f9fba47648cfdd3233ccd8cdc1db66782c1c3febea75cc7cef",
+     "question": "olympiad|olympiad_2545",
+     "status": "AUDITED",
+     "attempt_id": "b58fffe91fd9f202395802469663632dae7364948fac999a0c2ecf2401716c18",
+     "reasoning_tokens": 18371,
+     "candidate_events": [
+      {
+       "kind": "answer_is",
+       "recognition_token": 12366,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_is",
+       "recognition_token": 13429,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      }
+     ]
+    },
+    {
+     "family": "7c35645d806e00273bcdf6e5073a09c394d231ada6491853d20776822862990d",
+     "question": "olympiad|olympiad_2729",
+     "status": "AUDITED",
+     "attempt_id": "8c45db718b6df0657e4684ce3e43ec4cb457a83a06090726702fb2125621475d",
+     "reasoning_tokens": 10002,
+     "candidate_events": []
+    },
+    {
+     "family": "2e4a711b7dd04a4785cb83983ecccbea5889c3af19735a910153d39152185b0f",
+     "question": "math500|math500_test/prealgebra/2066.json",
+     "status": "AUDITED",
+     "attempt_id": "97f248cd90cf24ecfe9ea07a7aab8f76cbfc467fd0936f533c011b521f6e1b3b",
+     "reasoning_tokens": 7079,
+     "candidate_events": [
+      {
+       "kind": "answer_is",
+       "recognition_token": 3023,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      }
+     ]
+    },
+    {
+     "family": "a343f49039e24d7c7415cdbb10b77a4da7a9da709dad11338b7e98a0d8894706",
+     "question": "olympiad|olympiad_3089",
+     "status": "AUDITED",
+     "attempt_id": "44a17e01ffba7b55fe621f40ede3039e7f9bedf4d61e93a0fac25d348489dcd7",
+     "reasoning_tokens": 3053,
+     "candidate_events": [
+      {
+       "kind": "answer_is",
+       "recognition_token": 1255,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      }
+     ]
+    },
+    {
+     "family": "76507e7a4d72f0636c5d38d21bc9f69fca56f2302378cfb1cd9e5385c78b2778",
+     "question": "olympiad|olympiad_2370",
+     "status": "AUDITED",
+     "attempt_id": "0c62b3f582c46538c5af463872aaeb5a67f153effc3598cf9b711db87776b75e",
+     "reasoning_tokens": 3459,
+     "candidate_events": []
+    },
+    {
+     "family": "20b35ce8d5d74fd8d29fd05943023262966f54f086f46c2871f48f3118b61abe",
+     "question": "olympiad|olympiad_2040",
+     "status": "AUDITED",
+     "attempt_id": "f9e40fc83ce741ae500d37f3d7184917264213203ea65ecf69e8f78c8288e0a7",
+     "reasoning_tokens": 56949,
+     "candidate_events": []
+    },
+    {
+     "family": "fda9535b6e25a348a4cc86bb44bcc3ca70f7a008bfa77fca75e7b04efdc516f8",
+     "question": "minerva|minerva_196",
+     "status": "AUDITED",
+     "attempt_id": "4d4fd1b0de682a82fab9d09425d8e281cb34c73e4a72f3e583a2580a6ad016ce",
+     "reasoning_tokens": 7097,
+     "candidate_events": []
+    },
+    {
+     "family": "f3b8129c5206c7f047fb0879d004fa6db475e9201e8983f307d4d69e60249686",
+     "question": "olympiad|olympiad_2423",
+     "status": "AUDITED",
+     "attempt_id": "b387ca2f2b01a5d48ce3e4244c9a26d535765e8642ce64f0c60e59966bc7fe75",
+     "reasoning_tokens": 5451,
+     "candidate_events": []
+    },
+    {
+     "family": "7db03a1d8e94205ab5d08fbecbe276159faf6091019046464309c1960bd095ec",
+     "question": "aime25|aime25_19",
+     "status": "AUDITED",
+     "attempt_id": "b740445f203adc5863e5b83dccbfb95c46ba801ce8cd0c4cfe4e74fb0d038bf7",
+     "reasoning_tokens": 38898,
+     "candidate_events": []
+    },
+    {
+     "family": "ec7d834fe4ff94f494fbdb50a02be3014e8fd375baa929f491bd37c447038fbe",
+     "question": "olympiad|olympiad_2897",
+     "status": "AUDITED",
+     "attempt_id": "18818e89fff73170a93c0ba3fa14cf59ca009859ea4c53d69565c0704784e0c9",
+     "reasoning_tokens": 18364,
+     "candidate_events": []
+    },
+    {
+     "family": "be612dce378ec5caf572e500a9cc2471cdf6bb43bdbf987aec9f240be419aa44",
+     "question": "olympiad|olympiad_3095",
+     "status": "AUDITED",
+     "attempt_id": "eea5f85495622ca86995f2cef1bf5a2e9e3806047b309476c6824ed18f42f192",
+     "reasoning_tokens": 9580,
+     "candidate_events": [
+      {
+       "kind": "boxed",
+       "recognition_token": 8756,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      },
+      {
+       "kind": "boxed",
+       "recognition_token": 9170,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      }
+     ]
+    },
+    {
+     "family": "719871d19b9b4b5bd304959bc937326091cb34af4e493994ea923793fca37fb5",
+     "question": "olympiad|olympiad_2961",
+     "status": "AUDITED",
+     "attempt_id": "dbc2c26ab85d522c7c7927cfab04aa6a9f7717d2bf364f1421d2dc87571cbeaf",
+     "reasoning_tokens": 2007,
+     "candidate_events": [
+      {
+       "kind": "boxed",
+       "recognition_token": 1989,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": false,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      }
+     ]
+    },
+    {
+     "family": "5c32a046bb4487a5a002d8547a76174c40f3e1824c606bcf4974810b9e0afebd",
+     "question": "minerva|minerva_157",
+     "status": "AUDITED",
+     "attempt_id": "abf5202703bcdeb82272d75607c59f2659f6382402935407c2b87cd5179d6447",
+     "reasoning_tokens": 5982,
+     "candidate_events": []
+    },
+    {
+     "family": "bdfe3ad79700b74cd4c88b5c441b41a6603ea852e5ec3c75d6a6e2e2d5a15cfc",
+     "question": "olympiad|olympiad_2742",
+     "status": "AUDITED",
+     "attempt_id": "76dae43c7ebb480122566f036b58d151c956945c291d9780955c3be63076ed8d",
+     "reasoning_tokens": 34063,
+     "candidate_events": []
+    },
+    {
+     "family": "7c1114a55ac83e2ec058f107aa8f43ef5d7c23b41d68e84f15bd94c68782761e",
+     "question": "amc23|amc23_2",
+     "status": "AUDITED",
+     "attempt_id": "83ce4abe7de5ea5d3bc183ed733c9cbe78992ee269478d25f8a56ab3b6ff3277",
+     "reasoning_tokens": 1579,
+     "candidate_events": [
+      {
+       "kind": "boxed",
+       "recognition_token": 1306,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      },
+      {
+       "kind": "boxed",
+       "recognition_token": 1510,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": false,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      }
+     ]
+    },
+    {
+     "family": "439a8bd253238f61a92911ba6cd501dec73f8e3a47859202dc9f57391d31b86a",
+     "question": "olympiad|olympiad_2656",
+     "status": "AUDITED",
+     "attempt_id": "9c9e93e54391b3ac66ff43c085b853618f727ef1dddfd616632bb4c3a197a535",
+     "reasoning_tokens": 8890,
+     "candidate_events": [
+      {
+       "kind": "answer_math",
+       "recognition_token": 6568,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      }
+     ]
+    },
+    {
+     "family": "d72a51a2c8e01ccda0490c2169f61b13d6d002d7b08e018a5c64a3ce72ad0b16",
+     "question": "olympiad|olympiad_2037",
+     "status": "AUDITED",
+     "attempt_id": "0639d51bd04f78610034e5bf9ed35d5956ae47dcfb2a95860036777b3146d67b",
+     "reasoning_tokens": 42334,
+     "candidate_events": [
+      {
+       "kind": "answer_is",
+       "recognition_token": 6013,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_is",
+       "recognition_token": 38039,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      }
+     ]
+    },
+    {
+     "family": "6814662e5eb6ac3aac534ae008e2355b259aa4d2a793139131668b937795eb7a",
+     "question": "olympiad|olympiad_2236",
+     "status": "AUDITED",
+     "attempt_id": "3d56efab16475ab8c673ce20fb19f7b10f7e806108841b9fd1f0839ebf12059a",
+     "reasoning_tokens": 4612,
+     "candidate_events": []
+    },
+    {
+     "family": "e2beedb07827a1d46510175cd887193bd7afc214d0a068a362d50d80ae3d5b7e",
+     "question": "math500|math500_test/prealgebra/307.json",
+     "status": "AUDITED",
+     "attempt_id": "ccbd72290bf012727a79a43bdaed8d789d2c1511adce394abed5ac78045c48c0",
+     "reasoning_tokens": 597,
+     "candidate_events": [
+      {
+       "kind": "boxed",
+       "recognition_token": 368,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": false,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      },
+      {
+       "kind": "boxed",
+       "recognition_token": 450,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": false,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      },
+      {
+       "kind": "boxed",
+       "recognition_token": 494,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": false,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      },
+      {
+       "kind": "boxed",
+       "recognition_token": 581,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": false,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      }
+     ]
+    },
+    {
+     "family": "c6b4e280468f3351066103fc4d5128f2bae14b704d05f865fdc7a7fe941a6449",
+     "question": "olympiad|olympiad_1618",
+     "status": "AUDITED",
+     "attempt_id": "671a9d7759412f14bc9df7a7859e05d27e0807aca563f3370bb973efe2ed9adb",
+     "reasoning_tokens": 40781,
+     "candidate_events": []
+    },
+    {
+     "family": "ce6ded5d9d282fe50b7f694b659bbf955263946b0b419a43ba08a9ebe76dfe87",
+     "question": "math500|math500_test/prealgebra/996.json",
+     "status": "AUDITED",
+     "attempt_id": "1da237ac32c4a9e65de38dd1d50f39f2f109ac0f8d40201b662cface90451b4f",
+     "reasoning_tokens": 480,
+     "candidate_events": [
+      {
+       "kind": "answer_is",
+       "recognition_token": 434,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": false,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      }
+     ]
+    },
+    {
+     "family": "6fcbcde1a386b11f772df5aae596429da4f1fbfa09af58f369ced8821aa0fea8",
+     "question": "olympiad|olympiad_2859",
+     "status": "AUDITED",
+     "attempt_id": "674b8770dfdae6d6b4fc1743df646f8d9ce4d3207b2f0e450860f2c9f878e8ad",
+     "reasoning_tokens": 23522,
+     "candidate_events": [
+      {
+       "kind": "answer_is",
+       "recognition_token": 22803,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      }
+     ]
+    },
+    {
+     "family": "393eb34d9094223f792a3bd0066ff51945fc2d46854f551963e603c9c821f3ee",
+     "question": "olympiad|olympiad_2778",
+     "status": "AUDITED",
+     "attempt_id": "a1c779f2a2bffeb97fe2a68387d7da21d3285af9ecb6bd1ff593de13b2a6fee6",
+     "reasoning_tokens": 4868,
+     "candidate_events": [
+      {
+       "kind": "answer_is",
+       "recognition_token": 2920,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      }
+     ]
+    },
+    {
+     "family": "bdcedb2456c577940324ec963784418fa25728aa039c92a6647da2bc7ad33cd1",
+     "question": "math500|math500_test/prealgebra/1995.json",
+     "status": "AUDITED",
+     "attempt_id": "c34bf8f3dff4d0417fb8a31b585f80186e4af8c8a5409c88498a1cc94c4d7e32",
+     "reasoning_tokens": 2438,
+     "candidate_events": [
+      {
+       "kind": "boxed",
+       "recognition_token": 1469,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      },
+      {
+       "kind": "boxed",
+       "recognition_token": 2332,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": false,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      }
+     ]
+    },
+    {
+     "family": "bcdc01d4bda63d11b83ca440632588ec9ed36c114648e4fdd632123687b38e49",
+     "question": "amc23|amc23_27",
+     "status": "AUDITED",
+     "attempt_id": "df76f393b9346d224b13ef04f85e8b799b18d60fcadaf91e5ee0bc5029f902dc",
+     "reasoning_tokens": 12809,
+     "candidate_events": []
+    },
+    {
+     "family": "493941e0a87c3c5b10c2d6fa3609be82ceaa0eeb8ec2496a1f375ae10a9fe1e5",
+     "question": "olympiad|olympiad_2748",
+     "status": "AUDITED",
+     "attempt_id": "32f68f6c25aac1f77b20746cbfeccdd7c97d40cafdea92d14a285fdd2cdc6759",
+     "reasoning_tokens": 17166,
+     "candidate_events": []
+    },
+    {
+     "family": "a5f5eb4d69a7e0e3af7ed24536dd6874c6df42500d6f110c88b78f4e46ca5b28",
+     "question": "olympiad|olympiad_2075",
+     "status": "AUDITED",
+     "attempt_id": "60c537446074ac6145911d829e8d41155c6eec2f054e33683a4cfe49230b7f51",
+     "reasoning_tokens": 22747,
+     "candidate_events": []
+    },
+    {
+     "family": "41a5dc43b2b1762481b16e224d11223e22f9d01b072beb8e1ddfaafaf8bd6fba",
+     "question": "olympiad|olympiad_2858",
+     "status": "AUDITED",
+     "attempt_id": "c4246e6b2b51422d828b3a0fc033f6d8fd5f680570c2803e872f6e737ffa7334",
+     "reasoning_tokens": 12451,
+     "candidate_events": []
+    },
+    {
+     "family": "b0b306ad23f8faba796fbee2d8a87e9d48782e8d620230614735a468e9e3decd",
+     "question": "olympiad|olympiad_2821",
+     "status": "AUDITED",
+     "attempt_id": "792f10b3e3fe1328a501dad7d2771cbefdff9ca2d2be37712b8323bd71a84150",
+     "reasoning_tokens": 27960,
+     "candidate_events": []
+    },
+    {
+     "family": "cc48d8e264c03a0aad534bd2c10c05c94367a65451fe36464ab7560732390c0f",
+     "question": "math500|math500_test/intermediate_algebra/1508.json",
+     "status": "AUDITED",
+     "attempt_id": "2db63bddb05f4a0fd42a21478f35dd5964a27e6dac7a21dc00e34394a279470e",
+     "reasoning_tokens": 18580,
+     "candidate_events": []
+    },
+    {
+     "family": "03ed005ab045df39047db6ca2b511486eace6719618b7bb370d66c04b623b586",
+     "question": "olympiad|olympiad_1766",
+     "status": "AUDITED",
+     "attempt_id": "48b56906165ac1aef23a5cc1cbdd9ebd452656a6739e892fe1bf2d80932e8b40",
+     "reasoning_tokens": 30679,
+     "candidate_events": []
+    },
+    {
+     "family": "f7cdc930b3e9c66c8fb8a8eb2c7f70ef65fb6e95dd93bb1f14f11fc2ee15b15d",
+     "question": "minerva|minerva_47",
+     "status": "AUDITED",
+     "attempt_id": "d8e68df49eda2f90137f181f32aa8362f57d86d676e1d898c40f525898540d82",
+     "reasoning_tokens": 14257,
+     "candidate_events": [
+      {
+       "kind": "answer_math",
+       "recognition_token": 2770,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_math",
+       "recognition_token": 2793,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_math",
+       "recognition_token": 9926,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_math",
+       "recognition_token": 9971,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      }
+     ]
+    },
+    {
+     "family": "f519766089ce7cc8a8620f27cd027b62021a7058474014289812145f42595e8d",
+     "question": "aime25|aime25_2",
+     "status": "AUDITED",
+     "attempt_id": "ab19f1c1e199cf8756de454206cc3994773afaacb045ecf56ce6bf4bb45f6647",
+     "reasoning_tokens": 13548,
+     "candidate_events": []
+    },
+    {
+     "family": "a59aa248501ea61fcc0f8ccd319362e633f6345adb3915383d4f0fbf3d323b71",
+     "question": "math500|math500_test/prealgebra/874.json",
+     "status": "AUDITED",
+     "attempt_id": "c0a1ef9bc9466fe76ba0d4cf2b743a18d90537a5b0d2d0f7120aec0e554de285",
+     "reasoning_tokens": 32098,
+     "candidate_events": []
+    },
+    {
+     "family": "59a6b6e693b4ed336d12b52c2b2e387b0c10b8d6520c397ad8406f4f7c8477ad",
+     "question": "math500|math500_test/algebra/1842.json",
+     "status": "AUDITED",
+     "attempt_id": "cbb40ca4fd8db146710534442503f9a93278ae1987db2573e4b3d7758702d814",
+     "reasoning_tokens": 1609,
+     "candidate_events": [
+      {
+       "kind": "boxed",
+       "recognition_token": 951,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      },
+      {
+       "kind": "boxed",
+       "recognition_token": 1589,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": false,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      }
+     ]
+    },
+    {
+     "family": "c7cd69e8ed2d1f0c9b3ab9a481fbc82ec6df8e09c6ed0b675f08c4044b51b7eb",
+     "question": "amc23|amc23_14",
+     "status": "AUDITED",
+     "attempt_id": "6713d10b896e137ee284ed0a9c67621d3a3acbafa93057ac688ef9b286f00056",
+     "reasoning_tokens": 16026,
+     "candidate_events": []
+    },
+    {
+     "family": "35a9ddc2bc4458b801528d04ea49bc7049311cc839acb2e0b4c5c73c080f492a",
+     "question": "math500|math500_test/algebra/246.json",
+     "status": "AUDITED",
+     "attempt_id": "257fe76ac39f5fc59feb95a5b05db48768e1c6bc5d15664026bafc1cf70fff8b",
+     "reasoning_tokens": 2706,
+     "candidate_events": []
+    },
+    {
+     "family": "cf2df7f39393cbfdd76a5991541117f296830f135888f92192001a1d099b32ed",
+     "question": "amc23|amc23_29",
+     "status": "AUDITED",
+     "attempt_id": "d53035f823065cd23757f255023ec741692f53b725961b6382ebcb93076d2061",
+     "reasoning_tokens": 10948,
+     "candidate_events": []
+    },
+    {
+     "family": "cee0263739d3e2a7ebce61c2be4fadea32c1fe2f4405426f1d1c104a7e3303c9",
+     "question": "olympiad|olympiad_2536",
+     "status": "AUDITED",
+     "attempt_id": "2c034e9868c29944384656627b2fb800701e716aefdd185303801e38dc20b9c4",
+     "reasoning_tokens": 4425,
+     "candidate_events": []
+    },
+    {
+     "family": "7c4732963c0fc636f825c2865a3ff4659d32f9bd88a3d06d6b4b0a69f3edddbd",
+     "question": "math500|math500_test/geometry/229.json",
+     "status": "AUDITED",
+     "attempt_id": "8b5c698645187c675c263caf329a2ab203a7a7dcff04a343fc14856abaab7283",
+     "reasoning_tokens": 23333,
+     "candidate_events": []
+    },
+    {
+     "family": "b498dcabf4b8cca356bfd2cb72fb3f4759acbe70e26f60f1584c8615ddd439d4",
+     "question": "math500|math500_test/algebra/109.json",
+     "status": "AUDITED",
+     "attempt_id": "b37b46a85b6f80b3afb21562c463652ab435bde14d284b837f8499e68da76722",
+     "reasoning_tokens": 1437,
+     "candidate_events": [
+      {
+       "kind": "boxed",
+       "recognition_token": 787,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      },
+      {
+       "kind": "boxed",
+       "recognition_token": 1425,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": false,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      }
+     ]
+    },
+    {
+     "family": "a552bf007474dcc61a62b9abe61e51f50e6b415378eda286ab66bf01f222a8a7",
+     "question": "math500|math500_test/intermediate_algebra/607.json",
+     "status": "AUDITED",
+     "attempt_id": "7f4ccb9a08c681e5c8b64be1d6e596a5552df85d993e3977b8d89b1ddc4113fd",
+     "reasoning_tokens": 18616,
+     "candidate_events": [
+      {
+       "kind": "answer_is",
+       "recognition_token": 3042,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_is",
+       "recognition_token": 7994,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      }
+     ]
+    },
+    {
+     "family": "9379b2836d2cc64d80de956d1ea5aa1f94c294754974273b75811e1795413f43",
+     "question": "olympiad|olympiad_2830",
+     "status": "AUDITED",
+     "attempt_id": "329195569e8d977b3cf0d509dc0009719080d3ee0ca857cd9c88e57418c15bd9",
+     "reasoning_tokens": 4516,
+     "candidate_events": [
+      {
+       "kind": "boxed",
+       "recognition_token": 3145,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      }
+     ]
+    },
+    {
+     "family": "faba7ac59f7fe12174de98b2fd9488d0aa9cecafa9bbbdeea0ed543e2c4e0a3f",
+     "question": "olympiad|olympiad_2063",
+     "status": "AUDITED",
+     "attempt_id": "a59cfec43a9fa7c0b1b223d3298916c8d45949e81afc7c133e54f624b51d4d76",
+     "reasoning_tokens": 27031,
+     "candidate_events": []
+    },
+    {
+     "family": "6b56f8cc42854fbfd8871e9a17ce045ea245335d8e823e2917282e38d6b62a2d",
+     "question": "olympiad|olympiad_2287",
+     "status": "AUDITED",
+     "attempt_id": "bbb9eb3fd47875ef9281d86a1e5df169664dc067c21d9e0ac05df2d9f3b254ff",
+     "reasoning_tokens": 10974,
+     "candidate_events": []
+    },
+    {
+     "family": "f1b4218199e5f6fe3683254e82353f8bb0418ddbc6adf7f9667313b2de535a23",
+     "question": "olympiad|olympiad_2064",
+     "status": "AUDITED",
+     "attempt_id": "8afedd09ae3ed2772c8b98b1d70e125c07f0c591f809fdb42be6ecbfc19b729b",
+     "reasoning_tokens": 43557,
+     "candidate_events": [
+      {
+       "kind": "answer_is",
+       "recognition_token": 40918,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_is",
+       "recognition_token": 41498,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_is",
+       "recognition_token": 42089,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      }
+     ]
+    },
+    {
+     "family": "3fbbaff73137a98fb0bca38074d2bfefe75f86ab011cad3c09b0dd99d4544fac",
+     "question": "math500|math500_test/precalculus/703.json",
+     "status": "AUDITED",
+     "attempt_id": "c3e76efca70fd7f5ad106d76fc81c7fb52fd3ddafd697393b872ef8ed09bd55d",
+     "reasoning_tokens": 17896,
+     "candidate_events": []
+    },
+    {
+     "family": "86b0389af7da770c6b6ef6b8e98ebddc3364d87330d069fab9a325c4dda3712c",
+     "question": "olympiad|olympiad_2955",
+     "status": "AUDITED",
+     "attempt_id": "bcddf2a7c8b930cb0418d1ef9390ba3853ac1524c18145548f8e90fea66505f7",
+     "reasoning_tokens": 12274,
+     "candidate_events": [
+      {
+       "kind": "answer_is",
+       "recognition_token": 9454,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      }
+     ]
+    },
+    {
+     "family": "ec491783aadd1e96f8c3b79410d89e610e9dfec8d8d17dc05052df8127e7b76f",
+     "question": "minerva|minerva_72",
+     "status": "AUDITED",
+     "attempt_id": "5bcd7c250a072bcd57aca12e86640f3b65e8204547f0fe4d18edd49c8a916ab8",
+     "reasoning_tokens": 2396,
+     "candidate_events": []
+    },
+    {
+     "family": "de9df52b2ccceeaf3f10140d9b76b2c805ac85b77692bbb9a2182e5be189f12b",
+     "question": "olympiad|olympiad_3078",
+     "status": "AUDITED",
+     "attempt_id": "4fd198a575e735dbeeb80cb19aebde42fa54f0133cd175ad79117b555987abb6",
+     "reasoning_tokens": 4628,
+     "candidate_events": []
+    },
+    {
+     "family": "2050893e3dbdcbdcfc488218511a9bb406b74e2bdab4223f5f977c0bafcf4050",
+     "question": "minerva|minerva_261",
+     "status": "AUDITED",
+     "attempt_id": "9dde4a1b328a8ebfce9a05faec1d3c9384528a67c9f11d84839e60b374a54c02",
+     "reasoning_tokens": 10483,
+     "candidate_events": []
+    },
+    {
+     "family": "991c1440fd6162de1b0f58a366416100dccbcc6280762da850155eec9668e5b4",
+     "question": "olympiad|olympiad_1882",
+     "status": "AUDITED",
+     "attempt_id": "bd28befcf4f33b83a90e433e517a21be0fbc0a15757fb6ac5f8c204f010c6cca",
+     "reasoning_tokens": 30456,
+     "candidate_events": []
+    },
+    {
+     "family": "5faecfa9c6a0693f75de5af9a5afd0d9466b339c193fa5ed96e278244cdc527d",
+     "question": "olympiad|olympiad_2280",
+     "status": "AUDITED",
+     "attempt_id": "9a63192d26bc8cb4b050d9ba0950d5951f8ec162942cbff5f464fca80c94f003",
+     "reasoning_tokens": 3970,
+     "candidate_events": [
+      {
+       "kind": "boxed",
+       "recognition_token": 3073,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      }
+     ]
+    },
+    {
+     "family": "b6c9fedfd5588eafa27fd40cae2a6c00d2ee6b28c5407ec48bb195ac116a94cd",
+     "question": "math500|math500_test/counting_and_probability/282.json",
+     "status": "AUDITED",
+     "attempt_id": "75802db89ef0d5a1da43df98e5de8e7c39fa48fe116aba1cf3c4e8572dd1d138",
+     "reasoning_tokens": 29804,
+     "candidate_events": []
+    },
+    {
+     "family": "063c91b8bdbd2e2bce31283d495687550f3fd56b82d94a0a994f1785d5d280d3",
+     "question": "olympiad|olympiad_1970",
+     "status": "AUDITED",
+     "attempt_id": "588ce97b5ebe2784473467c950de211cda219ba4093b0ddf620e58af392d240f",
+     "reasoning_tokens": 52940,
+     "candidate_events": []
+    },
+    {
+     "family": "e87b7e359c67d1cd9003546c9d7a71afe336e360068fe0c9693fbddf074104f5",
+     "question": "minerva|minerva_96",
+     "status": "AUDITED",
+     "attempt_id": "9a63c91690a0a394520245371a990fb47ed1d8b5b561762c66743d76426ada84",
+     "reasoning_tokens": 1401,
+     "candidate_events": []
+    },
+    {
+     "family": "2dbdd72cd44c8e6f5de7939e82de86638243a34d071a622940e2c6b9f1ffea28",
+     "question": "math500|math500_test/intermediate_algebra/690.json",
+     "status": "AUDITED",
+     "attempt_id": "7e153b4918bdf72e80e7f711299b699513174e86ab0298622bced737cacc9e3d",
+     "reasoning_tokens": 6906,
+     "candidate_events": []
+    },
+    {
+     "family": "341272c10e57547ad6bef99094090f5dc3d61b7cb310f0745554ed5e3ef23620",
+     "question": "minerva|minerva_266",
+     "status": "AUDITED",
+     "attempt_id": "9729b41252667c767cbe8106359468298863a2820beeb366b5203104f2a20682",
+     "reasoning_tokens": 9178,
+     "candidate_events": []
+    },
+    {
+     "family": "bd8dc5d99623e3fbf08a4edb9b6892896daed3b122be0ca72df0d37aef5dc06b",
+     "question": "olympiad|olympiad_2469",
+     "status": "AUDITED",
+     "attempt_id": "62c6fac455ba8edcf347ba07b6f85a459999cc1e7599aea712cb6c22c2f336b7",
+     "reasoning_tokens": 6154,
+     "candidate_events": []
+    },
+    {
+     "family": "77fd0e655928dec52ab63ae9b4409b8457b3a52059b53c4f385ffae232358796",
+     "question": "olympiad|olympiad_2975",
+     "status": "AUDITED",
+     "attempt_id": "8517a06b3b5ebb784c387031ca099638fcf7d199e53969a831a77ec1f86dd010",
+     "reasoning_tokens": 31481,
+     "candidate_events": []
+    },
+    {
+     "family": "0e87fa42b04c1ebbf6a92832cfbcc059ac85caaeecdb83490e45581a47ef3594",
+     "question": "olympiad|olympiad_3011",
+     "status": "AUDITED",
+     "attempt_id": "6ba88571c9a855fb8ab1b479240d577a5632eb0905fea85257f885346efa94f7",
+     "reasoning_tokens": 21954,
+     "candidate_events": []
+    },
+    {
+     "family": "a0ad44e1ffa88bdd40667753e78ef9f970833f7af232c92fcc19ebd8300bb0ba",
+     "question": "olympiad|olympiad_2713",
+     "status": "AUDITED",
+     "attempt_id": "d7d743e56546bd7444e5ceed4b6498f5e49c502941de1e3d0003cfe70f0e1344",
+     "reasoning_tokens": 24588,
+     "candidate_events": [
+      {
+       "kind": "answer_math",
+       "recognition_token": 20653,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_math",
+       "recognition_token": 21168,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      }
+     ]
+    },
+    {
+     "family": "21a6d636eb15a772fc1f0bc930acf311c36a037f6bbd41e1486feb9b5251567f",
+     "question": "math500|math500_test/intermediate_algebra/1166.json",
+     "status": "AUDITED",
+     "attempt_id": "8f61894ca5aeca8fe34cb3ea973d80df2b75c1c21223804bad16885628969de8",
+     "reasoning_tokens": 16700,
+     "candidate_events": []
+    },
+    {
+     "family": "2f24f936b2971ea7da8365e7ba9792e1b43a25a7b3f9f4a56d439100e86d3c20",
+     "question": "olympiad|olympiad_2733",
+     "status": "AUDITED",
+     "attempt_id": "60ecfe0fbd7c5862faef23f71ffa846677e75c4ca8ba06902ad0db1416498f98",
+     "reasoning_tokens": 25473,
+     "candidate_events": []
+    },
+    {
+     "family": "d7dad68a049efed827bb0602b08b0038d3e712e918ccc02db4b7bc445d18dad1",
+     "question": "math500|math500_test/number_theory/928.json",
+     "status": "AUDITED",
+     "attempt_id": "bfe6cbc56ea5b57a8d8a35ae76f1f2295a677542053ad9dab0653e66f10aabee",
+     "reasoning_tokens": 2659,
+     "candidate_events": [
+      {
+       "kind": "answer_is",
+       "recognition_token": 892,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "boxed",
+       "recognition_token": 1694,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      },
+      {
+       "kind": "boxed",
+       "recognition_token": 2218,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      },
+      {
+       "kind": "boxed",
+       "recognition_token": 2565,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": false,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      }
+     ]
+    },
+    {
+     "family": "8f0cbde38f183a380773866cb71b7353c2869f34bba5dd8927d76dc355fa9bd6",
+     "question": "math500|math500_test/prealgebra/1961.json",
+     "status": "AUDITED",
+     "attempt_id": "c62c3e97daa5b2f5a920f1626e6d3015e6d930e59766a2e994173b8ecef7ca90",
+     "reasoning_tokens": 2196,
+     "candidate_events": [
+      {
+       "kind": "boxed",
+       "recognition_token": 1008,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "boxed",
+       "recognition_token": 1049,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "boxed",
+       "recognition_token": 1412,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      },
+      {
+       "kind": "boxed",
+       "recognition_token": 1546,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      },
+      {
+       "kind": "boxed",
+       "recognition_token": 1737,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      },
+      {
+       "kind": "boxed",
+       "recognition_token": 1914,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      },
+      {
+       "kind": "boxed",
+       "recognition_token": 2165,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": false,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      }
+     ]
+    },
+    {
+     "family": "346aa3bbc21d019e8c7f15ae70c184d85353aa8c88bad79e72b66a24e1bb6c19",
+     "question": "minerva|minerva_110",
+     "status": "AUDITED",
+     "attempt_id": "6b04fe047eb308f1931f09e3be5d8e1e90e5b4c98c0323661af174d8cfaed9db",
+     "reasoning_tokens": 8609,
+     "candidate_events": []
+    },
+    {
+     "family": "1fe5379fd73131b96f8549b009b6a7401547d805eeb7cfa5180526b617347c1e",
+     "question": "olympiad|olympiad_3087",
+     "status": "AUDITED",
+     "attempt_id": "6740b3b82f8b578dcf47e3f5890a1708c5042545f06accf68eaca903767af693",
+     "reasoning_tokens": 36371,
+     "candidate_events": []
+    },
+    {
+     "family": "1e6a0acf89d52a3a063862d69dec5bca17eda49ea741ec491457d11f3e1376db",
+     "question": "minerva|minerva_222",
+     "status": "AUDITED",
+     "attempt_id": "fa0c4285c9e308ecb3d5b43d8769a94f094fc59578144183b9a6172db41a2f90",
+     "reasoning_tokens": 14764,
+     "candidate_events": []
+    },
+    {
+     "family": "5c4e64d00492799cdb9aeed6c628db52cc9cdc9fc8f4c3284e157a1c8e0bd457",
+     "question": "amc23|amc23_15",
+     "status": "AUDITED",
+     "attempt_id": "607c438c3bb2d72c27bc6995ffddd707bc60b91d562580ee3f26b3d3d1b425b7",
+     "reasoning_tokens": 19678,
+     "candidate_events": []
+    },
+    {
+     "family": "4af0f340202049c38ad2554d19b6c8c0f05ecb16a5ac87339232440dfe400817",
+     "question": "math500|math500_test/intermediate_algebra/345.json",
+     "status": "AUDITED",
+     "attempt_id": "214fae3c63e5c5089c8c7e916d2c340fc64043bf365d3b451f6cbc46a8692358",
+     "reasoning_tokens": 29180,
+     "candidate_events": []
+    },
+    {
+     "family": "c0a52e412fa3913df0dd93ed7f7b23acc24a12160dbb39edbfce61b2f9f76a3e",
+     "question": "math500|math500_test/intermediate_algebra/2015.json",
+     "status": "AUDITED",
+     "attempt_id": "82f606d48578f6c0ce6443280cc63b35acc446ce66f2645cd1fae39024f6bb3a",
+     "reasoning_tokens": 27871,
+     "candidate_events": []
+    },
+    {
+     "family": "b5f77364e9381028490cde1924e9a123a5cdd86991135e893caf35cec9cf85c2",
+     "question": "olympiad|olympiad_2461",
+     "status": "AUDITED",
+     "attempt_id": "cc718bb59c2c33f7d388f65063faf14bfc3f3520bcfee0ee611b9e954bc57284",
+     "reasoning_tokens": 15753,
+     "candidate_events": []
+    },
+    {
+     "family": "8e0ca0c7d295d00bfcbb9b474b3db2e4664a95892a5d59c97cfaa8544ed3a6e8",
+     "question": "olympiad|olympiad_2855",
+     "status": "AUDITED",
+     "attempt_id": "3de72d8fd88b85bbd91100839e9babb15db1bcf083280ebdc72ab2f7878d0529",
+     "reasoning_tokens": 2787,
+     "candidate_events": []
+    },
+    {
+     "family": "0b69234ffc28b67d36f845df8b3be2fe643e738b53eb33ea042f89f15e696bdb",
+     "question": "olympiad|olympiad_2544",
+     "status": "AUDITED",
+     "attempt_id": "78f063dbe96c81bb29f04dc674995cbfa15757a5eb80dfc176e6dc4e180ed4f6",
+     "reasoning_tokens": 7528,
+     "candidate_events": []
+    },
+    {
+     "family": "400f4b5401a76d82f229bf6dec6f985e33bddbb60d7c9c3ec6ddf50c36e1c55d",
+     "question": "minerva|minerva_60",
+     "status": "AUDITED",
+     "attempt_id": "9532cda4bebd0c7df29f14a9672bf8c96d76acc08a5f290c18de2860dc3a273c",
+     "reasoning_tokens": 5402,
+     "candidate_events": []
+    },
+    {
+     "family": "f77b8b6377f0ceff557ec3e3dc12e349f4360533d8b7e150d99d4910250c3354",
+     "question": "math500|math500_test/prealgebra/1840.json",
+     "status": "AUDITED",
+     "attempt_id": "63537dafd4f95014b51a32dbffaef48142b593fc6d02cb3aadcbd2035cbfc51c",
+     "reasoning_tokens": 1590,
+     "candidate_events": [
+      {
+       "kind": "boxed",
+       "recognition_token": 574,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      },
+      {
+       "kind": "boxed",
+       "recognition_token": 582,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      },
+      {
+       "kind": "boxed",
+       "recognition_token": 605,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      },
+      {
+       "kind": "boxed",
+       "recognition_token": 631,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      },
+      {
+       "kind": "boxed",
+       "recognition_token": 644,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      },
+      {
+       "kind": "boxed",
+       "recognition_token": 657,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      },
+      {
+       "kind": "boxed",
+       "recognition_token": 1368,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": false,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      },
+      {
+       "kind": "boxed",
+       "recognition_token": 1386,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": false,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      },
+      {
+       "kind": "boxed",
+       "recognition_token": 1413,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": false,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      },
+      {
+       "kind": "boxed",
+       "recognition_token": 1432,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": false,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      },
+      {
+       "kind": "boxed",
+       "recognition_token": 1457,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": false,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      },
+      {
+       "kind": "boxed",
+       "recognition_token": 1532,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": false,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      },
+      {
+       "kind": "boxed",
+       "recognition_token": 1566,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": false,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      }
+     ]
+    },
+    {
+     "family": "5a52ee6888cf0c250bbeeff2cb9e69d1f09744e3215b31a0f6c36c141d2f4f00",
+     "question": "olympiad|olympiad_2441",
+     "status": "AUDITED",
+     "attempt_id": "cb1592f5b5d16f485466e504c25fc14f3fa5e06f23b71042e035b3915e8e691f",
+     "reasoning_tokens": 5081,
+     "candidate_events": [
+      {
+       "kind": "answer_is",
+       "recognition_token": 3463,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_is",
+       "recognition_token": 3796,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "boxed",
+       "recognition_token": 4976,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": false,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      }
+     ]
+    },
+    {
+     "family": "74950d7d26241fd8fbc87b1654edd734ad9eb1f46c59a28a8d644108bb3c03fc",
+     "question": "aime24|aime24_70",
+     "status": "AUDITED",
+     "attempt_id": "d8f4384ab26e5c1ac064565d4dbaecb2158e7a2825043f3a5d3665685c463b88",
+     "reasoning_tokens": 28171,
+     "candidate_events": []
+    },
+    {
+     "family": "437fc41dd18fef7d53fbf4aae0ba21d671cff6ccfd8154c08267eb1946faddd6",
+     "question": "math500|math500_test/intermediate_algebra/1981.json",
+     "status": "AUDITED",
+     "attempt_id": "f7211371ee378f94a41ae4de68d7bfdd4b9a924087c70b7c15a5ba7aba5ab730",
+     "reasoning_tokens": 4908,
+     "candidate_events": []
+    },
+    {
+     "family": "c3e0a8d592bc2c342748fed948da766652d1b853f188e8dba536f146ad7cbbdc",
+     "question": "olympiad|olympiad_1641",
+     "status": "AUDITED",
+     "attempt_id": "198fc091f478f212401d020173d5daa34e3c5d83bd58955f7aaae1e052b6daf5",
+     "reasoning_tokens": 53413,
+     "candidate_events": [
+      {
+       "kind": "answer_is",
+       "recognition_token": 3061,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_is",
+       "recognition_token": 16011,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      }
+     ]
+    },
+    {
+     "family": "d8f38d5129b19e794dc8c7a2165df4c1a75369ca4aa9e783041e0b61dddf0051",
+     "question": "math500|math500_test/intermediate_algebra/986.json",
+     "status": "AUDITED",
+     "attempt_id": "8daa3adc3be7a955f177445cc9d32044ec36a15d8de5325b2b82f0ab74ebf445",
+     "reasoning_tokens": 4411,
+     "candidate_events": []
+    },
+    {
+     "family": "4cb7eed4e618323d77c5ec1eab92d11022f98ae2132fb89d3794e79b82c25ec1",
+     "question": "olympiad|olympiad_2349",
+     "status": "AUDITED",
+     "attempt_id": "64c93219a86b49b752c6097c153f9a09c64c19200469299af3ac912da0c4d0bb",
+     "reasoning_tokens": 20680,
+     "candidate_events": []
+    },
+    {
+     "family": "6b993d3ce60450f5b5e3b9b0ed1dae3aec296a667d0017d3d259b8795b8c411b",
+     "question": "olympiad|olympiad_2786",
+     "status": "AUDITED",
+     "attempt_id": "b14eecd9436375577f0d4e174b3687413bec60d35af4b2655d653f6267813c33",
+     "reasoning_tokens": 5358,
+     "candidate_events": []
+    },
+    {
+     "family": "1f35a27f5e4c59b37e4a43a826607f043b28075836e312f5513a69392256bd1f",
+     "question": "olympiad|olympiad_2857",
+     "status": "AUDITED",
+     "attempt_id": "cc7fbb259b1ade0d853488e0571b34d79ee13e2607b8113e4ae7c0637112446a",
+     "reasoning_tokens": 10235,
+     "candidate_events": []
+    },
+    {
+     "family": "ef981aedd639442e4b3861f77a4fb541c2fe0780c70f6e604d0d7c905882d427",
+     "question": "minerva|minerva_225",
+     "status": "AUDITED",
+     "attempt_id": "26979af2277c363f314613cd94c3bc2bd39e40bec72df587b6bf3f1964dc1745",
+     "reasoning_tokens": 24575,
+     "candidate_events": []
+    },
+    {
+     "family": "6a45636a01f79891aaa21b653af9852fbc27c27a286ac0e369dc9468b8e0b47a",
+     "question": "math500|math500_test/intermediate_algebra/582.json",
+     "status": "AUDITED",
+     "attempt_id": "4979d17f0dae1b9b22aeaece17a260403755e1e8a7ee39b4cff44457ea4929e8",
+     "reasoning_tokens": 21024,
+     "candidate_events": []
+    },
+    {
+     "family": "d7eb2ff007bfe623f85f8bf78753b6fea02274c03fb06fd166502c0a541e7efd",
+     "question": "aime24|aime24_89",
+     "status": "AUDITED",
+     "attempt_id": "6d401bb734a0148d5e29d099defe7ee79043a64b5b70a34d2a216bd5609a7af7",
+     "reasoning_tokens": 30826,
+     "candidate_events": []
+    },
+    {
+     "family": "c3768f9f34235556674294feb5d32275f03e7c81e64ab3600797c0c3ecc49c0d",
+     "question": "olympiad|olympiad_2831",
+     "status": "AUDITED",
+     "attempt_id": "347baf0c924398401cbb57bb61699f5073f73709cf65dfeaeee7cba0495b201f",
+     "reasoning_tokens": 5925,
+     "candidate_events": [
+      {
+       "kind": "answer_is",
+       "recognition_token": 4778,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      }
+     ]
+    },
+    {
+     "family": "657e66af6834072e371c441d892363a6272828fee62f85d04905b1b6b20b9187",
+     "question": "math500|math500_test/prealgebra/914.json",
+     "status": "AUDITED",
+     "attempt_id": "e7923236551c81f6750f899d9bcf193199ece395b780630e6b734fa8aa2aca7f",
+     "reasoning_tokens": 3132,
+     "candidate_events": [
+      {
+       "kind": "answer_is",
+       "recognition_token": 2621,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      },
+      {
+       "kind": "boxed",
+       "recognition_token": 2759,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      }
+     ]
+    },
+    {
+     "family": "dd5198b9b9f0f3e6e8fad212919388af704dbc7c9cb58144029c7a39f306d4a8",
+     "question": "math500|math500_test/prealgebra/1044.json",
+     "status": "AUDITED",
+     "attempt_id": "539de1ea27419a6cc8d3c663ecacbbe05d40bcc0a3ba58e65b7d2695cca53272",
+     "reasoning_tokens": 4949,
+     "candidate_events": []
+    },
+    {
+     "family": "d425da4fdbf1ab3738151fa1c2c6d9f07fbe355036c1e00240278d3f357ee563",
+     "question": "olympiad|olympiad_2797",
+     "status": "AUDITED",
+     "attempt_id": "044ae0c4ddfc792e318408ecc6f63db21e9501a15a01ecea7ed2c5baa5787276",
+     "reasoning_tokens": 17608,
+     "candidate_events": []
+    },
+    {
+     "family": "02c681f2e30927193fea6ab09d563b8ffff227530f66ab18ef265a8b2971209c",
+     "question": "olympiad|olympiad_2949",
+     "status": "AUDITED",
+     "attempt_id": "8f562cef027107dd894f24a660ddfc23e356710c76f0980d201cfcd5865e2c9f",
+     "reasoning_tokens": 20256,
+     "candidate_events": []
+    },
+    {
+     "family": "5d2cf5d04280fc70f7e9acbae1e47427c9c2c6028b3d5719cc923029c6561a2e",
+     "question": "olympiad|olympiad_2644",
+     "status": "AUDITED",
+     "attempt_id": "80d66517530a4016af7127d68faa1aa4cca02d160b32467dee0ee8f848531401",
+     "reasoning_tokens": 11707,
+     "candidate_events": []
+    },
+    {
+     "family": "874ddda2af091c0c3c1b362805098dacf87bcb23f9c53c4a7fcac280ac6b8d7a",
+     "question": "olympiad|olympiad_2851",
+     "status": "AUDITED",
+     "attempt_id": "10821a9ebf204ed989d214b942464d356ba9e57923d3ac9821b5861040d56575",
+     "reasoning_tokens": 17582,
+     "candidate_events": []
+    },
+    {
+     "family": "335d6fa7610820729ee8ebab2c68c9bdf30a0d54e4da8191708aa90898962d07",
+     "question": "olympiad|olympiad_3036",
+     "status": "AUDITED",
+     "attempt_id": "97b3b8af8482353df62c811beee54c6e45b83baac3fa7d0f0e70e2b63de2d34a",
+     "reasoning_tokens": 5450,
+     "candidate_events": []
+    },
+    {
+     "family": "3fe7405be1051f2c6807d3929e1229e5212c6b1bc6f84f50402c1712d92d8084",
+     "question": "math500|math500_test/intermediate_algebra/158.json",
+     "status": "AUDITED",
+     "attempt_id": "9ca74631b4c30519e20278cb9e85f45ee629f9da44f6474b9653d9c68da92e6d",
+     "reasoning_tokens": 6788,
+     "candidate_events": []
+    },
+    {
+     "family": "9f13317fd9968d3438bc9b9592cb36a8c717408921a690e6ebd9eacb4d66ee04",
+     "question": "math500|math500_test/number_theory/1055.json",
+     "status": "AUDITED",
+     "attempt_id": "2cc0aeaf888c4611866172f89c01814db9787419b60ef2a7211b439e4bc1a82d",
+     "reasoning_tokens": 3984,
+     "candidate_events": [
+      {
+       "kind": "answer_is",
+       "recognition_token": 2785,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_is",
+       "recognition_token": 3037,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      },
+      {
+       "kind": "boxed",
+       "recognition_token": 3914,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": false,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      }
+     ]
+    },
+    {
+     "family": "436186d3a4a8f73d36b089043f609142f9fe19ce01c89853547b17f32e2bbf42",
+     "question": "olympiad|olympiad_3099",
+     "status": "AUDITED",
+     "attempt_id": "c77cbcd4f5a4a1799eace46e9bbb6257d4b2c90ba7899a2501b107dea9182771",
+     "reasoning_tokens": 4639,
+     "candidate_events": []
+    },
+    {
+     "family": "87eae0863d8cb93700fc3c37cc542f90041ed2b3e8a8c54c84d25412db5cc682",
+     "question": "minerva|minerva_82",
+     "status": "AUDITED",
+     "attempt_id": "1a5d23b641f61bb01f2012f6ec2d74aa20d47bb2823071944e7640f1d9830aa3",
+     "reasoning_tokens": 4694,
+     "candidate_events": []
+    }
+   ]
+  },
+  "utility": {
+   "families": 96,
+   "with_trace": 96,
+   "with_preclosure_candidate": 33,
+   "with_candidate_and_256_native_tokens": 28,
+   "with_candidate_and_1024_native_tokens": 17,
+   "records": [
+    {
+     "family": "c138ab74b7d78da1f1c24a83b62085fa2072e66d7f66be1ecd24af317ed173ce",
+     "question": "olympiad|olympiad_2388",
+     "status": "AUDITED",
+     "attempt_id": "bc00e3033c3158d616c9f049cb4467bee75fd4c65a72d7cb2d3b52285081fa98",
+     "reasoning_tokens": 2135,
+     "candidate_events": []
+    },
+    {
+     "family": "12247c7cf3d87a6b258e67a4338ba3095842c61fa00abdcb516e327d79c4f83f",
+     "question": "math500|math500_test/number_theory/634.json",
+     "status": "AUDITED",
+     "attempt_id": "9a98c6306d4d65e088dc3ee2f44ca26b4af39cacd6badfb62b6d91a721488658",
+     "reasoning_tokens": 5148,
+     "candidate_events": [
+      {
+       "kind": "answer_is",
+       "recognition_token": 1438,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_is",
+       "recognition_token": 3226,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      }
+     ]
+    },
+    {
+     "family": "463b0dd63126a05f2b87a6993e165e8e4ef7024e1f0868862f73911f9e271dcf",
+     "question": "math500|math500_test/algebra/518.json",
+     "status": "AUDITED",
+     "attempt_id": "0628b4ed4c49170a84ab4cfb60a478ec5edb3c81c45fddfc0f61ea3f1d4a4a19",
+     "reasoning_tokens": 3986,
+     "candidate_events": [
+      {
+       "kind": "boxed",
+       "recognition_token": 3585,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      },
+      {
+       "kind": "boxed",
+       "recognition_token": 3598,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      }
+     ]
+    },
+    {
+     "family": "d407414aa701d5e470ad099832ba632a9811aaffe53e81f195422c267d9ed7ea",
+     "question": "math500|math500_test/intermediate_algebra/754.json",
+     "status": "AUDITED",
+     "attempt_id": "a1b967f6ba3f794fdc3a7c69e6a1e36efe254bbbba7c19a3c5d901c434f4beda",
+     "reasoning_tokens": 8022,
+     "candidate_events": []
+    },
+    {
+     "family": "908c174582f2f67a9f85725325cda9c0f3f61e6e3416fe5f6f679f239bf5aa40",
+     "question": "math500|math500_test/prealgebra/977.json",
+     "status": "AUDITED",
+     "attempt_id": "845bbba7bc6a4756ffd525b19c9d142345df6e0a3e4aebcd00f415af05e1c132",
+     "reasoning_tokens": 652,
+     "candidate_events": []
+    },
+    {
+     "family": "44c67668953b2df370b33e1c356a519e872b1cf829ba760a0d00318a011f469b",
+     "question": "olympiad|olympiad_2466",
+     "status": "AUDITED",
+     "attempt_id": "4ebccac978afc954a35ab45794229b3f79148660e34407e465c8568c4a92182d",
+     "reasoning_tokens": 1773,
+     "candidate_events": []
+    },
+    {
+     "family": "d606edcfc9156f651625bddd1d20fbfa44f9d92582054d8215f0fa0396f5495d",
+     "question": "math500|math500_test/algebra/1814.json",
+     "status": "AUDITED",
+     "attempt_id": "e2f323ed38a6cd1abdfe07aaa109849d42a9bc3df084f0bee70992a26d5e95cd",
+     "reasoning_tokens": 1630,
+     "candidate_events": [
+      {
+       "kind": "boxed",
+       "recognition_token": 1293,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      },
+      {
+       "kind": "boxed",
+       "recognition_token": 1610,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": false,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      }
+     ]
+    },
+    {
+     "family": "49ac4f12fa528a31323828d6e2cbcf830d14e3efbe0ad4facd6a174ed5a12f94",
+     "question": "math500|math500_test/counting_and_probability/508.json",
+     "status": "AUDITED",
+     "attempt_id": "c7ac1c8e7539bfde5fe19414328c4272c2bc9cfd46b493fd53442bdae59092df",
+     "reasoning_tokens": 1064,
+     "candidate_events": []
+    },
+    {
+     "family": "e28c349a82e8caaac07533f0dbfd1b73347c70861e2c898c370909b42e7d4990",
+     "question": "olympiad|olympiad_1662",
+     "status": "AUDITED",
+     "attempt_id": "165def5a6df852740e58b8f7c2f09bcd487c2b356495ec26575cb864c9488a26",
+     "reasoning_tokens": 63832,
+     "candidate_events": [
+      {
+       "kind": "answer_is",
+       "recognition_token": 54858,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_is",
+       "recognition_token": 55726,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_is",
+       "recognition_token": 55736,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      }
+     ]
+    },
+    {
+     "family": "d1aaed7a188a3ae478689923c2ab96edb86c692f4ea4ad1e70507a4f3e7a9a90",
+     "question": "olympiad|olympiad_2425",
+     "status": "AUDITED",
+     "attempt_id": "a7ed6691919d4872e12e527948212dfaba6c8dc0ca47400c748e0d73a2a80c21",
+     "reasoning_tokens": 4027,
+     "candidate_events": []
+    },
+    {
+     "family": "75df8c03e51bc3d9102229ccfdcc8fc02f8708dca54b2ccc7bba36c03a22702b",
+     "question": "minerva|minerva_206",
+     "status": "AUDITED",
+     "attempt_id": "4115f6b1b9f1b2f7a66014583755d81df4dca2c6a0078d947052d66a17e0d54f",
+     "reasoning_tokens": 20579,
+     "candidate_events": []
+    },
+    {
+     "family": "42816e4df93c52c2355b8e7b329056d704a7863a35cf364c5f5cf7586d8e1c92",
+     "question": "minerva|minerva_6",
+     "status": "AUDITED",
+     "attempt_id": "79aca0e2a1c3f6a28d7f19251ab28e12fdd0544e02f67883d8af1cb5bbb1507f",
+     "reasoning_tokens": 9768,
+     "candidate_events": []
+    },
+    {
+     "family": "e8dd0f84ed34c5a6011d5241855dc3f4cdce3bcc1533ced9ef288b65ae03aa29",
+     "question": "olympiad|olympiad_2740",
+     "status": "AUDITED",
+     "attempt_id": "0485e29d326354ec5bdb3b0104ada96a107cb0efc18809d0db3f4d17a454907e",
+     "reasoning_tokens": 32413,
+     "candidate_events": []
+    },
+    {
+     "family": "e38f4791cef0b135935f7df7c55a471b1a15b113d87ffa8a4fa5221d90e579d9",
+     "question": "olympiad|olympiad_2648",
+     "status": "AUDITED",
+     "attempt_id": "d470d8a2a0d9e2ba8abd369fbd5951243d15413b25fc04673cacdb65a90c5e2d",
+     "reasoning_tokens": 3481,
+     "candidate_events": []
+    },
+    {
+     "family": "809fe94041813e7806fe6456c3d625adc9cc585645baf3ebd806209054658a32",
+     "question": "math500|math500_test/algebra/529.json",
+     "status": "AUDITED",
+     "attempt_id": "aafa45b5e1f8804143aaacff98ec151189674eae0b2200f3c5663afbe1d77034",
+     "reasoning_tokens": 1294,
+     "candidate_events": [
+      {
+       "kind": "answer_is",
+       "recognition_token": 865,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      },
+      {
+       "kind": "boxed",
+       "recognition_token": 1226,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": false,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      }
+     ]
+    },
+    {
+     "family": "9ad3e1a9d26d34f1b8275380a7cb8d24c95c5cea2ee2e5dbe382cf6a5c21478d",
+     "question": "math500|math500_test/prealgebra/1555.json",
+     "status": "AUDITED",
+     "attempt_id": "4352ce5aa441dd51b07861fefc9a576d5ecb0847eed5c0269702febf76b00f73",
+     "reasoning_tokens": 2926,
+     "candidate_events": []
+    },
+    {
+     "family": "ad341ffe71141b92e68b0f36e48e748dc467051277af30e39278e702ec3465c5",
+     "question": "olympiad|olympiad_3080",
+     "status": "AUDITED",
+     "attempt_id": "4c10893ce219691bb28a76e8d58238d1b5cb5d3ffc8d570097f97b982d0672c3",
+     "reasoning_tokens": 23988,
+     "candidate_events": [
+      {
+       "kind": "answer_is",
+       "recognition_token": 23655,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      }
+     ]
+    },
+    {
+     "family": "9948656e0778dde10f388561ef7fd902117a7b1bea1f50f18d8e5db11bc25932",
+     "question": "math500|math500_test/algebra/1098.json",
+     "status": "AUDITED",
+     "attempt_id": "44edb6a1244d4052cbedbbefad886b221f8819aeb8448ab039169c74c329f746",
+     "reasoning_tokens": 807,
+     "candidate_events": []
+    },
+    {
+     "family": "dbefef771805d891c91c780a685507bd3d9f47b1f525eb14f7f28ef523a8898f",
+     "question": "olympiad|olympiad_2193",
+     "status": "AUDITED",
+     "attempt_id": "085a79bf06a9e16c05b8cef61f6e3fbbc89883c7027ced622c32ffa240d5c413",
+     "reasoning_tokens": 35333,
+     "candidate_events": []
+    },
+    {
+     "family": "e9b77b087dcdc1cd448dc0a3bc84231315f4c53143d9963e57580da040246cb3",
+     "question": "olympiad|olympiad_2151",
+     "status": "AUDITED",
+     "attempt_id": "93d55c2e4a12995b04244c86b0724f72c699f7543dbe37dcbf2a884c49f6fcf3",
+     "reasoning_tokens": 29665,
+     "candidate_events": []
+    },
+    {
+     "family": "5d044d4a863ce519e2e65bbe98c4da94132e4e6cdc620b1a5ce3f5376d7d4beb",
+     "question": "olympiad|olympiad_1998",
+     "status": "AUDITED",
+     "attempt_id": "9f50d5038502d1ef611e99413ef9850e5a376555b9f106b10ef7e7988e2c09a3",
+     "reasoning_tokens": 33758,
+     "candidate_events": []
+    },
+    {
+     "family": "a15f25a97df16ea611c6030244f9e3952c8486b4ab675063bcd2c146787103e3",
+     "question": "math500|math500_test/number_theory/572.json",
+     "status": "AUDITED",
+     "attempt_id": "f636bca6f911083f0dbe4f5fdf9fbfd787ac2691d711763f5602b4674ccb8631",
+     "reasoning_tokens": 874,
+     "candidate_events": [
+      {
+       "kind": "boxed",
+       "recognition_token": 706,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": false,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      }
+     ]
+    },
+    {
+     "family": "6e87b0906d10a38e217d2d0bbb14739b6a3ca58f4f504acad05094d5bb045eb4",
+     "question": "olympiad|olympiad_2926",
+     "status": "AUDITED",
+     "attempt_id": "b5cf94e14b5b95c1bb03ca1fc28940122cf5a0d3d60d388241960f3bffd90d65",
+     "reasoning_tokens": 4481,
+     "candidate_events": []
+    },
+    {
+     "family": "ece850668ebf77bdce5e560491725c7272e55f12d5239f28544610d7f5e189a4",
+     "question": "olympiad|olympiad_2403",
+     "status": "AUDITED",
+     "attempt_id": "86cbfd4695ff11f54e0026d799190685f831ec63603a84274337d42ed6ae9fb9",
+     "reasoning_tokens": 1268,
+     "candidate_events": []
+    },
+    {
+     "family": "573c5d63a8db5392c90265b7444bb8ef85c5199903fd49de0eb56ff2098844a0",
+     "question": "olympiad|olympiad_2565",
+     "status": "AUDITED",
+     "attempt_id": "628e0c15970ef928fa16e0bec9203f998eee8853a805d52746e0425f5378ca5d",
+     "reasoning_tokens": 46036,
+     "candidate_events": []
+    },
+    {
+     "family": "b7e8a72e80ebb0722e5f3f076f2221a442bd547d2eec08f2fdab4f74a74d770e",
+     "question": "math500|math500_test/algebra/1078.json",
+     "status": "AUDITED",
+     "attempt_id": "18bb2335b91995c868e7abc290879c02b0aea9908905f97e79443430a36cefb6",
+     "reasoning_tokens": 4822,
+     "candidate_events": []
+    },
+    {
+     "family": "ad9fa446038bc3f2a3f04f1e89f7b258c551bc7a3835533d6630780081be950e",
+     "question": "amc23|amc23_44",
+     "status": "AUDITED",
+     "attempt_id": "3baaabc0040b37d0fa18dc969bc0700d0d53b4773ebebee92141017837850d54",
+     "reasoning_tokens": 1590,
+     "candidate_events": [
+      {
+       "kind": "answer_math",
+       "recognition_token": 1141,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      }
+     ]
+    },
+    {
+     "family": "8c0e9cb2133f62402ecb53bf4bfed0d54b63e9c67df8846549aec3e9299a0fc6",
+     "question": "olympiad|olympiad_2986",
+     "status": "AUDITED",
+     "attempt_id": "89d59fd4121362c0defd38f05f5e00bf662d89a775add3085a602c44e602a514",
+     "reasoning_tokens": 6264,
+     "candidate_events": []
+    },
+    {
+     "family": "ca905577c9c3e553006ec5efe2d7a36b3d1a962e14112ff826b0ee455d6ef250",
+     "question": "math500|math500_test/precalculus/826.json",
+     "status": "AUDITED",
+     "attempt_id": "df0ab2c3d983bbdf13a6c16ac927ccd1e8d3be4184385692aaa820b5f1dfb918",
+     "reasoning_tokens": 10367,
+     "candidate_events": [
+      {
+       "kind": "answer_math",
+       "recognition_token": 5108,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_math",
+       "recognition_token": 5124,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      }
+     ]
+    },
+    {
+     "family": "1d19ffd264ade6de3f7a1a1a844e3fe1d34969b2646f228b8814034495257b39",
+     "question": "math500|math500_test/intermediate_algebra/1247.json",
+     "status": "AUDITED",
+     "attempt_id": "03f51152ffce63907d61e1dce53ea0c42801d574b34973702047ae08f74ffed0",
+     "reasoning_tokens": 17822,
+     "candidate_events": []
+    },
+    {
+     "family": "863d6a33f5ab93831e3eda619958d2c222cc268e4e7087591bbde6700dedd169",
+     "question": "minerva|minerva_218",
+     "status": "AUDITED",
+     "attempt_id": "1af4e06f6074ff7dcbd11862e71c9720589e81a5c1887b6bb8f322144e04d947",
+     "reasoning_tokens": 19325,
+     "candidate_events": []
+    },
+    {
+     "family": "293f1fc8100fdd6fc8658527154b8f92d7d009760fa1634e00d5dfd54d158fd1",
+     "question": "minerva|minerva_156",
+     "status": "AUDITED",
+     "attempt_id": "56bf1f3264ad28ff2371e32917f63abc74b6abf63c8c344dd3e8bc9794cd7178",
+     "reasoning_tokens": 24683,
+     "candidate_events": []
+    },
+    {
+     "family": "f2b6b681e8360c91aea3114bc2c4957970881544618516282cf032906bcec93a",
+     "question": "math500|math500_test/prealgebra/1907.json",
+     "status": "AUDITED",
+     "attempt_id": "1d22291ee9609e6b8844cae5bcacebe3f161aa8d53d67a727e8874bf42231680",
+     "reasoning_tokens": 1596,
+     "candidate_events": []
+    },
+    {
+     "family": "476dcea3f2204b4c00e1f35ea23c7416f4d9502cfbb710d729adaf1609674374",
+     "question": "math500|math500_test/algebra/1787.json",
+     "status": "AUDITED",
+     "attempt_id": "4d7933b4f027a1659c5b454a85783b6e0539353d17bbce22782a358973b0a53d",
+     "reasoning_tokens": 5793,
+     "candidate_events": [
+      {
+       "kind": "answer_is",
+       "recognition_token": 1391,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_is",
+       "recognition_token": 2993,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "boxed",
+       "recognition_token": 3266,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "boxed",
+       "recognition_token": 4010,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_is",
+       "recognition_token": 5102,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      },
+      {
+       "kind": "boxed",
+       "recognition_token": 5107,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      },
+      {
+       "kind": "boxed",
+       "recognition_token": 5620,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": false,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      }
+     ]
+    },
+    {
+     "family": "f59c27e97c5f8942becd2298f60a4c10903fe2e16aa9ee9f5181768025082ba7",
+     "question": "minerva|minerva_142",
+     "status": "AUDITED",
+     "attempt_id": "3b4eda14d015cf8c392bc420cfccb2aab291c68e6f25f7305782d9cad25a34b6",
+     "reasoning_tokens": 958,
+     "candidate_events": []
+    },
+    {
+     "family": "f90ff1ef1dea4e42a82a4846bebc807c4c1e6b419aa2a08bc1fbbd3d6e2a9115",
+     "question": "olympiad|olympiad_2099",
+     "status": "AUDITED",
+     "attempt_id": "5dd71a4f31a571d6ed64483e8136af2b07ee0668f57406f11e5945f0007f2abf",
+     "reasoning_tokens": 37064,
+     "candidate_events": []
+    },
+    {
+     "family": "aac1de523f024979dc4b47e8e6a021eae3a07298950347d636559a1cc56eecb2",
+     "question": "math500|math500_test/intermediate_algebra/117.json",
+     "status": "AUDITED",
+     "attempt_id": "962e4b8be33d67436072dc34c057844e04c87418d39e55e79a17c927b7a7a5ae",
+     "reasoning_tokens": 17474,
+     "candidate_events": [
+      {
+       "kind": "answer_is",
+       "recognition_token": 17400,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": false,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      }
+     ]
+    },
+    {
+     "family": "da6576675125a2eb3102586f503d9b2a0557fbdd17fae6f3ab63889c9b40bed0",
+     "question": "math500|math500_test/prealgebra/846.json",
+     "status": "AUDITED",
+     "attempt_id": "2e2f8cb66403e88ff0cf1f942a17b2011e411f125e4c9c4261a135e80f3b952d",
+     "reasoning_tokens": 1331,
+     "candidate_events": [
+      {
+       "kind": "boxed",
+       "recognition_token": 672,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      },
+      {
+       "kind": "boxed",
+       "recognition_token": 955,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      },
+      {
+       "kind": "boxed",
+       "recognition_token": 1080,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": false,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      },
+      {
+       "kind": "boxed",
+       "recognition_token": 1188,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": false,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      },
+      {
+       "kind": "boxed",
+       "recognition_token": 1264,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": false,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      }
+     ]
+    },
+    {
+     "family": "6da642a3c262e565e7559eeaff03329e9c98ad23e8a5faa62c088c782bab15c8",
+     "question": "minerva|minerva_122",
+     "status": "AUDITED",
+     "attempt_id": "2737203f3b9b943641419433e138e8b9ca7e9444f98d4e7d69373db91cc67383",
+     "reasoning_tokens": 3292,
+     "candidate_events": []
+    },
+    {
+     "family": "f2fc48bf4ae18e1eb81c3dc60e6f20217ea39b7969b16a0f91b0aa8cd7f39375",
+     "question": "math500|math500_test/counting_and_probability/51.json",
+     "status": "AUDITED",
+     "attempt_id": "29597486d637ed0bcb0dc7628356f51399c97e66df1159f88ed6206c8323a530",
+     "reasoning_tokens": 3014,
+     "candidate_events": []
+    },
+    {
+     "family": "d9f0a51a8931ce71c84a97e9ebc207ee5a0d8f78a3032728e5ae94e82d512320",
+     "question": "olympiad|olympiad_2507",
+     "status": "AUDITED",
+     "attempt_id": "76ed01cd5b4e6b263178c099cef6c015fb481769261392b2e4847e2082241153",
+     "reasoning_tokens": 5209,
+     "candidate_events": [
+      {
+       "kind": "answer_is",
+       "recognition_token": 3588,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_is",
+       "recognition_token": 4893,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      }
+     ]
+    },
+    {
+     "family": "3bca817ff06efa7ce589c437fd93d0817e8600b67c24601a1998956f0e370ab7",
+     "question": "olympiad|olympiad_2611",
+     "status": "AUDITED",
+     "attempt_id": "aac66d3f91dc2312d60d40f40b086b7ed34a5b532842246000d29c58223e3e34",
+     "reasoning_tokens": 29486,
+     "candidate_events": []
+    },
+    {
+     "family": "e12c442dcd0e64fb87f51dc56aa25e519886adf2d271a6259b015579ff920a32",
+     "question": "math500|math500_test/algebra/2430.json",
+     "status": "AUDITED",
+     "attempt_id": "7a5d3548525178a7c0faf70c34aacb65b5dd8f5804c9ad4891b9c7bcfe04dc2e",
+     "reasoning_tokens": 4074,
+     "candidate_events": [
+      {
+       "kind": "answer_is",
+       "recognition_token": 2307,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      }
+     ]
+    },
+    {
+     "family": "3e36840f6387ac06fb46d7e324409868b10834c4975d1ef18ca615af0867dcb3",
+     "question": "math500|math500_test/prealgebra/1113.json",
+     "status": "AUDITED",
+     "attempt_id": "517d3e6d8aa22b2be476ea70e098ccd10fe33892f2f34d2c4c01efa84da786cd",
+     "reasoning_tokens": 5153,
+     "candidate_events": [
+      {
+       "kind": "answer_math",
+       "recognition_token": 1289,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_is",
+       "recognition_token": 2545,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      }
+     ]
+    },
+    {
+     "family": "4b7569168251d62ee57cf8053b77f0c6563e425833a4d4763ad890e4d2e38bd6",
+     "question": "minerva|minerva_182",
+     "status": "AUDITED",
+     "attempt_id": "4ee6d67946b65d4c736ce1559bd33d9e89b57e055fb0b7b45012ab2a2537ceed",
+     "reasoning_tokens": 12723,
+     "candidate_events": []
+    },
+    {
+     "family": "02f6b785f868d738ac88445f6e6972fab1f2d680977973d288584ecadc24f8d3",
+     "question": "math500|math500_test/algebra/694.json",
+     "status": "AUDITED",
+     "attempt_id": "3f76addbab394a14d4f9da4be7540a907b790bd6ef8e700daec7f5ba22fdad53",
+     "reasoning_tokens": 1754,
+     "candidate_events": [
+      {
+       "kind": "boxed",
+       "recognition_token": 1654,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": false,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      }
+     ]
+    },
+    {
+     "family": "0d36fc1aa107ef5a7b3bad5d01b4144fb96f17a05e48d024cdb48c0f09eb3dbc",
+     "question": "math500|math500_test/algebra/2779.json",
+     "status": "AUDITED",
+     "attempt_id": "fc6ead696dc00c271d2f0d33272039124adc0c3e1ddbd78da802bf67cd68323e",
+     "reasoning_tokens": 6309,
+     "candidate_events": []
+    },
+    {
+     "family": "139ff13193804cf5b5a16139f5e7f97669930ef54f05f6d9280528adc06a7f74",
+     "question": "math500|math500_test/precalculus/625.json",
+     "status": "AUDITED",
+     "attempt_id": "93c7c069a5a8cc46b39ac7337fd1eef0b3ffa0b402822998640e0bfe8ea80044",
+     "reasoning_tokens": 3384,
+     "candidate_events": []
+    },
+    {
+     "family": "2a66c785c0c332b46c0c2d1956828e70a49e77296fe8b32fb16d296d6fda7130",
+     "question": "olympiad|olympiad_2793",
+     "status": "AUDITED",
+     "attempt_id": "52eb986190c09f55e25b10cb67bdeb2746dc986222fbcdcf99083d79e688c643",
+     "reasoning_tokens": 43182,
+     "candidate_events": []
+    },
+    {
+     "family": "8c340c0e70805660c414198aba8d3ed8ba2ce145598bf4c9be74d431e931592e",
+     "question": "minerva|minerva_10",
+     "status": "AUDITED",
+     "attempt_id": "dce20dd88c5f644534c23b75217cbba18dfc8ad6e36c2f9820518aa1e21e3954",
+     "reasoning_tokens": 3508,
+     "candidate_events": []
+    },
+    {
+     "family": "92385ab1bb8c98733848146b54e59f0d72a4ace7b9a3941a859c3531e0e4afa8",
+     "question": "olympiad|olympiad_2765",
+     "status": "AUDITED",
+     "attempt_id": "5db581d93b86de3ad42f36814b49538f02b512533417fb4e647b062629f92e34",
+     "reasoning_tokens": 14983,
+     "candidate_events": []
+    },
+    {
+     "family": "f09f7f735bd4d8e9b6eef5009870bc52dfa0a5cc2aefdf3a2ab0b5db95b9fb58",
+     "question": "minerva|minerva_208",
+     "status": "AUDITED",
+     "attempt_id": "082baa20694805ceaae8ae5cd4f49909e7f046eff6fa2c00f66e2de01008a6ff",
+     "reasoning_tokens": 17363,
+     "candidate_events": []
+    },
+    {
+     "family": "82a2015c705a4ff6a07710b375311669b90ea0530c2ba616a170f284f8c2fc65",
+     "question": "olympiad|olympiad_1678",
+     "status": "AUDITED",
+     "attempt_id": "6b934f14b5fdc1f798c4611550d92346bcc854d49173c3553fc8f66bffed5f62",
+     "reasoning_tokens": 28140,
+     "candidate_events": []
+    },
+    {
+     "family": "a6f53194ad809ecb4d1c28177565a6e3596a3490ecc879e52efc0d2a16ec8e09",
+     "question": "minerva|minerva_87",
+     "status": "AUDITED",
+     "attempt_id": "e2369b9fb4aa1c49142af024046c28af231d049360ac3c15deff37417a1feb1f",
+     "reasoning_tokens": 3614,
+     "candidate_events": []
+    },
+    {
+     "family": "5329ec1903a20a3d6a2e38d62429e6a25956b7afee2c775d30a9eb182ac9cb62",
+     "question": "minerva|minerva_212",
+     "status": "AUDITED",
+     "attempt_id": "ef4d504b75d38cdd4e97a8aa9448fc3bef01111f24966af41ba464e1127917b9",
+     "reasoning_tokens": 22883,
+     "candidate_events": [
+      {
+       "kind": "answer_math",
+       "recognition_token": 16217,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_math",
+       "recognition_token": 16243,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      }
+     ]
+    },
+    {
+     "family": "5210288df37aa3efe0d28c28ec662156fb840cdacaac7a163157896c43465252",
+     "question": "olympiad|olympiad_3021",
+     "status": "AUDITED",
+     "attempt_id": "86538091a4ae3bf5c2e94ff69970aa1e03932227ad87e431ced319b1fe17e749",
+     "reasoning_tokens": 17737,
+     "candidate_events": [
+      {
+       "kind": "answer_is",
+       "recognition_token": 10743,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_is",
+       "recognition_token": 11154,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_is",
+       "recognition_token": 12923,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_is",
+       "recognition_token": 15355,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      }
+     ]
+    },
+    {
+     "family": "68adf5f18e444cffc8f058b8de6767a55c487aca16676159895d0c59e559a21e",
+     "question": "olympiad|olympiad_2922",
+     "status": "AUDITED",
+     "attempt_id": "ff7772e08ad4eef45be17914bd3d704a2343f5edecd3337d13b03b72ca397304",
+     "reasoning_tokens": 3322,
+     "candidate_events": [
+      {
+       "kind": "answer_is",
+       "recognition_token": 2596,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      }
+     ]
+    },
+    {
+     "family": "723c8307d524b306aebeefc0ca3f94b933103b0df389ac4ef57e34c6fe6ba30a",
+     "question": "olympiad|olympiad_2902",
+     "status": "AUDITED",
+     "attempt_id": "adbd5020fa330c902a38d4db554d8a864d5e6b2049181bfa9f66f7bc4e040e63",
+     "reasoning_tokens": 13356,
+     "candidate_events": [
+      {
+       "kind": "answer_is",
+       "recognition_token": 5052,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_is",
+       "recognition_token": 8385,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_math",
+       "recognition_token": 8460,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      }
+     ]
+    },
+    {
+     "family": "6dab3ec8e79764b6ae10c0e7f1f57f7db5ee7748d0b76c592c7f6b48ab88a5f5",
+     "question": "olympiad|olympiad_2845",
+     "status": "AUDITED",
+     "attempt_id": "adb18d9f7560a450ac0f5d8982c11886728c139b21123ae4d6420410459f09ee",
+     "reasoning_tokens": 8936,
+     "candidate_events": []
+    },
+    {
+     "family": "0a629797b37b0832cb1b3fa36246fa29d5a5fdbd368303cbb7a16f8d2a909e8b",
+     "question": "olympiad|olympiad_1873",
+     "status": "AUDITED",
+     "attempt_id": "f7d223030200d029df028282fc4e73e2451691ce5aa48b42fe7c8e52ece7dc06",
+     "reasoning_tokens": 36475,
+     "candidate_events": []
+    },
+    {
+     "family": "f019a1a7dc1da52106439a299e648136b7dc0bb6af718304a729e8d28a4686e5",
+     "question": "math500|math500_test/intermediate_algebra/1992.json",
+     "status": "AUDITED",
+     "attempt_id": "fc0620b85136fc2eb706eff7f7b4493ce75643db2330a4b9b00cc66641ff7edf",
+     "reasoning_tokens": 3542,
+     "candidate_events": []
+    },
+    {
+     "family": "519a3efdf6978552dd870f7326ac7612fbd1deff65c33546f750a2ba9d20f17f",
+     "question": "math500|math500_test/geometry/456.json",
+     "status": "AUDITED",
+     "attempt_id": "64f16b094946b35385f53551045e2b8b2e6ac09889625b4e85f7b0f5df54d6bc",
+     "reasoning_tokens": 1564,
+     "candidate_events": [
+      {
+       "kind": "answer_is",
+       "recognition_token": 1563,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": false,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      }
+     ]
+    },
+    {
+     "family": "1b2d072ed8789a3f4fa408417c5d897f4e04e87c451ef48760af3954a6168fe3",
+     "question": "olympiad|olympiad_3022",
+     "status": "AUDITED",
+     "attempt_id": "eb9eacbba0a1112d84466a9bc1e5ece4b73f99c623da735b53e8bd9ec979b4ce",
+     "reasoning_tokens": 6217,
+     "candidate_events": [
+      {
+       "kind": "answer_is",
+       "recognition_token": 2895,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_is",
+       "recognition_token": 5807,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      }
+     ]
+    },
+    {
+     "family": "37304433cbd07bd5f0c15aa62a130c89d99d82f032b56365b730a42e5e2355c9",
+     "question": "olympiad|olympiad_2710",
+     "status": "AUDITED",
+     "attempt_id": "775bec16d6b13c3283359822fa766dbb03381cd0f24d01979f8b6e5705d57fc1",
+     "reasoning_tokens": 14501,
+     "candidate_events": []
+    },
+    {
+     "family": "c9d920f67d3b136983d191f299f94396c92bd6ecfdb7e43f9283a839f166c7a8",
+     "question": "olympiad|olympiad_2787",
+     "status": "AUDITED",
+     "attempt_id": "3c139d349a9faec951f67f35af6471d420d77d71f9d833a1e0234f5bd5e8a08f",
+     "reasoning_tokens": 2958,
+     "candidate_events": [
+      {
+       "kind": "answer_is",
+       "recognition_token": 2566,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      }
+     ]
+    },
+    {
+     "family": "93834b62716f149310fbb8c07f25c671747421158abd265df2c7a4e1fa9e6e78",
+     "question": "olympiad|olympiad_2482",
+     "status": "AUDITED",
+     "attempt_id": "3dc70a09c8952b7fd44f23496e878113500c884786ca62a6c5c9653b14e1277f",
+     "reasoning_tokens": 3790,
+     "candidate_events": [
+      {
+       "kind": "boxed",
+       "recognition_token": 3710,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": false,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      }
+     ]
+    },
+    {
+     "family": "ebeee91a23bf643c5f2098d59507e4ba5f23ed9a778aeb7764ec89ab04001511",
+     "question": "minerva|minerva_181",
+     "status": "AUDITED",
+     "attempt_id": "568b2dd0c78bf90f0b973800b9ac0b957bd9542849261d0e6f184fd709ef9c9a",
+     "reasoning_tokens": 3480,
+     "candidate_events": []
+    },
+    {
+     "family": "d869cbda16168b035f1e511dae4276b5d9c03be1dd635d8b9dfe4d93172f01a5",
+     "question": "olympiad|olympiad_2726",
+     "status": "AUDITED",
+     "attempt_id": "f515559c06cb9860f9533172227e8e1a49a0b99e82f81534efac1f5c7817a618",
+     "reasoning_tokens": 14807,
+     "candidate_events": [
+      {
+       "kind": "answer_is",
+       "recognition_token": 4815,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_is",
+       "recognition_token": 10620,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_is",
+       "recognition_token": 10646,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_is",
+       "recognition_token": 13890,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      }
+     ]
+    },
+    {
+     "family": "baa2306ff56de663d6d5a244bf4b6f4fc4f89070e774f9898dd601fb742f8be0",
+     "question": "olympiad|olympiad_2275",
+     "status": "AUDITED",
+     "attempt_id": "2c27a0049fbd1c7b744a2c5e2e79c7af4de3e41bfecde09e6ad5a7448a4748ee",
+     "reasoning_tokens": 1309,
+     "candidate_events": [
+      {
+       "kind": "answer_is",
+       "recognition_token": 900,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      },
+      {
+       "kind": "boxed",
+       "recognition_token": 1172,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": false,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      }
+     ]
+    },
+    {
+     "family": "20ae881c88575e3954ad8aca1b66792b34f718a9b70c89a852b91e52ecdc8bd2",
+     "question": "olympiad|olympiad_2738",
+     "status": "AUDITED",
+     "attempt_id": "6fd21661dc9a00ce290b0b97c7c2fdfa9b10c226627eef1be3b6dfb336b78728",
+     "reasoning_tokens": 18086,
+     "candidate_events": [
+      {
+       "kind": "answer_is",
+       "recognition_token": 2655,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      }
+     ]
+    },
+    {
+     "family": "ff14acaaf8deeaed7a75826e9a5a8a48649b7a59396fd972b1e68acc33c1d456",
+     "question": "olympiad|olympiad_3044",
+     "status": "AUDITED",
+     "attempt_id": "6ba8ae960064c97f88c96c23ce203a84840856deae4ca43e80cb0a7b8d3f1f7f",
+     "reasoning_tokens": 2903,
+     "candidate_events": [
+      {
+       "kind": "answer_is",
+       "recognition_token": 1507,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      }
+     ]
+    },
+    {
+     "family": "e85fdbe55e83399dbba718c5765f05d14672bec6ee821f3ee4d14f573869c075",
+     "question": "olympiad|olympiad_2325",
+     "status": "AUDITED",
+     "attempt_id": "26c6c8bed7a0275511e05ae95b609e1219660b8c872a39e434c1dd2f4d732eaa",
+     "reasoning_tokens": 2036,
+     "candidate_events": [
+      {
+       "kind": "boxed",
+       "recognition_token": 1658,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      },
+      {
+       "kind": "boxed",
+       "recognition_token": 1893,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": false,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      }
+     ]
+    },
+    {
+     "family": "0c10504b81dba5b6c5aa617722ae0d6e5a8fe88d2b86580be3096ba3971a08d3",
+     "question": "minerva|minerva_240",
+     "status": "AUDITED",
+     "attempt_id": "e0a3d05910fb43d7f82771679c7280877b3205e5c0cc3888cb0f8e3668d06f92",
+     "reasoning_tokens": 15613,
+     "candidate_events": []
+    },
+    {
+     "family": "eaadca3ffe7a74cdfaeb14dea8aafa331bb2a3b953d1f6073ad99c60351792f3",
+     "question": "olympiad|olympiad_3006",
+     "status": "AUDITED",
+     "attempt_id": "2125c6789c6be2b5285418b1bcc3408ef6b9145f310c44abe1a41219f6af65ed",
+     "reasoning_tokens": 37963,
+     "candidate_events": []
+    },
+    {
+     "family": "7de3357f28b8cdcb7895f6a78e193b8f5ea0f94c6649b6322cd7ddfc48ff40a4",
+     "question": "amc23|amc23_47",
+     "status": "AUDITED",
+     "attempt_id": "ab3ad0875bc73af59481cd52627231ae53d346c280c05be652643bc6e99c1760",
+     "reasoning_tokens": 19269,
+     "candidate_events": []
+    },
+    {
+     "family": "58f4134908532d6cadfbab5f5bf20684a78ee61d46d6f9a528275edcd8e659f6",
+     "question": "olympiad|olympiad_2084",
+     "status": "AUDITED",
+     "attempt_id": "83db2457fbe9f61b0b484c4000d197a40e3bd4bfb478e989903ae6e0fb4d1121",
+     "reasoning_tokens": 30191,
+     "candidate_events": []
+    },
+    {
+     "family": "9eb7781d6348824404e1b2ae1a6856d724a6fa518e207a7018831eba047636e1",
+     "question": "olympiad|olympiad_2924",
+     "status": "AUDITED",
+     "attempt_id": "15ff2ce1daff024d3c1bd33e422c94431cd5739baae356014ef2aefe5495345d",
+     "reasoning_tokens": 14814,
+     "candidate_events": []
+    },
+    {
+     "family": "ead07286bfe177ff4eb1cec70c5e667eafa10bb60bb059e178629e805680db03",
+     "question": "math500|math500_test/precalculus/580.json",
+     "status": "AUDITED",
+     "attempt_id": "67b9ce5b76bee01b1e58f47458c498a12b54665605ce1d446af5c202450ef243",
+     "reasoning_tokens": 5255,
+     "candidate_events": []
+    },
+    {
+     "family": "cd634e1eb29f9696a8cec5fea1c1279dc88fba679e733bdd10fd1eec308d874e",
+     "question": "math500|math500_test/algebra/2159.json",
+     "status": "AUDITED",
+     "attempt_id": "17d4e8d8b83306947d8c7f682124b976031dbb0cb451946c4190ea513db3111d",
+     "reasoning_tokens": 4433,
+     "candidate_events": []
+    },
+    {
+     "family": "4ec37a9bf13f218b67e525ce2e53b4efd43dafa91005ee4918ea5f0a7eca8f3e",
+     "question": "math500|math500_test/intermediate_algebra/1123.json",
+     "status": "AUDITED",
+     "attempt_id": "3b41443decd679aafd2255c1cf452ec3c7895878d3a86c83a7f05c6a51a48677",
+     "reasoning_tokens": 7134,
+     "candidate_events": []
+    },
+    {
+     "family": "033677ab37dc608db0de69e4bea24dd2b33e11678c91c83d65128c47da20b130",
+     "question": "olympiad|olympiad_2660",
+     "status": "AUDITED",
+     "attempt_id": "5c4512a670a60bb11c4de9c8b6417f6051d68497971cccbd3cab4f0ec2ee6faa",
+     "reasoning_tokens": 9643,
+     "candidate_events": []
+    },
+    {
+     "family": "93a5f57a642f8129090ef3f028412681faad3d2b3f7c165017b622b1c13dcb85",
+     "question": "math500|math500_test/precalculus/398.json",
+     "status": "AUDITED",
+     "attempt_id": "ba4a9157cc0d27385e130a17f900fb59ab84e80003c46ee1762dd08209dbef9d",
+     "reasoning_tokens": 11902,
+     "candidate_events": []
+    },
+    {
+     "family": "9da20393d6fafe31d14af93f4d9916dce63a9a2253b75a29731ab737cd389f3a",
+     "question": "olympiad|olympiad_2472",
+     "status": "AUDITED",
+     "attempt_id": "14ba947be63f57cfddd74235c7a16a47a55763fdc733635fe7a624c527a1372f",
+     "reasoning_tokens": 27200,
+     "candidate_events": []
+    },
+    {
+     "family": "faf6b4fb64c1ff5778a748a600a597717cd675ac8b0cf82743584c4abd7c0978",
+     "question": "olympiad|olympiad_2904",
+     "status": "AUDITED",
+     "attempt_id": "3a0fd2c896bc483e55dcd5a057f5376fd2e26cc80d619e953a49ed8490eb61fd",
+     "reasoning_tokens": 1370,
+     "candidate_events": []
+    },
+    {
+     "family": "b5a50deaf1d3bcc5760258ed4b0962746088e863f9d4cfb0055da6239fbd043b",
+     "question": "minerva|minerva_237",
+     "status": "AUDITED",
+     "attempt_id": "b84a5aa88e9a07caff0553fc1a3bc49e6189a2c035cad13694f2df8da2d694d2",
+     "reasoning_tokens": 3169,
+     "candidate_events": [
+      {
+       "kind": "boxed",
+       "recognition_token": 1174,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "boxed",
+       "recognition_token": 1390,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "boxed",
+       "recognition_token": 1620,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "boxed",
+       "recognition_token": 1765,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "boxed",
+       "recognition_token": 1986,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "boxed",
+       "recognition_token": 2627,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      },
+      {
+       "kind": "boxed",
+       "recognition_token": 3099,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": false,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      }
+     ]
+    },
+    {
+     "family": "680c23f1c39149e7f6ce30d7a2de26ada3d64d9702801f7866a5c129d9081c5f",
+     "question": "olympiad|olympiad_2706",
+     "status": "AUDITED",
+     "attempt_id": "5a4556094334d51da8adbeb96ddffbb4d141721869f0e3248dbad216cf531491",
+     "reasoning_tokens": 9063,
+     "candidate_events": []
+    },
+    {
+     "family": "1b4e14eb6d84d788673e25b06f1a0fa5fb5110f6c6fd6bb4156c619976bd0b69",
+     "question": "olympiad|olympiad_2501",
+     "status": "AUDITED",
+     "attempt_id": "b667f77cde2caa9fb50a7cbc6b21629e34913d24efdc00c7722f3d004acefa09",
+     "reasoning_tokens": 19969,
+     "candidate_events": []
+    },
+    {
+     "family": "ac81df35ee35f8f23aae2c9b7ab24e3c0cdd3f1a6ad0f4810537eb3badb4e963",
+     "question": "math500|math500_test/prealgebra/631.json",
+     "status": "AUDITED",
+     "attempt_id": "d8cc4b4dee0d2fefb55a02e6e9852415a6ae456a8b69f039af919effebde07cc",
+     "reasoning_tokens": 23228,
+     "candidate_events": []
+    },
+    {
+     "family": "74c871fc723b4d06bfb3585736c72fb0253dee22023236a4519b8ef9aa3d4ec5",
+     "question": "aime25|aime25_29",
+     "status": "AUDITED",
+     "attempt_id": "abef02248cfe140c47b6144076bafd43cc92473a5c0eba29dbea02b00b4bb691",
+     "reasoning_tokens": 74991,
+     "candidate_events": [
+      {
+       "kind": "answer_is",
+       "recognition_token": 61656,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      }
+     ]
+    },
+    {
+     "family": "4672d62a469b8e12dcb9ed04bdfed126109bf6774b780c0a4112ae773f2b07eb",
+     "question": "olympiad|olympiad_2969",
+     "status": "AUDITED",
+     "attempt_id": "418a6f85af0710ae40747905db6067a973e7e13a284174e111ff1cfaf7732cf6",
+     "reasoning_tokens": 13265,
+     "candidate_events": []
+    },
+    {
+     "family": "17e16f440cca7aae3351c1b5cbaa640d04c9e5bff0ca9e367ae4f2b7de4ca672",
+     "question": "olympiad|olympiad_2022",
+     "status": "AUDITED",
+     "attempt_id": "fad85345d568e851d6ff8f9eeb2e51b79489d8e7b221b5e72474bebdf89c1ee8",
+     "reasoning_tokens": 39922,
+     "candidate_events": []
+    },
+    {
+     "family": "37abf1e06bf9d557ec84ed668da3373151332e7d3e4ea104ce0fbf4c03cf96f7",
+     "question": "math500|math500_test/precalculus/1146.json",
+     "status": "AUDITED",
+     "attempt_id": "952df3ebe4a3d2467d95bf9ba70ddc33686fe22fb4517c03e251056686d90b8b",
+     "reasoning_tokens": 10802,
+     "candidate_events": []
+    },
+    {
+     "family": "696619bf8bcc6f8e9e8dff468f52f7d444dd976f6883fd2b1909dd90cb9e802d",
+     "question": "olympiad|olympiad_2082",
+     "status": "AUDITED",
+     "attempt_id": "ce870d9742b533223c4face48a0df280665c99472e7aedf8000c19d00b9a12d7",
+     "reasoning_tokens": 54073,
+     "candidate_events": [
+      {
+       "kind": "answer_is",
+       "recognition_token": 42312,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      },
+      {
+       "kind": "answer_is",
+       "recognition_token": 47758,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": true
+      }
+     ]
+    },
+    {
+     "family": "6a43ad2dbf37dd48dbd92e20415fa9087c11fa4a655f2b6f267dac5819739e25",
+     "question": "math500|math500_test/number_theory/1032.json",
+     "status": "AUDITED",
+     "attempt_id": "3072a274945f7bb79df6c55092331f4f576c7dcf5d9c180c440510aec6e07fd9",
+     "reasoning_tokens": 2924,
+     "candidate_events": [
+      {
+       "kind": "answer_is",
+       "recognition_token": 1926,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": true,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      },
+      {
+       "kind": "boxed",
+       "recognition_token": 2782,
+       "before_closure": true,
+       "at_least_256_native_reasoning_tokens_remain": false,
+       "at_least_1024_native_reasoning_tokens_remain": false
+      }
+     ]
+    },
+    {
+     "family": "865d6da756ccaad34c66cae6d3413fe3c993434bd4417f0e5fae8acd0e35f521",
+     "question": "minerva|minerva_54",
+     "status": "AUDITED",
+     "attempt_id": "a7cd02f3fb1ba355734f9633385b16a4c05cb765a90c6e2e81cc411da93387c6",
+     "reasoning_tokens": 7355,
+     "candidate_events": []
+    },
+    {
+     "family": "210d79679d8cb47cc46dba40c4fc3f5e1a2aeb17270032525ee5ad0c8880464a",
+     "question": "olympiad|olympiad_2300",
+     "status": "AUDITED",
+     "attempt_id": "b5c7673723e99794badf9810130550e56d9f04dd16a681ad12c7837534ff8eb3",
+     "reasoning_tokens": 14776,
+     "candidate_events": []
+    }
+   ]
+  }
+ },
+ "interpretation": "Offline arithmetic-candidate coverage only. Native future-length counts describe opportunity, not an online eligibility rule or semantic verification label."
+}

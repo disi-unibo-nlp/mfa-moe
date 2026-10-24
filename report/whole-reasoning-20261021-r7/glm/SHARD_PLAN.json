@@ -1,0 +1,1 @@
+{"approved_maximum_minutes":240,"committed_gpu_hours":399.5338888888889,"gpu_ceiling":700.0,"minutes":240,"model":"glm","other_future_maximum_gpu_hours":32.0,"reason":"full allocation maxima plus all charged predecessor costs stay within the GPU ceiling","sha256":"de418404e83896721b3149bb9957309f668a7f7d170646ac65c0639bc21e2c55","shards":24}

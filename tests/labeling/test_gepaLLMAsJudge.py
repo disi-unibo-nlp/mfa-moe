@@ -1,0 +1,354 @@
+import json
+from argparse import Namespace
+from pathlib import Path
+
+import pytest
+
+from labeling.gepa.data import (
+    EpisodeDocument,
+    EpisodeUnit,
+    annotation_audit,
+    documents_to_dspy_examples,
+    load_documents,
+    make_nested_group_folds,
+    split_documents,
+)
+from labeling.gepa.metrics import (
+    LabelParseError,
+    compute_classification_metrics,
+    compute_sentence_agreement,
+    parse_sentence_label,
+)
+from labeling.gepa.prompts import (
+    SEED_INSTRUCTIONS,
+    build_few_shot_instructions,
+    select_few_shot_sentences,
+)
+from labeling.gepa.run import (
+    _append_stats,
+    _call_lm,
+    _save_program,
+    _seed_configuration,
+    create_metric,
+    parse_llm_judge_response,
+)
+from store import CLASSES
+
+
+def test_parse_sentence_label_is_case_tolerant_but_strict() -> None:
+    assert parse_sentence_label("read") == "Read"
+    assert parse_sentence_label('{"label": "VERIFY"}') == "Verify"
+    assert parse_sentence_label("Label: Monitor") == "Monitor"
+
+    with pytest.raises(LabelParseError, match="invalid label"):
+        parse_sentence_label("The answer is Read because it repeats the problem.")
+
+
+def test_parse_llm_judge_response_requires_all_dimensions() -> None:
+    response = """REASONING: The candidate is adjacent to the gold label, but it performs
+the derivation rather than checking it. Analyze is therefore the closest alternative.
+GOLD_AGREEMENT: 2
+FUNCTIONAL_FIT: 3
+CONTEXTUAL_COHERENCE: 4
+BOUNDARY_PRECISION: 2"""
+    parsed = parse_llm_judge_response(response)
+    assert parsed == {
+        "reasoning": (
+            "The candidate is adjacent to the gold label, but it performs\n"
+            "the derivation rather than checking it. Analyze is therefore the closest "
+            "alternative."
+        ),
+        "gold_agreement": 2,
+        "functional_fit": 3,
+        "contextual_coherence": 4,
+        "boundary_precision": 2,
+    }
+
+    with pytest.raises(ValueError, match="BOUNDARY_PRECISION"):
+        parse_llm_judge_response(response.rsplit("\n", 1)[0])
+
+
+def test_call_lm_extracts_text_from_qwen_mapping_response() -> None:
+    judge_text = """REASONING: The candidate exactly matches the gold label.
+GOLD_AGREEMENT: 5
+FUNCTIONAL_FIT: 5
+CONTEXTUAL_COHERENCE: 5
+BOUNDARY_PRECISION: 5"""
+
+    class FakeLM:
+        def __call__(self, prompt: str) -> list[dict[str, str]]:
+            assert prompt == "Evaluate this."
+            return [{"text": judge_text, "reasoning_content": "Internal reasoning."}]
+
+    response = _call_lm(FakeLM(), "Evaluate this.")
+
+    assert response == judge_text
+    assert parse_llm_judge_response(response)["gold_agreement"] == 5
+
+
+def test_llm_judge_metric_returns_weighted_score_and_feedback(tmp_path: Path) -> None:
+    class FakeLM:
+        def __init__(self) -> None:
+            self.prompt = ""
+
+        def __call__(self, prompt: str) -> list[str]:
+            self.prompt = prompt
+            return [
+                """REASONING: The unit recomputes an earlier result, so Verify is the
+decisive label rather than Analyze.
+GOLD_AGREEMENT: 5
+FUNCTIONAL_FIT: 4
+CONTEXTUAL_COHERENCE: 3
+BOUNDARY_PRECISION: 4"""
+            ]
+
+    class Example:
+        problem_statement = "Find x."
+        previous_sentence = "We obtained x = 2."
+        sentence = "Substituting 2 confirms the equation."
+        next_sentence = "<END OF RESPONSE>"
+        gold_label = "Verify"
+        class_weight = 1.0
+
+    fake_lm = FakeLM()
+    audit_path = tmp_path / "judge_feedback.jsonl"
+    metric = create_metric(
+        reward_mode="llm-judge",
+        evaluation_lm=fake_lm,
+        judge_audit_path=audit_path,
+    )
+    result = metric(Example(), "Verify")
+
+    expected = 0.40 * 1.0 + 0.25 * 0.75 + 0.15 * 0.50 + 0.20 * 0.75
+    assert result.score == pytest.approx(expected)
+    assert result.gold_agreement == 5
+    assert "GOLD_AGREEMENT=5/5" in result.feedback
+    assert "CANDIDATE LABEL: Verify" in fake_lm.prompt
+    assert "GOLD LABEL: Verify" in fake_lm.prompt
+    audit_record = json.loads(audit_path.read_text(encoding="utf-8"))
+    assert audit_record["candidate_label"] == "Verify"
+    assert audit_record["gold_agreement"] == 5
+    assert audit_record["score"] == pytest.approx(expected)
+
+
+def test_llm_judge_metric_rejects_invalid_classifier_output_without_calling_judge() -> None:
+    class FailingLM:
+        def __call__(self, prompt: str) -> str:
+            raise AssertionError(f"judge must not be called: {prompt}")
+
+    class Example:
+        gold_label = "Read"
+        class_weight = 1.0
+
+    metric = create_metric(reward_mode="llm-judge", evaluation_lm=FailingLM())
+    result = metric(Example(), "This could be Read or Analyze.")
+    assert result.score == 0.0
+    assert "OUTPUT CONTRACT ERROR" in result.feedback
+
+
+def test_exact_sentence_agreement_scores_one_for_constant_sequences() -> None:
+    agreement = compute_sentence_agreement(["Read", "Read"], ["Read", "Read"])
+    assert agreement.cohen_kappa == 1.0
+    assert agreement.kendall_tau_b == 1.0
+    assert agreement.accuracy == 1.0
+    assert agreement.score == 1.0
+
+
+def test_agreement_rescales_instead_of_clipping_negative_coefficients() -> None:
+    agreement = compute_sentence_agreement(
+        ["Read", "Analyze", "Plan", "Implement"],
+        ["Implement", "Plan", "Analyze", "Read"],
+    )
+    assert agreement.kendall_tau_b < 0.0
+    assert 0.0 <= agreement.score < 0.5
+
+
+def test_load_split_and_flatten_without_cross_document_leakage(tmp_path: Path) -> None:
+    labels_dir = tmp_path / "responses_labeled"
+    labels_dir.mkdir()
+    for index in range(4):
+        question_id = f"q{index}"
+        payload = {
+            "Question ID": question_id,
+            "data": [
+                {"text": "We are given x.", "gt-class-1": "General", "gt-class-2": "Read"},
+                {
+                    "text": "Thus x=1.",
+                    "gt-class-1": "General",
+                    "gt-class-2": "Implement",
+                },
+            ],
+        }
+        (labels_dir / f"{index + 1}.json").write_text(json.dumps(payload), encoding="utf-8")
+    (tmp_path / "SAT.json").write_text(
+        json.dumps(
+            [
+                {
+                    "Question ID": f"q{index}",
+                    "Item Stem": f"Given value {index}.",
+                    "Question": "What is x?",
+                    "Choice A": "1",
+                    "Choice B": "2",
+                    "Correct Answer": "B",
+                    "Rationale": "This must never be model-visible.",
+                }
+                for index in range(4)
+            ]
+        ),
+        encoding="utf-8",
+    )
+    documents = load_documents(tmp_path)
+    train, val, test = split_documents(documents, train_size=2, val_size=1, seed=7)
+    split_ids = [{document.question_id for document in group} for group in (train, val, test)]
+
+    class FakeExample:
+        def __init__(self, **kwargs: object) -> None:
+            self.__dict__.update(kwargs)
+            self.input_fields: tuple[str, ...] = ()
+
+        def with_inputs(self, *fields: str) -> "FakeExample":
+            self.input_fields = fields
+            return self
+
+    class FakeDSPy:
+        Example = FakeExample
+
+    examples = documents_to_dspy_examples(train, FakeDSPy)
+    assert len(examples) == 4
+    assert all(
+        example.input_fields
+        == ("problem_statement", "previous_sentence", "sentence", "next_sentence")
+        for example in examples
+    )
+    assert all("What is x?" in example.problem_statement for example in examples)
+    assert all("Rationale" not in example.problem_statement for example in examples)
+    assert all("This must never" not in example.problem_statement for example in examples)
+    assert examples[0].previous_sentence == "<START OF RESPONSE>"
+    assert examples[0].next_sentence == "Thus x=1."
+    assert examples[1].next_sentence == "<END OF RESPONSE>"
+    for label in ("Read", "Implement"):
+        label_examples = [example for example in examples if example.gold_label == label]
+        assert sum(example.class_weight for example in label_examples) == pytest.approx(
+            len(examples) / 2
+        )
+    assert not (split_ids[0] & split_ids[1])
+    assert not (split_ids[0] & split_ids[2])
+    assert not (split_ids[1] & split_ids[2])
+
+
+def test_few_shot_prompt_covers_all_sentence_labels() -> None:
+    examples = select_few_shot_sentences(count=21)
+    prompt = build_few_shot_instructions(examples)
+
+    assert {example.label for example in examples} == set(CLASSES)
+    assert prompt.startswith(SEED_INSTRUCTIONS)
+    assert prompt.count("Correct label:") == 21
+    assert all(
+        sum(example.label == label for example in examples) == 3 for label in CLASSES
+    )
+    assert "Previous unit:" in prompt
+    assert "Next unit:" in prompt
+
+
+def test_external_seed_prompt_is_loaded_verbatim(tmp_path: Path) -> None:
+    seed_path = tmp_path / "optimized_prompt.txt"
+    seed_path.write_text("  Previously optimized instructions.\n", encoding="utf-8")
+    args = Namespace(seed_prompt_file=seed_path)
+
+    examples, prompt = _seed_configuration(args)
+
+    assert examples == ()
+    assert prompt == "Previously optimized instructions."
+
+
+def test_external_seed_prompt_must_not_be_empty(tmp_path: Path) -> None:
+    seed_path = tmp_path / "empty_prompt.txt"
+    seed_path.write_text("  \n", encoding="utf-8")
+    args = Namespace(seed_prompt_file=seed_path)
+
+    with pytest.raises(ValueError, match="seed prompt file is empty"):
+        _seed_configuration(args)
+
+
+def test_strict_classification_metrics_include_invalid_predictions() -> None:
+    report = compute_classification_metrics(
+        ["Read", "Read", "Analyze", "Analyze"],
+        ["Read", None, "Analyze", "Read"],
+    )
+    assert report["accuracy"] == 0.5
+    assert report["balanced_accuracy"] == pytest.approx(0.5)
+    assert report["per_class"]["Read"]["recall"] == 0.5
+    assert report["per_class"]["Analyze"]["precision"] == 1.0
+
+
+def test_nested_group_folds_never_expose_locked_test() -> None:
+    documents = [
+        EpisodeDocument(
+            question_id=f"q{index}",
+            units=(EpisodeUnit("Sentence.", "Read"),),
+        )
+        for index in range(12)
+    ]
+    folds, locked = make_nested_group_folds(
+        documents,
+        folds=3,
+        locked_test_documents=3,
+        inner_val_documents=2,
+        seed=42,
+    )
+    locked_ids = {document.question_id for document in locked}
+    outer_ids: list[str] = []
+    for train, inner_val, outer_test in folds:
+        groups = [
+            {document.question_id for document in group} for group in (train, inner_val, outer_test)
+        ]
+        assert not (groups[0] & groups[1])
+        assert not (groups[0] & groups[2])
+        assert not (groups[1] & groups[2])
+        assert not (locked_ids & set.union(*groups))
+        outer_ids.extend(document.question_id for document in outer_test)
+    assert len(outer_ids) == len(set(outer_ids)) == 9
+
+
+def test_annotation_audit_flags_compound_structural_units() -> None:
+    documents = [
+        EpisodeDocument(
+            question_id="q1",
+            problem_statement="What is 2 + 3?",
+            units=(
+                EpisodeUnit(
+                    "**Final Answer**\n\\boxed{B}</think>",
+                    "Monitor",
+                    "General",
+                ),
+            ),
+        )
+    ]
+    report = annotation_audit(documents)
+    assert report["documents_missing_problem_context"] == 0
+    assert report["flagged_units"] == 1
+    flags = report["items"][0]["flags"]
+    assert "structural_or_control_marker" in flags
+    assert "mixed_structural_and_substantive_content" in flags
+
+
+def test_stats_csv_gets_new_columns_without_losing_old_rows(tmp_path: Path) -> None:
+    path = tmp_path / "stats.csv"
+    _append_stats(path, {"timestamp": "t1", "model": "m"})
+    _append_stats(path, {"timestamp": "t2", "model": "m", "test_kappa": 0.5})
+    _append_stats(path, {"timestamp": "t3", "model": "m", "test_kappa": 0.6})
+    assert path.read_text(encoding="utf-8").splitlines() == [
+        "timestamp,model,test_kappa",
+        "t1,m,",
+        "t2,m,0.5",
+        "t3,m,0.6",
+    ]
+
+
+def test_a_program_that_cannot_be_saved_only_warns(tmp_path: Path, capsys) -> None:
+    class Unsavable:
+        def save(self, path: Path) -> None:
+            raise RuntimeError("no serializer")
+
+    _save_program(Unsavable(), tmp_path / "program.json")
+    assert "could not serialize program.json" in capsys.readouterr().out

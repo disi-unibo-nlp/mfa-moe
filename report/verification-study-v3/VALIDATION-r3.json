@@ -1,0 +1,27 @@
+{
+  "campaign_sha256": "5012688f04d24db00879118588236c6f1b94d8c636e05a773b7d223697b6bf83",
+  "contract_suite": {
+    "elapsed_seconds": 278.98,
+    "passed": 35,
+    "tests": 35
+  },
+  "full_suite_rerun_after_position_repair": false,
+  "post_repair_position_regressions": {
+    "elapsed_seconds": 0.001,
+    "passed": 5,
+    "scope": "two new multi-axis cases plus original prediction/closure/prefix isolation cases",
+    "tests": 5
+  },
+  "post_suite_serial_guard": {
+    "passed": 1,
+    "tests": 1
+  },
+  "reviewers": [
+    "DeepSeek V4.1 Flash / max",
+    "GPT-6.1 Sol / xhigh"
+  ],
+  "schema": "verification-implementation-validation-v3",
+  "scientific_gpu_fidelity": "REQUIRES_ACTUAL_SLURM_QUALIFICATION",
+  "sha256": "e9d6de1ace85a90081b569eaee42fa99faa6a6ede0c3a3702c96d51ad8ae0a04",
+  "shell_syntax": "PASS"
+}

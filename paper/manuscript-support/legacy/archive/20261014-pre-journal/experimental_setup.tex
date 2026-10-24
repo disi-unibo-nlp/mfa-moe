@@ -1,0 +1,141 @@
+\section{Experimental Setup}
+
+\paragraph{Historical experimental scope.}
+The generative judge assigns Schoenfeld episode labels. Boundary probes test
+prospective label decodability in Qwen3.5-35B-A3B, GPT-OSS-20B, and
+Gemma-4-26B-A4B. Correlation analysis relates each model's routing summaries
+to correctness and labelled reasoning episodes. Identity and margin guiding
+evaluate frozen policies under their original model-specific evaluation
+contracts. The current seven-model verification design is specified
+separately in Section~\ref{sec:verification-study}.
+
+\paragraph{GEPA judge design.}
+The workflow uses GEPA prompt optimization~\cite{agrawal2026gepa}
+and the annotated DeepSeek-R1 SAT responses released by
+Li et al.~\cite{li2025schoenfeld}: 3,125 units in 38 responses.  Complete responses are assigned to partitions before their
+units are flattened, preventing neighboring units from crossing splits.  A
+local \texttt{llama.cpp} server supplies Qwen predictions.  Each request
+contains the SAT problem and the previous, current, and next response units.
+The original context-aware seed instruction contains 21 audited synthetic
+contrastive demonstrations.  The Qwen3.8 alignment instead imports the
+40-example prompt selected by the earlier final fit as its external seed, so
+it does not dynamically sample new demonstrations.  The implementation
+supports inverse-frequency weighted exact match and an informative same-model
+LLM-as-a-judge reward.  Prompt-selection rules are evaluated with nested
+response-grouped cross-validation; the final-fit runs use a response-grouped
+26/6/6 train/validation/test split.
+
+\paragraph{Schoenfeld boundary-probe design.}
+The probe workflow excludes the 38 synthetic \texttt{</think>} closing units,
+which are all labelled Monitor, leaving the paper-matched 3,087 units. Each model
+receives each SAT instruction as the user message and the released response as
+a teacher-forced assistant continuation.  For a target unit, the feature is
+the hidden state immediately before its first token, so the probe sees the
+problem and preceding response but cannot read the target sentence.  Hidden-state index 0 is the embedding output. Qwen, GPT-OSS, and Gemma
+provide 41, 25, and 31 hidden-state indices, respectively. An intermediate
+index is the input to the equally numbered decoder block; the final output
+has no corresponding router.
+
+At each index, seven separate target-versus-rest logistic regressions use raw
+activations (2,048 dimensions for Qwen, 2,880 for GPT-OSS, and 2,816 for Gemma), balanced class weights, L2 regularization with
+$C=1$, and no standardization or PCA.  The layerwise binary fitting procedure and target-stratified 80/20 split
+follow Sun et al.~\cite{sun2026trajectories}, adapted here from step-position
+labels to Schoenfeld episodes, with seed 42. This protocol choice limits
+generalization assessment: all 38 response IDs occur
+in both partitions.  The reported layer for each target maximizes accuracy on
+that same test split.  For qualitative transfer inspection, the selected Qwen
+probes are applied to 20 examples each from GSM8K, MATH, PRM800K, and
+ProcessBench.  The seven binary scores are independently trained and
+uncalibrated; their argmax is an inspection label, not a multiclass probability
+or new gold annotation.  Only boundary vectors are stored; the models do not
+regenerate the released or benchmark solutions.
+
+\paragraph{Additional response-grouped probe evaluation.}
+A separate CPU-only mode reuses the saved activations and the same logistic
+regression settings. Five outer \texttt{StratifiedGroupKFold} folds (seed 42)
+hold out 8, 8, 7, 8, and 7 complete responses. The folds are identical across
+encoders and targets, verified against exact text, labels, and unit identities.
+Within each development set, a single grouped 20\% validation holdout selects
+each target's layer by AUROC, breaking ties toward the lower index. This
+leaves 24 fit and six or seven validation responses; the selected classifier
+is refitted on all 30 or 31 development responses before outer testing.
+The inner seed is $42+f+1$ for zero-based fold $f$.
+
+A position-only logistic baseline uses $\log(1+j)$ and $\log(1+t)$, where $j$
+and $t$ count preceding annotated units and response tokens. Total length
+and future content are excluded. Tokenization makes the token-count feature
+model-specific. Metrics weight units equally within each fold, then average
+folds equally; macro results also average the seven targets equally.
+Confidence intervals resample complete responses within each outer test
+fold (5,000 percentile draws, seed 42), pairing probe and baseline predictions.
+They condition on saved folds, chosen layers, and fits, omitting refitting
+and split-seed variation; no multiple-comparison adjustment is applied.
+The grouped study retains fold-specific estimators and does not replace
+the legacy layers used by the correlation and intervention experiments.
+
+\paragraph{Correlation-pipeline design.}
+Each of the three models has 4,647 attempts from 1,547 source problems:
+32 attempts per AIME24, AIME25, and AMC23 problem, and one per MATH-500,
+OlympiadBench, and Minerva problem. The benchmark selection and
+repeat counts adapt the mathematical subset of SPIRAL's evaluation
+suite~\cite{liu2025spiral}. There are 100 complete avg@32 groups.
+Generation uses temperature 0.6, top-$p$ 0.95, a 32,768-token completion
+budget, and a 49,152-token context. Generation and replay quantizations
+are not identical: Qwen uses GPTQ generation and Unsloth runtime 4-bit
+replay; Gemma uses NVFP4 generation and NF4 replay; GPT-OSS uses its
+MXFP4 checkpoint. Native top-$k$ is 8 of 256, 8 of 128, and 4 of 32,
+respectively. Probe-selected router indices are Qwen 27/34/35/36/38/39,
+Gemma 16/19/21/22/25/27/29, and GPT-OSS 15/19/21/23.
+
+All token-limit completions remain included. Known-gold attempts with no
+extracted answer count as incorrect in correlation analysis. Whole-continuation
+features include final-answer tokens; full-reasoning and absolute-position
+views use all reasoning tokens independently of tagging. Class views use
+available sentence labels and omit missing features pairwise.
+Qwen uses a frozen Qwen3.8-NVFP4 judge at temperature zero, low effort,
+and a 4,096-token output budget, with a 100,000-unit sample-zero cap.
+Imported Gemma and GPT-OSS labels use temperature 1, top-$p$ 0.95,
+top-$k$ 20, low effort, and a 16,384-token budget. Gemma labels cover all
+six benchmarks; GPT-OSS labels cover MATH-500 and part of AIME24.
+These annotation protocols and populations are not matched across models.
+Source-integrity checks do not establish label accuracy.
+
+\paragraph{Guiding design.}
+Identity and margin policies use a dataset-stratified 70/30 source-problem
+split (seed 42), problem-weighted calibration, and at least four supporting
+problems per target. Their completed stochastic evaluations pair 1,395
+attempts on 465 held-out problems with condition-specific baselines.
+Sampling settings and prompts match within each pair; original attempt
+seeds are retained. Hooks act during prefill and decoding with native expert
+dispatch, eager execution, and no speculative decoding or prefix cache.
+Section~\ref{sec:guiding} gives the calibration exclusions, policy definitions,
+and numerical comparisons. Intervention evaluation outcomes use the
+common offline answer-equivalence rule in Section~\ref{sec:guiding-rescoring};
+calibration and observational labels retain their original values.
+
+\paragraph{Table model and metric conventions.}
+Every table caption identifies the evaluated model or models and the metrics
+shown.  For classification, accuracy is the fraction of exact label matches,
+balanced accuracy is the unweighted mean of class recalls, precision and
+recall have their standard true-positive definitions, macro-F1 is the
+unweighted mean of per-class F1, and AUROC measures score ranking across the
+positive and negative classes.  Cohen's $\kappa$ is chance-corrected nominal
+agreement, Kendall's $\tau_b$ is rank agreement under the fixed episode-label
+ordering, and the GEPA composite averages their equal-weight $[0,1]$
+rescalings.  Routing entropy is Shannon entropy of the softmax router
+distribution; the correlation pipeline's switch rate is the fraction of
+adjacent tokens whose top-1 expert changes; its top-$k$ overlap is the
+adjacent-set intersection divided by $k$ (not Jaccard overlap); and router
+margin is the top-1 minus top-2 router probability.  Top-$k$ mass sums the
+selected probabilities, while the boundary margin is $p_{(k)}-p_{(k+1)}$.
+Unless a caption states
+otherwise, $N$ and support are observation counts, $r$ is a Pearson-family
+correlation coefficient, and confidence intervals are percentile bootstrap
+intervals.
+
+\paragraph{Artifact provenance.}
+The five active packages are under \path{src/moe_exp}; their saved outputs
+are under the corresponding \path{results} subdirectories. Source hashes,
+comparison checks, and regeneration commands are listed in the
+reproducibility appendix. Correlation tables and guiding comparisons have
+different populations and must not be pooled.

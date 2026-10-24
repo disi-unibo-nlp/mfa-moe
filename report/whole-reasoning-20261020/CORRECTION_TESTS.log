@@ -1,0 +1,14 @@
+test_truncated_unit_keeps_occupancy_but_no_complete_overlap_event (test_cohort.CohortContracts.test_truncated_unit_keeps_occupancy_but_no_complete_overlap_event) ... ok
+test_inherited_scientific_checks_do_not_patch_the_old_scheduler (test_recovery.RecoveryTests.test_inherited_scientific_checks_do_not_patch_the_old_scheduler) ... ok
+test_accounting_carries_all_earlier_terminal_costs (test_whole.ExecutionGateTests.test_accounting_carries_all_earlier_terminal_costs) ... ok
+test_failed_validation_never_queues_empty_extraction_or_analysis (test_whole.ExecutionGateTests.test_failed_validation_never_queues_empty_extraction_or_analysis) ... ok
+test_nonempty_unbound_store_rejects_before_any_engine_load (test_whole.ExecutionGateTests.test_nonempty_unbound_store_rejects_before_any_engine_load) ... ok
+test_only_fluency_failure_selects_the_one_half_dose_fallback (test_whole.ExecutionGateTests.test_only_fluency_failure_selects_the_one_half_dose_fallback) ... ok
+test_passing_canaries_submit_seven_shards_with_only_six_released (test_whole.ExecutionGateTests.test_passing_canaries_submit_seven_shards_with_only_six_released) ... ok
+test_quarter_pair_projection_cancels_exact_remaining_shards_above_ceiling (test_whole.ExecutionGateTests.test_quarter_pair_projection_cancels_exact_remaining_shards_above_ceiling) ... ok
+test_software_failure_never_becomes_a_dose_failure (test_whole.ExecutionGateTests.test_software_failure_never_becomes_a_dose_failure) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.783s
+
+OK

@@ -1,0 +1,87 @@
+{
+ "schema": "legacy-X3-complete-stage-price-v3",
+ "status": "PASS_COMPLETE_STAGE",
+ "launch_status": "HOLD_NEW_STUDY_PRIORITY",
+ "stage_scope": "registered-two-sign-N-E1-M1",
+ "request_count": 770,
+ "assigned_questions": 96,
+ "firing_questions": 77,
+ "retained_nonfire_questions": 19,
+ "eligibility_sha256": "bf1425d987cbea417115574928ee5a2ece46c3c194f1e0d6280cf6ae53381508",
+ "registered_selection_sha256": "0ecb13095d5ef60fd83270d2017150c6cdcd7a5c2cc3b79b1dd126ebf7cfd122",
+ "resource_amendment_sha256": "021cc266983ab450a3cc9bb13e5f66d5401785320b721c132e8620880c154f19",
+ "approved_ceiling_total_GPU_h": 65.0,
+ "already_spent_X3_GPU_h": 1.7444444444444445,
+ "components_GPU_h": {
+  "generation": 12.409485360916896,
+  "prefill": 0.4672127255460589,
+  "labeling": 26.633001060445388,
+  "grading_and_audit": 7.771345029239766,
+  "native_nll": 2.0,
+  "cold_loads": 0.78584,
+  "retries_and_shutdown": 3.0
+ },
+ "all_in_GPU_h": 53.066884176148115,
+ "remaining_margin_GPU_h": 10.188671379407438,
+ "maximum_decode_tokens": 14049070,
+ "maximum_prefill_tokens": 4132590,
+ "measured_pilot_decode_tokens_per_second": 838.61,
+ "generation_throughput_derate": 0.75,
+ "prefill_stress_tokens_per_second": 4914,
+ "native_label_proxy_units": 25380,
+ "maximum_priced_label_units": 38070,
+ "historical_same_program_label_jobs": [
+  {
+   "id": 58728654,
+   "elapsed_seconds": 35624,
+   "state": "COMPLETED"
+  },
+  {
+   "id": 58728656,
+   "elapsed_seconds": 22803,
+   "state": "COMPLETED"
+  },
+  {
+   "id": 58728657,
+   "elapsed_seconds": 5410,
+   "state": "FAILED"
+  },
+  {
+   "id": 58728658,
+   "elapsed_seconds": 22324,
+   "state": "COMPLETED"
+  },
+  {
+   "id": 58811162,
+   "elapsed_seconds": 19495,
+   "state": "COMPLETED"
+  }
+ ],
+ "historical_same_program_label_units": 113135,
+ "historical_same_program_gross_GPU_h": 58.69777777777777,
+ "historical_slowest_complete_GPU_h_per_unit": 0.0006995797494206826,
+ "J1_historical_items": 228,
+ "J1_historical_GPU_h": 0.8622222222222222,
+ "priced_J1_and_audit_items": 1370,
+ "complete_generation_source_sha256": "1e3072e7ffc13819e793e0e33cb6bb5bea396aa82c2bcb51e486264aa439d811",
+ "labeling_source_sha256": "de4d71eee3c07f4bf8c937d2b35b9c1b744f628b164a09c4bfcd5fe13a0df1a8",
+ "grading_source_sha256": "f46609115a3966a5149b5c7ea0374bd933cff444317d912a2664dbff6c4dbaf1",
+ "native_nll_source_sha256": "0f83c9a9ae7bcdac191397f21b67b43c4cb4ebdc701cc9db623ce4b25f4939a6",
+ "native_nll_scope": "price 770 first-256-token native teacher-forced sequences as conservative upper bound; actual registered N/E roster and long-prefix parity are checked before submission",
+ "retry_rule": "stop and reprice before any stage if actual work exceeds its bound, label units exceed 38,070, parity fails, or prior plus projected spend exceeds 65 GPU-hours; no silent retry",
+ "new_study_priority_resolved": false,
+ "input_file_sha256": {
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/resume-v1/x3-timing-pilot-v1/results-8f7c67d6b2a06e42-v4/shard-0.status.json": "1e3072e7ffc13819e793e0e33cb6bb5bea396aa82c2bcb51e486264aa439d811",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/native-nll/2f10f3dbaefd0839c3ec16d0768581e0863c26ee18e70911de40f1643b4feebe/ec9661af160f42d145a09756925d2bc26a3f36360a25be772a41730a0e03c515/native-nll.json": "0f83c9a9ae7bcdac191397f21b67b43c4cb4ebdc701cc9db623ce4b25f4939a6",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x1/score/verdicts.jsonl": "f46609115a3966a5149b5c7ea0374bd933cff444317d912a2664dbff6c4dbaf1",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/results/gepaLLMAsJudge/qwen3.8-27b-medium-final-s42-v3/selected_program_20260827_173300.json": "467510e4fc1759bf2833e7bc8f5a9d7937c52f2d31f530168776788a590b7a07",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/campaign-v3/labels/qwen330b/part-00/summary.json": "ce340eb3b61a11de57ac71b5fbd3afe5ec703c1401a284eb1df081f8db1af666",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/campaign-v3/labels/qwen330b/part-01/summary.json": "846feac91ea7bb2c7a76b4fa688a670e752b3edee80b1a4b422c05317bb5358c",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/campaign-v3/labels/qwen330b/part-02/summary.json": "3f07b4816f0c72a7c9beebbae79a24e870ac48fe6ba191fc6a25a960f662e57e",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/campaign-v3/labels/qwen330b/part-03/summary.json": "83f348dda656b1022f705b577329916f2bcebddb5632f6289b484ed99d8f3dce",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/X3_COST_INVENTORY_v1.json": "e84ce5f73309e01e08fe31237ec412c8dd94417067cbd20b01ed5651ae148c61",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/X3_LABEL_DENSITY_PROJECTION_v1.json": "224e04e602586814adefe0e1dacbd794b67b12ea7b1d344c556c51381a2f3447"
+ },
+ "scientific_limit": "X3 remains a registered diagnostic causal screen; same-program historical GEPA throughput and native sentence density are resource proxies, not semantic outcomes.",
+ "sha256": "603988d07d85746a504c780aee5460654a21b78baf3a056989771b10cd4f12d7"
+}

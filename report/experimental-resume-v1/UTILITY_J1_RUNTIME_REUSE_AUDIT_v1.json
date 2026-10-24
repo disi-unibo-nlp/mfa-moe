@@ -1,0 +1,85 @@
+{
+ "schema": "utility-j1-runtime-reuse-audit-v1",
+ "status": "EXISTING_FROZEN_WRAPPER_AND_JUDGE_IDENTICAL",
+ "historical_job": {
+  "job_id": "59068750",
+  "state": "COMPLETED",
+  "exit_code": "0:0",
+  "wrapper": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/code/s1-f2ded3957eb54fd5/sbatch/steer_j1.sbatch",
+  "items": 228,
+  "verdicts": 228,
+  "evidence": "Observed sacct exact parent row and LEGACY_AMENDMENT_v0.3.md; historical server step cancellation remains separate."
+ },
+ "reusable_wrapper": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/code/s1-9a61e32f48c04c24/sbatch/steer_j1.sbatch",
+ "wrapper_sha256": "946b023377b1abcc4f2469a264f42abc2a71d5ab52a357e73d6fc8c4a3549ae7",
+ "snapshot_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/code/s1-9a61e32f48c04c24",
+ "tree_sha256": "9a61e32f48c04c242acccc89c529bd750776c553cdfc776347151d359bc53430",
+ "snapshot_manifest_sha256": "481c762679a6a910c098adde669608374f2756c6f229d5e8333647173354b830",
+ "judge_sources_identical": {
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/code/s1-f2ded3957eb54fd5/moe_exp_src/moe_exp/correlation_pipeline/answer_equivalence.py": "5ed66ae640513141df97bfe6d8d21af9afe254230c1011db35c1237be4a5633a",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/code/s1-9a61e32f48c04c24/moe_exp_src/moe_exp/correlation_pipeline/answer_equivalence.py": "5ed66ae640513141df97bfe6d8d21af9afe254230c1011db35c1237be4a5633a",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/addenda/ordered/9727c10299b71e7a/moe_exp_src/moe_exp/correlation_pipeline/answer_equivalence.py": "5ed66ae640513141df97bfe6d8d21af9afe254230c1011db35c1237be4a5633a"
+ },
+ "model": "Qwen/Qwen3.8-27B",
+ "revision": "1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0",
+ "cached_snapshot": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/cache/hf/hub/models--Qwen--Qwen3.8-27B/snapshots/1d4bf0f2ff6012fd82039f2fa52739d0dd7c60c0",
+ "server": {
+  "tensor_parallel_size": 2,
+  "dtype": "bfloat16",
+  "kv_cache_dtype": "bfloat16",
+  "max_model_len": 24576,
+  "max_num_seqs": 64,
+  "max_num_batched_tokens": 8192,
+  "enable_prefix_caching": true,
+  "gpu_memory_utilization": 0.9,
+  "enforce_eager": true,
+  "generation_config": "vllm",
+  "reasoning_parser": "qwen3",
+  "language_model_only": true,
+  "attention_backend": "FLASH_ATTN",
+  "speculative_method": "mtp",
+  "num_speculative_tokens": 3
+ },
+ "client": {
+  "module": "moe_exp.correlation_pipeline.answer_equivalence",
+  "workers": 48,
+  "votes": 3,
+  "max_tokens_per_vote": 8192,
+  "max_transport_attempts_per_vote": 3,
+  "enable_thinking": true,
+  "prompt_version": 1,
+  "parser_version": 2,
+  "seed_schedule": "int(item_id[:8],16) % 1000000 + vote_index",
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "top_k": 20,
+  "min_p": 0.0,
+  "presence_penalty": 0.0,
+  "repetition_penalty": 1.0
+ },
+ "positional_API": [
+  "absolute/items.jsonl",
+  "absolute/verdicts.jsonl"
+ ],
+ "required_environment": {
+  "STEER_CODE": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/code/s1-9a61e32f48c04c24",
+  "STEER_EXPECT_TREE": "9a61e32f48c04c242acccc89c529bd750776c553cdfc776347151d359bc53430"
+ },
+ "compatible_utility_preparation": "utility_outcomes_v2.py writes items.jsonl under GRADE_PREP.json files/items; the existing J1 client accepts this format.",
+ "new_adapter_requirements": [
+  "Bind GRADE_PREP and exact items file SHA before runtime.",
+  "Use new output directory bound to preparation and code hashes; do not reuse incompatible verdict IDs.",
+  "Zero items skips model load and permits CPU analysis.",
+  "Validate exact item IDs, exactly three recorded votes, parser version2, prompt version1 and sampler fields before final utility analysis.",
+  "Price complete stage after exact item count; count both GPUs, all loads/prefill/decoding/transport retries/shutdown and observed allocation time.",
+  "Preserve existing rubric/model/sampler/seed and MTP server profile when invoking this wrapper."
+ ],
+ "limitations": [
+  "Existing client resumes on any parsed output item ID and does not bind a previous output file to current input bytes.",
+  "Frozen score.load_verdicts validates final verdict coverage/conflicts but does not enforce per-row vote counts or sampler/parser metadata.",
+  "Existing client saves final content tails, not exact per-request token usage; GPU cost should use Slurm allocation accounting."
+ ],
+ "inspection_only": true,
+ "new_GPU_submissions": 0,
+ "sha256": "54f714af623e82c05cedd83f9cb927fcec43f6f6cb960c543bef8f2488c170a3"
+}

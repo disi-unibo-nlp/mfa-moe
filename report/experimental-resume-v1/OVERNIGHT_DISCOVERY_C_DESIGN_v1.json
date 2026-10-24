@@ -1,0 +1,614 @@
+{
+ "schema": "overnight-routing-design-v1",
+ "lane": "C",
+ "mode": "native_operator",
+ "horizon": 256,
+ "transitions": [
+  "candidate_to_verify",
+  "approach_to_commit"
+ ],
+ "actions": [
+  {
+   "name": "candidate_to_verify_bias",
+   "transition": "candidate_to_verify",
+   "experts": [
+    [
+     28,
+     [
+      9,
+      189
+     ]
+    ]
+   ],
+   "kind": "bias",
+   "sign": 1,
+   "magnitude": 1.0
+  },
+  {
+   "name": "candidate_to_verify_bias_random0",
+   "transition": "candidate_to_verify",
+   "experts": [
+    [
+     28,
+     [
+      120,
+      139
+     ]
+    ]
+   ],
+   "kind": "bias",
+   "sign": 1,
+   "magnitude": 1.0
+  },
+  {
+   "name": "candidate_to_verify_bias_random1",
+   "transition": "candidate_to_verify",
+   "experts": [
+    [
+     28,
+     [
+      133,
+      255
+     ]
+    ]
+   ],
+   "kind": "bias",
+   "sign": 1,
+   "magnitude": 1.0
+  },
+  {
+   "name": "candidate_to_verify_bias_random2",
+   "transition": "candidate_to_verify",
+   "experts": [
+    [
+     28,
+     [
+      5,
+      43
+     ]
+    ]
+   ],
+   "kind": "bias",
+   "sign": 1,
+   "magnitude": 1.0
+  },
+  {
+   "name": "candidate_to_verify_bias_random3",
+   "transition": "candidate_to_verify",
+   "experts": [
+    [
+     28,
+     [
+      24,
+      196
+     ]
+    ]
+   ],
+   "kind": "bias",
+   "sign": 1,
+   "magnitude": 1.0
+  },
+  {
+   "name": "approach_to_commit_bias",
+   "transition": "approach_to_commit",
+   "experts": [
+    [
+     24,
+     [
+      159
+     ]
+    ]
+   ],
+   "kind": "bias",
+   "sign": 1,
+   "magnitude": 1.0
+  },
+  {
+   "name": "approach_to_commit_bias_random0",
+   "transition": "approach_to_commit",
+   "experts": [
+    [
+     24,
+     [
+      109
+     ]
+    ]
+   ],
+   "kind": "bias",
+   "sign": 1,
+   "magnitude": 1.0
+  },
+  {
+   "name": "approach_to_commit_bias_random1",
+   "transition": "approach_to_commit",
+   "experts": [
+    [
+     24,
+     [
+      63
+     ]
+    ]
+   ],
+   "kind": "bias",
+   "sign": 1,
+   "magnitude": 1.0
+  },
+  {
+   "name": "approach_to_commit_bias_random2",
+   "transition": "approach_to_commit",
+   "experts": [
+    [
+     24,
+     [
+      40
+     ]
+    ]
+   ],
+   "kind": "bias",
+   "sign": 1,
+   "magnitude": 1.0
+  },
+  {
+   "name": "approach_to_commit_bias_random3",
+   "transition": "approach_to_commit",
+   "experts": [
+    [
+     24,
+     [
+      26
+     ]
+    ]
+   ],
+   "kind": "bias",
+   "sign": 1,
+   "magnitude": 1.0
+  },
+  {
+   "name": "candidate_to_verify_force",
+   "transition": "candidate_to_verify",
+   "experts": [
+    [
+     28,
+     [
+      9,
+      189
+     ]
+    ]
+   ],
+   "kind": "force",
+   "sign": 1,
+   "magnitude": 0.0
+  },
+  {
+   "name": "candidate_to_verify_force_random0",
+   "transition": "candidate_to_verify",
+   "experts": [
+    [
+     28,
+     [
+      120,
+      139
+     ]
+    ]
+   ],
+   "kind": "force",
+   "sign": 1,
+   "magnitude": 0.0
+  },
+  {
+   "name": "candidate_to_verify_force_random1",
+   "transition": "candidate_to_verify",
+   "experts": [
+    [
+     28,
+     [
+      133,
+      255
+     ]
+    ]
+   ],
+   "kind": "force",
+   "sign": 1,
+   "magnitude": 0.0
+  },
+  {
+   "name": "candidate_to_verify_force_random2",
+   "transition": "candidate_to_verify",
+   "experts": [
+    [
+     28,
+     [
+      5,
+      43
+     ]
+    ]
+   ],
+   "kind": "force",
+   "sign": 1,
+   "magnitude": 0.0
+  },
+  {
+   "name": "candidate_to_verify_force_random3",
+   "transition": "candidate_to_verify",
+   "experts": [
+    [
+     28,
+     [
+      24,
+      196
+     ]
+    ]
+   ],
+   "kind": "force",
+   "sign": 1,
+   "magnitude": 0.0
+  },
+  {
+   "name": "approach_to_commit_force",
+   "transition": "approach_to_commit",
+   "experts": [
+    [
+     24,
+     [
+      159
+     ]
+    ]
+   ],
+   "kind": "force",
+   "sign": 1,
+   "magnitude": 0.0
+  },
+  {
+   "name": "approach_to_commit_force_random0",
+   "transition": "approach_to_commit",
+   "experts": [
+    [
+     24,
+     [
+      109
+     ]
+    ]
+   ],
+   "kind": "force",
+   "sign": 1,
+   "magnitude": 0.0
+  },
+  {
+   "name": "approach_to_commit_force_random1",
+   "transition": "approach_to_commit",
+   "experts": [
+    [
+     24,
+     [
+      63
+     ]
+    ]
+   ],
+   "kind": "force",
+   "sign": 1,
+   "magnitude": 0.0
+  },
+  {
+   "name": "approach_to_commit_force_random2",
+   "transition": "approach_to_commit",
+   "experts": [
+    [
+     24,
+     [
+      40
+     ]
+    ]
+   ],
+   "kind": "force",
+   "sign": 1,
+   "magnitude": 0.0
+  },
+  {
+   "name": "approach_to_commit_force_random3",
+   "transition": "approach_to_commit",
+   "experts": [
+    [
+     24,
+     [
+      26
+     ]
+    ]
+   ],
+   "kind": "force",
+   "sign": 1,
+   "magnitude": 0.0
+  },
+  {
+   "name": "candidate_to_verify_reweight",
+   "transition": "candidate_to_verify",
+   "experts": [
+    [
+     28,
+     [
+      9,
+      189
+     ]
+    ]
+   ],
+   "kind": "reweight",
+   "sign": 1,
+   "magnitude": 1.0
+  },
+  {
+   "name": "candidate_to_verify_reweight_random0",
+   "transition": "candidate_to_verify",
+   "experts": [
+    [
+     28,
+     [
+      120,
+      139
+     ]
+    ]
+   ],
+   "kind": "reweight",
+   "sign": 1,
+   "magnitude": 1.0
+  },
+  {
+   "name": "candidate_to_verify_reweight_random1",
+   "transition": "candidate_to_verify",
+   "experts": [
+    [
+     28,
+     [
+      133,
+      255
+     ]
+    ]
+   ],
+   "kind": "reweight",
+   "sign": 1,
+   "magnitude": 1.0
+  },
+  {
+   "name": "candidate_to_verify_reweight_random2",
+   "transition": "candidate_to_verify",
+   "experts": [
+    [
+     28,
+     [
+      5,
+      43
+     ]
+    ]
+   ],
+   "kind": "reweight",
+   "sign": 1,
+   "magnitude": 1.0
+  },
+  {
+   "name": "candidate_to_verify_reweight_random3",
+   "transition": "candidate_to_verify",
+   "experts": [
+    [
+     28,
+     [
+      24,
+      196
+     ]
+    ]
+   ],
+   "kind": "reweight",
+   "sign": 1,
+   "magnitude": 1.0
+  },
+  {
+   "name": "approach_to_commit_reweight",
+   "transition": "approach_to_commit",
+   "experts": [
+    [
+     24,
+     [
+      159
+     ]
+    ]
+   ],
+   "kind": "reweight",
+   "sign": 1,
+   "magnitude": 1.0
+  },
+  {
+   "name": "approach_to_commit_reweight_random0",
+   "transition": "approach_to_commit",
+   "experts": [
+    [
+     24,
+     [
+      109
+     ]
+    ]
+   ],
+   "kind": "reweight",
+   "sign": 1,
+   "magnitude": 1.0
+  },
+  {
+   "name": "approach_to_commit_reweight_random1",
+   "transition": "approach_to_commit",
+   "experts": [
+    [
+     24,
+     [
+      63
+     ]
+    ]
+   ],
+   "kind": "reweight",
+   "sign": 1,
+   "magnitude": 1.0
+  },
+  {
+   "name": "approach_to_commit_reweight_random2",
+   "transition": "approach_to_commit",
+   "experts": [
+    [
+     24,
+     [
+      40
+     ]
+    ]
+   ],
+   "kind": "reweight",
+   "sign": 1,
+   "magnitude": 1.0
+  },
+  {
+   "name": "approach_to_commit_reweight_random3",
+   "transition": "approach_to_commit",
+   "experts": [
+    [
+     24,
+     [
+      26
+     ]
+    ]
+   ],
+   "kind": "reweight",
+   "sign": 1,
+   "magnitude": 1.0
+  }
+ ],
+ "arms": [
+  {
+   "name": "native",
+   "role": "native",
+   "policies": {},
+   "slots": []
+  },
+  {
+   "name": "native_duplicate",
+   "role": "native",
+   "policies": {},
+   "slots": []
+  },
+  {
+   "name": "bias",
+   "role": "target",
+   "policies": {
+    "candidate_to_verify": [
+     "candidate_to_verify_bias"
+    ],
+    "approach_to_commit": [
+     "approach_to_commit_bias"
+    ]
+   },
+   "slots": []
+  },
+  {
+   "name": "random_bias",
+   "role": "random",
+   "policies": {
+    "candidate_to_verify": [
+     "candidate_to_verify_bias_random{random_set}"
+    ],
+    "approach_to_commit": [
+     "approach_to_commit_bias_random{random_set}"
+    ]
+   },
+   "slots": []
+  },
+  {
+   "name": "force",
+   "role": "target",
+   "policies": {
+    "candidate_to_verify": [
+     "candidate_to_verify_force"
+    ],
+    "approach_to_commit": [
+     "approach_to_commit_force"
+    ]
+   },
+   "slots": []
+  },
+  {
+   "name": "random_force",
+   "role": "random",
+   "policies": {
+    "candidate_to_verify": [
+     "candidate_to_verify_force_random{random_set}"
+    ],
+    "approach_to_commit": [
+     "approach_to_commit_force_random{random_set}"
+    ]
+   },
+   "slots": []
+  },
+  {
+   "name": "reweight",
+   "role": "target",
+   "policies": {
+    "candidate_to_verify": [
+     "candidate_to_verify_reweight"
+    ],
+    "approach_to_commit": [
+     "approach_to_commit_reweight"
+    ]
+   },
+   "slots": []
+  },
+  {
+   "name": "random_reweight",
+   "role": "random",
+   "policies": {
+    "candidate_to_verify": [
+     "candidate_to_verify_reweight_random{random_set}"
+    ],
+    "approach_to_commit": [
+     "approach_to_commit_reweight_random{random_set}"
+    ]
+   },
+   "slots": []
+  }
+ ],
+ "planned_contrasts": [
+  [
+   "bias",
+   "native"
+  ],
+  [
+   "bias",
+   "random_bias"
+  ],
+  [
+   "force",
+   "native"
+  ],
+  [
+   "force",
+   "random_force"
+  ],
+  [
+   "reweight",
+   "native"
+  ],
+  [
+   "reweight",
+   "random_reweight"
+  ],
+  [
+   "force",
+   "bias"
+  ],
+  [
+   "reweight",
+   "bias"
+  ]
+ ],
+ "analysis_scopes": [
+  "all",
+  "candidate_to_verify",
+  "approach_to_commit"
+ ],
+ "analysis_seed": 20261004,
+ "dictionary_sha256": "144458193e294152f92703c854a11055fa49929cee0e85289d0cb4eb2ab0aef0",
+ "bootstrap_replicates": 50000,
+ "claim_limit": "Exploratory discovery prefixes previously examined; no independent confirmation or utility claim.",
+ "selection_information": "Frozen native discovery correlations and existing discovery audits only; no newly completing mechanism outcomes.",
+ "sha256": "a81bd7b738cf6a6edd3f5c8c8636a26cd27c5dad2a053b369c742c23034dbe8b"
+}

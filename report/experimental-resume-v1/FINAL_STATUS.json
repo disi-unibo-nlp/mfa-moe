@@ -1,0 +1,35 @@
+{
+ "schema": "resume-final-status-v1",
+ "observed_UTC": "2026-10-01T14:52:00.802420+00:00",
+ "job_audit": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/JOB_AUDIT.json",
+ "job_audit_sha256": "93d89fcfdee7527b1cd841bda1be7388ba5e24a0e377f49bc206ec981aaf75a0",
+ "study_gates": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/STUDY_GATES.json",
+ "study_gates_sha256": "17ee0a9e55f81b46f9259e62c6fbf06278bb69e06c94c1a910f6c6955cc05ed2",
+ "all_submitted_jobs_final": true,
+ "paper_snapshot": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/paper/resume-v1/20261001T143703Z",
+ "paper_job_id": "59106067",
+ "paper_frozen_sha256": "0d08aa5393bd309e81ce40d0177eb2229f5684efeee05f398ccd654c7cfc407f",
+ "paper_input_archive": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/paper/resume-v1/20261001T143703Z/INPUT_ARCHIVES.json",
+ "paper_input_archive_sha256": "df40d0a742edb79178eb69069cb9f257a4e89c9061555e792dd0a60c20987961",
+ "routing_supplement": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/paper/resume-v1/routing-supplement-20261001T144527Z",
+ "routing_supplement_job_id": "59106824",
+ "routing_supplement_frozen_sha256": "7a21a1a61791a180d291e2a13f52687c0267f9d47c8414aa632f78c21986de4b",
+ "claim_count": 204,
+ "G3_registered_passing_cells": 2,
+ "G3_registered_selected": {
+  "-1": "reweight_m1_L1_landmark",
+  "1": "reweight_p2_BAND_landmark"
+ },
+ "actual_allocation_hours": {
+  "H14_GPUh": 0.9461111111111111,
+  "X2_GPUh": 5.127222222222223,
+  "new_qualification_GPUh": 0.27222222222222225,
+  "R3D_CPU_coreh": 15.90111111111111,
+  "paper_CPU_coreh": 0.01138888888888889
+ },
+ "new_study_status": "FAILED_BEFORE_WORKER_BATCHES; authorized single recovery exhausted",
+ "new_study_downstream": "HOLD unqualified worker, semantic detector, behavioral eligibility and complete stage pricing",
+ "next_qualification_proposal": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/QUALIFICATION_RECOVERY_PROPOSAL_v2.json",
+ "next_qualification_authorization": "NOT_RECEIVED_AT_THIS_SNAPSHOT",
+ "paper_note": "primary compute chart uses the pre-publication job audit; this receipt includes the two completed report jobs"
+}

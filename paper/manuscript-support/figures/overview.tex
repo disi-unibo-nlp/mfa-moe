@@ -1,0 +1,79 @@
+% Native construction: SoLD's numbered worked example, MoM's layer-local
+% circled experts, and SYNCO's state channels; probability bars requested here.
+% All probabilities and sentences are constructed, not measured outcomes.
+\begin{tikzpicture}[x=1cm,y=1cm,font=\fontsize{8}{9}\selectfont,
+  flow/.style={-{Stealth[length=1.5mm]},draw=black!55,line width=.7pt,rounded corners=3pt},
+  expert/.style={circle,draw=black!60,fill=white,minimum size=3.6mm,inner sep=0pt,font=\fontsize{7}{8}\selectfont},
+  localnote/.style={text=black!65,font=\fontsize{7.5}{8.5}\selectfont}]
+\path[fill=journalplotbackground] (-.16,.38) rectangle (13.22,-5.45);
+\node[anchor=west,font=\small\bfseries] at (.05,0) {\circnum{1} Label reasoning};
+\node[anchor=west,font=\small\bfseries] at (4.63,0) {\circnum{2} Read routing};
+\node[anchor=west,font=\small\bfseries] at (9.02,0) {\circnum{3} Guide and evaluate};
+\node[anchor=west,text=black!65] at (.05,-.52) {Solve $x^2-5x+6=0$.};
+\node[anchor=west,localnote] at (4.63,-.52) {Routing probabilities $p_e$, one layer};
+\node[anchor=west,localnote] at (9.02,-.52) {Target action: \textbf{Verify}};
+
+\foreach \yy/\col/\state in
+  {-1.15/syncoanalyze/Analyze,-2.18/syncoimplement/Implement,-3.21/syncoverify/Verify} {
+  \draw[\col,line width=2.4pt] (.07,\yy+.12)--(.07,\yy-.43);
+  \node[anchor=west,font=\bfseries] at (.24,\yy) {\state};}
+\node[anchor=west] at (.24,-1.47) {Roots: sum $5$, product $6$.};
+\node[anchor=west] at (.24,-2.50) {Factor: $(x-2)(x-3)=0$.};
+\node[anchor=west] at (.24,-3.53) {Test $x=2$: $4-10+6=0$.};
+
+% Every vector sums to one; black outlines mark the selected top-2.
+\foreach \yy/\col/\values/\first/\second in {
+  -1.58/syncoanalyze/{.36,.10,.27,.15,.07,.05}/1/3,
+  -2.61/syncoimplement/{.10,.36,.15,.07,.27,.05}/2/5,
+  -3.64/syncoverify/{.10,.07,.15,.36,.05,.27}/4/6} {
+  \draw[black!40,line width=.35pt] (4.91,\yy)--(7.66,\yy);
+  \draw[black!40,line width=.35pt] (4.91,\yy)--(4.91,\yy+.66);
+  \node[anchor=east,font=\fontsize{6.5}{7}\selectfont,text=black!55] at (4.88,\yy) {$0$};
+  \node[anchor=east,font=\fontsize{6.5}{7}\selectfont,text=black!55] at (4.88,\yy+.66) {$0.5$};
+  \foreach \prob [count=\idx from 1] in \values {
+    \pgfmathsetmacro{\xx}{5.15+.46*(\idx-1)}
+    \path[fill=\col!65,draw=black,line width=.35pt] (\xx-.135,\yy) rectangle (\xx+.135,\yy+1.32*\prob);
+    \pgfmathtruncatemacro{\percentval}{round(100*\prob)}
+    \node[anchor=south,inner sep=.4pt,font=\fontsize{7}{8}\selectfont]
+      at (\xx,\yy+1.32*\prob+.035) {.\ifnum\percentval<10 0\fi\percentval};
+    \ifnum\idx=\first
+      \draw[black,line width=.75pt] (\xx-.135,\yy) rectangle (\xx+.135,\yy+1.32*\prob);
+    \fi
+    \ifnum\idx=\second
+      \draw[black,line width=.75pt] (\xx-.135,\yy) rectangle (\xx+.135,\yy+1.32*\prob);
+    \fi}
+  \draw[flow] (4.11,\yy+.22)--(4.54,\yy+.22);
+  \node[expert,fill=\col!25] at (8.01,\yy+.31) {\first};
+  \node[expert,fill=\col!25] at (8.42,\yy+.31) {\second};}
+\node[localnote] at (8.21,-.87) {Top-$2$};
+\foreach \id in {1,...,6} {
+  \pgfmathsetmacro{\xx}{5.15+.46*(\id-1)}
+  \node[font=\fontsize{7}{8}\selectfont,text=black!65] at (\xx,-3.86) {$e_{\id}$};}
+\node[localnote] at (6.80,-4.14) {Expert IDs are local to the layer.};
+
+% Separate endpoint glyphs denote measurements, not an observed success.
+\node[expert,fill=syncoverify!28] at (9.47,-1.16) {4};
+\node[expert,fill=syncoverify!28] at (9.90,-1.16) {6};
+\draw[flow] (10.21,-1.16)--(10.61,-1.16);
+\node[anchor=west,align=left] at (10.77,-1.16) {Test both roots:\\$x=2\Rightarrow0$\\$x=3\Rightarrow0$};
+\node[localnote] at (9.68,-1.64) {Promote targets};
+\draw[flow] (8.67,-2.30)--(9.02,-2.30);
+\node[expert,fill=syncoverify!28] at (9.46,-2.30) {4};
+\node[expert,fill=syncoverify!28] at (9.87,-2.30) {6};
+\node[anchor=west] at (10.21,-2.30) {Target inclusion};
+\node[font=\fontsize{12}{13}\selectfont] at (9.67,-2.96) {$\checkmark$};
+\node[anchor=west] at (10.21,-2.96) {Answer quality};
+\draw[draw=black!60,line width=.7pt] (9.67,-3.62) circle (.17);
+\draw[draw=black!60,line width=.7pt,line cap=round] (9.67,-3.51)--(9.67,-3.62)--(9.75,-3.67);
+\node[anchor=west] at (10.21,-3.62) {Resource cost};
+\node[localnote] at (11.00,-4.14) {Native / random / targeted};
+
+% Four columns, then three; first three anchors match exactly across rows.
+\node[anchor=west] at (.10,-4.77) {\statekey{black!45}{\textbf{Read}: problem}};
+\node[anchor=west] at (3.35,-4.77) {\statekey{syncoanalyze}{\textbf{Analyze}: constraints}};
+\node[anchor=west] at (6.60,-4.77) {\statekey{momexpert}{\textbf{Explore}: alternatives}};
+\node[anchor=west] at (9.85,-4.77) {\statekey{gomorangeone}{\textbf{Plan}: next steps}};
+\node[anchor=west] at (.10,-5.17) {\statekey{syncoimplement}{\textbf{Implement}: compute}};
+\node[anchor=west] at (3.35,-5.17) {\statekey{syncoverify}{\textbf{Verify}: test a result}};
+\node[anchor=west] at (6.60,-5.17) {\statekey{syncomonitor}{\textbf{Monitor}: reassess progress}};
+\end{tikzpicture}

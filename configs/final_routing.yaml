@@ -1,0 +1,56 @@
+schema: final-routing-v1
+seed: 20261015
+root: report/final-routing-20261015-r1
+source_campaign: report/research-campaign-v3-20261014-r6
+bulk_root: /leonardo_scratch/fast/IscrC_MIOSR/lmolfett/mfa-moe/campaign-runs/final-routing-20261015-r1
+environment: /leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/envs/vllm-cu129
+models: [gpt, nemotron, qwen35, qwen36, gemma, glm, qwen330b, lfm25]
+checkpoint_transfer: huggingface_https
+lfm25:
+  repository: LiquidAI/LFM2.5-24B-A2B
+  revision: 1769516ac588c4c558089c94f27d96b0dc67b183
+  local_path: /leonardo_scratch/fast/IscrC_MIOSR/lmolfett/mfa-moe/campaign-runs/final-routing-20261015-r1/checkpoints/lfm25
+  layers: 38
+  experts: 64
+  native_k: 4
+  max_model_len: 131072
+  temperature: 0.1
+  top_k: 50
+  top_p: 1.0
+  min_p: 0.0
+  repetition_penalty: 1.05
+  presence_penalty: 0.0
+  frequency_penalty: 0.0
+design:
+  classes: [Read, Analyze, Plan, Implement, Explore, Verify, Monitor]
+  depths: 3
+  folds: 5
+  prefix_slots: 129
+  outer_fallback_families: 32
+  reader_pilot_contexts: 512
+  reader_batch_size: 64
+  reader_max_tokens: 16384
+  bootstrap_draws: 10000
+budget:
+  ceiling_hours: 42050.0
+  baseline_consumed: 25950.0
+  margin: 1.25
+  preparation_hours: 1400.0
+  reserve_gib_per_filesystem: 10
+  closeout_hours: 40.0
+  preparation_output_gib: {work: 2, fast: 80}
+slurm:
+  account: iscrc_miosr
+  partition: boost_usr_prod
+  qos: normal
+  gpu: {gpus: 2, cpus: 16, memory_gib: 120, billing_units: 16}
+  cpu: {gpus: 0, cpus: 4, memory_gib: 24, billing_units: 4}
+  qualification_minutes: 240
+  reader_pilot_minutes: 120
+  validation_minutes: 120
+  production_minutes: 360
+  packing_minutes: 300
+  max_gpu_workers: 24
+  max_cpu_workers: 8
+  recoveries: 1
+protected_report_jobs: ['60509618', '60509619', '60509620', '60509621']

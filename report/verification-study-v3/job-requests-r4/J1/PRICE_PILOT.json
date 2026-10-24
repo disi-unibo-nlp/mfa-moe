@@ -1,0 +1,48 @@
+{
+  "arguments": [
+    "--frame",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/J1/AUDIT_FRAME.json",
+    "--output",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/J1/audit",
+    "--begin",
+    "12",
+    "--count",
+    "1"
+  ],
+  "artifact": "one retained original audit verdict with three8192-cap draws, exact invocation runtime and separate J1 load/item/token prices",
+  "claim": "C4/C5 all-seven: measure the shared exact offline J1 deployment before qualifying or grading accuracy residuals",
+  "decision_if_failure": "preserve any committed original audit verdict; inspect exact failure/accounting; do not substitute strict CPU or semantic-reader prices or claim grader qualification",
+  "extension": {
+    "kind": "j1-audit-slice",
+    "parameters": {
+      "begin": 12,
+      "count": 1,
+      "frame": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/J1/AUDIT_FRAME.json",
+      "output": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/J1/audit"
+    }
+  },
+  "finite_assignments": 1,
+  "measurement_pilot": true,
+  "missing_cell": "current J1 deployment cold-load, three-vote generation and maximum audit input-context price",
+  "model": "gpt",
+  "population": "frozen_J1_audit",
+  "prerequisites": [
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/J1/AUDIT_FRAME.json"
+  ],
+  "resources": {
+    "billing_core_hours_max": 16,
+    "cpus": 16,
+    "gpus": 2,
+    "memory_gb": 120,
+    "partition": "boost_usr_prod",
+    "price_basis": "narrow first retained current-grader measurement: one original audit item, three unchanged8192-cap votes,1446 input tokens; no final production exemption",
+    "qos": "normal",
+    "walltime_seconds": 3600
+  },
+  "reuse": "original100-item audit; unchanged pinned r4 Reader.grade; largest input chosen by token count before verdicts; audit shared across all seven generators",
+  "schema": "verification-task-request-v3",
+  "selection_path": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/verification-study-v3/J1_INPUT_SELECTION-r1.json",
+  "selection_sha256": "9be1013f8283b5b6ce64e17173dd5440342ec0581f2a87d4fa7e8da5882cb55e",
+  "sha256": "e59e4f650ac51c4e348df5125442956c99a86b01d620d2c99f53416789d60274",
+  "stage": "j1-audit"
+}

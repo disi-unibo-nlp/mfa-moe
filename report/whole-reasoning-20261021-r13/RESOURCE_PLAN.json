@@ -1,0 +1,1 @@
+{"cpu_core_hour_ceiling":120.0,"cutoff":1792789200.0,"models":["lfm25"],"new_gpu_hour_ceiling":34.0,"no_budget_reset":true,"rows":{"lfm25":404},"sha256":"a50bb993338eb1df7ed7922a75fbd588ea828fc845bf627160b16170510f4b2c","shards":{"lfm25":3},"sweep":{"lfm25":"quarter"}}
