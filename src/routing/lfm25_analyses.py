@@ -11,7 +11,9 @@
     python -m routing.lfm25_analyses dynamics --study STUDY_DIR
                                         class occupancy, dwell and next-class panel (needs derive)
 
-STUDY_DIR is the study folder (default: STUDY_DATA_ROOT, else report/final-routing-20261015-r1).
+STUDY_DIR is the study folder (default: STUDY_DATA_ROOT, else report/final-routing-20261015-r1). `derive` also writes
+the main-design assignments through `steering.pulse.plan`, which reads the study from STUDY_DATA_ROOT, so set that to
+STUDY_DIR as well when it is not the default.
 `scripts/routing/run_lfm25_analyses.sh STUDY_DIR OUT_DIR` runs derive, then readout (into OUT_DIR) and dynamics. The
 replay itself is the GPU stage `python -m steering.pulse lfm-replay`.
 """
