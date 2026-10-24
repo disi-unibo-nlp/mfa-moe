@@ -9,7 +9,7 @@ Python only. Each folder is a topic with its own README. Run everything from the
 | [`labeling/gepa/`](labeling/gepa/README.md) | Optimises the judge prompt (done once). |
 | [`models/`](models/README.md) | Loads checkpoints and reads the routers of each model family. |
 | [`capture/`](capture/README.md) | Replays saved traces through a model and records which experts the routers pick. |
-| [`routing/`](routing/README.md) | The analyses of native routing: readout, anticipation, next state, selection coverage, dynamics, efficiency link, lexical classifier. |
+| [`routing/`](routing/README.md) | The analyses of native routing: readout, anticipation, next state, selection coverage, dynamics, next-sentence labels for the transitions, efficiency link, lexical classifier. |
 | [`steering/`](steering/README.md) | Edits the routing while a model reasons and measures the effect. |
 | [`paper/`](paper/README.md) | Turns receipts into the paper's tables and figure data, builds and checks the manuscript. |
 

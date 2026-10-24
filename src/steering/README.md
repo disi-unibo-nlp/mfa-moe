@@ -5,7 +5,7 @@ Code that pushes the routers of the eight models toward or away from chosen expe
 There are three experiments:
 
 - Pulsed steering (`pulse.py`, `pulse_outcomes.py`, `pulse_effects.py`): a short push on the experts of one reasoning state at the start of a continuation. Activating a state forces its nominated experts into the selection; deactivating removes them. It runs at a central strength and, for four models, a stronger one. Each edit is compared with matched random experts at the same layers and with native routing. Its tables are the main and strong steering results of the paper (figure `routing`).
-- Whole-reasoning steering (`whole.py`, `whole_effects.py`, `release.py`): the push is applied at every prompt and reasoning token until the reasoning closes, and the final answer is left to native routing. States are promoted or suppressed according to whether they precede shorter or longer remaining reasoning (the efficiency link), at quarter, half and full strength, with matched random experts as controls. The sealed result is `EFFECTS_WHOLE.json` (figures `whole_states`, `whole_dose`).
+- Whole-reasoning steering (`whole.py`, `whole_effects.py`, `release.py`, `followup.py`): the push is applied at every prompt and reasoning token until the reasoning closes, and the final answer is left to native routing. States are promoted or suppressed according to whether they precede shorter or longer remaining reasoning (the efficiency link), at quarter, half and full strength, with matched random experts as controls. The sealed result is `EFFECTS_WHOLE.json` (figures `whole_states`, `whole_dose`).
 - Outcome-selected nudge (`outcome/`): not in the paper, the active next line. See [its README](outcome/README.md).
 
 The same routing operators serve all three.
@@ -19,7 +19,8 @@ The same routing operators serve all three.
 | `pulse_effects.py` | The paired effects with bounds for unknown outcomes, the bootstrap, and the efficiency-link test. |
 | `whole.py` | The whole-reasoning release: manifests, the fluency canary, the shards, `plan`, `budget`, `validate`, `prepare`, `run`. |
 | `whole_effects.py` | Replays and scores the finished rows (`extract`) and joins every release into `EFFECTS_WHOLE.json` (`combine`). |
-| `release.py` | Seals a complement, relink or outcome release: receipts plus a frozen copy of the code. |
+| `release.py` | Seals a complement, relink, outcome or continuation release: receipts plus a frozen copy of the code. |
+| `followup.py` | Sizes the continuation of a complement release (read-only): its rows by saved state, its shard jobs by outcome, and the shards to run under a GPU-hour limit. |
 | `stream.py`, `observer.py`, `operators.py` | The hooks that change the routing of the running model, and the operators: hard inclusion and exclusion, and the score override that follows SteerMoE. |
 | `nominations.py`, `selection.py`, `allocation.py` | Which experts to edit for each state (the nominations), which layer of the network, and which question families go to which arm. |
 | `runtime.py`, `session.py`, `penalties.py`, `fast_penalties.py` | Prompts and the durable per-request generation, one request lifecycle, and the repetition penalties applied to saved history. |
@@ -31,7 +32,8 @@ python -m steering.pulse COMMAND [--model M] [--shard I/N] [--design main|strong
 python -m steering.pulse_outcomes --model M [--design strong]
 python -m steering.pulse_effects --out DIR [--design strong --models gpt,nemotron,qwen330b,gemma]
 python -m steering.whole COMMAND --release report/NAME [--model M] [--shard I/N]     # plan, prepare, canary, run, extract, combine
-python -m steering.release KIND NAME --tests N [--models ...] [--shards ...] [--cutoff TIME]   # KIND: complement, relink, outcome
+python -m steering.release KIND NAME --tests N [--models ...] [--shards ...] [--cutoff TIME]   # KIND: complement, relink, outcome, continuation
+python -m steering.followup report/PARENT [--max-gpu-hours H] [--shards model:N,...]          # plan of a continuation; seals nothing
 ```
 
 GPU commands (`run`, `native`, `annotate`, `lfm-replay`, `canary`) refuse to start outside a Slurm GPU allocation. Use the launchers.
@@ -55,21 +57,8 @@ snapshot and seals the result in `CPU_VALIDATION.json`; `prepare` and `combine` 
 The fluency canary of a base release is run by hand (`python -m steering.whole canary`), and its
 receipt is what lets `run` start production.
 
+A complement release whose shards could not all start or finish before its cutoff gets one continuation (`whole.sh continuation NAME TESTS --parent PARENT --cutoff TIME`; r21 continues r18). It runs the rows the parent never started and continues the ones it left PARTIAL, with the parent's UIDs, seeds and actions, after every parent shard job has ended (`steering.release` refuses while one is live). Print its plan first with `python -m steering.followup report/PARENT`: rows by state, the parent's shard jobs by outcome, and the shards chosen under 285 GPU-hours. A saved partial is copied into the continuation's own store and re-prefilled through the same hooks, and the parent's store is only read. The release names the eight-model efficiency link in `CONTINUATION.json`, extends the source list of `--chain` (default r20) with itself, and its combine joins the outcomes to the parent's rows by UID (`whole_effects`). Pass the parent's extraction jobs, which the plan lists, as `AFTER="JOB ..."` so the combine waits for them. The stores of a sweep, complement or continuation release are bound in `prepare`, under a lock, before any shard exists: shards of one model that start together used to fail with "nonempty unbound whole store".
+
 Two rules apply to results: an outcome that is unknown (a continuation that reaches its allowance, or never finishes) keeps an interval and is never dropped, and nothing is redrawn after the fact. Token contrasts are `log(1+T_control) - log(1+T_treated)`, so a positive value means shorter reasoning than the control.
 
 Tests: [`tests/steering`](../../tests/steering/README.md).
-
-<!-- ledger:begin -->
-## Ledger
-
-Decisions and features that govern this folder (generated by `ledger sync`):
-
-- [D-0002](../../../docs/ledger/decisions/D-0002-whole-reasoning-efficiency.md) [active] Whole-reasoning routing efficiency: chosen Alignment v3 control-feasible global sign-stable RD nomination with exact layer/quintile/role controls at both doses; original prompts, dual score override at epsilon 0.01, prompt and reasoning steering until closure, native and native_repeat. Continuous 64-slot admission with native and efficiency cells before other promote cells. Relative full-allowance canaries, two GPT and seven Qwen shards, immutable releases, fresh stores and six simultaneous bounded contrasts. Monitor deadlines/errors never stop production; actual CPU usage remains bounded separately.; scope: Whole-reasoning GPT/Qwen efficiency experiment and corrected main/strong CPU analyses.; not: Further 512-token rescue work, manuscript edits, pushes, outcome-driven tuning.
-- [D-0003](../../../docs/ledger/decisions/D-0003-outcome-selected-gentle-routing-nudge.md) [active] Outcome-selected gentle routing nudge: chosen Select experts by outcome on campaign-v3 cohort B (per-attempt usage per reasoning token, z-scored within question, mean wrong-minus-right over mixed-outcome questions, sign stable under leave-one-question-out). Exclude the shared core (top 5% native frequency per layer) and the most execution-specific experts (union over folds of the top 10% positive Implement/Analyze risk differences). Take stable positive pairs until 1.2% of native routing mass (5 to 40 pairs; fill to 5 by score with an unstable_fill flag if needed). Families whose question is in cohort B use the set selected without that question. Subtract delta in {0.4, 0.8, 1.6} from the selected experts' router logits at every prompt and reasoning token, keeping native top-k and renormalisation. Matched random controls with the same layers, frequency quintiles and exclusions. Reuse the base releases' native and native_repeat rows. Length-limit baseline: cut each family's native reasoning at 50/70/85% of its length, append the closing suffix and generate only the answer (allowance min(2048, remaining)).; scope: The outcome-steering experiment (F-0004) on gpt, qwen330b and nemotron; extension to the other models with cohort-B captures only if the three-model result is positive.; not: Changes to the finished whole-reasoning releases r7-r17 or their analysis; manuscript claims before a sealed receipt.
-- [F-0003](../../../docs/ledger/features/F-0003-whole-reasoning-efficiency.md) [active 6/13] Execute the whole-reasoning efficiency experiment
-- [F-0004](../../../docs/ledger/features/F-0004-outcome-selected-gentle-steering-experiment.md) [active 6/6] Outcome-selected gentle steering experiment
-- [F-0008](../../../docs/ledger/features/F-0008-complete-the-whole-reasoning-per-state-heatmap-wit.md) [active 1/3] Complete the whole-reasoning per-state heatmap with the missing suppress cells
-- [F-0009](../../../docs/ledger/features/F-0009-lfm2-5-on-its-own-efficiency-link-signs.md) [active 4/6] LFM2.5 on its own efficiency-link signs
-- [W-0001](../../../docs/ledger/walkthroughs/W-0001-causal-rescue-one-historical-gpt-assignment.md) [walkthrough @0084256] Causal rescue, one historical GPT assignment
-
-<!-- ledger:end -->

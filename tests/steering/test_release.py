@@ -87,6 +87,10 @@ class SealTests(unittest.TestCase):
         self.assertEqual(release.rome('2026-10-24T06:00'), 1792814400.)  # complement r18
         self.assertEqual(release.rome('2026-10-23T23:00'), 1792789200.)  # outcome r1
 
+    def test_a_cutoff_names_its_zone_or_is_epoch_seconds(self):
+        self.assertEqual(release.rome('2026-10-24T04:00+00:00'), 1792814400.)  # the same moment as 06:00 in Rome
+        self.assertEqual(release.rome('1792814400'), 1792814400.)
+
 
 if __name__ == '__main__':
     unittest.main()
