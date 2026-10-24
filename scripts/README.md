@@ -21,3 +21,4 @@ Rules that hold for every script:
 - The other `.sh` files run on the login node and only submit jobs, or print, or build the paper. They never start a model.
 - A job refuses to start outside Slurm. Its setup is `slurm/env.sh`, so all jobs look the same: same modules, offline mode, own cache folders.
 - An `OUT_DIR` argument must name a folder that does not exist yet.
+- A model is passed as its Hugging Face id (for example `openai/gpt-oss-20b`). No launcher lists the models: to run one for every model, use `for m in $(python -m models.roster); do ...; done` (`--captured` for the seven whose routers were captured; run it from the repository root with Python 3.11 and `PYTHONPATH=src`).
