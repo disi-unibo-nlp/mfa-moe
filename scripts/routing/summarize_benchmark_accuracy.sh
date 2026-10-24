@@ -1,6 +1,7 @@
 #!/bin/bash
-# Benchmark accuracy tables and the per-model inventory of the generated corpora:
-#   scripts/routing/benchmarks.sh OUT_DIR      e.g. report/benchmarks
-out="${1:?OUT_DIR}"
-sbatch -J bench-accuracy --export=ALL,THREADS=4 scripts/slurm/run_module_cpu.sbatch routing.benchmark_accuracy "$out/accuracy"
-sbatch -J bench-inventory --export=ALL,THREADS=4 scripts/slurm/run_module_cpu.sbatch routing.benchmark_inventory "$out/inventory"
+# Benchmark accuracy tables (accuracy, budget, continuation, errors, length gap) from the outcome sidecar OUTCOMES_JSON.
+# OUT_DIR must be new:
+#   scripts/routing/summarize_benchmark_accuracy.sh OUTCOMES_JSON OUT_DIR
+set -euo pipefail
+test -e "${1:?OUTCOMES_JSON}"
+sbatch -J bench-accuracy --export=ALL,THREADS=4 scripts/slurm/run_module_cpu.sbatch routing.benchmark_accuracy "${2:?OUT_DIR}" --outcomes "$1"

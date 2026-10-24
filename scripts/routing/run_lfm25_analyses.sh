@@ -1,8 +1,11 @@
 #!/bin/bash
-# LFM2.5 native analyses: expert selection and nominations, then the present-state readout and the class dynamics.
-# OUT_DIR must be new; it receives the readout fits and READOUT_RESULTS.json (the receipt in the study folder stays):
-#   scripts/routing/lfm.sh OUT_DIR
-out="${1:?OUT_DIR}"
-D=$(sbatch --parsable -J lfm-derive scripts/slurm/run_module_cpu.sbatch routing.lfm derive)
-sbatch -J lfm-readout --dependency=afterok:$D scripts/slurm/run_module_cpu.sbatch routing.lfm readout --out "$out"
-sbatch -J lfm-dynamics --dependency=afterok:$D scripts/slurm/run_module_cpu.sbatch routing.lfm dynamics
+# LFM2.5 native analyses: expert selection and nominations (derive) first, then the present-state readout and the class
+# dynamics, both after derive succeeds. The study's receipts stay in STUDY_DIR; OUT_DIR must be new and receives the
+# readout fits and READOUT_RESULTS.json (the published lfm25/READOUT_RESULTS.json is never rewritten):
+#   scripts/routing/run_lfm25_analyses.sh STUDY_DIR OUT_DIR
+set -euo pipefail
+study=${1:?STUDY_DIR}; out=${2:?OUT_DIR}; test -e "$study/BINDING.json"
+derive=$(sbatch --parsable -J lfm-derive scripts/slurm/run_module_cpu.sbatch routing.lfm25_analyses derive --study "$study")
+after=(--dependency=afterok:$derive --kill-on-invalid-dep=yes)
+sbatch -J lfm-readout "${after[@]}" scripts/slurm/run_module_cpu.sbatch routing.lfm25_analyses readout --study "$study" --out "$out"
+sbatch -J lfm-dynamics "${after[@]}" scripts/slurm/run_module_cpu.sbatch routing.lfm25_analyses dynamics --study "$study"
