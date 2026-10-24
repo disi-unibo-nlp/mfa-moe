@@ -1,0 +1,94 @@
+{
+  "schema": "final-routing-rescue-attempts-v1",
+  "source_binding": "SOURCE_BINDING-r8.json",
+  "attempts": [
+    {
+      "jobs": [
+        "61494559",
+        "61494560"
+      ],
+      "status": "failed_or_cancelled",
+      "exit": "61494559 FAILED 1:0; 61494560 CANCELLED 0:0",
+      "elapsed": [
+        "00:07:21",
+        "00:05:22"
+      ],
+      "reason": "score_override re-entry validation compared native affinities against the wrong logits",
+      "evidence": [
+        "rescue-gpt-61494559.err",
+        "rescue-qwen36-61494560.err"
+      ],
+      "disposition": "preserved; corrected in SOURCE_BINDING-r2"
+    },
+    {
+      "jobs": [
+        "61494913",
+        "61494915"
+      ],
+      "status": "failed",
+      "exit": "both FAILED 1:0",
+      "elapsed": [
+        "00:12:08",
+        "00:12:02"
+      ],
+      "reason": "score_override target inclusion/exclusion was not dispatched; diagnostic shard 61495564 identified the direct-selection defect",
+      "evidence": [
+        "rescue-gpt-r4-61494913.err",
+        "rescue-qwen36-r4-61494915.err",
+        "rescue-diag-61495564.err"
+      ],
+      "disposition": "preserved; corrected in SOURCE_BINDING-r7"
+    },
+    {
+      "jobs": [
+        "61496141",
+        "61496147"
+      ],
+      "status": "cancelled",
+      "exit": "both CANCELLED 0:0",
+      "elapsed": [
+        "00:15:07",
+        "00:15:07"
+      ],
+      "reason": "uncapped continuation allowance; stopped before the 512-token rescue window was enforced",
+      "evidence": [
+        "rescue-gpt-r7-61496141.out",
+        "rescue-qwen36-r7-61496147.out"
+      ],
+      "disposition": "preserved; corrected in SOURCE_BINDING-r8"
+    },
+    {
+      "jobs": [
+        "61497098",
+        "61497099"
+      ],
+      "status": "released",
+      "shape": "2 GPU / 16 CPU / 120 GiB / 4 h each",
+      "source_binding": "SOURCE_BINDING-r8.json",
+      "scope": "GPT-OSS-20B and Qwen3.6-35B-A3B; 64 held-out families; 3,712 continuations each; score override, single/triple depth regime, 512-token window",
+      "automatic_retry": false,
+      "jobs_by_model": {
+        "gpt": [
+          "61497098"
+        ],
+        "qwen36": [
+          "61497099"
+        ]
+      },
+      "observed_20261020": {
+        "scheduler_state": "both COMPLETED 0:0",
+        "scientific_state": "incomplete and mixed source; see GENERATION_PROVENANCE_AUDIT.json",
+        "gpt_complete": 3712,
+        "qwen36_complete": 1705,
+        "qwen36_untouched": 2007,
+        "source_and_window_eligible": 5380,
+        "observed_receipt": "OBSERVED_STATUS.json",
+        "provenance_receipt": "GENERATION_PROVENANCE_AUDIT.json"
+      }
+    }
+  ],
+  "notes": [
+    "No failed receipt or prior allocation is deleted or reclassified.",
+    "Only the score-override selection implementation changed between attempts; frozen prefixes, nominations and outcomes were not selected from results."
+  ]
+}

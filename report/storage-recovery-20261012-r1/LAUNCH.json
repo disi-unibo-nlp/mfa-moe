@@ -1,0 +1,14 @@
+{
+  "job_id": "60189548",
+  "account": "iscrc_miosr",
+  "partition": "lrd_all_serial",
+  "qos": "normal",
+  "cpus": 2,
+  "memory_gib": 2,
+  "minutes": 10,
+  "upper_local_hours": 0.3333333333333333,
+  "upper_with_25pct_margin": 0.41666666666666663,
+  "plan_sha256": "0f71d8965e32541e9ee16e8b035bcc9dd428396740184c4ca5f307be1b1f0c0c",
+  "authorization": "User Q3: first check if there is memory we can remove that is useless; standing authorization for verified disposable storage cleanup",
+  "observed_utc": "2026-10-12T14:33:26.889883+00:00"
+}
