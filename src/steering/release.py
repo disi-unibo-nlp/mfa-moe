@@ -3,6 +3,7 @@
   python -m steering.release complement NAME --tests N   suppress the states the base releases left out (r18)
   python -m steering.release relink NAME --tests N       the final combine again under the eight-model link (r19, r20)
   python -m steering.release outcome NAME --tests N      the outcome-selected nudge (--models, --shards)
+  python -m steering.release continuation NAME --tests N --parent P   the rows a complement left unfinished (r21)
 
 N is the number of tests that passed locally on this commit. Run it from the repository with the committed code
 clean: what runs is `git archive HEAD`, unpacked once into mfa-moe/releases/<commit>. It writes report/NAME/
@@ -19,11 +20,14 @@ import subprocess
 import time
 from zoneinfo import ZoneInfo
 
+from steering.followup import APPROVED_GPU_HOURS, parse_shards, plan_followup
 from store import MODELS, REPO, WORK, check_files, file_sha, publish, require, verified
 
 REPORTS = REPO/'report'
 SNAPSHOTS = WORK/'mfa-moe/releases'
 TEMPLATE = 'whole-reasoning-20261021-r7'  # pins the inputs, the sentence classifier and the nomination reference
+CHAIN = 'whole-reasoning-20261021-r20'  # the release whose source list a continuation extends
+LINK = 'final-routing-20261015-r1/driver/EFFICIENCY_LINK_V2.json'  # the eight-model efficiency link, under report/
 RUN_PATHS = ('src', 'tests/steering', 'tests/routing', 'scripts/slurm', 'scripts/steering')
 
 
@@ -36,8 +40,11 @@ def prior_usage() -> dict:
 
 
 def rome(text: str) -> float:
-    """A Europe/Rome wall-clock time as a Unix time."""
-    return datetime.fromisoformat(text).replace(tzinfo=ZoneInfo('Europe/Rome')).timestamp()
+    """A Unix time from an ISO date-time (Europe/Rome unless it names a zone) or from epoch seconds."""
+    if text.isdigit():
+        return float(text)
+    moment = datetime.fromisoformat(text)
+    return (moment if moment.tzinfo else moment.replace(tzinfo=ZoneInfo('Europe/Rome'))).timestamp()
 
 
 def complement(root: Path, args: argparse.Namespace) -> dict:
@@ -89,7 +96,7 @@ def relink(root: Path, args: argparse.Namespace) -> dict:
     """
     parent_name = 'whole-reasoning-20261021-r18'
     parent = verified(REPORTS/parent_name/'RELEASE.json')
-    link = REPORTS/'final-routing-20261015-r1/driver/EFFICIENCY_LINK_V2.json'
+    link = REPORTS/LINK
     sealed_link = verified(link)
     require(set(sealed_link['models']) == set(MODELS), 'the link receipt does not cover the eight models')
     return dict(
@@ -144,7 +151,57 @@ def outcome(root: Path, args: argparse.Namespace) -> dict:
                f'GPU work stops at {cutoff} Rome.\n')
 
 
-KINDS = {'complement': complement, 'relink': relink, 'outcome': outcome}
+def continuation(root: Path, args: argparse.Namespace) -> dict:
+    """r21: the follow-up of a complement release that could not start or finish all its shards before its cutoff.
+
+    It runs every row the parent never started and continues every row it left PARTIAL
+    (steering.whole.continuation_manifest), with the parent's UIDs, seeds and actions and a later cutoff, after
+    all the parent's shard jobs have ended. Its shards are sized by steering.followup under --max-gpu-hours. Its
+    combine extends the source list of release --chain (the newer efficiency link) with this release, and runs
+    under the eight-model link (--link). The parent's extraction jobs are passed as AFTER="..." to whole.sh.
+    """
+    from steering.whole import manifest_path
+    require(args.parent, '--parent is required: the complement release to continue')
+    require(args.cutoff, '--cutoff is required: no GPU row may start after it (Rome time, e.g. 2026-10-27T06:00)')
+    parent = REPORTS/args.parent
+    old = verified(parent/'RELEASE.json')
+    plan = plan_followup(parent, args.max_gpu_hours or APPROVED_GPU_HOURS, parse_shards(args.shards or ''))
+    require(not plan['live_parent_jobs'], f'{args.parent} still has shard jobs that have not ended: {plan["live_parent_jobs"]}')
+    cutoff = rome(args.cutoff)
+    require(cutoff > max(time.time(), old['cutoff']), "the cutoff must be later than now and than the parent's")
+    link = Path(args.link) if args.link else REPORTS/LINK
+    sealed_link = verified(link)
+    require(set(sealed_link['models']) == set(MODELS), 'the link receipt does not cover the eight models')
+    models, shards = list(plan['models']), plan['shards']
+    sweep = {m: plan['models'][m]['dose'] for m in models}
+    sources = verified(REPORTS/(args.chain or CHAIN)/'SOURCES.json')['sources']
+    for model in models:
+        source = next((s for s in sources if s['model'] == model and str(parent) in s.get('complements', [])), None)
+        require(source, f'{args.chain or CHAIN} has no {model} source with {args.parent} among its complements')
+        source['complements'].append(str(root))
+    # The continuation reads each parent manifest; the combine reads the link receipt.
+    inputs = {str(manifest_path(model, sweep[model], parent)): file_sha(manifest_path(model, sweep[model], parent))
+              for model in models}
+    inputs[str(link)] = file_sha(link)
+    counts = ', '.join(f'{m} {v["never_started"]}+{v["partial"]} in {shards[m]}' for m, v in plan['models'].items())
+    return dict(
+        kind_file={'models': {m: {'parent': str(parent)} for m in models}, 'parent': args.parent, 'plan': plan,
+                   'link': str(link), 'link_sha256': sealed_link['sha256']},
+        template=old, models=models, shards=shards, sweep=sweep, cutoff=cutoff, cpu_ceiling=200., sources=sources,
+        inputs=inputs,
+        scope='tests/steering/test_whole*.py; the allocated validation runs tests/steering, '
+              'tests/steering/outcome and tests/routing in full',
+        readme=f'Continues the complement release {args.parent}, whose shards could not all start or finish before its\n'
+               'science cutoff. It runs the rows the parent never started and continues the rows it left PARTIAL, with\n'
+               "the parent UIDs, seeds and actions; each saved partial is copied into this release's own store and\n"
+               're-prefilled through the same hooks, and no parent store is written. Rows the parent finished stay\n'
+               "with it. Its combined analysis joins every outcome to the parent's rows by UID, with the efficiency\n"
+               'link of the eight-model receipt (driver/EFFICIENCY_LINK_V2.json): analysis-combined/EFFECTS_WHOLE.json.\n'
+               f'Rows (never started + partial) and shards: {counts}.\n'
+               f'GPU work stops at {datetime.fromtimestamp(cutoff, ZoneInfo("Europe/Rome")):%Y-%m-%d %H:%M} Rome.\n')
+
+
+KINDS = {'complement': complement, 'relink': relink, 'outcome': outcome, 'continuation': continuation}
 
 
 def snapshot(root: Path, commit: str) -> tuple[Path, Path]:
@@ -178,6 +235,11 @@ def seal(kind: str, name: str, tests: int, args: argparse.Namespace) -> Path:
     gpu_ceiling = 8.*sum(shards.values())+10 if shards else 0.
     commit = subprocess.run(['git', 'rev-parse', 'HEAD'], cwd=REPO, capture_output=True, text=True,
                             check=True).stdout.strip()
+    # Which release this one derives from: a relink and a continuation name their parent (a continuation keeps
+    # its parent's template too), the others name their template.
+    derived = {('parent' if kind in ('relink', 'continuation') else 'template')+'_release_sha256': template['sha256']}
+    if kind == 'continuation':
+        derived['template_release_sha256'] = template['template_release_sha256']
     root.mkdir(mode=0o700)
     try:
         prior = publish(root/'PRIOR_USAGE.json', prior_usage())
@@ -205,7 +267,7 @@ def seal(kind: str, name: str, tests: int, args: argparse.Namespace) -> Path:
             'nomination_reference': template['nomination_reference'],
             'local_validation_sha256': validation['sha256'], 'resource_plan_sha256': plan['sha256'],
             'new_gpu_hour_ceiling': gpu_ceiling, 'cpu_core_hour_ceiling': spec['cpu_ceiling'], 'engineering_only': False,
-            'prior_usage': prior, ('parent' if kind == 'relink' else 'template')+'_release_sha256': template['sha256']})
+            'prior_usage': prior, **derived})
     except BaseException:
         shutil.rmtree(root, ignore_errors=True)  # a failed seal leaves no half-written release
         raise
@@ -218,8 +280,15 @@ def main() -> None:
     parser.add_argument('name')
     parser.add_argument('--tests', type=int, required=True, help='tests that passed locally on this commit')
     parser.add_argument('--models', help='outcome only: the models to steer (default: the first wave)')
-    parser.add_argument('--shards', help='outcome only: N per model, or model:N,...; default 3')
-    parser.add_argument('--cutoff', help='complement, outcome (required): no GPU row starts after this Rome time')
+    parser.add_argument('--shards', help='outcome: N per model, or model:N,...; default 3. continuation: model:N,... '
+                        'instead of the computed sizes')
+    parser.add_argument('--cutoff', help='complement, outcome, continuation (required): no GPU row starts after this '
+                        'time (Rome, unless it names a zone)')
+    parser.add_argument('--parent', help='continuation only: the complement release (report/NAME) to continue')
+    parser.add_argument('--chain', help=f'continuation only: the release whose SOURCES.json it extends (default {CHAIN})')
+    parser.add_argument('--link', type=Path, help=f'continuation only: efficiency-link receipt (default report/{LINK})')
+    parser.add_argument('--max-gpu-hours', type=float,
+                        help=f'continuation only: GPU-hours its shards may reserve (default {APPROVED_GPU_HOURS:g})')
     args = parser.parse_args()
     print(seal(args.kind, args.name, args.tests, args))
 
