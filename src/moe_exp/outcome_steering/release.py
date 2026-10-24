@@ -131,6 +131,14 @@ def sweep_release(name: str, models: list[str], shards: dict[str, int], local_te
                 extra_inputs=extra, cutoff=CAPTURE_CUTOFF, cpu_ceiling=60., job_prefix='os', stores=stores)
 
 
+def balance() -> str:
+    """The account balance (saldo exists on login nodes only; a job sealing a release records its absence)."""
+    try:
+        return subprocess.run(['/cineca/bin/saldo', '-b'], capture_output=True, text=True).stdout
+    except FileNotFoundError:
+        return 'saldo unavailable on this node'
+
+
 def seal(name: str, models: list[str], shards: dict[str, int], local_tests: int, *, spec_name: str, spec: dict,
          readme: str, extra_inputs: list, cutoff: int, cpu_ceiling: float, job_prefix: str,
          stores: Path | None = None) -> dict:
@@ -176,7 +184,7 @@ def seal(name: str, models: list[str], shards: dict[str, int], local_tests: int,
     publish(root/'PREFLIGHT.json', {
         'host': os.uname().nodename, 'user': 'lmolfett', 'account': 'iscrc_miosr', 'time': time.time(),
         'template_release_sha256': template['sha256'],
-        'balance': subprocess.run(['/cineca/bin/saldo', '-b'], capture_output=True, text=True).stdout})
+        'balance': balance()})
     publish(root/spec_name, {'models': spec})        # makes whole.prepare build this release's rows
     (root/'README.md').write_text(readme)
 
