@@ -17,8 +17,11 @@ from store import check_files, require
 class Renderer:
     def __init__(self,campaign):
         check_files(campaign["renderer"]["files"])
+        # The pinned DSPy copy is named by the campaign (the files just checked), not looked up in the code tree:
+        # a worktree or release snapshot has no gitignored .research-runtime.
         self.child=subprocess.Popen([sys.executable,"-B","-m","labeling.renderer_child",
-            campaign["annotator"]["program"]],stdin=subprocess.PIPE,stdout=subprocess.PIPE,text=True,
+            campaign["annotator"]["program"],campaign["renderer"]["path"]],
+            stdin=subprocess.PIPE,stdout=subprocess.PIPE,text=True,
             env={**os.environ,"PYTHONPATH":os.pathsep.join(filter(None,[str(Path(__file__).resolve().parents[1]),os.environ.get("PYTHONPATH")])),
                  "DSPY_CACHEDIR":os.environ["TMPDIR"]+"/dspy","LITELLM_LOCAL_MODEL_COST_MAP":"True"})
         self.first_response=True
