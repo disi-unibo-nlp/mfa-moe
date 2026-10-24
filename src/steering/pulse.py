@@ -21,6 +21,7 @@ Commands (python -m steering.pulse ...):
 """
 from __future__ import annotations
 import argparse
+import hashlib
 import json
 import os
 import sys
@@ -466,6 +467,8 @@ def intervention_builder(b, model, tokenizer, closure, *, greedy=False, limit=No
             total = min(total, int(row['horizon']))
         if limit is not None:
             total = min(total, limit)
+        if row.get('cap_tokens'):
+            total = min(total, int(row['cap_tokens']))
         left = total-len(history)
         if left <= 0:
             return None
@@ -474,7 +477,8 @@ def intervention_builder(b, model, tokenizer, closure, *, greedy=False, limit=No
                    'action': row['action'], 'actions': row.get('actions'), 'capture_layers': row['capture_layers'],
                    'window': row['horizon']}
         if row.get('whole'):
-            request.update(whole=True, prompt_scope=row['prompt_scope'], audit_capture=row['audit_capture'])
+            request.update(whole=True, prompt_scope=row['prompt_scope'], audit_capture=row['audit_capture'],
+                           capture_mode=row.get('capture_mode'))
         return {'prompt_ids': prompt+prefix+history, 'params': params, 'request': request, 'total': total}
     return build
 
@@ -503,21 +507,44 @@ def compress_audit_capture(folder: Path, capture: dict) -> dict:
     """
     import numpy as np
     arrays = {}
-    for layer, record in capture['capture'].items():
-        for key, values in record.items():
-            dtype = (np.uint8 if key.endswith('_ids') else np.float32 if key.endswith('_weights')
-                     else np.bool_ if key == 'active' else np.int32)
-            arrays['layer_'+layer+'_'+key] = np.asarray(values, dtype=dtype)
-    require(work_remaining_bytes() > 13*2**30+sum(array.nbytes for array in arrays.values()),
-            'full audit would breach the existing WORK reserve and concurrent-write margin')
+    native_ids = capture.get('native_id_arrays')
+    if native_ids is not None:
+        # Native-id capture: the native top-k ids (uint8) and weights (float16) of every reasoning token,
+        # row i = generated position i; the receipt already holds each array's hash.
+        for layer, (ids, weights) in native_ids.items():
+            record = capture['capture'][layer]
+            require(hashlib.sha256(ids.tobytes()).hexdigest() == record['native_ids_sha256'] and
+                    hashlib.sha256(weights.tobytes()).hexdigest() == record['native_weights_sha256'],
+                    'native-id capture differs from its receipt')
+            arrays['layer_'+layer+'_native_ids'], arrays['layer_'+layer+'_native_weights'] = ids, weights
+    else:
+        for layer, record in capture['capture'].items():
+            for key, values in record.items():
+                dtype = (np.uint8 if key.endswith('_ids') else np.float32 if key.endswith('_weights')
+                         else np.bool_ if key == 'active' else np.int32)
+                arrays['layer_'+layer+'_'+key] = np.asarray(values, dtype=dtype)
+    require(free_bytes(folder) > 13*2**30+sum(array.nbytes for array in arrays.values()),
+            'full audit would breach the storage reserve and concurrent-write margin')
     folder.mkdir(parents=True, exist_ok=True)
     destination = folder/'AUDIT.npz'
     require(not destination.exists(), 'whole audit capture already exists')
     with destination.open('xb') as stream:
         np.savez_compressed(stream, **arrays)
-    return {**capture, 'capture': {}, 'full_capture': {
-        'path': str(destination), 'sha256_file': file_sha(destination),
-        'bytes': destination.stat().st_size, 'format': 'numpy-compressed-exact-float32-uint8'}}
+    kept = {k: v for k, v in capture.items() if k != 'native_id_arrays'}
+    return {**kept, 'capture': capture['capture'] if native_ids is not None else {}, 'full_capture': {
+        'path': str(destination), 'sha256_file': file_sha(destination), 'bytes': destination.stat().st_size,
+        'format': 'native-ids-uint8-float16' if native_ids is not None else 'numpy-compressed-exact-float32-uint8'}}
+
+
+def free_bytes(folder: Path) -> int:
+    """Space left where `folder` lives: the WORK project quota, or the free space of any other filesystem."""
+    path = Path(folder).resolve()
+    while not path.exists():
+        path = path.parent
+    if str(path).startswith('/leonardo_work/'):
+        return work_remaining_bytes()
+    stat = os.statvfs(path)
+    return stat.f_bavail*stat.f_frsize
 
 
 def intervention_finisher(store, b, model):
@@ -540,7 +567,7 @@ def intervention_finisher(store, b, model):
         if not capture_valid:
             status, why = 'unknown', 'required_routing_capture_missing'
         else:
-            if row.get('whole') and row.get('audit_capture'):
+            if row.get('whole') and (row.get('audit_capture') or row.get('capture_mode') == 'native_ids'):
                 capture = compress_audit_capture(folder, capture)
             publish(folder/'CAPTURE.json', {'uid': uid, 'raw_sha256': raw['sha256'], **capture})
         publish(folder/'RESULT.json', {'uid': uid, 'assignment_sha256': digest(row), 'status': status,
