@@ -93,7 +93,7 @@ def stream_router_signals(
             if family in PROBABILITY_ROUTERS:
                 values = values.clamp_min(torch.finfo(torch.float32).tiny).log()
             elif family in SIGMOID_ROUTERS:
-                # Downstream softmax now yields normalized sigmoid affinities.
+                # A softmax downstream then yields normalized sigmoid affinities.
                 # Selection still uses the model's correction bias/group mask.
                 values = F.logsigmoid(values)
             routers[index] = values

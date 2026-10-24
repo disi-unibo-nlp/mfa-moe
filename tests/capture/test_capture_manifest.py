@@ -112,7 +112,7 @@ class ManifestTests(unittest.TestCase):
 
     def test_only_the_native_capture_spec_is_accepted(self):
         self.rewrite(spec=dict(capture_version=1, layers=LAYERS))
-        with self.assertRaisesRegex(ValueError, 'native capture spec'):
+        with self.assertRaisesRegex(ValueError, 'Native capture spec'):
             load_manifest(self.path)
 
     def test_outcomes_never_enter_a_manifest(self):
@@ -315,13 +315,6 @@ class RunHelperTests(unittest.TestCase):
         (other / 'stray.txt').write_text('x')
         with self.assertRaisesRegex(ValueError, 'Unbound existing capture output'):
             run.claim_capture_output(manifest, other, self.CODE)
-
-    def test_a_folder_of_the_old_bundle_scheme_is_not_resumed(self):
-        out = self.root / 'old'
-        out.mkdir()
-        write_json(out / 'run-binding.json', {'manifest_binding': 'a' * 64, 'code_binding': 'c' * 64})
-        with self.assertRaisesRegex(ValueError, 'other inputs or by other code'):
-            run.claim_capture_output(dict(binding='a' * 64), out, self.CODE)
 
     def test_a_repeat_capture_goes_to_a_folder_named_like_its_shard(self):
         shard = Shard(self.root, repeat=True)

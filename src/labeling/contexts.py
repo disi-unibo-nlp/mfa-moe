@@ -1,7 +1,9 @@
 """Reasoning/answer split of a decoded continuation and the judge contexts of its sentences.
 
-`context_id`, `scientific_config`, `parser_parts` and `sentence_contexts` are vendored verbatim from
-`research_campaign_v3_r6.annotation`.
+`context_id` names one judge input together with the program and the settings that label it;
+`identity_config` is the part of the judge settings that enters that name (not the server address, the
+source plan or the batch size). `sentence_contexts` lists the sentences a continuation owns, each with its
+judge inputs.
 """
 from store import digest, require
 
@@ -11,8 +13,8 @@ def parts(tokenizer, profile, text):
         reasoning, marker, final = text.partition('</think>')
         return reasoning.removeprefix('<think>'), final if marker else None
     if profile['key'] == 'gpt':
-        # vLLM 0.29's GptOssReasoningParser no longer extracts text; split Harmony channels directly
-        # (analysis bodies joined as vLLM did, final channel up to <|return|>/<|end|>).
+        # vLLM 0.29's GptOssReasoningParser does not extract text, so the Harmony channels are split here
+        # (analysis bodies joined with newlines, final channel up to <|return|>/<|end|>).
         import re
         from generation.continuation import final_answer
         bodies = re.findall(r'<\|channel\|>analysis<\|message\|>(.*?)(?=<\|end\|>|<\|return\|>|<\|call\|>|\Z)',
@@ -23,10 +25,10 @@ def parts(tokenizer, profile, text):
 
 def context_id(inputs, annotator):
     return digest({"inputs": inputs, "program_sha256": annotator["config"]["program_sha256"],
-                   "reader_revision": annotator["revision"], "config": scientific_config(annotator["config"])})
+                   "reader_revision": annotator["revision"], "config": identity_config(annotator["config"])})
 
 
-def scientific_config(config):
+def identity_config(config):
     return {k:v for k,v in config.items() if k not in ("base_url","source_plan_sha256","batch_size")}
 
 
@@ -54,8 +56,8 @@ def sentence_contexts(trace, replay, row, result):
         owned = layout["unit_tokens"][i] or []
         if not owned or max(owned)<prefix:
             continue
-        # A prefix must be at the end of its saved sentence. An overlapping
-        # boundary is a compatibility failure, never outcome-based replacement.
+        # A prefix must end at the end of a saved sentence; one that cuts a sentence is an error, never
+        # replaced by a choice that looks at outcomes.
         require(min(owned)>=prefix,"selected prefix bisects a reasoning sentence")
         end = max(owned)+1
         complete = i<len(units)-1 or result["finish_reason"]=="stop" or u["text"].rstrip().endswith((".","!","?"))

@@ -1,7 +1,7 @@
 """Bound the query rows of native GPT-OSS eager attention, preserving sinks and masks.
 
 This changes no installed files, parameters, routing, keys, or context length.
-The original attention implementation performs every chunk's arithmetic.
+The native attention implementation performs every chunk's arithmetic.
 """
 import torch
 

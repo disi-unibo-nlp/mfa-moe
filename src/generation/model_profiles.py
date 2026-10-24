@@ -17,9 +17,9 @@ API_KEY = "local-vllm-key"  # the key scripts/serve/args.sh starts every server 
 CARD_OUTPUT_TOKENS = 131_072
 CARD_CONTEXT = 133_120  # output cap plus prompt room; every chosen checkpoint supports it
 
-# Model-card sampling for the v3 primary corpus (user decision 2026-09-25): each model's
-# own recommended thinking-mode sampler, and a 131,072-token output cap wherever the
-# native context allows. Citations point at the local card / generation_config snapshot.
+# Each model's own recommended thinking-mode sampler, and a 131,072-token output cap wherever the
+# native context allows. `card` cites the line of the local model card or generation_config.json
+# that gives the sampler.
 CARD_PROFILES: dict[str, dict] = {
     "qwen36": dict(
         model="Qwen/Qwen3.6-35B-A3B-FP8", revision="95a723d08a9490559dae23d0cff1d9466213d989",

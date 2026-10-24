@@ -86,10 +86,9 @@ class HFBackend:
         from models.router_adapters import decoder_layers
         details = {}
         router, hidden = extract_logs_single_pass(
-            model=self.model, tokenizer=self.tokenizer, problem=trace.prompt, cot_text=trace.cot_text,
-            system_prompt=trace.system_prompt, messages=trace.generation_messages, extract_hidden_states=True,
-            layer_indices=self.spec['layers'], token_replay=trace.metadata['token_replay'],
-            routing_details=details)
+            model=self.model, tokenizer=self.tokenizer, cot_text=trace.cot_text,
+            token_replay=trace.metadata['token_replay'], extract_hidden_states=True,
+            layer_indices=self.spec['layers'], routing_details=details)
         semantics = details['semantics']
         ids = details['selected_experts']
         weights = details['expert_weights']
@@ -138,10 +137,10 @@ class VLLMBackend:
         else:
             kwargs['language_model_only'] = True
         if spec.get('kv_cache_dtype') is not None:
-            # Only the primary Gemma replay (native NVFP4 weights, bf16 KV cache) sets this.
+            # Only the Gemma replay (native NVFP4 weights, bf16 KV cache) sets this.
             if (spec['kv_cache_dtype'] != 'bfloat16' or not spec['generation_model'].startswith('nvidia/Gemma')
                     or spec.get('precision') != 'nvfp4'):
-                raise ValueError('Primary Gemma requires native NVFP4 with BF16 KV')
+                raise ValueError('Gemma requires native NVFP4 with BF16 KV')
             kwargs['kv_cache_dtype'] = 'bfloat16'
         self.llm = LLM(**kwargs)
         if spec['generation_model'].startswith('nvidia/Gemma'):

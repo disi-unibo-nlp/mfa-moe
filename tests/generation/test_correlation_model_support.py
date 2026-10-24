@@ -127,7 +127,7 @@ def test_noncanonical_bpe_tokens_are_not_reencoded(byte_tokenizer):
             seen["input_ids"] = input_ids.tolist()
             self.layers[0](torch.zeros(1, input_ids.shape[1], 4))
 
-    result = extract_logs_single_pass(Backbone(), byte_tokenizer, "ignored", text, token_replay=replay)
+    result = extract_logs_single_pass(Backbone(), byte_tokenizer, text, replay)
     assert seen["input_ids"] == [[0] + ids]
     assert result.shape == (1, 2, 4)
     with pytest.raises(ValueError, match="do not decode"):
@@ -241,8 +241,8 @@ def test_real_tiny_architectures_capture_native_routes_and_decoder_inputs(family
     # Nonconsecutive selection tests that returned tensor rows retain real layer IDs.
     selected_layers = indices[-1:]
     router, hidden = extract_logs_single_pass(
-        model, byte_tokenizer, "unused", text, True, layer_indices=selected_layers,
-        token_replay=replay, routing_details=details,
+        model, byte_tokenizer, text, replay, True, layer_indices=selected_layers,
+        routing_details=details,
     )
     index = selected_layers[0]
     raw = reference_router[index].reshape(1, -1, 4)[0, len(prompt_ids):].float()

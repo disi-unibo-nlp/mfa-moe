@@ -3,7 +3,7 @@ from __future__ import annotations
 
 import re
 
-_GSM_GOLD_RE = re.compile(r"####\s*([^\n]+)")
+_HASH_ANSWER_RE = re.compile(r"####\s*([^\n]+)")
 _FINAL_ANSWER_RE = re.compile(
     r"(?:the\s+)?(?:final\s+)?answer\s+is[:\s]+([^\n.]+)",
     re.IGNORECASE,
@@ -48,7 +48,7 @@ def extract_model_answer(text: str) -> str:
     if boxed is not None:
         return boxed.strip()
 
-    m = _GSM_GOLD_RE.search(text)
+    m = _HASH_ANSWER_RE.search(text)
     if m:
         return m.group(1).strip().replace(",", "")
 

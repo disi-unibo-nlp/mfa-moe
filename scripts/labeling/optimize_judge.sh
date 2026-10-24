@@ -1,9 +1,9 @@
 #!/bin/bash
-# Optimise the judge prompt with GEPA against a running OpenAI-compatible server of Qwen3.8-27B (it ran on a
-# workstation with llama.cpp: llama-server --jinja --flash-attn on --ctx-size 8192 --api-key local-llamacpp-key):
+# Optimise the judge prompt with GEPA against a running OpenAI-compatible server of Qwen3.8-27B, for example
+# llama-server --jinja --flash-attn on --ctx-size 8192 --api-key local-llamacpp-key (the key the optimiser sends by default):
 #   scripts/labeling/optimize_judge.sh API_BASE OUTPUT_DIR     e.g. http://127.0.0.1:8080/v1 results/gepaLLMAsJudge/new-run
 # Every other setting is the default (seed 42, 21-example few-shot prompt, LLM-judge reward, balanced-accuracy
-# selection, medium reasoning effort, split 26/6/6); the seed prompt is the earlier optimised prompt the judge is aligned from.
+# selection, medium reasoning effort, split 26/6/6); the seed prompt is the file named on the last line.
 MFA=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe
 DSPY=/leonardo_scratch/large/userexternal/lmolfett/mfa-moe/qwen-fp-fa-smoke/envs/qwen-fp-fa-dspy-88189c22f214ed65
 PYTHONPATH=src:$DSPY/lib/python3.11/site-packages:$MFA/envs/vllm-cu129/lib/python3.11/site-packages \

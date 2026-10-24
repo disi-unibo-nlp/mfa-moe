@@ -98,9 +98,9 @@ class RoutingReducer:
         while offset < n:
             length = min(n - offset, self.stride - self.count % self.stride)
             for name, values in incoming.items():
-                old = self.buffers.get(name)
+                kept = self.buffers.get(name)
                 new = values[offset:offset + length].copy()
-                self.buffers[name] = new if old is None else np.concatenate((old, new))[-self.limit:]
+                self.buffers[name] = new if kept is None else np.concatenate((kept, new))[-self.limit:]
             offset += length
             self.count += length
             if self.count % self.stride == 0:
@@ -160,7 +160,7 @@ class RoutingReducer:
 
 def reduce_arrays(selected, *, layers, model, probabilities_array=None, weights=None,
                   selection_scores=None, semantics=None, config=None, token_indices=None):
-    """Bounded scratch memory even when existing extractors supply whole-trace tensors."""
+    """Bounded scratch memory even when the caller supplies whole-trace tensors."""
     def numpy(x):
         return x.detach().float().cpu().numpy() if hasattr(x, "detach") else np.asarray(x)
     config = {**DEFAULT_CONFIG, **(config or {})}

@@ -48,7 +48,7 @@ def capture_chunked(model, tokenizer, trace, layers, chunk_size=512):
         values = dict(router=router, hidden=hidden,
                       ids=details['selected_experts'], weights=details['expert_weights'])
         if not details.get('semantics', {}).get('native_selection'):
-            raise ValueError('Native selected IDs/weights are required from the frozen HF adapter')
+            raise ValueError('Native selected IDs/weights are required from the HF adapter')
         if semantics is not None and semantics != details['semantics']:
             raise ValueError('Routing semantics changed between chunks')
         semantics = details['semantics']

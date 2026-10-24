@@ -1,5 +1,4 @@
-"""Optimise the judge prompt with GEPA against a running OpenAI-compatible server (the workstation's
-llama.cpp).
+"""Optimise the judge prompt with GEPA against a running OpenAI-compatible server.
 
 Input: the labelled Schoenfeld responses (`--dataset-dir`), a server, and a GEPA budget. The
 responses are split 26 / 6 / 6 into train / validation / locked test by seed, whole responses only.
@@ -9,7 +8,7 @@ The locked test is touched only with `--evaluate-locked-test`, and never in cros
 Output in `--output-dir`: `selected_program_<time>.json` (the judge program that
 `labeling.batch_predictor` loads), the seed and GEPA-optimised prompts and programs, validation
 predictions, `results_<time>.json`, the judge feedback log and `stats.csv`.
-`scripts/labeling/optimize_judge.sh` is the command that produced the frozen judge.
+`scripts/labeling/optimize_judge.sh` runs it with the settings of the frozen judge.
 """
 from __future__ import annotations
 
@@ -546,7 +545,7 @@ def _optimize_and_select(
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Optimize a seven-class Schoenfeld sentence judge with GEPA and llama.cpp.",
+        description="Optimize a seven-class Schoenfeld sentence judge with GEPA.",
         formatter_class=argparse.ArgumentDefaultsHelpFormatter,
     )
     parser.add_argument(

@@ -10,12 +10,10 @@ Output in OUT: `annotations.json` (one record per sentence, in file order), `sum
     python -m labeling.annotation_batch --trace-root ROOT --output-dir OUT
         --base-url http://127.0.0.1:PORT/v1
 
-With `--include-traces LIST.json` only the listed traces are labelled, and their stored selection is
-mapped from the frozen version 1 sentence splitter to the current one (the targeted relabel of the
-traces the splitter fix changed).
+With `--include-traces LIST.json` only the listed traces are labelled. Their stored
+`sentence_selection` indexes the units of the first sentence splitter (version 1), so it is mapped to the
+units of the current one (version 2).
 `--plan-only` prints what would be labelled and stops.
-Runs of the superseded 4-part label sets (`--parts 4` on a combined root) cannot be resumed with
-this one-part plan.
 """
 from __future__ import annotations
 
@@ -65,8 +63,8 @@ def _unknown_record(row: dict[str, Any], outcome: dict[str, Any]) -> dict[str, A
 
 
 def validate_record(row: dict[str, Any], record: Any) -> None:
-    """Check one checkpoint record against its source row. Records written before `unknown` outcomes
-    existed (a `label` and nothing else) are valid too, so old checkpoints still resume."""
+    """Check one checkpoint record against its source row: it is the row plus a `label`, or the row plus
+    the fields of an `unknown` outcome (status, raw completion and failure)."""
     if not isinstance(record, dict) or any(record.get(key) != value for key, value in row.items()):
         raise ValueError("invalid checkpoint record")
     added = set(record) - set(row)
@@ -91,8 +89,8 @@ def outcome_record(row: dict[str, Any], outcome: dict[str, Any]) -> dict[str, An
 
 
 def _without_server(value: dict) -> dict:
-    """A binding or summary written when the server address was still part of the key, as it is
-    written now."""
+    """A binding or summary without the server address (`config.base_url`). Checkpoints may store the
+    address in their key, but a rerun on another port must still match them."""
     value = dict(value or {})
     if "base_url" in value.get("config", {}):
         value["config"] = {k: v for k, v in value["config"].items() if k != "base_url"}
@@ -135,12 +133,12 @@ def run_part(rows, config, *, output_dir, classify):
         summary["unknown_count"] = unknown_count
     for path, value in ((root / "annotations.json", saved), (root / "summary.json", summary)):
         if path.exists():
-            old = json.loads(path.read_text(encoding="utf-8"))
-            if path.name == "summary.json" and old.get("binding_sha256") != value["binding_sha256"]:
+            existing = json.loads(path.read_text(encoding="utf-8"))
+            if path.name == "summary.json" and existing.get("binding_sha256") != value["binding_sha256"]:
                 stored = json.loads(sorted(checkpoints.glob("*.json"))[0].read_text(encoding="utf-8"))["binding"]
-                if digest(stored) == old["binding_sha256"] and _without_server(stored) == binding:
-                    old["binding_sha256"] = value["binding_sha256"]
-            if old != value:
+                if digest(stored) == existing["binding_sha256"] and _without_server(stored) == binding:
+                    existing["binding_sha256"] = value["binding_sha256"]
+            if existing != value:
                 raise ValueError("stale completed output")
         else:
             _publish(path, value)
@@ -148,7 +146,7 @@ def run_part(rows, config, *, output_dir, classify):
 
 
 def load_include_traces(path: Path, source: str | None = None) -> set[tuple[str, str, int]]:
-    """Read the committed list of affected traces used for a targeted relabel.
+    """Read the list of traces to relabel.
 
     `source` keeps only the entries that belong to the corpus being labelled, because the same
     problem id can exist in two corpora.
@@ -218,8 +216,8 @@ def enumerate_items(
             if remaining is None:
                 indices = selected_sentence_indices(trace, units)
             else:
-                # A stored sentence_selection always indexes the frozen version 1 units, so a
-                # targeted relabel maps it onto the current splitter's sub-units.
+                # A stored sentence_selection indexes the version 1 units, so a targeted relabel maps it
+                # onto the sub-units of the current splitter.
                 stored = selected_sentence_indices(trace, sentence_spans_v1(trace))
                 indices = map_selection_to_v2(trace, stored)
             question = question_of(trace.generation_messages, trace.prompt)
@@ -268,9 +266,8 @@ def main(argv: list[str] | None = None) -> None:
     rows = enumerate_items(args.trace_root, include=include)
     if not rows:
         raise ValueError(f"no sentences to label under {args.trace_root}")
-    # The part fields below describe one part holding every sentence. They are redundant, but the
-    # plan's hash is part of every checkpoint key, so they stay as they were when runs were launched
-    # with --part 0 --parts 1.
+    # The plan's hash is part of every checkpoint key; the part fields describe the single part that holds
+    # every sentence.
     source_plan = {
         "schema_version": 1,
         "trace_root": str(args.trace_root),
