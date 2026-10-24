@@ -102,6 +102,16 @@ class DigestTests(unittest.TestCase):
                 path.write_text(path.read_text().replace('"old"', '"edited"'))
                 store.publish(path, {'counts': [1, 2], 'module_sha256': 'new'}, provenance=('module_sha256',))
 
+    def test_write_once_accepts_the_same_bytes_and_refuses_others(self):
+        with tempfile.TemporaryDirectory(dir=store.WORK/'tools/tmp') as tmp:
+            path = Path(tmp)/'sub/table.bin'
+            first = store.write_once(path, lambda stream: stream.write(b'abc'))
+            self.assertEqual(store.write_once(path, lambda stream: stream.write(b'abc')), first)
+            with self.assertRaises(ValueError):
+                store.write_once(path, lambda stream: stream.write(b'abd'))
+            self.assertEqual(path.read_bytes(), b'abc')
+            self.assertEqual(sorted(p.name for p in path.parent.iterdir()), ['table.bin'])
+
 
 class StatsTests(unittest.TestCase):
     def test_bootstrap_panel_matches_the_longer_version_it_replaced(self):

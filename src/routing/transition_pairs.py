@@ -54,7 +54,7 @@ from labeling.lfm_inputs import judge_inputs
 from routing.dynamics import trajectories
 from routing.sentence_table import (CAMPAIGN, PAIR_SOURCES, attempt_layout, campaign, campaign_sources,
                                     original_label_records, pairs_dir, receipt_dir, sentence_extent, trace_key,
-                                    usable_labels)
+                                    usable_labels, write_table)
 from stats import bootstrap_panel
 from steering.pulse import ADMISSION_MARGIN_HOURS, annotate_rows, log, parse_shard
 from store import CLASSES, MODELS, STUDY, Units, binding, digest, file_sha, load, publish, require, verified
@@ -142,16 +142,6 @@ def captured_tokens(model: str, source: dict) -> int | None:
         return None
     bulk = Path(binding()['config']['bulk_root'])
     return verified(bulk/'lfm25/replay'/(source['attempt_id']+'.json'))['captured_completion_tokens']
-
-
-def write_table(frame: pd.DataFrame, path: Path) -> None:
-    """Write a parquet table; an existing file must hold exactly these rows (nothing is overwritten)."""
-    if path.exists():
-        require(pd.read_parquet(path).equals(frame), f'existing table differs: {path}')
-        return
-    temporary = path.with_name('.pending-'+path.name)
-    frame.to_parquet(temporary, index=False)
-    temporary.rename(path)
 
 
 # ----------------------------------------------------------------------------- pair completion
