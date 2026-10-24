@@ -5,7 +5,7 @@
 - purpose: A person can read the repo, find the script behind every paper result, and rerun it, without wading through 250k lines of finished campaigns.
 - acceptance: (1) find scripts -name '*.py' and find src -name '*.sh' are empty; (2) every paper experiment has one script listed in the top README; (3) rerunning every CPU analysis and the paper exporters with the new code gives outputs identical to the golden baseline from commit 978f011 (mfa-moe/r/polish-golden/, provenance keys ignored); (4) all tests pass; (5) /simplify and /code-review high ran on every step with confirmed findings fixed.
 - keywords: cleanup, layout, scripts, readme, simplify, legacy, archive, vllm serve, env.sh, release.sh
-- paths: scripts, src, tests
+- paths: scripts/slurm/env.sh, scripts/serve/gpt.sh, scripts/generation/generate.sbatch, scripts/labeling/label.sbatch, scripts/capture/gate.sh, scripts/routing/selection.sh, scripts/steering/gpu.sh, scripts/paper/build.sh, src/generation/generate.py, src/labeling/spans.py, src/capture/reduce.py, src/routing/selection.py, src/steering/whole.py, src/paper/build_cl_manuscript.py, tests/generation/test_generate_contract.py, tests/labeling/test_annotation_batch_resume.py, tests/capture/test_capture_reduce.py, tests/routing/test_selection.py, tests/steering/test_whole.py, tests/paper/test_table_order.py
 - decisions: D-0007
 
 ## Tasks
