@@ -3,9 +3,12 @@ from __future__ import annotations
 
 import argparse
 import json
+from pathlib import Path
+import sys
 
-MODELS = 'gpt,qwen330b,nemotron'
+from store import REPO
 
+from steering.outcome.manifest import DEFAULT_MODELS as MODELS
 
 def main() -> None:
     parser = argparse.ArgumentParser(prog='python -m steering.outcome')
@@ -15,45 +18,35 @@ def main() -> None:
     usage.add_argument('--workers', type=int, default=4)
     select = commands.add_parser('select', help='print each model\'s expert sets; writes nothing')
     select.add_argument('--models', default=MODELS)
-    release = commands.add_parser('release', help='seal a release: receipts, code snapshot, launch.env')
-    release.add_argument('--name', required=True)
-    release.add_argument('--models', default=MODELS)
-    release.add_argument('--shards', default='3', help='shards per model: N, or model:N,...')
-    release.add_argument('--local-tests', type=int, required=True)
-    commands.add_parser('analyze', help='write EFFECTS_OUTCOME.json (allocated CPU job, from the release)')
-    decide = commands.add_parser('decide', help='apply the declared extension rule; launch the other models if met')
-    decide.add_argument('--effects', required=True)
-    decide.add_argument('--name', required=True)
-    decide.add_argument('--models', required=True)
-    decide.add_argument('--shards', required=True)
-    decide.add_argument('--local-tests', required=True)
+    analyze = commands.add_parser('analyze', help='write EFFECTS_OUTCOME.json (CPU job, after the extractions)')
+    analyze.add_argument('--release', type=Path, required=True, help='the release folder, report/NAME')
+    decide = commands.add_parser('decide', help='apply the declared extension rule; exit 0 when it is met, 3 when it is not')
+    decide.add_argument('--effects', required=True, help='the sealed EFFECTS_OUTCOME.json')
     args = parser.parse_args()
 
+    reports = REPO/'report'
     if args.command == 'usage':
         from steering.outcome.select import usage as run
         for model in args.models.split(','):
-            receipt = run(model, args.workers)
+            receipt = run(model, reports, args.workers)
             print(model, receipt['shape'], receipt['sha256'])
     elif args.command == 'select':
-        from steering.outcome.manifest import evaluation_questions
+        from steering.outcome.manifest import default_spec, evaluation_questions
         from steering.outcome.select import selection
         for model in args.models.split(','):
-            value = selection(model, evaluation_questions(model))
+            questions = evaluation_questions(model, default_spec(model, reports))
+            value = selection(model, questions, reports)
             summary = {name: {k: s[k] for k in ('mass', 'control_mass', 'unstable_fill', 'stable_positive', 'questions')}
                        | {'pairs': len(s['targets'])} for name, s in value['sets'].items()}
             print(json.dumps({'model': model, 'protected': value['protected'], 'sets': summary}, indent=1))
-    elif args.command == 'release':
-        from steering.outcome.release import release as seal
-        models = args.models.split(',')
-        shards = ({m: int(args.shards) for m in models} if args.shards.isdigit() else
-                  {m: int(n) for m, n in (item.split(':') for item in args.shards.split(','))})
-        print(json.dumps(seal(args.name, models, shards, args.local_tests)))
+    elif args.command == 'analyze':
+        from steering.outcome.analysis import analyze as run
+        print(json.dumps({'sha256': run(args.release.resolve())['sha256']}))
     elif args.command == 'decide':
         from steering.outcome.decide import decide as rule
-        print(json.dumps(rule(args.effects, args.name, args.models, args.shards, args.local_tests)))
-    elif args.command == 'analyze':
-        from steering.outcome.analysis import analyze
-        print(json.dumps({'sha256': analyze()['sha256']}))
+        decision = rule(args.effects)
+        print(json.dumps(decision))
+        sys.exit(0 if decision["extend"] else 3)  # 3: the rule is not met (any other code is a failure)
 
 
 if __name__ == '__main__':

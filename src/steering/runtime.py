@@ -2,7 +2,7 @@
 from __future__ import annotations
 from pathlib import Path
 import time
-from store import Units, check_files, digest, load, publish, require
+from store import check_files, digest, load, publish, require
 
 
 def remaining(profile, prompt, prefix):
@@ -58,22 +58,6 @@ def budget_tokens(spec):
     tokens = load(spec['path'])['token_ids']
     require(0 < spec['cut'] <= len(tokens), 'budget cut outside the source output')
     return list(tokens[:spec['cut']])+list(spec['suffix'])
-
-
-def sampling_parameters(profile, row, prefix, cap):
-    from vllm import SamplingParams
-    from vllm.sampling_params import RequestOutputKind
-    sampler = dict(profile['sampler'])
-    if sampler.get('top_k') == 0:
-        sampler['top_k'] = -1
-    penalties = {'research_prefix_penalties': {
-        'prefix': prefix, 'presence': sampler.get('presence_penalty', 0.),
-        'frequency': sampler.get('frequency_penalty', 0.),
-        'repetition': sampler.get('repetition_penalty', 1.)}}
-    sampler.update(presence_penalty=0., frequency_penalty=0., repetition_penalty=1.)
-    return SamplingParams(**sampler, seed=row['seed'], max_tokens=cap,
-                          skip_special_tokens=False, extra_args=penalties,
-                          output_kind=RequestOutputKind.FINAL_ONLY)
 
 
 class Backend:
@@ -162,119 +146,5 @@ class Backend:
                 'profile': 'teacher-forced-native-input-token', 'discarded_output_tokens': 1,
                 'native_validation': report['native_validation'], 'load_seconds': self.load_seconds})
 
-    def run(self, rows, units, *, engineering_tokens=None):
-        import os
-        engine = self.llm.llm_engine
-        require(not engine.has_unfinished_requests() and len(rows) <= self.capacity, 'batch capacity/isolation mismatch')
-        requests, params = [], {}
-        for row in rows:
-            if units.state(row['uid']) is not None:
-                continue
-            prompt, prefix, _ = prompt_prefix(self.binding, self.model, row, self.tokenizer)
-            if engineering_tokens is not None and row.get('engineering_input'):
-                prompt, prefix = row['engineering_input']['prompt'], row['engineering_input']['prefix']
-            cap = remaining(self.profile, prompt, prefix)
-            if engineering_tokens is not None:
-                cap = min(cap, engineering_tokens)
-            params[row['uid']] = sampling_parameters(self.profile, row, prefix, cap)
-            layers = row.get('capture_layers') or ([row['action']['layer']] if row.get('action') else [self.profile['layers'][0]])
-            requests.append({'uid': row['uid'], 'prompt': prompt, 'prefix': prefix, 'closure': self.closure,
-                             'action': row.get('action'), 'capture_layers': layers,
-                             'window': row.get('horizon') or 512, 'audit': bool(engineering_tokens)})
-        if not requests:
-            return []
-        by_uid = {r['uid']: r for r in rows}
-        from steering.session import request_session
-        started, outputs = time.monotonic(), {}
-        with request_session(self.llm, requests, self.profile) as session:
-            for request in requests:
-                row = by_uid[request['uid']]
-                if not units.intent(row, os.environ['SLURM_JOB_ID']):
-                    raise ValueError('request was concurrently claimed after batch preparation')
-                internal_id = session.admit(row['uid'], {'prompt_token_ids': request['prompt'] + request['prefix']}, params[row['uid']])
-                units.admitted(row, os.environ['SLURM_JOB_ID'], internal_id)
-            session.bind()
-            while engine.has_unfinished_requests():
-                require(time.time() < self.deadline, 'allocation deadline during assigned execution')
-                for response in session.step():
-                    require(response.request_id in by_uid and len(response.outputs) == 1, 'response attribution differs')
-                    if response.finished:
-                        row = by_uid[response.request_id]
-                        output = response.outputs[0]
-                        raw = units.output(row, {'status': 'complete', 'token_ids': list(output.token_ids),
-                            'text': self.tokenizer.decode(output.token_ids, skip_special_tokens=False),
-                            'finish_reason': output.finish_reason, 'stop_reason': output.stop_reason,
-                            'seconds': time.monotonic()-started, 'load_seconds': self.load_seconds,
-                            'batch_size': len(requests), 'capacity': self.capacity,
-                            'cap': params[row['uid']].max_tokens, 'engineering_only': engineering_tokens is not None})
-                        outputs[row['uid']] = raw
-            report = session.finish()
-            for uid, raw in outputs.items():
-                row = by_uid[uid]
-                capture = report['capture'][uid]
-                required = next(request['capture_layers'] for request in requests if request['uid'] == uid)
-                if not all(str(layer) in capture and capture[str(layer)]['positions'] for layer in required):
-                    units.commit(row, {'status': 'unknown', 'raw_sha256': raw['sha256'],
-                                       'reason': 'required_routing_capture_missing', 'stochastic_redraw': False})
-                    continue
-                publish(units.folder(uid)/'CAPTURE.json', {'uid': uid, 'raw_sha256': raw['sha256'],
-                    'request_map_sha256': report['request_map_sha256'], 'capture': capture,
-                    'stats': report['stats'][uid], 'geometry': report['geometry'], 'closed': report['closed'][uid],
-                    'sampled_states': report['sampled_states'].get(uid),
-                    'native_validation': report['native_validation']})
-                units.commit(row, {'status': 'complete', 'raw_sha256': raw['sha256'],
-                                  'capture_path': str(units.folder(uid)/'CAPTURE.json')})
-            require(len(outputs) == len(requests), 'batch has missing terminal output')
-            return [outputs[r['uid']] for r in requests]
-
     def close(self):
         self.llm.llm_engine.engine_core.shutdown()
-
-    def metrics(self):
-        import os
-        import resource
-        reports = self.llm.collective_rpc('fr_metrics')
-        return {'workers': reports, 'driver_peak_rss_kib':resource.getrusage(resource.RUSAGE_SELF).ru_maxrss,
-                'temporary_bytes':sum(p.stat().st_size for p in Path(os.environ['TMPDIR']).rglob('*') if p.is_file())}
-
-    def abort_probe(self, row):
-        """Exercise real admission, one step, external-ID abort and hook cleanup."""
-        from vllm import SamplingParams
-        from steering.session import request_session
-        prompt, prefix, _ = prompt_prefix(self.binding, self.model, row, self.tokenizer)
-        uid = digest(['engineering-abort', row['uid'], self.capacity])
-        request = {'uid': uid, 'prompt': prompt, 'prefix': prefix, 'closure': self.closure,
-                   'action': row.get('action'), 'capture_layers': [self.profile['layers'][0]],
-                   'window': 8, 'audit': True}
-        engine = self.llm.llm_engine
-        with request_session(self.llm, [request], self.profile) as session:
-            internal_id = session.admit(uid, {'prompt_token_ids': prompt + prefix},
-                                        SamplingParams(temperature=0., max_tokens=8, seed=0))
-            session.bind()
-            session.step()
-            engine.abort_request([uid], internal=False)
-            require(not engine.has_unfinished_requests(), 'abort left an active request')
-        return {'status': 'complete', 'actual_engine_step': True, 'workers_detached': 2,
-                'external_uid': uid, 'internal_request_id': internal_id,
-                'native_id_randomization_observed': internal_id != uid}
-
-
-def recover_outputs(units, rows):
-    from store import file_sha, verified
-    for row in rows:
-        state = units.state(row['uid'])
-        if not state or state['status'] != 'output':
-            continue
-        folder = units.folder(row['uid'])
-        raw = verified(folder / 'OUTPUT.json')
-        capture = folder / 'CAPTURE.json'
-        if capture.exists():
-            proof = verified(capture)
-            require(proof.get('uid') == row['uid'] and proof.get('raw_sha256') == raw['sha256'],
-                    'raw output and routing capture identities differ')
-            units.commit(row, {'status': 'complete', 'raw_sha256': raw['sha256'],
-                              'capture_path': str(capture), 'capture_file_sha256': file_sha(capture),
-                              'deterministic_output_recovery': True})
-        else:
-            units.commit(row, {'status': 'unknown', 'raw_sha256': raw['sha256'],
-                              'reason': 'routing_capture_missing', 'stochastic_redraw': False})

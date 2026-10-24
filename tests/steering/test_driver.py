@@ -41,7 +41,7 @@ class Selection(unittest.TestCase):
 
     def test_shards_partition_families(self):
         rows = verified(driver.DRIVER/'gpt'/'ASSIGNMENTS.json')['records']
-        parts = [driver.shard_rows('gpt', (i, 3)) for i in range(3)]
+        parts = [driver.design_rows('gpt', 'main', (i, 3)) for i in range(3)]
         self.assertEqual(sum(map(len, parts)), len(rows))
         fams = [{r['family'] for r in p} for p in parts]
         self.assertFalse(fams[0] & fams[1] or fams[1] & fams[2] or fams[0] & fams[2])
@@ -155,7 +155,7 @@ class EngineTest(unittest.TestCase):
             engine = driver.Engine(SimpleNamespace(llm_engine=fake, collective_rpc=rpc), store,
                                    time.time()+30, hooked=True, max_inflight=2)
             engine.inflight[uid] = {'progress': {'tokens': [1], 'segments': [{}]}, 'new': 1}
-            with patch('steering.whole.work_remaining_bytes', return_value=100*2**30):
+            with patch('steering.pulse.work_remaining_bytes', return_value=100*2**30):
                 with self.assertRaisesRegex(ValueError, 'tensor-parallel captures disagree'):
                     engine.release([uid])
             for rank, expected in enumerate((.5, .50000006)):
@@ -270,18 +270,3 @@ class ReviewFixes(unittest.TestCase):
             self.assertEqual(driver.recover_outputs(store, [row]), 1)
             self.assertEqual(store.state(uid)['status'], 'unknown')
             self.assertTrue(store.state(uid)['recovered_after_crash'])
-
-
-class SubShards(unittest.TestCase):
-    def test_sub_shards_partition_one_shard(self):
-        whole = {r['uid'] for r in driver.shard_rows('glm', (2, 4))}
-        parts = [{r['uid'] for r in driver.shard_rows('glm', (2, 4), sub=(j, 3))} for j in range(3)]
-        self.assertEqual(set().union(*parts), whole)
-        self.assertEqual(sum(map(len, parts)), len(whole))
-
-    def test_nested_sub_shards_partition_a_sub_shard(self):
-        whole = {r['uid'] for r in driver.shard_rows('glm', (2, 4), sub=[(2, 3)])}
-        parts = [{r['uid'] for r in driver.shard_rows('glm', (2, 4), sub=[(2, 3), (j, 3)])} for j in range(3)]
-        self.assertEqual(set().union(*parts), whole)
-        self.assertEqual(sum(map(len, parts)), len(whole))
-        self.assertEqual({r['uid'] for r in driver.shard_rows('glm', (2, 4), sub=(2, 3))}, whole)

@@ -1,13 +1,18 @@
-"""Bounded efficiency and lexical mechanism inference for whole-reasoning rows.
+"""Extraction and bounded analysis of whole-reasoning rows.
 
-Extraction reuses outcomes.record, including GPT token replay and the threaded
-math_verify helper. Analysis keeps every planned family/cell and shares all
-10,000 benchmark-stratified bootstrap draws across models and contrasts.
+extract(root, model) replays and scores the finished rows of one model of a release with
+pulse_outcomes.record (GPT token replay, the threaded math_verify helper) and writes
+root/MODEL/extraction/. combine(root) joins the extractions of every release listed in
+root/SOURCES.json by family, keeps every planned family and cell, shares all 10,000
+benchmark-stratified bootstrap draws across models and contrasts, and writes
+root/analysis-combined/EFFECTS_WHOLE.json (the paper's whole-reasoning results).
+Run both through python -m steering.whole.
 """
 from __future__ import annotations
 
 from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
 import multiprocessing
+import shutil
 from collections import Counter
 import json
 import math
@@ -23,22 +28,15 @@ from steering import pulse as driver
 from steering.whole import (
     DOSES,
     DRAWS,
-    LINK,
     MODELS,
-    PLAN,
-    ROOT,
     SEED,
     bound_store,
-    directions,
     efficiency_directed,
+    link_receipt,
     manifest,
-    manifest_path,
     repetition_rate,
 )
 
-LINK_WORDING = ('The frozen preregistered test (activation arms, central strength, log total tokens, main design) '
-                'is not estimable in this design. We report an exploratory transfer of the frozen beta_tok signs '
-                'to the promote arms.')
 _EXTRACTOR = local()
 
 
@@ -118,13 +116,12 @@ def _extract_with_worker(row: dict, *, b: dict, model: str, store, inputs):
                         close=_EXTRACTOR.close, store=store, inputs=inputs)
 
 
-
-def extract(model: str) -> dict:
+def extract(root: Path, model: str) -> dict:
     """Extract whatever completed, preserving missing rows for the subsequent planned join."""
     from transformers import AutoTokenizer
     from steering.runtime import prompt_prefix
-    value = manifest(model)
-    store = bound_store(model, value['dose'])
+    value = manifest(root, model)
+    store = bound_store(root, model, value['dose'])
     b = driver.binding()
     tokenizer = AutoTokenizer.from_pretrained(b['models'][model]['local_path'], local_files_only=True)
     rows = value['records']
@@ -152,23 +149,27 @@ def extract(model: str) -> dict:
                 sentences.extend(spans)
             if failure:
                 failures.append(failure)
-    folder = ROOT/model/'extraction'
+    folder = root/model/'extraction'
     require(not folder.exists(), 'whole extraction requires a fresh destination')
-    folder.mkdir(parents=True, mode=0o700)
-    pd.DataFrame(outcomes, columns=list(outcomes[0]) if outcomes else ['uid']).to_parquet(folder/'outcomes.parquet', index=False)
-    pd.DataFrame(sentences, columns=list(sentences[0]) if sentences else ['uid']).to_parquet(folder/'sentences.parquet', index=False)
-    return publish(folder/'EXTRACTION.json', {'model': model, 'manifest_sha256': value['sha256'],
-                  'planned': len(rows), 'extracted': len(outcomes), 'failures': failures, 'sentences': len(sentences)})
+    # Written aside and renamed last, so a job that dies half-way leaves nothing for combine to read.
+    partial = folder.with_name('extraction.partial')
+    shutil.rmtree(partial, ignore_errors=True)
+    partial.mkdir(parents=True, mode=0o700)
+    pd.DataFrame(outcomes, columns=list(outcomes[0]) if outcomes else ['uid']).to_parquet(partial/'outcomes.parquet', index=False)
+    pd.DataFrame(sentences, columns=list(sentences[0]) if sentences else ['uid']).to_parquet(partial/'sentences.parquet', index=False)
+    receipt = publish(partial/'EXTRACTION.json', {'model': model, 'manifest_sha256': value['sha256'],
+                      'planned': len(rows), 'extracted': len(outcomes), 'failures': failures, 'sentences': len(sentences)})
+    partial.rename(folder)
+    return receipt
 
 
-def load_table(sources: list[dict] | None = None) -> pd.DataFrame:
+def load_table(sources: list[dict]) -> pd.DataFrame:
     """Join every manifest row and fixed-denominator lexical occupancy with bounds.
 
     Args:
-        sources: {model, root, dose} entries to join (SOURCES.json); by default this release's selected
-            dose of each model. Sources are read in parallel processes, one per CPU.
+        sources: {model, root, dose} entries to join (SOURCES.json). Sources are read in parallel
+            processes, one per CPU.
     """
-    sources = sources or [{'model': m, 'root': str(ROOT), 'dose': manifest(m)['dose']} for m in MODELS]
     workers = min(len(sources), int(os.environ.get('SLURM_CPUS_PER_TASK', '1')))
     if workers <= 1:
         return pd.concat(map(_source_table, sources), ignore_index=True)
@@ -186,6 +187,8 @@ def _extracted(root: Path, model: str, value: dict) -> tuple[pd.DataFrame, pd.Da
     if (folder/'EXTRACTION.json').exists():
         require(verified(folder/'EXTRACTION.json')['manifest_sha256'] == value['sha256'],
                 'whole extraction belongs to another manifest')
+    else:  # its rows stay unknown in the analysis; say so in the job log
+        driver.log({'event': 'whole-no-extraction', 'model': model, 'release': root.name})
     observed = pd.read_parquet(folder/'outcomes.parquet') if (folder/'outcomes.parquet').exists() else pd.DataFrame()
     sentences = pd.read_parquet(folder/'sentences.parquet') if (folder/'sentences.parquet').exists() else pd.DataFrame()
     if not sentences.empty:
@@ -204,14 +207,14 @@ def _source_table(source: dict) -> pd.DataFrame:
     ('complements', whole.complement_manifest) whose new cells join the source's rows by family.
     """
     model, root = source['model'], Path(source['root'])
-    value = verified(manifest_path(model, source['dose'], root))
+    value = manifest(root, model, source['dose'])
     parts = [_extracted(root, model, value)]
     for topup in map(Path, source.get('topups', [])):
-        planned = verified(manifest_path(model, source['dose'], topup))
+        planned = manifest(topup, model, source['dose'])
         require(planned['parent_manifest_sha256'] == value['sha256'], 'top-up belongs to another manifest')
         parts.append(_extracted(topup, model, planned))
     for complement in map(Path, source.get('complements', [])):
-        planned = verified(manifest_path(model, source['dose'], complement))
+        planned = manifest(complement, model, source['dose'])
         require(planned['design'] == 'complement' and planned['parent_manifest_sha256'] == value['sha256'],
                 'complement belongs to another manifest')
         parts.append(_extracted(complement, model, planned))
@@ -259,7 +262,8 @@ def _source_table(source: dict) -> pd.DataFrame:
             row['occ_'+class_name] = (lower+upper)/2
             row['occ_'+class_name+':lower'], row['occ_'+class_name+':upper'] = lower, upper
         rows.append(row)
-    return pd.DataFrame(rows)
+    # The experts of each row stay in the manifest; the analysis never reads them, and they dominate the memory.
+    return pd.DataFrame(rows).drop(columns=['source', 'actions'], errors='ignore')
 
 
 def contrast(target: dict, control: dict, metric: str, benefit=False) -> tuple[float, float, float]:
@@ -271,7 +275,7 @@ def contrast(target: dict, control: dict, metric: str, benefit=False) -> tuple[f
     return (lower+upper)/2, lower, upper
 
 
-def family_contrasts(table: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
+def family_contrasts(table: pd.DataFrame, link: Path) -> tuple[pd.DataFrame, pd.DataFrame]:
     """Paired within-family contrasts for every model, dose and planned cell.
 
     Native rows are dose-free, so a sweep dose (which runs none) pairs with the native rows of the
@@ -301,7 +305,7 @@ def family_contrasts(table: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
         for operation, class_name in planned:
             arms = {r['arm']: r for r in records if r['class'] == class_name and r['operation'] == operation}
             target, random = arms['target_'+operation], arms['random_'+operation]
-            efficiency = efficiency_directed(model, operation, class_name)
+            efficiency = efficiency_directed(model, operation, class_name, link)
             nominated = all(r.get('nomination_status', 'nominated') == 'nominated' for r in (target, random))
             require(nominated or not efficiency, 'efficiency-directed cell is not nominated')
             if not nominated:
@@ -349,7 +353,7 @@ def primary_frame(cells: pd.DataFrame, comparison: str = 'target_random', dose: 
         require((selected.nomination_status == 'nominated').all(), 'primary composite contains an unnominated cell')
     metrics = [comparison+':'+metric+suffix for metric in ('tokens', 'accuracy') for suffix in ('', ':lower', ':upper')]
     grouped = selected.groupby(['family', 'model'])[metrics].mean()
-    models = [model for model in PLAN if model in set(selected.model)]
+    models = [model for model in MODELS if model in set(selected.model)]
     frame = pd.DataFrame({'family': sorted(cells.family.unique())}).set_index('family')
     for metric in ('tokens', 'accuracy'):
         for suffix in ('', ':lower', ':upper'):
@@ -388,7 +392,7 @@ def dose_response(boot, cells: pd.DataFrame) -> dict:
     x = {dose: math.log2(fraction) for dose, fraction in DOSES.items()}
     centered = {dose: value-np.mean(list(x.values())) for dose, value in x.items()}
     weights = {dose: value/sum(v*v for v in centered.values()) for dose, value in centered.items()}
-    complete = [m for m in PLAN if all(m+'@'+dose+':tokens' in joined for dose in DOSES)]
+    complete = [m for m in MODELS if all(m+'@'+dose+':tokens' in joined for dose in DOSES)]
     for metric in ('tokens', 'accuracy'):
         for model in complete:
             column = model+':slope:'+metric
@@ -403,170 +407,6 @@ def dose_response(boot, cells: pd.DataFrame) -> dict:
     return {'contrasts': result, 'slope_models': complete, 'log2_strength': x,
             'models_by_dose': {dose: sorted(cells[cells.dose == dose].model.unique()) for dose in DOSES},
             'declared': 'secondary; separate from the full-dose primary; no best strength is selected'}
-
-
-def planning(models=MODELS) -> dict:
-    """Transport within-family native-repeat noise to the planned composite SD.
-
-    Args:
-        models: Models with saved main-study native and native_repeat outcomes.
-
-    Returns:
-        SUSPECTED planning values; absent paired evidence is disclosed and never
-        gates science. Accuracy uses driver outcomes, never trace is_correct.
-    """
-    from steering.pulse_effects import _read_outcome_table
-    from scipy.stats import norm
-    results, native_residuals = {}, {}
-    for model in models:
-        folder = driver.bulk()/model/'outcomes'
-        outcomes = _read_outcome_table(folder, 'outcomes', 'main')
-        differences = native_repeat_differences(outcomes)
-        cell_count = len(directions(model)['promote'])+len(directions(model)['suppress'])
-        composite = differences/math.sqrt(cell_count)
-        native_residuals[model] = composite
-        difference_sd = differences.std(ddof=1)
-        token_sd, accuracy_sd = composite.std(ddof=1).tolist()
-        critical = float(norm.ppf(1-.05/12)+norm.ppf(.8))
-        results[model] = {
-            'source': str(folder),
-            'accuracy_source': 'main-study driver strict_correct outcomes; legacy trace is_correct excluded',
-            'noise_reference': 'native_repeat minus native within family',
-            'formula': 'sigma_w = SD(d)/sqrt(2); composite_SD = sigma_w*sqrt(2/m)',
-            'efficiency_cells': cell_count,
-            'paired_families': differences.notna().sum().to_dict(),
-            'within_family_sigma_w': (difference_sd/math.sqrt(2)).to_dict(),
-            'log_reasoning_sd': token_sd if np.isfinite(token_sd) else None,
-            'accuracy_sd': accuracy_sd if np.isfinite(accuracy_sd) else None,
-            'planning_z': critical,
-            'mde_log_tokens': critical*token_sd/math.sqrt(len(differences)) if np.isfinite(token_sd) else None,
-            'mde_accuracy': critical*accuracy_sd/math.sqrt(len(differences)) if np.isfinite(accuracy_sd) else None,
-            'transport_status': 'SUSPECTED',
-            'paired_values_sha256': digest(differences.reset_index().to_dict('records')),
-        }
-    if set(MODELS) <= set(results):
-        critical = results[MODELS[0]]['planning_z']
-        results['pooled'] = _pooled_native_planning(native_residuals, critical)
-    return {'models': results, 'hypothesis_cells_frozen_before_production': True,
-            'note': 'Within-family paired noise, transported with the declared sqrt(2/m) approximation; no gate uses it.'}
-
-
-def native_repeat_differences(outcomes: pd.DataFrame) -> pd.DataFrame:
-    """Return observed paired reasoning/accuracy differences from main driver outcomes."""
-    native = outcomes[outcomes.arm.isin(('native', 'native_repeat'))].copy()
-    require(not native.duplicated(['family', 'arm']).any(), 'main native planning identities are duplicated')
-    closed = native.reasoning_end.notna()
-    unknown = (native.finish_reason == 'length') & ~closed
-    native['log_reasoning'] = np.log1p(native.reasoning_tokens).where(~unknown)
-    native['correct'] = native.strict_correct.astype(float).where(native.finish_reason != 'length', 0.)
-    columns = ['log_reasoning', 'correct']
-    first = native[native.arm == 'native'].set_index('family')[columns]
-    repeat = native[native.arm == 'native_repeat'].set_index('family')[columns]
-    return repeat-first
-
-
-def _pooled_native_planning(residuals: dict, critical: float) -> dict:
-    """Average the scaled within-family noise differences with equal model weights."""
-    require(all(frame.index.is_unique for frame in residuals.values()), 'native planning families are duplicated')
-    pooled = pd.concat(residuals.values()).groupby(level=0).mean()
-    token_sd, accuracy_sd = pooled.std(ddof=1).tolist()
-    if not pooled.correct.notna().all():
-        accuracy_sd = np.nan
-    return {
-        'transport_status': 'SUSPECTED', 'model_weights': 'equal over models present for each family',
-        'log_reasoning_sd': token_sd, 'accuracy_sd': accuracy_sd if np.isfinite(accuracy_sd) else None,
-        'accuracy_observed': int(pooled.correct.notna().sum()),
-        'mde_log_tokens': critical*token_sd/math.sqrt(len(pooled)),
-        'mde_accuracy': critical*accuracy_sd/math.sqrt(len(pooled)) if np.isfinite(accuracy_sd) else None,
-        'covariance_role': 'paired within-family differences scaled by sqrt(m); model covariance retained; transport SUSPECTED',
-    }
-
-
-def _total_bounds(unit: dict):
-    """Bound historical log-total length using this request's actual allowance."""
-    if unit['outcome_status'] != 'observed':
-        return 0., math.log(unit['total_allowance'])
-    value = math.log(max(1, unit['generated_tokens']))
-    return value, math.log(unit['total_allowance']) if unit['finish_reason'] == 'length' else value
-
-
-def exploratory_link(cells: pd.DataFrame, table: pd.DataFrame, boot) -> dict:
-    """Transfer frozen beta signs to promote cells with both declared token comparands."""
-    from steering.pulse_effects import summarize
-    prereg = verified(LINK)
-    frozen = {(r['model'], r['class']): r for r in prereg['cells'] if r['model'] in MODELS}
-    details, link_cells = [], {'log_reasoning': [], 'log_total': []}
-    table = table[table.get('nomination_status', pd.Series('nominated', index=table.index)) == 'nominated']
-    for model in MODELS:
-        for class_name in CLASSES:
-            sub = cells[(cells.model == model) & (cells['class'] == class_name) & (cells.operation == 'promote')]
-            row = frozen.get((model, class_name), {})
-            signs = row.get('tok_reason', {})
-            token_summary = summarize(boot, sub, ['target_random:tokens'], 'exploratory-link')
-            if signs.get('beta') is not None:
-                link_cells['log_reasoning'].append((signs, sub.assign(
-                    delta=-sub['target_random:tokens'],
-                    **{'delta:lower': -sub['target_random:tokens:upper'],
-                       'delta:upper': -sub['target_random:tokens:lower']})))
-            # Historical log(total), without the new log1p reasoning transform.
-            total_rows = []
-            for family, group in table[(table.model == model) & (table['class'] == class_name) &
-                                       (table.operation == 'promote')].groupby('family'):
-                arms = {r['arm']: r for r in group.to_dict('records')}
-                if not {'target_promote', 'random_promote'} <= arms.keys():
-                    continue  # a dropped promote cell has no executed pair for this family
-                target, random = arms['target_promote'], arms['random_promote']
-                tl, tu = _total_bounds(target)
-                rl, ru = _total_bounds(random)
-                total_rows.append({'family': family, 'delta': (tl-ru+tu-rl)/2,
-                                   'delta:lower': tl-ru, 'delta:upper': tu-rl})
-            if signs.get('beta') is not None:
-                link_cells['log_total'].append((signs, pd.DataFrame(total_rows)))
-            details.append({'model': model, 'class': class_name, 'frozen_tok_beta': signs,
-                            'log_reasoning_token_benefit': token_summary,
-                            'log_total_target_minus_random': summarize(boot, pd.DataFrame(total_rows), ['delta'],
-                                                                      'exploratory-link-total')})
-    return {'wording': LINK_WORDING, 'prereg_sha256': prereg['sha256'], 'cells': details,
-            'statistics': {metric: link_statistics(boot, records) for metric, records in link_cells.items()},
-            'inference': {'draws': DRAWS, 'seed': SEED, 'shared_with_primary': True,
-                          'preregistered_draws': 2000, 'preregistered_seed': 20261017,
-                          'status': 'exploratory inference differs from the preregistration'},
-            'claim': 'exploratory sign transfer; no preregistered replication claim'}
-
-
-def _rank_correlation(centered_predictor, values):
-    """Evaluate cell-wise Spearman correlations for points or shared bootstrap rows."""
-    from scipy.stats import rankdata
-    ranked = rankdata(values, axis=-1)
-    ranked -= ranked.mean(axis=-1, keepdims=True)
-    return (ranked*centered_predictor).sum(-1)/np.sqrt((ranked**2).sum(-1)*(centered_predictor**2).sum())
-
-
-def link_statistics(boot, records: list[tuple]) -> dict:
-    """Compute exploratory rho and sign agreement only for point-identified cells."""
-    from scipy.stats import binomtest, rankdata
-    if any((frame['delta:lower'] != frame['delta:upper']).any() for _, frame in records):
-        return {'status': 'unqualified_partial_identification', 'cells': len(records),
-                'reason': 'Capped or missing cells retain their bounds; no midpoint correlation is observed.'}
-    estimates = [boot.estimate(frame, 'delta') for _, frame in records]
-    if any(not value or value['status'] != 'qualified' for value in estimates):
-        return {'status': 'unqualified_missing_benchmark', 'cells': len(records)}
-    predictors = np.asarray([record['beta'] for record, _ in records])
-    points = np.asarray([value['estimate'] for value in estimates])
-    draws = np.column_stack([value['draws'] for value in estimates])
-    x = rankdata(predictors)
-    x -= x.mean()
-    signed = np.asarray([record.get('sign') in ('+', '-') for record, _ in records])
-    predicted = np.asarray([1 if record.get('sign') == '+' else -1 for record, _ in records])
-    agreements = (np.sign(points[signed]) == predicted[signed]) & (points[signed] != 0)
-    agreement_draws = ((np.sign(draws[:, signed]) == predicted[signed]) & (draws[:, signed] != 0)).mean(-1)
-    rho_draws = _rank_correlation(x, draws)
-    return {'status': 'qualified_exploratory', 'spearman': float(_rank_correlation(x, points)),
-            'spearman_ci': np.nanquantile(rho_draws, [.025, .975]).tolist(),
-            'sign_agreement': float(agreements.mean()),
-            'sign_agreement_ci': np.quantile(agreement_draws, [.025, .975]).tolist(),
-            'signed_cells': int(signed.sum()), 'cells': len(records), 'draws': len(boot.weights),
-            'binomial_p': float(binomtest(int(agreements.sum()), int(signed.sum()), .5).pvalue)}
 
 
 def arm_summaries(boot, table: pd.DataFrame) -> tuple[list, dict]:
@@ -675,45 +515,12 @@ def verdicts(primary: dict, models) -> dict:
     return result
 
 
-def analyze() -> dict:
-    """Publish this release's primary bounded contrasts and mandatory companions from fresh files."""
-    from steering.pulse_effects import summarize
-    folder = ROOT/'analysis'
-    require(not folder.exists(), 'whole analysis requires a fresh directory')
-    sources = [{'model': m, 'root': str(ROOT), 'dose': manifest(m)['dose']} for m in MODELS]
-    table = load_table(sources)
-    cells, noise = family_contrasts(table)
-    boot = bootstrap()
-    result = {'models': list(MODELS), 'bootstrap_draws': DRAWS, 'seed': SEED,
-              'release_sha256': verified(ROOT/'RELEASE.json')['sha256'],
-              'manifest_sha256': {model: manifest(model)['sha256'] for model in MODELS},
-              'scope': {model: manifest(model)['scope'] for model in MODELS},
-              **failures(table, sources),
-              'primary': summarize_present(boot, primary_frame(cells), 'whole-primary-six'),
-              'companions': {comparison: summarize_present(boot, primary_frame(cells, comparison),
-                                                           'whole-companions:'+comparison)
-                             for comparison in ('target_native', 'random_native')},
-              'native_repeat_minus_native': {model: summarize(boot, noise[noise.model == model],
-                                                            ['tokens', 'accuracy'], 'whole-native-noise')
-                                             for model in MODELS}}
-    result['cell_effects'], result['mechanism'] = cell_summaries(boot, cells)
-    result['exploratory_link'] = exploratory_link(cells, table, boot)
-    result['levels'], result['dose'] = arm_summaries(boot, table)
-    result['verdict'] = verdicts(result['primary'], MODELS)
-    folder.mkdir(parents=True, mode=0o700)
-    table.drop(columns=['source', 'actions'], errors='ignore').to_parquet(folder/'continuations.parquet', index=False)
-    cells.to_parquet(folder/'cells.parquet', index=False)
-    receipt = publish(folder/'EFFECTS.json', result)
-    write_report(result, folder/'REPORT.md')
-    return receipt
-
-
-def combine(path: Path) -> dict:
+def combine(root: Path) -> dict:
     """Analyze base and strength-sweep releases together into EFFECTS_WHOLE.json.
 
     Args:
-        path: SOURCES.json, listing {model, root, dose} for each model's base release (with its native
-            rows) and its sweep releases.
+        root: The release folder. Its SOURCES.json lists {model, root, dose} for each model's base release
+            (with its native rows) and its sweep releases; RELINK.json, if present, names the link receipt.
 
     Returns:
         The pre-registered primary at the full dose for every model, its native companions, the
@@ -721,18 +528,19 @@ def combine(path: Path) -> dict:
         breakdown (cap rate, repetition) and manipulation checks by model, dose and arm.
     """
     from steering.pulse_effects import summarize
-    folder = ROOT/'analysis-combined'
+    folder = root/'analysis-combined'
     require(not folder.exists(), 'combined whole analysis requires a fresh directory')
-    sources = verified(path)['sources']
+    link = link_receipt(root)
+    sources = verified(root/'SOURCES.json')['sources']
     require(len({(s['model'], s['dose']) for s in sources}) == len(sources), 'a model and dose is listed twice')
     table = load_table(sources)
-    cells, noise = family_contrasts(table)
+    cells, noise = family_contrasts(table, link)
     boot = bootstrap()
-    models = [model for model in PLAN if model in set(table.model)]
+    models = [model for model in MODELS if model in set(table.model)]
     result = {'models': models, 'bootstrap_draws': DRAWS, 'seed': SEED,
               # The receipt whose native signs decide which cells are efficiency-directed.
-              'efficiency_link': {'path': str(LINK), 'sha256': verified(LINK)['sha256']},
-              'sources': [{**s, 'manifest_sha256': verified(manifest_path(s['model'], s['dose'], Path(s['root'])))['sha256'],
+              'efficiency_link': {'path': str(link), 'sha256': verified(link)['sha256']},
+              'sources': [{**s, 'manifest_sha256': manifest(Path(s['root']), s['model'], s['dose'])['sha256'],
                            'release_sha256': verified(Path(s['root'])/'RELEASE.json')['sha256']} for s in sources],
               **failures(table, sources),
               'primary': summarize_present(boot, primary_frame(cells, dose='main'), 'whole-primary-full'),
@@ -747,39 +555,8 @@ def combine(path: Path) -> dict:
     result['levels'], result['manipulation'] = arm_summaries(boot, table)
     result['verdict'] = verdicts(result['primary'], models)
     folder.mkdir(parents=True, mode=0o700)
-    table.drop(columns=['source', 'actions'], errors='ignore').to_parquet(folder/'continuations.parquet', index=False)
+    table.to_parquet(folder/'continuations.parquet', index=False)
     cells.to_parquet(folder/'cells.parquet', index=False)
     return publish(folder/'EFFECTS_WHOLE.json', result)
 
 
-def write_report(result: dict, path: Path) -> None:
-    """Write the required primary, manipulation and failure disclosures beside effects.
-
-    Args:
-        result: The bounded analysis result written to EFFECTS.json.
-        path: Fresh report destination in the same analysis folder.
-
-    Returns:
-        None; detailed unit failures and bootstrap components remain in EFFECTS.json.
-    """
-    lines = ['# Whole-reasoning results', '',
-             f"Extraction failures: {result['extraction_failures']['count']}; "
-             f"sentence-coverage unit failures: {len(result['unit_failures'])}. "
-             'Their units and reasons are listed in EFFECTS.json and retain unknown bounds.', '',
-             '| Contrast | Estimate | Simultaneous bounds |', '|---|---:|---|']
-    for name, value in result['primary'].items():
-        lines.append(f"| {name} | {value.get('estimate')} | {value.get('bound_simultaneous')} |")
-    lines += ['', '| Model / dose / arm | Native frequency | Changed membership | L1 | Deactivated native weight |',
-              '|---|---:|---:|---:|---:|']
-    for level in result['levels']:
-        check = level['manipulation_check']
-        values = [check[key] for key in ('mean_native_frequency_steered_experts', 'changed_membership_fraction',
-                                        'l1', 'deactivated_native_weight')]
-        lines.append('| '+' / '.join((level['model'], level['dose'], level['arm']))+' | '+' | '.join(map(str, values))+' |')
-    lines += ['', LINK_WORDING, '',
-              'The exploratory link uses the shared 10,000-draw family bootstrap with seed 20261015, '
-              'rather than the preregistered 2,000 draws with seed 20261017.', '',
-              'Non-nominated cells are not_in_design and do not enter composites. '
-              'Targets retain the larger native-frequency perturbation. Historical generic disruption '
-              'lengthened reasoning and reduced accuracy, so this residual mismatch works against an efficiency claim.']
-    path.write_text('\n'.join(lines)+'\n')
