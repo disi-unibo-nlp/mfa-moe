@@ -63,6 +63,7 @@ Each paper experiment has one launcher. The launcher submits the job, which call
 | Next state, 8 models | `next_state.sh` | `next_state` | `report/final-routing-20261015-r1/driver/NEXT_STATE.json` | Not in the paper yet (it will replace the anticipation figure) |
 | Expert selection coverage | `selection.sh OUT_DIR` (LFM2.5: `lfm.sh OUT_DIR`) | `selection`, `lfm` | `selection_coverage.csv` | Figure `selection`, tables `selection`, `selection_folds` |
 | Occupancy and transitions | `dynamics.sh OUT_DIR` (LFM2.5: `lfm.sh OUT_DIR`) | `dynamics`, `lfm` | `NATIVE_DYNAMICS_SUMMARY.json` per model | Figures `occupancy`, `state_transitions`, `transition_summary`; tables `occupancy`, `state_transitions` |
+| Next-sentence labels for the transitions, 8 models | `transition_pairs.sh [SOURCE_CLASSES [SHARDS]]` (judge shards on GPU) | `sentence_table`, `transition_pairs` | `report/final-routing-20261015-r1/driver/TRANSITION_PAIRS.<variant>.json`, `.../transition-pairs/<model>/<variant>/NATIVE_DYNAMICS_SUMMARY.json` | Figure `state_transitions`, table `state_transitions`: fills the Read and Verify rows that have no labelled successor (the exporter still reads `dynamics`; switching it is open) |
 | Efficiency link | `efficiency_link.sh` | `efficiency_link` | `report/final-routing-20261015-r1/driver/EFFICIENCY_LINK_V2.json` | Table `efficiency_link`; picks the experts of whole-reasoning steering |
 | Lexical classifier | `lexical.sh OUT_DIR` | `lexical` | five fold classifiers in `OUT_DIR` | Appendix, lexical reading of continuations |
 
