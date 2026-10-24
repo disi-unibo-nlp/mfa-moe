@@ -19,7 +19,12 @@
 - [x] F-0006.7 Deliver the authorized Overleaf revision, read back the remote revision, and add concrete explanatory replies while preserving every original thread and resolution state.; evidence: review-revision/DELIVERY.json, REPLY_POSTS.json and COMMENTS_AFTER_DELIVERY.json; Overleaf 9ff6d88 read back, 55 implemented replies plus one pending-analysis reply, all 56 originals and open states preserved.
 
 - [ ] F-0006.8 Complete the author-requested R51 next-state extension after a claim-linked CPU plan, measured budget and workload authorization; preserve the current two-model result until real additional estimates exist.
-- [ ] F-0006.9 Complete the remaining TAB-022 printed numerical readback and TAB-026 ascending-size model order; both remain explicit after the bounded third review round.
+- [x] F-0006.9 Complete TAB-022 printed numerical readback and TAB-026 ascending-size model order; evidence: editorial-closeout/PRINTED_TABLE_READBACK.json and ORDERED_TABLE_FIDELITY.json, source-round-74, 19 tables / 453 rows / 2,641 printed cells, all negative controls rejected; embedded tables and quota list included.
+
+- [x] F-0006.10 Close LAY-010 and all remaining visual short-tail findings; evidence: source-round-74 successful 55-page build, all pages visually inspected, zero undefined references, 107 style PASS / four N/A, native packet and visual verdict evidence in editorial-closeout. Pending r20 scientific integration remains separate.
+- [x] F-0006.11 Commit the completed editorial closeout locally in the Overleaf checkout after verification; evidence: Overleaf local c98ed00c46604c256056ff72481db97bd49b6fa4, clean checkout; remote main remains 4c9d7d4, no push. Remote delivery and explanatory replies await author approval; editorial-closeout/LOCAL_DELIVERY.json.
+
+- [x] F-0006.12 Remove both superseded historical steering designs and their references, retain the separate candidate-recognition qualification, and repair the verifier; evidence: local Overleaf c98ed00c46604c256056ff72481db97bd49b6fa4, source-round-74, 55 pages (58 before both removals; 57 before Qwen follow-up), zero undefined references; PREFIX_REMOVAL.json and LOCAL_DELIVERY.json. Strong-dose and transition exhibits preserved from the follow-up request.
 
 ## Results
 
@@ -30,3 +35,7 @@
 | Source/data fidelity | 35 Results interval triples, 35 data files and 11 PDF backups | bb9fb04 source bindings | All preserved | FIDELITY.json |
 | Compilation and rule check | source-round-61 | Not a new baseline build | 58 pages, compiler exit 0, zero raw violations | build/BUILD.json; DELIVERY.json |
 | Judge verification | 262 applicable packet items | Initial substantive Method style FAIL | 233 PASS, 27 N/A, 2 explicit FAIL; 0 invalid | source-round-61/.paper-review/verdicts.md |
+
+Continuation authorized October 23: "so why have u stopped? go until everything is perfect". Continue F-0006.9–11 rather than treating the earlier bounded pass as final compliance. Preserve the completed ELM optimization; use the current accepted manuscript 4c9d7d4 as scientific baseline. Research jobs remain owned by the other session. The current r20 and next-state receipts are absent.
+
+Final local closeout, October 23: 267 native judgments, 241 PASS / 25 N/A / one explicit PRC-001 failure / zero invalid evidence records. The remaining failure is pending r20 scientific integration, not an editorial or layout failure. All 55 pages and 11 current standalone figures were inspected; all 19 tables were read back. No remote write or new experiment was performed. F-0006.8 remains open.
