@@ -90,7 +90,7 @@ def capture_release(name: str, models: list[str], shards: dict[str, int], local_
                 extra_inputs=extra, cutoff=CAPTURE_CUTOFF, cpu_ceiling=200., job_prefix='oc', stores=stores)
 
 
-CAPTURE_RELEASE = 'outcome-capture-20261023-r1'
+CAPTURE_RELEASE = 'outcome-capture-20261023-r2'   # r1's allocated validation failed on a test message
 R2_DELTAS = (0.4, 0.8, 1.2)    # logit shifts of the r2 sweep (D-0006)
 
 

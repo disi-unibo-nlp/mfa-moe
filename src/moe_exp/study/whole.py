@@ -336,7 +336,7 @@ def prepare_model(b: dict, model: str, scope: bool) -> dict:
                 'OUTCOME_SWEEP.json': 'moe_exp.outcome_steering.manifest:sweep_manifest'}
     present = [name for name in builders if (ROOT/name).exists()]
     require(len(present) <= 1,
-            'a release is either a top-up, a resume, a capture or an outcome-steering release (or a complement)')
+            'a release is either a top-up, a resume or an outcome-steering release (or a complement or a capture)')
     if present:
         spec = verified(ROOT/present[0])['models'][model]
         builder = builders[present[0]]
