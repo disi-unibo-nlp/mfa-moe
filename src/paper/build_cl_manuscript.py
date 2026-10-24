@@ -6,7 +6,6 @@ BUILD/BUILD.json. The manuscript folder is only read, and the build stops if a s
 
   python -m paper.build_cl_manuscript [--timeout-seconds 300]
 """
-from pathlib import Path
 import argparse
 import importlib.util
 import json
@@ -121,16 +120,18 @@ def compile_bounded(snapshot, engine, env, timeout=PASS_SECONDS):
 
 
 def seed_from_last_build(snapshot, bindings):
-    """Copy the auxiliary files of the last good build when the class and bibliography are unchanged."""
-    path = BUILD / "BUILD.json"
-    if not path.exists():
-        return None
-    previous = json.loads(path.read_text())
-    unchanged = all(previous.get("source_hashes", {}).get(name) == bindings.get(name)
-                    for name in ("references.bib", "clv2025.cls", "compling.bst"))
-    if previous.get("exit_code") != 0 or not unchanged:
-        return None
-    return copy_auxiliary(Path(previous["source_snapshot"]) / ".paper-review/build", snapshot)
+    """Copy the auxiliary files of the newest completed build whose class, bibliography style and references still match.
+
+    A failed latest build does not hide an earlier compatible bibliography cache, because every source-round folder is searched.
+    """
+    for old in sorted(BUILD.glob("source-round-*"), key=lambda folder: int(folder.name.rsplit("-", 1)[1]), reverse=True):
+        output = old / ".paper-review/build"
+        if not all((output / name).is_file() for name in ("main.pdf", "main.aux", "main.bbl")):
+            continue
+        if all((old / name).is_file() and file_sha(old / name) == bindings.get(name)
+               for name in ("references.bib", "clv2025.cls", "compling.bst")):
+            return copy_auxiliary(output, snapshot)
+    return None
 
 
 def render_pages(index):

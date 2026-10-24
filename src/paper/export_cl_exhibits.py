@@ -16,11 +16,10 @@ import csv
 import json
 import shutil
 
+from paper.cl_models import MODELS, ORIGINAL_MODELS
 from paper.cl_paths import DATA, LEGACY, REPO
 from paper.export_routing_results import PAPER_CLASSES
-from store import BENCHMARKS, FAST, MODELS, file_sha, verified
-
-ORIGINAL_MODELS = MODELS[:7]  # the seven models of the first capture; native-memory fixtures exist for these only
+from store import BENCHMARKS, FAST, file_sha, verified
 
 
 def read_csv(name):

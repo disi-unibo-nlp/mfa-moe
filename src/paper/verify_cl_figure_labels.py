@@ -28,21 +28,25 @@ def expected_labels(root):
     for line in rows[1:]:
         for name, value in zip(names, line.split()):
             table[name].append(float(value))
-    column, index, expected = None, 0, []
+    # Node source order may differ from the plotted model order. The explicit
+    # x coordinate binds each annotation to its data row after model reordering.
+    row_by_coordinate = {value: index for index, value in enumerate(table['x'])}
+    column, expected = None, []
     for line in (root / 'routing.tex').read_text().splitlines():
         plot = re.search(r'\\addplot.*table\[x=x,y=(\w+),', line)
         if plot:
-            column, index = plot[1], 0
+            column = plot[1]
             continue
         node = re.search(r'\\node\[rotate=90,anchor=(?:east|west),inner sep=1pt.*\{\$([^$]+)\$\};', line)
         if node:
             text = node[1]
             decimals = len(text.split('.')[1])
+            coordinate = float(re.search(r'axis cs:([^,]+),', line)[1])
+            index = row_by_coordinate[coordinate]
             value = table[column][index]
             assert abs(float(text) - value) <= .5 * 10 ** -decimals + 1e-5 * max(1, abs(value)), \
                 ('label differs from routing.dat', column, index, text, value)
             expected.append(text)
-            index += 1
     return expected
 
 
