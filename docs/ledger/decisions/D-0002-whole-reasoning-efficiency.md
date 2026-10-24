@@ -9,7 +9,7 @@
 - rejected: Full-top-k promotion, new 512-token generation, routine dose sweeps, mixed doses per model, treating the exploratory sign-transfer link as a preregistered replication.
 - evidence: User's Alignment v2, 2026-10-20: "This message replaces that plan and the 2026-10-20 'final implementation plan'." Exact endpoints, debate, gates and authorization are recorded in report/whole-reasoning-20261020/README.md. New-work ceiling 72 GPU-hours plus retained r3 engineering 0.346111; CPU ceiling 16 core-hours. Science cutoff 2026-10-23 05:30 Europe/Rome.
 - keywords: whole, efficiency, routing, bootstrap, nomination, SteerMoE, rescue
-- paths: src/moe_exp/study, src/moe_exp/final_routing, tests/study, scripts/study
+- paths: src/steering, tests/steering, scripts/steering
 
 ## Alignment v3 amendments (user, before any whole GPU outcome)
 

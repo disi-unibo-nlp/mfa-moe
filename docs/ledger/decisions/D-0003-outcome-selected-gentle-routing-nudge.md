@@ -9,7 +9,7 @@
 - rejected: Class-risk-difference nomination (the 87-cell whole design found no helpful experts); forced on/off membership; excluding every expert with any positive Implement/Analyze link (empties the control pools); fresh native reruns.
 - evidence: User answers 2026-10-22 (3 models first, length-limit baseline, three strengths 0.4/0.8/1.6, top-10% execution protection, reuse natives); analysis in /leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/r/claude-review/why-steering-20261022/; chen2026beyond ("Beyond the Trace") reports shorter and more accurate GPT-OSS-20B output with five outcome-selected experts at a -0.8 logit shift.
 - keywords: outcome, nudge, steering, budget, early-exit, routing
-- paths: src/moe_exp/outcome_steering, scripts/outcome_steering, src/moe_exp/final_routing/operator.py, src/moe_exp/study
+- paths: src/steering/outcome, src/steering/operators.py, scripts/steering, src/steering
 
 ## Extension rule (declared 2026-10-22, before any nudge outcome)
 

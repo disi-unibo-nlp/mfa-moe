@@ -5,7 +5,7 @@
 - purpose: Every result the paper reports covers the same eight models (gpt, nemotron, qwen35, qwen36, gemma, glm, qwen330b, lfm25), with no unestimated cells caused by missing runs or sparse labels.
 - acceptance: Fig. 6 and the state-transitions table have every row and interval estimated for all eight models; the strong-dose appendix table has eight model rows from a fresh eight-model analysis-strong receipt; Fig. 9 / whole_occupancy have no not-run cell that a follow-up release could fill; the two-model global-steering table and the Qwen3.6-only historical interventions are gone from the manuscript.
 - keywords: eight models, coverage, strong dose, state transitions, figure 6, n/e, next sentence labels, Qwen3.6 509 families, complement follow-up, r21
-- paths: src/moe_exp/study
+- paths: src/routing, scripts/routing, tests/routing, src/steering, scripts/steering, tests/steering, src/paper
 - decisions:
 
 ## Tasks

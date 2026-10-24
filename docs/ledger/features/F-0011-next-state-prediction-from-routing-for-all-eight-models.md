@@ -5,7 +5,7 @@
 - purpose: Fig. 7 (next_state) reports the anticipatory routing gain only for GPT-OSS and Qwen3.6, with a retrospective relative-progress control and a 32-token sensitivity. Replace it with one next-state classification over all adjacent labelled pairs for all eight models: current state only (Fig. 6), plus text and position, plus routing.
 - acceptance: For each of the eight models, held-out cross-entropy of the next state for markov, text and routing on every adjacent labelled pair of the 522 readout questions (no length filter, no relative progress); routing gain with family-cluster 95% intervals and its excess over five token-permutation nulls; receipts report/final-routing-20261015-r1/<model>/NEXT_STATE.json and driver/NEXT_STATE.json; CPU only.
 - keywords: next state, anticipation, ARG, figure 7, next_state, routing gain, transition, markov
-- paths: src/moe_exp/study
+- paths: src/routing, scripts/routing, tests/routing
 - decisions:
 
 ## Tasks

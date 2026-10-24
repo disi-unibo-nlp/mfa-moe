@@ -5,7 +5,7 @@
 - purpose: Explore section revisions through the requested generator and two independent Luna High judges, as amended by the author on October 23, then retain only independently justified improvements over the delivered author-comment revision.
 - acceptance: Each requested section has 10 valid generation/scoring iterations with actual model IDs, raw outputs, scores and best-candidate selection recorded; candidates are compared with the fixed current baseline and useful changes are chosen with reasons; scientific values, citations, equations and scope survive; final source/build/reference/visual checks and authorized delivery are read back.
 - keywords: paper, ELM, optimization, scoring, Luna, Sol 6.1, generator, ten iterations
-- paths: paper/manuscript-support, scripts/paper
+- paths: paper/manuscript-support, src/paper, scripts/paper
 - decisions: D-0004, D-0005
 
 ## Tasks
