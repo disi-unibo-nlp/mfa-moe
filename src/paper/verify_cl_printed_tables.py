@@ -22,7 +22,7 @@ import unicodedata
 
 from store import file_sha
 
-ACCEPTED_REVISION = "452524ddf6c159e3ce5360ac6563624ae682a791"
+ACCEPTED_REVISION = "ae5767bac870055034dfbc39642d83a17bd9a70d"
 AUTHORIZED_REMOVALS = set()  # tables of the accepted revision that the manuscript no longer holds
 CI = re.compile(r"\\(bestcid|secondcid|cid)\{([^}]+)\}\{([^}]+)\}\{([^}]+)\}")
 TABLE = re.compile(r"\\begin\{(table|longtable)\}.*?\\end\{\1\}", re.S)

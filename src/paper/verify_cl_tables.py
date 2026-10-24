@@ -2,8 +2,9 @@
 
 Reads only: no fitting, resampling or inference. Every table cell, found by table, model, condition and metric, must
 equal the cell of the accepted manuscript revision (verify_cl_printed_tables.ACCEPTED_REVISION); the benchmark and routing
-tables are also checked against benchmark_cells.csv and the saved routing estimates, the next-state table against
-next_state.csv, and the occupancy and transition tables against native_dynamics.json. The row order of a table may differ
+tables are also checked against benchmark_cells.csv and the saved routing estimates, the readout table and figure labels
+against routing_readout.csv, the next-state table against next_state.csv, and the occupancy and transition tables against
+native_dynamics.json. The row order of a table may differ
 from that revision, its numbers may not. --self-test also shows that the check rejects swapped rows, changed intervals
 and wrong rank marks in copies of the tables held in memory, and that export_cl_exhibits, run on a temporary copy of the
 manuscript, writes only below figures/journal/data and never a table. The printed PDF is read back by
@@ -315,7 +316,7 @@ def thousands(value):
 NEXT_STATE_COLUMNS = (("", "gain"), ("null_", "alignment gain"))
 
 
-def next_state_gains(rows, prefix):
+def gains_from(rows, prefix):
     """Each model's gain in nats (positive when routing lowers the loss) with its simultaneous limits."""
     gains = {}
     for model in DISPLAY_MODELS:
@@ -330,7 +331,7 @@ def verify_next_state(paper, texts):
     rows = {row["model"]: row for row in read_csv(data / "next_state.csv")}
     require(set(rows) == set(DISPLAY_MODELS) and all(row["status"] == "CLEAN" for row in rows.values()),
             "next_state.csv model roster or status differs")
-    gains = [next_state_gains(rows, prefix) for prefix, _ in NEXT_STATE_COLUMNS]
+    gains = [gains_from(rows, prefix) for prefix, _ in NEXT_STATE_COLUMNS]
     seen = []
     for model, columns in model_rows(texts["next_state.tex"]):
         seen.append(model)
@@ -472,8 +473,8 @@ def verify_next_state_prose(paper):
     """The next-state Results subsection against next_state.csv: its claims about intervals, ranges and every number."""
     data = figure_root(paper) / "data"
     rows = {row["model"]: row for row in read_csv(data / "next_state.csv")}
-    gains = next_state_gains(rows, "")
-    nulls = next_state_gains(rows, "null_")
+    gains = gains_from(rows, "")
+    nulls = gains_from(rows, "null_")
     excluding = {model for model, (mean, low, high) in gains.items() if low > 0}
     require(len(excluding) == len(DISPLAY_MODELS) - 1 and set(DISPLAY_MODELS) - excluding == {LFM_MODEL},
             "next-state gain intervals no longer exclude zero in exactly seven models")
@@ -501,6 +502,57 @@ def formatted_cell(values):
     return signed_deviations(values, 5)
 
 
+READOUT_COLUMNS = (("routing_", "RIG"), ("routing_excess_over_lexical_null_", "alignment gain"))
+VALUE_NODE = re.compile(r"at \(axis cs:(\d+),([\d.]+)\) \{([\d.]+)\};")
+
+
+def verify_readout(paper, texts):
+    """The present-state table and the typed value labels of its figure against routing_readout.csv."""
+    data = figure_root(paper) / "data"
+    rows = {row["model"]: row for row in read_csv(data / "routing_readout.csv")}
+    require(set(rows) == set(DISPLAY_MODELS) and all(row["status"] == "CLEAN" for row in rows.values()),
+            "routing_readout.csv model roster or status differs")
+    gains = [gains_from(rows, prefix) for prefix, _ in READOUT_COLUMNS]
+    seen = []
+    for model, columns in model_rows(texts["readout.tex"]):
+        seen.append(model)
+        require(len(columns) == 4, model + ": readout columns differ")
+        require(clean_cell(columns[1]) == thousands(rows[model]["sentences"]), model + ": readout sentence count differs from routing_readout.csv")
+        for cell, (prefix, name), values in zip(columns[2:], READOUT_COLUMNS, gains):
+            check_ci(cell, values[model], 5, model + "/readout " + name, rank_mark(values[model][0], [v[0] for v in values.values()]))
+    require(len(seen) == len(DISPLAY_MODELS) and set(seen) == set(DISPLAY_MODELS), "readout model coverage differs")
+    blocks = (figure_root(paper) / "readout.tex").read_text().split("\\begin{axis}")[1:]
+    require(len(blocks) == len(READOUT_COLUMNS), "readout figure panel count differs")
+    for block, values in zip(blocks, gains):
+        nodes = {int(x): (float(y), text) for x, y, text in VALUE_NODE.findall(block)}
+        require(set(nodes) == set(range(1, len(PRESENTATION_MODELS) + 1)), "readout figure label missing")
+        for x, model in enumerate(PRESENTATION_MODELS, 1):
+            mean, low, high = values[model]
+            require(nodes[x][1] == f"{mean:.3f}", model + ": readout figure label differs from routing_readout.csv")
+            require(nodes[x][0] > mean + max(mean - low, high - mean), model + ": readout figure label lies inside its whisker")
+    return [("readout.tex", len(DISPLAY_MODELS) * 3, "figures/journal/data/routing_readout.csv",
+             {"rank_scope": "descriptive, within each gain column across the models"})]
+
+
+SELECTION_NODE = re.compile(r"at \(axis cs:(\d+),([-\d.]+)\) \{([^}]+)\};")
+
+
+def verify_selection_labels(paper):
+    """The typed fold and mean labels of the selection figure against selection.dat."""
+    table = [line.split() for line in (figure_root(paper) / "data/selection.dat").read_text().splitlines()]
+    heading, body = table[0], table[1:]
+    blocks = (figure_root(paper) / "selection.tex").read_text().split("\\begin{axis}")[1:]
+    require(len(blocks) == len(body) == len(PRESENTATION_MODELS), "selection figure panel count differs")
+    for block, row, model in zip(blocks, body, PRESENTATION_MODELS):
+        values = dict(zip(heading, map(float, row)))
+        expected = {x: values[f"f{x - 1}"] for x in range(1, 6)} | {6: values["mean"]}
+        nodes = {int(x): text for x, _, text in SELECTION_NODE.findall(block)}
+        require(set(nodes) == set(expected), model + ": selection figure label missing")
+        for x, value in expected.items():
+            require(nodes[x] == f"{value:.2f}", model + ": selection figure label differs from selection.dat")
+    return [("selection.tex (figure labels)", len(body) * 6, "figures/journal/data/selection.dat", {"rank_scope": "none"})]
+
+
 def verify(paper):
     """Every table cell against the accepted manuscript revision, and the benchmark and routing tables against the saved estimates."""
     result = verify_declared_source(paper)
@@ -508,7 +560,7 @@ def verify(paper):
     texts = {path.name: path.read_text() for path in (paper / "journal/tables").glob("*.tex")}
     result["saved_estimates"] = [
         {"table": name, "ordered_cells": count, "source": source, **extra}
-        for name, count, source, extra in (*verify_routing(paper, texts), *verify_next_state(paper, texts),
+        for name, count, source, extra in (*verify_routing(paper, texts), *verify_readout(paper, texts), *verify_selection_labels(paper), *verify_next_state(paper, texts),
                                            *verify_dynamics(paper, texts), *verify_occupancy_data(paper),
                                            *verify_summary_data(paper), *verify_next_state_prose(paper))
     ]
@@ -545,7 +597,8 @@ def self_test(paper):
         else:
             raise TableMismatch("invalid source passed: " + name)
     texts = {path.name: path.read_text() for path in (paper / "journal/tables").glob("*.tex")}
-    for name, check, table in (("changed_next_state_cell_rejected", verify_next_state, "next_state.tex"),
+    for name, check, table in (("changed_readout_cell_rejected", verify_readout, "readout.tex"),
+                               ("changed_next_state_cell_rejected", verify_next_state, "next_state.tex"),
                                ("changed_occupancy_cell_rejected", verify_dynamics, "occupancy.tex"),
                                ("changed_transition_cell_rejected", verify_dynamics, "state_transitions.tex")):
         changed = {**texts, table: re.sub(r"(\\(?:best|second)?cid\{)(\d)", lambda m: m[1] + str((int(m[2]) + 1) % 10), texts[table], count=1)}

@@ -176,7 +176,7 @@ class VerifierReadsTheTable(unittest.TestCase):
         self.rows = {row["model"]: row for row in rows}
 
     def table_text(self):
-        gains = [verify.next_state_gains(self.rows, prefix) for prefix, _ in verify.NEXT_STATE_COLUMNS]
+        gains = [verify.gains_from(self.rows, prefix) for prefix, _ in verify.NEXT_STATE_COLUMNS]
         lines = []
         for model in MODELS:
             cells = []
