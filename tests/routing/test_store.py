@@ -87,6 +87,21 @@ class DigestTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 store.verified(path)
 
+    def test_a_rerun_with_other_provenance_is_accepted_and_anything_else_is_refused(self):
+        with tempfile.TemporaryDirectory(dir=store.WORK/'tools/tmp') as tmp:
+            path = Path(tmp)/'R.json'
+            first = store.publish(path, {'counts': [1, 2], 'module_sha256': 'old'}, provenance=('module_sha256',))
+            again = store.publish(path, {'counts': [1, 2], 'module_sha256': 'new'}, provenance=('module_sha256',))
+            self.assertEqual(again, first)  # the receipt on disk is kept as it is
+            self.assertEqual(store.verified(path)['module_sha256'], 'old')
+            with self.assertRaises(ValueError):  # a different result is still a conflict
+                store.publish(path, {'counts': [1, 3], 'module_sha256': 'old'}, provenance=('module_sha256',))
+            with self.assertRaises(ValueError):  # and so is other provenance when it was not declared
+                store.publish(path, {'counts': [1, 2], 'module_sha256': 'new'})
+            with self.assertRaises(ValueError):  # a receipt whose own hash does not hold is never accepted
+                path.write_text(path.read_text().replace('"old"', '"edited"'))
+                store.publish(path, {'counts': [1, 2], 'module_sha256': 'new'}, provenance=('module_sha256',))
+
 
 class StatsTests(unittest.TestCase):
     def test_bootstrap_panel_matches_the_longer_version_it_replaced(self):
