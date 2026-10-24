@@ -1,5 +1,7 @@
 # Execute the adopted campaign
 
+> **2026-10-24: historical.** This runbook describes the verification-study-v3 campaign. The scripts it names (`scripts/experimental_resume/*`, `scripts/paper/*_r1.py`) were removed from the tree on 2026-10-23; they are kept at the git tag `archive/pre-cleanup-20261023`. To run any paper experiment today, use the experiment table in the root [README](../../README.md) and the README of each `scripts/` folder.
+
 The campaign is `report/verification-study-v3/CAMPAIGN.json`, execution revision4. Its generator/reader/analysis source closure is frozen while jobs are pending or running. Result root: `/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4`. Every model uses the same stage order. Scientific definitions and decision gates remain in [NEXT_EXPERIMENTS.md](NEXT_EXPERIMENTS.md). The previous root retains revision3's partial engineering receipts; never copy them into the active root as passing qualification or scientific results.
 
 ## Durable continuation when Codex stops
