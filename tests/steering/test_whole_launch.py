@@ -2,6 +2,8 @@
 import math
 import os
 from pathlib import Path
+import shutil
+import signal
 import tempfile
 import subprocess
 import time
@@ -23,7 +25,7 @@ LINK = driver.DRIVER/'EFFICIENCY_LINK_PREREG.json'  # the seven-model pre-regist
 class ActualNominationTests(unittest.TestCase):
     def test_greedy_matches_all_70_dp_optima_and_preserves_other_exact_rank_cells(self):
         """Use saved discovery evidence; neither nominations nor tests read whole outcomes."""
-        history = driver.ROOT.parent/'whole-reasoning-20261020-r2'
+        history = driver.STUDY.parent/'whole-reasoning-20261020-r2'
         proposal = load(history/'CONTROL_FEASIBLE_RD_BOTH_DOSES.json')
         references = {(r['dose'], r['fold'], r['class']): r for r in proposal['records']}
         for model, layers, experts, native_k in (('gpt', 24, 32, 4), ('qwen36', 40, 256, 8)):
@@ -162,7 +164,8 @@ class DesignAndCoverageTests(unittest.TestCase):
             pd.DataFrame(outcomes).to_parquet(folder/'outcomes.parquet')
             pd.DataFrame(spans).to_parquet(folder/'sentences.parquet')
             publish(root/'RELEASE.json', {'classifier': {}})
-            publish(whole.manifest_path('gpt', 'main', root), {'records': records})
+            planned = publish(whole.manifest_path('gpt', 'main', root), {'records': records})
+            publish(folder/'EXTRACTION.json', {'manifest_sha256': planned['sha256']})
             with patch('routing.lexical.predict', side_effect=lambda frame, *args, **kwargs: frame):
                 table = whole_effects.load_table([{'model': 'gpt', 'root': str(root), 'dose': 'main'}]).set_index('uid')
         self.assertEqual(table.loc['valid', 'outcome_status'], 'observed')
@@ -173,22 +176,47 @@ class DesignAndCoverageTests(unittest.TestCase):
 
 
 class LaunchGraphTests(unittest.TestCase):
-    """scripts/steering/launch.sh on a sealed release prints the sbatch commands of its graph (DRY_RUN=1)."""
+    """scripts/steering/launch.sh on a made-up sealed release, with Slurm commands that only keep a record."""
     PY = Path('/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/envs/vllm-cu129/bin/python')
+    FAKE = {  # job numbers count up from 1001; FAIL_AT and HANG_AT name the sbatch call that fails or hangs
+        'sbatch': 'n=$(( $(cat "$FAKE_SLURM/count" 2>/dev/null || echo 0) + 1 )); echo $n > "$FAKE_SLURM/count"\n'
+                  'test "$n" != "${FAIL_AT:-}" || { echo "sbatch: error: invalid account" >&2; exit 1; }\n'
+                  'test "$n" != "${HANG_AT:-}" || exec sleep 30\n'
+                  'echo $((1000 + n))\n',
+        'scancel': 'echo "$@" >> "$FAKE_SLURM/cancelled"\n',
+        'sacct': 'echo "${JOB_STATE:-RUNNING}"\n',
+    }
 
-    def launch(self, kind_file: str, shards: dict) -> tuple[list[list[str]], str]:
-        """Lay out a repository-like folder around a made-up release, run the launcher, return its commands."""
-        with tempfile.TemporaryDirectory(dir=WORK/'tools/tmp') as temporary:
-            repo = Path(temporary)
-            for folder in ('src', 'scripts'):
-                os.symlink(REPO/folder, repo/folder)
-            root = repo/'report/release'
-            publish(root/'RELEASE.json', {'release_root': str(repo), 'models': list(shards), 'shards': shards})
-            publish(root/kind_file, {})
-            run = subprocess.run(['bash', str(repo/'scripts/steering/launch.sh'), 'release'], cwd=repo,
-                                 env={**os.environ, 'DRY_RUN': '1'}, capture_output=True, text=True)
-            self.assertEqual(run.returncode, 0, run.stderr)
-            return [line.split() for line in run.stderr.splitlines() if line.startswith('sbatch')], str(root)
+    def setUp(self):
+        temporary = tempfile.TemporaryDirectory(dir=WORK/'tools/tmp')
+        self.addCleanup(temporary.cleanup)
+        self.repo = Path(temporary.name)
+        for folder in ('src', 'scripts'):
+            os.symlink(REPO/folder, self.repo/folder)
+        (self.repo/'bin').mkdir()
+        for name, body in self.FAKE.items():
+            (self.repo/'bin'/name).write_text('#!/bin/bash\n'+body)
+            (self.repo/'bin'/name).chmod(0o755)
+        self.root = self.repo/'report/release'
+
+    def seal(self, kind_file: str, shards: dict, cpu_ceiling=1000., gpu_ceiling=1000.):
+        publish(self.root/'RELEASE.json', {'release_root': str(self.repo), 'models': list(shards), 'shards': shards,
+                                           'cpu_core_hour_ceiling': cpu_ceiling, 'new_gpu_hour_ceiling': gpu_ceiling})
+        publish(self.root/kind_file, {})
+
+    def environment(self, **extra):
+        return {**os.environ, 'PATH': f"{self.repo/'bin'}:{os.environ['PATH']}", 'FAKE_SLURM': str(self.repo), **extra}
+
+    def launch(self, *jobs, **extra):
+        return subprocess.run(['bash', str(self.repo/'scripts/steering/launch.sh'), 'release', *jobs], cwd=self.repo,
+                              env=self.environment(**extra), capture_output=True, text=True)
+
+    def dry_run(self, kind_file: str, shards: dict, *jobs, **ceilings) -> list[list[str]]:
+        """The sbatch commands the launcher prints for a release."""
+        self.seal(kind_file, shards, **ceilings)
+        run = self.launch(*jobs, DRY_RUN='1')
+        self.assertEqual(run.returncode, 0, run.stderr)
+        return [line.split() for line in run.stderr.splitlines() if line.startswith('sbatch')]
 
     @staticmethod
     def option(command, name):
@@ -196,7 +224,7 @@ class LaunchGraphTests(unittest.TestCase):
 
     @unittest.skipUnless(PY.exists(), 'needs the cluster environment')
     def test_a_sweep_release_runs_tests_then_manifests_then_shards_then_one_extraction_per_model(self):
-        jobs, root = self.launch('COMPLEMENT.json', {'gpt': 2, 'glm': 1})
+        jobs, root = self.dry_run('COMPLEMENT.json', {'gpt': 2, 'glm': 1}), str(self.root)
         names = [command[command.index('-J')+1] for command in jobs]
         self.assertEqual(names, ['whole-tests', 'whole-prepare', 'whole-run-gpt', 'whole-run-gpt', 'whole-extract-gpt',
                                  'whole-run-glm', 'whole-extract-glm', 'whole-combine', 'whole-export'])
@@ -210,24 +238,164 @@ class LaunchGraphTests(unittest.TestCase):
         self.assertEqual(self.option(export, '--dependency'), 'afterok:whole-combine')
         self.assertEqual(last_shard[-6:], ['--release', root, '--model', 'gpt', '--shard', '1/2'])
         self.assertEqual(last_shard[-8:-6], ['steering.whole', 'run'])
-        self.assertTrue(last_shard[-9].endswith('scripts/steering/gpu.sh'))  # a shard's 2 GPUs and 4 hours are its header
+        self.assertTrue(last_shard[-9].endswith('scripts/steering/gpu.sh'))
         for cpu_job in (tests, prepare, extract, combine):  # the serial partition would reject them
             self.assertEqual(cpu_job[cpu_job.index('-p')+1], 'boost_usr_prod')
+        self.assertEqual(tests[-4:], ['steering.whole', 'validate', '--release', root])
         self.assertEqual(combine[-4:], ['steering.whole', 'combine', '--release', root])
         self.assertIn('--export=ALL,MOE_EXP_SCORING_PROCESSES=8', extract)
 
     @unittest.skipUnless(PY.exists(), 'needs the cluster environment')
+    def test_every_job_states_its_cpus_and_time_and_a_shard_its_two_gpus(self):
+        jobs = {command[command.index('-J')+1]: command for command in self.dry_run('COMPLEMENT.json', {'gpt': 1})}
+        for name, cpus, minutes in (('whole-tests', '4', '60'), ('whole-prepare', '4', '60'), ('whole-extract-gpt', '8', '90'),
+                                    ('whole-combine', '8', '120'), ('whole-export', '2', '60'), ('whole-run-gpt', '16', '240')):
+            command = jobs[name]
+            self.assertEqual((command[command.index('-c')+1], command[command.index('-t')+1]), (cpus, minutes), name)
+        self.assertIn('--gres=gpu:2', jobs['whole-run-gpt'])
+        self.assertLess(jobs['whole-run-gpt'].index('--gres=gpu:2'), jobs['whole-run-gpt'].index('steering.whole'))
+        self.assertFalse(any('--gres' in command for name, command in jobs.items() if name != 'whole-run-gpt'))
+
+    @unittest.skipUnless(PY.exists(), 'needs the cluster environment')
+    def test_the_export_runs_from_the_checkout_that_holds_report(self):
+        jobs = {command[command.index('-J')+1]: command for command in self.dry_run('COMPLEMENT.json', {'gpt': 1})}
+        export = jobs['whole-export']
+        self.assertEqual(self.option(export, '--chdir'), str(self.repo))
+        self.assertEqual(export[export.index('paper.export_whole_results')-1], str(self.repo/'scripts/slurm/cpu.sh'))
+        self.assertIn(str(self.root/'analysis-combined/EFFECTS_WHOLE.json'), export)
+
+    @unittest.skipUnless(PY.exists(), 'needs the cluster environment')
     def test_a_relink_release_runs_only_the_tests_the_combine_and_the_export(self):
-        jobs, _ = self.launch('RELINK.json', {'gpt': 0})
+        jobs = self.dry_run('RELINK.json', {'gpt': 0}, cpu_ceiling=22., gpu_ceiling=0.)  # the ceilings sealed for a relink
         self.assertEqual([command[command.index('-J')+1] for command in jobs],
                          ['whole-tests', 'whole-combine', 'whole-export'])
         self.assertEqual(self.option(jobs[1], '--dependency'), 'afterok:whole-tests')
 
     @unittest.skipUnless(PY.exists(), 'needs the cluster environment')
+    def test_a_relink_waits_for_the_jobs_named_after_the_release(self):
+        self.seal('RELINK.json', {'gpt': 0})
+        run = self.launch('4242', DRY_RUN='1', JOB_STATE='RUNNING')
+        self.assertEqual(run.returncode, 0, run.stderr)
+        combine = next(line.split() for line in run.stderr.splitlines() if '-J whole-combine' in line)
+        self.assertEqual(self.option(combine, '--dependency'), 'afterok:whole-tests,afterok:4242')
+        run = self.launch('4242', DRY_RUN='1', JOB_STATE='FAILED')  # a failed job is no reason to start
+        self.assertNotEqual(run.returncode, 0)
+        self.assertIn('did not complete', run.stderr)
+
+    @unittest.skipUnless(PY.exists(), 'needs the cluster environment')
     def test_an_outcome_release_ends_in_its_own_analysis(self):
-        jobs, root = self.launch('OUTCOME.json', {'gpt': 1})
-        self.assertEqual(jobs[-1][-4:], ['steering.outcome', 'analyze', '--release', root])
+        jobs = self.dry_run('OUTCOME.json', {'gpt': 1})
+        self.assertEqual(jobs[-1][-4:], ['steering.outcome', 'analyze', '--release', str(self.root)])
+        self.assertEqual((jobs[-1][jobs[-1].index('-c')+1], jobs[-1][jobs[-1].index('-t')+1]), ('8', '120'))
         self.assertNotIn('whole-export', [command[command.index('-J')+1] for command in jobs])
+
+    @unittest.skipUnless(PY.exists(), 'needs the cluster environment')
+    def test_nothing_is_submitted_when_the_time_limits_exceed_a_ceiling(self):
+        # Complement of two models, three shards: 4+4+24+16+2 = 50 CPU core-hours and 3 x 2 GPUs x 4 hours = 24 GPU-hours.
+        self.dry_run('COMPLEMENT.json', {'gpt': 2, 'glm': 1}, cpu_ceiling=50., gpu_ceiling=24.)
+        for ceilings in ({'cpu_core_hour_ceiling': 49.9, 'new_gpu_hour_ceiling': 24.},
+                         {'cpu_core_hour_ceiling': 50., 'new_gpu_hour_ceiling': 23.9}):
+            shutil.rmtree(self.root)
+            publish(self.root/'RELEASE.json', {'release_root': str(self.repo), 'models': ['gpt', 'glm'],
+                                               'shards': {'gpt': 2, 'glm': 1}, **ceilings})
+            publish(self.root/'COMPLEMENT.json', {})
+            run = self.launch()
+            self.assertNotEqual(run.returncode, 0)
+            self.assertIn('the release allows', run.stderr)
+            self.assertFalse((self.repo/'count').exists(), 'sbatch was called')
+            self.assertFalse((self.root/'JOBS.txt').exists())
+
+    @unittest.skipUnless(PY.exists(), 'needs the cluster environment')
+    def test_a_failed_launch_cancels_its_jobs_keeps_their_record_and_can_be_repeated(self):
+        self.seal('RELINK.json', {'gpt': 0})
+        run = self.launch(FAIL_AT='3')  # the export is refused
+        self.assertNotEqual(run.returncode, 0)
+        self.assertEqual((self.repo/'cancelled').read_text().split(), ['1001', '1002'])
+        self.assertFalse((self.root/'JOBS.txt').exists())
+        (record,) = self.root.glob('JOBS.cancelled-*.txt')
+        self.assertEqual([line.split()[:2] for line in record.read_text().splitlines()],
+                         [['whole-tests', '1001'], ['whole-combine', '1002']])
+        self.assertEqual(self.launch().returncode, 0)  # a new launch is allowed
+        self.assertEqual(len((self.root/'JOBS.txt').read_text().splitlines()), 3)
+        self.assertIn('launched already', self.launch().stderr)
+        self.assertEqual(len(list(self.root.glob('JOBS.cancelled-*.txt'))), 1)
+
+    @unittest.skipUnless(PY.exists(), 'needs the cluster environment')
+    def test_an_interrupted_launch_cancels_its_jobs_too(self):
+        self.seal('RELINK.json', {'gpt': 0})
+        process = subprocess.Popen(['bash', str(self.repo/'scripts/steering/launch.sh'), 'release'], cwd=self.repo,
+                                   env=self.environment(HANG_AT='3'), stdout=subprocess.DEVNULL,
+                                   stderr=subprocess.PIPE, text=True, start_new_session=True)  # its own process group, as a terminal gives it
+        for _ in range(100):  # the third sbatch call is under way: two jobs are queued
+            if (self.repo/'count').exists() and (self.repo/'count').read_text().strip() == '3':
+                break
+            time.sleep(.2)
+        os.killpg(process.pid, signal.SIGTERM)
+        _, error = process.communicate(timeout=30)
+        self.assertNotEqual(process.returncode, 0, error)
+        self.assertEqual((self.repo/'cancelled').read_text().split(), ['1001', '1002'])
+        self.assertFalse((self.root/'JOBS.txt').exists())
+        self.assertEqual(len(list(self.root.glob('JOBS.cancelled-*.txt'))), 1)
+
+
+class ReleaseStageTests(unittest.TestCase):
+    """The checks around a release's stages: the unit-test receipt, the ceilings and the extractions."""
+    def setUp(self):
+        temporary = tempfile.TemporaryDirectory(dir=WORK/'tools/tmp')
+        self.addCleanup(temporary.cleanup)
+        self.root = Path(temporary.name)
+
+    def suites(self, returncode=0, text='Ran 5 tests in 0.1s\n\nOK\n'):
+        """Stand-ins for the three unittest runs of validate."""
+        calls = []
+
+        def run(command, **kwargs):
+            calls.append(command)
+            return SimpleNamespace(returncode=returncode, stderr=text)
+        self.enterContext(patch.object(whole.subprocess, 'run', run))
+        self.enterContext(patch.object(whole, 'verify_release', return_value={'commit': 'abc123'}))
+        self.enterContext(patch.dict(os.environ, {'SLURM_JOB_ID': '77'}))
+        return calls
+
+    def test_validate_seals_the_tests_run_and_keeps_that_receipt_on_a_second_launch(self):
+        calls = self.suites()
+        receipt = whole.validate(self.root)
+        self.assertEqual((receipt['passed'], receipt['tests'], receipt['job'], receipt['commit']), (True, 15, '77', 'abc123'))
+        self.assertEqual(len(calls), 3)
+        whole.validated(self.root)
+        self.assertEqual(whole.validate(self.root), receipt)
+        self.assertEqual(len(calls), 3)  # the same snapshot is not tested twice
+
+    def test_a_failing_suite_is_sealed_as_failed_and_stops_the_stages(self):
+        self.suites(returncode=1, text='Ran 5 tests in 0.1s\n\nFAILED (failures=1)\n')
+        self.assertFalse(whole.validate(self.root)['passed'])
+        with self.assertRaisesRegex(ValueError, 'did not pass'):
+            whole.validated(self.root)
+
+    def test_a_suite_that_ran_nothing_does_not_pass(self):
+        self.suites(text='ImportError: cannot import name\n')
+        self.assertFalse(whole.validate(self.root)['passed'])
+
+    def test_the_stages_need_the_receipt_to_exist(self):
+        with self.assertRaises(FileNotFoundError):
+            whole.validated(self.root)
+
+    def test_budget_compares_the_committed_hours_with_both_ceilings(self):
+        publish(self.root/'RELEASE.json', {'cpu_core_hour_ceiling': 24., 'new_gpu_hour_ceiling': 10.})
+        whole.budget(self.root, 24., 10.)
+        with self.assertRaisesRegex(ValueError, 'CPU core-hours; the release allows 24.0'):
+            whole.budget(self.root, 24.1, 10.)
+        with self.assertRaisesRegex(ValueError, 'GPU-hours; the release allows 10.0'):
+            whole.budget(self.root, 1., 10.1)
+
+    def test_a_release_whose_model_has_no_extraction_cannot_be_combined(self):
+        publish(self.root/'RELEASE.json', {'classifier': {}})
+        value = publish(whole.manifest_path('gpt', 'main', self.root), {'records': []})
+        with self.assertRaisesRegex(ValueError, 'has no gpt extraction'):
+            whole_effects._extracted(self.root, 'gpt', value)
+        publish(self.root/'gpt/extraction/EXTRACTION.json', {'manifest_sha256': 'another'})
+        with self.assertRaisesRegex(ValueError, 'another manifest'):
+            whole_effects._extracted(self.root, 'gpt', value)
 
 
 class DoseResponseTests(unittest.TestCase):
@@ -301,10 +469,11 @@ class DoseResponseTests(unittest.TestCase):
             rows = [{'uid': uid, 'family': uid, 'model': 'gpt', 'dose': 'half', 'total_allowance': 100,
                      'nomination_status': 'nominated'} for uid in ('early', 'late')]
             planned = publish(whole.manifest_path('gpt', 'half', base), {'records': rows})
-            publish(whole.manifest_path('gpt', 'half', topup), {'records': rows[1:],
-                                                                'parent_manifest_sha256': planned['sha256']})
-            for root, uid in ((base, 'early'), (topup, 'late')):
+            follow_up = publish(whole.manifest_path('gpt', 'half', topup), {'records': rows[1:],
+                                                                            'parent_manifest_sha256': planned['sha256']})
+            for root, uid, manifest in ((base, 'early', planned), (topup, 'late', follow_up)):
                 (root/'gpt/extraction').mkdir(parents=True)
+                publish(root/'gpt/extraction/EXTRACTION.json', {'manifest_sha256': manifest['sha256']})
                 pd.DataFrame([{'uid': uid, 'outcome_status': 'observed', 'reasoning_tokens': 5, 'reasoning_end': 5,
                                'strict_correct': True, 'finish_reason': 'stop'}]).to_parquet(
                     root/'gpt/extraction/outcomes.parquet')
@@ -336,7 +505,8 @@ class DoseResponseTests(unittest.TestCase):
                             for role in ('target', 'random'):
                                 rows.append({**row, 'uid': dose+family['family']+operation+cls+role, 'class': cls,
                                              'arm': role+'_'+operation, 'operation': operation})
-                publish(whole.manifest_path('gpt', dose, root), {'model': 'gpt', 'dose': dose, 'records': rows})
+                planned = publish(whole.manifest_path('gpt', dose, root), {'model': 'gpt', 'dose': dose, 'records': rows})
+                publish(root/'gpt/extraction/EXTRACTION.json', {'manifest_sha256': planned['sha256'], 'failures': []})
                 publish(root/'RELEASE.json', {'classifier': {}})
             sources = publish(sweep/'SOURCES.json', {'sources': [
                 {'model': 'gpt', 'root': str(base), 'dose': 'main'},
