@@ -1,15 +1,16 @@
-"""The checks around a capture run, on a tiny synthetic shard: manifest, resume markers, verification receipt, gate."""
+"""The checks around a capture run, on a tiny synthetic shard: manifest, resume markers, verification receipt, completeness check."""
 import gzip
 import hashlib
 import json
 import os
 from pathlib import Path
+import sys
 import tempfile
 import time
 import unittest
 from unittest import mock
 
-from capture import buffers, gate, run
+from capture import buffers, capture_routers, check_complete
 from capture.manifest import (
     atomic, capture_folders, digest, load_manifest, read_location, resume_records, validate_verification, write_new,
 )
@@ -65,7 +66,7 @@ class Shard:
         write_json(self.out / 'result.json', dict(
             status='complete_native_collection', manifest_binding=manifest['binding'], records=self.records,
             tokens=manifest['expected_tokens'], artifact_bytes=used))
-        ready = {k: manifest[k] for k in gate.SHARED_KEYS}
+        ready = {k: manifest[k] for k in check_complete.SHARED_KEYS}
         ready.update(status='ready', attempts=2, tokens=manifest['expected_tokens'],
                      shards=[dict(index=0, binding=manifest['binding'])])
         write_json(self.manifest_dir / 'ready.json', ready)
@@ -224,7 +225,7 @@ class VerificationTests(unittest.TestCase):
                 self.check(source, differential=dict(status='failed'))
 
 
-class GateTests(unittest.TestCase):
+class CheckCompleteTests(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
         self.shard = Shard(self.tmp.name)
@@ -233,60 +234,60 @@ class GateTests(unittest.TestCase):
         self.tmp.cleanup()
 
     def test_a_complete_capture_is_accepted(self):
-        result = gate.gate(self.shard.manifest_dir)
+        result = check_complete.check_complete(self.shard.manifest_dir)
         self.assertEqual((result['status'], result['attempts'], result['tokens']), ('complete', 2, 30))
         self.assertEqual(list(result['results']), [str(self.shard.out / 'result.json')])
 
-    def test_a_repeat_capture_is_gated_in_its_own_tree(self):
+    def test_a_repeat_capture_is_checked_in_its_own_tree(self):
         with tempfile.TemporaryDirectory() as other:
             repeat = Shard(other, repeat=True)
-            result = gate.gate(repeat.manifest_dir, repeat.tree)
+            result = check_complete.check_complete(repeat.manifest_dir, repeat.tree)
             self.assertEqual((result['status'], result['attempts']), ('complete', 2))
             with self.assertRaises(FileNotFoundError):
-                gate.gate(repeat.manifest_dir)
+                check_complete.check_complete(repeat.manifest_dir)
 
     def test_a_missing_trace_is_refused(self):
         (self.shard.out / 'attempt2.complete.json').unlink()
         with self.assertRaisesRegex(ValueError, 'Incomplete capture shard'):
-            gate.gate(self.shard.manifest_dir)
+            check_complete.check_complete(self.shard.manifest_dir)
 
     def test_a_damaged_file_is_refused(self):
         Path(self.shard.records[1]['files'][0]['path']).write_bytes(b'damaged')
         with self.assertRaisesRegex(ValueError, 'Corrupt accepted capture'):
-            gate.gate(self.shard.manifest_dir)
+            check_complete.check_complete(self.shard.manifest_dir)
 
     def test_a_result_that_disagrees_with_the_markers_is_refused(self):
         result_path = self.shard.out / 'result.json'
         write_json(result_path, {**json.loads(result_path.read_text()), 'tokens': 31})
         with self.assertRaisesRegex(ValueError, 'Stale/inconsistent shard result'):
-            gate.gate(self.shard.manifest_dir)
+            check_complete.check_complete(self.shard.manifest_dir)
 
     def test_an_unplanned_manifest_is_refused(self):
         write_json(self.shard.manifest_dir / '1.json', self.shard.manifest)
         with self.assertRaisesRegex(ValueError, 'Unexpected/missing capture manifests'):
-            gate.gate(self.shard.manifest_dir)
+            check_complete.check_complete(self.shard.manifest_dir)
 
     def test_a_shard_that_differs_from_the_plan_is_refused(self):
         ready_path = self.shard.manifest_dir / 'ready.json'
         write_json(ready_path, {**json.loads(ready_path.read_text()), 'shards': [dict(index=0, binding='other')]})
         with self.assertRaisesRegex(ValueError, 'Ready shard binding differs'):
-            gate.gate(self.shard.manifest_dir)
+            check_complete.check_complete(self.shard.manifest_dir)
 
     def test_the_acceptance_is_written_once_and_must_not_change(self):
         output = Path(self.tmp.name) / 'acceptance.json'
         env = {'SLURM_JOB_ID': '1'}
-        with mock.patch.dict(os.environ, env), mock.patch('sys.argv', ['gate', str(self.shard.manifest_dir), str(output)]):
-            gate.main()
+        with mock.patch.dict(os.environ, env), mock.patch('sys.argv', ['check_complete', str(self.shard.manifest_dir), str(output)]):
+            check_complete.main()
             first = json.loads(output.read_text())
-            gate.main()
+            check_complete.main()
             self.assertEqual(json.loads(output.read_text())['results'], first['results'])
             write_json(output, {**first, 'tokens': 1})
             with self.assertRaisesRegex(ValueError, 'Existing acceptance differs'):
-                gate.main()
+                check_complete.main()
         self.assertEqual(set(first), {'status', 'attempts', 'tokens', 'ready_sha256', 'results', 'code'})
 
 
-class RunHelperTests(unittest.TestCase):
+class CaptureRoutersHelperTests(unittest.TestCase):
     CODE = {'source_sha256': 's' * 64}
 
     def setUp(self):
@@ -304,82 +305,119 @@ class RunHelperTests(unittest.TestCase):
         manifest = dict(binding='a' * 64)
         out = self.root / 'out'
         out.mkdir()
-        run.claim_capture_output(manifest, out, self.CODE)
-        run.claim_capture_output(manifest, out, self.CODE)
+        capture_routers.claim_capture_output(manifest, out, self.CODE)
+        capture_routers.claim_capture_output(manifest, out, self.CODE)
         with self.assertRaisesRegex(ValueError, 'other inputs or by other code'):
-            run.claim_capture_output({**manifest, 'binding': 'b' * 64}, out, self.CODE)
+            capture_routers.claim_capture_output({**manifest, 'binding': 'b' * 64}, out, self.CODE)
         with self.assertRaisesRegex(ValueError, 'other inputs or by other code'):
-            run.claim_capture_output(manifest, out, {'source_sha256': 'edited'})
+            capture_routers.claim_capture_output(manifest, out, {'source_sha256': 'edited'})
         other = self.root / 'other'
         other.mkdir()
         (other / 'stray.txt').write_text('x')
         with self.assertRaisesRegex(ValueError, 'Unbound existing capture output'):
-            run.claim_capture_output(manifest, other, self.CODE)
+            capture_routers.claim_capture_output(manifest, other, self.CODE)
 
     def test_a_repeat_capture_goes_to_a_folder_named_like_its_shard(self):
         shard = Shard(self.root, repeat=True)
-        out, repeat = run.prepare_output(shard.manifest, self.root / 'fresh' / '0', self.CODE)
+        out, repeat = capture_routers.prepare_output(shard.manifest, self.root / 'fresh' / '0', self.CODE)
         self.assertEqual((out.name, repeat, sorted(os.listdir(out))), ('0', True, ['run-binding.json']))
         with self.assertRaisesRegex(ValueError, 'repeat capture goes to ROOT/0'):
-            run.prepare_output(shard.manifest, self.root / 'fresh' / 'elsewhere', self.CODE)
+            capture_routers.prepare_output(shard.manifest, self.root / 'fresh' / 'elsewhere', self.CODE)
 
     def test_a_finished_capture_is_not_run_or_overwritten_again(self):
         shard = Shard(self.root, repeat=True)
         with self.assertRaisesRegex(ValueError, 'already holds result.json'):
-            run.prepare_output(shard.manifest, shard.out, self.CODE)
+            capture_routers.prepare_output(shard.manifest, shard.out, self.CODE)
         with self.assertRaisesRegex(ValueError, 'other inputs or by other code'):
-            run.prepare_output(shard.manifest, shard.out, {'source_sha256': 'edited'})
+            capture_routers.prepare_output(shard.manifest, shard.out, {'source_sha256': 'edited'})
         (shard.out / 'result.json').unlink()
-        run.prepare_output(shard.manifest, shard.out, self.CODE)  # an interrupted run resumes
+        capture_routers.prepare_output(shard.manifest, shard.out, self.CODE)  # an interrupted run resumes
         write_json(shard.out / 'verification.json', {'status': 'passed'})
         with self.assertRaisesRegex(ValueError, 'already holds verification.json'):
-            run.prepare_output(shard.manifest, shard.out, self.CODE)
+            capture_routers.prepare_output(shard.manifest, shard.out, self.CODE)
 
     def test_the_manifests_own_capture_dir_is_not_a_repeat(self):
         shard = Shard(self.root)
         (shard.out / 'result.json').unlink()
-        out, repeat = run.prepare_output(shard.manifest, shard.manifest['capture_dir'], self.CODE)
+        out, repeat = capture_routers.prepare_output(shard.manifest, shard.manifest['capture_dir'], self.CODE)
         self.assertEqual((out, repeat), (shard.out.resolve(), False))
 
     def test_a_shard_in_a_repeat_tree_needs_a_verification_written_by_this_code(self):
         shard = Shard(self.root, repeat=True)
-        run.check_verification(shard.manifest, shard.out, True, self.CODE)
+        capture_routers.check_verification(shard.manifest, shard.out, True, self.CODE)
         with self.assertRaisesRegex(ValueError, 'written by other code'):
-            run.check_verification(shard.manifest, shard.out, True, {'source_sha256': 'edited'})
+            capture_routers.check_verification(shard.manifest, shard.out, True, {'source_sha256': 'edited'})
         paper = Shard(Path(self.tmp.name) / 'paper')
-        run.check_verification(paper.manifest, paper.out, False, {'source_sha256': 'edited'})
+        capture_routers.check_verification(paper.manifest, paper.out, False, {'source_sha256': 'edited'})
         (shard.tree / 'verify' / 'verification.json').unlink()
         with self.assertRaises(FileNotFoundError):
-            run.check_verification(shard.manifest, shard.out, True, self.CODE)
+            capture_routers.check_verification(shard.manifest, shard.out, True, self.CODE)
 
     def test_no_trace_is_started_in_the_last_half_hour_of_the_job(self):
         now = time.time()
-        self.assertFalse(run.must_stop(None))
-        self.assertFalse(run.must_stop(now + 3600))
-        self.assertTrue(run.must_stop(now + 1700))
-        self.assertTrue(run.must_stop(now - 5))
+        self.assertFalse(capture_routers.must_stop(None))
+        self.assertFalse(capture_routers.must_stop(now + 3600))
+        self.assertTrue(capture_routers.must_stop(now + 1700))
+        self.assertTrue(capture_routers.must_stop(now - 5))
 
     def test_packed_files_are_lossless_reproducible_and_capped(self):
         raw = b'router' * 5000
-        first = run.pack_bytes(self.root / 'a.pt.gz', raw, 10 ** 6)
-        second = run.pack_bytes(self.root / 'b.pt.gz', raw, 10 ** 6)
+        first = capture_routers.pack_bytes(self.root / 'a.pt.gz', raw, 10 ** 6)
+        second = capture_routers.pack_bytes(self.root / 'b.pt.gz', raw, 10 ** 6)
         self.assertEqual(gzip.decompress((self.root / 'a.pt.gz').read_bytes()), raw)
         self.assertEqual((first['sha256'], first['raw_sha256']), (second['sha256'], hashlib.sha256(raw).hexdigest()))
         with self.assertRaisesRegex(RuntimeError, 'storage cap'):
-            run.pack_bytes(self.root / 'c.pt.gz', raw, 10)
+            capture_routers.pack_bytes(self.root / 'c.pt.gz', raw, 10)
         self.assertEqual(sorted(p.name for p in self.root.iterdir()), ['a.pt.gz', 'b.pt.gz'])
 
     def test_the_differential_receipt_is_bound_to_its_verification(self):
         path, binding = self.root / 'differential.json', {'short_id': 'x'}
-        self.assertIsNone(run.saved_differential(path, binding))
+        self.assertIsNone(capture_routers.saved_differential(path, binding))
         with self.assertRaisesRegex(ValueError, 'did not pass'):
-            run.save_differential(path, binding, {'status': 'failed'})
-        run.save_differential(path, binding, {'status': 'passed', 'flips': 0})
-        self.assertEqual(run.saved_differential(path, binding), {'status': 'passed', 'flips': 0})
+            capture_routers.save_differential(path, binding, {'status': 'failed'})
+        capture_routers.save_differential(path, binding, {'status': 'passed', 'flips': 0})
+        self.assertEqual(capture_routers.saved_differential(path, binding), {'status': 'passed', 'flips': 0})
         with self.assertRaisesRegex(ValueError, 'Stale or failed'):
-            run.saved_differential(path, {'short_id': 'y'})
+            capture_routers.saved_differential(path, {'short_id': 'y'})
         with self.assertRaisesRegex(ValueError, 'Existing differential differs'):
-            run.save_differential(path, binding, {'status': 'passed', 'flips': 1})
+            capture_routers.save_differential(path, binding, {'status': 'passed', 'flips': 1})
+
+
+class CaptureRoutersMainTests(unittest.TestCase):
+    """The model and the kind of run (verification or shard) come from the manifest, not from the command line."""
+
+    def run_main(self, source, shard):
+        """Run main() on a manifest of `source` and `shard` as far as the output folder; returns sys.path and LOCAL_KERNELS."""
+        class Stop(Exception):
+            pass
+
+        manifest = dict(source=source, shard=shard)
+        env = {'SLURM_JOB_ID': '1'}
+        seen = {}
+
+        def stop_at_output(manifest, output, code):
+            seen['path'], seen['local_kernels'] = list(sys.path), os.environ.get('LOCAL_KERNELS')
+            raise Stop
+
+        with mock.patch.dict(os.environ, env), mock.patch.object(sys, 'path', list(sys.path)), \
+                mock.patch.object(capture_routers.socket, 'gethostname', return_value='lrdn0001'), \
+                mock.patch.object(capture_routers, 'load_manifest', return_value=manifest), \
+                mock.patch.object(capture_routers, 'code_provenance', return_value={}), \
+                mock.patch.object(capture_routers, 'prepare_output', side_effect=stop_at_output):
+            os.environ.pop('LOCAL_KERNELS', None)
+            with self.assertRaises(Stop):
+                capture_routers.main(['manifest.json', 'out'])
+        return seen
+
+    def test_gpt_gets_the_newer_kernels_before_anything_heavy_is_imported(self):
+        seen = self.run_main('gpt', 'verify')
+        self.assertEqual(seen['path'][1], str(capture_routers.GPT_KERNELS_PACKAGES))
+        self.assertTrue(seen['local_kernels'].startswith('kernels-community/gpt-oss-triton-kernels='))
+
+    def test_the_other_models_run_with_the_environment_as_it_is(self):
+        seen = self.run_main('qwen36', 0)
+        self.assertNotIn(str(capture_routers.GPT_KERNELS_PACKAGES), seen['path'])
+        self.assertIsNone(seen['local_kernels'])
 
 
 class CapturePathTests(unittest.TestCase):

@@ -44,13 +44,13 @@ Each paper experiment has one launcher. The launcher submits the job, which call
 
 | Experiment | Launcher (`scripts/`) | Module (`src/`) | Output or receipt | Used in the paper |
 | --- | --- | --- | --- | --- |
-| Trace generation, 8 models | `generation/generate.sbatch MODEL DATASET SHARD NSHARDS`; `lfm25`: `sbatch slurm/run_module_gpu.sbatch steering.pulse native --shard I/N` | `generation.generate`; `steering.pulse` | `results/correlation_pipeline/card-v3/MODEL/generation/<checkpoint>/<dataset>/traces.jsonl` | Benchmark tables, setup |
-| Answer scoring (J1) | `generation/score.sbatch ITEMS OUT` | `generation.scoring` (inside generation), `generation.answer_equivalence` | judge verdicts in `OUT` | Accuracy in the benchmark tables |
+| Trace generation, 8 models | `generation/generate_answers.sbatch HF_MODEL DATASET SHARD NSHARDS OUT_DIR`; `lfm25`: `sbatch slurm/run_module_gpu.sbatch steering.pulse native --shard I/N` | `generation.generate_answers`; `steering.pulse` | `results/correlation_pipeline/card-v3/MODEL/generation/<checkpoint>/<dataset>/traces.jsonl` | Benchmark tables, setup |
+| Answer scoring (J1) | `generation/list_rejected_answers.sh TRACES_DIR ITEMS_JSONL`, then `generation/judge_answers.sbatch ITEMS_JSONL VERDICTS_JSONL` | `generation.scoring` (inside generation), `generation.judge_answers` | judge verdicts in `VERDICTS_JSONL` | Accuracy in the benchmark tables |
 | Benchmark accuracy tables | `routing/benchmarks.sh OUT_DIR` | `routing.benchmark_accuracy`, `routing.benchmark_inventory` | `OUT_DIR/accuracy/*.csv`, `OUT_DIR/inventory` | Tables `benchmarks`, `benchmark_details` |
-| Judge optimisation (GEPA) | `labeling/optimize_judge.sh API_BASE OUT_DIR` | `labeling.gepa.run` | `selected_program_*.json` (the frozen judge) | Appendix, external annotation development |
-| Sentence sampling | `labeling/sample.sh MODEL` | `labeling.sample_cohorts` | `cohorts.json`, `parts.json`, four label part roots | Appendix, sentence sampling |
-| Sentence labeling | `labeling/label.sbatch TRACE_ROOT OUT_DIR` | `labeling.annotation_batch` | `annotations.json`, `summary.json` | Every exhibit that uses states |
-| Router capture | `capture/capture.sbatch MODEL MANIFEST OUT_DIR [verify]`, then `capture/gate.sh MANIFEST_DIR OUT.json` | `capture.run`, `capture.gate` | per-trace packets and tensors, `result.json`, the gate's acceptance JSON | Input of all routing results |
+| Judge optimisation (GEPA) | `labeling/optimize_judge_prompt.sh SERVER_URL DATASET_DIR SEED_PROMPT OUT_DIR` | `labeling.gepa.optimize_judge` | `selected_program_*.json` (the frozen judge) | Appendix, external annotation development |
+| Sentence sampling | `labeling/choose_sentences.sh TRACES_DIR OUT_DIR` | `labeling.choose_sentences` | `cohorts.json`, `parts.json`, four label part roots | Appendix, sentence sampling |
+| Sentence labeling | `labeling/label_sentences.sbatch TRACE_ROOT OUT_DIR [JUDGE_PROGRAM]` | `labeling.label_sentences` | `annotations.json`, `summary.json` | Every exhibit that uses states |
+| Router capture | `capture/capture_routers.sbatch MANIFEST OUT_DIR`, then `capture/check_capture_complete.sh MANIFEST_DIR OUT_JSON [CAPTURE_ROOT]` | `capture.capture_routers`, `capture.check_complete` | per-trace packets and tensors, `result.json`, the completeness check's acceptance JSON | Input of all routing results |
 | LFM2.5 replay | `sbatch slurm/run_module_gpu.sbatch steering.pulse lfm-replay --shard I/N` | `steering.pulse`, `capture.lfm_replay` | `lfm25/replay/<attempt>.npz` under the study scratch folder | Input of the LFM2.5 rows |
 
 ### Analyses of native routing

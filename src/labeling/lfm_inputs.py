@@ -80,7 +80,7 @@ def judge_inputs(value, units, index):
 def materialize(binding):
     """Commit exact native lines and run the 100k stratified sampler."""
     from transformers import AutoTokenizer
-    from generation.generate import _model_slug
+    from generation.generate_answers import _model_slug
     from labeling.sample_stratified import build_plan
     from capture.dynamics.classes import saved_layout
     from labeling.spans import trace_digest
