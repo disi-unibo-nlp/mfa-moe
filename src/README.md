@@ -1,0 +1,28 @@
+# src
+
+Python only. Each folder is a topic with its own README. Run everything from the repository root with `PYTHONPATH=src`, for example `python -m routing.selection export OUT_DIR`. Launchers for these modules are in `scripts/` under the same topic name.
+
+| Folder | What it does |
+| --- | --- |
+| [`generation/`](generation/README.md) | Makes the reasoning traces: benchmarks, per-model sampling settings, the client for a vLLM server, answer scoring. |
+| [`labeling/`](labeling/README.md) | Splits traces into sentences, picks the sentences to label and labels them with the judge. |
+| [`labeling/gepa/`](labeling/gepa/README.md) | Optimises the judge prompt (done once). |
+| [`models/`](models/README.md) | Loads checkpoints and reads the routers of each model family. |
+| [`capture/`](capture/README.md) | Replays saved traces through a model and records which experts the routers pick. |
+| [`routing/`](routing/README.md) | The analyses of native routing: readout, anticipation, next state, selection coverage, dynamics, efficiency link, lexical classifier. |
+| [`steering/`](steering/README.md) | Edits the routing while a model reasons and measures the effect. |
+| [`paper/`](paper/README.md) | Turns receipts into the paper's tables and figure data, builds and checks the manuscript. |
+
+Four small modules sit directly in `src/` and are used by all of them:
+
+| File | What it does |
+| --- | --- |
+| `store.py` | Receipts and files. A receipt is a JSON file with the hash of its own content: `publish` writes one atomically and refuses to overwrite it, `verified` reads one back and checks the hash. It also reads trace lines, keeps the state of each unit of work, and holds the shared constants (the eight model names, the seven states, the six benchmarks, the standard paths). |
+| `stats.py` | The bootstrap that resamples question families, never single attempts, and the bounds for outcomes that are unknown. |
+| `schemas.py` | `TraceRecord`, the record every stage passes on: one generated attempt with its prompt, completion, answer, correctness and metadata. |
+| `provenance.py` | The code and environment hashes that outputs record, so a result can say which code made it. |
+
+Two rules hold across the code:
+
+- Repeated attempts of one question are never independent. A question family is one question together with its duplicates (the same problem appearing twice); folds and bootstraps keep a family whole, and intervals resample whole families.
+- An unknown outcome (a truncated generation, an unreadable answer) stays unknown and is bounded. It is never dropped or filled in.

@@ -1,144 +1,38 @@
-# gepaLLMAsJudge
+# src/labeling/gepa
 
-`gepaLLMAsJudge` optimizes the prompt used by Qwen 3.6 27B to assign one of seven
-adapted Schoenfeld Episode Theory labels:
+Optimises the prompt of the judge that labels reasoning sentences with the seven states (Read, Analyze, Plan, Implement, Explore, Verify, Monitor). This was done once. The result is the frozen judge that every label set in the project uses.
 
-`Read`, `Analyze`, `Plan`, `Implement`, `Explore`, `Verify`, `Monitor`.
+| File | What it does |
+| --- | --- |
+| `run.py` | The command: loads the data, runs GEPA, applies the safety check, evaluates, writes everything. |
+| `data.py` | The labelled Schoenfeld responses, response-grouped splits, and an audit of units that merit a human look. |
+| `prompts.py` | The seed instructions for the seven labels and a bank of 21 hand-written contrastive examples (three per label). |
+| `metrics.py` | Strict and balanced accuracy, macro-F1, per-class precision and recall, Cohen's kappa, Kendall's tau-b. |
 
-Run it with `PYTHONPATH=src`; it needs `dspy` and `scipy`. The frozen judge (the program every other
-folder loads) came out of `scripts/labeling/optimize_judge.sh`.
+## Run
 
-## Context and data isolation
-
-Each target unit is classified with:
-
-- the SAT problem statement, choices, table, and figure description from
-  `SAT.json`;
-- the previous response unit;
-- the current target unit;
-- the next response unit.
-
-Correct answers and rationales are never copied into model-visible context.
-Documents are split before units are flattened, so no response crosses train,
-validation, outer-CV, or locked-test boundaries.
-
-The prompt defines a whole-unit precedence rule for compound annotations such
-as a `**Final Answer**` marker combined with a boxed answer. Gold labels are
-never silently modified. Every run writes `annotation_audit_*.json`.
-
-## Prompt and optimization
-
-The default `few-shot` prompt uses 21 hand-audited synthetic contrastive
-examples: three per class. They target the recurring boundaries
-`Read`/`Analyze`, `Analyze`/`Verify`, `Analyze`/`Implement`, `Plan`/`Monitor`,
-and `Explore`/`Analyze`. Because the examples are synthetic, validation and
-test annotations cannot leak into the prompt.
-
-GEPA now uses an LLM-as-a-judge reward by default. The judge is the same Qwen
-model being optimized, but it runs with reasoning disabled for this stage. For
-each candidate label it returns a short free-text explanation and four scores
-from 1 to 5:
-
-- `GOLD_AGREEMENT`: agreement with the authoritative annotation;
-- `FUNCTIONAL_FIT`: fit to the target unit's reasoning function;
-- `CONTEXTUAL_COHERENCE`: use of problem and neighboring-unit context;
-- `BOUNDARY_PRECISION`: distinction from the closest competing label.
-
-The GEPA reward is a normalized weighted mean: gold agreement has weight 0.40,
-functional fit 0.25, contextual coherence 0.15, and boundary precision 0.20.
-These are optimization-feedback dimensions, not final experiment metrics.
-Final prompt selection still uses gold-label balanced accuracy or macro-F1
-plus the per-class recall safety gate. The former static rewards remain
-available with `--gepa-reward balanced` and `--gepa-reward exact` for ablations.
-Every judge call is also appended to `judge_feedback_*.jsonl`, including the
-candidate and gold labels, four component scores, normalized composite score,
-and free-text reasoning. This makes judge quality auditable independently of
-GEPA's binary checkpoint.
-
-After optimization, a safety gate compares the seed and optimized prompts on
-validation balanced accuracy. The optimized prompt is rejected if it fails to
-improve the selection metric or lowers any class recall by more than 0.10.
-Configure this with:
+Needs `dspy`, `gepa` and `scipy`, and a running OpenAI-compatible server. The launcher is `scripts/labeling/optimize_judge.sh API_BASE OUT_DIR`; it runs
 
 ```bash
---selection-metric balanced_accuracy
---max-class-recall-drop 0.10
+PYTHONPATH=src:... python -m labeling.gepa.run --dataset-dir data/Schoenfeld_Reasoning --api-base API_BASE \
+  --output-dir OUT_DIR --gepa-auto heavy --enable-thinking --reflection-max-tokens 4096 \
+  --seed-prompt-file results/exp0a/context-llmjudge-20k-s42/gepa_optimized_prompt_20260811_135905.txt
 ```
 
-Reports include strict accuracy, balanced accuracy, macro-F1, per-class
-precision/recall/F1, Cohen's kappa, Kendall's tau-b, and valid-output coverage.
-Kendall's tau-b is retained for comparability but should not be treated as the
-primary metric unless the configured label ordering is substantively justified.
+Everything else is the default: seed 42, the 21-example few-shot prompt, the LLM-judge reward, balanced-accuracy selection, medium reasoning effort, and a split of 26 training, 6 validation and 6 locked-test responses. The frozen judge is `results/gepaLLMAsJudge/qwen3.8-27b-medium-final-s42-v3/selected_program_20260827_173300.json`. Use a fresh output folder when you change the reward, because GEPA resumes checkpoints it finds under the folder's `gepa_logs/`.
 
-## Recommended workflow
+Output in `--output-dir`: `selected_program_<time>.json` (the program `labeling.batch_predictor` loads), the seed and optimised prompts and programs, validation predictions, split response ids, `annotation_audit_<time>.json`, `results_<time>.json`, `judge_feedback_<time>.jsonl` and `stats.csv`.
 
-First compare configurations using nested response-grouped cross-validation:
+## How it is set up
 
-```bash
-python -m labeling.gepa.run \
-  --dataset-dir data/Schoenfeld_Reasoning \
-  --prompt-variant few-shot \
-  --few-shot-examples 21 \
-  --gepa-reward llm-judge \
-  --selection-metric balanced_accuracy \
-  --cv-folds 5 \
-  --locked-test-documents 6 \
-  --gepa-auto heavy \
-  --output-dir results/gepaLLMAsJudge/context-llmjudge-cv
-```
+- Data: the released Schoenfeld Reasoning annotations (`data/Schoenfeld_Reasoning`). Each unit is judged with the problem statement, the previous unit, the unit itself and the next unit. Correct answers and rationales are never shown to the model. Responses are split before units are flattened, so no response sits in two of training, validation, cross-validation fold or locked test.
+- Prompt: the default `few-shot` prompt appends 21 synthetic contrastive examples, so no validation or test annotation can leak into it.
+- Reward: the judge is the same model that is being optimised. For each candidate label it gives a short explanation and four scores from 1 to 5 (gold agreement 0.40, functional fit 0.25, contextual coherence 0.15, boundary precision 0.20). These guide GEPA; they are not result metrics. Every judge call is logged in `judge_feedback_*.jsonl`. `--gepa-reward balanced` and `exact` give the older static rewards.
+- Safety check: the optimised prompt is rejected if it does not improve the selection metric on validation, or if any class recall drops by more than 0.10 (`--max-class-recall-drop`).
+- Locked test: touched only with `--evaluate-locked-test`, once, after the configuration is frozen, and never in cross-validation (`--cv-folds`). The current test split has already been inspected in earlier experiments, so a final claim needs new held-out responses.
 
-For each outer fold, GEPA uses only an inner training and validation split. The
-selected fold prompt is then evaluated on an untouched outer fold. The six
-locked-test responses are excluded from the entire process. Cross-validation
-does not produce one deployable prompt; use it to choose the configuration.
+To compare configurations first, add `--cv-folds 5 --locked-test-documents 6`. Cross-validation chooses a configuration; it does not produce one deployable prompt.
 
-Fit the chosen configuration without evaluating the locked test:
+Paper use: the appendix on external annotation development.
 
-```bash
-python -m labeling.gepa.run \
-  --dataset-dir data/Schoenfeld_Reasoning \
-  --prompt-variant few-shot \
-  --few-shot-examples 21 \
-  --gepa-reward llm-judge \
-  --selection-metric balanced_accuracy \
-  --gepa-auto heavy \
-  --output-dir results/gepaLLMAsJudge/context-llmjudge-final
-```
-
-Only after configuration and prompt-selection rules are frozen, explicitly
-authorize the one-time locked-test evaluation:
-
-```bash
-python -m labeling.gepa.run \
-  --dataset-dir data/Schoenfeld_Reasoning \
-  --prompt-variant few-shot \
-  --few-shot-examples 21 \
-  --gepa-reward llm-judge \
-  --selection-metric balanced_accuracy \
-  --gepa-auto heavy \
-  --evaluate-locked-test \
-  --output-dir results/gepaLLMAsJudge/context-llmjudge-locked-test
-```
-
-The current historical test split has already been inspected in earlier
-experiments. A genuinely final result requires newly held-out responses or an
-external evaluation corpus.
-
-## Reproducing the frozen judge
-
-`scripts/labeling/optimize_judge.sh API_BASE OUTPUT_DIR` runs the Qwen3.8-27B alignment pass
-that produced `results/gepaLLMAsJudge/qwen3.8-27b-medium-final-s42-v3`: the heavy GEPA budget,
-medium reasoning effort, 4096 reflection tokens, and the earlier 40-example optimized prompt
-(`results/exp0a/context-llmjudge-20k-s42/gepa_optimized_prompt_20260811_135905.txt`) as the
-external seed. Everything else is the default (seed 42, LLM-judge reward, balanced-accuracy
-selection, 26/6/6 split). Add `--evaluate-locked-test` only to the frozen final evaluation job.
-Always use a fresh output directory when changing the reward configuration, because GEPA resumes
-checkpoints found under that directory's `gepa_logs/`.
-
-The splits are fixed in `run.py` (`TRAIN_DOCUMENTS`, `VAL_DOCUMENTS`): 26 / 6 / 6 whole
-responses for the seed given with `--seed`.
-
-Outputs include the seed, GEPA-optimized, and safety-selected prompts/programs;
-validation or outer-fold predictions; split response IDs; annotation audit;
-aggregate and per-class metrics; per-call `judge_feedback_*.jsonl`; and an
-append-only `stats.csv`.
+Tests: [`tests/labeling/test_gepaLLMAsJudge.py`](../../../tests/labeling/README.md).

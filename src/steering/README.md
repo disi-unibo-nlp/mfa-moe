@@ -1,36 +1,44 @@
-# Steering
+# src/steering
 
-Code that pushes the routers of the eight models toward or away from chosen experts while a model
-reasons, and measures what that did to the length and the correctness of the reasoning.
+Code that pushes the routers of the eight models toward or away from chosen experts while a model reasons, and measures what that did to the length and the correctness of the reasoning. Launchers are in [`scripts/steering`](../../scripts/steering/README.md). Python decides what runs; the scripts decide where and in which order.
 
 There are three experiments:
 
-- **Pulsed steering** (`pulse.py`, `pulse_outcomes.py`, `pulse_effects.py`): a short push on the
-  experts of one reasoning state at the start of a continuation, at a central strength and at a
-  stronger one. Its tables are the main and strong steering results of the paper.
-- **Whole-reasoning steering** (`whole.py`, `whole_effects.py`, `release.py`): the push is applied
-  to every prompt and reasoning token. Experts come from the efficiency link, with matched random
-  experts as controls, at three strengths. The sealed result is `EFFECTS_WHOLE.json`.
-- **Outcome-selected nudge** (`outcome/`): not in the paper, the active next line. See its README.
+- Pulsed steering (`pulse.py`, `pulse_outcomes.py`, `pulse_effects.py`): a short push on the experts of one reasoning state at the start of a continuation. Activating a state forces its nominated experts into the selection; deactivating removes them. It runs at a central strength and, for four models, a stronger one. Each edit is compared with matched random experts at the same layers and with native routing. Its tables are the main and strong steering results of the paper (figure `routing`).
+- Whole-reasoning steering (`whole.py`, `whole_effects.py`, `release.py`): the push is applied at every prompt and reasoning token until the reasoning closes, and the final answer is left to native routing. States are promoted or suppressed according to whether they precede shorter or longer remaining reasoning (the efficiency link), at quarter, half and full strength, with matched random experts as controls. The sealed result is `EFFECTS_WHOLE.json` (figures `whole_states`, `whole_dose`).
+- Outcome-selected nudge (`outcome/`): not in the paper, the active next line. See [its README](outcome/README.md).
+
+The same routing operators serve all three.
 
 ## Files
 
 | File | What it does |
 | --- | --- |
-| `pulse.py` | The generation engine (many requests at once, saved and resumed exactly), the pulsed design's manifests and the LFM2.5 native stages. |
+| `pulse.py` | The pulsed design: its manifests, one engine per model shard that admits requests while others finish, and the LFM2.5 stages (`native`, `annotate`, `lfm-replay`). |
 | `pulse_outcomes.py` | Reads the saved continuations and writes one table of outcomes and one of sentences per model. |
-| `pulse_effects.py` | The paired effects with bounds for unknown outcomes, the bootstrap, and the efficiency-link test. |
+| `pulse_effects.py` | The paired effects with bounds for unknown outcomes, the family bootstrap and the efficiency-link test. |
 | `whole.py` | The whole-reasoning release: manifests, the fluency canary, the shards, `plan`, `prepare`, `run`. |
 | `whole_effects.py` | Replays and scores the finished rows (`extract`) and joins every release into `EFFECTS_WHOLE.json` (`combine`). |
 | `release.py` | Seals a complement, relink or outcome release: receipts plus a frozen copy of the code. |
-| `stream.py`, `operators.py` | The hooks and the operators that change the routing of the running model. |
-| `nominations.py`, `selection.py`, `allocation.py` | Which experts, which layers, which families. |
-| `runtime.py`, `observer.py`, `session.py`, `penalties.py`, `fast_penalties.py` | Prompts, the per-request routing capture used by the LFM2.5 replay, and the repetition penalties. |
+| `stream.py`, `observer.py`, `operators.py` | The hooks that change the routing of the running model, and the operators: hard inclusion and exclusion, and the score override that follows SteerMoE. |
+| `nominations.py`, `selection.py`, `allocation.py` | Which experts to edit for each state (the nominations), which layer of the network, and which question families go to which arm. |
+| `runtime.py`, `session.py`, `penalties.py`, `fast_penalties.py` | Prompts and the durable per-request generation, one request lifecycle, and the repetition penalties applied to saved history. |
+
+## Commands
+
+```bash
+python -m steering.pulse COMMAND [--model M] [--shard I/N] [--design main|strong]   # plan, plan-strong, run, native, annotate, lfm-replay, status
+python -m steering.pulse_outcomes --model M [--design strong]
+python -m steering.pulse_effects --out DIR [--design strong --models gpt,nemotron,qwen330b,gemma]
+python -m steering.whole COMMAND --release report/NAME [--model M] [--shard I/N]     # plan, prepare, canary, run, extract, combine
+python -m steering.release KIND NAME --tests N [--models ...] [--shards ...] [--cutoff TIME]   # KIND: complement, relink, outcome
+```
+
+GPU commands (`run`, `native`, `annotate`, `lfm-replay`, `canary`) refuse to start outside a Slurm GPU allocation. Use the launchers.
 
 ## Running a whole-reasoning release
 
-A release is a folder `report/NAME`. Every stage takes `--release report/NAME` and reads its
-settings (models, strengths, shards, cutoff time, efficiency link) from the files in it.
+A release is a folder `report/NAME`. Every stage takes `--release report/NAME` and reads its settings (models, strengths, shards, cut-off time, efficiency link) from the files in it.
 
 ```bash
 scripts/steering/whole.sh complement NAME TESTS --cutoff 2026-10-24T06:00   # seal, then submit the jobs
@@ -38,12 +46,11 @@ scripts/steering/launch.sh NAME                          # submit the jobs of a 
 DRY_RUN=1 scripts/steering/launch.sh NAME                # print the sbatch commands only
 ```
 
-The stages are `python -m steering.whole plan | prepare | canary | run | extract | combine`. Slurm
-is only in `scripts/steering/`: dependencies, resources and walltimes are in `launch.sh`.
-A shard asks for 4 hours of 2 GPUs, the release records its declared ceilings, and
-`scripts/slurm/ledger.sh whole-` adds up what was spent.
-The fluency canary of a base release is run by hand (`python -m steering.whole canary`), and its
-receipt is what lets `run` start production.
+The stages are `plan`, `prepare`, `canary`, `run`, `extract`, `combine`. Slurm is only in `scripts/steering/`: dependencies, resources and walltimes are in `launch.sh`. A shard asks for 4 hours of 2 GPUs, the release records its declared ceilings, and `scripts/slurm/ledger.sh whole-` adds up what was spent. The fluency canary of a base release runs by hand (`python -m steering.whole canary`); it checks that steered continuations do not break down (reach the limit or repeat themselves far more often than native ones), and its receipt is what lets `run` start production. A continuation still running at the end of an allocation is saved with its tokens and resumed later through the same hooks, so every position keeps its steering and nothing is redrawn.
+
+Two rules apply to results: an outcome that is unknown (a continuation that reaches its allowance, or never finishes) keeps an interval and is never dropped, and nothing is redrawn after the fact. Token contrasts are `log(1+T_control) - log(1+T_treated)`, so a positive value means shorter reasoning than the control.
+
+Tests: [`tests/steering`](../../tests/steering/README.md).
 
 <!-- ledger:begin -->
 ## Ledger

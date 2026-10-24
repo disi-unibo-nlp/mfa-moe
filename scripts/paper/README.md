@@ -1,34 +1,17 @@
-# Paper tooling
+# scripts/paper
 
-The active manuscript is `paper/6a510c6db0d9b08aa438c142`. Its native figures
-and plotting data are canonical; local review outputs stay in the ignored
-`paper/manuscript-support/build` directory.
+Turn finished receipts into the paper's tables and figure data, build the PDF, and check the writing rules. The manuscript is `paper/6a510c6db0d9b08aa438c142`, a separate Overleaf checkout that holds sources only. Nothing here pushes to Overleaf.
 
-`optimize_sections.py` runs a previously approved section-optimization protocol
-through the existing ELM batch client. It resumes the saved initial generator
-responses, submits two independent counterbalanced GPT-6 Luna High reviews per
-proposal, and feeds actual criticism back to GPT-6.1 Sol Medium. All ten rounds
-are retained, including unchanged or rejected proposals. Scientific-source
-changes and judge-identified regressions veto automatic incumbent selection.
-The command does not edit, commit or push the manuscript. Final adoption still
-requires an independent comparison with the fixed baseline, source and visual
-checks, and the paper-writer workflow.
+| Script | What it does |
+| --- | --- |
+| `export.sh [EFFECTS_WHOLE.json]` | Writes the routing tables, the whole-reasoning tables and the plotting data for the figures. It reads sealed receipts and fits nothing. Without an argument it uses `report/whole-reasoning-20261021-r20/analysis-combined/EFFECTS_WHOLE.json`, the final whole-reasoning receipt. |
+| `build.sh` | Compiles the figure sources, then the manuscript, with the offline `tectonic` (a few minutes). Use it instead of `pw build`, which falls back to a system LaTeX and shows an old PDF here. |
+| `check.sh` | Runs the paper-writer rule check on the manuscript. The rules are in `paper/manuscript-support/notes/paper-rules.md`. |
 
-```sh
-python -m paper.optimize_sections \
-  --run-dir paper/manuscript-support/build/elm-optimization \
-  --client ~/.paper-writer-skill/skills/deep-research/scripts/deep-research
+```bash
+scripts/paper/export.sh
+scripts/paper/build.sh
+scripts/paper/check.sh
 ```
 
-The run directory must contain `PROTOCOL.json`, section baselines and complete
-author examples, `round-01-generators.jsonl`, its successful responses, and the
-judge rubric/schema. Requests and responses are immutable evidence. Completed
-selection records resume without more calls; unfinished batches resume through
-the existing client's successful-request IDs. Credentials remain with that
-client and never enter run artifacts.
-
-Validate selection behavior with:
-
-```sh
-PYTHONPATH=src python -m unittest discover -s tests/paper -p test_paper_optimization.py
-```
+Never edit the exported tables by hand. `export.sh` runs `paper.export_routing_results`, `paper.export_whole_results` and `paper.export_cl_exhibits`; what each one writes, which receipt feeds which table or figure, and the other checks (`paper.verify_cl_tables` and friends) are in [`src/paper`](../../src/paper/README.md).
