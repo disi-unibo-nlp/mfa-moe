@@ -1,3 +1,29 @@
+**Repository cleanup merged into main — 2026-10-24 (Claude, repo-polishing; ledger F-0010):**
+- Layout: bash only in `scripts/<topic>/`, Python only in `src/<topic>/` (no `moe_exp` folder; `python -m routing.readout`,
+  `PYTHONPATH=src`), tests in `tests/<topic>/`, a plain README in every folder. The root README maps every paper
+  experiment to its launcher, module, receipt and table/figure. Old campaigns, rescue, the journaled job graph and
+  `scripts/experimental_resume` were removed; they are at git tag `archive/pre-cleanup-20261023` (978f011).
+- Same numbers: every CPU analysis was rerun from the tag (mfa-moe/r/polish-golden/GOLDEN.md) and again with the new
+  code, topic by topic and at the end (mfa-moe/r/polish-final/): identical. Not rerun: the 7-model readout and
+  anticipation drivers (19 and 84 core-hours; a 1-CPU smoke run was bit-identical) and the lexical fit.
+- Slurm: `scripts/slurm/env.sh` (per-job folder, PORT/URL, offline), `scripts/serve/MODEL.sh` (one `vllm serve`),
+  steering releases sealed by `python -m steering.release` via `scripts/steering/whole.sh`, job graph in
+  `scripts/steering/launch.sh` (budget check, CPU_VALIDATION.json, DRY_RUN=1). No Slurm submission left in Python.
+- Ported from analysis/routing-dynamics up to 6fb1b1c (F-0011 next_state, F-0012 sentence_table/transition_pairs,
+  continuation release = old `--continue-from`), and the main checkout's uncommitted paper-tooling edits of 2026-10-24
+  (model display order, printed-table verifier). The r21 command is now `python -m steering.followup
+  report/whole-reasoning-20261021-r18`, then `AFTER="<parent extraction jobs>" scripts/steering/whole.sh continuation
+  whole-reasoning-20261021-r21 TESTS --parent whole-reasoning-20261021-r18 --cutoff ...` from a clean tree.
+- main on GitHub held 17 commits by Leonardo Tassinari (2026-09-17..28: thesis, report figures, moe_guiding/identity
+  guiding and probe experiments). User decision 2026-10-24: the cleanup wins; the merge keeps them in history (last
+  61fbfea) but not in the tree.
+- Not in main: branch outcome/r2 (its session ports it onto main itself) and the main checkout's uncommitted manuscript
+  edits under paper/ (about 105 files, figure sources moved into the Overleaf folder): commit them before they can move.
+- Known science item, unchanged by the cleanup: today's pulse-outcome extractor takes a reasoning_fallback path for 2 GPT
+  continuations, so its effects differ from the stored r7 corrected-main receipt in GPT/pooled values (GOLDEN.md, a.outcomes).
+- Pair-judge jobs 62005318-62005389 failed because the renderer child looked for `.research-runtime` inside the release
+  snapshot; fixed (the receipt's bound renderer path is passed to the child).
+
 **F-0012 jobs queued — 2026-10-23 20:45 Rome (Claude, repo-a1):**
 - Fig. 6 (snapshot releases/ee85fa9): Qwen3.6 table rebuild 62004522; plans 62004524-62004532; judge 62004533-62004553
   (Read+Verify successors, 119,556 contexts, 16 x 2 GPUs x 4 h); panels 62004558-62004567; collect 62004568 ->
