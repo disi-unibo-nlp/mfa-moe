@@ -76,6 +76,8 @@ Launchers are in `scripts/steering/`, modules in `src/steering/`.
 | Pulsed steering, main and strong doses | `pulse.sh SHARDS HOURS MODEL...`, then `pulse_analyze.sh OUT` | `pulse`, `pulse_outcomes`, `pulse_effects` | `report/final-routing-20261015-r1/driver/analysis-final/EFFECTS.json` and `.../analysis-strong/EFFECTS.json` | Figure `routing`, tables `routing`, `routing_levels`, `routing_strong` |
 | Whole-reasoning steering and dose sweep | `whole.sh KIND NAME TESTS [OPTION...]` (calls `launch.sh`); KIND `continuation` runs what a complement left unfinished | `release`, `whole`, `whole_effects`, `followup` (the continuation's plan) | `report/whole-reasoning-20261021-r20/analysis-combined/EFFECTS_WHOLE.json` | Figures `whole_states`, `whole_dose`; tables `whole`, `whole_cells`, `whole_occupancy`, `whole_levels` |
 | Outcome-selected nudge | `outcome_usage.sh`, `whole.sh outcome ...`, `outcome_next.sh` | `outcome` | `analysis/EFFECTS_OUTCOME.json` in the release | Not in the paper. This is the next line of work. |
+| Outcome steering r2: native attempts with routing, 8 models | `whole.sh capture NAME TESTS ...`, then `outcome_derive.sh NAME MODEL...` | `outcome` (`capture`, `classes`, `select`, `evidence`, `attempts`, `derive`) | `report/outcome-capture-20261023-r2/MODEL/SELECTION_R2.json`, `SIGNAL.json`, `ATTEMPT_SELECTION.json` | Not in the paper. |
+| Outcome steering r2: class-conditioned sweep, then the confirmed cell | `whole.sh sweep NAME TESTS --half A ...`, `outcome_pick.sh HALF_A MODEL NAME TESTS ...` | `outcome` (`manifest`, `analysis`, `pick`) | `analysis/EFFECTS_OUTCOME.json` and `PICK.json` in the release (half A, `report/outcome-steering-20261023-r6`, was stopped before its analysis) | Not in the paper. |
 
 ### Paper
 

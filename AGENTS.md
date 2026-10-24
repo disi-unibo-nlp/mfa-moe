@@ -1,3 +1,38 @@
+**Outcome steering r2 ported into the cleaned layout — 2026-10-24 (Claude, subagent s10-outcome; ledger F-0013, F-0014, D-0006):**
+- Branch `s10/outcome` (from merge/main ac713c4) carries branch `outcome/r2` (head bee5962) in the new layout. Nothing was
+  launched or sealed. Old -> new: `moe_exp.outcome_steering.{capture,classes,evidence,attempts,derive,pick}` ->
+  `src/steering/outcome/`; `study/{stream,driver,outcomes,whole_effects}.py` -> `steering/{stream,pulse,pulse_outcomes,whole_effects}.py`;
+  `outcome_steering/release.py` -> kinds `capture` and `sweep` of `steering.release`; `WHOLE_JOB_PREFIX` -> `job_prefix` in
+  RELEASE.json (`whole.py plan` prints it, `launch.sh` names its jobs with it); `scripts/outcome_steering/{launch,derive,pick}.sh` ->
+  `whole.sh capture|sweep`, `outcome_derive.sh`, `outcome_pick.sh`. The locked store binding was already in `steering/whole.py`.
+- Spec files keep their published names (CAPTURE_NATIVE.json, OUTCOME_SWEEP.json), so the ported code reads
+  `report/outcome-capture-20261023-r2` and `report/outcome-steering-20261023-r6` as they are. The `outcome/r2` worktree stays
+  read-only history; its sealing from a worktree (CODE vs REPORTS) is not ported: seal from the checkout that holds report/.
+
+**Outcome steering r2: class-conditioned selection, captures on all eight models — updated 2026-10-24 13:20 Rome (user-approved plan; Claude, ledger F-0013, F-0014, D-0006):**
+- Code on branch `outcome/r2` (worktree `.claude/worktrees/outcome-r2`), not in this checkout: native-id capture in
+  study/stream.py, per-row token cap, job-name prefix WHOLE_JOB_PREFIX, locked store binding, and
+  src/moe_exp/outcome_steering/{capture,classes,evidence,attempts,derive,pick}.py. The polishing session ports it.
+- Capture r1 `report/outcome-capture-20261023-r1` FAILED at allocated validation 61994112 (one test pinned an old error
+  message; VALIDATION_FAILED.json); no shard ran, no GPU hours. Do not reuse it.
+- Capture r2 `report/outcome-capture-20261023-r2` (commit cf82b90, stores on FAST
+  `campaign-runs/outcome-capture-20261023-r2/stores`): 300 shared questions x 6 native attempts x 8 models, 32,768-token
+  cap, routing ids saved. Jobs `oc-*`: validate 62112740, 55 GPU shards (gpt 3, nemotron 4, qwen330b 4, gemma 5,
+  qwen36 7, qwen35 8, lfm25 9, glm 15; ceiling 450 GPU-h), extraction per model, monitor 62113122. Cutoff 2026-10-30 23:00.
+- CPU chain `oc-derive-<model>`: gpt 62113144 failed (fixed paper-five set exhausted its control pool; nearest-usage
+  fallback in dea1154); rerun gpt 62130386 COMPLETED; others 62130387-62130399 (afterok extraction; snapshot releases/dea1154).
+  Outputs SELECTION_R2.json, SIGNAL.json, ATTEMPT_SELECTION.json under report/outcome-capture-20261023-r2/<model>/.
+- GPT-OSS vertical, failed attempts (no GPU hours; do not reuse): r2 unsealed (saldo missing on compute nodes,
+  LAUNCH_FAILED.json); r4 failed allocated validation (sweep cells key read by audit_nominations, VALIDATION_FAILED.json;
+  its analysis/pick cancelled before running). Fixes 3327256, bee5962 plus an end-to-end CPU dry run.
+- Half A now `report/outcome-steering-20261023-r6` (commit bee5962, launched from login 16:01): validate 62131947, 15 shards,
+  extract 62132028, monitor 62132033, analysis 62132037, os-pick 62132038 -> seals half B `report/outcome-steering-20261023-r7`
+  (2 shards). 2026-10-24 ~17:30 the user said: let half A finish and remove the rest. os-pick 62132038 CANCELLED (no
+  half B); oc-extract/oc-derive of glm, qwen330b, qwen35, qwen36 CANCELLED (their running capture shards were left to
+  end; stores kept on FAST, not extracted). Nothing else is queued. Write-up: paper/wiki/OUTCOME_STEERING_R2.md.
+- Job names are oc-/os-, never whole-*. Keep the outcome/r2 worktree clean and committed until half B is sealed
+  (os-launch-A and os-pick seal from its HEAD). r18 pending-shard cancellation after 06:00 was handed to repo-a1.
+
 **Repository cleanup merged into main — 2026-10-24 (Claude, repo-polishing; ledger F-0010):**
 - Layout: bash only in `scripts/<topic>/`, Python only in `src/<topic>/` (no `moe_exp` folder; `python -m routing.readout`,
   `PYTHONPATH=src`), tests in `tests/<topic>/`, a plain README in every folder. The root README maps every paper
