@@ -1,180 +1,91 @@
-# MoE Routing Dynamics During Chain-of-Thought Reasoning
+# MoE routers during chain-of-thought reasoning
 
-The current paper direction, seven-model evidence, decisions and experiment
-requirements are consolidated in the [research wiki](paper/wiki/README.md).
-Start there before planning new analyses or jobs; the workflow descriptions
-below and `NEXT_STEPS.md` retain their historical context.
+This repository holds the code behind a journal paper on how the routers of mixture-of-experts (MoE) language models behave while the model reasons step by step.
+Eight models solve competition-math problems. A judge model labels each reasoning sentence with one of seven states (Read, Analyze, Plan, Implement, Explore, Verify, Monitor).
+We replay the saved text through each model and record which experts the routers pick, ask whether routing says anything about the state of a sentence beyond its text, and then edit the routing during generation to see what changes.
+The manuscript is in `paper/`.
 
-This repository currently contains four active workflows:
+The eight models, with the short names used in every command: `gpt` (GPT-OSS-20B), `nemotron` (Nemotron-3.5-Lightning-30B-A3B), `qwen35` (Qwen3.5-35B-A3B), `qwen36` (Qwen3.6-35B-A3B), `gemma` (Gemma-4-26B-A4B), `glm` (GLM-4.7-Flash), `qwen330b` (Qwen3-30B-A3B) and `lfm25` (LFM2.5-24B-A2B). Their checkpoints and router types are in [src/models](src/models/README.md).
 
-1. `gepaLLMAsJudge`: GEPA prompt optimization for the seven Schoenfeld
-   reasoning-episode labels, using the served model as an informative judge.
-2. `correlation_pipeline`: repeated benchmark generation, teacher-forced MoE
-   router/hidden-state extraction, and cluster-aware correlation analysis.
-3. `probeTest`: Qwen3.5 hidden-state probes trained on the released gold
-   Schoenfeld traces.
-4. `moe_guiding`: exploratory margin-triggered expert replacement during live
-   top-2 Mixtral inference with vLLM.
+## Layout
 
-The earlier prioritized work from the tutor meeting is tracked in
-[`NEXT_STEPS.md`](NEXT_STEPS.md).
+| Folder | What it holds |
+| --- | --- |
+| `scripts/` | Bash only. One launcher per experiment, the model servers, the shared Slurm setup. |
+| `src/` | Python only, one folder per topic (generation, labeling, capture, routing, steering, paper). |
+| `tests/` | Unit tests, one folder per `src/` topic. |
+| `results/` | Git-ignored outputs of generation and labeling runs. |
+| `report/` | Receipts: small JSON files that record what a finished run read and produced, each with a hash of its own content. Whether a stage passed is decided by its receipt, not by a log or a job state. |
+| `paper/` | The manuscript (an Overleaf checkout, sources only), the research wiki and the support files around it. |
+| `configs/`, `data/`, `requirements/` | The frozen design of the eight-model study, small input data, the lock file of the judge-client environment. |
+| `docs/ledger/` | Decisions and plans. `AGENTS.md` is the dated log of what is running now. |
 
-The earlier numbered experiments are archived under `src/moe_exp/old`. Their
-launchers, results, documentation, and full report are retained under `old/`
-and `results/old/`; they are not part of the current workflow.
-
-## Current eight-model study
-
-The maintained launch path is documented in [scripts/study](scripts/study/README.md).
-Python lives in [src/moe_exp/study](src/moe_exp/study/README.md).
-
-```bash
-scripts/study/run.sh plan
-scripts/study/run.sh status
-```
-
-Use `submit` or `resume` for the approved Slurm workflow. Read
-[the current receipts](report/final-routing-20261015-r1/RECAP.md) for observed
-progress. [Ordinary model serving](scripts/inference/README.md) has a separate
-short launcher. Historical launchers remain while frozen jobs depend on them.
+Every folder under `scripts/`, `src/` and `tests/` has its own README. Start there when you work on one part.
 
 ## Setup
 
-Requires Python 3.11 or newer. Install a CUDA-compatible PyTorch build first,
-then install the project:
+- Everything runs on the CINECA LEONARDO cluster. Run GPU and long CPU work through Slurm only. The login node is for short checks (600 s of CPU, no GPU).
+- Two environments live in `/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/envs/`. `vllm-cu129` (vLLM 0.29, torch with CUDA 12.9, scipy) is the one every Slurm job uses. `correlation-client-3.11` (numpy, pandas, pydantic, pytest; no torch, no scipy) is for light tests.
+- The judge client needs a third environment with DSPy, built once by `scripts/setup/dspy_env.sh`.
+- The package is not installed. Run from the repository root with `PYTHONPATH=src`.
+- Compute nodes are offline. Model weights are read from `mfa-moe/cache/hf`.
+- `scripts/slurm/env.sh` sets up each job: modules, offline mode, per-job cache folders, and a port derived from the job id, so two jobs on one node do not collide. Launchers source it.
 
 ```bash
-pip install torch --index-url https://download.pytorch.org/whl/cu128
-pip install -e .
+PYTHONPATH=src /leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/envs/correlation-client-3.11/bin/python \
+  -m pytest -q -p no:cacheprovider tests/capture
 ```
 
-Install the renamed GEPA workflow and test dependencies when working on it:
+## The experiments
 
-```bash
-pip install -e ".[dev,gepa-llm-as-judge]"
-```
+Each paper experiment has one launcher. The launcher submits the job, which calls one module in `src/`. An `OUT_DIR` argument must name a new folder.
 
-The Docker image supplies the supported Python and CUDA environment on hosts
-where the system Python is older:
+### Data
 
-```bash
-docker build -t moe-mfa-experiments:latest .
-```
+| Experiment | Launcher (`scripts/`) | Module (`src/`) | Output or receipt | Used in the paper |
+| --- | --- | --- | --- | --- |
+| Trace generation, 8 models | `generation/generate.sbatch MODEL DATASET SHARD NSHARDS`; `lfm25`: `sbatch steering/gpu.sh steering.pulse native --shard I/N` | `generation.generate`; `steering.pulse` | `results/correlation_pipeline/card-v3/MODEL/generation/<checkpoint>/<dataset>/traces.jsonl` | Benchmark tables, setup |
+| Answer scoring (J1) | `generation/score.sbatch ITEMS OUT` | `generation.scoring` (inside generation), `generation.answer_equivalence` | judge verdicts in `OUT` | Accuracy in the benchmark tables |
+| Benchmark accuracy tables | `routing/benchmarks.sh OUT_DIR` | `routing.benchmark_accuracy`, `routing.benchmark_inventory` | `OUT_DIR/accuracy/*.csv`, `OUT_DIR/inventory` | Tables `benchmarks`, `benchmark_details` |
+| Judge optimisation (GEPA) | `labeling/optimize_judge.sh API_BASE OUT_DIR` | `labeling.gepa.run` | `selected_program_*.json` (the frozen judge) | Appendix, external annotation development |
+| Sentence sampling | `labeling/sample.sh MODEL` | `labeling.sample_cohorts` | `cohorts.json`, `parts.json`, four label part roots | Appendix, sentence sampling |
+| Sentence labeling | `labeling/label.sbatch TRACE_ROOT OUT_DIR` | `labeling.annotation_batch` | `annotations.json`, `summary.json` | Every exhibit that uses states |
+| Router capture | `capture/capture.sbatch MODEL MANIFEST OUT_DIR [verify]`, then `capture/gate.sh MANIFEST_DIR OUT.json` | `capture.run`, `capture.gate` | per-trace packets and tensors, `result.json`, the gate's acceptance JSON | Input of all routing results |
+| LFM2.5 replay | `sbatch steering/gpu.sh steering.pulse lfm-replay --shard I/N` | `steering.pulse`, `capture.lfm_replay` | `lfm25/replay/<attempt>.npz` under the study scratch folder | Input of the LFM2.5 rows |
 
-## gepaLLMAsJudge
+### Analyses of native routing
 
-The package is located at `src/moe_exp/gepaLLMAsJudge`. Its default output is
-`results/gepaLLMAsJudge`.
+| Experiment | Launcher (`scripts/routing/`) | Module (`src/routing/`) | Output or receipt | Used in the paper |
+| --- | --- | --- | --- | --- |
+| Present-state readout, 7 models | `readout.sh OUT_DIR` | `readout` | `readout-results.v3.json` | Figure `readout`, table `readout` |
+| Present-state readout, LFM2.5 | `lfm.sh` | `lfm` (`derive`, `readout`, `dynamics`) | `report/final-routing-20261015-r1/lfm25/READOUT_RESULTS.json` | Same figure and table |
+| Anticipation (GPT-OSS, Qwen3.6) | `anticipation.sh OUT_DIR` | `anticipation` | `anticipation-results.json` | Figure `next_state`, table `next_state` |
+| Next state, 8 models | `next_state.sh` | `next_state` | `report/final-routing-20261015-r1/driver/NEXT_STATE.json` | Not in the paper yet (it will replace the anticipation figure) |
+| Expert selection coverage | `selection.sh OUT_DIR` (LFM2.5: `lfm.sh`) | `selection`, `lfm` | `selection_coverage.csv` | Figure `selection`, tables `selection`, `selection_folds` |
+| Occupancy and transitions | `dynamics.sh OUT_DIR` (LFM2.5: `lfm.sh`) | `dynamics`, `lfm` | `NATIVE_DYNAMICS_SUMMARY.json` per model | Figures `occupancy`, `state_transitions`, `transition_summary`; tables `occupancy`, `state_transitions` |
+| Efficiency link | `efficiency_link.sh` | `efficiency_link` | `report/final-routing-20261015-r1/driver/EFFICIENCY_LINK_V2.json` | Table `efficiency_link`; picks the experts of whole-reasoning steering |
+| Lexical classifier | `lexical.sh OUT_DIR` | `lexical` | five fold classifiers in `OUT_DIR` | Appendix, lexical reading of continuations |
 
-```bash
-python -m moe_exp.gepaLLMAsJudge.audit \
-  --dataset-dir data/Schoenfeld_Reasoning \
-  --output results/gepaLLMAsJudge/annotation_audit.json
+### Routing interventions
 
-python -m moe_exp.gepaLLMAsJudge.run \
-  --dataset-dir data/Schoenfeld_Reasoning \
-  --prompt-variant few-shot \
-  --few-shot-examples 21 \
-  --gepa-reward llm-judge \
-  --gepa-auto heavy \
-  --output-dir results/gepaLLMAsJudge/context-llmjudge-final
-```
+Launchers are in `scripts/steering/`, modules in `src/steering/`.
 
-On SLURM, the launcher starts the llama.cpp server and GEPA containers:
+| Experiment | Launcher | Module | Output or receipt | Used in the paper |
+| --- | --- | --- | --- | --- |
+| Pulsed steering, main and strong doses | `pulse.sh SHARDS HOURS MODEL...`, then `pulse_analyze.sh OUT` | `pulse`, `pulse_outcomes`, `pulse_effects` | `report/final-routing-20261015-r1/driver/analysis-final/EFFECTS.json` and `.../analysis-strong/EFFECTS.json` | Figure `routing`, tables `routing`, `routing_levels`, `routing_strong` |
+| Whole-reasoning steering and dose sweep | `whole.sh KIND NAME TESTS [OPTION...]` (calls `launch.sh`) | `release`, `whole`, `whole_effects` | `report/whole-reasoning-20261021-r20/analysis-combined/EFFECTS_WHOLE.json` | Figures `whole_states`, `whole_dose`; tables `whole`, `whole_cells`, `whole_occupancy`, `whole_levels` |
+| Outcome-selected nudge | `outcome_usage.sh`, `whole.sh outcome ...`, `outcome_next.sh` | `outcome` | `analysis/EFFECTS_OUTCOME.json` in the release | Not in the paper. This is the next line of work. |
 
-```bash
-sbatch run_gepaLLMAsJudge.sh --gepa-auto heavy
-```
+### Paper
 
-See [`src/moe_exp/gepaLLMAsJudge/README.md`](src/moe_exp/gepaLLMAsJudge/README.md)
-for split isolation, metrics, safety selection, audit artifacts, and the locked
-test policy.
+| Step | Launcher (`scripts/paper/`) | Module (`src/paper/`) | Output |
+| --- | --- | --- | --- |
+| Tables and figure data from receipts | `export.sh [EFFECTS_WHOLE.json]` | `export_routing_results`, `export_whole_results`, `export_cl_exhibits` | table `.tex` files and plotting data in `paper/` |
+| Build the figures and the PDF | `build.sh` | `build_cl_figures`, `build_cl_manuscript` | PDF under `paper/manuscript-support/build` |
+| Check the writing rules | `check.sh` | paper-writer rules | rule report |
 
-## Correlation Pipeline
+Unit tests of the live code: `tests/` (see its README). `scripts/steering/tests.sh` runs the steering and routing tests as a Slurm job.
 
-The current Qwen MoE benchmark workflow is self-contained under
-`src/moe_exp/correlation_pipeline`. The default resumable run executes the
-six benchmarks: MATH-500, AIME24, AIME25, OlympiadBench, AMC23 and Minerva. It
-runs vLLM generation and frozen GEPA sentence tagging with eight concurrent
-requests per stage, followed by forward replay and all
-correctness, metric-pair, expert, class and position analyses:
+## Old code
 
-```bash
-src/moe_exp/correlation_pipeline/run_all.sh
-```
-
-Use `--skip-tagging` to omit the judge and class-based analyses while retaining
-whole-reasoning, position and standard correlation/expert analyses. Untagged
-outputs go to `reasoning-vllm-untagged-v1`. `--skip-annotate` instead reuses
-existing labels and keeps class-based analyses.
-
-GPQA-Diamond and MMLU-Pro remain available through explicit `--datasets` selection.
-Use `--skip-generate` to reuse generations of the selected model. For the saved
-GGUF generations, also pass
-`--generation-model qwen3.5-35b-a3b-mtp-ud-q4-k-xl`. New generation uses
-`Qwen/Qwen3.5-35B-A3B-GPTQ-Int4`; the judge uses
-`unsloth/Qwen3.8-27B-NVFP4`. New annotations and analyses live under
-`results/correlation_pipeline/reasoning-vllm-v1`, preserving older results. Generation, tagging, forward replay,
-and analysis can also be run independently. See
-[`src/moe_exp/correlation_pipeline/README.md`](src/moe_exp/correlation_pipeline/README.md)
-for supported benchmarks, sampling settings, model pairing, output layout,
-and Docker commands.
-
-Native CINECA generation for a custom checkpoint (Nemotron 3.5 Lightning
-30B-A3B NVFP4 on the A100s, including a DSpark feasibility probe) uses
-[`sbatch/native_nemotron_generate.sbatch`](sbatch/native_nemotron_generate.sbatch);
-see [MODEL_SUPPORT.md](src/moe_exp/correlation_pipeline/MODEL_SUPPORT.md#nemotron-on-leonardo-booster-a100-native-slurm).
-
-## probeTest
-
-`probeTest` extracts pre-sentence Qwen3.5 hidden states for the 38 released
-gold traces and trains layer-wise one-vs-rest probes. Results remain under
-`results/probeTest`.
-
-See [`src/moe_exp/probeTest/README.md`](src/moe_exp/probeTest/README.md) for the
-protocol and launcher.
-
-## MoE guiding
-
-`moe_guiding` compares native top-2 routing with margin-triggered top-1 + least-1
-routing, using either the selected experts' probabilities or the original
-top-2 mixing coefficients. Start with the model-free arithmetic check:
-
-```bash
-python -m moe_exp.moe_guiding.run sanity
-```
-
-See [`src/moe_exp/moe_guiding/README.md`](src/moe_exp/moe_guiding/README.md) for
-worker plugin setup, layer selection, generation commands, and validation limits.
-
-## Reports and Archive
-
-- Active manuscript: [`paper/6a510c6db0d9b08aa438c142/main.tex`](paper/6a510c6db0d9b08aa438c142/main.tex); historical report: [`report/main.tex`](report/main.tex)
-- All-seven verification implementation and job contracts: [`paper/wiki/NEXT_EXPERIMENTS.md`](paper/wiki/NEXT_EXPERIMENTS.md)
-- Current experimental setup: [`report/experimental_setup.tex`](report/experimental_setup.tex)
-- Current GEPA section: [`report/gepaLLMAsJudge.tex`](report/gepaLLMAsJudge.tex)
-- Current boundary-probe section: [`report/probeTest.tex`](report/probeTest.tex)
-- Current correlation section: [`report/correlation_pipeline.tex`](report/correlation_pipeline.tex)
-- Current analysis and limitations: [`report/active_synthesis.tex`](report/active_synthesis.tex)
-- Current reproducibility checklist: [`report/reproducibility.tex`](report/reproducibility.tex)
-- Numbered source packages: [`src/moe_exp/old`](src/moe_exp/old)
-- Historical README snapshot: [`old/README.md`](old/README.md)
-- Historical full report: [`old/report/legacy_full_report.tex`](old/report/legacy_full_report.tex)
-- Archived outputs: `results/old/exp1` through `results/old/exp5`
-
-The archived pipeline remains runnable through
-`old/scripts/run_pipeline.sh`; it writes to `results/old` by default.
-
-## Active Layout
-
-```text
-src/moe_exp/
-|-- correlation_pipeline/
-|-- gepaLLMAsJudge/
-|-- moe_guiding/
-|-- probeTest/
-|-- models/
-|-- datasets/
-|-- analysis/
-`-- old/
-```
+The code of the finished campaigns (earlier pipelines, Docker launchers, the rescue study, the old job graph) was removed from the tree on 2026-10-23. It is kept in the git tag `archive/pre-cleanup-20261023`. Every receipt in `report/` names the commit it was made with, so check out that commit to rerun an old result.
