@@ -317,7 +317,7 @@ def verify(paper):
         for name, count, source, extra in verify_routing(paper, texts)
     ]
     style = re.sub(r"\s+", "", (paper / "journal/style.tex").read_text())
-    require(r"\fp_compare:nTF{#1>#2}{\pm#1}{\pm#2}" in style, "CI printer no longer preserves maximum original margin")
+    require(r"\fp_compare:nTF{#1>#2}{\pm#1}{\pm#2}" in style, "CI printer does not preserve the maximum original margin")
     result["uncertainty_contract"] = "Both original deviations checked; printed plus/minus is their maximum."
     return result
 
