@@ -1,4 +1,4 @@
-"""Acceptance of a finished capture: every shard of a cohort has complete, intact and consistent artifacts.
+"""Check that a capture is complete: every shard of a cohort has complete, intact and consistent artifacts.
 
 For the manifest folder of one model and cohort (`ready.json` plus one `SHARD.json` per shard) it checks that
   - the shard list is exactly the one `ready.json` froze, and each manifest carries the same model, spec and bindings;
@@ -6,7 +6,9 @@ For the manifest folder of one model and cohort (`ready.json` plus one `SHARD.js
   - every trace of every shard has its two files (sizes and hashes match the marker), no trace is missing or twice;
   - the shard `result.json` agrees with the markers, and the token and trace totals equal the planned ones.
 
-    python -m capture.gate MANIFEST_DIR OUTPUT.json [--captures ROOT]     (a CPU job: it hashes every captured file)
+    python -m capture.check_complete MANIFEST_DIR OUTPUT.json [--captures ROOT]
+
+It is a CPU job, because it hashes every captured file: `scripts/capture/check_capture_complete.sh` submits it.
 
 The captures are where the manifests say (`capture_dir`). With `--captures ROOT` they are in a repeat tree instead:
 `ROOT/<shard number>` for the shards and `ROOT/verify` for the verification.
@@ -28,7 +30,7 @@ SHARED_KEYS = ('source', 'cohort', 'spec', 'validation_binding', 'code_binding',
                'cohort_manifest_path', 'maximum_input_tokens', 'storage_root')
 
 
-def gate(manifest_dir, captures=None):
+def check_complete(manifest_dir, captures=None):
     root = Path(manifest_dir)
     ready = json.loads((root / 'ready.json').read_text())
     if ready.get('status') != 'ready' or not ready.get('shards'):
@@ -79,8 +81,8 @@ def main():
     parser.add_argument('--captures', type=Path)
     args = parser.parse_args()
     if not os.environ.get('SLURM_JOB_ID'):
-        raise RuntimeError('The capture gate requires a Slurm CPU allocation')
-    result = gate(args.manifest_dir, args.captures)
+        raise RuntimeError('The completeness check requires a Slurm CPU allocation')
+    result = check_complete(args.manifest_dir, args.captures)
     if args.output.exists():
         saved = json.loads(args.output.read_text())
         if {k: v for k, v in saved.items() if k != 'code'} != result:

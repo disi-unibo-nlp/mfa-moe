@@ -27,7 +27,7 @@ ENTRY_POINTS = [
     'generation.generate_answers', 'generation.serve_flags', 'models.roster', 'labeling.choose_sentences',
     'labeling.label_sentences', 'generation.judge_answers',
     'labeling.gepa.optimize_judge',
-    'capture.run', 'capture.gate', 'capture.vllm_capture',
+    'capture.capture_routers', 'capture.check_complete', 'capture.vllm_capture',
     'routing.readout', 'routing.anticipation', 'routing.next_state', 'routing.selection',
     'routing.dynamics', 'routing.sentence_table', 'routing.transition_pairs',
     'routing.benchmark_accuracy', 'routing.benchmark_inventory',

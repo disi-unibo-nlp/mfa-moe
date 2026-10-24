@@ -5,25 +5,25 @@ Replays the saved token ids of the generated traces through a model and records 
 ## Run
 
 ```bash
-python -m capture.run MODEL MANIFEST OUTPUT_DIR [--verify-only] [--deadline-epoch EPOCH]   # GPU, 2 GPUs
-python -m capture.gate MANIFEST_DIR OUTPUT.json [--captures ROOT]                           # CPU, hashes every file
+python -m capture.capture_routers MANIFEST OUTPUT_DIR [--deadline-epoch EPOCH]   # GPU, 2 GPUs
+python -m capture.check_complete MANIFEST_DIR OUTPUT.json [--captures ROOT]     # CPU, hashes every file
 ```
 
-The launchers are `scripts/capture/capture.sbatch` and `gate.sh` (commands and the folder layout of a repeat capture are in [`scripts/capture`](../../scripts/capture/README.md)). Inputs are the frozen manifests of the paper. A manifest lists the traces of one shard of one model with the byte position of each saved trace line and its chosen sentences, the model spec (checkpoint, routed layers, experts, top-k), the cohort file it was cut from and the label files. Every file it names is checked against the hash it was frozen with before use.
+The model is the `source` of the manifest, and a manifest whose `shard` is `verify` makes the run the verification. The launchers are `scripts/capture/capture_routers.sbatch` and `check_capture_complete.sh` (commands and the folder layout of a repeat capture are in [`scripts/capture`](../../scripts/capture/README.md)). Inputs are the frozen manifests of the paper. A manifest lists the traces of one shard of one model with the byte position of each saved trace line and its chosen sentences, the model spec (checkpoint, routed layers, experts, top-k), the cohort file it was cut from and the label files. Every file it names is checked against the hash it was frozen with before use.
 
-- The paper's capture folders (`capture_dir` in the manifests) are only read, by the gate and the analyses. A run refuses to write into a folder that another manifest or other code started, and it never overwrites `verification.json` or `result.json`.
+- The paper's capture folders (`capture_dir` in the manifests) are only read, by the completeness check and the analyses. A run refuses to write into a folder that another manifest or other code started, and it never overwrites `verification.json` or `result.json`.
 - The verify run (the longest trace and a short one) must pass before any shard. `gpt` compares its query-chunked attention with the native one, `glm` compares vLLM with a Hugging Face reference, the other models only check that every routed layer and token is covered. A shard in a repeat tree only accepts a verification written by the same code.
 - Captures are written only under the scratch campaign folder `/leonardo_scratch/fast/IscrC_MIOSR/lmolfett/mfa-moe/campaign-v3`, `/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/r` or `/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/campaign-v3`, never inside a git checkout.
 - The job stops starting traces in the last 30 minutes (`drained.json`, exit code 75). The same command resumes, as long as the code and the manifest are unchanged.
 
-Output per trace: `<id>.pt.gz` (selected expert ids, fp16 weights, selection margins, reasoning token indices), `<id>.json.gz` (the packet: features, routing windows, class and position views, expert counts) and `<id>.complete.json` (a marker with sizes and hashes). Per shard: `result.json`, `progress.json`, `load.json`, `backend.json`, `run-binding.json`. The gate checks that `result.json` equals the markers and that tokens and traces add up to the plan.
+Output per trace: `<id>.pt.gz` (selected expert ids, fp16 weights, selection margins, reasoning token indices), `<id>.json.gz` (the packet: features, routing windows, class and position views, expert counts) and `<id>.complete.json` (a marker with sizes and hashes). Per shard: `result.json`, `progress.json`, `load.json`, `backend.json`, `run-binding.json`. The completeness check checks that `result.json` equals the markers and that tokens and traces add up to the plan.
 
 ## Files
 
 | File | What it does |
 | --- | --- |
-| `run.py` | The GPU job: checks the manifest, replays each trace, writes the packet, the tensors and the markers. |
-| `gate.py` | The CPU acceptance of a finished cohort. |
+| `capture_routers.py` | The GPU job: checks the manifest, replays each trace, writes the packet, the tensors and the markers. |
+| `check_complete.py` | The CPU check that a finished cohort is complete, with its acceptance file. |
 | `manifest.py` | Loads and checks a manifest, resume markers and the verification receipt. |
 | `backends.py` | `HFBackend` (transformers: gpt, qwen330b, and the glm reference) and `VLLMBackend` (two GPUs, tensor parallel: glm, qwen36, nemotron, gemma, qwen35). |
 | `vllm_capture.py` | The vLLM worker hooks: expert selection, dispatch and decoder inputs of every routed layer. No installed package is edited and nothing is intervened on. |

@@ -6,19 +6,20 @@ weights. Each trace is reduced (features, routing windows, class views, expert c
 `<id>.pt.gz` (tensors) and `<id>.json.gz` (packet), followed by the marker `<id>.complete.json`. A rerun skips the
 traces that have a marker and checks that their files are intact.
 
-    python -m capture.run MODEL MANIFEST OUTPUT_DIR [--verify-only] [--deadline-epoch EPOCH]
+    python -m capture.capture_routers MANIFEST OUTPUT_DIR [--deadline-epoch EPOCH]
 
-`--verify-only` runs the 2-trace verification (longest and a short trace) that must pass before the shards are run:
-gpt compares its query-chunked attention with the native one, glm compares the vLLM capture with a Hugging Face
-reference; the others only check that every routed layer and every token is covered. Its receipt is
-`OUTPUT_DIR/verification.json`. With `--deadline-epoch` (the end of the Slurm job) no new trace is started in the last
-30 minutes: the run writes `drained.json` and exits with 75, and the same command resumes.
+The model is the `source` of the manifest. A manifest whose `shard` is `verify` (`MODEL/verify.json`) makes the run the
+2-trace verification (longest and a short trace) that must pass before the shards are run: gpt compares its
+query-chunked attention with the native one, glm compares the vLLM capture with a Hugging Face reference; the others
+only check that every routed layer and every token is covered. Its receipt is `OUTPUT_DIR/verification.json`. With
+`--deadline-epoch` (the end of the Slurm job) no new trace is started in the last 30 minutes: the run writes
+`drained.json` and exits with 75, and the same command resumes.
 
 A repeat capture goes to a new tree: `ROOT/verify` for the verification (run first), then `ROOT/0`, `ROOT/1` ... for the
 shards. A shard run there needs the receipt `ROOT/verify/verification.json`, written by the same code. The paper's
-folders (`capture_dir` of the manifests) are only read, by the gate and the analyses: `run-binding.json` and
-`differential.json` bind a folder to the manifest and the hash of the running code, so a folder is only resumed by
-the code that started it, and a finished receipt is never overwritten.
+folders (`capture_dir` of the manifests) are only read, by the completeness check and the analyses:
+`run-binding.json` and `differential.json` bind a folder to the manifest and the hash of the running code, so a folder
+is only resumed by the code that started it, and a finished receipt is never overwritten.
 """
 import argparse
 import gzip
@@ -30,6 +31,7 @@ import os
 from pathlib import Path
 import resource
 import socket
+import sys
 import time
 
 from capture.buffers import approved_capture_path
@@ -38,10 +40,25 @@ from capture.manifest import (
     write_new,
 )
 from provenance import code_provenance
-from store import file_sha
+from store import WORK, file_sha
 
 
 DRAIN_SECONDS = 30 * 60  # no new trace is started when less than this remains of the Slurm job
+# transformers loads gpt-oss as MXFP4 only with kernels 0.16 (the vLLM environment has 0.11 and would dequantize)
+GPT_KERNELS_PACKAGES = WORK / 'mfa-moe/envs/forward-kernels-0.16'
+GPT_KERNELS_WEIGHTS = ('kernels-community/gpt-oss-triton-kernels=' + str(
+    WORK / 'mfa-moe/cache/hf/hub/models--kernels-community--gpt-oss-triton-kernels'
+    / 'snapshots/0f351046d799bc4d2c9dbb2c7cf36753204b5916'))
+
+
+def use_new_kernels_for_gpt(source):
+    """Make the newer `kernels` package win over the vLLM environment's for gpt (call before torch and transformers).
+
+    It goes right after the script folder on `sys.path`, where `PYTHONPATH` entries would be, and the local copy of
+    the kernels is named in `LOCAL_KERNELS`. The other models run with the environment as it is."""
+    if source == 'gpt':
+        sys.path.insert(1, str(GPT_KERNELS_PACKAGES))
+        os.environ['LOCAL_KERNELS'] = GPT_KERNELS_WEIGHTS
 
 
 def must_stop(deadline_epoch):
@@ -227,18 +244,16 @@ def capture_one(row, backend, manifest, out, used, code):
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    parser.add_argument('source')
     parser.add_argument('manifest', type=Path)
     parser.add_argument('output', type=Path)
-    parser.add_argument('--verify-only', action='store_true')
     parser.add_argument('--deadline-epoch', type=float)
     args = parser.parse_args(argv)
-    source = args.source
     if not os.environ.get('SLURM_JOB_ID') or not socket.gethostname().startswith('lrdn'):
         raise RuntimeError('GPU Slurm allocation required')
     manifest = load_manifest(args.manifest)
-    if manifest['source'] != source:
-        raise ValueError('Wrong manifest source')
+    source = manifest['source']
+    verify_only = manifest['shard'] == 'verify'
+    use_new_kernels_for_gpt(source)
     code = code_provenance()
     out, repeat = prepare_output(manifest, args.output, code)
     import torch
@@ -248,7 +263,7 @@ def main(argv=None):
     from capture.sentence_schema import install
     install()
     rows = manifest['attempts']
-    if args.verify_only:
+    if verify_only:
         longest = max(rows, key=lambda r: r['total_input_tokens'])
         short = min(rows, key=lambda r: r['total_input_tokens'])
         if len(rows) != 2 or longest['total_input_tokens'] != manifest['maximum_input_tokens']:
@@ -258,9 +273,9 @@ def main(argv=None):
     else:
         check_verification(manifest, out, repeat, code)
     completed, remaining, used = resume_records(manifest, out)
-    needs_differential = args.verify_only and source in DIFFERENTIAL_MODELS
+    needs_differential = verify_only and source in DIFFERENTIAL_MODELS
     differential_binding = differential = None
-    if args.verify_only:
+    if verify_only:
         differential_binding = dict(validation_binding=manifest.get('validation_binding'),
                                     source_sha256=code['source_sha256'],
                                     short_trace_sha256=short['trace_sha256'], short_id=short['id'])
@@ -282,7 +297,7 @@ def main(argv=None):
             backend = VLLMBackend(manifest['spec'], out, transient_cap_bytes=manifest['transient_cap_bytes'])
         else:
             raise ValueError('Unapproved capture backend')
-        if args.verify_only and differential is None:
+        if verify_only and differential is None:
             differential = run_differential(source, manifest, out, short, backend, reference, differential_binding)
             reference = None
             if needs_differential:
@@ -305,7 +320,7 @@ def main(argv=None):
     reread, unfinished, checked_bytes = resume_records(manifest, out)
     if unfinished or len(reread) != manifest['expected_attempts'] or sum(r['tokens'] for r in reread) != manifest['expected_tokens']:
         raise ValueError('Incomplete exact capture coverage')
-    if args.verify_only:
+    if verify_only:
         if needs_differential and (not differential or differential.get('status') != 'passed'):
             raise ValueError('Required differential acceptance missing')
         write_new(out / 'verification.json', dict(
