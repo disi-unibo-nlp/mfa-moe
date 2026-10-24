@@ -1,9 +1,9 @@
 """Shared basics: sealed receipts, per-unit execution states, trace-line reading and JSONL files.
 
 A receipt is a JSON file with its own content hash under "sha256". `publish` writes one atomically and
-refuses to change an existing one; `verified` reads one back and checks the hash. `digest` hashes any
-JSON-like value after `clean` has made it JSON-ready (numpy to Python, tuples to lists, missing and
-non-finite numbers to null).
+refuses to change an existing one, except in the provenance keys it is told to ignore; `verified` reads one
+back and checks the hash. `digest` hashes any JSON-like value after `clean` has made it JSON-ready (numpy to
+Python, tuples to lists, missing and non-finite numbers to null).
 """
 from __future__ import annotations
 
@@ -122,14 +122,18 @@ def locked(root, name='journal'):
         yield
 
 
-def publish(path, value):
-    """Atomic, exclusive publication. An existing receipt must match exactly."""
+def publish(path, value, provenance=()):
+    """Atomic, exclusive publication. An existing receipt must match exactly.
+
+    `provenance` names top-level keys that say who computed the receipt (a code hash, say) and not what it
+    holds. They are written, but a receipt already there that differs only in them (and in the hash that
+    covers them) is accepted and returned as it is, so a rerun with changed code reproduces the same result.
+    """
     path = private(path)
     payload = seal(value)
     path.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
     if path.exists():
-        require(load(path) == payload, f'immutable receipt conflict: {path}')
-        return payload
+        return same_receipt(path, payload, provenance, 'immutable receipt conflict')
     fd, tmp = tempfile.mkstemp(prefix='.pending-', dir=path.parent)
     try:
         with os.fdopen(fd, 'wb') as stream:
@@ -139,11 +143,21 @@ def publish(path, value):
         try:
             os.link(tmp, path)
         except FileExistsError:
-            require(load(path) == payload, f'concurrent receipt conflict: {path}')
+            return same_receipt(path, payload, provenance, 'concurrent receipt conflict')
         require(load(path) == payload, f'publication readback differs: {path}')
     finally:
         Path(tmp).unlink(missing_ok=True)
     return payload
+
+
+def same_receipt(path, payload, provenance, message):
+    """The receipt at `path` when it equals `payload` apart from the provenance keys; otherwise a ValueError."""
+    existing = load(path)
+    if existing != payload:
+        def identity(receipt):
+            return {k: v for k, v in receipt.items() if k != 'sha256' and k not in provenance}
+        require(provenance and identity(verified(path)) == identity(payload), f'{message}: {path}')
+    return existing
 
 
 def write_once(path, write):

@@ -21,7 +21,9 @@ the four `campaign-v3/labels/<model>/part-*/annotations.json` of `store.ANALYSIS
     python -m routing.sentence_table rebuild --model qwen36 --limit 8 --output PATH            (small debug run)
 
 Output: `sentences.parquet` in the model's folder of the transition-pair work (the bulk root named in the study
-binding) and the receipt `report/final-routing-20261015-r1/transition-pairs/<model>/SENTENCES.json`.
+binding) and the receipt `report/final-routing-20261015-r1/transition-pairs/<model>/SENTENCES.json`. A rerun
+rebuilds the table and finishes when the files already there are the same (same bytes; the receipt may differ in
+`module_sha256`, which records the code that wrote it and is not part of what it says); a different result is refused.
 Used by: `routing.transition_pairs` (Fig. 6 and the state-transitions table).
 """
 from __future__ import annotations
@@ -40,7 +42,7 @@ import pandas as pd
 from capture.dynamics.classes import saved_layout
 from labeling.spans import reasoning_ranges, trace_digest
 from schemas import TraceRecord
-from store import ANALYSIS, CLASSES, STUDY, binding, file_sha, load, publish, read_source, require
+from store import ANALYSIS, CLASSES, STUDY, binding, file_sha, load, publish, read_source, require, write_once
 
 # Next to the final-routing report (not under the code tree, so a source snapshot finds it too).
 CAMPAIGN = STUDY.parent/'research-campaign-v3-20261014-r5-r2'
@@ -178,6 +180,11 @@ def _attempt_rows(task: tuple) -> list[dict]:
     return table_rows(source, layout, labels)
 
 
+def write_table(frame: pd.DataFrame, path: Path) -> None:
+    """Write a parquet table atomically; a file already there must hold exactly these bytes (a rerun is a no-op)."""
+    write_once(path, lambda stream: frame.to_parquet(stream, index=False))
+
+
 def as_frame(rows: list[dict]) -> pd.DataFrame:
     """Rows in the extraction's column order and dtypes, sorted by attempt and sentence."""
     frame = pd.DataFrame(rows, columns=COLUMNS).sort_values(['attempt_id', 'sentence_index'], ignore_index=True)
@@ -247,11 +254,7 @@ def rebuild(model: str, workers: int, limit: int | None = None, output: Path | N
         rows = [row for part in pool.imap_unordered(_attempt_rows, tasks, chunksize=4) for row in part]
     frame = as_frame(rows)
     output = Path(output) if output else pairs_dir(model)/'sentences.parquet'
-    require(not output.exists(), f'never overwritten: {output}')
-    output.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
-    temporary = output.with_name('.pending-'+output.name)
-    frame.to_parquet(temporary, index=False)
-    temporary.rename(output)
+    write_table(frame, output)  # a table already there must be this one, so a relaunched job finishes
     summary = {'attempts': int(frame.attempt_id.nunique()), 'questions': int(frame.question.nunique()),
                'sentences': len(frame), 'path': str(output)}
     if limit:
@@ -265,7 +268,7 @@ def rebuild(model: str, workers: int, limit: int | None = None, output: Path | N
         'class_sentences': frame.groupby('cls_name').size().to_dict(),
         'label_files': {str(p): file_sha(p) for p in label_files(model)},
         'sources_sha256': file_sha(CAMPAIGN/model/'SOURCES.json'), 'campaign_sha256': campaign()['sha256'],
-        'module_sha256': file_sha(Path(__file__))})
+        'module_sha256': file_sha(Path(__file__))}, provenance=('module_sha256',))
 
 
 def main(argv: list[str] | None = None) -> None:

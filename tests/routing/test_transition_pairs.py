@@ -1,11 +1,14 @@
 """Next-sentence labels for Fig. 6: the Qwen3.6 sentence table and the pair-completion estimator."""
+import contextlib
 from pathlib import Path
 import tempfile
+from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
 
 import pandas as pd
 
+import store
 from routing import sentence_table, transition_pairs
 from store import WORK, Units, publish
 
@@ -147,12 +150,73 @@ class Estimands(unittest.TestCase):
             self.assertEqual((result['gaps_differ'], round(result['largest_difference'], 2)), (1, 0.25))
 
     def test_a_different_table_is_refused_not_overwritten(self):
-        with tempfile.TemporaryDirectory() as folder:
+        with tempfile.TemporaryDirectory(dir=WORK/'tools/tmp') as folder:
             path = Path(folder)/'table.parquet'
             transition_pairs.write_table(pd.DataFrame({'a': [1, 2]}), path)
             transition_pairs.write_table(pd.DataFrame({'a': [1, 2]}), path)
             with self.assertRaises(ValueError):
                 transition_pairs.write_table(pd.DataFrame({'a': [1, 3]}), path)
+            self.assertEqual(pd.read_parquet(path).a.tolist(), [1, 2])
+
+
+class SerialPool:
+    """A stand-in for multiprocessing's pool that maps in this process."""
+    def __init__(self, workers):
+        pass
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, *error):
+        pass
+
+    def imap_unordered(self, function, tasks, chunksize=1):
+        return map(function, tasks)
+
+
+class Rebuild(unittest.TestCase):
+    """A relaunched table rebuild finishes when what is on disk is what it would write."""
+
+    def rebuild(self, root, label):
+        source = {'attempt_id': 'a', 'question': 'q', 'benchmark': 'math500', 'problem_id': 'p', 'sample_id': 0,
+                  'trace_sha256': 't', 'family': 'f'}
+        records = {sentence_table.trace_key(source): [(i, 10*i, 10*i+9, label if i == 1 else 'Read', None)
+                                                       for i in range(4)]}
+        counts = {'attempts_in_existing_table': 0, 'rows_in_existing_table': 0, 'rows_rebuilt_for_those_attempts': 0,
+                  'identical': True}
+        patches = (patch.object(sentence_table, 'CAMPAIGN', root), patch.object(sentence_table, 'campaign_sources',
+                                                                                return_value=[source]),
+                   patch.object(sentence_table, 'original_label_records', return_value=records),
+                   patch.object(sentence_table, 'attempt_layout', return_value=layout(4)),
+                   patch.object(sentence_table, 'label_files', return_value=[]),
+                   patch.object(sentence_table, 'campaign', return_value={'sha256': 'c'}),
+                   patch.object(sentence_table, 'check_class_counts', return_value=1),
+                   patch.object(sentence_table, 'compare_with_existing', return_value=counts),
+                   patch.object(sentence_table, 'pairs_dir', return_value=root/'bulk'),
+                   patch.object(sentence_table, 'receipt_dir', return_value=root/'receipts'),
+                   patch.object(sentence_table.multiprocessing, 'get_context',
+                                return_value=SimpleNamespace(Pool=SerialPool)))
+        with contextlib.ExitStack() as stack:
+            for patcher in patches:
+                stack.enter_context(patcher)
+            return sentence_table.rebuild('gpt', 1)
+
+    def test_a_relaunch_finishes_even_if_the_module_changed_and_a_changed_result_is_refused(self):
+        with tempfile.TemporaryDirectory(dir=WORK/'tools/tmp') as folder:
+            root = Path(folder)
+            (root/'gpt').mkdir()
+            (root/'gpt/SOURCES.json').write_text('{}')
+            first = self.rebuild(root, 'Plan')
+            table = root/'bulk/sentences.parquet'
+            before = table.read_bytes()
+            # The receipt was written by an older version of the module.
+            old = store.seal({**{k: v for k, v in first.items() if k != 'sha256'}, 'module_sha256': 'older'})
+            (root/'receipts/SENTENCES.json').write_bytes(store._dump(old)+b'\n')
+            self.assertEqual(self.rebuild(root, 'Plan'), old)
+            self.assertEqual(table.read_bytes(), before)
+            with self.assertRaisesRegex(ValueError, 'conflicting immutable data file'):
+                self.rebuild(root, 'Verify')
+            self.assertEqual(table.read_bytes(), before)
 
 
 class Merge(unittest.TestCase):

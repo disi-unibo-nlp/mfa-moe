@@ -48,14 +48,15 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
+from generation.client import slurm_deadline
 from labeling.contexts import context_id
 from labeling.lfm_inputs import judge_inputs
 from routing.dynamics import trajectories
 from routing.sentence_table import (CAMPAIGN, PAIR_SOURCES, attempt_layout, campaign, campaign_sources,
                                     original_label_records, pairs_dir, receipt_dir, sentence_extent, trace_key,
-                                    usable_labels)
+                                    usable_labels, write_table)
 from stats import bootstrap_panel
-from steering.pulse import annotate_rows, deadline_from_slurm, log, parse_shard
+from steering.pulse import ADMISSION_MARGIN_HOURS, annotate_rows, log, parse_shard
 from store import CLASSES, MODELS, STUDY, Units, binding, digest, file_sha, load, publish, require, verified
 
 NEXT_COLUMN = ':next:'
@@ -141,16 +142,6 @@ def captured_tokens(model: str, source: dict) -> int | None:
         return None
     bulk = Path(binding()['config']['bulk_root'])
     return verified(bulk/'lfm25/replay'/(source['attempt_id']+'.json'))['captured_completion_tokens']
-
-
-def write_table(frame: pd.DataFrame, path: Path) -> None:
-    """Write a parquet table; an existing file must hold exactly these rows (nothing is overwritten)."""
-    if path.exists():
-        require(pd.read_parquet(path).equals(frame), f'existing table differs: {path}')
-        return
-    temporary = path.with_name('.pending-'+path.name)
-    frame.to_parquet(temporary, index=False)
-    temporary.rename(path)
 
 
 # ----------------------------------------------------------------------------- pair completion
@@ -274,7 +265,7 @@ def plan(model: str, workers: int, limit: int | None = None, classes: tuple[str,
         'original_table': str(table), 'original_table_sha256': file_sha(table),
         'annotator': {k: annotator['config'][k] for k in ('judge_model', 'program_sha256', 'reasoning_effort',
                                                            'max_tokens', 'temperature', 'top_p', 'top_k')},
-        'module_sha256': file_sha(Path(__file__))})
+        'module_sha256': file_sha(Path(__file__))}, provenance=('module_sha256',))
 
 
 # ----------------------------------------------------------------------------- judge and merge
@@ -289,7 +280,7 @@ def judge(model: str, shard: tuple[int, int], classes: tuple[str, ...] = PAIR_SO
             'judging requires a Slurm GPU allocation')
     folder = pairs_dir(model)
     tasks = verified(folder/variant(classes)/'PAIR_TASKS.json')['records']
-    return annotate_rows(tasks, shard, deadline_from_slurm(), units_root=folder/'annotations',
+    return annotate_rows(tasks, shard, slurm_deadline(ADMISSION_MARGIN_HOURS), units_root=folder/'annotations',
                          progress_root=folder/'progress', jobs_root=folder/'jobs', stage='pair-judge-'+model)
 
 

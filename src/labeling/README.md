@@ -9,7 +9,7 @@ Cuts reasoning into sentences, picks which sentences to label, and labels them w
 | `sample_stratified.py` | Picks 100,000 sentences stratified by correctness and reasoning length (used for LFM2.5). |
 | `annotation_batch.py` | Labels the selected sentences of one part with the judge, 64 at a time, resuming after each batch. |
 | `batch_predictor.py` | The judge client: builds the prompt from the frozen GEPA program and reads the answers. |
-| `contexts.py`, `renderer.py`, `renderer_child.py`, `reader.py` | The judge's inputs (the question, the sentence and one neighbour on each side) and the process that renders and parses with the original DSPy program. |
+| `contexts.py`, `renderer.py`, `renderer_child.py`, `reader.py` | The judge's inputs (the question, the sentence and one neighbour on each side) and the process that renders and parses with the original DSPy program. The process loads DSPy from the pinned copy the campaign names (`campaign['renderer']['path']`, `.research-runtime/original-renderer` in the main checkout, which git ignores), so it also works from a worktree or a release snapshot. |
 | `lfm_inputs.py` | The LFM2.5 side: its native task list, its sampled sentences and the judge inputs for them. |
 | [`gepa/`](gepa/README.md) | The one-off optimisation of the judge prompt. |
 
