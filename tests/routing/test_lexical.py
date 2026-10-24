@@ -13,7 +13,16 @@ from routing.readout_text import TextTransform
 
 @contextmanager
 def lives_in(module, *classes):
-    """Make the classes look as if they lived in `module`, so that pickle writes that module name."""
+    """Make the classes look as if they lived in `module`, so that pickle writes that module name.
+
+    Pickle imports every parent of a dotted name, so missing parents are registered too.
+    """
+    parts = module.split('.')
+    parents = [name for name in ('.'.join(parts[:i]) for i in range(1, len(parts))) if name not in sys.modules]
+    for name in parents:
+        package = types.ModuleType(name)
+        package.__path__ = []
+        sys.modules[name] = package
     created = module not in sys.modules
     host = types.ModuleType(module) if created else sys.modules[module]
     sys.modules[module] = host
@@ -30,6 +39,8 @@ def lives_in(module, *classes):
                 delattr(host, cls.__name__)
         if created:
             del sys.modules[module]
+        for name in parents:
+            del sys.modules[name]
 
 
 def text_transform(n_active, scale):
