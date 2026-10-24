@@ -124,11 +124,11 @@ def seed_from_last_build(snapshot, bindings):
 
     A failed latest build does not hide an earlier compatible bibliography cache, because every source-round folder is searched.
     """
-    for old in sorted(BUILD.glob("source-round-*"), key=lambda folder: int(folder.name.rsplit("-", 1)[1]), reverse=True):
-        output = old / ".paper-review/build"
+    for earlier in sorted(BUILD.glob("source-round-*"), key=lambda folder: int(folder.name.rsplit("-", 1)[1]), reverse=True):
+        output = earlier / ".paper-review/build"
         if not all((output / name).is_file() for name in ("main.pdf", "main.aux", "main.bbl")):
             continue
-        if all((old / name).is_file() and file_sha(old / name) == bindings.get(name)
+        if all((earlier / name).is_file() and file_sha(earlier / name) == bindings.get(name)
                for name in ("references.bib", "clv2025.cls", "compling.bst")):
             return copy_auxiliary(output, snapshot)
     return None
@@ -137,8 +137,8 @@ def seed_from_last_build(snapshot, bindings):
 def render_pages(index):
     """One 144 dpi image per page of BUILD/build/main.pdf, in a fresh folder and in BUILD/pages; returns (folder, count)."""
     (BUILD / "pages").mkdir(exist_ok=True)
-    for old in (BUILD / "pages").glob("page-*.png"):
-        old.unlink()
+    for stale in (BUILD / "pages").glob("page-*.png"):
+        stale.unlink()
     fresh = BUILD / f"pages-{index:02d}"
     fresh.mkdir()
     with pymupdf.open(BUILD / "build/main.pdf") as document:
@@ -153,7 +153,7 @@ def main(timeout):
     BUILD.mkdir(parents=True, exist_ok=True)
     (BUILD / ".gitignore").write_text("*\n")
     (BUILD / "tmp").mkdir(exist_ok=True)
-    # A fresh snapshot keeps old auxiliary files of the source folder out of the build.
+    # A fresh snapshot keeps the auxiliary files of the source folder out of the build.
     index = len(list(BUILD.glob("source-round-*"))) + 1
     snapshot = BUILD / f"source-round-{index:02d}"
     snapshot.mkdir()

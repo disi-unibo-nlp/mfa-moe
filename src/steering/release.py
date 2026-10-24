@@ -250,11 +250,11 @@ def continuation(root: Path, args: argparse.Namespace) -> dict:
     require(args.parent, '--parent is required: the complement release to continue')
     require(args.cutoff, '--cutoff is required: no GPU row may start after it (Rome time, e.g. 2026-10-27T06:00)')
     parent = REPORTS/args.parent
-    old = verified(parent/'RELEASE.json')
+    parent_release = verified(parent/'RELEASE.json')
     plan = plan_followup(parent, args.max_gpu_hours or APPROVED_GPU_HOURS, parse_shards(args.shards or ''))
     require(not plan['live_parent_jobs'], f'{args.parent} still has shard jobs that have not ended: {plan["live_parent_jobs"]}')
     cutoff = rome(args.cutoff)
-    require(cutoff > max(time.time(), old['cutoff']), "the cutoff must be later than now and than the parent's")
+    require(cutoff > max(time.time(), parent_release['cutoff']), "the cutoff must be later than now and than the parent's")
     link = Path(args.link) if args.link else REPORTS/LINK
     sealed_link = verified(link)
     require(set(sealed_link['models']) == set(MODELS), 'the link receipt does not cover the eight models')
@@ -274,7 +274,7 @@ def continuation(root: Path, args: argparse.Namespace) -> dict:
     return dict(
         kind_file={'models': {m: {'parent': str(parent)} for m in models}, 'parent': args.parent, 'plan': plan,
                    'link': str(link), 'link_sha256': sealed_link['sha256']},
-        template=old, models=models, shards=shards, sweep=sweep, cutoff=cutoff, cpu_ceiling=200., sources=sources,
+        template=parent_release, models=models, shards=shards, sweep=sweep, cutoff=cutoff, cpu_ceiling=200., sources=sources,
         inputs=inputs,
         scope='tests/steering/test_whole*.py; the allocated validation runs tests/steering, '
               'tests/steering/outcome and tests/routing in full',
