@@ -1,14 +1,19 @@
 """Write the data behind the paper figures from the bundled copies of completed estimates.
 
 Nothing is fitted, resampled or run here. The bundled copies live in figures/journal/data (readout, selection and
-anticipation CSVs, native dynamics, benchmark cells). A plain run turns them into the plotting files readout.dat,
+next-state CSVs, native dynamics, benchmark cells). A plain run turns them into the plotting files readout.dat,
 selection.dat, selection_summary.json, next_state.dat, occupancy.dat and state_transitions_*.dat. The tables of the
 manuscript are edited by hand and are never written here; `verify_cl_tables` checks them against the same copies.
 Before writing it also checks that the native-memory fixtures add up over workers and that every model has 4,647
-benchmark attempts.
+benchmark attempts. The study is the one store.STUDY names (STUDY_DATA_ROOT).
 
   python -m paper.export_cl_exhibits                 plotting files from the bundled copies
-  python -m paper.export_cl_exhibits --capture-lfm   first add the LFM2.5 rows from final-routing-20261015-r1
+  python -m paper.export_cl_exhibits --capture-lfm   first add the LFM2.5 rows from the study
+  python -m paper.export_cl_exhibits --capture-next-state   first copy the eight next-state estimates from the study
+  python -m paper.export_cl_exhibits --capture-qwen36-panel   first replace Qwen3.6's native-dynamics panel by the
+                                                     one the study rebuilt on all its question families
+  python -m paper.export_cl_exhibits --capture-pairs VARIANT   first replace every native-dynamics panel by the one
+                                                     completed with the next-sentence labels of VARIANT
   python -m paper.export_cl_exhibits --capture-existing   first copy the seven-model estimates from the saved reports
 """
 import argparse
@@ -28,15 +33,33 @@ def read_csv(name):
 
 
 def source(path):
-    """How SOURCES.json names a file: its path below the repository and its hash."""
-    return {"path": str(path.relative_to(REPO)), "sha256": file_sha(path)}
+    """How SOURCES.json names a file: its path below the folder that holds report/, and its hash."""
+    root = REPO if path.is_relative_to(REPO) else STUDY.parents[1]
+    return {"path": str(path.relative_to(root)), "sha256": file_sha(path)}
+
+
+QWEN36_PANEL = "transition-pairs/qwen36/NATIVE_DYNAMICS_SUMMARY.original-sample.json"
+
+
+def study_panel(path):
+    """A native-dynamics panel the study published: its path and its content, after the receipt hash is checked."""
+    return path, verified(path)
+
+
+def qwen36_panel():
+    """Qwen3.6's panel on all 1,486 question families; the capture's saved sentence table covers 509 of them."""
+    path, panel = study_panel(STUDY / QWEN36_PANEL)
+    families = {r["family_support"] for k, r in panel["results"].items() if k.endswith(":occupancy")}
+    if panel["panel"] != "native-dynamics:qwen36" or families != {1486}:
+        raise ValueError("Qwen3.6 panel does not cover 1,486 families")
+    return path, panel
 
 
 def capture():
     DATA.mkdir(parents=True, exist_ok=True)
     sources = {}
     saved, review = SAVED_REPORTS / "generated/best_results_20261009", REPO / "report/model-analysis-review-20261008"
-    for origin in [saved / name for name in ("routing_readout.csv", "selection_coverage.csv", "anticipation.csv")] + [
+    for origin in [saved / name for name in ("routing_readout.csv", "selection_coverage.csv")] + [
             review / name for name in ("benchmark_cells.csv", "expert_usage_correctness_mean_all.csv")]:
         shutil.copyfile(origin, DATA / origin.name)
         sources[origin.name] = source(origin)
@@ -44,10 +67,13 @@ def capture():
     bindings = {r["path"]: r["sha256"] for r in json.loads(imported.read_text())["references"]}
     summaries = {}
     for model in SEVEN_MODELS:
-        path = REPO / "report/research-campaign-v3-20261014-r5-r2" / model / "NATIVE_DYNAMICS_SUMMARY.json"
-        if bindings[str(path)] != file_sha(path):
-            raise ValueError("imported dynamics changed: " + model)
-        summaries[model] = json.loads(path.read_text())
+        if model == "qwen36":
+            path, summaries[model] = qwen36_panel()
+        else:
+            path = REPO / "report/research-campaign-v3-20261014-r5-r2" / model / "NATIVE_DYNAMICS_SUMMARY.json"
+            if bindings[str(path)] != file_sha(path):
+                raise ValueError("imported dynamics changed: " + model)
+            summaries[model] = json.loads(path.read_text())
         sources[model + ":dynamics"] = source(path)
     (DATA / "native_dynamics.json").write_text(json.dumps(summaries, indent=2) + "\n")
     fixture = REPO / "report/research-campaign-v3-20261014-r6/PARTIAL_VALIDATION_EVIDENCE.json"
@@ -60,6 +86,7 @@ def capture():
                                                    "new_measurement": False}, indent=2) + "\n")
 
 
+NEXT_STATE_LABEL_GAP = .006  # axis units between the top of a whisker and its value label
 LFM_ROOT = STUDY / "lfm25"
 LFM_BULK = FAST / STUDY.name / "lfm25"
 
@@ -174,6 +201,87 @@ def capture_lfm_rows():
     (DATA / "SOURCES.json").write_text(json.dumps(sources, indent=2) + "\n")
 
 
+def capture_qwen36_panel():
+    """Replace Qwen3.6's panel in the bundled native dynamics by the study's, which covers all its families."""
+    path, panel = qwen36_panel()
+    summaries = json.loads((DATA / "native_dynamics.json").read_text())
+    summaries["qwen36"] = panel
+    (DATA / "native_dynamics.json").write_text(json.dumps(summaries, indent=2) + "\n")
+    sources = json.loads((DATA / "SOURCES.json").read_text())
+    sources["sources"]["qwen36:dynamics"] = source(path)
+    (DATA / "SOURCES.json").write_text(json.dumps(sources, indent=2) + "\n")
+
+
+def capture_pairs(variant):
+    """Replace every model's panel in the bundled native dynamics by the one completed with the next-sentence labels.
+
+    The labels of `variant` (the folder name of a source-class rule, `routing.next_sentence_labels variant`) enter only
+    the next-state estimates; every panel is the study's own, so its simultaneous critical value covers all its columns.
+    """
+    joined = verified(STUDY / f"driver/TRANSITION_PAIRS.{variant}.json")
+    if set(joined["models"]) != set(MODELS):
+        raise ValueError("transition-pair roster differs")
+    summaries = json.loads((DATA / "native_dynamics.json").read_text())
+    sources = json.loads((DATA / "SOURCES.json").read_text())
+    for model in MODELS:
+        path, panel = study_panel(STUDY / "transition-pairs" / model / variant / "NATIVE_DYNAMICS_SUMMARY.json")
+        if panel["panel"] != "native-dynamics:" + model or panel["sha256"] != joined["models"][model]["panel_sha256"]:
+            raise ValueError("completed panel differs from the joined receipt: " + model)
+        if panel["results"]["label_coverage"]["family_support"] != 1486:
+            raise ValueError("completed panel does not cover 1,486 families: " + model)
+        summaries[model] = panel
+        sources["sources"][model + ":dynamics"] = source(path)
+    sources["sources"]["transition_pairs"] = source(STUDY / f"driver/TRANSITION_PAIRS.{variant}.json")
+    (DATA / "native_dynamics.json").write_text(json.dumps(summaries, indent=2) + "\n")
+    (DATA / "SOURCES.json").write_text(json.dumps(sources, indent=2) + "\n")
+
+
+NEXT_STATE_DEFINITION = ("gain = held-out cross-entropy of the smaller model minus the larger one (nats per adjacent pair, "
+                         "questions weighted equally); routing_gain.P is routing minus text, so negative values favour routing")
+NEXT_STATE_COLUMNS = ("model", "status", "questions", "families", "pairs", "labelled_sentences", "source_tokens",
+                      "markov_loss", "text_loss", "routing_loss")
+INTERVALS = ("ci95_low", "ci95_high", "simultaneous_ci7_low", "simultaneous_ci7_high")
+
+
+def next_state_row(model, result):
+    """One model's receipt as a CSV row: sizes, the three cross-entropies, and the two gains with their intervals."""
+    analysis = result["readout_analysis"]
+    if result["status"] != "CLEAN" or analysis["status"] != "CLEAN" or result["definition"] != NEXT_STATE_DEFINITION:
+        raise ValueError("next-state receipt differs: " + model)
+    loss = result["cross_entropy"]
+    row = {"model": model, "status": result["status"], "questions": analysis["n_questions"],
+           "families": analysis["n_families"], "pairs": result["pairs"], "labelled_sentences": result["labelled_sentences"],
+           "source_tokens": result["source_tokens"], "markov_loss": loss["markov"], "text_loss": loss["text"],
+           "routing_loss": loss["routing"]}
+    for prefix, gain in (("", result["routing_gain"]), ("null_", result["routing_excess_over_null"])):
+        low, high = gain["ci95"]
+        simultaneous = gain["simultaneous_ci7"]
+        if not simultaneous[0] <= low <= gain["P"] <= high <= simultaneous[1]:
+            raise ValueError("next-state interval mismatch: " + model)
+        row[prefix + "delta_logloss"] = gain["P"]
+        row.update(zip((prefix + name for name in INTERVALS), (low, high, *simultaneous)))
+    if abs(row["delta_logloss"] - (loss["routing"] - loss["text"])) > 1e-9:
+        raise ValueError("next-state gain is not routing minus text: " + model)
+    return row
+
+
+def capture_next_state():
+    """Copy the eight next-state estimates of the study into next_state.csv and name the receipt in SOURCES.json."""
+    path = STUDY / "driver/NEXT_STATE.json"
+    receipt = verified(path)
+    if set(receipt["models"]) != set(MODELS) or set(receipt["results"]) != set(MODELS):
+        raise ValueError("next-state roster differs")
+    rows = [next_state_row(model, receipt["results"][model]) for model in MODELS]
+    with (DATA / "next_state.csv").open("w", newline="") as stream:
+        writer = csv.DictWriter(stream, fieldnames=list(rows[0]), lineterminator="\n")
+        writer.writeheader()
+        writer.writerows(rows)
+    sources = json.loads((DATA / "SOURCES.json").read_text())
+    sources["sources"].pop("anticipation.csv", None)
+    sources["sources"]["next_state"] = source(path)
+    (DATA / "SOURCES.json").write_text(json.dumps(sources, indent=2) + "\n")
+
+
 def dat(name, headings, rows):
     (DATA / name).write_text(" ".join(headings) + "\n" + "\n".join(
         " ".join(format(v, ".16g") if isinstance(v, float) else str(v) for v in row)
@@ -227,18 +335,59 @@ def selection_data():
 
 
 def next_state_data():
-    """Next-state cross-entropy change (adjacent and contained windows) for the two models that have it."""
-    lookup = {(r["model"], r["mode"]): r for r in read_csv("anticipation.csv") if r["feature"] == "composition16"}
+    """Next-state cross-entropy change of routing over text, and over the lexical null, with the label of each bar.
+
+    The columns keep the loss sign of the receipts (routing minus baseline, negative when routing helps); the figure
+    plots their negation. A label sits above its whisker: its height and text are written here, not typed.
+    """
+    rows = {r["model"]: r for r in read_csv("next_state.csv")}
+    if set(rows) != set(MODELS):
+        raise ValueError("next-state roster mismatch")
     coords = []
-    for i, m in enumerate(("gpt", "qwen36")):
-        vals = []
-        for mode in ("next", "next-contained"):
-            mu, low, high = (float(lookup[m, mode][k]) for k in ("delta_logloss", "simultaneous_ci6_low", "simultaneous_ci6_high"))
-            if not low <= mu <= high:
+    for i, model in enumerate(MODELS):
+        r = rows[model]
+        if r["status"] != "CLEAN":
+            raise ValueError("next-state status mismatch")
+        values = []
+        for prefix in ("", "null_"):
+            mean = float(r[prefix + "delta_logloss"])
+            low, high = float(r[prefix + "simultaneous_ci7_low"]), float(r[prefix + "simultaneous_ci7_high"])
+            if not low <= mean <= high:
                 raise ValueError("next-state interval mismatch")
-            vals.extend((mu, mu - low, high - mu))
-        coords.append((i + 1, *vals))
-    dat("next_state.dat", ("x", "adjacent", "adjminus", "adjplus", "contained", "conminus", "conplus"), coords)
+            margin = max(mean - low, high - mean)
+            values.extend((mean, mean - low, high - mean, -mean + margin + NEXT_STATE_LABEL_GAP, format(-mean, ".3f")))
+        coords.append((i + 1, *values))
+    dat("next_state.dat", ("x", "gain", "gainminus", "gainplus", "gainlabely", "gainlabel",
+                           "null", "nullminus", "nullplus", "nulllabely", "nulllabel"), coords)
+
+
+# Panels of the transition summary: column prefix, panel of native_dynamics.json, unit scale and the top of the axis.
+SUMMARY_PANELS = (("ai", "Analyze:next:Implement", 100, 52), ("iv", "Implement:next:Verify", 100, 52),
+                  ("vv", "Verify:next:Verify", 100, 52), ("vd", "Verify:observed_dwell_tokens", 1, 28))
+SUMMARY_LABEL_GAP = .04  # of the axis height between the top of a whisker and its value label
+DAGGER = r"$^{\dagger}$"
+
+
+def summary_data(dynamics):
+    """Transition and dwell means with their margins, value labels and a flag for each interval that is unavailable.
+
+    A model whose interval is unavailable keeps its mean, gets no whisker and a dagger on its label.
+    """
+    coords = []
+    for i, model in enumerate(MODELS):
+        row = [i + 1]
+        for name, key, scale, top in SUMMARY_PANELS:
+            cell = dynamics[model]["results"][key]
+            mean = scale * cell["estimate"]
+            missing = cell["interval"] is None
+            low, high = (float("nan"),) * 2 if missing else (scale * x for x in cell["interval"])
+            margin = 0. if missing else max(mean - low, high - mean)
+            row.extend((mean, mean - low, high - mean, mean + margin + SUMMARY_LABEL_GAP * top,
+                        format(mean, ".1f") + (DAGGER if missing else ""), int(missing)))
+        coords.append(tuple(row))
+    headings = ["x"] + [name + suffix for name, *_ in SUMMARY_PANELS
+                        for suffix in ("", "minus", "plus", "labely", "label", "missing")]
+    dat("state_transitions_summary.dat", headings, coords)
 
 
 def dynamics_data():
@@ -262,17 +411,43 @@ def dynamics_data():
         dat("state_transitions_" + model + ".dat", ("to", "from", "probability", "missing"), matrix)
         if absent:
             dat("state_transitions_missing_" + model + ".dat", ("to", "from"), absent)
+    summary_data(dynamics)
     order = ("Analyze", "Implement", "Verify", "Monitor", "Read", "Explore", "Plan")
     coords = []
     for i, m in enumerate(MODELS):
-        vals = []
+        vals, tops = [], {}
         for c in order:
             r = dynamics[m]["results"][c + ":occupancy"]
             mu, low, high = r["estimate"], *r["interval"]
             vals.extend((100 * mu, 100 * (mu - low), 100 * (high - mu)))
+            tops[c] = (100 * (mu + max(mu - low, high - mu)), PAPER_CLASSES.index(c) + 1, 100 * mu)
+        for c, (end, label) in zip(order, occupancy_labels(tops, order)):
+            vals.extend((tops[c][0], end - tops[c][0], end + OCCUPANCY_LABEL_GAP, label))
         coords.append((i + 1, *vals))
     headings = [h for c in order for h in (c.lower(), c[0].lower() + "minus", c[0].lower() + "plus")]
+    headings += [c.lower() + suffix for c in order for suffix in ("top", "lead", "labely", "label")]
     dat("occupancy.dat", ("x", *headings), coords)
+
+
+# Value labels of the occupancy panels, in units of their 0-60 axis. A label sits OCCUPANCY_LEAD above the top of its
+# whisker; when the label of a neighbouring column (one position left or right) is already placed lower, it is raised by
+# OCCUPANCY_CLEAR above that one's leader, the height of a label.
+OCCUPANCY_LEAD = 7.8 / 7
+OCCUPANCY_CLEAR = 51 / 7
+OCCUPANCY_LABEL_GAP = .6
+
+
+def occupancy_labels(tops, order):
+    """Leader end and label text of each state of one panel, in `order`: tops maps state to (whisker top, column, mean)."""
+    placed, ends = {}, {}
+    for state in sorted(tops, key=lambda c: tops[c][0]):
+        top, column, mean = tops[state]
+        end = top + OCCUPANCY_LEAD
+        for other, other_end in placed.items():
+            if abs(other - column) <= 1 and end < other_end + OCCUPANCY_CLEAR - 1e-9:
+                end = other_end + OCCUPANCY_CLEAR
+        placed[column], ends[state] = end, (end, format(mean, ".1f"))
+    return [ends[c] for c in order]
 
 
 def check_inputs():
@@ -287,23 +462,34 @@ def check_inputs():
             raise ValueError("benchmark attempt population differs")
 
 
-def main(capture_existing=False, capture_lfm=False):
+def main(capture_existing=False, capture_lfm=False, capture_next=False, capture_qwen36=False, pairs_variant=None):
     if capture_existing:
         capture()
     if capture_lfm:
         capture_lfm_rows()
+    if capture_qwen36:
+        capture_qwen36_panel()
+    if pairs_variant:
+        capture_pairs(pairs_variant)
+    if capture_next:
+        capture_next_state()
     check_inputs()
     readout_data()
     selection_data()
     next_state_data()
     dynamics_data()
     print(json.dumps({"models": len(MODELS), "selection_cells": len(MODELS) * 15, "native_dynamics_models": len(MODELS),
-                      "next_state_models": 2, "new_inference": False}))
+                      "next_state_models": len(MODELS), "new_inference": False}))
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     parser.add_argument("--capture-existing", action="store_true")
     parser.add_argument("--capture-lfm", action="store_true", help="append the LFM2.5 rows to the bundled copies")
+    parser.add_argument("--capture-next-state", action="store_true", help="copy the eight next-state estimates")
+    parser.add_argument("--capture-qwen36-panel", action="store_true",
+                        help="replace Qwen3.6's native-dynamics panel by the one covering all its families")
+    parser.add_argument("--capture-pairs", metavar="VARIANT",
+                        help="replace every native-dynamics panel by the one completed with the next-sentence labels of VARIANT")
     args = parser.parse_args()
-    main(args.capture_existing, args.capture_lfm)
+    main(args.capture_existing, args.capture_lfm, args.capture_next_state, args.capture_qwen36_panel, args.capture_pairs)

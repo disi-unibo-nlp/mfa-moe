@@ -2,7 +2,8 @@
 
 Reads only: no fitting, resampling or inference. Every table cell, found by table, model, condition and metric, must
 equal the cell of the accepted manuscript revision (verify_cl_printed_tables.ACCEPTED_REVISION); the benchmark and routing
-tables are also checked against benchmark_cells.csv and the saved routing estimates. The row order of a table may differ
+tables are also checked against benchmark_cells.csv and the saved routing estimates, the next-state table against
+next_state.csv, and the occupancy and transition tables against native_dynamics.json. The row order of a table may differ
 from that revision, its numbers may not. --self-test also shows that the check rejects swapped rows, changed intervals
 and wrong rank marks in copies of the tables held in memory, and that export_cl_exhibits, run on a temporary copy of the
 manuscript, writes only below figures/journal/data and never a table. The printed PDF is read back by
@@ -307,14 +308,209 @@ def verify_current_benchmarks(paper):
     }
 
 
+def thousands(value):
+    return f"{int(value):,}"
+
+
+NEXT_STATE_COLUMNS = (("", "gain"), ("null_", "alignment gain"))
+
+
+def next_state_gains(rows, prefix):
+    """Each model's gain in nats (positive when routing lowers the loss) with its simultaneous limits."""
+    gains = {}
+    for model in DISPLAY_MODELS:
+        r = rows[model]
+        gains[model] = [-float(r[prefix + key]) for key in ("delta_logloss", "simultaneous_ci7_high", "simultaneous_ci7_low")]
+    return gains
+
+
+def verify_next_state(paper, texts):
+    """The next-state table and the plotting data against next_state.csv: sizes, gains, intervals and rank marks."""
+    data = figure_root(paper) / "data"
+    rows = {row["model"]: row for row in read_csv(data / "next_state.csv")}
+    require(set(rows) == set(DISPLAY_MODELS) and all(row["status"] == "CLEAN" for row in rows.values()),
+            "next_state.csv model roster or status differs")
+    gains = [next_state_gains(rows, prefix) for prefix, _ in NEXT_STATE_COLUMNS]
+    seen = []
+    for model, columns in model_rows(texts["next_state.tex"]):
+        seen.append(model)
+        require(len(columns) == 5, model + ": next-state columns differ")
+        require([clean_cell(columns[1]), clean_cell(columns[2])] == [thousands(rows[model]["questions"]), thousands(rows[model]["pairs"])],
+                model + ": next-state question or pair count differs from next_state.csv")
+        for cell, (prefix, name), values in zip(columns[3:], NEXT_STATE_COLUMNS, gains):
+            check_ci(cell, values[model], 5, model + "/next-state " + name, rank_mark(values[model][0], [v[0] for v in values.values()]))
+    require(len(seen) == len(DISPLAY_MODELS) and set(seen) == set(DISPLAY_MODELS), "next-state model coverage differs")
+    table = [line.split() for line in (data / "next_state.dat").read_text().splitlines()]
+    heading, body = table[0], table[1:]
+    require(heading == ["x", "gain", "gainminus", "gainplus", "gainlabely", "gainlabel",
+                        "null", "nullminus", "nullplus", "nulllabely", "nulllabel"], "next_state.dat columns differ")
+    require(len(body) == len(DISPLAY_MODELS), "next_state.dat row count differs")
+    for row, model in zip(body, PRESENTATION_MODELS):
+        for offset, (prefix, name) in zip((1, 6), NEXT_STATE_COLUMNS):
+            mean, low, high = (float(rows[model][prefix + key]) for key in ("delta_logloss", "simultaneous_ci7_low", "simultaneous_ci7_high"))
+            saved = [float(value) for value in row[offset:offset + 3]]
+            require(all(abs(a - b) <= 1e-12 for a, b in zip(saved, (mean, mean - low, high - mean))), model + "/" + name + ": next_state.dat differs from next_state.csv")
+            require(row[offset + 4] == f"{-mean:.3f}", model + "/" + name + ": value label differs from next_state.csv")
+    return [("next_state.tex", len(DISPLAY_MODELS) * 4, "figures/journal/data/next_state.csv",
+             {"rank_scope": "descriptive, within each gain column across the models"})]
+
+
+def dynamics_text(panel, key, scale, digits):
+    """A native-dynamics cell as the tables print it: mean with its symmetric margin, or the mean alone when no interval exists."""
+    cell = panel["results"][key]
+    mean = decimal(f"{scale * cell['estimate']:.{digits}f}")
+    if cell["interval"] is None:
+        return ("n/e", mean)
+    low, high = (scale * x for x in cell["interval"])
+    return ("cid", (mean, *formatted([max(scale * cell["estimate"] - low, high - scale * cell["estimate"])] * 2, digits)))
+
+
+def check_dynamics_cell(text, panel, key, scale, digits, context):
+    kind, value = dynamics_text(panel, key, scale, digits)
+    if kind == "n/e":
+        require(clean_cell(text).replace(" ", "") == f"${value}_{{\\mathrm{{n/e}}}}$", context + ": estimate without an interval is not printed as n/e")
+    else:
+        require(ci_cells(text) == [("cid", value)], context + ": estimate or margin differs from native_dynamics.json")
+
+
+def verify_dynamics(paper, texts):
+    """The occupancy and transition tables against native_dynamics.json: every estimate, margin and n/e mark."""
+    panels = json.loads((figure_root(paper) / "data/native_dynamics.json").read_text())
+    require(set(panels) == set(DISPLAY_MODELS), "native_dynamics.json model roster differs")
+    seen = []
+    for model, columns in model_rows(texts["occupancy.tex"]):
+        seen.append(model)
+        require(len(columns) == 8, model + ": occupancy columns differ")
+        for state, cell in zip(STATE_ORDER, columns[1:]):
+            check_dynamics_cell(cell, panels[model], state + ":occupancy", 100, 2, model + "/" + state)
+    require(len(seen) == len(DISPLAY_MODELS) and set(seen) == set(DISPLAY_MODELS), "occupancy model coverage differs")
+    checked = [("occupancy.tex", len(seen) * len(STATE_ORDER), "figures/journal/data/native_dynamics.json",
+                {"rank_scope": "none; state shares within model"})]
+    seen = []
+    cells = (("label_coverage", 100), ("Analyze:next:Implement", 100), ("Implement:next:Verify", 100),
+             ("Verify:next:Verify", 100), ("Verify:observed_dwell_tokens", 1))
+    for model, columns in model_rows(texts["state_transitions.tex"]):
+        seen.append(model)
+        require(len(columns) == 7, model + ": state-transition columns differ")
+        families = panels[model]["results"]["label_coverage"]["family_support"]
+        require(clean_cell(columns[1]) == thousands(families), model + ": family count differs from native_dynamics.json")
+        for cell, (key, scale) in zip(columns[2:], cells):
+            check_dynamics_cell(cell, panels[model], key, scale, 2, model + "/" + key)
+    require(len(seen) == len(DISPLAY_MODELS) and set(seen) == set(DISPLAY_MODELS), "state-transition model coverage differs")
+    checked.append(("state_transitions.tex", len(seen) * (len(cells) + 1), "figures/journal/data/native_dynamics.json",
+                    {"rank_scope": "none; transition probabilities within model"}))
+    return checked
+
+
+OCCUPANCY_ORDER = ("Read", "Analyze", "Explore", "Plan", "Implement", "Verify", "Monitor")
+
+
+def verify_occupancy_data(paper):
+    """occupancy.dat against native_dynamics.json: means, margins, whisker tops, value labels and leader lengths.
+
+    The figure types no number: every label and leader comes from this file.
+    """
+    data = figure_root(paper) / "data"
+    panels = json.loads((data / "native_dynamics.json").read_text())
+    table = [line.split() for line in (data / "occupancy.dat").read_text().splitlines()]
+    heading, body = table[0], table[1:]
+    require(len(body) == len(PRESENTATION_MODELS), "occupancy.dat row count differs")
+    require(not re.search(r"at \(axis cs:", (figure_root(paper) / "occupancy.tex").read_text()), "the occupancy figure types a coordinate")
+    for row, model in zip(body, PRESENTATION_MODELS):
+        values = dict(zip(heading, row))
+        for state in OCCUPANCY_ORDER:
+            cell = panels[model]["results"][state + ":occupancy"]
+            mean, (low, high) = 100 * cell["estimate"], cell["interval"]
+            name, initial = state.lower(), state[0].lower()
+            top = mean + 100 * max(cell["estimate"] - low, high - cell["estimate"])
+            where = model + "/" + state
+            require(abs(float(values[name]) - mean) < 1e-9, where + ": occupancy mean differs from native_dynamics.json")
+            require(abs(float(values[initial + "minus"]) - 100 * (cell["estimate"] - low)) < 1e-9
+                    and abs(float(values[initial + "plus"]) - 100 * (high - cell["estimate"])) < 1e-9, where + ": occupancy margins differ")
+            require(abs(float(values[name + "top"]) - top) < 1e-9, where + ": whisker top differs")
+            require(values[name + "label"] == f"{mean:.1f}", where + ": occupancy label differs from native_dynamics.json")
+            require(float(values[name + "lead"]) > 0 and float(values[name + "labely"]) > top, where + ": label does not lie above its whisker")
+    return [("occupancy.dat (figure labels)", len(PRESENTATION_MODELS) * len(OCCUPANCY_ORDER), "figures/journal/data/native_dynamics.json",
+             {"rank_scope": "none"})]
+
+
+def verify_summary_data(paper):
+    """state_transitions_summary.dat against native_dynamics.json: means, margins, labels and the unavailable-interval flags."""
+    data = figure_root(paper) / "data"
+    panels = json.loads((data / "native_dynamics.json").read_text())
+    table = [line.split() for line in (data / "state_transitions_summary.dat").read_text().splitlines()]
+    heading, body = table[0], table[1:]
+    names = ("ai", "iv", "vv", "vd")
+    keys = ("Analyze:next:Implement", "Implement:next:Verify", "Verify:next:Verify", "Verify:observed_dwell_tokens")
+    scales = (100, 100, 100, 1)
+    require(heading == ["x"] + [n + suffix for n in names for suffix in ("", "minus", "plus", "labely", "label", "missing")],
+            "state_transitions_summary.dat columns differ")
+    require(len(body) == len(PRESENTATION_MODELS), "state_transitions_summary.dat row count differs")
+    for row, model in zip(body, PRESENTATION_MODELS):
+        for i, (key, scale) in enumerate(zip(keys, scales)):
+            mean, minus, plus, _, label, missing = row[1 + 6 * i:7 + 6 * i]
+            cell = panels[model]["results"][key]
+            require(abs(float(mean) - scale * cell["estimate"]) < 1e-9 * max(1, scale), model + "/" + key + ": summary mean differs")
+            require(int(missing) == int(cell["interval"] is None), model + "/" + key + ": unavailable-interval flag differs")
+            require(label == f"{scale * cell['estimate']:.1f}" + (r"$^{\dagger}$" if cell["interval"] is None else ""),
+                    model + "/" + key + ": summary label differs")
+            if cell["interval"] is not None:
+                low, high = (scale * x for x in cell["interval"])
+                require(abs(float(minus) - (scale * cell["estimate"] - low)) < 1e-9 * max(1, scale)
+                        and abs(float(plus) - (high - scale * cell["estimate"])) < 1e-9 * max(1, scale),
+                        model + "/" + key + ": summary margins differ")
+    return [("state_transitions_summary.dat", len(PRESENTATION_MODELS) * len(names), "figures/journal/data/native_dynamics.json",
+             {"rank_scope": "none"})]
+
+
+NEXT_RESULTS = r"\subsection{Routing adds information about the next reasoning state}"
+DECIMAL = re.compile(r"(?<![\d.])\d+\.\d+")
+MODEL_VERSION = re.compile(r"(?:Qwen|LFM)\d+\.\d+")
+
+
+def verify_next_state_prose(paper):
+    """The next-state Results subsection against next_state.csv: its claims about intervals, ranges and every number."""
+    data = figure_root(paper) / "data"
+    rows = {row["model"]: row for row in read_csv(data / "next_state.csv")}
+    gains = next_state_gains(rows, "")
+    nulls = next_state_gains(rows, "null_")
+    excluding = {model for model, (mean, low, high) in gains.items() if low > 0}
+    require(len(excluding) == len(DISPLAY_MODELS) - 1 and set(DISPLAY_MODELS) - excluding == {LFM_MODEL},
+            "next-state gain intervals no longer exclude zero in exactly seven models")
+    require(all(low > 0 for _, low, _ in nulls.values()), "an alignment-gain interval contains zero")
+    results = (paper / "journal/results.tex").read_text()
+    text = results.split(NEXT_RESULTS)[1].split(r"\subsection")[0]
+    text = "\n".join(line for line in text.splitlines() if not line.startswith("%"))
+    cells = {values for _, values in ci_cells((paper / "journal/tables/next_state.tex").read_text())}
+    shown = [values for _, values in ci_cells(text)]
+    require(shown and set(shown) <= cells, "a number of the next-state Results is not a cell of the next-state table")
+    lowest, highest = min(excluding, key=lambda m: gains[m][0]), max(excluding, key=lambda m: gains[m][0])
+    for model in (lowest, highest, LFM_MODEL):
+        require(formatted_cell(gains[model]) in shown, model + ": next-state Results omits its gain")
+    require(formatted_cell(nulls[LFM_MODEL]) in shown, "next-state Results omits the alignment gain of LFM2.5")
+    relative = [100 * g[0] / float(rows[m]["text_loss"]) for m, g in gains.items() if m in excluding]
+    allowed = {f"{min(relative):.1f}", f"{max(relative):.1f}", f"{nulls[LFM_MODEL][1]:.4f}"}
+    stray = [number for number in DECIMAL.findall(CI.sub("", MODEL_VERSION.sub("", text))) if number not in allowed]
+    require(not stray, "next-state Results prints numbers that no receipt supports: " + ", ".join(stray))
+    return [("results.tex (next-state subsection)", len(shown) + len(allowed), "figures/journal/data/next_state.csv",
+             {"rank_scope": "none"})]
+
+
+def formatted_cell(values):
+    """The (mean, minus, plus) a CI macro prints for a gain with its simultaneous limits."""
+    return signed_deviations(values, 5)
+
+
 def verify(paper):
     """Every table cell against the accepted manuscript revision, and the benchmark and routing tables against the saved estimates."""
     result = verify_declared_source(paper)
     result["benchmark_saved_estimates"] = verify_current_benchmarks(paper)
     texts = {path.name: path.read_text() for path in (paper / "journal/tables").glob("*.tex")}
-    result["routing_saved_estimates"] = [
+    result["saved_estimates"] = [
         {"table": name, "ordered_cells": count, "source": source, **extra}
-        for name, count, source, extra in verify_routing(paper, texts)
+        for name, count, source, extra in (*verify_routing(paper, texts), *verify_next_state(paper, texts),
+                                           *verify_dynamics(paper, texts), *verify_occupancy_data(paper),
+                                           *verify_summary_data(paper), *verify_next_state_prose(paper))
     ]
     style = re.sub(r"\s+", "", (paper / "journal/style.tex").read_text())
     require(r"\fp_compare:nTF{#1>#2}{\pm#1}{\pm#2}" in style, "CI printer does not preserve the maximum original margin")
@@ -348,6 +544,18 @@ def self_test(paper):
             checks.append(name)
         else:
             raise TableMismatch("invalid source passed: " + name)
+    texts = {path.name: path.read_text() for path in (paper / "journal/tables").glob("*.tex")}
+    for name, check, table in (("changed_next_state_cell_rejected", verify_next_state, "next_state.tex"),
+                               ("changed_occupancy_cell_rejected", verify_dynamics, "occupancy.tex"),
+                               ("changed_transition_cell_rejected", verify_dynamics, "state_transitions.tex")):
+        changed = {**texts, table: re.sub(r"(\\(?:best|second)?cid\{)(\d)", lambda m: m[1] + str((int(m[2]) + 1) % 10), texts[table], count=1)}
+        require(changed[table] != texts[table], "self-test mutation did not apply: " + name)
+        try:
+            check(paper, changed)
+        except TableMismatch:
+            checks.append(name)
+        else:
+            raise TableMismatch("invalid table passed: " + name)
     exporter_writes_only_data(paper)
     return {"status": "pass", "checks": ["model_row_swap_rejected", *checks, "export_writes_only_figure_data"],
             "filesystem_writes": False}
