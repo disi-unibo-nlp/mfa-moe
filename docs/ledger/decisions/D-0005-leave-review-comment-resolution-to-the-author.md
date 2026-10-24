@@ -8,4 +8,4 @@
 - rejected: Automatically resolving or deleting addressed comments: the author explicitly reserves the final judgement.
 - evidence: User: "When addressing the comments, in the end, do not resolve/delete the comment. Add a subcommnt telling how u sovle it. And leave it there. So I can later judge and possibly solve it myself". LOC-044 and source-clone PRC-014 record this preference. DELIVERY.json verifies all 56 original threads, messages and open states unchanged after delivery.
 - keywords: overleaf, comments, replies, resolve, review, todos
-- paths: paper/manuscript-support/notes
+- paths: 
