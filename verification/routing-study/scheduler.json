@@ -1,0 +1,27 @@
+{
+  "status": "test_only_accepted_no_submission",
+  "date": "2026-09-22T14:59:36.239354+00:00",
+  "host": "login02.leonardo.local",
+  "user": "lmolfett",
+  "account": "iscrc_miosr",
+  "partition": "boost_usr_prod",
+  "qos": "boost_qos_dbg",
+  "gpus": 2,
+  "cpus": 16,
+  "memory_gib": 120,
+  "wall_minutes": 30,
+  "maximum_gpu_hours": 1,
+  "bash_syntax_exit_code": 0,
+  "login_direct_execution_exit_code": 2,
+  "sbatch_test_only_exit_code": 0,
+  "test_only_note": "Slurm printed a hypothetical scheduling identifier; no job was submitted.",
+  "pilot_jobs_observed_pending": [
+    "58377369",
+    "58377404"
+  ],
+  "script_sha256": "5d3b13b4d68bd0cb282cbd533ed9e8a315ecb0a9acfcaf4f1b1aadbb1c06f276",
+  "work_quota_observation": {
+    "used_gib": 926.7,
+    "quota_tib": 1
+  }
+}

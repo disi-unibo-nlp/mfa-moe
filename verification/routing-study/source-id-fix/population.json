@@ -1,0 +1,93 @@
+{
+  "study_sha256": "7b59b077e7776ffef5a06e96cf9308718f2a0578b1f3a0866f03519ec9fe9b3b",
+  "counts": {
+    "math500": {
+      "groups": 500,
+      "group_counts": {
+        "calibration": 300,
+        "tuning": 100,
+        "test": 100
+      },
+      "problem_counts": {
+        "calibration": 300,
+        "tuning": 100,
+        "test": 100
+      }
+    },
+    "aime24": {
+      "groups": 30,
+      "group_counts": {
+        "calibration": 18,
+        "tuning": 6,
+        "test": 6
+      },
+      "problem_counts": {
+        "calibration": 18,
+        "tuning": 6,
+        "test": 6
+      }
+    },
+    "aime25": {
+      "groups": 30,
+      "group_counts": {
+        "calibration": 18,
+        "tuning": 6,
+        "test": 6
+      },
+      "problem_counts": {
+        "calibration": 18,
+        "tuning": 6,
+        "test": 6
+      }
+    },
+    "amc23": {
+      "groups": 40,
+      "group_counts": {
+        "calibration": 24,
+        "tuning": 8,
+        "test": 8
+      },
+      "problem_counts": {
+        "calibration": 24,
+        "tuning": 8,
+        "test": 8
+      }
+    },
+    "minerva": {
+      "groups": 272,
+      "group_counts": {
+        "calibration": 163,
+        "tuning": 54,
+        "test": 55
+      },
+      "problem_counts": {
+        "calibration": 163,
+        "tuning": 54,
+        "test": 55
+      }
+    },
+    "olympiad": {
+      "groups": 675,
+      "group_counts": {
+        "calibration": 405,
+        "tuning": 135,
+        "test": 135
+      },
+      "problem_counts": {
+        "calibration": 405,
+        "tuning": 135,
+        "test": 135
+      }
+    }
+  },
+  "pilot_calibration_problems": 64,
+  "engineering_fixture_problems": 4,
+  "planned_attempts": {
+    "tuning": 1236,
+    "test": 930
+  },
+  "calibration_attempts": 2788,
+  "calibration_replay_tokens": 51441154,
+  "validation": "Manifest integrity, current code and duplicate-group split isolation passed; no holdout outcomes used.",
+  "sha256": "594c4c71b4db0b0c41e900201ea2c457621c511315cc71d5948688ba4184d37f"
+}

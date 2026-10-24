@@ -1,0 +1,15 @@
+{
+  "job_id": "58389406",
+  "recorded_utc": "2026-09-22T15:11:39.199190+00:00",
+  "state": "FAILED",
+  "exit_code": "1:0",
+  "elapsed_seconds": 9,
+  "allocated_gpus": 2,
+  "allocated_gpu_hours": 0.005,
+  "failure": "Population adapter compared per-attempt problem_id values as common problem metadata; no model load was reached.",
+  "model_loaded": false,
+  "experimental_results_available": false,
+  "accounting": "58389406|FAILED|1:0|9|billing=16,cpu=16,gres/gpu=2,mem=120G,node=1\n58389406.batch|FAILED|1:0|9|cpu=16,gres/gpu=2,mem=120G,node=1\n58389406.extern|COMPLETED|0:0|9|billing=16,cpu=16,gres/gpu=2,mem=120G,node=1\n58389406.0|FAILED|1:0|2|cpu=16,gres/gpu=2,mem=120G,node=1\n",
+  "remaining_authorized_gpu_hours": 0.995,
+  "retry_wall_seconds_cap": 1785
+}

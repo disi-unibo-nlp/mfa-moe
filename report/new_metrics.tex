@@ -1,0 +1,272 @@
+% Section-only file: \input{new_metrics}
+% Requires amsmath; add new_metrics to the parent document's BibTeX databases.
+% Definitions describe diagnostics, not empirical results or validated controls.
+\section{Temporal Routing and Reasoning-Class Dynamics}
+\label{sec:new-routing-metrics}
+
+We extend aggregate routing statistics with diagnostics of allocation persistence,
+changes in mixture weights, and the organization of reasoning episodes.
+The definitions below separate published foundations from adaptations introduced
+for this study. They measure observed behavior; a large or small value does not,
+by itself, identify useful reasoning or a beneficial intervention.
+
+\subsection{Notation and observation scope}
+
+At routed layer $\ell$ and reasoning-token position $t$, let
+$S_{\ell t}\subseteq\{1,\ldots,E_\ell\}$ be the native selected expert set,
+with $|S_{\ell t}|=k_\ell$. Let $p_{\ell t}$ denote the full router probability
+vector and $a_{\ell te}\geq0$ the weight actually assigned to a selected expert.
+The normalized executed mixture is
+\begin{equation}
+ m_{\ell te}=
+ \frac{\mathbf{1}\{e\in S_{\ell t}\}\,a_{\ell te}}
+      {\sum_{j\in S_{\ell t}}a_{\ell tj}}.
+ \label{eq:new-executed-mixture}
+\end{equation}
+Thus $p_{\ell t}$ describes router preferences, whereas $m_{\ell t}$ describes
+the relative weights of the selected routed experts. Neither is reconstructed
+from scalar confidence summaries. Shared experts are excluded from $S_{\ell t}$
+and these routed-expert distributions.
+
+We use a trailing window $W_t^{(w)}=\{t-w+1,\ldots,t\}$ contained in one
+contiguous reasoning segment. The current configuration uses
+$w\in\{64,256\}$, stride $64$, and lags $h\in\{1,4,16,64\}$.
+Prompt tokens, padding and gaps are excluded; insufficient history yields an
+unavailable metric. All logarithms are natural, so entropies and divergences are
+in nats. Layer indices are preserved throughout.
+
+\subsection{Expert-set persistence and turnover}
+
+Let $V_{t,h}^{(w)}$ contain positions $u\in W_t^{(w)}$ for which $u-h$ is
+observed in the same reasoning segment. Lagged overlap is
+\begin{equation}
+ O_{\ell,h}(t;w)=\frac{1}{|V_{t,h}^{(w)}|}
+ \sum_{u\in V_{t,h}^{(w)}}
+ \frac{|S_{\ell u}\cap S_{\ell,u-h}|}{k_\ell},
+ \qquad U_\ell(t;w)=1-O_{\ell,1}(t;w).
+ \label{eq:new-overlap}
+\end{equation}
+Overlap lies in $[0,1]$ and scores persistence of selected identities; turnover
+$U$ scores adjacent replacement. Rank changes inside an unchanged set do not
+increase turnover. The temporal lag construction extends the existing adjacent
+overlap metric.
+
+\paragraph{Uniform-chance correction.}
+Following the normalized overlap of Olson et al.~\cite{newmetrics_olson2025},
+but applying it to temporal pairs, define
+\begin{equation}
+ O^{\mathrm{unif}}_{\ell,h}
+ =\frac{O_{\ell,h}-k_\ell/E_\ell}{1-k_\ell/E_\ell}.
+ \label{eq:new-corrected-overlap}
+\end{equation}
+Zero denotes the uniform independent-selection baseline; one denotes identical
+sets. Negative values are possible, and the expression is undefined when
+$k_\ell=E_\ell$. This affine transform is not independent evidence from raw overlap.
+
+\paragraph{Usage-preserving order control.}
+Our additional control permutes routing sets within the observed trailing
+$w+h$-token pool, clipped at the segment start. If the pool contains $n$ tokens
+and expert $e$ appears at $n_e$ positions, the exact expected overlap under
+sampling distinct token positions is
+\begin{equation}
+ B_{\ell,h}=\frac{\sum_e n_e(n_e-1)}{n(n-1)k_\ell},
+ \qquad O^{\mathrm{excess}}_{\ell,h}=O_{\ell,h}-B_{\ell,h}.
+ \label{eq:new-shuffled-overlap}
+\end{equation}
+This separates temporal persistence from high overlap caused simply by repeatedly
+using a small expert pool. Positive excess indicates more persistence than the
+same usage frequencies predict under random ordering.
+
+\subsection{Allocation concentration, diversity and drift}
+
+\paragraph{Local and marginal entropy.}
+LIMoE distinguishes token-local entropy from entropy of the average routing
+distribution~\cite{newmetrics_mustafa2022}. We adapt this distinction from
+modality-level training regularization to descriptive trailing windows.
+For $r\in\{p,m\}$, set $\bar r_{\ell,W}=w^{-1}\sum_{u\in W}r_{\ell u}$ and
+\begin{align}
+ H^{r}_{\mathrm{local}}(W)
+   &=\frac{1}{w}\sum_{u\in W}H(r_{\ell u}),
+ &H^{r}_{\mathrm{marginal}}(W)&=H(\bar r_{\ell,W}),\nonumber\\
+ H(v)&=-\sum_e v_e\log v_e,
+ &I^{r}_{\mathrm{alloc}}(W)&=H^{r}_{\mathrm{marginal}}(W)
+                           -H^{r}_{\mathrm{local}}(W).
+ \label{eq:new-entropies}
+\end{align}
+Local entropy scores within-token dispersion. Marginal entropy scores diversity
+across the window. Their nonnegative difference scores how much distributions
+vary across positions: it is the mutual information between a uniformly sampled
+window position and an expert drawn from that position's distribution. It is
+invariant to token order, so it does not itself measure temporal drift.
+
+For native selection counts $c_e=\sum_{u\in W}\mathbf{1}\{e\in S_{\ell u}\}$,
+we additionally report $H_{\mathrm{selection}}=H((c_e/(wk_\ell))_e)$.
+This describes usage diversity without using mixture weights. The corresponding
+selection rates $c_e/w$ sum to $k_\ell$, not one.
+
+\paragraph{Effective expert count.}
+We express marginal executed-mixture entropy as
+\begin{equation}
+ N_{\mathrm{eff},\ell}(W)=\exp\!\left(H^{m}_{\mathrm{marginal}}(W)\right).
+ \label{eq:new-effective-experts}
+\end{equation}
+It is the number of equally weighted experts with the same window-level entropy,
+between $1$ and $E_\ell$. It can exceed $k_\ell$ because different tokens select
+different experts; it is not the number executed per token.
+
+\paragraph{Within-window distribution drift.}
+Using Jensen--Shannon divergence~\cite{newmetrics_lin1991}, split $W$ into equal
+chronological halves $W^-$ and $W^+$ and define
+\begin{align}
+ D^r_\ell(W)&=\operatorname{JSD}(\bar r_{\ell,W^-},\bar r_{\ell,W^+}),\nonumber\\
+ \operatorname{JSD}(a,b)&=H\!\left(\frac{a+b}{2}\right)
+                        -\frac{H(a)+H(b)}{2}.
+ \label{eq:new-jsd}
+\end{align}
+The score lies in $[0,\log2]$ and measures redistribution between the two halves.
+Full-router and executed-mixture drift are reported separately. Our temporal
+control averages the same statistic over $B=16$ random permutations of positions
+inside $W$, giving $D^{r,\mathrm{shuffle}}$ and
+$D^{r,\mathrm{excess}}=D^r-D^{r,\mathrm{shuffle}}$.
+Excess drift can be negative. All permutations use only the observed window.
+
+\subsection{Native selection-boundary diagnostics}
+
+Let $s_{\ell te}$ be the scores actually used for deterministic top-$k$
+selection, including any relevant selection bias. We extend the existing
+boundary-margin diagnostic with a temporal summary:
+\begin{equation}
+ g_{\ell t}=\min_{e\in S_{\ell t}}s_{\ell te}
+            -\max_{e\notin S_{\ell t}}s_{\ell te},
+ \qquad \bar g_\ell(W)=\frac{1}{w}\sum_{u\in W}g_{\ell u}.
+ \label{eq:new-boundary}
+\end{equation}
+A small gap indicates a nearly tied selected/unselected boundary in score space;
+it does not measure answer robustness. Ties give zero. This metric requires
+$k_\ell<E_\ell$ and verified native score semantics; unsupported routing rules
+are marked unavailable.
+
+The study-specific weak-boundary fraction is
+\begin{equation}
+ F^{\mathrm{weak}}_\ell(W)=\frac{1}{w}
+ \sum_{u\in W}\mathbf{1}\{g_{\ell u}\leq\theta_\ell\},
+ \qquad \theta_\ell=Q_{0.10}(g_\ell;\mathcal D_{\mathrm{train}}).
+ \label{eq:new-weak-boundary}
+\end{equation}
+The threshold is fitted only on calibration data or the training fold, counting
+each token once despite overlapping windows. A larger fraction means more
+near-boundary selections relative to that reference. Until such a threshold is
+fitted, the fraction remains unavailable; the compact correlation report uses
+the mean gap only.
+
+\subsection{Reasoning-class dynamics}
+
+ThinkARM motivates describing reasoning through episode sequences and transition
+patterns~\cite{newmetrics_li2026}. We retain the project's seven labels
+$\mathcal C=\{\mathrm{Read},\mathrm{Analyze},\mathrm{Plan},\mathrm{Implement},
+\mathrm{Explore},\mathrm{Verify},\mathrm{Monitor}\}$ rather than ThinkARM's
+eight-class taxonomy. Our censoring and hazard diagnostics are study-specific
+extensions, not claimed reproductions of ThinkARM metrics.
+Let $C_i$ be the label of reasoning sentence $i$ and $n_i$ its aligned token count.
+Unknown labels break sequences rather than becoming an eighth class.
+
+\paragraph{Occupancy, transitions and transition uncertainty.}
+Sentence and token shares are respectively
+$f_c=\sum_i\mathbf{1}\{C_i=c\}/N$ and
+$f_c^{\mathrm{tok}}=\sum_i n_i\mathbf{1}\{C_i=c\}/\sum_i n_i$,
+with denominators restricted to labeled observations and label coverage reported
+separately. For adjacent labeled sentences in one contiguous segment, let $N_{cd}$
+count transitions from $c$ to $d$. Then
+\begin{equation}
+ P_{cd}=\frac{N_{cd}}{\sum_{b\in\mathcal C}N_{cb}},\qquad
+ P_{\mathrm{stay}}(c)=P_{cc},\qquad
+ P_{\mathrm{exit}}(c)=1-P_{cc},\qquad
+ H_{\mathrm{next}}(c)=-\sum_d P_{cd}\log P_{cd}.
+ \label{eq:new-transitions}
+\end{equation}
+These score destination preference, persistence, switching, and uncertainty over
+observed next classes. Zero source support gives an undefined rate. Natural
+termination is outside this seven-class matrix; hence $1-P_{cc}$ is conditional
+on an observed next labeled sentence, not an unconditional stopping probability.
+Conditioning additionally on $C_{i-1}$ describes second-order transition patterns.
+
+\paragraph{Runs, returns and motifs.}
+A run is a maximal contiguous sequence of the same class. Its sentence/token
+length scores sustained allocation to that reasoning activity; its current age
+uses only the observed prefix. Entry after a missing-label gap is unobserved, so
+full duration is unavailable. A gap, cap or unknown ending right-censors the run;
+observed natural termination is a competing exit event.
+Return intervals measure the sentence/token distance between successive run
+starts of the same class, without crossing gaps. Counts of contiguous label
+bigrams and trigrams describe recurring local motifs. Motif counts alone are
+not significance scores and do not establish purposeful self-correction.
+
+\paragraph{Destination-specific exit hazards.}
+For runs with observed entry, let $Y_c(a)$ count runs whose outgoing boundary at
+sentence age $a$ is observable, and $D_{cd}(a)$ count exits to destination $d$ at
+that age. Our discrete hazard is
+\begin{equation}
+ h_{c\rightarrow d}(a)=D_{cd}(a)/Y_c(a),
+ \qquad d\in(\mathcal C\setminus\{c\})\cup\{\mathrm{natural\ termination}\}.
+ \label{eq:new-hazard}
+\end{equation}
+It scores the chance of a particular observed exit at that age, conditional on
+reaching an observable boundary. Right-censored runs contribute earlier
+boundaries but not their unobserved final boundary. Empty risk sets remain
+undefined; observed run lengths must not be mistaken for uncensored dwell times.
+
+\subsection{Relating routing to reasoning classes}
+
+\paragraph{Within-question class contrasts.}
+For a scalar window metric $z$, let $\bar z_{q,c}$ average windows ending in
+class $c$ within question $q$, and $\bar z_{q,\neg c}$ average other labeled
+endpoints. Our contrast is
+\begin{equation}
+ \Delta_c(z)=\frac{1}{|\mathcal Q_c|}
+ \sum_{q\in\mathcal Q_c}(\bar z_{q,c}-\bar z_{q,\neg c}),
+ \label{eq:new-class-contrast}
+\end{equation}
+where $\mathcal Q_c$ contains questions with both kinds of window. Layers are
+averaged equally within each question. Positive values indicate larger metric
+values around that class. A trailing window can include earlier classes, so this
+is an endpoint-conditioned association. The saved original class-view comparison
+instead uses class minus all reasoning and is kept as a distinct estimand.
+
+\paragraph{Expert-specific association diagnostics.}
+The broader diagnostic interface also compares expert activation rates, adapting
+SteerMoE's contrast principle~\cite{newmetrics_fayyaz2026} from paired behavioral
+prompts to observed classes. For tokens with label $c$, define
+\begin{equation}
+ R_{\ell e\mid c}=\frac{\sum_t\mathbf{1}\{C(t)=c,\ e\in S_{\ell t}\}}
+                          {\sum_t\mathbf{1}\{C(t)=c\}},
+ \qquad A_{\ell e,c}=R_{\ell e\mid c}-R_{\ell e\mid\neg c}.
+ \label{eq:new-activation-contrast}
+\end{equation}
+This is a token-weighted selection-rate difference; positive values indicate
+class-associated recruitment. Expert identity always includes its layer.
+A secondary normalized pointwise mutual information score, following the
+association measure used by RICE~\cite{newmetrics_wang2025}, is
+\begin{equation}
+ \operatorname{nPMI}(X_{\ell e},c)=
+ \frac{\log\!\left[P(X_{\ell e}=1,C=c)/
+                (P(X_{\ell e}=1)P(C=c))\right]}
+      {-\log P(X_{\ell e}=1,C=c)},
+ \quad X_{\ell e}(t)=\mathbf{1}\{e\in S_{\ell t}\}.
+ \label{eq:new-npmi}
+\end{equation}
+Zero indicates independence; the sign indicates positive or negative association.
+Degenerate joint probabilities are marked unavailable. Replacing RICE's marker
+tokens with sentence-class labels is our adaptation, not its published signed
+marker-ranking score. Contrasts require at least ten supporting questions in
+each arm and ten with expert activation for inference. These expert-level
+diagnostics and motif mining are defined by the broader interface but were not
+part of the compact recovery analysis.
+
+\paragraph{Interpretation and aggregation.}
+Missing data are never encoded as zero. Question-level aggregation and
+question-bootstrap intervals prevent overlapping windows from being counted
+as independent observations; searched comparisons require multiple-testing
+correction. Labels supplied by a retrospective judge describe observed reasoning
+and are not assumed available to an online controller. These metrics supply
+hypotheses about routing and reasoning dynamics, not causal claims that
+persistence, instability, or any class-associated expert is helpful or harmful.

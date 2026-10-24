@@ -1,0 +1,74 @@
+{
+  "schema": 1,
+  "status": "source_inventory_only; full source hashing and grouped split deferred to authorized compute",
+  "sources": [
+    {
+      "benchmark": "math500",
+      "path": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/results/correlation_pipeline/qwen36-35b-a3b-fp8/generation/Qwen--Qwen3.6-35B-A3B-FP8/math500/traces.jsonl",
+      "bytes": 127159908,
+      "mtime_ns": 1789761294000000000,
+      "problems": 500,
+      "samples_per_problem": 1,
+      "traces": 500,
+      "manifest_sha256": "24ef18e5fbc96175df264cb29ce1436b938e8621222faa6a52fe90ed69d73d07"
+    },
+    {
+      "benchmark": "aime24",
+      "path": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/results/correlation_pipeline/qwen36-35b-a3b-fp8/generation/Qwen--Qwen3.6-35B-A3B-FP8/aime24/traces.jsonl",
+      "bytes": 646345385,
+      "mtime_ns": 1789781801000000000,
+      "problems": 30,
+      "samples_per_problem": 32,
+      "traces": 960,
+      "manifest_sha256": "ca6ce440a85f310c788dfd142e60f3a2b54a6080d05c086b68293c85b3d58858"
+    },
+    {
+      "benchmark": "aime25",
+      "path": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/results/correlation_pipeline/qwen36-35b-a3b-fp8/generation/Qwen--Qwen3.6-35B-A3B-FP8/aime25/traces.jsonl",
+      "bytes": 680340259,
+      "mtime_ns": 1789782301000000000,
+      "problems": 30,
+      "samples_per_problem": 32,
+      "traces": 960,
+      "manifest_sha256": "e0c158fd1a37bf2540572f39109974cdea47e7dbbf0b3ca6329e314b65944f86"
+    },
+    {
+      "benchmark": "amc23",
+      "path": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/results/correlation_pipeline/qwen36-35b-a3b-fp8/generation/Qwen--Qwen3.6-35B-A3B-FP8/amc23/traces.jsonl",
+      "bytes": 547263478,
+      "mtime_ns": 1789775738000000000,
+      "problems": 40,
+      "samples_per_problem": 32,
+      "traces": 1280,
+      "manifest_sha256": "ab841ee1de4142f96f74a1faaa3b724a21fd009decd527ab459d60036010f320"
+    },
+    {
+      "benchmark": "minerva",
+      "path": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/results/correlation_pipeline/qwen36-35b-a3b-fp8/generation/Qwen--Qwen3.6-35B-A3B-FP8/minerva/traces.jsonl",
+      "bytes": 74094940,
+      "mtime_ns": 1789759636000000000,
+      "problems": 272,
+      "samples_per_problem": 1,
+      "traces": 272,
+      "manifest_sha256": "88825436767df94ced522d71e76c0463b30db1faf38d1d01cc393f240926e29b"
+    },
+    {
+      "benchmark": "olympiad",
+      "path": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/results/correlation_pipeline/qwen36-35b-a3b-fp8/generation/Qwen--Qwen3.6-35B-A3B-FP8/olympiad/traces.jsonl",
+      "bytes": 353016941,
+      "mtime_ns": 1789770405000000000,
+      "problems": 675,
+      "samples_per_problem": 1,
+      "traces": 675,
+      "manifest_sha256": "60bd843c6207a5e970e5c47cacd263daeabe9ce26d644abb38ddf83d5852aed5"
+    }
+  ],
+  "pilot": {
+    "path": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/results/correlation_pipeline/routing-dynamics-v1/pilot/pilot.json",
+    "sha256": "21783cb8e6724ce3f13dec98f93f606ee6aacf82aeaacf82d6a51cee7436a097"
+  },
+  "fixtures": {
+    "path": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/results/correlation_pipeline/forward-validation-v2/panels/qwen36/generation/Qwen--Qwen3.6-35B-A3B-FP8/math500/traces.jsonl",
+    "sha256": "dff45773db75a8ce2574523996dfec20ed8589971796a1a9f2f40d57d60c0934"
+  }
+}

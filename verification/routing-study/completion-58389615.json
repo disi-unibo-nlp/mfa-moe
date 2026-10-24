@@ -1,0 +1,18 @@
+{
+  "job_id": "58389615",
+  "recorded_utc": "2026-09-22T15:24:08.118806+00:00",
+  "state": "CANCELLED",
+  "elapsed_seconds": 457,
+  "maximum_step_elapsed_seconds": 461,
+  "allocated_gpus": 2,
+  "allocated_gpu_hours": 0.2538888888888889,
+  "conservative_gpu_hours_including_cleanup": 0.2561111111111111,
+  "reason": "Stopped after startup log and installed source confirmed offline vLLM rewrites model ID to exact cached snapshot; existing config guard accepted only repository ID.",
+  "failure_observed_in_runtime_guard": false,
+  "population_prepared": true,
+  "cpu_tests_passed": 59,
+  "experimental_results_available": false,
+  "accounting": "58389615|CANCELLED by 133943|0:0|457|billing=16,cpu=16,gres/gpu=2,mem=120G,node=1\n58389615.batch|CANCELLED|0:15|459|cpu=16,gres/gpu=2,mem=120G,node=1\n58389615.extern|COMPLETED|0:0|461|billing=16,cpu=16,gres/gpu=2,mem=120G,node=1\n58389615.0|COMPLETED|0:0|41|cpu=16,gres/gpu=2,mem=120G,node=1\n58389615.1|COMPLETED|0:0|98|cpu=16,gres/gpu=2,mem=120G,node=1\n58389615.2|CANCELLED|0:15|319|cpu=16,gres/gpu=2,mem=120G,node=1\n",
+  "next_retry_wall_seconds_cap": 1260,
+  "cumulative_conservative_gpu_hours_at_next_cap": 0.9611111111111111
+}

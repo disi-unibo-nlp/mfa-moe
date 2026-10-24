@@ -1,0 +1,1 @@
+CPU fixture outputs only. Not Qwen3.6 experimental evidence.

@@ -1,0 +1,220 @@
+[
+  {
+    "source": "gpt",
+    "stage": "production-supplement",
+    "dataset": "olympiad",
+    "result": {
+      "schema_version": 1,
+      "n": 642,
+      "status": "descriptive",
+      "r": -0.16486690988080038,
+      "p": 2.772375503198598e-05,
+      "confidence_interval": [
+        -0.24138018301734127,
+        -0.08418196322087777
+      ],
+      "bootstrap": 1000,
+      "metric": "class_token_fraction/Monitor",
+      "family": "class_token_fraction",
+      "adjustment": "log_length_and_cap",
+      "mean_metric": 0.0393092289016772,
+      "positive_questions": 577,
+      "within_question_mixed_outcome_n": 0,
+      "within_question_correct_minus_wrong": null,
+      "q_bh": 0.00019406628522390185
+    },
+    "path": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/production-supplement/gpt/associations/qwen38-mtp3-stratified-gpt/olympiad/correlations.jsonl",
+    "file_sha256": "2e6fd360455b38e088c1cbbf27bd23c61cf2b03a47f828dfb9f61afa11b95877"
+  },
+  {
+    "source": "glm",
+    "stage": "production-supplement",
+    "dataset": "olympiad",
+    "result": {
+      "schema_version": 1,
+      "n": 539,
+      "status": "descriptive",
+      "r": -0.33735129919959705,
+      "p": 9.276016802836555e-16,
+      "confidence_interval": [
+        -0.4042940262632579,
+        -0.2729240139043592
+      ],
+      "bootstrap": 1000,
+      "metric": "class_token_fraction/Monitor",
+      "family": "class_token_fraction",
+      "adjustment": "log_length_and_cap",
+      "mean_metric": 0.05210977994762084,
+      "positive_questions": 508,
+      "within_question_mixed_outcome_n": 0,
+      "within_question_correct_minus_wrong": null,
+      "q_bh": 6.493211761985588e-15
+    },
+    "path": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/production-supplement/glm/associations/qwen38-mtp3-stratified-glm/olympiad/correlations.jsonl",
+    "file_sha256": "d149774ee979e567807667eabd5c0e387f1f2179b93c313923f623f3b6e7e689"
+  },
+  {
+    "source": "gpt",
+    "stage": "production-supplement",
+    "dataset": "minerva",
+    "result": {
+      "schema_version": 1,
+      "n": 272,
+      "status": "descriptive",
+      "r": -0.19733254954259224,
+      "p": 0.0010921005298156585,
+      "confidence_interval": [
+        -0.3167784187860629,
+        -0.06420154572759904
+      ],
+      "bootstrap": 1000,
+      "metric": "temporal_complete_global/W64/overlap_excess_lag1",
+      "family": "temporal_complete_global",
+      "adjustment": "log_length_and_cap",
+      "mean_metric": 0.09753533048839536,
+      "positive_questions": 272,
+      "within_question_mixed_outcome_n": 0,
+      "within_question_correct_minus_wrong": null,
+      "q_bh": 0.018019658741958364
+    },
+    "path": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/production-supplement/gpt/associations/qwen38-mtp3-stratified-gpt/minerva/correlations.jsonl",
+    "file_sha256": "f9f821331aef560afd7511bd610a189eee624d5785a11cf326e4a81c9e59f135"
+  },
+  {
+    "source": "glm",
+    "stage": "production-supplement",
+    "dataset": "olympiad",
+    "result": {
+      "schema_version": 1,
+      "n": 530,
+      "status": "descriptive",
+      "r": -0.13438051572233234,
+      "p": 0.0019710639800097837,
+      "confidence_interval": [
+        -0.21677644001528207,
+        -0.0576591682535449
+      ],
+      "bootstrap": 1000,
+      "metric": "temporal_complete_global/W256/mixture_jsd_excess",
+      "family": "temporal_complete_global",
+      "adjustment": "log_length_and_cap",
+      "mean_metric": 0.05382500402758352,
+      "positive_questions": 530,
+      "within_question_mixed_outcome_n": 0,
+      "within_question_correct_minus_wrong": null,
+      "q_bh": 0.009292158762903267
+    },
+    "path": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/production-supplement/glm/associations/qwen38-mtp3-stratified-glm/olympiad/correlations.jsonl",
+    "file_sha256": "d149774ee979e567807667eabd5c0e387f1f2179b93c313923f623f3b6e7e689"
+  },
+  {
+    "source": "glm",
+    "stage": "production-supplement",
+    "dataset": "minerva",
+    "result": {
+      "schema_version": 1,
+      "n": 250,
+      "status": "descriptive",
+      "r": 0.4139104250806695,
+      "p": 1.0019338218877416e-11,
+      "confidence_interval": [
+        0.31796595024104574,
+        0.5112796016719511
+      ],
+      "bootstrap": 1000,
+      "metric": "temporal_complete/L15/W256/mixture_local_entropy",
+      "family": "temporal_complete",
+      "adjustment": "log_length_and_cap",
+      "mean_metric": 1.2731010327534726,
+      "positive_questions": 250,
+      "within_question_mixed_outcome_n": 0,
+      "within_question_correct_minus_wrong": null,
+      "q_bh": 3.0418710832511834e-08
+    },
+    "path": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/production-supplement/glm/associations/qwen38-mtp3-stratified-glm/minerva/correlations.jsonl",
+    "file_sha256": "c6c63db66ef8a81d0ce2bd9e8978cbf206d153833e98d7c59c964facada31c2f"
+  },
+  {
+    "source": "gpt",
+    "stage": "production-analysis",
+    "dataset": "math500",
+    "result": {
+      "schema_version": 1,
+      "n": 496,
+      "status": "descriptive",
+      "r": -0.2450482968628885,
+      "p": 3.339850485077121e-08,
+      "confidence_interval": [
+        -0.33033000259460105,
+        -0.16023640508252973
+      ],
+      "bootstrap": 1000,
+      "metric": "saved_full/router_confidence_l11",
+      "family": "saved_full",
+      "adjustment": "log_length_and_cap",
+      "mean_metric": 0.04858828914321719,
+      "mean_accuracy": 0.6693548387096774,
+      "positive_questions": 496,
+      "within_question_mixed_outcome_n": 0,
+      "within_question_correct_minus_wrong": null,
+      "q_bh": 9.551972387320566e-06
+    },
+    "path": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/production-analysis/gpt/associations/qwen38-mtp3-stratified-gpt/math500/math500/correlations.jsonl",
+    "file_sha256": "31209f3a3785be432f981e775cc5677a5394e469f3e957fe4fa3d31e497ade58"
+  },
+  {
+    "source": "gpt",
+    "stage": "production-analysis",
+    "dataset": "olympiad",
+    "result": {
+      "schema_version": 1,
+      "n": 642,
+      "status": "descriptive",
+      "r": -0.23632155284611034,
+      "p": 1.4237899649689797e-09,
+      "confidence_interval": [
+        -0.3090396238508626,
+        -0.15668220865427585
+      ],
+      "bootstrap": 1000,
+      "metric": "saved_full/router_boundary_margin_l09",
+      "family": "saved_full",
+      "adjustment": "log_length_and_cap",
+      "mean_metric": 0.005629253712253547,
+      "mean_accuracy": 0.4439252336448598,
+      "positive_questions": 642,
+      "within_question_mixed_outcome_n": 0,
+      "within_question_correct_minus_wrong": null,
+      "q_bh": 8.144078599622564e-07
+    },
+    "path": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/production-analysis/gpt/associations/qwen38-mtp3-stratified-gpt/olympiad/olympiad/correlations.jsonl",
+    "file_sha256": "e4d6712cd951f028cf62874ae54a01eba4a70d0ea97f475100519429f0577304"
+  },
+  {
+    "source": "gpt",
+    "stage": "production-supplement",
+    "dataset": "math500",
+    "result": {
+      "schema_version": 1,
+      "n": 496,
+      "status": "descriptive",
+      "r": 0.15473146094132914,
+      "p": 0.0005509424788155592,
+      "confidence_interval": [
+        0.09126460989128038,
+        0.21422831589859684
+      ],
+      "bootstrap": 1000,
+      "metric": "class_token_fraction/Explore",
+      "family": "class_token_fraction",
+      "adjustment": "log_length_and_cap",
+      "mean_metric": 0.05782118753187878,
+      "positive_questions": 212,
+      "within_question_mixed_outcome_n": 0,
+      "within_question_correct_minus_wrong": null,
+      "q_bh": 0.003856597351708914
+    },
+    "path": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/production-supplement/gpt/associations/qwen38-mtp3-stratified-gpt/math500/correlations.jsonl",
+    "file_sha256": "8b8e59e1799cc732fcac7a08b48ae960a4f5877836a6652bad3690dd2b1d4f70"
+  }
+]

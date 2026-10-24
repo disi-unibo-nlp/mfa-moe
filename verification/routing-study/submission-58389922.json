@@ -1,0 +1,17 @@
+{
+  "job_id": "58389922",
+  "submission_result": "58389922",
+  "recorded_utc": "2026-09-22T15:27:52.834032+00:00",
+  "retry_of": [
+    "58389406",
+    "58389615"
+  ],
+  "authorization": "Corrected same smoke workload within cumulative one-GPU-hour authorization.",
+  "prior_conservative_gpu_seconds_including_cleanup": 940,
+  "retry_maximum_gpu_seconds": 2520,
+  "cumulative_maximum_gpu_hours": 0.9611111111111111,
+  "job_description": "JobId=58389922 JobName=qwen36-routing-smoke\n   UserId=lmolfett(133943) GroupId=interactive(25200) MCS_label=N/A\n   Priority=256529 Nice=0 Account=iscrc_miosr QOS=boost_qos_dbg\n   JobState=PENDING Reason=Priority Dependency=(null)\n   Requeue=0 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0\n   RunTime=00:00:00 TimeLimit=00:21:00 TimeMin=N/A\n   SubmitTime=2026-09-22T17:27:24 EligibleTime=2026-09-22T17:27:24\n   AccrueTime=2026-09-22T17:27:24\n   StartTime=Unknown EndTime=Unknown Deadline=N/A\n   SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-09-22T17:27:48 Scheduler=Main\n   Partition=boost_usr_prod AllocNode:Sid=login02-interconnect-1:1157093\n   ReqNodeList=(null) ExcNodeList=(null)\n   NodeList=\n   NumNodes=1-1 NumCPUs=16 NumTasks=1 CPUs/Task=16 ReqB:S:C:T=0:0:*:*\n   ReqTRES=cpu=16,mem=120G,node=1,billing=16,gres/gpu=2\n   AllocTRES=(null)\n   Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=*\n   MinCPUsNode=16 MinMemoryNode=120G MinTmpDiskNode=0\n   Features=(null) DelayBoot=00:00:00\n   OverSubscribe=OK Contiguous=0 Licenses=(null) LicensesAlloc=(null) Network=(null)\n   Command=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/sbatch/routing_study_smoke.sbatch\n   WorkDir=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo\n   StdErr=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/routing-study/logs/qwen36-routing-smoke-58389922.err\n   StdIn=/dev/null\n   StdOut=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/routing-study/logs/qwen36-routing-smoke-58389922.out\n   TresPerNode=gres/gpu:2\n   TresPerTask=cpu=16\n   \n\n",
+  "protocol_sha256": "58605df102295fc66028fefbe9112f3ce893a5a62262eda29226397209ca05df",
+  "cpu_report_sha256": "ae883da0be3e03405321e9c944a4467070b222d7a68e5ce57de88aa9d392a1e4",
+  "pilot_budget_reserved_gpu_hours": 32
+}

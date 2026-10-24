@@ -1,0 +1,597 @@
+{
+  "models": [
+    {
+      "source": "gpt",
+      "attempts": 1580,
+      "tokens": 6140145,
+      "capture_seconds": 38897.149234910874,
+      "seconds_per_token": 0.00633489098953052,
+      "compressed_bytes_per_token": 593.8497589226313,
+      "compressed_bytes": 3646323628,
+      "startup_seconds": [
+        146.37268895469606,
+        144.7789084969845,
+        147.0599545231089,
+        148.37229739967734
+      ],
+      "max_startup_seconds": 148.37229739967734,
+      "per_trace_rate_p90": 0.008251587175109876,
+      "evidence": [
+        "/leonardo_scratch/fast/IscrC_MIOSR/lmolfett/mfa-moe/measurement-study-v1/capture/gpt/0/result.json",
+        "/leonardo_scratch/fast/IscrC_MIOSR/lmolfett/mfa-moe/measurement-study-v1/capture/gpt/1/result.json",
+        "/leonardo_scratch/fast/IscrC_MIOSR/lmolfett/mfa-moe/measurement-study-v1/capture/gpt/2/result.json",
+        "/leonardo_scratch/fast/IscrC_MIOSR/lmolfett/mfa-moe/measurement-study-v1/capture/gpt/3/result.json"
+      ]
+    },
+    {
+      "source": "glm",
+      "attempts": 1390,
+      "tokens": 7550193,
+      "capture_seconds": 36563.25744393072,
+      "seconds_per_token": 0.004842691762174917,
+      "compressed_bytes_per_token": 2069.6344431195334,
+      "compressed_bytes": 15626139485,
+      "startup_seconds": [
+        264.5718272840604,
+        358.9260080871172,
+        357.406230653869,
+        339.3897362370044
+      ],
+      "max_startup_seconds": 358.9260080871172,
+      "per_trace_rate_p90": 0.005090456653043681,
+      "evidence": [
+        "/leonardo_scratch/fast/IscrC_MIOSR/lmolfett/mfa-moe/measurement-study-v1/capture/glm/0/result.json",
+        "/leonardo_scratch/fast/IscrC_MIOSR/lmolfett/mfa-moe/measurement-study-v1/capture/glm/1/result.json",
+        "/leonardo_scratch/fast/IscrC_MIOSR/lmolfett/mfa-moe/measurement-study-v1/capture/glm/2/result.json",
+        "/leonardo_scratch/fast/IscrC_MIOSR/lmolfett/mfa-moe/measurement-study-v1/capture/glm/3/result.json"
+      ]
+    },
+    {
+      "source": "qwen36",
+      "attempts": 424,
+      "tokens": 8493406,
+      "capture_seconds": 79886.69164763484,
+      "seconds_per_token": 0.009405730945587065,
+      "compressed_bytes_per_token": 2525.1097563215512,
+      "compressed_bytes": 21446782355,
+      "startup_seconds": [
+        922.4416888430715,
+        1268.580273354426,
+        1015.8853347692639
+      ],
+      "max_startup_seconds": 1268.580273354426,
+      "per_trace_rate_p90": 0.010789991483421538,
+      "evidence": [
+        "/leonardo_scratch/fast/IscrC_MIOSR/lmolfett/mfa-moe/measurement-study-v1/capture/qwen36/0/*.complete.json",
+        "/leonardo_scratch/fast/IscrC_MIOSR/lmolfett/mfa-moe/measurement-study-v1/capture/qwen36/1/*.complete.json",
+        "/leonardo_scratch/fast/IscrC_MIOSR/lmolfett/mfa-moe/measurement-study-v1/capture/qwen36/2/*.complete.json",
+        "/leonardo_scratch/fast/IscrC_MIOSR/lmolfett/mfa-moe/measurement-study-v1/capture/qwen36/3/*.complete.json"
+      ]
+    },
+    {
+      "source": "nemotron",
+      "seconds_per_token": 0.0056818846102544285,
+      "compressed_bytes_per_token": 1408.5350036621094,
+      "startup_seconds": 393.72623118944466,
+      "total_gpu_hours": 36.0,
+      "status": "ready_for_scheduling",
+      "evidence": [
+        "results/measurement-study/recovery-proposals/nemotron.json"
+      ]
+    },
+    {
+      "source": "gemma",
+      "seconds_per_token": 0.0066724669529492076,
+      "compressed_bytes_per_token": 1896.6754760742188,
+      "startup_seconds": 300.4556249445304,
+      "total_gpu_hours": 84.0,
+      "status": "staged_exceeds_remaining_envelope",
+      "evidence": [
+        "results/measurement-study/recovery-proposals/gemma.json"
+      ]
+    }
+  ],
+  "long_storage_sizing": [
+    {
+      "source": "gpt",
+      "model": "openai/gpt-oss-20b",
+      "corpus": {
+        "model": "openai/gpt-oss-20b",
+        "unique_content_attempts": 1580,
+        "completion_tokens": 6140145,
+        "exact_replay_attempts": 1580,
+        "benchmarks": [
+          "aime24",
+          "aime25",
+          "amc23",
+          "math500",
+          "minerva",
+          "olympiad"
+        ]
+      },
+      "measured_tokens": 10492,
+      "measured_phase_seconds": 82.13464318308979,
+      "measured_load_seconds": 144.7156030498445,
+      "planned_shards": 31,
+      "shard_target_tokens": 200000,
+      "estimated_total_wall_hours": 14.598097439070004,
+      "proposed_gpu_hours_cap": 44.0,
+      "estimated_packed_bytes": 5384905410,
+      "packed_fixture_bytes": 9201481,
+      "source_fixture_bytes": 71262539,
+      "sizing_seconds": 1.2554436149075627,
+      "files": [
+        {
+          "source": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/smoke/gpt-58487262/forward/openai--gpt-oss-20b/math500/tensors/math500_math500_test_algebra_101.json__sample_00_189f7cef7fc8e5b5_experts.pt",
+          "packed": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/long-storage-sizing/gpt/openai--gpt-oss-20b/math500/tensors/math500_math500_test_algebra_101.json__sample_00_189f7cef7fc8e5b5_experts.pt.gz",
+          "source_bytes": 116371,
+          "packed_bytes": 37453,
+          "sha256": "72672b7dc92b2d2a0aa76ac610e7525081e57a6f4fb4b3e04d34377181e93cbd",
+          "round_trip_verified": true
+        },
+        {
+          "source": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/smoke/gpt-58487262/forward/openai--gpt-oss-20b/math500/tensors/math500_math500_test_algebra_101.json__sample_00_189f7cef7fc8e5b5_extraction.json",
+          "packed": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/long-storage-sizing/gpt/openai--gpt-oss-20b/math500/tensors/math500_math500_test_algebra_101.json__sample_00_189f7cef7fc8e5b5_extraction.json.gz",
+          "source_bytes": 963814,
+          "packed_bytes": 134956,
+          "sha256": "9e896c3935e42e36076a7059a114acd8cb8161ffe83ba6df90bccd0cb0de8de6",
+          "round_trip_verified": true
+        },
+        {
+          "source": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/smoke/gpt-58487262/forward/openai--gpt-oss-20b/math500/tensors/math500_math500_test_algebra_1031.json__sample_00_badee296d8d14fb3_experts.pt",
+          "packed": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/long-storage-sizing/gpt/openai--gpt-oss-20b/math500/tensors/math500_math500_test_algebra_1031.json__sample_00_badee296d8d14fb3_experts.pt.gz",
+          "source_bytes": 138074,
+          "packed_bytes": 43691,
+          "sha256": "19898336f727ed77a22f4c657ea607eaa3831c879a7a7471b919b13ebf483c77",
+          "round_trip_verified": true
+        },
+        {
+          "source": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/smoke/gpt-58487262/forward/openai--gpt-oss-20b/math500/tensors/math500_math500_test_algebra_1031.json__sample_00_badee296d8d14fb3_extraction.json",
+          "packed": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/long-storage-sizing/gpt/openai--gpt-oss-20b/math500/tensors/math500_math500_test_algebra_1031.json__sample_00_badee296d8d14fb3_extraction.json.gz",
+          "source_bytes": 1868369,
+          "packed_bytes": 237433,
+          "sha256": "055f6b7f14d1d5ecb953e8434648141d851389af3ae03d81ee22c5b94e36431c",
+          "round_trip_verified": true
+        },
+        {
+          "source": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/smoke/gpt-58487262/forward/openai--gpt-oss-20b/math500/tensors/math500_math500_test_geometry_434.json__sample_00_0834e0313da2eae9_experts.pt",
+          "packed": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/long-storage-sizing/gpt/openai--gpt-oss-20b/math500/tensors/math500_math500_test_geometry_434.json__sample_00_0834e0313da2eae9_experts.pt.gz",
+          "source_bytes": 1767578,
+          "packed_bytes": 484060,
+          "sha256": "f8cdf0d7963acb38d9c13b14fd52d78e6d0aeb0f4e733f715a71f713054cfc8c",
+          "round_trip_verified": true
+        },
+        {
+          "source": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/smoke/gpt-58487262/forward/openai--gpt-oss-20b/math500/tensors/math500_math500_test_geometry_434.json__sample_00_0834e0313da2eae9_extraction.json",
+          "packed": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/long-storage-sizing/gpt/openai--gpt-oss-20b/math500/tensors/math500_math500_test_geometry_434.json__sample_00_0834e0313da2eae9_extraction.json.gz",
+          "source_bytes": 40621842,
+          "packed_bytes": 4291360,
+          "sha256": "f59135464b75dcfdd788dcab23a2bd6069b95f9fec4ffe8e0ae458195ebfef30",
+          "round_trip_verified": true
+        },
+        {
+          "source": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/smoke/gpt-58487262/forward/openai--gpt-oss-20b/math500/traces_with_routing.jsonl",
+          "packed": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/long-storage-sizing/gpt/openai--gpt-oss-20b/math500/traces_with_routing.jsonl.gz",
+          "source_bytes": 25783492,
+          "packed_bytes": 3971123,
+          "sha256": "83a2f5ec0444e5962ac208e827ccb80528cef520ab0f2164f8ef3282181c5704",
+          "round_trip_verified": true
+        },
+        {
+          "source": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/smoke/gpt-58487262/forward/openai--gpt-oss-20b/position_reference.json",
+          "packed": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/long-storage-sizing/gpt/openai--gpt-oss-20b/position_reference.json.gz",
+          "source_bytes": 325,
+          "packed_bytes": 244,
+          "sha256": "fc5c8922c3e59b1b9b2a1f9e6975cb3fa64c190df5378b64579351bfaf811d92",
+          "round_trip_verified": true
+        },
+        {
+          "source": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/smoke/gpt-58487262/forward/openai--gpt-oss-20b/summary.json",
+          "packed": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/long-storage-sizing/gpt/openai--gpt-oss-20b/summary.json.gz",
+          "source_bytes": 2674,
+          "packed_bytes": 1161,
+          "sha256": "b287bb31ad379f9ac7df6d80ca31d9cfe4db8c563b2e505f5c5c31cc0a3950f5",
+          "round_trip_verified": true
+        }
+      ],
+      "max_context_pending_sources": null
+    },
+    {
+      "source": "glm",
+      "model": "zai-org/GLM-4.7-Flash",
+      "corpus": {
+        "unique_content_attempts": 1390,
+        "completion_tokens": 7550193
+      },
+      "measured_tokens": 12075,
+      "measured_phase_seconds": 83.62029677070677,
+      "measured_load_seconds": 359.428331727162,
+      "planned_shards": 38,
+      "shard_target_tokens": 200000,
+      "estimated_total_wall_hours": 18.31776096961401,
+      "proposed_gpu_hours_cap": 55.0,
+      "estimated_packed_bytes": 21030098741,
+      "packed_fixture_bytes": 33633371,
+      "source_fixture_bytes": 217673894,
+      "sizing_seconds": 12.682634681928903,
+      "files": [
+        {
+          "source": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/smoke/glm-58487265/forward/zai-org--GLM-4.7-Flash/math500/tensors/math500_math500_test_algebra_101.json__sample_00_d76d26b8792dd58a_experts.pt",
+          "packed": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/long-storage-sizing/glm/zai-org--GLM-4.7-Flash/math500/tensors/math500_math500_test_algebra_101.json__sample_00_d76d26b8792dd58a_experts.pt.gz",
+          "source_bytes": 235795,
+          "packed_bytes": 101809,
+          "sha256": "7a4819ec99aa1eeca085d4a6748ca0a8f36a8e15383aafbdeb03d1f458f552b2",
+          "round_trip_verified": true
+        },
+        {
+          "source": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/smoke/glm-58487265/forward/zai-org--GLM-4.7-Flash/math500/tensors/math500_math500_test_algebra_101.json__sample_00_d76d26b8792dd58a_extraction.json",
+          "packed": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/long-storage-sizing/glm/zai-org--GLM-4.7-Flash/math500/tensors/math500_math500_test_algebra_101.json__sample_00_d76d26b8792dd58a_extraction.json.gz",
+          "source_bytes": 3882833,
+          "packed_bytes": 580741,
+          "sha256": "8b59ae1344f3d3060009eb6ff58052c802beb9d30a085dc9f6958721ce4cbd0e",
+          "round_trip_verified": true
+        },
+        {
+          "source": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/smoke/glm-58487265/forward/zai-org--GLM-4.7-Flash/math500/tensors/math500_math500_test_algebra_1031.json__sample_00_0d4ff962e60de2c6_experts.pt",
+          "packed": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/long-storage-sizing/glm/zai-org--GLM-4.7-Flash/math500/tensors/math500_math500_test_algebra_1031.json__sample_00_0d4ff962e60de2c6_experts.pt.gz",
+          "source_bytes": 283994,
+          "packed_bytes": 122302,
+          "sha256": "c23c3fca1dc5cb4820f2a625ce0eab7b0f01dc2eac9b0ba88e6556817e805312",
+          "round_trip_verified": true
+        },
+        {
+          "source": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/smoke/glm-58487265/forward/zai-org--GLM-4.7-Flash/math500/tensors/math500_math500_test_algebra_1031.json__sample_00_0d4ff962e60de2c6_extraction.json",
+          "packed": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/long-storage-sizing/glm/zai-org--GLM-4.7-Flash/math500/tensors/math500_math500_test_algebra_1031.json__sample_00_0d4ff962e60de2c6_extraction.json.gz",
+          "source_bytes": 5421425,
+          "packed_bytes": 792439,
+          "sha256": "fc24f3853622c07a6c6570628d8d67238afc373c0f04bfca1d98086117b14401",
+          "round_trip_verified": true
+        },
+        {
+          "source": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/smoke/glm-58487265/forward/zai-org--GLM-4.7-Flash/math500/tensors/math500_math500_test_algebra_892.json__sample_00_97f494f74c156c61_experts.pt",
+          "packed": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/long-storage-sizing/glm/zai-org--GLM-4.7-Flash/math500/tensors/math500_math500_test_algebra_892.json__sample_00_97f494f74c156c61_experts.pt.gz",
+          "source_bytes": 3931283,
+          "packed_bytes": 1527473,
+          "sha256": "ca26d2f783045ac6ef4a03c388f9c632ff6d4ae7a1eaf7e00af8d82505aacf12",
+          "round_trip_verified": true
+        },
+        {
+          "source": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/smoke/glm-58487265/forward/zai-org--GLM-4.7-Flash/math500/tensors/math500_math500_test_algebra_892.json__sample_00_97f494f74c156c61_extraction.json",
+          "packed": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/long-storage-sizing/glm/zai-org--GLM-4.7-Flash/math500/tensors/math500_math500_test_algebra_892.json__sample_00_97f494f74c156c61_extraction.json.gz",
+          "source_bytes": 119009901,
+          "packed_bytes": 16194998,
+          "sha256": "3b7c27ddb9baa707d043c515284abca1928634672001dcc7e0d6fbbcd279eebd",
+          "round_trip_verified": true
+        },
+        {
+          "source": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/smoke/glm-58487265/forward/zai-org--GLM-4.7-Flash/math500/traces_with_routing.jsonl",
+          "packed": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/long-storage-sizing/glm/zai-org--GLM-4.7-Flash/math500/traces_with_routing.jsonl.gz",
+          "source_bytes": 84905481,
+          "packed_bytes": 14312134,
+          "sha256": "c5a1dc8613db73ebd296ae0c0ab354e81f4dbecad1d936d96877ddfebe86c713",
+          "round_trip_verified": true
+        },
+        {
+          "source": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/smoke/glm-58487265/forward/zai-org--GLM-4.7-Flash/position_reference.json",
+          "packed": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/long-storage-sizing/glm/zai-org--GLM-4.7-Flash/position_reference.json.gz",
+          "source_bytes": 328,
+          "packed_bytes": 252,
+          "sha256": "e7e27b8f581f0bd02d771df910681e64733f7d54aded94e8d2b30cc684a7076d",
+          "round_trip_verified": true
+        },
+        {
+          "source": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/smoke/glm-58487265/forward/zai-org--GLM-4.7-Flash/summary.json",
+          "packed": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/long-storage-sizing/glm/zai-org--GLM-4.7-Flash/summary.json.gz",
+          "source_bytes": 2854,
+          "packed_bytes": 1223,
+          "sha256": "fefc27cebacc43c81073bff253de3e99c1bd970566bfe330820826baddf4bb95",
+          "round_trip_verified": true
+        }
+      ],
+      "max_context_pending_sources": 33844
+    },
+    {
+      "source": "qwen330b",
+      "model": "Qwen/Qwen3-30B-A3B",
+      "corpus": {
+        "unique_content_attempts": 1530,
+        "completion_tokens": 11648912
+      },
+      "measured_tokens": 15001,
+      "measured_phase_seconds": 98.33558105491102,
+      "measured_load_seconds": 310.8672486683354,
+      "planned_shards": 59,
+      "shard_target_tokens": 200000,
+      "estimated_total_wall_hours": 26.30636450934148,
+      "proposed_gpu_hours_cap": 79.0,
+      "estimated_packed_bytes": 24654371292,
+      "packed_fixture_bytes": 31748907,
+      "source_fixture_bytes": 208607066,
+      "sizing_seconds": 14.164783242158592,
+      "files": [
+        {
+          "source": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/smoke/qwen330b-58487288/forward/Qwen--Qwen3-30B-A3B/math500/tensors/math500_math500_test_algebra_1004.json__sample_00_a40ba01872a244d8_experts.pt",
+          "packed": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/long-storage-sizing/qwen330b/Qwen--Qwen3-30B-A3B/math500/tensors/math500_math500_test_algebra_1004.json__sample_00_a40ba01872a244d8_experts.pt.gz",
+          "source_bytes": 1122266,
+          "packed_bytes": 502914,
+          "sha256": "aeeb18db063e8c5d12f37dd26239e4f4e31720aac3edc904141401ab84848550",
+          "round_trip_verified": true
+        },
+        {
+          "source": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/smoke/qwen330b-58487288/forward/Qwen--Qwen3-30B-A3B/math500/tensors/math500_math500_test_algebra_1004.json__sample_00_a40ba01872a244d8_extraction.json",
+          "packed": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/long-storage-sizing/qwen330b/Qwen--Qwen3-30B-A3B/math500/tensors/math500_math500_test_algebra_1004.json__sample_00_a40ba01872a244d8_extraction.json.gz",
+          "source_bytes": 10047649,
+          "packed_bytes": 1229130,
+          "sha256": "335ad1c8fa6b0f4f06f93cbd15068de3479fd5a3222215fcdbb6410a93af2e58",
+          "round_trip_verified": true
+        },
+        {
+          "source": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/smoke/qwen330b-58487288/forward/Qwen--Qwen3-30B-A3B/math500/tensors/math500_math500_test_algebra_101.json__sample_00_a13de0c7982df90f_experts.pt",
+          "packed": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/long-storage-sizing/qwen330b/Qwen--Qwen3-30B-A3B/math500/tensors/math500_math500_test_algebra_101.json__sample_00_a13de0c7982df90f_experts.pt.gz",
+          "source_bytes": 1846483,
+          "packed_bytes": 818579,
+          "sha256": "69dfd1e628f3c627c3b7e084ef66c77e90bb9bf0cfa6f136f0e88ae6b1608bb3",
+          "round_trip_verified": true
+        },
+        {
+          "source": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/smoke/qwen330b-58487288/forward/Qwen--Qwen3-30B-A3B/math500/tensors/math500_math500_test_algebra_101.json__sample_00_a13de0c7982df90f_extraction.json",
+          "packed": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/long-storage-sizing/qwen330b/Qwen--Qwen3-30B-A3B/math500/tensors/math500_math500_test_algebra_101.json__sample_00_a13de0c7982df90f_extraction.json.gz",
+          "source_bytes": 16854094,
+          "packed_bytes": 2036124,
+          "sha256": "05afa7a5b471a217754d8e26bf04915ff587f4ee532d63f8286d607bbbcc4f98",
+          "round_trip_verified": true
+        },
+        {
+          "source": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/smoke/qwen330b-58487288/forward/Qwen--Qwen3-30B-A3B/math500/tensors/math500_math500_test_algebra_2176.json__sample_00_aaa70be62936b326_experts.pt",
+          "packed": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/long-storage-sizing/qwen330b/Qwen--Qwen3-30B-A3B/math500/tensors/math500_math500_test_algebra_2176.json__sample_00_aaa70be62936b326_experts.pt.gz",
+          "source_bytes": 8559578,
+          "packed_bytes": 3379232,
+          "sha256": "298ce2709071866b1d88987a0985f19a8fde62d4f897233acd6769224a42c8dc",
+          "round_trip_verified": true
+        },
+        {
+          "source": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/smoke/qwen330b-58487288/forward/Qwen--Qwen3-30B-A3B/math500/tensors/math500_math500_test_algebra_2176.json__sample_00_aaa70be62936b326_extraction.json",
+          "packed": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/long-storage-sizing/qwen330b/Qwen--Qwen3-30B-A3B/math500/tensors/math500_math500_test_algebra_2176.json__sample_00_aaa70be62936b326_extraction.json.gz",
+          "source_bytes": 100194335,
+          "packed_bytes": 11659185,
+          "sha256": "574feb4d8b419925707f5310fa432526445b0aafc8da14bde7638fa129898689",
+          "round_trip_verified": true
+        },
+        {
+          "source": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/smoke/qwen330b-58487288/forward/Qwen--Qwen3-30B-A3B/math500/traces_with_routing.jsonl",
+          "packed": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/long-storage-sizing/qwen330b/Qwen--Qwen3-30B-A3B/math500/traces_with_routing.jsonl.gz",
+          "source_bytes": 69979473,
+          "packed_bytes": 12122269,
+          "sha256": "1455cb676eb212610db13a18bf36d0341c73ebc9f9e5b6bbfa7caa767bb2b749",
+          "round_trip_verified": true
+        },
+        {
+          "source": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/smoke/qwen330b-58487288/forward/Qwen--Qwen3-30B-A3B/position_reference.json",
+          "packed": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/long-storage-sizing/qwen330b/Qwen--Qwen3-30B-A3B/position_reference.json.gz",
+          "source_bytes": 324,
+          "packed_bytes": 249,
+          "sha256": "b09b84be3f8f578e140aa0633234aed3cab4b78799e4336e0d8554a133229599",
+          "round_trip_verified": true
+        },
+        {
+          "source": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/smoke/qwen330b-58487288/forward/Qwen--Qwen3-30B-A3B/summary.json",
+          "packed": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/long-storage-sizing/qwen330b/Qwen--Qwen3-30B-A3B/summary.json.gz",
+          "source_bytes": 2864,
+          "packed_bytes": 1225,
+          "sha256": "fb898073ada43f9da7041d1ae29ed09db98fda2b3e22facbe5f1fd5d369ab4f9",
+          "round_trip_verified": true
+        }
+      ],
+      "max_context_pending_sources": 32852
+    },
+    {
+      "source": "qwen36",
+      "model": "Qwen/Qwen3.6-35B-A3B-FP8",
+      "corpus": {
+        "model": "Qwen/Qwen3.6-35B-A3B-FP8",
+        "unique_content_attempts": 1354,
+        "completion_tokens": 15445926,
+        "exact_replay_attempts": 1354,
+        "benchmarks": [
+          "aime24",
+          "aime25",
+          "amc23",
+          "math500",
+          "minerva",
+          "olympiad"
+        ]
+      },
+      "measured_tokens": 17087,
+      "measured_phase_seconds": 136,
+      "measured_load_seconds": 522.8958065863699,
+      "planned_shards": 78,
+      "shard_target_tokens": 200000,
+      "estimated_total_wall_hours": 45.478923978544785,
+      "proposed_gpu_hours_cap": 137.0,
+      "estimated_packed_bytes": 37828341931,
+      "packed_fixture_bytes": 41847467,
+      "source_fixture_bytes": 137409754,
+      "sizing_seconds": 3.462994887959212,
+      "files": [
+        {
+          "source": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/native-replay/qwen36-58472802/forward/Qwen--Qwen3.6-35B-A3B-FP8/math500/tensors/0-experts.pt",
+          "packed": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/long-storage-sizing/qwen36/Qwen--Qwen3.6-35B-A3B-FP8/math500/tensors/0-experts.pt.gz",
+          "source_bytes": 1382071,
+          "packed_bytes": 727951,
+          "sha256": "eeeae66cd438ab9642354be2e668537fedd04df7b1bee75625fe45023f5baaf6",
+          "round_trip_verified": true
+        },
+        {
+          "source": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/native-replay/qwen36-58472802/forward/Qwen--Qwen3.6-35B-A3B-FP8/math500/tensors/0-weights.pt",
+          "packed": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/long-storage-sizing/qwen36/Qwen--Qwen3.6-35B-A3B-FP8/math500/tensors/0-weights.pt.gz",
+          "source_bytes": 2762551,
+          "packed_bytes": 2264561,
+          "sha256": "1867ba5cb756654639ab017aa4d3330f5d6bd5f06c658b459e25dd7b4805233f",
+          "round_trip_verified": true
+        },
+        {
+          "source": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/native-replay/qwen36-58472802/forward/Qwen--Qwen3.6-35B-A3B-FP8/math500/tensors/1-experts.pt",
+          "packed": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/long-storage-sizing/qwen36/Qwen--Qwen3.6-35B-A3B-FP8/math500/tensors/1-experts.pt.gz",
+          "source_bytes": 1053111,
+          "packed_bytes": 560394,
+          "sha256": "2d99939f80879e3ff1e43ed015c9c433e3ffbea027a865084386f994d39a4aa0",
+          "round_trip_verified": true
+        },
+        {
+          "source": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/native-replay/qwen36-58472802/forward/Qwen--Qwen3.6-35B-A3B-FP8/math500/tensors/1-weights.pt",
+          "packed": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/long-storage-sizing/qwen36/Qwen--Qwen3.6-35B-A3B-FP8/math500/tensors/1-weights.pt.gz",
+          "source_bytes": 2104631,
+          "packed_bytes": 1721619,
+          "sha256": "f59830672745cfc0415c8fe2f7e4596c99a2f13d560667ebc7afad1e97015fea",
+          "round_trip_verified": true
+        },
+        {
+          "source": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/native-replay/qwen36-58472802/forward/Qwen--Qwen3.6-35B-A3B-FP8/math500/tensors/2-experts.pt",
+          "packed": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/long-storage-sizing/qwen36/Qwen--Qwen3.6-35B-A3B-FP8/math500/tensors/2-experts.pt.gz",
+          "source_bytes": 8505271,
+          "packed_bytes": 4345404,
+          "sha256": "c5a353be002edec62023a29aa869c8cc299fdf4d9b640bcdbb7ce63698b8862f",
+          "round_trip_verified": true
+        },
+        {
+          "source": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/native-replay/qwen36-58472802/forward/Qwen--Qwen3.6-35B-A3B-FP8/math500/tensors/2-weights.pt",
+          "packed": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/long-storage-sizing/qwen36/Qwen--Qwen3.6-35B-A3B-FP8/math500/tensors/2-weights.pt.gz",
+          "source_bytes": 17008951,
+          "packed_bytes": 13712379,
+          "sha256": "5766e6f20e6ea181b7d2485306699a6c027e6b7463734b078c33328e01072ffe",
+          "round_trip_verified": true
+        },
+        {
+          "source": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/native-replay/qwen36-58472802/forward/Qwen--Qwen3.6-35B-A3B-FP8/math500/trace-0.json",
+          "packed": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/long-storage-sizing/qwen36/Qwen--Qwen3.6-35B-A3B-FP8/math500/trace-0.json.gz",
+          "source_bytes": 11404177,
+          "packed_bytes": 2052569,
+          "sha256": "475abe140ae67e5a03febbd62476d93fdcb9433855554577afea78434dea3e52",
+          "round_trip_verified": true
+        },
+        {
+          "source": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/native-replay/qwen36-58472802/forward/Qwen--Qwen3.6-35B-A3B-FP8/math500/trace-1.json",
+          "packed": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/long-storage-sizing/qwen36/Qwen--Qwen3.6-35B-A3B-FP8/math500/trace-1.json.gz",
+          "source_bytes": 8353372,
+          "packed_bytes": 1518906,
+          "sha256": "f821c4b6889be0694f2841a57ff0274cb3cf7cbf0f623ee1404ba4b8436ccd70",
+          "round_trip_verified": true
+        },
+        {
+          "source": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/native-replay/qwen36-58472802/forward/Qwen--Qwen3.6-35B-A3B-FP8/math500/trace-2.json",
+          "packed": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/long-storage-sizing/qwen36/Qwen--Qwen3.6-35B-A3B-FP8/math500/trace-2.json.gz",
+          "source_bytes": 84835619,
+          "packed_bytes": 14943684,
+          "sha256": "9c22a766bdc8611ccab40f4921d8eb6aa8ad2d72af3d38cd2a4c23ad84446153",
+          "round_trip_verified": true
+        }
+      ],
+      "max_context_pending_sources": null
+    },
+    {
+      "source": "nemotron",
+      "model": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4",
+      "corpus": {
+        "model": "nvidia/NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4",
+        "unique_content_attempts": 1411,
+        "completion_tokens": 6998743,
+        "exact_replay_attempts": 1411,
+        "benchmarks": [
+          "aime24",
+          "aime25",
+          "amc23",
+          "math500",
+          "minerva",
+          "olympiad"
+        ]
+      },
+      "measured_tokens": 16866,
+      "measured_phase_seconds": 104,
+      "measured_load_seconds": 276.63227737881243,
+      "planned_shards": 35,
+      "shard_target_tokens": 200000,
+      "estimated_total_wall_hours": 14.677261150959305,
+      "proposed_gpu_hours_cap": 45.0,
+      "estimated_packed_bytes": 9583536559,
+      "packed_fixture_bytes": 23094994,
+      "source_fixture_bytes": 89383164,
+      "sizing_seconds": 1.9875967497937381,
+      "files": [
+        {
+          "source": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/native-replay/nemotron-58474338/forward/nvidia--NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4/math500/tensors/0-experts.pt",
+          "packed": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/long-storage-sizing/nemotron/nvidia--NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4/math500/tensors/0-experts.pt.gz",
+          "source_bytes": 84663,
+          "packed_bytes": 45318,
+          "sha256": "6c32042cf36f801d9da8807be89cd2a408dda83b9278e0e9b6c0580a26598111",
+          "round_trip_verified": true
+        },
+        {
+          "source": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/native-replay/nemotron-58474338/forward/nvidia--NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4/math500/tensors/0-weights.pt",
+          "packed": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/long-storage-sizing/nemotron/nvidia--NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4/math500/tensors/0-weights.pt.gz",
+          "source_bytes": 167735,
+          "packed_bytes": 145335,
+          "sha256": "a1a0868baad2a27d2684c861705dd79617355945e2185dc7b964d7b3ea1c0899",
+          "round_trip_verified": true
+        },
+        {
+          "source": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/native-replay/nemotron-58474338/forward/nvidia--NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4/math500/tensors/1-experts.pt",
+          "packed": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/long-storage-sizing/nemotron/nvidia--NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4/math500/tensors/1-experts.pt.gz",
+          "source_bytes": 134071,
+          "packed_bytes": 71027,
+          "sha256": "feb6fd60b9e38f6407aa967dfdc3a67fec2dc6b56887065a47d2ea6f3b15829f",
+          "round_trip_verified": true
+        },
+        {
+          "source": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/native-replay/nemotron-58474338/forward/nvidia--NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4/math500/tensors/1-weights.pt",
+          "packed": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/long-storage-sizing/nemotron/nvidia--NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4/math500/tensors/1-weights.pt.gz",
+          "source_bytes": 266551,
+          "packed_bytes": 230643,
+          "sha256": "505f162e518bb785264b7043da0d20fd30e6c9f7ee8303962f55c725a5397572",
+          "round_trip_verified": true
+        },
+        {
+          "source": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/native-replay/nemotron-58474338/forward/nvidia--NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4/math500/tensors/2-experts.pt",
+          "packed": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/long-storage-sizing/nemotron/nvidia--NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4/math500/tensors/2-experts.pt.gz",
+          "source_bytes": 4441015,
+          "packed_bytes": 2147134,
+          "sha256": "61600100dad306789c53e57be61215e5fc94d92238fa5c885be04f6d8adac00b",
+          "round_trip_verified": true
+        },
+        {
+          "source": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/native-replay/nemotron-58474338/forward/nvidia--NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4/math500/tensors/2-weights.pt",
+          "packed": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/long-storage-sizing/nemotron/nvidia--NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4/math500/tensors/2-weights.pt.gz",
+          "source_bytes": 8880503,
+          "packed_bytes": 7592529,
+          "sha256": "779ba9f2dd4300d954f55ef42c2f82251612fc5c25dad922a60cb48e6c660ca3",
+          "round_trip_verified": true
+        },
+        {
+          "source": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/native-replay/nemotron-58474338/forward/nvidia--NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4/math500/trace-0.json",
+          "packed": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/long-storage-sizing/nemotron/nvidia--NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4/math500/trace-0.json.gz",
+          "source_bytes": 306769,
+          "packed_bytes": 82613,
+          "sha256": "49ace667428379191aa42be15022fc9b4a7086fbc542950420a2cb8a76745813",
+          "round_trip_verified": true
+        },
+        {
+          "source": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/native-replay/nemotron-58474338/forward/nvidia--NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4/math500/trace-1.json",
+          "packed": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/long-storage-sizing/nemotron/nvidia--NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4/math500/trace-1.json.gz",
+          "source_bytes": 704289,
+          "packed_bytes": 154584,
+          "sha256": "86dfd6b1049b1b6148661c9ed85552af794cf77af7a616053157de43e94639b7",
+          "round_trip_verified": true
+        },
+        {
+          "source": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/native-replay/nemotron-58474338/forward/nvidia--NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4/math500/trace-2.json",
+          "packed": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/long-storage-sizing/nemotron/nvidia--NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4/math500/trace-2.json.gz",
+          "source_bytes": 74397568,
+          "packed_bytes": 12625811,
+          "sha256": "0738f18de63409933635f42ee08ce112d9e28936907bd5afd6ec2855f31ca8c4",
+          "round_trip_verified": true
+        }
+      ],
+      "max_context_pending_sources": null
+    }
+  ],
+  "note": "Read accepted metadata only; no full tensor scans. New run budgets require current CPU overlays and manifests. Requested caps are not observed runtime."
+}

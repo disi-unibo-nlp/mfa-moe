@@ -1,0 +1,66 @@
+{
+  "status": "completed_all_three_passed",
+  "purpose": "Complete long-trace acceptance for the three already verified native HF models",
+  "max_additional_gpu_hours": 3,
+  "max_jobs": 3,
+  "gpus_per_job": 2,
+  "cpus_per_job": 8,
+  "memory_gib_per_job": 96,
+  "walltime_minutes_per_job": 30,
+  "qos": "boost_qos_dbg",
+  "bundle": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/bundles/303571bc4dbe7b88",
+  "tests": "Two short saved completions and one 8192..32768-token saved completion per model; all routed layers, native weights/IDs, all legacy metrics, temporal gaps and available class labels",
+  "sources": [
+    "gpt",
+    "glm",
+    "qwen330b"
+  ],
+  "commands": [
+    [
+      "sbatch",
+      "--parsable",
+      "sbatch/measurement_capture_smoke.sbatch",
+      "gpt",
+      "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/bundles/303571bc4dbe7b88"
+    ],
+    [
+      "sbatch",
+      "--parsable",
+      "sbatch/measurement_capture_smoke.sbatch",
+      "glm",
+      "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/bundles/303571bc4dbe7b88"
+    ],
+    [
+      "sbatch",
+      "--parsable",
+      "sbatch/measurement_capture_smoke.sbatch",
+      "qwen330b",
+      "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/bundles/303571bc4dbe7b88"
+    ]
+  ],
+  "production_collection_included": false,
+  "authorization": "User: resume the missing one. Put everuthing in queue so we will have everuthing neede to do the analyses asap",
+  "submitted_jobs": [
+    {
+      "source": "gpt",
+      "job_id": 58487262,
+      "qos": "boost_qos_dbg",
+      "state": "COMPLETED",
+      "artifact_status": "native_capture_and_long_trace_passed"
+    },
+    {
+      "source": "glm",
+      "job_id": 58487265,
+      "qos": "boost_qos_dbg",
+      "state": "COMPLETED",
+      "artifact_status": "native_capture_and_long_trace_passed"
+    },
+    {
+      "source": "qwen330b",
+      "job_id": 58487288,
+      "qos": "normal",
+      "state": "COMPLETED",
+      "artifact_status": "native_capture_and_long_trace_passed"
+    }
+  ]
+}

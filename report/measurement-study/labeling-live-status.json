@@ -1,0 +1,32 @@
+{
+  "checked_utc": "2026-09-23T20:51:40.264358+00:00",
+  "completed": [
+    58461579
+  ],
+  "running": [
+    58461580,
+    58461581,
+    58461582,
+    58461596,
+    58461608
+  ],
+  "failed": [
+    58461592,
+    58461593
+  ],
+  "failure": "HTTP 400 from batch judge API; precise response body absent from inspected logs",
+  "estimated_persisted_records": {
+    "glm": 88360,
+    "qwen330b": 55808
+  },
+  "target_per_model": 100000,
+  "count_method": "checkpoint-file count times first batch size plus last batch records; running counts change; not final label-quality audit",
+  "watchers": {
+    "58461580": 57851,
+    "58461581": 19182,
+    "58461582": 88142,
+    "58461596": 79121,
+    "58461608": 49866
+  },
+  "failed_jobs_resubmitted": false
+}

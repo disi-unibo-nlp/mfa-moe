@@ -1,0 +1,210 @@
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018) (preloaded format=pdflatex)
+
+kpathsea: Running mktexfmt pdflatex.fmt
+mktexfmt: mktexfmt is using the following fmtutil.cnf files (in precedence order):
+mktexfmt:   /usr/share/texlive/texmf-dist/web2c/fmtutil.cnf
+mktexfmt: mktexfmt is using the following fmtutil.cnf file for writing changes:
+mktexfmt:   /leonardo/home/userexternal/lmolfett/.texlive2018/texmf-config/web2c/fmtutil.cnf
+mktexfmt [WARNING]: double mention of mf/mf-nowin in /usr/share/texlive/texmf-dist/web2c/fmtutil.cnf
+mktexfmt [WARNING]: double mention of tex/tex in /usr/share/texlive/texmf-dist/web2c/fmtutil.cnf
+mktexfmt [INFO]: writing formats under /leonardo/home/userexternal/lmolfett/.texlive2018/texmf-var/web2c
+mktexfmt [INFO]: --- remaking pdflatex with pdftex
+mktexfmt: running `pdftex -ini   -jobname=pdflatex -progname=pdflatex -translate-file=cp227.tcx *pdflatex.ini' ...
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (TeX Live 2018) (INITEX)
+ restricted \write18 enabled.
+ (/usr/share/texlive/texmf-dist/web2c/cp227.tcx)
+entering extended mode
+(/usr/share/texlive/texmf-dist/tex/latex/latexconfig/pdflatex.ini
+(/usr/share/texlive/texmf-dist/tex/generic/tex-ini-files/pdftexconfig.tex)
+(/usr/share/texlive/texmf-dist/tex/latex/base/latex.ltx
+(/usr/share/texlive/texmf-dist/tex/latex/base/texsys.cfg)
+./texsys.aux found
+
+
+\@currdir set to: ./.
+
+
+Assuming \openin and \input 
+have the same search path.
+
+
+Defining UNIX/DOS style filename parser.
+
+catcodes, registers, parameters,
+LaTeX2e <2017-04-15>
+hacks, control, par, spacing, files, font encodings, lengths,
+====================================
+
+Local config file fonttext.cfg used
+
+====================================
+(/usr/share/texlive/texmf-dist/tex/latex/base/fonttext.cfg
+(/usr/share/texlive/texmf-dist/tex/latex/base/fonttext.ltx
+=== Don't modify this file, use a .cfg file instead ===
+
+(/usr/share/texlive/texmf-dist/tex/latex/base/omlenc.def)
+(/usr/share/texlive/texmf-dist/tex/latex/base/t1enc.def)
+(/usr/share/texlive/texmf-dist/tex/latex/base/ot1enc.def)
+(/usr/share/texlive/texmf-dist/tex/latex/base/omsenc.def)
+(/usr/share/texlive/texmf-dist/tex/latex/base/t1cmr.fd)
+(/usr/share/texlive/texmf-dist/tex/latex/base/ot1cmr.fd)
+(/usr/share/texlive/texmf-dist/tex/latex/base/ot1cmss.fd)
+(/usr/share/texlive/texmf-dist/tex/latex/base/ot1cmtt.fd)))
+====================================
+
+Local config file fontmath.cfg used
+
+====================================
+(/usr/share/texlive/texmf-dist/tex/latex/base/fontmath.cfg
+(/usr/share/texlive/texmf-dist/tex/latex/base/fontmath.ltx
+=== Don't modify this file, use a .cfg file instead ===
+
+(/usr/share/texlive/texmf-dist/tex/latex/base/omlcmm.fd)
+(/usr/share/texlive/texmf-dist/tex/latex/base/omscmsy.fd)
+(/usr/share/texlive/texmf-dist/tex/latex/base/omxcmex.fd)
+(/usr/share/texlive/texmf-dist/tex/latex/base/ucmr.fd)))
+====================================
+
+Local config file preload.cfg used
+
+=====================================
+(/usr/share/texlive/texmf-dist/tex/latex/base/preload.cfg
+(/usr/share/texlive/texmf-dist/tex/latex/base/preload.ltx)) page nos., x-ref,
+environments, center, verbatim, math definitions, boxes, title, sectioning,
+contents, floats, footnotes, index, bibliography, output,
+===========================================
+Local configuration file hyphen.cfg used
+===========================================
+(/usr/share/texlive/texmf-dist/tex/generic/babel/hyphen.cfg
+(/usr/share/texlive/texmf-dist/tex/generic/babel/switch.def)
+(/usr/share/texlive/texmf-dist/tex/generic/hyphen/hyphen.tex)
+(/usr/share/texlive/texmf-dist/tex/generic/hyphen/dumyhyph.tex)
+(/usr/share/texlive/texmf-dist/tex/generic/hyphen/zerohyph.tex))
+ ) )
+Beginning to dump on file pdflatex.fmt
+ (preloaded format=pdflatex 2026.9.23)
+5083 strings of total length 69301
+44966 memory locations dumped; current usage is 144&44370
+3423 multiletter control sequences
+\font\nullfont=nullfont
+\font\OMX/cmex/m/n/10=cmex10
+\font\tenln=line10
+\font\tenlnw=linew10
+\font\tencirc=lcircle10
+\font\tencircw=lcirclew10
+\font\OT1/cmr/m/n/5=cmr5
+\font\OT1/cmr/m/n/7=cmr7
+\font\OT1/cmr/m/n/10=cmr10
+\font\OML/cmm/m/it/5=cmmi5
+\font\OML/cmm/m/it/7=cmmi7
+\font\OML/cmm/m/it/10=cmmi10
+\font\OMS/cmsy/m/n/5=cmsy5
+\font\OMS/cmsy/m/n/7=cmsy7
+\font\OMS/cmsy/m/n/10=cmsy10
+3633 words of font info for 14 preloaded fonts
+14 hyphenation exceptions
+Hyphenation trie of length 6081 has 183 ops out of 35111
+  2 for language 1
+  181 for language 0
+0 words of pdfTeX memory
+0 indirect objects
+No pages of output.
+Transcript written on pdflatex.log.
+mktexfmt [INFO]: /leonardo/home/userexternal/lmolfett/.texlive2018/texmf-var/web2c/pdftex/pdflatex.fmt installed.
+mktexfmt [INFO]: Disabled formats: 32
+mktexfmt [INFO]: Successfully rebuilt formats: 1
+mktexfmt [INFO]: Not selected formats: 15
+mktexfmt [INFO]: Total formats: 48
+mktexfmt [INFO]: exiting with status 0
+entering extended mode
+
+(/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/verification/new-met
+rics-latex/new_metrics_preview.tex
+LaTeX2e <2017-04-15>
+Babel <3.17> and hyphenation patterns for 3 language(s) loaded.
+(/usr/share/texlive/texmf-dist/tex/latex/base/article.cls
+Document Class: article 2014/09/29 v1.4h Standard LaTeX document class
+(/usr/share/texlive/texmf-dist/tex/latex/base/size11.clo))
+(/usr/share/texlive/texmf-dist/tex/latex/geometry/geometry.sty
+(/usr/share/texlive/texmf-dist/tex/latex/graphics/keyval.sty)
+(/usr/share/texlive/texmf-dist/tex/generic/oberdiek/ifpdf.sty)
+(/usr/share/texlive/texmf-dist/tex/generic/oberdiek/ifvtex.sty)
+(/usr/share/texlive/texmf-dist/tex/generic/ifxetex/ifxetex.sty))
+(/usr/share/texlive/texmf-dist/tex/latex/amsmath/amsmath.sty
+For additional information on amsmath, use the `?' option.
+(/usr/share/texlive/texmf-dist/tex/latex/amsmath/amstext.sty
+(/usr/share/texlive/texmf-dist/tex/latex/amsmath/amsgen.sty))
+(/usr/share/texlive/texmf-dist/tex/latex/amsmath/amsbsy.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/amsmath/amsopn.sty))
+(/usr/share/texlive/texmf-dist/tex/latex/hyperref/hyperref.sty
+(/usr/share/texlive/texmf-dist/tex/generic/oberdiek/hobsub-hyperref.sty
+(/usr/share/texlive/texmf-dist/tex/generic/oberdiek/hobsub-generic.sty))
+(/usr/share/texlive/texmf-dist/tex/latex/oberdiek/auxhook.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/oberdiek/kvoptions.sty)
+(/usr/share/texlive/texmf-dist/tex/latex/hyperref/pd1enc.def)
+(/usr/share/texlive/texmf-dist/tex/latex/latexconfig/hyperref.cfg)
+(/usr/share/texlive/texmf-dist/tex/latex/url/url.sty))
+
+Package hyperref Message: Driver (autodetected): hpdftex.
+
+(/usr/share/texlive/texmf-dist/tex/latex/hyperref/hpdftex.def
+(/usr/share/texlive/texmf-dist/tex/latex/oberdiek/rerunfilecheck.sty))
+No file new_metrics_preview.aux.
+*geometry* driver: auto-detecting
+*geometry* detected driver: pdftex
+(/usr/share/texlive/texmf-dist/tex/latex/hyperref/nameref.sty
+(/usr/share/texlive/texmf-dist/tex/generic/oberdiek/gettitlestring.sty))
+(./new_metrics.tex
+
+LaTeX Warning: Citation `newmetrics_olson2025' on page 1 undefined on input lin
+e 55.
+
+[1{/usr/share/texlive/texmf-dist/fonts/map/pdftex/updmap/pdftex.map}]
+
+LaTeX Warning: Citation `newmetrics_mustafa2022' on page 2 undefined on input l
+ine 84.
+
+
+LaTeX Warning: Citation `newmetrics_lin1991' on page 2 undefined on input line 
+118.
+
+[2]
+
+LaTeX Warning: Citation `newmetrics_li2026' on page 3 undefined on input line 1
+65.
+
+[3]
+
+LaTeX Warning: Citation `newmetrics_fayyaz2026' on page 4 undefined on input li
+ne 237.
+
+
+LaTeX Warning: Citation `newmetrics_wang2025' on page 4 undefined on input line
+ 248.
+
+)
+No file new_metrics_preview.bbl.
+[4]
+(/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/verification/new-met
+rics-latex/new_metrics_preview.aux)
+
+LaTeX Warning: There were undefined references.
+
+
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+
+ )</usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></us
+r/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/shar
+e/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/share/texl
+ive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texlive/te
+xmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></usr/share/texlive/texmf-dis
+t/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/share/texlive/texmf-dist/fonts
+/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/texmf-dist/fonts/type1/
+public/amsfonts/cm/cmr6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/a
+msfonts/cm/cmr8.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/
+cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cms
+y6.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb>
+Output written on /leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/ver
+ification/new-metrics-latex/new_metrics_preview.pdf (4 pages, 160249 bytes).
+Transcript written on /leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study
+/verification/new-metrics-latex/new_metrics_preview.log.

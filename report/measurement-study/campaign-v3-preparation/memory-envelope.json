@@ -1,0 +1,68 @@
+{
+  "status": "analytic_budget_only_not_measured",
+  "models": {
+    "gpt": {
+      "backend": "hf",
+      "layers": 24,
+      "input_cap": 131072,
+      "sizing_completion_tokens": 131071,
+      "worker_cap_gib": 34.74,
+      "transient_cap_gib": 34.62,
+      "host_budget_gib": 99.58
+    },
+    "gemma": {
+      "backend": "vllm",
+      "layers": 30,
+      "input_cap": 133120,
+      "sizing_completion_tokens": 131072,
+      "worker_cap_gib": 45.49,
+      "transient_cap_gib": 45.3,
+      "host_budget_gib": 113.54
+    },
+    "qwen36": {
+      "backend": "vllm",
+      "layers": 40,
+      "input_cap": 133120,
+      "sizing_completion_tokens": 131072,
+      "worker_cap_gib": 50.63,
+      "transient_cap_gib": 50.4,
+      "host_budget_gib": 125.06
+    },
+    "nemotron": {
+      "backend": "vllm",
+      "layers": 23,
+      "input_cap": 133120,
+      "sizing_completion_tokens": 131072,
+      "worker_cap_gib": 33.37,
+      "transient_cap_gib": 33.24,
+      "host_budget_gib": 100.4
+    },
+    "glm": {
+      "backend": "vllm",
+      "layers": 46,
+      "input_cap": 133120,
+      "sizing_completion_tokens": 131072,
+      "worker_cap_gib": 49.28,
+      "transient_cap_gib": 49.11,
+      "host_budget_gib": 116.38
+    },
+    "qwen330b": {
+      "backend": "hf",
+      "layers": 48,
+      "input_cap": 40960,
+      "sizing_completion_tokens": 38912,
+      "worker_cap_gib": 16.3,
+      "transient_cap_gib": 16.18,
+      "host_budget_gib": 82.19
+    },
+    "qwen35": {
+      "backend": "vllm",
+      "layers": 40,
+      "input_cap": 133120,
+      "sizing_completion_tokens": 131072,
+      "worker_cap_gib": 50.63,
+      "transient_cap_gib": 50.4,
+      "host_budget_gib": 125.06
+    }
+  }
+}

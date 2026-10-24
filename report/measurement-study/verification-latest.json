@@ -1,0 +1,38 @@
+{
+  "checks": [
+    {
+      "command": "pytest tests/measurement_study",
+      "passed": 10,
+      "seconds": 76.36
+    },
+    {
+      "command": "pytest tests/measurement_study/test_vllm_capture.py",
+      "passed": 4,
+      "seconds": 74.67,
+      "new_tests": 1
+    },
+    {
+      "check": "content-hash separation, model isolation and deterministic attempt identity",
+      "status": "passed"
+    },
+    {
+      "check": "Python AST and batch shell syntax",
+      "status": "passed"
+    }
+  ],
+  "unique_pytest_cases": 11,
+  "slurm_validation": {
+    "cpu_join": "accepted_and_submitted_58474478",
+    "storage_sizing": "accepted_and_submitted_58474659",
+    "nemotron_retry": "submitted_58474338",
+    "additional_hf_long_tests": "not_submitted; budget extension pending; scheduler test-only currently rejects full two-job debug submission quota"
+  },
+  "gpu_data": {
+    "qwen36": "all 40 layers, two short traces plus 13287-token trace; native dispatch and TP hashes verified",
+    "gpt": "24 layers, two short traces passed",
+    "glm": "46 layers, two short traces passed; new biased-gap code only CPU-tested",
+    "qwen330b": "48 layers, two short traces passed",
+    "nemotron": "retry pending",
+    "gemma": "no GPU capture yet"
+  }
+}

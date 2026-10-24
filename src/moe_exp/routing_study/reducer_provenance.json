@@ -1,0 +1,5 @@
+{
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/src/moe_exp/correlation_pipeline/dynamics/routing.py",
+  "source_sha256": "0632de5fedddd617e187b5b95fecb3ab83e695b37d87a75df221ce9e90b984e5",
+  "adaptation": "Copy through RoutingReducer only; study defaults windows=256, lags=1/16, shuffles=0; reducer mathematics unchanged."
+}

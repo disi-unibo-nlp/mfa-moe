@@ -1,0 +1,16 @@
+{
+  "job_id": "58389615",
+  "submission_result": "58389615",
+  "recorded_utc": "2026-09-22T15:15:40.186823+00:00",
+  "retry_of": "58389406",
+  "authorization": "Same authorized smoke workload and cumulative one-GPU-hour ceiling; retry after tested source adapter fix.",
+  "prior_allocated_gpu_seconds": 18,
+  "retry_maximum_gpu_seconds": 3480,
+  "cumulative_maximum_gpu_hours": 0.9716666666666667,
+  "scheduler_rounding": "Requested 29m45s rounded up to 30m; immediately reduced with scontrol to 29m, verified before one minute of runtime.",
+  "job_description": "JobId=58389615 JobName=qwen36-routing-smoke\n   UserId=lmolfett(133943) GroupId=interactive(25200) MCS_label=N/A\n   Priority=256506 Nice=0 Account=iscrc_miosr QOS=boost_qos_dbg\n   JobState=RUNNING Reason=None Dependency=(null)\n   Requeue=0 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0\n   RunTime=00:01:21 TimeLimit=00:29:00 TimeMin=N/A\n   SubmitTime=2026-09-22T17:14:18 EligibleTime=2026-09-22T17:14:18\n   AccrueTime=2026-09-22T17:14:18\n   StartTime=2026-09-22T17:14:19 EndTime=2026-09-22T17:43:20 Deadline=N/A\n   SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-09-22T17:14:19 Scheduler=Main\n   Partition=boost_usr_prod AllocNode:Sid=login02-interconnect-1:651349\n   ReqNodeList=(null) ExcNodeList=(null)\n   NodeList=lrdn1192\n   BatchHost=lrdn1192\n   NumNodes=1 NumCPUs=16 NumTasks=1 CPUs/Task=16 ReqB:S:C:T=0:0:*:*\n   ReqTRES=cpu=16,mem=120G,node=1,billing=16,gres/gpu=2\n   AllocTRES=cpu=16,mem=120G,node=1,billing=16,gres/gpu=2\n   Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=*\n   MinCPUsNode=16 MinMemoryNode=120G MinTmpDiskNode=0\n   Features=(null) DelayBoot=00:00:00\n   OverSubscribe=OK Contiguous=0 Licenses=(null) LicensesAlloc=(null) Network=(null)\n   Command=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/sbatch/routing_study_smoke.sbatch\n   WorkDir=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo\n   StdErr=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/routing-study/logs/qwen36-routing-smoke-58389615.err\n   StdIn=/dev/null\n   StdOut=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/routing-study/logs/qwen36-routing-smoke-58389615.out\n   TresPerNode=gres/gpu:2\n   TresPerTask=cpu=16\n   \n\n",
+  "protocol_sha256": "ef90190735f1b8a712506a09c4b4a9e37f97a009fb8d786d330b37e649fa03ce",
+  "cpu_report_sha256": "ddc3e4f6fa6ea081f78d9854a50bf037676ed844ee1cca4c13635d768bb1611f",
+  "script_sha256": "5d3b13b4d68bd0cb282cbd533ed9e8a315ecb0a9acfcaf4f1b1aadbb1c06f276",
+  "pilot_budget_reserved_gpu_hours": 32
+}

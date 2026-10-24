@@ -1,0 +1,84 @@
+{
+  "status": "prepared_not_transferred",
+  "repository": "nvidia/Gemma-4-26B-A4B-NVFP4",
+  "revision": "a19cfe00be84568a6867111c9a68c9c44fdcffe6",
+  "historical_generation_revision_status": "not_yet_verified",
+  "source_metadata_url": "https://huggingface.co/api/models/nvidia/Gemma-4-26B-A4B-NVFP4/revision/a19cfe00be84568a6867111c9a68c9c44fdcffe6?blobs=true",
+  "destination": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/cache/native-replay/Gemma-4-26B-A4B-NVFP4/a19cfe00be84568a6867111c9a68c9c44fdcffe6",
+  "transport": "strict verified SSH to data.leonardo.cineca.it, bounded curl per file",
+  "files": [
+    {
+      "name": "chat_template.jinja",
+      "bytes": 16934,
+      "sha256": null,
+      "git_blob_id": "f62ca843a405a3066bdbddba8e42c92dd1ca4058",
+      "url": "https://huggingface.co/nvidia/Gemma-4-26B-A4B-NVFP4/resolve/a19cfe00be84568a6867111c9a68c9c44fdcffe6/chat_template.jinja"
+    },
+    {
+      "name": "config.json",
+      "bytes": 10289,
+      "sha256": null,
+      "git_blob_id": "1247fb379f4ac91070ebdc083389c6d005b72ccb",
+      "url": "https://huggingface.co/nvidia/Gemma-4-26B-A4B-NVFP4/resolve/a19cfe00be84568a6867111c9a68c9c44fdcffe6/config.json"
+    },
+    {
+      "name": "generation_config.json",
+      "bytes": 208,
+      "sha256": null,
+      "git_blob_id": "e605bb4523b1462ea9d9a3810b9e3ecf7ab7b1f6",
+      "url": "https://huggingface.co/nvidia/Gemma-4-26B-A4B-NVFP4/resolve/a19cfe00be84568a6867111c9a68c9c44fdcffe6/generation_config.json"
+    },
+    {
+      "name": "hf_quant_config.json",
+      "bytes": 5188,
+      "sha256": null,
+      "git_blob_id": "e22d980f5b0c9da99621831a4ad05f960d987f83",
+      "url": "https://huggingface.co/nvidia/Gemma-4-26B-A4B-NVFP4/resolve/a19cfe00be84568a6867111c9a68c9c44fdcffe6/hf_quant_config.json"
+    },
+    {
+      "name": "model-00001-of-00002.safetensors",
+      "bytes": 10001865236,
+      "sha256": "b5df31122600666617b05f9be2015552cd2edff401e86b1d99b9127efdc6d819",
+      "git_blob_id": "8746019fe3c8cfbb26100db3194b8292914a1d35",
+      "url": "https://huggingface.co/nvidia/Gemma-4-26B-A4B-NVFP4/resolve/a19cfe00be84568a6867111c9a68c9c44fdcffe6/model-00001-of-00002.safetensors"
+    },
+    {
+      "name": "model-00002-of-00002.safetensors",
+      "bytes": 8786620352,
+      "sha256": "ff11061ebf57327af4f1993ff758b0859d7746b0c03ca1b17ded7dec30410962",
+      "git_blob_id": "6951ae76cd3fe7537b75859435ea8b365f4da1e9",
+      "url": "https://huggingface.co/nvidia/Gemma-4-26B-A4B-NVFP4/resolve/a19cfe00be84568a6867111c9a68c9c44fdcffe6/model-00002-of-00002.safetensors"
+    },
+    {
+      "name": "model.safetensors.index.json",
+      "bytes": 4977046,
+      "sha256": null,
+      "git_blob_id": "00f1ef75fa9f4867a0cbd14a8c14f836b4c55b23",
+      "url": "https://huggingface.co/nvidia/Gemma-4-26B-A4B-NVFP4/resolve/a19cfe00be84568a6867111c9a68c9c44fdcffe6/model.safetensors.index.json"
+    },
+    {
+      "name": "processor_config.json",
+      "bytes": 1689,
+      "sha256": null,
+      "git_blob_id": "5465974d23e1eca2c46c2809b26c997946ce0d90",
+      "url": "https://huggingface.co/nvidia/Gemma-4-26B-A4B-NVFP4/resolve/a19cfe00be84568a6867111c9a68c9c44fdcffe6/processor_config.json"
+    },
+    {
+      "name": "tokenizer.json",
+      "bytes": 32169626,
+      "sha256": "cc8d3a0ce36466ccc1278bf987df5f71db1719b9ca6b4118264f45cb627bfe0f",
+      "git_blob_id": "1ff9f3e3439a939b971f9919e821bf87e835a503",
+      "url": "https://huggingface.co/nvidia/Gemma-4-26B-A4B-NVFP4/resolve/a19cfe00be84568a6867111c9a68c9c44fdcffe6/tokenizer.json"
+    },
+    {
+      "name": "tokenizer_config.json",
+      "bytes": 2095,
+      "sha256": null,
+      "git_blob_id": "375b25dc8be85705251e41be1c25310d24932051",
+      "url": "https://huggingface.co/nvidia/Gemma-4-26B-A4B-NVFP4/resolve/a19cfe00be84568a6867111c9a68c9c44fdcffe6/tokenizer_config.json"
+    }
+  ],
+  "bytes": 18825668663,
+  "blocker": "CINECA-verified SSH server host key required before trust",
+  "changes_to_existing_checkpoints": "none"
+}

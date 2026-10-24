@@ -1,0 +1,50 @@
+{
+  "observed_utc": "2026-09-23T10:16:56.398258+00:00",
+  "source_sha256": {
+    "labels": "3df6af3655c81cf31b83514f6d401e299bdefa341d30db9d5fa2c4aa1a73398f",
+    "capture": "cbb550bf02cb03b90979176c9ad030c4384a74d663ca4b55f1c2b221ce4801a3",
+    "analysis": "7ffd0b882520fe71bb176425aa4187a17b891676163fbee1c1254c2723a5d904",
+    "forward": "676aad2ea55c9aed08e641b90ba13c7b735343b4f4670e6051d80eca5d424282"
+  },
+  "labels": {
+    "status": "complete",
+    "completed": 30187,
+    "expected": 30187,
+    "binding_sha256": "c2d0af679985bd1be85283e610000e905240c8a9129b95ef7a8957ee91353aa1",
+    "annotations_sha256": "ceaea6402294f338f6c7eff5f788b041769b42bc3bfaf5be4925c8b849e75b44",
+    "manifest_sha256": "51b9410a2ed7a2d2e1423cffc0cdc45d2f05f61a2d14caf32d42df07d82facf9",
+    "traces": 64,
+    "labeled_sentences": 30187,
+    "unknown_sentences": 0
+  },
+  "capture_acceptance": {
+    "status": "complete",
+    "traces": 64,
+    "windows": 640800,
+    "manifest_sha256": "51b9410a2ed7a2d2e1423cffc0cdc45d2f05f61a2d14caf32d42df07d82facf9",
+    "labels": {
+      "status": "complete",
+      "completed": 30187,
+      "expected": 30187,
+      "binding_sha256": "c2d0af679985bd1be85283e610000e905240c8a9129b95ef7a8957ee91353aa1",
+      "annotations_sha256": "ceaea6402294f338f6c7eff5f788b041769b42bc3bfaf5be4925c8b849e75b44",
+      "manifest_sha256": "51b9410a2ed7a2d2e1423cffc0cdc45d2f05f61a2d14caf32d42df07d82facf9",
+      "traces": 64,
+      "labeled_sentences": 30187,
+      "unknown_sentences": 0
+    },
+    "code": {
+      "git_revision": "0722caa7dc4068b2e3eee37bb2f7bc9ef78dca76",
+      "source_sha256": "98908a83c15c783b7470fa9465eb0b10a1a94b55b574e83a69dec7881db3fbad"
+    },
+    "forward_sha256": "1a918e0ae2fd8fd774c8082de4c921068dd0a7d8aa9923ddf9440cb6096eaaeb"
+  },
+  "analysis_manifest_status": "running",
+  "analysis_job_state": "TIMEOUT",
+  "completed_analysis_report_present": false,
+  "completed_evaluation_present": false,
+  "replay_quantization": "bnb-4bit",
+  "layers": 40,
+  "retained_tokens": 554738,
+  "note": "Read-only inspection of pilot artifacts; no pilot job or artifact changed. Completed collection does not establish a completed statistical analysis."
+}

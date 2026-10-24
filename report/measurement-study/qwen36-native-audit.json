@@ -1,0 +1,36 @@
+{
+  "job_id": 58472802,
+  "state": "COMPLETED",
+  "exit_code": "0:0",
+  "attempts": [
+    {
+      "tokens": 2157,
+      "layers": 40,
+      "tp_hashes_match": true,
+      "windows": 2120,
+      "boundary_windows": 2120,
+      "weak_boundary_pending": 2120,
+      "capture_matches_frozen_bundle": true
+    },
+    {
+      "tokens": 1643,
+      "layers": 40,
+      "tp_hashes_match": true,
+      "windows": 1560,
+      "boundary_windows": 1560,
+      "weak_boundary_pending": 1560,
+      "capture_matches_frozen_bundle": true
+    },
+    {
+      "tokens": 13287,
+      "layers": 40,
+      "tp_hashes_match": true,
+      "windows": 15720,
+      "boundary_windows": 15720,
+      "weak_boundary_pending": 15720,
+      "capture_matches_frozen_bundle": true
+    }
+  ],
+  "scope": "capture validation only",
+  "code_loading_note": "The initial launcher used the study working directory; recorded capture hashes match the frozen bundle. Future launchers change into the bundle before module loading."
+}

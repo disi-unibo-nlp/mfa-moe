@@ -1,0 +1,64 @@
+{
+  "status": "v3_T2_blockers_fixed_cpu_validated",
+  "review": {
+    "T2_reviewer": "Claude",
+    "blockers_addressed": ["B1", "B2", "B3", "B4", "M1", "M2", "m1", "m2", "m3", "m4"],
+    "previous_baseline": "ready_for_Claude_T2_review (job 58614723)",
+    "summary": "report/measurement-study/T2_FIXES_deepseek.md"
+  },
+  "final_cpu_job": "58622773",
+  "counts": {
+    "measurement_passed": 147,
+    "guiding_passed": 74
+  },
+  "receipt_hashes": {
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/campaign-v3/tests/58622773-measurement.json": "43471913b8ddeef117c418a7727f206e762baf793e16de87c7ab22c2966f0afc",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/routing-study/results/measurement-study/campaign-v3/tests/58622773-guiding.json": "9b8ffa22ac5c3c60e02722b80afd1d0dbb91315045c48e1525c4afabd2179e76"
+  },
+  "files": {
+    "measurement_study/bundle.py": "d88dd8a77bac33c39342828d3fe009b215694392b329e21a3b1aedaba605acfe",
+    "measurement_study/campaign_v3_plan.py": "47942ce3c1619c1b988b0b7c64f88a1cfccf909f3615880d33e669c383ea6828",
+    "measurement_study/campaign_v3_capture.py": "a96fc075f0ce7abaf256a6fabb29472a564972c3d867abcb4b673e9b2a596c7b",
+    "measurement_study/capture_buffers.py": "b068db3887327fff3a0655c942bbe11efb68c2b9ce53623c9bf815ff2e5f1a1d",
+    "measurement_study/hf_chunked_capture.py": "905d27eeccab8a8bb699bd9e3623ffad1e01af080d0dd84e5dbf688f674ad4fc",
+    "measurement_study/capture_gate.py": "f78cbd179b9ebc17396df859f521117ad144fc248e88e292b8ec96325c432c1b",
+    "measurement_study/attach_labels.py": "437e48ed2b53c8c1fdf2fce22d1241ff892909dc8c46618ddf3463c4dc0a6043",
+    "measurement_study/annotation_provenance.py": "ea90972a105b5d24949b286eb8f83c4bd5c9346059bf3fca1e8b5ac270d5db9e",
+    "measurement_study/production_plan.py": "c4556b3ec0cb116524686d33350a469c04acec7fa2138a880fa438941df83729",
+    "measurement_study/production_capture.py": "adf40b7ee44060869a4868f45279bd2fd660b7918fbf035931495f38fafeefb1",
+    "measurement_study/vllm_capture.py": "0504855fec15dca2b5485b1c1e019c48e0fd2cfa4d9253ac0b5e56c38bbc73f9",
+    "measurement_study/production_analyze.py": "426de5186b4f7460fd73f7639a9e939c3ceeb284850a75c86905ab2027ce18b4",
+    "measurement_study/gemma_cache_policy.py": "07f7200d102cab80dd2712b8624a5467e7b4eef9adf166af9b21243eccc2202d",
+    "scripts/prepare_campaign_v3.py": "0118fba29e1582c681db356b5035d016fab4d9c3e0dee91ccaafcf126170f7de",
+    "scripts/run_campaign_v3_module.py": "de3380698889668d0f7d5537806f8918f5b22b0211cc3fa98f096b33e05a67a1",
+    "scripts/test_campaign_v3.py": "ad475121992d8fee4529eeb998895247a28ebeaebdb177b27ebbda24513fbe06",
+    "scripts/analyze_available_metrics.py": "e1fef2ed03c22adeb17c65296f157d33fb701c25a14adebb09c44184dfc7190c",
+    "sbatch/campaign_v3_capture.sbatch": "6ac25c4a176633f74bbbcd56deadefed3cbad801ee915c30300c1afe5df25194",
+    "sbatch/campaign_v3_cpu_tests.sbatch": "ee38b0b7806f77142c4c3c5e6384abf0276cacd42e0e69384461d1a010356710",
+    "sbatch/production_analyze.sbatch": "f4a1f17f78e7e07c32dbaca35ff43910ce66bebaebd6d3788d914bdb695d30f6",
+    "src/moe_exp/routing_study/common.py": "46c9556f7eb49cad73b4ad139168c3db6aeece305595a1ab052ffeac69ee1873",
+    "src/moe_exp/routing_study/calibration.py": "ad6d15764c9777789d77e1d0a1dd29207c1765f0b597be5b959aae9139758217",
+    "tests/measurement_study/test_bundle_v3.py": "9fcda7a1382edee62bc20a149258c51a3e42c366e1e1880429dd2994b6d96b8f",
+    "tests/measurement_study/test_campaign_v3_plan.py": "f4f257cdf80b87367cdbd4fe7077beaf01d8ccf568cb32e2d6a34faa767bbf08",
+    "tests/measurement_study/test_attach_labels.py": "659f352340d56dd12243a5c5dcece18633900db7c00913fa1b124bc5bbd02755",
+    "tests/measurement_study/test_capture_v3_runner.py": "abc592a29b4d36b25b280185ae9845df5f78b1f96a5b99075973f29ad1db7b98",
+    "tests/measurement_study/test_hf_chunked_capture.py": "e694118d218b351895e46f01d6abf2ed9eb5e0d550036383564eee834bf9cd9d",
+    "tests/measurement_study/test_vllm_capture_buffers.py": "855434c9925ffb1d1ae4d822f32ad0e5aa078a1faa7d864f83aebc84d056d6ff",
+    "tests/measurement_study/test_analysis_v3.py": "ae31b53687d6b88e8fb97382a1f8d9fc249b5ed5e75da04c47f17f154f1f071d",
+    "tests/measurement_study/test_vllm_capture.py": "0b27c425936e399b9d1957d929811e8e398f01cd1e015a703a5d3b105d52ffad",
+    "tests/test_available_metrics.py": "2fd20cf8be2d5d1fb38a183e0e56c4c088fcba8214430dcd8f935d15db3ee61d",
+    "tests/test_routing_study.py": "8ac51cf54af3cba8a8322ed6888b2a5677c09fe639d7fdca6ab23cd2ca917603",
+    "report/measurement-study/IMPLEMENTATION_codex.md": "f7a3e8dce7991fc66bcf1857e3a421d07e5e42ffb1c84e334fdae9953a50049c",
+    "report/measurement-study/T2_FIXES_deepseek.md": "294fea0a312673b4ae5e3381ec475d92f1780066b61442f39484d3d5cc01aabb"
+  },
+  "source_final_T1_received": false,
+  "production_bundle_frozen": false,
+  "gpu_jobs_submitted": [],
+  "remaining": [
+    "Claude re-review of the T2 fixes (B1-B4, M1-M2, m1-m4)",
+    "Explicit source-final T1 and joint review",
+    "Production bundle freeze",
+    "Seven model verify-only GPU jobs submitted by Claude after re-review, each with the manifest requested_seconds (>=18000 s for the verifier)",
+    "Capture submitter must pass requested_seconds as Slurm --time; the static sbatch directive is 16 h"
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "job_id": 58474338,
+  "state": "COMPLETED",
+  "exit_code": "0:0",
+  "elapsed_seconds": 721,
+  "attempts": [
+    {
+      "tokens": 301,
+      "layers": 23,
+      "tp_hashes_match": true,
+      "windows": 46,
+      "boundary_windows": 46,
+      "code_sha256": "e3d08e2c632e7a0cd8266e8a4b8894435372a28095b6a39dac59f2fe4ccb454a"
+    },
+    {
+      "tokens": 480,
+      "layers": 23,
+      "tp_hashes_match": true,
+      "windows": 115,
+      "boundary_windows": 115,
+      "code_sha256": "e3d08e2c632e7a0cd8266e8a4b8894435372a28095b6a39dac59f2fe4ccb454a"
+    },
+    {
+      "tokens": 16085,
+      "layers": 23,
+      "tp_hashes_match": true,
+      "windows": 11201,
+      "boundary_windows": 11201,
+      "code_sha256": "e3d08e2c632e7a0cd8266e8a4b8894435372a28095b6a39dac59f2fe4ccb454a"
+    }
+  ],
+  "scope": "native capture validation only",
+  "kv_cache_dtype": "bfloat16",
+  "checkpoint": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/cache/hf/hub/models--nvidia--NVIDIA-Nemotron-3.5-Lightning-30B-A3B-NVFP4/snapshots/bee7596271d1495f6992ae224aefde4410e816b8",
+  "revision": "bee7596271d1495f6992ae224aefde4410e816b8",
+  "load_seconds": 276.63227737881243,
+  "capture_seconds": 20.730776053853333,
+  "post_load_replay_reduction_output_seconds_approx": 104,
+  "timing_limitations": [
+    "Capture timings exclude CPU feature reduction.",
+    "Kernel compilation occurred during initial inference.",
+    "CUDA kernel cache directory warning; affected caching, capture completed."
+  ],
+  "artifact_bytes": 89383164
+}

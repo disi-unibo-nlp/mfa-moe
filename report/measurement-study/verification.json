@@ -1,0 +1,21 @@
+{
+  "contract_tests_passed": 5,
+  "python_syntax": "passed",
+  "batch_shell_syntax": "passed",
+  "slurm_test_only": "accepted; no allocation or submission",
+  "gpu_jobs_submitted": 5,
+  "gpu_budget_status": "8 GPU-hour validation cap; 5 GPU-hours conservatively reserved",
+  "job_ids": [
+    58469079,
+    58469402,
+    58469941,
+    58469979,
+    58471217
+  ],
+  "real_input_fixture_preflight": "passed: gpt, qwen330b, glm; exact source identities and fixture hashes",
+  "gpt_local_cuda_kernel_import": "passed; 42 CUDA files verified against pinned revision",
+  "successful_capture_jobs": [
+    58469941,
+    58469979
+  ]
+}

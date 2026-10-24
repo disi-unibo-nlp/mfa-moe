@@ -30,6 +30,7 @@ dependencies = [
 ]
 
 [project.scripts]
+routing-study = "moe_exp.routing_study.cli:main"
 gepa-llm-as-judge = "moe_exp.gepaLLMAsJudge.run:main"
 gepa-llm-as-judge-audit = "moe_exp.gepaLLMAsJudge.audit:main"
 old-exp1 = "moe_exp.old.experiment1.run:main"

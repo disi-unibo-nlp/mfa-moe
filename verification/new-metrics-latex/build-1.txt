@@ -1,0 +1,4 @@
+This is BibTeX, Version 0.99d (TeX Live 2018)
+The top-level auxiliary file: new_metrics_preview.aux
+The style file: plain.bst
+Database file #1: new_metrics.bib

@@ -1,0 +1,6 @@
+{
+  "revision": "0f351046d799bc4d2c9dbb2c7cf36753204b5916",
+  "verified_cuda_files": 42,
+  "verification": "Git blob SHA1 and byte length against cached revision tree",
+  "path": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/cache/hf/hub/models--kernels-community--gpt-oss-triton-kernels/snapshots/0f351046d799bc4d2c9dbb2c7cf36753204b5916"
+}

@@ -1,0 +1,15 @@
+{
+  "authorized_at": "2026-09-23T22:10:00.261542+00:00",
+  "instruction": "Schedule everything automatically so that everything goes on on its own without my input while I am AFK",
+  "scope": "Native all-layer measurements, all available labels, bounded CPU analysis and resource-limited resumptions",
+  "gpu_hours_cap": 360,
+  "fast_bytes_cap": 214748364800,
+  "fast_root": "/leonardo_scratch/fast/IscrC_MIOSR/lmolfett/mfa-moe/measurement-study-v1",
+  "max_concurrent_gpu_jobs": 4,
+  "initial_collection_gpu_hours": 304,
+  "unreserved_gpu_hours": 56,
+  "existing_label_resumes_separate": [
+    58487704,
+    58487708
+  ]
+}

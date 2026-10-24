@@ -1,0 +1,24 @@
+{
+  "job_id": "58389922",
+  "recorded_utc": "2026-09-22T15:42:29.882212+00:00",
+  "state": "FAILED",
+  "exit_code": "1:0",
+  "elapsed_seconds": 552,
+  "allocated_gpus": 2,
+  "allocated_gpu_hours": 0.30666666666666664,
+  "accounting": "58389922|FAILED|1:0|552|billing=16,cpu=16,gres/gpu=2,mem=120G,node=1\n58389922.batch|FAILED|1:0|552|cpu=16,gres/gpu=2,mem=120G,node=1\n58389922.extern|COMPLETED|0:0|552|billing=16,cpu=16,gres/gpu=2,mem=120G,node=1\n58389922.0|COMPLETED|0:0|43|cpu=16,gres/gpu=2,mem=120G,node=1\n58389922.1|COMPLETED|0:0|101|cpu=16,gres/gpu=2,mem=120G,node=1\n58389922.2|FAILED|1:0|403|cpu=16,gres/gpu=2,mem=120G,node=1\n",
+  "checkpoint_content_verified": true,
+  "checkpoint_validation_sha256": "2fa42e2c5ca595a4cae13929928f361a6228ee0f4a7a443e85475466f56f9922",
+  "checkpoint_validation_seconds": 93.44582102634013,
+  "cpu_tests_passed": 60,
+  "population_prepared": true,
+  "dispatch_verified": false,
+  "experimental_results_available": false,
+  "root_cause": "Forced Triton FP8 MoE backend rejects static 128x128 block weights / dynamic 1x128 activation scheme on the allocated A100 path.",
+  "additional_findings": [
+    "V2 model runner selected by default, outside inspected hooks.",
+    "Python vLLM rendezvous resolved to /tmp despite shell staging export; revised srun env passes private TMPDIR explicitly."
+  ],
+  "fix_status": "Marlin W8A16 and V1 runner pinned; private step temporary paths enforced; GPU acceptance pending.",
+  "sha256": "520422f352877ad34f0c9f93be7b74fe7dbff4f4c22ee4df6fa749345859bf9f"
+}

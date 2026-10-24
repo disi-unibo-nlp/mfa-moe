@@ -1,0 +1,37 @@
+{
+  "checked_at": "2026-09-24T03:39:38.983365+00:00",
+  "job": 58493271,
+  "state": "COMPLETED",
+  "exit_code": "0:0",
+  "elapsed": "02:39:14",
+  "attempts": 395,
+  "completion_tokens": 1535025,
+  "artifact_bytes": 910745971,
+  "validated": "manifest digest, exact attempt/token coverage, completion records, all 790 file sizes; downstream CPU analysis will recheck file hashes",
+  "progress_snapshot": {
+    "0": {
+      "completed": 395,
+      "expected": 395,
+      "tokens": 1535025,
+      "artifact_bytes": 910745971
+    },
+    "1": {
+      "completed": 63,
+      "expected": 395,
+      "tokens": 1038176,
+      "artifact_bytes": 633501009
+    },
+    "2": {
+      "completed": 46,
+      "expected": 395,
+      "tokens": 906773,
+      "artifact_bytes": 551501564
+    },
+    "3": {
+      "completed": 49,
+      "expected": 395,
+      "tokens": 934547,
+      "artifact_bytes": 570397261
+    }
+  }
+}

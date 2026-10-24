@@ -1,0 +1,22 @@
+{
+  "job_id": "58436697",
+  "recorded_utc": "2026-09-23T10:48:44.479577+00:00",
+  "state": "FAILED",
+  "exit_code": "1:0",
+  "elapsed_seconds": 852,
+  "allocated_gpus": 2,
+  "allocated_gpu_hours": 0.47333333333333333,
+  "accounting": "58436697|FAILED|1:0|852|billing=16,cpu=16,gres/gpu=2,mem=120G,node=1\n58436697.batch|FAILED|1:0|852|cpu=16,gres/gpu=2,mem=120G,node=1\n58436697.extern|COMPLETED|0:0|852|billing=16,cpu=16,gres/gpu=2,mem=120G,node=1\n58436697.0|COMPLETED|0:0|44|cpu=16,gres/gpu=2,mem=120G,node=1\n58436697.1|COMPLETED|0:0|102|cpu=16,gres/gpu=2,mem=120G,node=1\n58436697.2|FAILED|1:0|701|cpu=16,gres/gpu=2,mem=120G,node=1\n",
+  "engine_startup_seconds": 590.8,
+  "checkpoint_content_verified": true,
+  "model_loaded": true,
+  "marlin_v1_configured": true,
+  "cpu_tests_passed_on_compute": 62,
+  "dispatch_acceptance_available": false,
+  "experimental_results_available": false,
+  "root_cause": "Installed vLLM randomizes external request IDs before scheduling. The registered external ID 0 became internal 0-afd64386; request isolation guard rejected the first forward.",
+  "fix": "Pin supported VLLM_DISABLE_REQUEST_ID_RANDOMIZATION=1, generate globally unique wave/request IDs, verify add_request returns the registered ID, and regress the installed assignment method.",
+  "cumulative_conservative_gpu_hours": 1.041111111111111,
+  "approved_total_gpu_hours": 1.6,
+  "replacement_submitted": false
+}
