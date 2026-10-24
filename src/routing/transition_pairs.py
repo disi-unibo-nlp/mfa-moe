@@ -14,8 +14,9 @@ destination of a pair whose source is an original sampled label. Occupancy, dwel
 read the original sample alone, and the added rows carry `pair_completion=True` so nothing else can use them.
 A sentence the judge already saw but could not label stays unknown; nothing is redrawn.
 
-Inputs: the saved traces and original judge records of the campaign-v3 models (`routing.sentence_table`), LFM2.5's
-own sources and tasks in the study folder, the published panels of `report/research-campaign-v3-20261014-r5-r2`.
+Inputs: the saved traces and original judge records of the seven captured models (`routing.sentence_table`), LFM2.5's
+own sources and tasks in the study folder, the published panels in the capture record
+`report/research-campaign-v3-20261014-r5-r2`.
 The source classes are Read and Verify (`read-verify`); `--source-classes Read,Verify,Plan,Explore,Monitor` widens the
 rule (`read-verify-plan-explore-monitor`), and a widened plan reuses the labels of the narrower one.
 
@@ -54,7 +55,7 @@ from labeling.lfm_inputs import judge_inputs
 from routing.dynamics import trajectories
 from routing.sentence_table import (CAMPAIGN, PAIR_SOURCES, attempt_layout, campaign, campaign_sources,
                                     original_label_records, pairs_dir, receipt_dir, sentence_extent, trace_key,
-                                    usable_labels, write_table)
+                                    write_table)
 from stats import bootstrap_panel
 from steering.pulse import ADMISSION_MARGIN_HOURS, annotate_rows, log, parse_shard
 from store import CLASSES, MODELS, STUDY, Units, binding, digest, file_sha, load, publish, require, verified
@@ -76,7 +77,7 @@ def variant(classes: tuple[str, ...]) -> str:
 
 
 def model_sources(model: str) -> list[dict]:
-    """The attempts of a model: the campaign-v3 sources, or LFM2.5's own discovery sources."""
+    """The attempts of a model: the captured sources, or LFM2.5's own discovery sources."""
     return verified(STUDY/'lfm25/SOURCES.json')['records'] if model == 'lfm25' else campaign_sources(model)
 
 
@@ -388,7 +389,7 @@ def published_estimands_path(model: str) -> Path | None:
 
 
 def published_panel_path(model: str) -> Path:
-    """The published NATIVE_DYNAMICS_SUMMARY.json the paper currently reads."""
+    """The published NATIVE_DYNAMICS_SUMMARY.json the paper reads."""
     if model == 'lfm25':
         return STUDY/'lfm25/NATIVE_DYNAMICS_SUMMARY.json'
     return CAMPAIGN/model/'NATIVE_DYNAMICS_SUMMARY.json'
@@ -396,16 +397,16 @@ def published_panel_path(model: str) -> Path:
 
 def reproduction(rows: list[dict], published: Path) -> dict:
     """Compare per-attempt estimands with the published parquet: same attempts, columns, gaps and values."""
-    old = pd.read_parquet(published).set_index('attempt_id').sort_index()
+    stored = pd.read_parquet(published).set_index('attempt_id').sort_index()
     new = pd.DataFrame(rows).set_index('attempt_id').sort_index()
-    require(list(old.index) == list(new.index), 'reproduced attempts differ from the published ones')
-    numeric = [c for c in old.columns if c not in ('benchmark', 'family')]
+    require(list(stored.index) == list(new.index), 'reproduced attempts differ from the published ones')
+    numeric = [c for c in stored.columns if c not in ('benchmark', 'family')]
     require(set(numeric) == set(new.columns)-{'benchmark', 'family'},
             'reproduced columns differ from the published ones')
-    old, new = old[numeric].astype(float), new[numeric].astype(float)
-    gaps_differ = int((old.isna().to_numpy() != new.isna().to_numpy()).sum())
-    largest = float(np.nanmax(np.abs(old.to_numpy()-new[old.columns].to_numpy())))
-    return {'attempts': len(old), 'columns': len(numeric), 'gaps_differ': gaps_differ, 'largest_difference': largest,
+    stored, new = stored[numeric].astype(float), new[numeric].astype(float)
+    gaps_differ = int((stored.isna().to_numpy() != new.isna().to_numpy()).sum())
+    largest = float(np.nanmax(np.abs(stored.to_numpy()-new[stored.columns].to_numpy())))
+    return {'attempts': len(stored), 'columns': len(numeric), 'gaps_differ': gaps_differ, 'largest_difference': largest,
             'reproduced': bool(gaps_differ == 0 and largest <= REPRODUCTION_TOLERANCE)}
 
 
@@ -459,18 +460,18 @@ def collect(classes: tuple[str, ...] = PAIR_SOURCES) -> dict:
     """
     models = {}
     for model in MODELS:
-        old = load(published_panel_path(model))
+        published = load(published_panel_path(model))
         new = verified(receipt_dir(model)/variant(classes)/'NATIVE_DYNAMICS_SUMMARY.json')
         other = [k for k in new['results'] if NEXT_COLUMN not in k]
-        estimate_shift = max(abs(new['results'][k]['estimate']-old['results'][k]['estimate']) for k in other
-                             if None not in (new['results'][k]['estimate'], old['results'][k]['estimate']))
-        interval_shift = max(abs(a-b) for k in other if new['results'][k]['interval'] and old['results'][k]['interval']
-                             for a, b in zip(new['results'][k]['interval'], old['results'][k]['interval']))
+        estimate_shift = max(abs(new['results'][k]['estimate']-published['results'][k]['estimate']) for k in other
+                             if None not in (new['results'][k]['estimate'], published['results'][k]['estimate']))
+        interval_shift = max(abs(a-b) for k in other if new['results'][k]['interval'] and published['results'][k]['interval']
+                             for a, b in zip(new['results'][k]['interval'], published['results'][k]['interval']))
         models[model] = {
-            'without_estimate': {'published': without_estimate(old), 'completed': without_estimate(new)},
-            'without_interval': {'published': without_interval(old), 'completed': without_interval(new)},
+            'without_estimate': {'published': without_estimate(published), 'completed': without_estimate(new)},
+            'without_interval': {'published': without_interval(published), 'completed': without_interval(new)},
             'other_estimates_largest_change': estimate_shift, 'other_intervals_largest_change': interval_shift,
-            'critical_value': {'published': old['critical_value'], 'completed': new['critical_value']},
+            'critical_value': {'published': published['critical_value'], 'completed': new['critical_value']},
             'source_family_support': {c: new['results'][f'{c}:next:Read']['benchmark_family_support'] for c in CLASSES},
             'pair_completion': new['pair_completion'], 'panel_sha256': new['sha256']}
     return publish(STUDY/'driver'/f'TRANSITION_PAIRS.{variant(classes)}.json',

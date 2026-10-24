@@ -1,1 +1,1 @@
-"""Routing x reasoning-dynamics analysis (D1: sentence routing table, C1, C8 machinery)."""
+"""Class-routing features and the cohort, text and softmax helpers of the anticipation fits."""

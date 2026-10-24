@@ -1,4 +1,4 @@
-"""Loaders for the stage-1 tables. Outcomes are loaded ONLY through `load_outcomes` (stage 4)."""
+"""Loaders for the saved cohort tables: attempts (without outcome columns), sentences and class histograms."""
 from __future__ import annotations
 
 from dataclasses import dataclass
@@ -9,8 +9,6 @@ import pandas as pd
 
 from .common import RESULTS, V3R2, cohort_dir, keep_mask
 from .features import NC, SentenceTable
-
-OUTCOME_COLUMNS = ("correct", "adjudication_status", "difficulty", "difficulty_n", "difficulty_source")
 
 
 @dataclass
@@ -26,7 +24,7 @@ class Cohort:
 
 
 def load_attempts(model: str, cohort: str) -> pd.DataFrame:
-    """v3an attempts table restricted to the analysed questions, WITHOUT outcome columns."""
+    """Attempts table of the capture restricted to the analysed questions, WITHOUT outcome columns."""
     att = pd.read_parquet(V3R2 / model / cohort / "attempts.parquet")
     att = att[keep_mask(model, att["question"].to_numpy())]
     att = att.sort_values("attempt_id").reset_index(drop=True)
@@ -61,20 +59,3 @@ def load_cohort(model: str, cohort: str, root: Path | None = None) -> Cohort:
 def _rel_bin(rel: np.ndarray) -> np.ndarray:
     from .common import rel_bin
     return rel_bin(rel).astype(np.int64)
-
-
-def load_outcomes(model: str, cohort: str, attempts: pd.DataFrame) -> pd.DataFrame:
-    """Correctness and difficulty for the attempts (stage 4 only), aligned to `attempts`."""
-    att = pd.read_parquet(V3R2 / model / cohort / "attempts.parquet")
-    att = att.set_index("attempt_id").reindex(attempts["attempt_id"])
-    return att[list(OUTCOME_COLUMNS)].reset_index(drop=True)
-
-
-def load_static(model: str, cohort: str, attempts: pd.DataFrame, family: str = "saved_router"
-                ) -> pd.DataFrame:
-    """v3an layer-mean static routing summaries (`<family>|all|<metric>|mean`), attempt-aligned."""
-    x = pd.read_parquet(V3R2 / model / cohort / "features.parquet")
-    cols = [c for c in x.columns if c.startswith(f"{family}|all|") and c.endswith("|mean")]
-    x = x[cols].reindex(attempts["attempt_id"]).reset_index(drop=True)
-    x.columns = [c.split("|")[2] for c in cols]
-    return x

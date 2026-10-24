@@ -1,7 +1,7 @@
-"""Build native_<model>.parquet: one row per judge-labelled sentence (campaign-v3 labels).
+"""Build native_<model>.parquet: one row per judge-labelled sentence of the seven-model capture.
 
-Read-only on repo / campaign / label dirs. Writes only under OUT.
-Usage: build_native.py <model>
+Read-only on the label, cohort and receipt folders. Writes only under OUT_DIR.
+Usage: python -m routing.lexical_data.build_native MODEL OUT_DIR
 """
 from __future__ import annotations
 
@@ -18,18 +18,16 @@ import pandas as pd
 
 from capture.dynamics.classes import saved_layout
 from labeling.spans import trace_digest
-from store import iter_jsonl
+from store import ANALYSIS, iter_jsonl
 from schemas import TraceRecord
 from routing.readout_analysis import family_folds
 
-CV3 = Path("/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/campaign-v3")
-R6 = Path("/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/research-campaign-v3-20261014-r6")
-OUT = Path("/scratch_local/claude-133943/-leonardo-work-IscrC-MIOSR-lmolfett-mfa-moe-repo/"
-           "88d89532-1e37-4900-bace-03c5cfadb6b4/scratchpad/lexicon/data")
-OUTCOMES = CV3 / "outcomes/outcomes_v3-99bf8d59506e2893.parquet"
+CAPTURE = ANALYSIS / "campaign-v3"   # saved labels, cohorts and outcomes of the seven-model capture
+RECEIPTS = Path("/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/research-campaign-v3-20261014-r6")  # label index, folds
+OUTCOMES = CAPTURE / "outcomes/outcomes_v3-99bf8d59506e2893.parquet"
 DATASETS = ["math500", "aime24", "aime25", "olympiad", "amc23", "minerva"]
 CLASSES = ("Read", "Analyze", "Plan", "Implement", "Explore", "Verify", "Monitor")
-ABS_EDGES = (1024, 2048, 4096, 8192, 16384)  # study/readout_fit.py
+ABS_EDGES = (1024, 2048, 4096, 8192, 16384)  # as routing.readout_fit
 FOLD_SEED = 20260929
 START, END = "<START OF RESPONSE>", "<END OF RESPONSE>"
 
@@ -38,11 +36,11 @@ def sha(text: str) -> str:
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
 
-def main(model: str) -> None:
+def main(model: str, out: Path) -> None:
     t0 = time.time()
-    folds = json.load(open(R6 / "FOLDS.json"))
+    folds = json.load(open(RECEIPTS / "FOLDS.json"))
     qfam, fold_of = folds["question_families"], folds["folds"]
-    cohorts = json.load(open(CV3 / f"cohorts/{model}/cohorts.json"))
+    cohorts = json.load(open(CAPTURE / f"cohorts/{model}/cohorts.json"))
     # A trace can be enrolled in both cohorts A and B (same selected sentences, labelled once)
     cohort_by_digest: dict[str, dict] = {}
     for r in cohorts["rows"]:
@@ -58,7 +56,7 @@ def main(model: str) -> None:
     outcomes = outcomes[(outcomes.corpus == "card-v3") & (outcomes.model == model)]
     out_by_key = {(r.dataset, r.problem_id): r for r in outcomes.itertuples()}
 
-    db = sqlite3.connect(f"file:{R6 / model / 'LABEL_INDEX.sqlite'}?mode=ro&immutable=1", uri=True)
+    db = sqlite3.connect(f"file:{RECEIPTS / model / 'LABEL_INDEX.sqlite'}?mode=ro&immutable=1", uri=True)
     receipts: dict[str, dict[int, tuple[str, str | None]]] = collections.defaultdict(dict)
     ctx_count: collections.Counter = collections.Counter()
     for ctx, label, source, row_index in db.execute("select context,label,source,row_index from receipts"):
@@ -71,11 +69,11 @@ def main(model: str) -> None:
     frames, problems = [], {}
     for p in range(4):
         part = f"part-{p:02d}"
-        ann_path = CV3 / f"labels/{model}/{part}/annotations.json"
+        ann_path = CAPTURE / f"labels/{model}/{part}/annotations.json"
         ann = json.load(open(ann_path))
         rec = receipts[str(ann_path)]
         assert len(rec) == len(ann), (part, len(rec), len(ann))
-        root = next((CV3 / f"cohorts/{model}/labels/{part}/generation").iterdir())
+        root = next((CAPTURE / f"cohorts/{model}/labels/{part}/generation").iterdir())
         traces = {}
         for ds in DATASETS:
             path = root / ds / "traces.jsonl"
@@ -160,14 +158,14 @@ def main(model: str) -> None:
     df = pd.concat(frames, ignore_index=True)
     # conflicts: a context whose index label is NULL although the row label is valid
     df["context_label_conflict"] = df.index_label.isna() & df.label.notna()
-    # population-dependent readout fold (study/readout_fit.outer_folds recipe)
+    # population-dependent readout fold (the recipe of readout_fit.outer_folds)
     df["fold_readout5"] = family_folds(df.question.to_numpy(), 5, FOLD_SEED, qfam).astype(np.int8)
     df["fold_campaign"] = df.fold_campaign.astype("int8")
     df["abs_bin"] = df.abs_bin.astype("Int8")
-    OUT.mkdir(parents=True, exist_ok=True)
-    df.to_parquet(OUT / f"native_{model}.parquet", compression="zstd", index=False)
+    out.mkdir(parents=True, exist_ok=True)
+    df.to_parquet(out / f"native_{model}.parquet", compression="zstd", index=False)
     pd.DataFrame([dict(problem_sha=k, dataset=v[0], source_problem_id=v[1], problem_statement=v[2])
-                  for k, v in problems.items()]).to_parquet(OUT / f"_problems_{model}.parquet",
+                  for k, v in problems.items()]).to_parquet(out / f"_problems_{model}.parquet",
                                                            compression="zstd", index=False)
     print(f"[{model}] DONE rows={len(df)} labelled={df.label.notna().sum()} "
           f"unknown={(df.label_status == 'unknown').sum()} conflicts={df.context_label_conflict.sum()} "
@@ -175,4 +173,4 @@ def main(model: str) -> None:
 
 
 if __name__ == "__main__":
-    main(sys.argv[1])
+    main(sys.argv[1], Path(sys.argv[2]))

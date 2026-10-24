@@ -1,37 +1,32 @@
-"""Addendum 1 (S3) item (ii): readout counterpart. Do depth paths predict the reasoning class of a sentence
-beyond its token ids? All 7 models, cohort A labelled sentences (qwen36 = split-v1 dev+tune). No outcomes.
+"""Path-based present-state readout machinery: do depth paths predict the reasoning class of a sentence beyond its
+token ids? `routing.readout` drives these functions for the seven models; no outcomes are read.
 
-Rows: labelled sentences (dynamics-routing sentences.parquet, read-only) with >= 1 reasoning token; y = class
-(7). Tokens: results/s3/_tok (top-1 paths and token ids of labelled-sentence tokens).
+Rows: the judge-labelled sentences of cohort A (the saved sentence tables in `common.DYN_RESULTS`) with >= 1 reasoning
+token; y = class (7); Qwen3.6 keeps the dev and tune questions of the steering split. Tokens: the token caches in
+`common.TOKEN_CACHE` (top-1 paths and token ids of the labelled-sentence tokens).
 - baseline: token-id bag (crc32(id) mod 4,096 buckets; sublinear tf x in-fold idf, training df >= 2,
-  L2-normalised x 10, as the dynamics-routing A1 text block) + position (absolute-position bin one-hot (6) and
+  L2-normalised x 10, as the hashed text block of `dynrt.d3a_text`) + position (absolute-position bin one-hot (6) and
   relative-position decile one-hot (10)) + log sentence length;
-- augmented: baseline + path features of the sentence: mean F1 (path surprise under the add-0.5 depth
+- augmented: baseline + path features of the sentence: mean path surprise (under the add-0.5 depth
   bigram fitted on the training sentences' tokens), mean F2 (fraction of layers whose top-1 equals the
   previous token's, over within-sentence adjacent token pairs) and the per-layer top-1 histograms
   (L x E fractions) reduced by PCA to 64 components fitted on the training sentences (seeded randomized SVD).
 Everything data-dependent (idf, bigram, PCA, standardisation, ridge penalty) is fitted inside the fold it
 is used in, including the inner folds. Model: weighted multinomial ridge (softmax), question weights
-(1 / labelled sentences of the question), penalty on the C8 grid 10^{-3..2} chosen by inner 3-fold
-question-grouped CV (ties -> stronger penalty). Outer: question-grouped 5-fold CV (seed 0).
-Primary number: out-of-fold Delta log-loss (baseline - augmented) in nats per sentence, question-weighted,
-with a paired question bootstrap (1,000; seed 20260929). Unweighted (sentence-pooled) gain is also reported.
-Null (dynamics-routing B1 analogue): the top-1 path of every token is replaced by that of a random token with
-the same token id and absolute-position bin (a within-stratum permutation of the token paths; this is the
-B1 within-token-id x position-bin class shuffle expressed on the routing side, since sentence labels are
-per sentence); all path features and the augmented CV are recomputed (N_NULL draws).
-
-CLI: python -m dp.s3_readout [--models M ...] [--workers W] [--n-null K]  -> results/s3/readout/<model>.json
+(1 / labelled sentences of the question), penalty on the grid 10^{-3..2} chosen by inner 3-fold
+question-grouped CV (ties -> stronger penalty). Outer: question-grouped 5-fold CV.
+The gain is the out-of-fold Delta log-loss (baseline - augmented) in nats per sentence, question-weighted, with a
+paired question bootstrap (`question_bootstrap`); the unweighted (sentence-pooled) gain uses w = 1.
+Null: the top-1 path of every token is replaced by that of a random token with the same token id and
+absolute-position bin (a within-stratum permutation of the token paths, since sentence labels are per sentence); all
+path features and the augmented CV are recomputed (`null_paths`).
 """
 from __future__ import annotations
 
-import argparse
-import json
-import multiprocessing as mp
-import os
 import time
 import zlib
 from dataclasses import dataclass
+from pathlib import Path
 
 import numpy as np
 import pandas as pd
@@ -39,9 +34,7 @@ from scipy import optimize, sparse
 
 from . import common as cm
 from . import cv
-from .s3_collect import tok_path
 
-OUT = cm.RESULTS / "s3" / "readout"
 K = 7
 N_BUCKETS = 4096
 MIN_DF = 2
@@ -51,7 +44,6 @@ PCA_OVERSAMPLE = 16
 PCA_ITERS = 4
 OUTER, INNER = 5, 3
 FOLD_SEED = 0
-N_NULL = 5
 N_BOOT = 1000
 BOOT_SEED = 20260929
 SEED = 20260929
@@ -63,11 +55,12 @@ SENT_COLUMNS = ["attempt_id", "question", "sentence_index", "cls", "tok_start", 
                 "abs_bin", "rel_pos"]
 
 
-def log(msg: str) -> None:
-    print(f"[{time.strftime('%H:%M:%S')}] {msg}", flush=True)
-
-
 # ------------------------------------------------------------------------------ data
+
+def tok_path(model: str, row: int) -> Path:
+    """Token cache of attempt `row` of the model's cohort-A table."""
+    return cm.TOKEN_CACHE / model / f"{int(row):05d}.npz"
+
 
 def bucket_of(tokid: np.ndarray) -> np.ndarray:
     """crc32 of the little-endian int32 token id, mod N_BUCKETS."""
@@ -189,7 +182,7 @@ def path_variant(md: ModelData, top1: np.ndarray) -> PathVariant:
 
 
 def null_paths(md: ModelData, draw: int) -> np.ndarray:
-    """Token paths permuted among tokens of the same token id x absolute-position bin (B1 strata)."""
+    """Token paths permuted among tokens of the same token id x absolute-position bin."""
     n = len(md.tokid)
     stratum = md.tokid * 8 + md.tok_abs
     base = np.argsort(stratum, kind="stable")
@@ -249,7 +242,7 @@ def randomized_pca(x: sparse.csr_matrix, k: int, seed: int, n_iter: int = PCA_IT
 # ------------------------------------------------------------------------------ design
 
 class BagTransform:
-    """In-fold tf-idf of the token-id bag (the dynamics-routing A1 TextTransform on N_BUCKETS columns)."""
+    """In-fold tf-idf of the token-id bag (the transform of `dynrt.d3a_text` on N_BUCKETS columns)."""
 
     def __init__(self, counts: sparse.csr_matrix, train: np.ndarray, scale: float = BAG_SCALE):
         x = counts[train]
@@ -314,7 +307,7 @@ def _log_softmax(z: np.ndarray) -> np.ndarray:
 
 def fit_softmax(xd: np.ndarray, xs: sparse.csr_matrix, y: np.ndarray, w: np.ndarray, lam: float,
                 theta0: np.ndarray | None = None, maxiter: int = 400) -> SoftmaxFit:
-    """Weighted multinomial ridge, objective sum w nll / sum w + lam/2 |B|^2 (dynamics-routing d3a_softmax)."""
+    """Weighted multinomial ridge, objective sum w nll / sum w + lam/2 |B|^2 (as `dynrt.d3a_softmax`)."""
     n, pd_ = xd.shape
     ps = xs.shape[1]
     wn = w / w.sum()
@@ -412,115 +405,3 @@ def question_bootstrap(gain: np.ndarray, groups: np.ndarray, w: np.ndarray, n_bo
 
 def nll_rows(logp: np.ndarray, y: np.ndarray) -> np.ndarray:
     return -logp[np.arange(len(y)), y].astype(np.float64)
-
-
-def analyse(md: ModelData, workers: int, n_null: int) -> dict:
-    """Base / augmented / null CV of one model's sentence table -> result dict."""
-    t0 = time.time()
-    model = md.model
-    log(f"{model}: {md.n} sentences ({md.n_before_filter} before n_tokens >= 1), "
-        f"{len(np.unique(md.groups))} questions, {md.top1.shape[1]} tokens, L={md.L}, E={md.E} "
-        f"({time.time() - t0:.0f}s)")
-    variants = {"aug": path_variant(md, md.top1)}
-    for j in range(n_null):
-        variants[f"null_{j}"] = path_variant(md, null_paths(md, j))
-    log(f"{model}: path variants built ({time.time() - t0:.0f}s)")
-    _STATE.update(md=md, variants=variants)
-    names = ["base", "aug"] + [f"null_{j}" for j in range(n_null)]
-    tasks = [(v, f) for v in names for f in range(OUTER)]
-    tasks.sort(key=lambda t: t[0] == "base")                          # path tasks (slower) first
-    res = []
-    if workers > 1:
-        with mp.get_context("fork").Pool(workers) as pool:
-            for i, r in enumerate(pool.imap_unordered(run_task, tasks), 1):
-                res.append(r)
-                log(f"{model}: task {i}/{len(tasks)} {r['variant']} fold {r['fold']} lam {r['lam']:g} "
-                    f"({r['seconds']:.0f}s)")
-    else:
-        res = [run_task(t) for t in tasks]
-    logp = {v: np.full((md.n, K), np.nan, np.float32) for v in names}
-    lams = {v: [None] * OUTER for v in names}
-    infos = {v: [None] * OUTER for v in names}
-    stats = []
-    for r in res:
-        logp[r["variant"]][r["test"]] = r["logp"]
-        lams[r["variant"]][r["fold"]] = r["lam"]
-        infos[r["variant"]][r["fold"]] = r["info"]
-        stats.extend(r["stats"])
-    for v in names:
-        if np.isnan(logp[v]).any():
-            raise RuntimeError(f"{model}: held-out predictions missing for {v}")
-    nll = {v: nll_rows(logp[v], md.y) for v in names}
-    y, g, w = md.y, md.groups, md.w
-    ones = np.ones(md.n)
-    out = dict(model=model, n_sentences=int(md.n), n_sentences_before_min_tokens=int(md.n_before_filter),
-               n_questions=int(len(np.unique(g))), n_tokens=int(md.top1.shape[1]), layers=md.L, experts=md.E,
-               split_restriction="split-v1 dev+tune" if model == "qwen36" else None,
-               class_counts={c: int((y == i).sum()) for i, c in enumerate(cm.CLASSES)},
-               f2_missing_share=float(np.isnan(variants["aug"].f2).mean()),
-               design=dict(bag_buckets=N_BUCKETS, pca=N_PCA, outer=OUTER, inner=INNER, grid=cv.GRID,
-                           n_null=n_null, weights="question (1/labelled sentences)"),
-               logloss={v: dict(question_weighted=float(np.bincount(np.unique(g, return_inverse=True)[1],
-                                                                    weights=w * nll[v]).mean()),
-                                pooled=float(nll[v].mean())) for v in names},
-               accuracy={v: float((logp[v].argmax(1) == y).mean()) for v in names},
-               lambdas=lams, fold_info=infos)
-    out["gain_aug_vs_base"] = question_bootstrap(nll["base"] - nll["aug"], g, w)
-    out["gain_aug_vs_base_pooled"] = question_bootstrap(nll["base"] - nll["aug"], g, ones)
-    nulls = [v for v in names if v.startswith("null_")]
-    if nulls:
-        null_gain = [question_bootstrap(nll["base"] - nll[v], g, w)["gain"] for v in nulls]
-        mean_null_nll = np.mean([nll[v] for v in nulls], axis=0)
-        obs = out["gain_aug_vs_base"]["gain"]
-        out["null_within_token_id"] = dict(
-            gains=null_gain, mean=float(np.mean(null_gain)),
-            sd=float(np.std(null_gain, ddof=1)) if len(null_gain) > 1 else None,
-            max=float(np.max(null_gain)), retained_fraction=float(np.mean(null_gain) / obs) if obs else None,
-            excess_obs_over_null=question_bootstrap(mean_null_nll - nll["aug"], g, w),
-            gain_null_mean_vs_base=question_bootstrap(nll["base"] - mean_null_nll, g, w),
-            strata="token id x absolute-position bin (0-1k, 1-2k, 2-4k, 4-8k, 8-16k, 16k+)")
-    per_class = {}
-    for i, c in enumerate(cm.CLASSES):
-        m = y == i
-        if m.sum() >= 50:
-            per_class[c] = dict(n=int(m.sum()), pooled_gain=float((nll["base"] - nll["aug"])[m].mean()),
-                                pooled_excess_over_null=float((mean_null_nll - nll["aug"])[m].mean()) if nulls
-                                else None)
-    out["per_class_pooled"] = per_class
-    st = np.asarray(stats, float)
-    out["fit_diagnostics"] = dict(n_fits=int(len(st)), frac_converged=float(st[:, 1].mean()),
-                                  max_iter=int(st[:, 0].max()), max_grad=float(st[:, 2].max()))
-    out["seconds"] = time.time() - t0
-    gg = out["gain_aug_vs_base"]
-    log(f"{model}: gain {gg['gain']:.5f} [{gg['ci_lo']:.5f}, {gg['ci_hi']:.5f}]"
-        + (f", null mean {out['null_within_token_id']['mean']:.5f}, excess "
-           f"{out['null_within_token_id']['excess_obs_over_null']['gain']:.5f}" if nulls else "")
-        + f" ({out['seconds']:.0f}s)")
-    _STATE.clear()
-    return out
-
-
-def run_model(model: str, workers: int, n_null: int) -> dict:
-    out = analyse(load_model(model), workers, n_null)
-    OUT.mkdir(parents=True, exist_ok=True)
-    (OUT / f"{model}.json").write_text(json.dumps(cm.clean(out), indent=1))
-    return out
-
-
-def main(argv=None) -> int:
-    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--models", nargs="+", default=list(cm.MODELS), choices=cm.MODELS)
-    ap.add_argument("--workers", type=int, default=int(os.environ.get("SLURM_CPUS_PER_TASK", "8")))
-    ap.add_argument("--n-null", type=int, default=N_NULL)
-    a = ap.parse_args(argv)
-    os.environ.update({v: "1" for v in ("OMP_NUM_THREADS", "OPENBLAS_NUM_THREADS", "MKL_NUM_THREADS")})
-    for m in a.models:
-        if (OUT / f"{m}.json").exists():
-            log(f"{m}: output exists, skipped")
-            continue
-        run_model(m, a.workers, a.n_null)
-    return 0
-
-
-if __name__ == "__main__":
-    raise SystemExit(main())

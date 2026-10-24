@@ -1,17 +1,22 @@
-"""Validate the built datasets against their sources. Writes OUT/validation_report.json."""
+"""Validate the built datasets against their sources. Writes OUT_DIR/validation_report.json.
+
+Usage: python -m routing.lexical_data.validate OUT_DIR   (the folder the builders wrote into)
+"""
 from __future__ import annotations
 
 import json
-import sqlite3
 from pathlib import Path
+import sqlite3
+import sys
 
 import numpy as np
 import pandas as pd
 
-OUT = Path("/scratch_local/claude-133943/-leonardo-work-IscrC-MIOSR-lmolfett-mfa-moe-repo/"
-           "88d89532-1e37-4900-bace-03c5cfadb6b4/scratchpad/lexicon/data")
-R6 = Path("/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/research-campaign-v3-20261014-r6")
-CV3 = Path("/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/campaign-v3")
+from store import ANALYSIS
+
+OUT = Path(sys.argv[1])
+RECEIPTS = Path("/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/research-campaign-v3-20261014-r6")  # label index, folds
+CAPTURE = ANALYSIS / "campaign-v3"
 MODELS = "gpt nemotron qwen35 qwen36 gemma glm qwen330b".split()
 CLASSES = ["Read", "Analyze", "Plan", "Implement", "Explore", "Verify", "Monitor"]
 report = {"native": {}, "steered": {}, "checks_failed": []}
@@ -25,12 +30,12 @@ def check(cond, msg):
 
 for m in MODELS:
     df = pd.read_parquet(OUT / f"native_{m}.parquet")
-    db = sqlite3.connect(f"file:{R6 / m / 'LABEL_INDEX.sqlite'}?mode=ro&immutable=1", uri=True)
+    db = sqlite3.connect(f"file:{RECEIPTS / m / 'LABEL_INDEX.sqlite'}?mode=ro&immutable=1", uri=True)
     n_receipts = db.execute("select count(*) from receipts").fetchone()[0]
     n_contexts = db.execute("select count(*) from labels").fetchone()[0]
     rc_labels = dict(db.execute("select label,count(*) from receipts group by label").fetchall())
-    li = json.load(open(R6 / m / "LABEL_INDEX.json"))
-    coh = json.load(open(CV3 / f"cohorts/{m}/cohorts.json"))
+    li = json.load(open(RECEIPTS / m / "LABEL_INDEX.json"))
+    coh = json.load(open(CAPTURE / f"cohorts/{m}/cohorts.json"))
     check(len(df) == n_receipts == coh["counts"]["labeled_sentences"] == li["records"], f"{m}: row count")
     check(df.row_id.is_unique, f"{m}: row_id unique")
     lc = df.label.value_counts(dropna=False).to_dict()
@@ -49,7 +54,6 @@ for m in MODELS:
     check((df.groupby("family_id").fold_campaign.nunique() == 1).all(), f"{m}: family in one campaign fold")
     check((df.groupby("family_id").fold_readout5.nunique() == 1).all(), f"{m}: family in one readout fold")
     check(df.rel_pos.dropna().between(0, 1).all(), f"{m}: rel_pos range")
-    check((df.sentence_text.str.len() == df.n_chars).all() or True, "n/a")
     tr = df.drop_duplicates("trace_digest")
     dup = df.groupby("context_hash").size()
     report["native"][m] = dict(
@@ -80,7 +84,6 @@ for m in MODELS:
     print(m, "ok", len(df))
 
 # steered
-nat_q = set(pd.read_parquet(OUT / "native_qwen36.parquet", columns=["question"]).question)
 for s in ("A", "B", "C", "FRESH"):
     df = pd.read_parquet(OUT / f"steered_{s}.parquet")
     rep = dict(
@@ -102,7 +105,6 @@ for s in ("A", "B", "C", "FRESH"):
         hit_cap_continuations=int(df.drop_duplicates("uid").hit_cap.sum()),
         virtual_pulse_continuations=int(df.drop_duplicates("uid").virtual_pulse.sum()),
     )
-    check(set(df.question.unique()) <= set(nat_q) or True, "n/a")
     check(df.groupby("uid").sentence_index.apply(lambda x: (np.diff(x.to_numpy()) == 1).all()).all(),
           f"{s}: sentences contiguous within continuation")
     check(df.blind_id.is_unique, f"{s}: blind_id unique")

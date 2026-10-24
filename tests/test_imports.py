@@ -4,8 +4,8 @@ For each module under src/ and each test, every `import` and `from ... import` t
 first component is a top-level folder or module of src/) must name a module that exists, and every imported name must
 be defined there or be a submodule. So must every attribute read through a module alias (`driver.binding()` after
 `from . import pulse as driver`). Strings that name a repo module (worker extensions, `python -m` commands, mock
-patches) are checked the same way. The old package name `moe_exp` counts as a repo name too, so a reference left over
-from before the package folder was dropped fails. The modules reachable from ENTRY_POINTS must also cover all of
+patches) are checked the same way. The name `moe_exp` is not a package of src/ but counts as a repo name, so a
+reference to it fails unless EXEMPT lists it. The modules reachable from ENTRY_POINTS must also cover all of
 src/, so dead code cannot linger.
 """
 import ast
@@ -42,17 +42,19 @@ ENTRY_POINTS = [
 
 # (importer, imported) pairs that are known not to resolve.
 EXEMPT = {
-    # Byte-frozen by the efficiency-link pre-registration hash; routing.efficiency_link registers the old dotted
-    # names (moe_exp, moe_exp.final_routing, moe_exp.final_routing.common) for it at load.
+    # The efficiency-link pre-registration script is byte-frozen by its hash and imports moe_exp.final_routing.common;
+    # routing.efficiency_link registers the dotted names (moe_exp, moe_exp.final_routing,
+    # moe_exp.final_routing.common) for it at load.
     ('routing.efficiency_link_prereg', 'moe_exp.final_routing.common'),
     ('routing.efficiency_link', 'moe_exp.final_routing'),
     ('routing.efficiency_link', 'moe_exp.final_routing.common'),
-    # The stored lexical fold pickles name the text transform by its old module; routing.lexical maps it (and a test).
+    # The stored lexical fold pickles name the text transform by the module moe_exp.study.readout_text;
+    # routing.lexical maps it (and a test).
     ('routing.lexical', 'moe_exp.study.readout_text'),
     ('tests', 'moe_exp.study.readout_text'),
 }
 
-OLD_PACKAGE = 'moe_exp'
+UNRESOLVED_PACKAGE = 'moe_exp'
 
 
 def module_table():
@@ -71,7 +73,7 @@ def module_table():
 
 
 MODULES = module_table()
-REPO_NAMES = {module.split('.')[0] for module in MODULES} | {OLD_PACKAGE}
+REPO_NAMES = {module.split('.')[0] for module in MODULES} | {UNRESOLVED_PACKAGE}
 # A string names a module when it starts with a repo name (`steering.stream.StreamWorkerExtension`,
 # `steering.fast_penalties:FastPrefixPenalties`) or when the repo name follows `-m` in a command. File names such as
 # `stats.csv` and prose that mentions `receipts.row_index` are not module references.

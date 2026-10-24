@@ -1,12 +1,9 @@
-"""Class-routing mismatch features (C1), fitted on training questions only. No outcome is used.
+"""Class-routing mismatch scores, fitted on training questions only. No outcome is used.
 
-Definitions (ANALYSIS_PLAN.md, frozen):
+Definitions:
 - class profiles p[c,l,e]: sentence histograms averaged within attempt, then across attempts, shrunk
   toward the marginal p0 with kappa = 50 (p = (n_c p_hat_c + kappa p0) / (n_c + kappa)), floor 1e-6;
-- d_c(h) = mean_l sum_e h[l,e] log(p0[l,e] / p[c,l,e])  (lower = more class-c-like);
-- nuisance residualisation on class x abs-position bin x relative quintile x length tercile cell
-  means, shrunk toward the class x abs-bin mean with weight n / (n + 20);
-- attempt aggregation: unweighted mean over the attempt's labelled sentences.
+- d_c(h) = mean_l sum_e h[l,e] log(p0[l,e] / p[c,l,e])  (lower = more class-c-like).
 """
 from __future__ import annotations
 
@@ -14,10 +11,9 @@ from dataclasses import dataclass
 
 import numpy as np
 
-from .common import CELL_SHRINK, EPS, EXPLORE, KAPPA, N_ABS, N_REL
+from .common import EPS, KAPPA
 
 NC = 7
-N_LEN = 3
 
 
 def group_sums(x: np.ndarray, keys: np.ndarray) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
@@ -79,57 +75,6 @@ def d_scores(h: np.ndarray, profiles: Profiles) -> np.ndarray:
 
 
 @dataclass
-class Residualizer:
-    """Cell-mean nuisance model with hierarchical shrinkage (fit on training sentences)."""
-    len_edges: np.ndarray
-    cell_mean: np.ndarray
-    cell_n: np.ndarray
-    coarse_mean: np.ndarray
-    shrink: float
-
-    def cells(self, cls, abs_bin, rel_bin, n_tokens) -> np.ndarray:
-        length = np.searchsorted(self.len_edges, n_tokens, side="left")
-        return (((cls.astype(np.int64) * N_ABS + abs_bin) * N_REL + rel_bin) * N_LEN + length)
-
-    def predict(self, cls, abs_bin, rel_bin, n_tokens) -> np.ndarray:
-        cell = self.cells(cls, abs_bin, rel_bin, n_tokens)
-        coarse = self.coarse_mean[cls.astype(np.int64) * N_ABS + abs_bin]
-        n = self.cell_n[cell]
-        w = (n / (n + self.shrink))[:, None]
-        return w * self.cell_mean[cell] + (1.0 - w) * coarse
-
-    def residual(self, x, cls, abs_bin, rel_bin, n_tokens) -> np.ndarray:
-        return x - self.predict(cls, abs_bin, rel_bin, n_tokens)
-
-
-def fit_residualizer(x: np.ndarray, cls, abs_bin, rel_bin, n_tokens,
-                     shrink: float = CELL_SHRINK) -> Residualizer:
-    """Fit on training sentences: x [N, F]."""
-    x = np.asarray(x, float)
-    if x.ndim == 1:
-        x = x[:, None]
-    f = x.shape[1]
-    edges = np.quantile(np.asarray(n_tokens, float), [1 / 3, 2 / 3])
-    proto = Residualizer(edges, np.zeros((0, f)), np.zeros(0), np.zeros((0, f)), shrink)
-    cell = proto.cells(np.asarray(cls), np.asarray(abs_bin), np.asarray(rel_bin), np.asarray(n_tokens))
-    n_cells = NC * N_ABS * N_REL * N_LEN
-    cell_n = np.bincount(cell, minlength=n_cells).astype(float)
-    cell_sum = np.stack([np.bincount(cell, weights=x[:, j], minlength=n_cells) for j in range(f)], 1)
-    cell_mean = np.divide(cell_sum, cell_n[:, None], out=np.zeros_like(cell_sum), where=cell_n[:, None] > 0)
-    coarse = np.asarray(cls).astype(np.int64) * N_ABS + np.asarray(abs_bin)
-    n_coarse = np.bincount(coarse, minlength=NC * N_ABS).astype(float)
-    s_coarse = np.stack([np.bincount(coarse, weights=x[:, j], minlength=NC * N_ABS) for j in range(f)], 1)
-    n_cls = np.bincount(np.asarray(cls).astype(np.int64), minlength=NC).astype(float)
-    s_cls = np.stack([np.bincount(np.asarray(cls).astype(np.int64), weights=x[:, j], minlength=NC)
-                      for j in range(f)], 1)
-    global_mean = x.mean(0)
-    cls_mean = np.where(n_cls[:, None] > 0, s_cls / np.maximum(n_cls, 1)[:, None], global_mean[None])
-    coarse_mean = np.where(n_coarse[:, None] > 0, s_coarse / np.maximum(n_coarse, 1)[:, None],
-                           np.repeat(cls_mean, N_ABS, axis=0))
-    return Residualizer(edges, cell_mean, cell_n, coarse_mean, shrink)
-
-
-@dataclass
 class SentenceTable:
     """Sentence-level arrays for one cohort (rows sorted by attempt, then sentence)."""
     h: np.ndarray            # [N, L*E] float32
@@ -141,39 +86,3 @@ class SentenceTable:
     layers: int
     experts: int
     n_attempts: int
-
-
-@dataclass
-class Fitted:
-    profiles: Profiles
-    resid: Residualizer
-
-
-def fit(t: SentenceTable, train_attempts: np.ndarray, *, kappa: float = KAPPA) -> Fitted:
-    """Fit profiles and residualiser on the sentences of the training attempts (boolean mask [A])."""
-    rows = np.flatnonzero(np.asarray(train_attempts)[t.attempt])
-    sub = SentenceTable(t.h[rows], t.cls[rows], t.attempt[rows], t.abs_bin[rows], t.rel_bin[rows],
-                        t.n_tokens[rows], t.layers, t.experts, t.n_attempts)
-    prof = fit_profiles(sub.h, sub.cls, sub.attempt, t.layers, t.experts, kappa=kappa)
-    d = d_scores(sub.h, prof)
-    own = d[np.arange(len(d)), sub.cls.astype(np.int64)]
-    x = np.stack([own, own - d.min(1)], 1)
-    resid = fit_residualizer(x, sub.cls, sub.abs_bin, sub.rel_bin, sub.n_tokens)
-    return Fitted(prof, resid)
-
-
-def aggregate(scores: dict[str, np.ndarray], t: SentenceTable, *, min_explore: int = 3
-              ) -> dict[str, np.ndarray]:
-    """Unweighted attempt means: M_all, M_explore (NaN if < min_explore Explore sentences), margin."""
-    a, n = t.attempt.astype(np.int64), t.n_attempts
-    cnt = np.bincount(a, minlength=n).astype(float)
-    with np.errstate(invalid="ignore", divide="ignore"):
-        m_all = np.bincount(a, weights=scores["own"], minlength=n) / cnt
-        margin = np.bincount(a, weights=scores["margin"], minlength=n) / cnt
-        ex = t.cls == EXPLORE
-        n_ex = np.bincount(a[ex], minlength=n).astype(float)
-        m_ex = np.bincount(a[ex], weights=scores["own"][ex], minlength=n) / n_ex
-    m_ex = np.where(n_ex >= min_explore, m_ex, np.nan)
-    m_all = np.where(cnt > 0, m_all, np.nan)
-    margin = np.where(cnt > 0, margin, np.nan)
-    return dict(M_all=m_all, M_explore=m_ex, margin=margin, n_sent=cnt, n_explore=n_ex)

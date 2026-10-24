@@ -1,1 +1,1 @@
-"""Depth-wise routing paths within a forward pass (ANALYSIS_PLAN.md, frozen 2026-09-29)."""
+"""Depth-wise routing paths within a forward pass: the machinery of the path-based present-state readout."""

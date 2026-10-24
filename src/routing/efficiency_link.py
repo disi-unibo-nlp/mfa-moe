@@ -1,9 +1,9 @@
 """Efficiency link for all eight models: LFM2.5 gets its own native signs.
 
-The pre-registration (routing/efficiency_link_prereg.py -> driver/EFFICIENCY_LINK_PREREG.json) had no
-native table for LFM2.5, so the whole-reasoning steering gave LFM the pooled seven-model signs. LFM's
-labelled native sentences exist since 2026-10-17 22:22, but lexical/native_lfm25.parquet keeps only
-labels and text (it was built for the lexical readout). This module
+The pre-registration (routing/efficiency_link_prereg.py -> driver/EFFICIENCY_LINK_PREREG.json) covers seven
+models: it had no native table for LFM2.5, whose whole-reasoning steering therefore used the pooled seven-model
+signs. LFM's labelled native sentences are in lexical/native_lfm25.parquet, which keeps only labels and text (it
+was built for the lexical readout). This module
 
   table      joins those labels with LFM's sampled sources and native outcomes into the columns the
              estimator reads, in a new lexical directory next to links to the seven existing tables;
@@ -40,15 +40,15 @@ DRIVER_TEST = DRIVER/'analysis-final-link-v2/EFFICIENCY_LINK_TEST.json'
 
 def frozen():
     """The pre-registration script, loaded by path so that it stays byte-identical."""
-    # The script keeps its original line `from moe_exp.final_routing.common import ...` because its bytes are
-    # bound by the pre-registration hash. That package no longer exists and its module is now `store`, so the old
-    # dotted name is registered here, with empty parent packages.
+    # The script's bytes are bound by the pre-registration hash, and it imports
+    # `moe_exp.final_routing.common`, whose contents are the module `store`. That dotted name is registered here,
+    # with empty parent packages.
     for name in ('moe_exp', 'moe_exp.final_routing'):
         parent = types.ModuleType(name)
         parent.__path__ = []
         sys.modules.setdefault(name, parent)
     sys.modules.setdefault('moe_exp.final_routing.common', store)
-    spec = importlib.util.spec_from_file_location('efficiency_link_v1', FROZEN_SCRIPT)
+    spec = importlib.util.spec_from_file_location('efficiency_link_prereg', FROZEN_SCRIPT)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     require(file_sha(FROZEN_SCRIPT) == verified(PREREG)['script']['sha256'], 'frozen estimator script changed')
@@ -153,10 +153,10 @@ def publish_link(estimator, directory: Path) -> dict:
             sys.argv = saved
     payload = captured.payload
     prereg = verified(PREREG)
-    old = {(c['model'], c['class']): c for c in prereg['cells']}
+    registered = {(c['model'], c['class']): c for c in prereg['cells']}
     for cell in payload['cells']:
         if cell['model'] != 'lfm25':
-            require(same(cell, old[cell['model'], cell['class']]),
+            require(same(cell, registered[cell['model'], cell['class']]),
                     f"pre-registered cell changed: {cell['model']} {cell['class']}")
     for model, sha in prereg['inputs']['native_parquet_sha256'].items():
         require(payload['inputs']['native_parquet_sha256'][model] == sha, f'pre-registered {model} table changed')
@@ -193,10 +193,9 @@ def driver_test() -> dict:
     families = sorted(pd.read_parquet(final/'continuations.parquet', columns=['family']).family.unique())
     benchmarks = {r['family']: r['benchmark'] for r in load(STUDY/'ALLOCATION.json')['records']}
     boot = Bootstrap(families, benchmarks)
-    # analysis-final ran the plain test (it predates the bounded-outcome wrapper). Its intervals came from
-    # an earlier version of the shared Bootstrap draws, so on the pre-registration today's code must
-    # reproduce every point estimate exactly; the 49-cell test is republished with today's intervals so
-    # that the 49- and 56-cell tests compare like for like.
+    # analysis-final holds the plain link test with its own bootstrap intervals. The current code must
+    # reproduce every point estimate of the pre-registration exactly; the 49-cell test is recomputed with the
+    # current Bootstrap draws so that the 49- and 56-cell tests compare like for like.
     published = verified(final/'EFFECTS.json')['efficiency_link']
     reproduced = clean(efficiency_link(verified(PREREG), pairs, boot))
     require(same(point_estimates(reproduced), point_estimates(published)),

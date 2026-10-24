@@ -1,7 +1,7 @@
-"""Present-state readout of the seven campaign-v3 models: does routing tell a sentence's class beyond its text?
+"""Present-state readout of the seven captured models: does routing tell a sentence's class beyond its text?
 
-Family-grouped refits from existing caches only: the token caches `_tok` and the saved sentence tables of the
-campaign. Per model it fits, for each of five outer family folds, a baseline, the routing-augmented model and five
+Family-grouped refits from saved caches only: the token caches `_tok` and the saved sentence tables of the
+capture. Per model it fits, for each of five outer family folds, a baseline, the routing-augmented model and five
 token-permutation nulls, with three inner folds choosing the penalty, twice (token identity only, and with the
 judge's previous/current/next sentence text). A model whose cache is incomplete is reported INCOMPLETE and nothing
 is produced for it. Takes about 5 hours on 4 CPUs (19 core-hours in all).
@@ -9,8 +9,8 @@ is produced for it. Takes about 5 hours on 4 CPUs (19 core-hours in all).
     python -m routing.readout --out DIR [--workers 4]
 
 DIR must be new: it gets FROZEN.readout.v3.json (the run's inputs and the code that ran), the fold checkpoints,
-one JSON per model and readout-results.v3.json. The inputs are compared with the first run's spec in HISTORICAL;
-that run's own files are bound by the LFM readout and are never rewritten.
+one JSON per model and readout-results.v3.json. The inputs are compared with the published run's spec in
+PUBLISHED_RUN; that run's own files are bound by the LFM readout and are never rewritten.
 """
 from __future__ import annotations
 
@@ -125,7 +125,7 @@ def analyse(sr, md, context_counts, mode, workers, family, family_ids, directory
            'penalties': penalties, 'seconds': time.monotonic() - started,
            'P_candidate_minus_baseline': -sr.question_bootstrap(losses['base'] - losses['aug'],
                                                              md.groups, md.w, 5000)['gain']}
-    # Independent family cluster uncertainty; original question weighting remains the estimand.
+    # Family-cluster uncertainty; the question-weighted mean remains the estimand.
     uniq, inv = np.unique(family_ids, return_inverse=True)
     rng = np.random.default_rng(SEED)
     weights = rng.multinomial(len(uniq), np.full(len(uniq), 1 / len(uniq)), size=5000)
@@ -156,26 +156,25 @@ def run(workers, out):
     started = time.monotonic()
     import numpy as np
     from routing.dp import common as cm, s3_readout as sr
-    # A copied helper resolves cm.RESULTS relative to the copy. Raw caches are
-    # explicitly pinned to the historical, read-only root instead.
-    def original_tok_path(model, row):
-        return ANALYSIS / 'depth-paths/results/s3/_tok' / model / f'{int(row):05d}.npz'
+    # The token caches are read from their saved, read-only location, not from the helper's own results folder.
+    def token_cache_path(model, row):
+        return cm.TOKEN_CACHE / model / f'{int(row):05d}.npz'
     from routing.dynrt.d3a_pairs import load_unit_texts, LABELS_ROOT
     from routing.dynrt.d3a_text import hash_counts
     family, qf = question_families()
     split = cm.load_split()
-    original_load = cm.load_attempts
+    load_attempts = cm.load_attempts
     tables, maps, missing, inputs = {}, {}, {}, [FAMILY_FREEZE, cm.SPLIT_PATH,
         ANALYSIS / 'forum/tests/r3_integrity/estimates.v2.json',
         ANALYSIS / 'forum/tests/r3_integrity/out/ids.v2.json',
         ANALYSIS / 'forum/tests/r3_integrity/out/absent.v2.json',
         ANALYSIS / 'forum/tests/r3_dynamics_validity/estimates.json']
     for model in MODEL_ORDER:
-        old = original_load(model, 'A')
-        mask = np.array([split[q] in ('dev', 'tune') for q in old['question']])
-        tables[model] = old.loc[mask].reset_index(drop=True)
+        attempts = load_attempts(model, 'A')
+        mask = np.array([split[q] in ('dev', 'tune') for q in attempts['question']])
+        tables[model] = attempts.loc[mask].reset_index(drop=True)
         maps[model] = np.flatnonzero(mask)
-        cache_paths = [original_tok_path(model, int(i)) for i in maps[model]]
+        cache_paths = [token_cache_path(model, int(i)) for i in maps[model]]
         absent = [str(p) for p in cache_paths if not p.exists()]
         missing[model] = absent
         inputs.extend([cm.V3R2 / model / 'A/attempts.parquet',
@@ -196,8 +195,8 @@ def run(workers, out):
         'context': 'retrospective s-1,s,s+1; explicit missing slots; no sparse-gap joins',
         'remaining_R3D_core_hours_reserved': 8.})
     freeze(out, 'FROZEN.readout.v3.json', specification)
-    cm.load_attempts = lambda m, c: tables[m] if c == 'A' else original_load(m, c)
-    sr.tok_path = lambda m, i: original_tok_path(m, int(maps[m][i]))
+    cm.load_attempts = lambda m, c: tables[m] if c == 'A' else load_attempts(m, c)
+    sr.tok_path = lambda m, i: token_cache_path(m, int(maps[m][i]))
     sr.cv.question_folds = lambda questions, n, seed: family_folds(questions, n, seed, qf)
     sr.FOLD_SEED = SEED
     results = {}

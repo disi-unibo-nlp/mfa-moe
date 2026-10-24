@@ -1,12 +1,12 @@
-"""Historical family-grouped readout analysis without module patching."""
+"""Family folds, run-spec freezing and the family-grouped fit loop shared by the readout analyses."""
 from pathlib import Path
 import json
 import time
 from store import ANALYSIS, WORK, digest, file_sha, load, require, seal, verified
 
-# The first seven-model run: its frozen specs fix the inputs a rerun must reproduce, and the LFM readout binds its files.
-HISTORICAL = ANALYSIS / 'forum/tests/r3_context'
-# Reports are untracked and live in the main checkout only.
+# The published seven-model run: its frozen specs fix the inputs a rerun must reproduce, and the LFM readout binds its files.
+PUBLISHED_RUN = ANALYSIS / 'forum/tests/r3_context'
+# Reports are not tracked in git; they live in the main checkout.
 FAMILY_FREEZE = WORK / 'mfa-moe/repo/report/experimental-resume-v1/family-freeze.json'
 SEED = 20260929
 
@@ -25,17 +25,17 @@ def code_hashes(*paths):
     return {str(path): file_sha(path) for path in sorted(files)}
 
 
-def freeze(out, name, spec, check_first_run=True):
+def freeze(out, name, spec, check_published_run=True):
     """Write the run spec `name` into the new folder `out`.
 
-    Its inputs must equal those of the first run (HISTORICAL/name), which must exist; only the code hashes, and so the
-    seal, may differ. A spec already in `out` must be identical, so a resumed run keeps its checkpoints.
-    `check_first_run=False` is for tests only."""
-    if check_first_run:
-        first = HISTORICAL / name
-        require(first.exists(), f'the first run\'s spec is missing: {first}')
+    Its inputs must equal those of the published run (PUBLISHED_RUN/name), which must exist; only the code hashes, and
+    so the seal, may differ. A spec already in `out` must be identical, so a resumed run keeps its checkpoints.
+    `check_published_run=False` is for tests only."""
+    if check_published_run:
+        published = PUBLISHED_RUN / name
+        require(published.exists(), f'the published run\'s spec is missing: {published}')
         inputs = lambda value: {k: v for k, v in value.items() if k not in ('code', 'sha256')}
-        require(inputs(load(first)) == inputs(spec), f'inputs differ from the first run: {first}')
+        require(inputs(load(published)) == inputs(spec), f'inputs differ from the published run: {published}')
     out.mkdir(parents=True, exist_ok=True)
     path = out / name
     if path.exists():
@@ -109,7 +109,7 @@ def analyse(sr, md, context_counts, mode, workers, family, family_ids, output_ro
            'penalties': penalties, 'seconds': time.monotonic() - started,
            'P_candidate_minus_baseline': -sr.question_bootstrap(losses['base'] - losses['aug'],
                                                              md.groups, md.w, 5000)['gain']}
-    # Independent family cluster uncertainty; original question weighting remains the estimand.
+    # Family-cluster uncertainty; the question-weighted mean remains the estimand.
     uniq, inv = np.unique(family_ids, return_inverse=True)
     rng = np.random.default_rng(SEED)
     weights = rng.multinomial(len(uniq), np.full(len(uniq), 1 / len(uniq)), size=5000)

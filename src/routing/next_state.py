@@ -28,43 +28,42 @@ import pandas as pd
 from scipy import sparse
 
 import store
-from store import ANALYSIS, CLASSES, MODELS, digest, file_sha, load, publish, require, verified
+from store import CLASSES, MODELS, digest, file_sha, load, publish, require, verified
 from routing import readout_analysis, readout_fit as sr
-from routing.dp import common as cm, s3_readout as historical
-from routing.lfm_readout import HISTORICAL
+from routing.dp import common as cm, s3_readout
 
-# The historical present-state readout of the seven campaign-v3 models: its frozen population and the
-# token caches its loader reads (routing/readout.py binds the same files).
-FROZEN = HISTORICAL/'FROZEN.readout.v3.json'
-TOKEN_CACHE = ANALYSIS/'depth-paths/results/s3/_tok'
+# The seven-model present-state readout: its frozen population and the token caches its loader reads
+# (routing/readout.py binds the same files).
+FROZEN = readout_analysis.PUBLISHED_RUN/'FROZEN.readout.v3.json'
+TOKEN_CACHE = cm.TOKEN_CACHE
 LAYERS_EXPERTS_LFM = (38, 64)
 CODE = ('next_state.py', 'readout_fit.py', 'readout_analysis.py')
 
 
-def campaign_model(model: str) -> sr.ModelData:
-    """Labelled sentences and token routing of one campaign-v3 model, as the historical readout loads them.
+def captured_model(model: str) -> sr.ModelData:
+    """Labelled sentences and token routing of one captured model, as the seven-model readout loads them.
 
-    The historical loader reads cohort A; the readout kept its dev and tune questions (522) and mapped
-    each kept attempt to its token cache by its original row.
+    The loader reads cohort A; the readout keeps its dev and tune questions (522) and maps each kept
+    attempt to its token cache by its row in the full cohort-A table.
     """
     split = cm.load_split()
     attempts = cm.load_attempts(model, 'A')
     keep = np.array([split[q] in ('dev', 'tune') for q in attempts['question']])
-    table, original_rows = attempts.loc[keep].reset_index(drop=True), np.flatnonzero(keep)
-    original_load = cm.load_attempts
-    cm.load_attempts = lambda m, c: table if (m, c) == (model, 'A') else original_load(m, c)
-    historical.tok_path = lambda m, i: TOKEN_CACHE/m/f'{int(original_rows[i]):05d}.npz'
+    table, cohort_rows = attempts.loc[keep].reset_index(drop=True), np.flatnonzero(keep)
+    load_attempts = cm.load_attempts
+    cm.load_attempts = lambda m, c: table if (m, c) == (model, 'A') else load_attempts(m, c)
+    s3_readout.tok_path = lambda m, i: TOKEN_CACHE/m/f'{int(cohort_rows[i]):05d}.npz'
     try:
-        md = historical.load_model(model)
+        md = s3_readout.load_model(model)
     finally:
-        cm.load_attempts = original_load
+        cm.load_attempts = load_attempts
     require(set(md.groups) == set(load(FROZEN)['ids'][model]), f'{model}: readout population differs')
     return sr.ModelData(md.model, md.L, md.E, md.sent, md.y, md.groups, md.w, md.base, md.bag, md.top1,
                         md.tok_sent, md.tokid, md.tok_abs, md.adj, md.n_before_filter)
 
 
 def lfm_model(questions: set) -> sr.ModelData:
-    """LFM2.5's labelled discovery sentences and their replayed routing, as readouts.lfm loads them."""
+    """LFM2.5's labelled discovery sentences and their replayed routing, as `routing.lfm_readout` loads them."""
     binding = store.binding()
     root, bulk = Path(binding['root']), Path(binding['config']['bulk_root'])
     inputs = verified(root/'lfm25/DISCOVERY_INPUTS.json')
@@ -155,7 +154,7 @@ def run(model: str) -> dict:
     require(not target.exists(), f'{target} exists')
     question_family = load(Path(binding['source_campaign'])/'FOLDS.json')['question_families']
     questions = set(load(FROZEN)['ids']['gpt'])
-    md = lfm_model(questions) if model == 'lfm25' else campaign_model(model)
+    md = lfm_model(questions) if model == 'lfm25' else captured_model(model)
     pairs = adjacent_pairs(md, question_family, MODELS.index(model))
     provenance = {'code': {name: file_sha(Path(__file__).with_name(name)) for name in CODE},
                   'frozen_readout_sha256': file_sha(FROZEN), 'binding_sha256': binding['sha256']}

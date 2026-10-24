@@ -2,7 +2,7 @@
 
 It runs the same fits as the seven-model readout (readout_fit, readout_analysis) on LFM's replayed routing and
 its 522 readout questions, twice: token identity only, and with the judge's previous/current/next sentence text.
-The population is the one frozen in HISTORICAL/FROZEN.readout.v3.json (the seven-model run's inputs).
+The population is the one frozen in PUBLISHED_RUN/FROZEN.readout.v3.json (the seven-model run's inputs).
 
     python -m routing.lfm readout --out DIR      (about 1.5 h on 4 CPUs); result: DIR/READOUT_RESULTS.json
 
@@ -15,8 +15,8 @@ import numpy as np
 import pandas as pd
 from scipy import sparse
 
-from routing import readout_analysis as historical, readout_fit as sr
-from routing.readout_analysis import HISTORICAL
+from routing import readout_analysis, readout_fit as sr
+from routing.readout_analysis import PUBLISHED_RUN
 from routing.readout_text import hash_counts
 from store import check_files, digest, file_sha, load, publish, require, verified
 
@@ -51,13 +51,13 @@ def lfm(binding, out):
     inputs = verified(root/'lfm25/DISCOVERY_INPUTS.json')
     folds_path = Path(binding['source_campaign'])/'FOLDS.json'
     sampled_path = bulk/'lfm25/SAMPLED_SENTENCES.json'
-    # The checkpoints are keyed by code as well as data, so a fix never reuses old fits.
+    # The checkpoints are keyed by code as well as data, so a changed fit never reuses earlier checkpoints.
     provenance = provenance_of(binding)
     check_published(binding, provenance)
     check_files(binding['readout_files'])
-    frozen = load(HISTORICAL/'FROZEN.readout.v3.json')
+    frozen = load(PUBLISHED_RUN/'FROZEN.readout.v3.json')
     questions = set(frozen['ids']['gpt'])
-    require(len(questions) == 522, 'original readout population differs')
+    require(len(questions) == 522, 'readout population differs from the published run')
     sent = pd.read_parquet(inputs['sentences'])
     sent = sent[sent.question.isin(questions)].copy().sort_values(['attempt_id','tok_start']).reset_index(drop=True)
     require(set(sent.question) == questions, 'LFM common-population readout has unavailable questions')
@@ -67,8 +67,8 @@ def lfm(binding, out):
     row_of = {s:i for i,s in enumerate(sorted(sent.attempt_id.unique()))}
     sent['row'] = sent.attempt_id.map(row_of)
     top, tsent, tokid, tabs, adjacency = [], [], [], [], []
-    # Context slots read every sampled unit of the attempt, unknown labels included, as the historical
-    # load_unit_texts does; only sentences without any sampled unit stay '<missing>'.
+    # Context slots read every sampled unit of the attempt, unknown labels included, as
+    # `dynrt.d3a_pairs.load_unit_texts` does; only sentences without any sampled unit stay '<missing>'.
     attempts = set(sent.attempt_id)
     text_lookup = {(r['attempt_id'], r['sentence_index']): r['text'] for r in verified(sampled_path)['records']
                    if r['attempt_id'] in attempts}
@@ -109,7 +109,7 @@ def lfm(binding, out):
     from threadpoolctl import threadpool_limits
     for mode in ('token_identity','judge_context'):
         with threadpool_limits(limits=1):
-            results[mode] = historical.analyse(sr,md,counts,mode,4,family,np.asarray([qf[q] for q in groups]), out)
+            results[mode] = readout_analysis.analyse(sr,md,counts,mode,4,family,np.asarray([qf[q] for q in groups]), out)
     require(all(v['status']=='CLEAN' for v in results.values()),'LFM readout or lexical-null validation failed')
     return publish(target, {'status':'complete','models':{'lfm25':results},'historical_binding':frozen['sha256'],
         'questions':522,'families':len({qf[q] for q in questions}),'lexical_nulls':5,'provenance':provenance,
