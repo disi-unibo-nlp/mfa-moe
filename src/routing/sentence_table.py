@@ -64,7 +64,7 @@ def pairs_dir(model: str) -> Path:
 
 
 def receipt_dir(model: str) -> Path:
-    """Compact receipts of this model's transition-pair work, inside the final-routing campaign report."""
+    """Compact receipts of this model's transition-pair work, inside the study report."""
     return STUDY/'transition-pairs'/model
 
 
