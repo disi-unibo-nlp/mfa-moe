@@ -107,10 +107,13 @@ def _attempt_rate(task: tuple[str, str, int]) -> np.ndarray:
     return (rate/len(reasoning)).astype(np.float32)
 
 
-def usage(model: str, reports: Path, workers: int = 4, out: Path = BULK) -> dict:
+def usage(model: str, reports: Path, workers: int = 4, out: Path | None = None) -> dict:
     """Write out/MODEL/USAGE.npz (rates) and USAGE.json (attempts, outcomes, hashes) for one model.
 
-    `out` is where selection() and the outcome release (steering.release outcome) read the usage from: BULK."""
+    `out` defaults to BULK, where selection() and the outcome release (steering.release outcome) read the usage
+    from. A model whose usage is already measured in `out` is refused: the tables are never overwritten."""
+    folder = (out or BULK)/model
+    require(not (folder/'USAGE.json').exists(), f'the usage of {model} is already measured in {folder}')
     nominations = class_nominations(reports, model)
     attempts = cohort_attempts(model)
     strict = strict_outcomes(model, attempts)
@@ -118,7 +121,6 @@ def usage(model: str, reports: Path, workers: int = 4, out: Path = BULK) -> dict
     with ProcessPoolExecutor(workers) as pool:
         rates = np.stack(list(pool.map(_attempt_rate, tasks)))
     require(rates.shape[1] == len(nominations['layers']), 'capture layers differ from nominations')
-    folder = out/model
     folder.mkdir(parents=True, exist_ok=True, mode=0o700)
     np.savez(folder/'USAGE.npz', rates=rates)
     return publish(folder/'USAGE.json', {

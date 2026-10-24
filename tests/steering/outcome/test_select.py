@@ -1,9 +1,13 @@
 """Outcome selection on synthetic routing: scores, stability, protection and the chosen sets."""
+from pathlib import Path
+import tempfile
 import unittest
+from unittest.mock import patch
 
 import numpy as np
 
 from steering.outcome import select
+from store import WORK
 
 
 def toy_rates(questions=6, attempts=6, layers=4, experts=16, seed=0):
@@ -31,6 +35,43 @@ def toy_nominations(layers=(10, 11, 12, 13), experts=16, k=2):
             records.append({'fold': fold, 'class': name, 'frequency': frequency.tolist(), 'native_k': k,
                             'candidates': {'positive': positive, 'negative': []}})
     return {'layers': list(layers), 'experts': experts, 'records': records, 'sha256': 'x'}
+
+
+class UsageFolderTests(unittest.TestCase):
+    """`usage` writes MODEL/USAGE.json and USAGE.npz under the folder it is given, and touches no other."""
+    class InlinePool:
+        def __init__(self, workers):
+            pass
+
+        def __enter__(self):
+            return self
+
+        def __exit__(self, *error):
+            return False
+
+        def map(self, function, tasks):
+            return map(function, tasks)
+
+    def test_usage_lands_in_the_out_folder(self):
+        with tempfile.TemporaryDirectory(dir=WORK/'tools/tmp') as temporary:
+            base = Path(temporary)
+            outcomes = base/'outcomes.parquet'
+            outcomes.write_bytes(b'table')
+            attempts = [{'attempt': f'a{i}', 'question': 'aime24|q', 'tensor': f't{i}', 'tensor_sha256': 'x'} for i in range(2)]
+            with patch.object(select, 'cohort_attempts', return_value=attempts), \
+                    patch.object(select, 'strict_outcomes', return_value=[True, False]), \
+                    patch.object(select, 'class_nominations', return_value={'experts': 4, 'layers': [0, 1]}), \
+                    patch.object(select, '_attempt_rate', return_value=np.ones((2, 4), dtype=np.float32)), \
+                    patch.object(select, 'ProcessPoolExecutor', self.InlinePool), \
+                    patch.object(select, 'OUTCOMES', outcomes), patch.object(select, 'BULK', base/'default'):
+                receipt = select.usage('gpt', base/'reports', 1, base/'usage')
+                self.assertEqual(receipt['shape'], [2, 2, 4])
+                self.assertTrue((base/'usage/gpt/USAGE.json').is_file() and (base/'usage/gpt/USAGE.npz').is_file())
+                self.assertFalse((base/'default').exists())
+                select.usage('qwen330b', base/'reports', 1)  # without an out folder it writes to BULK, as the release reads it
+                self.assertTrue((base/'default/qwen330b/USAGE.json').is_file())
+                with self.assertRaisesRegex(ValueError, 'already measured'):  # published tables are never overwritten
+                    select.usage('gpt', base/'reports', 1, base/'usage')
 
 
 class ScoreTests(unittest.TestCase):
