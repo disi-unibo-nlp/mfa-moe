@@ -12,7 +12,7 @@ from unittest.mock import patch
 
 import pandas as pd
 
-from steering import pulsed_steering as pulse, whole_reasoning as whole, whole_reasoning_effects as whole_effects
+from steering import pulsed_steering as pulse, whole_reasoning as whole, whole_reasoning_effects
 from store import CLASSES, WORK, digest, load, publish
 
 TMP = WORK/'tools/tmp'
@@ -88,14 +88,14 @@ class ComplementManifestTests(unittest.TestCase):
             publish(root/'gemma/extraction/EXTRACTION.json',
                     {'manifest_sha256': load(whole.manifest_path('gemma', 'main', root))['sha256']})
         source = {'model': 'gemma', 'dose': 'main', 'root': str(self.parent), 'complements': [str(self.root)]}
-        table = whole_effects._source_table(source)
+        table = whole_reasoning_effects._source_table(source)
         self.assertEqual(len(table), 3+20)
         self.assertEqual(int(table.complement.eq(True).sum()), 20)
         foreign = Path(self.directory.name)/'foreign'
         publish(whole.manifest_path('gemma', 'main', foreign), {'design': 'complement', 'records': [],
                                                                 'parent_manifest_sha256': 'other'})
         with self.assertRaisesRegex(ValueError, 'complement belongs to another manifest'):
-            whole_effects._source_table({**source, 'complements': [str(foreign)]})
+            whole_reasoning_effects._source_table({**source, 'complements': [str(foreign)]})
 
 
 class ContinuationTests(unittest.TestCase):
@@ -249,7 +249,7 @@ class ContinuationTests(unittest.TestCase):
             pd.DataFrame([{'uid': uid, **observed} for uid in uids]).to_parquet(root/'gemma/extraction/outcomes.parquet')
         source = {'model': 'gemma', 'root': str(self.base_release), 'dose': 'main',
                   'complements': [str(self.complement), str(self.child)]}
-        table = whole_effects._source_table(source)
+        table = whole_reasoning_effects._source_table(source)
         # The follow-up adds outcomes, never rows: 2 natives plus the 20 complement rows.
         self.assertEqual(len(table), 2+len(self.complement_manifest['records']))
         self.assertEqual(table.uid.is_unique, True)
@@ -262,10 +262,10 @@ class ContinuationTests(unittest.TestCase):
         self.assertEqual(table.set_index('uid').release[self.never_started[0]['uid']], self.base_release.name)
         # A follow-up whose parent is not listed before it, or a row run by both releases, is refused.
         with self.assertRaisesRegex(ValueError, 'continuation belongs to another manifest'):
-            whole_effects._source_table({**source, 'complements': [str(self.child)]})
+            whole_reasoning_effects._source_table({**source, 'complements': [str(self.child)]})
         pd.DataFrame([{'uid': self.finished['uid'], **observed}]).to_parquet(self.child/'gemma/extraction/outcomes.parquet')
         with self.assertRaisesRegex(ValueError, 'duplicate whole extracted UID'):
-            whole_effects._source_table(source)
+            whole_reasoning_effects._source_table(source)
 
 
 class SlowPublish:

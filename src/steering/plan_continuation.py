@@ -57,8 +57,9 @@ def fit_shards(needed: dict[str, int], limit: int) -> dict[str, int]:
 def submitted_jobs(root: Path) -> dict[str, list[dict]]:
     """The jobs a release submitted, as {'run': [...], 'extract': [...]} with {id, model, shard} for each.
 
-    Reads JOBS.txt (written by scripts/steering/submit_release_jobs.sh; releases sealed before the module
-    renames name steering.whole there) or, in a release that holds JOBS.json instead, that file.
+    Reads JOBS.txt (written by scripts/steering/submit_release_jobs.sh; its commands name the module
+    steering.whole_reasoning, and the JOBS.txt of earlier releases names it steering.whole) or, in a release
+    that holds JOBS.json instead, that file.
     """
     jobs = {'run': [], 'extract': []}
     if (root/'JOBS.txt').exists():
