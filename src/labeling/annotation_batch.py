@@ -133,12 +133,12 @@ def run_part(rows, config, *, output_dir, classify):
         summary["unknown_count"] = unknown_count
     for path, value in ((root / "annotations.json", saved), (root / "summary.json", summary)):
         if path.exists():
-            old = json.loads(path.read_text(encoding="utf-8"))
-            if path.name == "summary.json" and old.get("binding_sha256") != value["binding_sha256"]:
+            existing = json.loads(path.read_text(encoding="utf-8"))
+            if path.name == "summary.json" and existing.get("binding_sha256") != value["binding_sha256"]:
                 stored = json.loads(sorted(checkpoints.glob("*.json"))[0].read_text(encoding="utf-8"))["binding"]
-                if digest(stored) == old["binding_sha256"] and _without_server(stored) == binding:
-                    old["binding_sha256"] = value["binding_sha256"]
-            if old != value:
+                if digest(stored) == existing["binding_sha256"] and _without_server(stored) == binding:
+                    existing["binding_sha256"] = value["binding_sha256"]
+            if existing != value:
                 raise ValueError("stale completed output")
         else:
             _publish(path, value)

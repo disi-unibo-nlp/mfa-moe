@@ -103,7 +103,7 @@ def compute_layer_features(
         raise ValueError(f"Invalid top_k={top_k} for {num_experts} experts")
 
     aggregate: dict[str, list[float]] = {}
-    for layer, original_layer in enumerate(layer_indices):
+    for layer, absolute_layer in enumerate(layer_indices):
         probabilities = F.softmax(router_logits[layer].to(torch.float32), dim=-1)
         entropy = -(probabilities * probabilities.clamp_min(1e-12).log()).sum(dim=-1)
         confidence = (
@@ -186,7 +186,7 @@ def compute_layer_features(
             )
 
         for name, value in layer_values.items():
-            features[f"{name}_l{original_layer:02d}"] = value
+            features[f"{name}_l{absolute_layer:02d}"] = value
             aggregate.setdefault(name, []).append(value)
 
     for name, values in aggregate.items():

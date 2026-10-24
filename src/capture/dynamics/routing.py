@@ -98,9 +98,9 @@ class RoutingReducer:
         while offset < n:
             length = min(n - offset, self.stride - self.count % self.stride)
             for name, values in incoming.items():
-                old = self.buffers.get(name)
+                kept = self.buffers.get(name)
                 new = values[offset:offset + length].copy()
-                self.buffers[name] = new if old is None else np.concatenate((old, new))[-self.limit:]
+                self.buffers[name] = new if kept is None else np.concatenate((kept, new))[-self.limit:]
             offset += length
             self.count += length
             if self.count % self.stride == 0:

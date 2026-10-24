@@ -113,7 +113,7 @@ def test_checkpoint_key_binds_traces_program_and_decoding_but_not_the_server(tmp
     assert first == module.checkpoint_config({'traces': 'plan'}, b'program')
     assert module.checkpoint_config({'traces': 'plan'}, b'other program') != first
     assert module.checkpoint_config({'traces': 'other plan'}, b'program') != first
-    # The keys and values every published checkpoint was written with.
+    # The keys and values of the checkpoint key (fixed: they are part of every checkpoint's binding).
     assert {key: first[key] for key in first if key != 'source_plan_sha256' and key != 'program_sha256'} == {
         'judge_model': 'Qwen/Qwen3.8-27B', 'batch_size': 64, 'max_tokens': 16384, 'temperature': 1.0, 'top_p': 0.95,
         'top_k': 20, 'min_p': 0.0, 'presence_penalty': 0.0, 'repetition_penalty': 1.0, 'reasoning_effort': 'low',

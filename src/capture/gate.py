@@ -22,6 +22,8 @@ from capture.manifest import atomic, capture_folders, load_manifest, resume_reco
 from provenance import code_provenance
 from store import file_sha
 
+# Fields that every shard manifest must share with `ready.json` (`code_binding` is the hash of the code bundle the
+# manifests were planned with).
 SHARED_KEYS = ('source', 'cohort', 'spec', 'validation_binding', 'code_binding', 'cohort_binding', 'cohort_model',
                'cohort_manifest_path', 'maximum_input_tokens', 'storage_root')
 

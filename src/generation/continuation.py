@@ -39,7 +39,7 @@ TRACES_32K = {
 }
 DATASETS = ("math500", "aime24", "aime25", "olympiad", "amc23", "minerva")
 CUMULATIVE_BUDGET = 131_072
-SEED_OFFSET = 7_000_003  # continuation seed = original sample seed + offset (distinct stream)
+SEED_OFFSET = 7_000_003  # continuation seed = seed of the parent sample + offset (distinct stream)
 CONTINUATION_CONTRACT_VERSION = 1
 
 

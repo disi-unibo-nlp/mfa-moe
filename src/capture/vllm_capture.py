@@ -211,7 +211,7 @@ class MeasurementWorkerExtension:
 
         for layer in found:
             decoders[layer].register_forward_pre_hook(hidden_hook(layer), with_kwargs=True)
-        original = self.model_runner._model_forward
+        native_forward = self.model_runner._model_forward
 
         def forward(*args, **kwargs):
             if args or owner['frame'] is not None:
@@ -234,7 +234,7 @@ class MeasurementWorkerExtension:
                                            positions)
             before = {layer: hook.dispatches for layer, hook in owner['hooks'].items()}
             try:
-                result = original(**kwargs)
+                result = native_forward(**kwargs)
                 # Every routed layer must have gone through exactly one capture.
                 if any(hook.pending is not None or hook.dispatches != before[layer] + 1
                        for layer, hook in owner['hooks'].items()):

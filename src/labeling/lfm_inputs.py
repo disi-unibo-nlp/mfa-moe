@@ -23,19 +23,19 @@ def population(binding):
     if destination.exists():
         return verified(destination)
     source = Path(binding['source_campaign'])
-    original = load(source/'gpt/NATIVE_ESTIMANDS.json')['records']
+    gpt_native = load(source/'gpt/NATIVE_ESTIMANDS.json')['records']
     folds = load(source/'FOLDS.json')
     rows = []
-    for old in original:
-        trace = read_source(old['original_source'])
+    for native in gpt_native:
+        trace = read_source(native['original_source'])
         example = {k: trace.get(k) for k in ('dataset', 'problem_id', 'source_problem_id', 'sample_id', 'prompt', 'system_prompt', 'gold_answer')}
         example['generation_messages'] = trace.get('generation_messages') or trace.get('metadata', {}).get('generation_messages')
-        r = {'model': 'lfm25', 'benchmark': old['benchmark'], 'family': old['family'],
-             'fold': folds['folds'][old['family']], 'native_example': example, 'source': None,
+        r = {'model': 'lfm25', 'benchmark': native['benchmark'], 'family': native['family'],
+             'fold': folds['folds'][native['family']], 'native_example': example, 'source': None,
              'arm': 'native', 'action': None, 'pulse_tokens': 0, 'horizon': 512,
              'profile_sha256': binding['models']['lfm25']['profile_sha256'],
-             'seed': seed_for(binding['config']['seed'], 'lfm-native', old['attempt_identity'][:3]),
-             'population_source': old['original_source'], 'original_attempt_identity': old['attempt_identity'][:3]}
+             'seed': seed_for(binding['config']['seed'], 'lfm-native', native['attempt_identity'][:3]),
+             'population_source': native['original_source'], 'original_attempt_identity': native['attempt_identity'][:3]}
         r['uid'] = digest(r)
         rows.append(r)
     require(len(rows) == 4647 and len({r['uid'] for r in rows}) == 4647, 'native population differs')
