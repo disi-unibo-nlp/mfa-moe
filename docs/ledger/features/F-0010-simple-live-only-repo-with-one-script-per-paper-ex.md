@@ -6,7 +6,7 @@
 - acceptance: (1) find scripts -name '*.py' and find src -name '*.sh' are empty; (2) every paper experiment has one script listed in the top README; (3) rerunning every CPU analysis and the paper exporters with the new code gives outputs identical to the golden baseline from commit 978f011 (mfa-moe/r/polish-golden/, provenance keys ignored); (4) all tests pass; (5) /simplify and /code-review high ran on every step with confirmed findings fixed.
 - keywords: cleanup, layout, scripts, readme, simplify, legacy, archive, vllm serve, env.sh, release.sh
 - paths: scripts, src, tests
-- decisions: 
+- decisions: D-0007
 
 ## Tasks
 
@@ -15,16 +15,19 @@
 - [x] F-0010.3 Bring the external code that produced paper numbers into the repo unchanged (router capture, readout helpers dp/dynrt/rkin, benchmark table builder, release sealers); evidence: 1b2c8ab
 - [x] F-0010.4 Copy the few functions live code takes from old campaigns into live modules, then remove old campaign code and dead code from the tree; evidence: a1a7438, 317f743, 9bf27e3; full suite job 61960382 334 passed (3 errors also on the tag)
 - [x] F-0010.5 Reorganize live code into topic packages (generation, labeling, capture, routing, steering, paper) with matching scripts/ folders and tests/; evidence: e6b924e..66f0741, merge 12854a8 (F-0011 next_state), review fixes 477fad3
-- [ ] F-0010.6 Bash: one shared Slurm env file, a ~6-line vLLM serve script per model and the judge, one script per paper experiment, one release script
-- [ ] F-0010.7 Simplify the live Python topic by topic (drop unused designs, move Slurm plumbing out of Python), each topic identical on the golden comparison, /simplify and /code-review high applied
-- [ ] F-0010.8 Plain-language README per folder and a top README mapping each paper experiment to its script and receipt; update CLAUDE.md, AGENTS.md, RUNBOOK, memory; retrace stale walkthroughs
+- [x] F-0010.6 Bash: one shared Slurm env file, a ~6-line vLLM serve script per model and the judge, one script per paper experiment, one release script; evidence: 2c37a70..b0db3a4, fe69325, b0db3a4; release sealing is `python -m steering.release` via scripts/steering/whole.sh (the bash release.sh was dropped as a second mechanism); /simplify + /code-review high applied
+- [x] F-0010.7 Simplify the live Python topic by topic (drop unused designs, move Slurm plumbing out of Python), each topic identical on the golden comparison, /simplify and /code-review high applied; evidence: merges of s6/{capture,paper,generation,labeling,routing,steering} and s6/fixes (40cace8..4cf4752); per-topic golden reports in mfa-moe/r/polish-s6-*/
+- [x] F-0010.8 Plain-language README per folder and a top README mapping each paper experiment to its script and receipt; update CLAUDE.md, AGENTS.md, RUNBOOK, memory; retrace stale walkthroughs; evidence: s7/docs merge, 3e8251f, d161d2f, s9/ledger merge (W-0002..W-0004 retraced, W-0006..W-0011 new, ledger check 0 errors)
 - [ ] F-0010.9 End-to-end check: full golden rerun identical, paper export and build unchanged, all tests pass, final /code-review high
-- [ ] F-0010.10 Merge into analysis/routing-dynamics after the r18/r20 exports have run; rerun the checks on the merged tree
+- [ ] F-0010.10 Merge into main and push (user 2026-10-23: "at the end I need to merge and push everything refactored and simplified to main") after the r18/r20 exports have run (done 2026-10-24 06:31/06:53); rerun the checks on the merged tree
 
 ## Results
 
 | Metric | Dataset | Baseline | Result | Evidence |
 |---|---|---|---|---|
+| Python lines in src | live code | 124k (src/moe_exp at 978f011, plus 119k in scripts/experimental_resume) | 29.3k | `find src -name '*.py' \| xargs cat \| wc -l` |
+| CPU analyses equal to golden | 15 golden analyses | golden 978f011 | identical where rerun (c, d, e-pickles, f, g-vs-WIP; a, b see F-0010.9) | mfa-moe/r/polish-final/ |
+| Tests | tests/ | 334 passed at 4c steps 2-4 | 476 passed, 3 skipped, 0 failed | job 62117100 |
 
 ## Carry-over for F-0010.7 (from the code review of steps 2-4)
 
