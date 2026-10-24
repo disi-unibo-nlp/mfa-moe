@@ -5,7 +5,7 @@
 - purpose: Measure strict accuracy and reasoning length against matched random and native, retaining capped and missing outcomes as bounds.
 - acceptance: 129 frozen families; up to 3096 GPT and 2838 Qwen rows, with non-nominated cells excluded; source-bound fresh execution; allocated full CPU suite/prepare and passing 48-row per-model canaries; six shared simultaneous contrasts and mandatory companions/manipulation/dose reporting. Continuous 64-slot admission, 2 GPT/7 Qwen unheld shards, relative fluency gates and a monitor whose deadline/errors never stop production. New GPU-hours at most 72, retained r3 0.346111 separately; CPU-only core-hours at most 16; science cutoff 2026-10-23 05:30 Europe/Rome.
 - keywords: whole, efficiency, SteerMoE, routing, canary, budget
-- paths: src/moe_exp/study, src/moe_exp/final_routing, tests/study, scripts/study
+- paths: src/steering, tests/steering, scripts/steering
 - decisions: D-0002
 
 ## Tasks
