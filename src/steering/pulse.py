@@ -22,19 +22,19 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import sys
 import tempfile
 import time
 from pathlib import Path
 from provenance import code_provenance
-from store import CLASSES, MODELS, REPO, digest, file_sha, load, private, publish, require, verified
+from store import CLASSES, DRIVER, MODELS, STUDY, binding, digest, file_sha, load, private, publish, require, verified
 
-ROOT = Path(os.environ.get('STUDY_DATA_ROOT', REPO/'report/final-routing-20261015-r1'))
-DRIVER = ROOT/'driver'
 SELECTOR = 'one-layer-per-fold-class: training association, then stability, then layer ID'
 
 
-def binding():
-    return load(ROOT/'BINDING.json')
+def code_record():
+    """Which code and which Python ran a job."""
+    return {**code_provenance(), 'python': sys.version.split()[0]}
 
 
 # Additive float telemetry; every routing decision and integer counter must still agree exactly.
@@ -125,9 +125,9 @@ def reduce_rows(rows, chosen):
 
 def plan(models=None):
     out = {}
-    for model in models or [m for m in MODELS if (ROOT/m/'ASSIGNMENTS-full.json').exists()]:
-        source = verified(ROOT/model/'ASSIGNMENTS-full.json')
-        nominations = verified(ROOT/model/'COUNT_NOMINATIONS.json')
+    for model in models or [m for m in MODELS if (STUDY/m/'ASSIGNMENTS-full.json').exists()]:
+        source = verified(STUDY/model/'ASSIGNMENTS-full.json')
+        nominations = verified(STUDY/model/'COUNT_NOMINATIONS.json')
         chosen, evidence = select_layers(nominations['records'])
         require(len(chosen) == 35, f'{model}: a fold/class lacks a nominated layer')
         rows, unavailable = reduce_rows(source['records'], chosen)
@@ -156,7 +156,7 @@ def plan_strong(models, seed_tag='strong-dose-v1'):
     (common random numbers)."""
     out = {}
     for model in models:
-        nominations = verified(ROOT/model/'COUNT_NOMINATIONS.json')
+        nominations = verified(STUDY/model/'COUNT_NOMINATIONS.json')
         by = {}
         for n in nominations['records']:
             if n['status'] == 'nominated' and n['expert_sets'][2] and n['control_sets'][2]:
@@ -640,7 +640,7 @@ def execute_rows(b, model, rows, store, deadline, *, max_inflight, design, shard
         llm.llm_engine.engine_core.shutdown()
     receipt = {'model': model, 'shard': list(shard), 'job': os.environ.get('SLURM_JOB_ID'), 'load_seconds': load_seconds,
                'engine': {k: v for k, v in kwargs.items() if k != 'logits_processors'}, 'metrics': metrics,
-               'native_validation': validation[0], 'code': code_provenance()}
+               'native_validation': validation[0], 'code': code_record()}
     publish(bulk(b)/model/'jobs'/(design+'-'+os.environ.get('SLURM_JOB_ID', 'local')+'.json'), receipt)
     log({'event': 'end', **receipt})
     return receipt
@@ -725,7 +725,7 @@ def lfm_native(shard, deadline):
     finally:
         llm.llm_engine.engine_core.shutdown()
     receipt = {'stage': 'lfm-native', 'shard': list(shard), 'job': os.environ.get('SLURM_JOB_ID'),
-               'load_seconds': load_seconds, 'metrics': metrics, 'code': code_provenance()}
+               'load_seconds': load_seconds, 'metrics': metrics, 'code': code_record()}
     publish(bulk(b)/'lfm25/jobs'/('native-'+os.environ.get('SLURM_JOB_ID', 'local')+'.json'), receipt)
     log({'event': 'end', **receipt})
     return receipt
@@ -743,7 +743,7 @@ def lfm_annotate(shard, deadline):
     parent = load(Path(b['source_campaign'])/'CAMPAIGN.json')
     a = parent['annotator']
     require(a['config']['max_tokens'] == 16384, 'fixed reader allowance changed')
-    rows = verified(ROOT/'lfm25/ANNOTATION_TASKS.json')['records']
+    rows = verified(STUDY/'lfm25/ANNOTATION_TASKS.json')['records']
     rows = [r for i, r in enumerate(rows) if i % shard[1] == shard[0]]
     units = Units(Path(b['config']['bulk_root'])/'reader/annotations')
     store = Store(bulk(b)/'reader-progress')
@@ -791,7 +791,7 @@ def lfm_annotate(shard, deadline):
         finally:
             renderer.close()
     receipt = {'stage': 'lfm-annotate', 'shard': list(shard), 'job': os.environ.get('SLURM_JOB_ID'),
-               'load_seconds': load_seconds, 'metrics': metrics, 'code': code_provenance()}
+               'load_seconds': load_seconds, 'metrics': metrics, 'code': code_record()}
     publish(bulk(b)/'lfm25/jobs'/('annotate-'+os.environ.get('SLURM_JOB_ID', 'local')+'.json'), receipt)
     log({'event': 'end', **receipt})
     return receipt
@@ -800,7 +800,7 @@ def lfm_annotate(shard, deadline):
 def lfm_replay(shard, deadline):
     from capture.lfm_replay import replay
     b = binding()
-    sources = verified(ROOT/'lfm25/SOURCES.json')['records']
+    sources = verified(STUDY/'lfm25/SOURCES.json')['records']
     rows = [s for i, s in enumerate(sources) if i % shard[1] == shard[0]]
     rows = [s for s in rows if not (Path(b['config']['bulk_root'])/'lfm25/replay'/(s['attempt_id']+'.json')).exists()]
     log({'event': 'start', 'stage': 'lfm-replay', 'pending': len(rows)})

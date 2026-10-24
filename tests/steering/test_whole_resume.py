@@ -489,7 +489,7 @@ class ResumeAnalysisJoinTests(unittest.TestCase):
                      'nomination_status': 'nominated', 'arm': 'native', 'operation': 'native', 'class': None}
                     for name in ('done', 'cut')]
             planned = publish(whole.manifest_path('gpt', 'half', base), {'records': rows})
-            publish(whole.manifest_path('gpt', 'half', resume), {
+            follow_up = publish(whole.manifest_path('gpt', 'half', resume), {
                 'records': rows[1:], 'parent_manifest_sha256': planned['sha256'], 'design': 'resume'})
             store = driver.Store(base/'stores/gpt/half/units')
             publish(store.folder(rows[0]['uid'])/'RESULT.json', {'status': 'complete'})
@@ -497,8 +497,9 @@ class ResumeAnalysisJoinTests(unittest.TestCase):
             # The parent's extraction skips the interrupted row: it stays missing there.
             self.assertIsNone(whole_effects._extract_one(rows[1], b={}, model='gpt', tokenizer=None, close=None,
                                                          store=store, inputs={}))
-            for root, row in ((base, rows[0]), (resume, rows[1])):
+            for root, row, manifest in ((base, rows[0], planned), (resume, rows[1], follow_up)):
                 (root/'gpt/extraction').mkdir(parents=True)
+                publish(root/'gpt/extraction/EXTRACTION.json', {'manifest_sha256': manifest['sha256']})
                 pd.DataFrame([{'uid': row['uid'], 'outcome_status': 'observed', 'reasoning_tokens': 5,
                                'reasoning_end': 5, 'strict_correct': True, 'finish_reason': 'stop'}]).to_parquet(
                     root/'gpt/extraction/outcomes.parquet')

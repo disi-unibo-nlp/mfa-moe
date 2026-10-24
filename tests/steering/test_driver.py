@@ -1,3 +1,4 @@
+import sys
 import tempfile
 import time
 import unittest
@@ -38,6 +39,11 @@ class Selection(unittest.TestCase):
             self.assertEqual(len({r['uid'] for r in rows}), len(rows))
             total += len(rows)
         self.assertEqual(total, 26129)
+
+    def test_job_receipts_record_the_code_and_the_python_that_ran(self):
+        record = driver.code_record()
+        self.assertEqual(set(record), {'git_revision', 'source_sha256', 'python'})
+        self.assertEqual(record['python'], sys.version.split()[0])
 
     def test_shards_partition_families(self):
         rows = verified(driver.DRIVER/'gpt'/'ASSIGNMENTS.json')['records']

@@ -20,7 +20,7 @@ There are three experiments:
 | `pulse.py` | The generation engine (many requests at once, saved and resumed exactly), the pulsed design's manifests and the LFM2.5 native stages. |
 | `pulse_outcomes.py` | Reads the saved continuations and writes one table of outcomes and one of sentences per model. |
 | `pulse_effects.py` | The paired effects with bounds for unknown outcomes, the bootstrap, and the efficiency-link test. |
-| `whole.py` | The whole-reasoning release: manifests, the fluency canary, the shards, `plan`, `prepare`, `run`. |
+| `whole.py` | The whole-reasoning release: manifests, the fluency canary, the shards, `plan`, `budget`, `validate`, `prepare`, `run`. |
 | `whole_effects.py` | Replays and scores the finished rows (`extract`) and joins every release into `EFFECTS_WHOLE.json` (`combine`). |
 | `release.py` | Seals a complement, relink or outcome release: receipts plus a frozen copy of the code. |
 | `stream.py`, `operators.py` | The hooks and the operators that change the routing of the running model. |
@@ -38,10 +38,12 @@ scripts/steering/launch.sh NAME                          # submit the jobs of a 
 DRY_RUN=1 scripts/steering/launch.sh NAME                # print the sbatch commands only
 ```
 
-The stages are `python -m steering.whole plan | prepare | canary | run | extract | combine`. Slurm
-is only in `scripts/steering/`: dependencies, resources and walltimes are in `launch.sh`.
-A shard asks for 4 hours of 2 GPUs, the release records its declared ceilings, and
-`scripts/slurm/ledger.sh whole-` adds up what was spent.
+The stages are `python -m steering.whole plan | budget | validate | prepare | canary | run | extract |
+combine`. Slurm is only in `scripts/steering/`: dependencies, resources and walltimes are in
+`launch.sh`. A shard asks for 4 hours of 2 GPUs. The release records its CPU and GPU ceilings, and
+`launch.sh` submits nothing when the walltimes of its jobs add up to more (`budget`);
+`scripts/slurm/ledger.sh whole-` adds up what was spent. `validate` runs the unit tests of the
+snapshot and seals the result in `CPU_VALIDATION.json`; `prepare` and `combine` need it to have passed.
 The fluency canary of a base release is run by hand (`python -m steering.whole canary`), and its
 receipt is what lets `run` start production.
 

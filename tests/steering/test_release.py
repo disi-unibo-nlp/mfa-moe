@@ -51,7 +51,13 @@ class SealTests(unittest.TestCase):
         self.assertEqual((sealed['commit'], sealed['release_root']), ('abc123', str(folder)))
         self.assertEqual((sealed['models'], sealed['shards'], sealed['sweep'], sealed['cutoff']),
                          (list(release.MODELS), {}, {}, 1792814400.))
-        self.assertEqual(sealed['template_release_sha256'], self.parent['sha256'])
+        self.assertEqual(sealed['parent_release_sha256'], self.parent['sha256'])  # the key the earlier relinks used
+        self.assertNotIn('template_release_sha256', sealed)
+        # The release records what the earlier jobs cost, since its ceilings do not reset the budget.
+        usage = verified(root/'PRIOR_USAGE.json')
+        self.assertEqual(sealed['prior_usage'], usage)
+        self.assertEqual(usage['ledger_totals'], {'whole-': 'abc123', 'os-': 'abc123'})
+        self.assertEqual((sealed['cpu_core_hour_ceiling'], sealed['new_gpu_hour_ceiling']), (24., 0.))
         self.assertEqual(sealed['relink_sha256'], verified(root/'RELINK.json')['sha256'])
         # The parent's pinned input moves to the new snapshot, and the link receipt is pinned too.
         self.assertIn(str(folder/'configs/study.yaml'), sealed['inputs'])

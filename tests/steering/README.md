@@ -8,8 +8,8 @@ The tests need the vLLM environment (torch, scipy, pandas). They cover the routi
 hooks, how a request is admitted, saved and resumed, the manifests and nominations of the
 whole-reasoning releases (their frozen digests too), the canary gate, the bounded effects with
 unknown outcomes, and the job graph that `scripts/steering/launch.sh` prints for a made-up release
-(`DRY_RUN=1`). No test loads a model or submits a job. `scripts/steering/tests.sh` runs them in a
-Slurm job; every release runs it first.
+(`DRY_RUN=1`). No test loads a model or submits a job. Every release runs them first in a Slurm job
+(`python -m steering.whole validate`), which seals the result in `CPU_VALIDATION.json`.
 
 <!-- ledger:begin -->
 ## Ledger
