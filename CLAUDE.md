@@ -35,8 +35,8 @@ The code does not tell you what is running, what is frozen or what was decided. 
 | Generation | `generation/generate.sbatch MODEL DATASET SHARD NSHARDS`, `score.sbatch` | `generation/` (client, profiles, benchmarks, scoring, answer equivalence), `models/` (router adapters, HF loading) |
 | Labeling | `labeling/sample.sh`, `label.sbatch TRACE_ROOT OUTPUT_DIR`, `optimize_judge.sh` | `labeling/` (spans, samplers, judge client, `gepa/`) |
 | Router capture | `capture/capture.sbatch`, `gate.sh` | `capture/` |
-| Routing analyses | `routing/*.sh` (readout, anticipation, next_state, selection, dynamics, lfm, efficiency_link, lexical, benchmarks) | `routing/` |
-| Steering | `steering/pulse.sh`, `pulse_analyze.sh`, `whole.sh KIND NAME TESTS`, `launch.sh NAME [JOB...]`, `gpu.sh MODULE ARGS` | `steering/` (pulse, whole, release, outcome/) |
+| Routing analyses | `routing/*.sh` (readout, anticipation, next_state, selection, dynamics, transition_pairs, lfm, efficiency_link, lexical, benchmarks) | `routing/` |
+| Steering | `steering/pulse.sh`, `pulse_analyze.sh`, `whole.sh KIND NAME TESTS`, `launch.sh NAME [JOB...]`, `gpu.sh MODULE ARGS` | `steering/` (pulse, whole, release, followup, outcome/) |
 | Paper | `paper/export.sh`, `build.sh`, `check.sh` | `paper/` (exporters, build, verifiers; locations in `paper/cl_paths.py`) |
 
 The code that came before this layout lives at the git tag `archive/pre-cleanup-20261023`: the old campaigns `research_campaign_*`, `final_routing`, `scripts/experimental_resume`, rescue, and the journaled job graph. Every historical receipt names its own commit, so old results stay traceable.

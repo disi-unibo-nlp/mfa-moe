@@ -268,39 +268,46 @@ class ContinuationTests(unittest.TestCase):
             whole_effects._source_table(source)
 
 
+class SlowPublish:
+    """publish() whose first call stalls with the folder created and a half-written receipt in it, like a shard
+    in the middle of binding its store when the next one starts."""
+
+    def __init__(self):
+        self.inside, self.proceed = threading.Event(), threading.Event()
+
+    def __call__(self, path, value):
+        if not self.inside.is_set():
+            path.parent.mkdir(parents=True, exist_ok=True)
+            (path.parent/'.pending-x').write_text('{}')
+            self.inside.set()
+            self.proceed.wait(30)
+            (path.parent/'.pending-x').unlink()
+        return publish(path, value)
+
+
+def bind(root, results):
+    """What one shard does first: bind the store, or record why it could not."""
+    try:
+        results.append(whole.bound_store(root, 'gemma', 'main').root)
+    except ValueError as error:
+        results.append(error)
+
+
 class StoreBindingTests(unittest.TestCase):
     def test_shards_starting_together_bind_one_store_without_a_nonempty_failure(self):
         with tempfile.TemporaryDirectory(dir=TMP) as temporary:
-            root = Path(temporary)
+            root, slow, results = Path(temporary), SlowPublish(), []
             publish(root/'RELEASE.json', {'release_root': str(whole.REPO)})
-            inside, proceed, results = threading.Event(), threading.Event(), []
-
-            def slow_publish(path, value):
-                # The first shard has created the folder and holds its pending receipt when the second starts.
-                if not inside.is_set():
-                    path.parent.mkdir(parents=True, exist_ok=True)
-                    (path.parent/'.pending-x').write_text('{}')
-                    inside.set()
-                    proceed.wait(30)
-                    (path.parent/'.pending-x').unlink()
-                return publish(path, value)
-
-            def bind():
-                try:
-                    results.append(whole.bound_store(root, 'gemma', 'main').root)
-                except ValueError as error:
-                    results.append(error)
-
             with patch.object(whole, 'manifest', return_value={'sha256': 'manifest'}), \
-                    patch.object(whole, 'publish', side_effect=slow_publish):
-                first = threading.Thread(target=bind)
+                    patch.object(whole, 'publish', side_effect=slow):
+                first = threading.Thread(target=bind, args=(root, results))
                 first.start()
-                self.assertTrue(inside.wait(30))
-                second = threading.Thread(target=bind)
+                self.assertTrue(slow.inside.wait(30))
+                second = threading.Thread(target=bind, args=(root, results))
                 second.start()
                 second.join(.5)
                 self.assertTrue(second.is_alive(), 'the second shard must wait for the first to bind')
-                proceed.set()
+                slow.proceed.set()
                 first.join(10)
                 second.join(10)
         self.assertEqual(len(results), 2)

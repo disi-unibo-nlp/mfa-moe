@@ -487,6 +487,7 @@ def collect(classes: tuple[str, ...] = PAIR_SOURCES) -> dict:
 
 
 def main(argv: list[str] | None = None) -> None:
+    """Run one step for one model (`collect` for all eight) and log the counts that identify its receipt."""
     parser = argparse.ArgumentParser(prog='routing.transition_pairs', description=__doc__.split('\n\n')[0])
     parser.add_argument('command', choices=['plan', 'judge', 'summary', 'collect'])
     parser.add_argument('--model')
