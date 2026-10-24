@@ -1,0 +1,1 @@
+{"approved_maximum_minutes":240,"committed_gpu_hours":384.0,"gpu_ceiling":430.0,"minutes":240,"model":"lfm25","other_future_maximum_gpu_hours":0.0,"reason":"full allocation maxima plus all charged predecessor costs stay within the GPU ceiling","sha256":"c313f9175bc83ee422db80b2032487f795e5d7029182d3d69c3312ee231dd221","shards":5}

@@ -1,0 +1,26 @@
+{
+ "schema": "overnight-dense-attach-chains-v1",
+ "records": [
+  {
+   "stage": "A",
+   "job": "59345815",
+   "parent": null
+  },
+  {
+   "stage": "B",
+   "job": "59345817",
+   "parent": null
+  },
+  {
+   "stage": "C",
+   "job": "59345819",
+   "parent": "59345508"
+  },
+  {
+   "stage": "FRESH",
+   "job": "59345821",
+   "parent": "59345513"
+  }
+ ],
+ "sha256": "07bca196958f07e158848963319a46528e1d2b6adb1a89e4fa111281aee04479"
+}

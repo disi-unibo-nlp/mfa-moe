@@ -1,0 +1,20 @@
+{
+ "schema": "overnight-fresh-frame-recovery-chain-v1",
+ "binding": {
+  "manifest_sha256": "6b5aa286e46cb818969c939346f448a6577b307779041ec2d35d7fce0562f074",
+  "amendment_sha256": "ae2dc509e2951056e315322a6c9f887bfae07b74c82a9aac4dd7f63b40e3bada",
+  "stage_completion_sha256": "b037fad3097751c79f4de04ef360fb324181f007cea0bea8b490ed73258e0ecd",
+  "original_generation_chain_sha256": "10e6a1579a359b7acac1298354e7d20ecc39137c2cdd3845002332b8f4a37f97",
+  "wrapper_hashes": {
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/build_price_overnight_semantics_fresh_adapter_v1.sbatch": "f1ca3c423d550398a335735c66fe9b7f291c66e11db0e40e5b2ce2bb052028bc",
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/dispatch_fresh_frame_recovery_v1.sbatch": "9d4d146613871776a613b2d3090fa9b43fac82e628f2629515dca922674fb6c8"
+  }
+ },
+ "amendment_sha256": "ae2dc509e2951056e315322a6c9f887bfae07b74c82a9aac4dd7f63b40e3bada",
+ "manifest_sha256": "6b5aa286e46cb818969c939346f448a6577b307779041ec2d35d7fce0562f074",
+ "frame_price_job": "59379611",
+ "reader_dispatch_job": "59379614",
+ "canonical_source": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/overnight-submissions-v2-6b5aa286e46cb818",
+ "analysis_output": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/OVERNIGHT_FRESH_COMPARISON_ANALYSIS_v2",
+ "sha256": "906ecee1007c941324ccc6c0b94e673167f01203ae65dec6ce5f5c3f4a2a6f7b"
+}

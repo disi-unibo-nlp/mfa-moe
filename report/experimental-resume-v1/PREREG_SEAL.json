@@ -1,0 +1,11 @@
+{
+ "ts": "2026-10-01T10:19:07.993558+00:00",
+ "version": "v0.3",
+ "path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/PREREG_steering_v1.v0.3.md",
+ "sha256": "4483782220d3e556e6a33c4596679f8292fee3a9beb4e6d6a6309f0e899a8932",
+ "draft_sha256": "e33280a51b1b4cb4c2dc8cdcf0bcae44d6cefa62eac3029867d018e6c306b43c",
+ "approved_by": "current user: implement resume plan including finish and seal v0.3",
+ "sealed_by": "Codex",
+ "inventory_sha256": "a3d1d6f85399d5d992ad3036b7064d0cfa6eb3ef6cfddc1a6c125468f3c42e1a",
+ "status": "design sealed; execution holds retained"
+}

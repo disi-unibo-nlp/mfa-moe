@@ -1,0 +1,34 @@
+{
+ "schema": "prefix-proposal-gate-exploratory-v0",
+ "gate_version": "explicit-proposal-gate-v0-discovery",
+ "gate_driver_sha256": "bb1bcab3729bddbdd723dc1304c56f60752a1f81d25add6ede7bf86211ae4a45",
+ "sensitivity_sha256": "1507899309aedf2ecb5ef5dedbc337a8f445b20140543764fc939068fcd54c27",
+ "units_sha256": "84a85c92b595a7829446b6a53b376e1126df3b6c36eabaddb3b4e884eb52fa72",
+ "old_rating_frame_sha256": "41fdd999e59db84fdc1d0675ac8c2c1af0bab23dfa2b02ba90a5b48f2cb45d79",
+ "scout_frame_sha256": "d8f50b7e4c309716d054fafa52cc22e2b77c3c9bb4b9bbdef829fe303271863a",
+ "scout_batch_sha256": "3f08923ff08e8cf28a2d9f0c76a2e1e4b9ee0471e5898fc48f7dc83dae87ce1d",
+ "full_v22_candidate_fire_burden": {
+  "fires": 1816,
+  "kept": 7,
+  "families_with_any_fire": 48,
+  "families_with_kept_fire": 4,
+  "fires_per_family_min": 15,
+  "fires_per_family_median": 35.5,
+  "fires_per_family_max": 74
+ },
+ "adapted_old_local_context_ratings": {
+  "rated_v22_fires": 77,
+  "start_both": 44,
+  "kept": 0,
+  "kept_start_both": 0
+ },
+ "fresh_full_context_scout_ratings": {
+  "rated_v22_fires": 5,
+  "start_both": 1,
+  "kept": 1,
+  "kept_start_both": 1,
+  "unresolved": 1
+ },
+ "limitations": "Exploratory lexical screen after v2.2 candidate fires. Old Qwen readers saw later sentences and are adapted only; fresh scout has 12 contexts and is not a precision estimate. Full independent 372-window audit and family-held-out semantic veto qualification remain necessary. Math-only candidates deliberately abstain.",
+ "sha256": "f6f08a32d61185ddeb896b86134790a140b37e3517cb1135570347ab84f527fc"
+}

@@ -1,0 +1,1 @@
+{"detail":{"status":"complete","units":1546},"failure_scope":null,"job_id":"60572526","model":"qwen330b","seconds":13528.471399444155,"sha256":"1dca3e2e9ce406d1839a28e96f9ede1456d3d49afe0bd1b9ee2fa4cbb7475f4e","shard_index":1,"stage":"measure","status":"complete","threshold_index":0}

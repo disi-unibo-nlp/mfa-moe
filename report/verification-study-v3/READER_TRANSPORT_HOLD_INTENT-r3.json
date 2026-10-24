@@ -1,0 +1,14 @@
+{
+  "campaign_sha256": "57df4a026a7be4c909ece85ac1ebe3dc47c3f27bb53ffcab88e3aa9d82bfbb3b",
+  "created_epoch": 1791414264.0652695,
+  "job_card_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/submissions/2f69b73734b4881b765cf11ab51d55d83c4eac6ece8616fe7ada05ee2d9e73a0/JOB_CARD.json",
+  "job_card_sha256": "2f69b73734b4881b765cf11ab51d55d83c4eac6ece8616fe7ada05ee2d9e73a0",
+  "job_id": "59658732",
+  "read_back_before": "JobId=59658732 JobName=cv3t-rate-gpt\n   UserId=lmolfett(133943) GroupId=interactive(25200) MCS_label=N/A\n   Priority=133604 Nice=0 Account=iscrc_miosr QOS=normal\n   JobState=PENDING Reason=Priority Dependency=(null)\n   Requeue=0 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0\n   RunTime=00:00:00 TimeLimit=08:00:00 TimeMin=N/A\n   SubmitTime=2026-10-08T01:01:31 EligibleTime=2026-10-08T01:01:31\n   AccrueTime=2026-10-08T01:01:31\n   StartTime=Unknown EndTime=Unknown Deadline=N/A\n   SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-10-08T01:04:04 Scheduler=Main\n   Partition=boost_usr_prod AllocNode:Sid=login08-net99-3:1640672\n   ReqNodeList=(null) ExcNodeList=(null)\n   NodeList=\n   NumNodes=1-1 NumCPUs=16 NumTasks=1 CPUs/Task=16 ReqB:S:C:T=0:0:*:*\n   ReqTRES=cpu=16,mem=120G,node=1,billing=16,gres/gpu=2\n   AllocTRES=(null)\n   Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=*\n   MinCPUsNode=16 MinMemoryNode=120G MinTmpDiskNode=0\n   Features=(null) DelayBoot=00:00:00\n   OverSubscribe=OK Contiguous=0 Licenses=(null) LicensesAlloc=(null) Network=(null)\n   Command=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/verification_study_v3_reader_r2.sbatch\n   WorkDir=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo\n   Comment=cv3t:2f69b73734b4881b765cf11ab51d55d83c4eac6ece8616fe7ada05ee2d9e73a0 \n   StdErr=/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/logs/cv3t-rate-gpt-59658732.err\n   StdIn=/dev/null\n   StdOut=/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/logs/cv3t-rate-gpt-59658732.out\n   TresPerNode=gres/gpu:2\n   TresPerTask=cpu=16\n   \n\n",
+  "reason": "known overlong r2 vLLM socket path; preserve unstarted original first-role item for compatible short-path replacement",
+  "schema": "verification-reader-transport-hold-v3",
+  "scientific_draws": 0,
+  "sha256": "e4be13280f58e80e63f16b9759e7a42c48807cfaa41a331cfe40ae11bfb131b6",
+  "submission_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/submissions/2f69b73734b4881b765cf11ab51d55d83c4eac6ece8616fe7ada05ee2d9e73a0/SUBMISSION.json",
+  "submission_sha256": "af50754434aadf95d40243ba6d53035de67111bf7bc3971ac10cdf4c92245d41"
+}

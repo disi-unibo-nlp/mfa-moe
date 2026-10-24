@@ -1,0 +1,77 @@
+% Native GoM/SYNCO bars in four compact MoM-style diagnostic panels.
+% Actual transition and dwell means, exact saved simultaneous CIs.
+% A dagger directly on a mean denotes an unavailable transition CI (Qwen3.6; LFM2.5 Verify persistence).
+\begin{tikzpicture}
+\begin{axis}[journalaxis,scale only axis,width=154pt,height=75pt,anchor=outer south west,at={(0pt,145pt)},name=summaryleft,
+ybar=0pt,bar width=8pt,xmin=.5,xmax=8.5,enlarge x limits=false,ymin=0,ymax=52,ytick={0,20,40},
+xtick={1,2,3,4,5,6,7,8},xticklabels={{\plotmodel{openai}{}{20B}},{\plotmodel{nvidia}{3.5}{30B}},{\plotmodel{qwen}{3.5}{35B}},{\plotmodel{qwen}{3.6}{35B}},{\plotmodel{gemma}{4}{26B}},{\plotmodel{zhipu}{4.7}{30B}},{\plotmodel{qwen}{3}{30B}},{\plotmodel{liquid}{2.5}{24B}}},
+xticklabel style={rotate=0,anchor=north,align=center,font=\fontsize{7}{8}\selectfont},
+xticklabels=\empty,title={\textbf{(a) Analyze $\to$ Implement}},title style={font=\fontsize{8}{9}\selectfont}]
+\addplot[fill=syncoanalyze,draw=black,line width=.35pt,bar shift=0pt,restrict expr to domain={\thisrow{x}!=4}{1:1},journalerror]
+table[x=x,y=ai,y error minus expr={max(\thisrow{aiminus},\thisrow{aiplus})},y error plus expr={max(\thisrow{aiminus},\thisrow{aiplus})}]{figures/journal/data/state_transitions_summary.dat};
+\addplot[fill=syncoanalyze,draw=black,line width=.35pt,bar shift=0pt,restrict expr to domain={\thisrow{x}==4}{1:1},]
+table[x=x,y=ai]{figures/journal/data/state_transitions_summary.dat};
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:1,32.28193075228428) {24.2};
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:2,29.761102751343635) {21.3};
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:3,22.089486988499566) {14.8};
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:4,20.864353690250653) {18.8$^{\dagger}$};
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:5,35.2116936596109) {26.6};
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:6,29.79073991318426) {21.1};
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:7,23.09507237844712) {16.3};
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:8,25.994049658341353) {16.2};
+\end{axis}
+\begin{axis}[journalaxis,scale only axis,width=154pt,height=75pt,anchor=outer south west,at={(194pt,145pt)},name=summaryright,
+ybar=0pt,bar width=8pt,xmin=.5,xmax=8.5,enlarge x limits=false,ymin=0,ymax=52,ytick={0,20,40},
+xtick={1,2,3,4,5,6,7,8},xticklabels={{\plotmodel{openai}{}{20B}},{\plotmodel{nvidia}{3.5}{30B}},{\plotmodel{qwen}{3.5}{35B}},{\plotmodel{qwen}{3.6}{35B}},{\plotmodel{gemma}{4}{26B}},{\plotmodel{zhipu}{4.7}{30B}},{\plotmodel{qwen}{3}{30B}},{\plotmodel{liquid}{2.5}{24B}}},
+xticklabel style={rotate=0,anchor=north,align=center,font=\fontsize{7}{8}\selectfont},
+xticklabels=\empty,title={\textbf{(b) Implement $\to$ Verify}},title style={font=\fontsize{8}{9}\selectfont}]
+\addplot[fill=syncoimplement,draw=black,line width=.35pt,bar shift=0pt,restrict expr to domain={\thisrow{x}!=4}{1:1},journalerror]
+table[x=x,y=iv,y error minus expr={max(\thisrow{ivminus},\thisrow{ivplus})},y error plus expr={max(\thisrow{ivminus},\thisrow{ivplus})}]{figures/journal/data/state_transitions_summary.dat};
+\addplot[fill=syncoimplement,draw=black,line width=.35pt,bar shift=0pt,restrict expr to domain={\thisrow{x}==4}{1:1},]
+table[x=x,y=iv]{figures/journal/data/state_transitions_summary.dat};
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:1,23.61888944315706) {17.3};
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:2,23.90839651094189) {16.9};
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:3,23.46654128275243) {15.4};
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:4,15.399206710248441) {13.3$^{\dagger}$};
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:5,23.06901475980611) {16.9};
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:6,28.71724503696496) {19.9};
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:7,27.217016962466964) {20.3};
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:8,24.282018505524686) {15.8};
+\end{axis}
+\begin{axis}[journalaxis,scale only axis,width=154pt,height=75pt,anchor=south west,at={(summaryleft.south west)},yshift=-108pt,
+ybar=0pt,bar width=8pt,xmin=.5,xmax=8.5,enlarge x limits=false,ymin=0,ymax=52,ytick={0,20,40},
+xtick={1,2,3,4,5,6,7,8},xticklabels={{\plotmodel{openai}{}{20B}},{\plotmodel{nvidia}{3.5}{30B}},{\plotmodel{qwen}{3.5}{35B}},{\plotmodel{qwen}{3.6}{35B}},{\plotmodel{gemma}{4}{26B}},{\plotmodel{zhipu}{4.7}{30B}},{\plotmodel{qwen}{3}{30B}},{\plotmodel{liquid}{2.5}{24B}}},
+xticklabel style={rotate=0,anchor=north,align=center,font=\fontsize{7}{8}\selectfont},
+title={\textbf{(c) Verify $\to$ Verify}},title style={font=\fontsize{8}{9}\selectfont}]
+\addplot[fill=syncoverify,draw=black,line width=.35pt,bar shift=0pt,restrict expr to domain={(\thisrow{x}!=4)*(\thisrow{x}!=8)}{1:1},journalerror]
+table[x=x,y=vv,y error minus expr={max(\thisrow{vvminus},\thisrow{vvplus})},y error plus expr={max(\thisrow{vvminus},\thisrow{vvplus})}]{figures/journal/data/state_transitions_summary.dat};
+\addplot[fill=syncoverify,draw=black,line width=.35pt,bar shift=0pt,restrict expr to domain={(\thisrow{x}==4)+(\thisrow{x}==8)}{1:1},]
+table[x=x,y=vv]{figures/journal/data/state_transitions_summary.dat};
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:1,33.544558429237235) {25.3};
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:2,36.71593917926833) {26.7};
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:3,40.41175529511295) {28.4};
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:4,29.713001032391276) {27.6$^{\dagger}$};
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:5,40.296696885553274) {29.9};
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:6,45.382857748405456) {34.5};
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:7,43.16545687473028) {34.3};
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:8,32.69170343291091) {30.6$^{\dagger}$};
+\end{axis}
+\begin{axis}[journalaxis,scale only axis,width=154pt,height=75pt,anchor=south west,at={(summaryright.south west)},yshift=-108pt,
+ybar=0pt,bar width=8pt,xmin=.5,xmax=8.5,enlarge x limits=false,ymin=0,ymax=28,ytick={0,10,20},
+xtick={1,2,3,4,5,6,7,8},xticklabels={{\plotmodel{openai}{}{20B}},{\plotmodel{nvidia}{3.5}{30B}},{\plotmodel{qwen}{3.5}{35B}},{\plotmodel{qwen}{3.6}{35B}},{\plotmodel{gemma}{4}{26B}},{\plotmodel{zhipu}{4.7}{30B}},{\plotmodel{qwen}{3}{30B}},{\plotmodel{liquid}{2.5}{24B}}},
+xticklabel style={rotate=0,anchor=north,align=center,font=\fontsize{7}{8}\selectfont},
+title={\textbf{(d) Verify dwell}},title style={font=\fontsize{8}{9}\selectfont}]
+\addplot[fill=gomorangeone,draw=black,line width=.35pt,bar shift=0pt,journalerror]
+table[x=x,y=vd,y error minus expr={max(\thisrow{vdminus},\thisrow{vdplus})},y error plus expr={max(\thisrow{vdminus},\thisrow{vdplus})}]{figures/journal/data/state_transitions_summary.dat};
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:1,18.358028645660024) {16.2};
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:2,24.127688097089145) {21.0};
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:3,16.715521573072326) {14.4};
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:4,16.27397433261831) {13.7};
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:5,20.39753973043135) {18.0};
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:6,23.570838219054316) {21.1};
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:7,19.341547366626067) {16.5};
+\node[anchor=south,inner sep=.2pt,font=\fontsize{7}{8}\selectfont] at (axis cs:8,19.545078935098896) {16.4};
+\end{axis}
+\node[anchor=north,yshift=-8pt,font=\fontsize{8.5}{9.5}\selectfont]
+at (current bounding box.south) {(a)--(c) Probability (\%)\qquad(d) Observed dwell (tokens)};
+\end{tikzpicture}

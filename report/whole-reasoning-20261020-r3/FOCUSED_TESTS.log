@@ -1,0 +1,50 @@
+test_capped_and_missing_token_accuracy_bounds_use_actual_allowance (test_whole.AnalysisTests.test_capped_and_missing_token_accuracy_bounds_use_actual_allowance) ... ok
+test_first_endpoints_reject_incomplete_overlap_and_out_of_horizon_sentences (test_whole.AnalysisTests.test_first_endpoints_reject_incomplete_overlap_and_out_of_horizon_sentences) ... ok
+test_gpt_reasoning_count_comes_from_replay_even_when_usage_says_zero (test_whole.AnalysisTests.test_gpt_reasoning_count_comes_from_replay_even_when_usage_says_zero) ... ok
+test_missing_benchmark_is_unqualified_even_with_finite_other_values (test_whole.AnalysisTests.test_missing_benchmark_is_unqualified_even_with_finite_other_values) ... ok
+test_native_only_pooled_planning_retains_cross_model_family_covariance (test_whole.AnalysisTests.test_native_only_pooled_planning_retains_cross_model_family_covariance) ... ok
+test_one_missing_cell_widens_its_metric_without_poisoning_other_columns (test_whole.AnalysisTests.test_one_missing_cell_widens_its_metric_without_poisoning_other_columns) ... ok
+test_threaded_math_verify_uses_helper_process (test_whole.AnalysisTests.test_threaded_math_verify_uses_helper_process) ... ok
+test_all_missing_production_still_exports_six_bounded_primary_contrasts (test_whole.ClosedAnalysisTests.test_all_missing_production_still_exports_six_bounded_primary_contrasts) ... ok
+test_completed_whole_output_replays_and_extracts_in_worker_scope (test_whole.ClosedAnalysisTests.test_completed_whole_output_replays_and_extracts_in_worker_scope) ... ok
+test_accounting_carries_all_earlier_terminal_costs (test_whole.ExecutionGateTests.test_accounting_carries_all_earlier_terminal_costs) ... ok
+test_failed_validation_never_queues_empty_extraction_or_analysis (test_whole.ExecutionGateTests.test_failed_validation_never_queues_empty_extraction_or_analysis) ... ok
+test_nonempty_unbound_store_rejects_before_any_engine_load (test_whole.ExecutionGateTests.test_nonempty_unbound_store_rejects_before_any_engine_load) ... ok
+test_only_fluency_failure_selects_the_one_half_dose_fallback (test_whole.ExecutionGateTests.test_only_fluency_failure_selects_the_one_half_dose_fallback) ... ok
+test_passing_canaries_submit_nine_unheld_shards_and_dependent_cpu_work (test_whole.ExecutionGateTests.test_passing_canaries_submit_nine_unheld_shards_and_dependent_cpu_work) ... ok
+test_quarter_pair_projection_cancels_exact_remaining_shards_above_ceiling (test_whole.ExecutionGateTests.test_quarter_pair_projection_cancels_exact_remaining_shards_above_ceiling) ... ok
+test_software_failure_never_becomes_a_dose_failure (test_whole.ExecutionGateTests.test_software_failure_never_becomes_a_dose_failure) ... ok
+test_cardinality_unique_uids_native_seeds_and_family_block_order (test_whole.ManifestTests.test_cardinality_unique_uids_native_seeds_and_family_block_order) ... ok
+test_whole_primary_equal_cell_and_equal_model_weights (test_whole.ManifestTests.test_whole_primary_equal_cell_and_equal_model_weights) ... ok
+test_controls_match_layer_frequency_quintile_and_role_with_local_exclusions (test_whole.NominationTests.test_controls_match_layer_frequency_quintile_and_role_with_local_exclusions) ... ok
+test_half_availability_rule_drops_below_half_without_substitution (test_whole.NominationTests.test_half_availability_rule_drops_below_half_without_substitution) ... ok
+test_heldout_fold_is_excluded_from_full_fit_and_all_four_refits (test_whole.NominationTests.test_heldout_fold_is_excluded_from_full_fit_and_all_four_refits) ... ok
+test_sign_must_survive_each_inner_refit (test_whole.NominationTests.test_sign_must_survive_each_inner_refit) ... ok
+test_aggregate_dose_equals_direct_dense_computation (test_whole.OperatorTests.test_aggregate_dose_equals_direct_dense_computation) ... ok
+test_dual_matches_extrema_reference_and_preserves_inactive_bits (test_whole.OperatorTests.test_dual_matches_extrema_reference_and_preserves_inactive_bits) ... ok
+test_chunked_prefill_recompute_closure_and_generated_capture_zero (test_whole.PromptScopeTests.test_chunked_prefill_recompute_closure_and_generated_capture_zero) ... ok
+test_original_prompt_runtime_allows_empty_prefix_only_when_flagged (test_whole.PromptScopeTests.test_original_prompt_runtime_allows_empty_prefix_only_when_flagged) ... ok
+test_real_unix_socket_binds_short_work_path (test_whole.PromptScopeTests.test_real_unix_socket_binds_short_work_path) ... ok
+test_greedy_matches_all_70_dp_optima_and_preserves_other_exact_rank_cells (test_whole_launch.ActualNominationTests.test_greedy_matches_all_70_dp_optima_and_preserves_other_exact_rank_cells)
+Use saved discovery evidence; neither nominations nor tests read whole outcomes. ... ok
+test_engine_admits_64_across_families_and_refills_before_long_row_finishes (test_whole_launch.ContinuousAdmissionTests.test_engine_admits_64_across_families_and_refills_before_long_row_finishes) ... ok
+test_tiers_order_all_primary_families_before_other_promote (test_whole_launch.ContinuousAdmissionTests.test_tiers_order_all_primary_families_before_other_promote) ... ok
+test_an_unnominated_efficiency_cell_is_a_design_error (test_whole_launch.DesignAndCoverageTests.test_an_unnominated_efficiency_cell_is_a_design_error) ... ok
+test_dropped_promote_cells_are_excluded_and_primary_is_unchanged (test_whole_launch.DesignAndCoverageTests.test_dropped_promote_cells_are_excluded_and_primary_is_unchanged) ... ok
+test_sentence_coverage_failure_bounds_one_unit_and_keeps_the_other_observed (test_whole_launch.DesignAndCoverageTests.test_sentence_coverage_failure_bounds_one_unit_and_keeps_the_other_observed) ... ok
+test_own_deadline_neither_writes_stop_nor_cancels_jobs (test_whole_launch.MonitorSurvivalTests.test_own_deadline_neither_writes_stop_nor_cancels_jobs) ... {"time": "2026-10-20T22:21:28", "event": "whole-monitor-deadline", "production_continues": true}
+ok
+test_transient_accounting_or_storage_exception_retries_without_stop (test_whole_launch.MonitorSurvivalTests.test_transient_accounting_or_storage_exception_retries_without_stop) ... {"time": "2026-10-20T22:21:28", "event": "whole-monitor-retry", "error": "Traceback (most recent call last):\n  File \"/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/src/moe_exp/study/whole.py\", line 743, in monitor\n    process.wait(timeout=20)\n                        ^^^^^\n  File \"/leonardo/prod/spack/06/install/0.22/linux-rhel8-icelake/gcc-8.5.0/python-3.11.7-ziwh63aulhhzxksf42k5u3gnim2rbpmp/lib/python3.11/unittest/mock.py\", line 1124, in __call__\n    return self._mock_call(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/leonardo/prod/spack/06/install/0.22/linux-rhel8-icelake/gcc-8.5.0/python-3.11.7-ziwh63aulhhzxksf42k5u3gnim2rbpmp/lib/python3.11/unittest/mock.py\", line 1128, in _mock_call\n    return self._execute_mock_call(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/leonardo/prod/spack/06/install/0.22/linux-rhel8-icelake/gcc-8.5.0/python-3.11.7-ziwh63aulhhzxksf42k5u3gnim2rbpmp/lib/python3.11/unittest/mock.py\", line 1183, in _execute_mock_call\n    raise effect\nRuntimeError: sacct transient\n"}
+{"time": "2026-10-20T22:21:28", "event": "whole-monitor-deadline", "production_continues": true}
+{"time": "2026-10-20T22:21:28", "event": "whole-monitor-retry", "error": "Traceback (most recent call last):\n  File \"/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/src/moe_exp/study/whole.py\", line 743, in monitor\n    process.wait(timeout=20)\n                        ^^^^^\n  File \"/leonardo/prod/spack/06/install/0.22/linux-rhel8-icelake/gcc-8.5.0/python-3.11.7-ziwh63aulhhzxksf42k5u3gnim2rbpmp/lib/python3.11/unittest/mock.py\", line 1124, in __call__\n    return self._mock_call(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/leonardo/prod/spack/06/install/0.22/linux-rhel8-icelake/gcc-8.5.0/python-3.11.7-ziwh63aulhhzxksf42k5u3gnim2rbpmp/lib/python3.11/unittest/mock.py\", line 1128, in _mock_call\n    return self._execute_mock_call(*args, **kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/leonardo/prod/spack/06/install/0.22/linux-rhel8-icelake/gcc-8.5.0/python-3.11.7-ziwh63aulhhzxksf42k5u3gnim2rbpmp/lib/python3.11/unittest/mock.py\", line 1183, in _execute_mock_call\n    raise effect\nRuntimeError: lfs quota transient\n"}
+{"time": "2026-10-20T22:21:28", "event": "whole-monitor-deadline", "production_continues": true}
+ok
+test_planning_noise_uses_repeat_differences_and_driver_accuracy (test_whole_launch.PairedPlanningTests.test_planning_noise_uses_repeat_differences_and_driver_accuracy) ... ok
+test_early_comparison_waits_for_both_same_family_native_references (test_whole_launch.RelativeGateTests.test_early_comparison_waits_for_both_same_family_native_references) ... ok
+test_historically_long_and_repetitive_native_does_not_fail_equal_steering (test_whole_launch.RelativeGateTests.test_historically_long_and_repetitive_native_does_not_fail_equal_steering) ... ok
+test_only_relative_cap_length_and_repetition_excess_fail (test_whole_launch.RelativeGateTests.test_only_relative_cap_length_and_repetition_excess_fail) ... ok
+
+----------------------------------------------------------------------
+Ran 39 tests in 163.221s
+
+OK

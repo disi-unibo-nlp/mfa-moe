@@ -1,0 +1,77 @@
+{
+  "accounting": {
+    "59652006": {
+      "elapsed_seconds": 200,
+      "exit_code": "0:0",
+      "state": "COMPLETED"
+    },
+    "59652028": {
+      "elapsed_seconds": 0,
+      "exit_code": "0:0",
+      "state": "CANCELLED"
+    },
+    "59652043": {
+      "elapsed_seconds": 0,
+      "exit_code": "0:0",
+      "state": "CANCELLED"
+    }
+  },
+  "all_seven_states": {
+    "gemma": "WAITING",
+    "glm": "WAITING",
+    "gpt": "WAITING",
+    "nemotron": "WAITING",
+    "qwen330b": "WAITING",
+    "qwen35": "WAITING",
+    "qwen36": "WAITING"
+  },
+  "campaign_sha256": "57df4a026a7be4c909ece85ac1ebe3dc47c3f27bb53ffcab88e3aa9d82bfbb3b",
+  "controller_job_id": "59652006",
+  "discovery_saved_assignments": {
+    "gemma": 2,
+    "glm": 1,
+    "gpt": 27,
+    "nemotron": 5,
+    "qwen330b": 3,
+    "qwen35": 1,
+    "qwen36": 1
+  },
+  "empty_error_log_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "errors": [],
+  "handoff_sha256": "9c691005ab72d44fd10642f92937c402b3dd47bd352e688efc30210f6d77f571",
+  "observed_epoch": 1791409003.197083,
+  "one_item_audit_check": {
+    "card_sha256": "65b2105cc4acc639d48bc5f8c2fa96c1439caa2fc0143132e7ecefdcce3ef02e",
+    "job_id": "59652408",
+    "resources": {
+      "billing_core_hours_max": 31.2,
+      "cpus": 16,
+      "gpus": 2,
+      "memory_gb": 120,
+      "partition": "boost_usr_prod",
+      "price_basis": "actual role maxima; full caps, one complete retry, two loads,1.25 factor plus600 seconds",
+      "qos": "normal",
+      "walltime_seconds": 7020
+    },
+    "selected_uids": [
+      "ad9c4dd4b8deeee06f9f38b4a24533782149b015c4fc20732cbe9639dbe214dd"
+    ],
+    "submission_sha256": "4b6336277a06c7744dace7ab36eee6c7e790b0f88213e8e00baa753c31e13b1d",
+    "transport_executor_sha256": "7fc22e9b0ed114c404892f9510fc36deae6e9fe7b151aa29475a283b2d105457"
+  },
+  "paper_provenance_sha256": "25297110f6cd36aee8749af83b3579469e15719aafa9e332eee76731c8722425",
+  "readiness_sha256": "b0818f69ca0c7ba9a2ff2514026bfa23d2b4eb77488cb05a2d082994a17b01e5",
+  "result_sha256": "0ccf74e621ebd90192e810b79fe1950ffa228f1d3ba02a541f987e35ef1c52fc",
+  "schema": "verification-autodriver-bootstrap-closeout-v3",
+  "scientific_effects": "NOT_MEASURED; successful bookkeeping and retention are not grader qualification or causal benefit",
+  "sha256": "34bb1dbb4176742252c59aee3204212a7c6635f968d25874e120669d21c1930e",
+  "shared_j1": "WAITING",
+  "successor_job_id": "59652415",
+  "successor_prearm_sha256": "0ee4e7f17c3f8927dba6f423159366786c6f38407ec1fd036cb6679579bee3a6",
+  "successor_read_back": "JobId=59652415 JobName=cv3-auto-r2-successor\n   UserId=lmolfett(133943) GroupId=interactive(25200) MCS_label=N/A\n   Priority=133585 Nice=0 Account=iscrc_miosr QOS=normal\n   JobState=PENDING Reason=Dependency Dependency=afterany:59645552(unfulfilled)?afterany:59645573(unfulfilled)?afterany:59645578(unfulfilled)?afterany:59645583(unfulfilled)?afterany:59645611(unfulfilled)?afterany:59645749(unfulfilled)?afterany:59645754(unfulfilled)?afterany:59645758(unfulfilled)?afterany:59645762(unfulfilled)?afterany:59645776(unfulfilled)?afterany:59645796(unfulfilled)?afterany:59645801(unfulfilled)?afterany:59645811(unfulfilled)?afterany:59645829(unfulfilled)?afterany:59645831(unfulfilled)?afterany:59645840(unfulfilled)?afterany:59645852(unfulfilled)?afterany:59645874(unfulfilled)?afterany:59645879(unfulfilled)?afterany:59645889(unfulfilled)?afterany:59645901(unfulfilled)?afterany:59645905(unfulfilled)?afterany:59645907(unfulfilled)?afterany:59645910(unfulfilled)?afterany:59645920(unfulfilled)?afterany:59652408(unfulfilled)\n   Requeue=0 Restarts=0 BatchFlag=1 Reboot=0 ExitCode=0:0\n   RunTime=00:00:00 TimeLimit=04:00:00 TimeMin=N/A\n   SubmitTime=2026-10-07T23:34:26 EligibleTime=Unknown\n   AccrueTime=Unknown\n   StartTime=Unknown EndTime=Unknown Deadline=N/A\n   SuspendTime=None SecsPreSuspend=0 LastSchedEval=2026-10-07T23:34:26 Scheduler=Main\n   Partition=lrd_all_serial AllocNode:Sid=login08-net99-3:1255363\n   ReqNodeList=(null) ExcNodeList=(null)\n   NodeList=\n   NumNodes=1-1 NumCPUs=4 NumTasks=1 CPUs/Task=4 ReqB:S:C:T=0:0:*:*\n   ReqTRES=cpu=4,mem=24G,node=1,billing=4,gres/tmpfs=10737418240\n   AllocTRES=(null)\n   Socks/Node=* NtasksPerN:B:S:C=0:0:*:* CoreSpec=*\n   MinCPUsNode=4 MinMemoryNode=24G MinTmpDiskNode=0\n   Features=(null) DelayBoot=00:00:00\n   OverSubscribe=OK Contiguous=0 Licenses=(null) LicensesAlloc=(null) Network=(null)\n   Command=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/verification_study_v3_autodriver_r2.sbatch\n   WorkDir=/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo\n   Comment=cv3auto:98c797ba4eb39d9c3ab913d6b8978e2d206c9821dd0067aa499771a7f62d4bc6 \n   StdErr=/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/automation/logs/cv3-auto-r2-successor-59652415.err\n   StdIn=/dev/null\n   StdOut=/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/automation/logs/cv3-auto-r2-successor-59652415.out\n   KillOInInvalidDependent=Yes\n   TresPerNode=gres/tmpfs:10g\n   TresPerTask=cpu=4",
+  "successor_release_sha256": "2a06422a77636492ea2df8f5e87876018364f1e04ae9da3e379ff633e3f29b89",
+  "unused_rescues_cancelled_zero_runtime": [
+    "59652028",
+    "59652043"
+  ]
+}

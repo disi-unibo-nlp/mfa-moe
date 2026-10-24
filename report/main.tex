@@ -22,50 +22,46 @@
 
 \section{Scope}
 
-This report describes annotation, representation probing, observational
-routing analysis, and held-out routing interventions. The active packages are
-\texttt{gepaLLMAsJudge}, \texttt{probeTest},
-\texttt{correlation\_pipeline}, \texttt{moe\_identity\_guiding}, and
-\texttt{moe\_margin\_guiding}. Numerical comparisons use complete saved
-artifacts and retain their model, population, and deployment limitations.
+This report tracks the three active workflows: \texttt{gepaLLMAsJudge},
+\texttt{probeTest}, and \texttt{correlation\_pipeline}.  The first two were
+called Experiments~0a and 0b in the previous combined manuscript.  Their full
+protocols, intermediate results, tables, limitations, and external-validation
+results are retained here under their current names.
+
+The previous combined manuscript for numbered Experiments 1--5 is preserved at
+\path{old/report/legacy_full_report.tex} together with its compiled PDF.
+Those archived results remain available for provenance but are not mixed into
+the current experimental plan.
 
 \input{experimental_setup}
 \input{gepaLLMAsJudge}
 \input{probeTest}
 \input{correlation_pipeline}
-\input{multimodel_correlation_results}
-\input{class_transition_results}
-\input{guiding_results}
-\input{oss_cache_diagnostics}
-\input{gemma_cache_diagnostics}
-\input{multimodel_cache_results}
 \input{active_synthesis}
 
 \section{Immediate Work}
 
-The remaining priorities are independent assessment of generated-trace
-labels; external-domain probe validation with thresholds and abstention
-rules selected inside training folds; matched problem cohorts and annotation
-protocols across models; and
-length-/termination-aware correlation models evaluated on held-out problems.
-The offline equivalence audit is complete for all saved baseline and
-guided evaluations. Further scoring validation should adjudicate residual
-parser failures and ambiguous structured answers and assess sensitivity
-to extraction and tolerance choices.
-Routing intervention intervals resample source-problem clusters. OSS
-negative-lift controls and four-target policies are complete; remaining
-controls concern random expert targets, smaller target budgets, calibration
-sensitivity, independent decoding seeds, and transfer across quantizations. Strength selection and final
-evaluation require separate problem sets. Class-conditioned routing remains
-unevaluated.
+The agreed order of work is:
+\begin{enumerate}
+\item freeze and archive the seed prompt retained by the completed final GEPA
+alignment, and reserve the locked test for a prespecified evaluation;
+\item prespecify a response to the remaining token-limit failures and extend
+the current vLLM run to GPQA-Diamond and MMLU-Pro;
+\item fit a prespecified length-/termination-aware, dataset-aware correctness
+model with problem-respecting validation and exploratory layerwise screening;
+\item test repeated-attempt and position-window confidence contrasts under
+length, termination, token-composition, and common-cohort controls, and qualify
+pooled expert-ID candidates by layer; and
+\item expand to additional MoE families only after the pilot pipeline and disk
+budget are stable.
+\end{enumerate}
+The detailed acceptance criteria and transcript ambiguities are maintained in
+\texttt{NEXT\_STEPS.md} at the repository root.
 
 \input{reproducibility}
 
-
 \clearpage
-\input{correlation_plot_atlas}
-\clearpage
-\input{multimodel_correlation_atlas}
+\input{correlation_tables}
 
 \clearpage
 \bibliographystyle{plain}

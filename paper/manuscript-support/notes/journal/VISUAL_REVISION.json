@@ -1,0 +1,55 @@
+{
+  "status": "pass",
+  "transition_order": [
+    "Read",
+    "Analyze",
+    "Explore",
+    "Plan",
+    "Implement",
+    "Verify",
+    "Monitor"
+  ],
+  "models": {
+    "gpt": {
+      "transition_cells": 49,
+      "undefined_intervals": 0
+    },
+    "nemotron": {
+      "transition_cells": 49,
+      "undefined_intervals": 7
+    },
+    "qwen35": {
+      "transition_cells": 49,
+      "undefined_intervals": 28
+    },
+    "qwen36": {
+      "transition_cells": 49,
+      "undefined_intervals": 49
+    },
+    "gemma": {
+      "transition_cells": 49,
+      "undefined_intervals": 14
+    },
+    "glm": {
+      "transition_cells": 49,
+      "undefined_intervals": 21
+    },
+    "qwen330b": {
+      "transition_cells": 49,
+      "undefined_intervals": 7
+    }
+  },
+  "source_cell_check": "verify_cl_tables.py --self-test: 466 populated table cells,14 prose CIs,17 negative controls",
+  "data_work": "Deterministic formatting, copying and sign transformations only; no fitting or resampling",
+  "beige_reference": "paper-writer/assets/templates/plot-spsd-game-math-performance.tex rqplotbg FAF7EF",
+  "named_diagnostics": {
+    "RIG": "text loss minus augmented loss; nats/sentence",
+    "ARG": "past-text/history loss minus augmented loss; nats/pair",
+    "WSC": "100 times minimum class native-slot coverage; percent",
+    "coverage_gain": "balanced WSC minus frequency WSC; percentage points"
+  },
+  "scientific_sources_modified": false,
+  "confidence_display_check": "CI_FORMAT_AUDIT.json: deviations computed before rounding;186 original-precision real,39 rounded-source historical and112 disclosed mock CI displays;5 rendered shape checks pass",
+  "table_width_and_identity_check": "TABLE_FORMAT_AUDIT.json: full verified model labels; max-width wrappers never enlarge; longtables fit unscaled; Table2 fits at native font size",
+  "latest_plot_policy": "Horizontal actual values above every bar; compact readout and seven-model panels; native ARG lines replace sparse bars"
+}

@@ -1,0 +1,8 @@
+test_gpt_reasoning_count_comes_from_replay_even_when_usage_says_zero (test_whole.AnalysisTests.test_gpt_reasoning_count_comes_from_replay_even_when_usage_says_zero) ... ok
+test_capped_and_missing_token_accuracy_bounds_use_actual_allowance (test_whole.AnalysisTests.test_capped_and_missing_token_accuracy_bounds_use_actual_allowance) ... ok
+test_all_missing_production_still_exports_six_bounded_primary_contrasts (test_whole.ClosedAnalysisTests.test_all_missing_production_still_exports_six_bounded_primary_contrasts) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 35.025s
+
+OK

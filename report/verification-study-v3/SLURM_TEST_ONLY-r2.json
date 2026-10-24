@@ -1,0 +1,48 @@
+{
+  "allocated_jobs": false,
+  "campaign_sha256": "4360749a06639b8cf13581a7f4b252e7d6f3a1525ea649815ecf441d79ae0539",
+  "closeout": {
+    "job_card": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007/submissions/f33c88ecaaafbe890c1ba88770fdc7f6107730a29ca4fa81e868e07becd82e62/JOB_CARD.json",
+    "scheduler_output": "sbatch: no gres/tmpfs specified, using default: gres/tmpfs:10g\nsbatch: Job 59615915 to start at 2026-10-09T07:11:35 a using 4 processors on nodes login08 in partition lrd_all_serial\n",
+    "test_only": true
+  },
+  "qualification": {
+    "gemma": {
+      "job_card": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007/submissions/c6fed0890d682afe4f76993d4c38984b74b0a665ee1ee8ad5666e89fcef456e9/JOB_CARD.json",
+      "scheduler_output": "sbatch: Job 59615912 to start at 2026-10-12T00:36:32 a using 16 processors on nodes lrdn0384 in partition boost_usr_prod\n",
+      "test_only": true
+    },
+    "glm": {
+      "job_card": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007/submissions/0e12dc902bec3a822b98f461db7ea07dc26877fb3aa859d87b67ffb3b11cd9c5/JOB_CARD.json",
+      "scheduler_output": "sbatch: Job 59615913 to start at 2026-10-12T00:36:32 a using 16 processors on nodes lrdn0384 in partition boost_usr_prod\n",
+      "test_only": true
+    },
+    "gpt": {
+      "job_card": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007/submissions/c160cd298b1993675c5b6d88a44428260c28b2dc499a20766e92ffd7a5303402/JOB_CARD.json",
+      "scheduler_output": "sbatch: Job 59615908 to start at 2026-10-12T00:36:29 a using 16 processors on nodes lrdn0384 in partition boost_usr_prod\n",
+      "test_only": true
+    },
+    "nemotron": {
+      "job_card": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007/submissions/8cb90590c1c47fc633da22162fc1a1082d150e41b95f93a4aa359e41a7245d3c/JOB_CARD.json",
+      "scheduler_output": "sbatch: Job 59615909 to start at 2026-10-12T00:36:29 a using 16 processors on nodes lrdn0384 in partition boost_usr_prod\n",
+      "test_only": true
+    },
+    "qwen330b": {
+      "job_card": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007/submissions/99431ef2cb8405a2d087e8a3f888cc9a28a1519bb392916526ef5c19f5c889d1/JOB_CARD.json",
+      "scheduler_output": "sbatch: Job 59615914 to start at 2026-10-12T00:36:34 a using 16 processors on nodes lrdn0384 in partition boost_usr_prod\n",
+      "test_only": true
+    },
+    "qwen35": {
+      "job_card": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007/submissions/d8e092a746d3d88ee24f9095bf7c16e1823d747b5b03cf41e484eb92878da997/JOB_CARD.json",
+      "scheduler_output": "sbatch: Job 59615910 to start at 2026-10-12T00:36:31 a using 16 processors on nodes lrdn0384 in partition boost_usr_prod\n",
+      "test_only": true
+    },
+    "qwen36": {
+      "job_card": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007/submissions/59fe8e7915e34e935fbefcfbd8cf493849292f6686fb95d239106c27ef5a81e5/JOB_CARD.json",
+      "scheduler_output": "sbatch: Job 59615911 to start at 2026-10-12T00:36:32 a using 16 processors on nodes lrdn0121 in partition boost_usr_prod\n",
+      "test_only": true
+    }
+  },
+  "schema": "verification-slurm-test-only-v3",
+  "sha256": "b1e71810b4db71679488ae9963955fa7cce7be47d04d8632d42e8aaaf1987c2e"
+}

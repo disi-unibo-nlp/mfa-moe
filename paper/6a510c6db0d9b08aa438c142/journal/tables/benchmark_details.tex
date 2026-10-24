@@ -1,0 +1,71 @@
+% Multipage longtable: retained outside adjustbox so page breaks remain available.
+% Compact 2pt intercolumn spacing fits the full model identities without text scaling.
+% Adapted from SPSD tab:main-results and SYNCO tab:mainRes.
+\begingroup\small
+\setlength{\tabcolsep}{2pt}
+\begin{longtable}{llrrc}
+\caption{\protect\phantomsection\label{tab:benchmark-details}Mean native card-profile accuracy (\%) with question-bootstrap 95\% confidence intervals in subscripts.
+%
+Repeated attempts remain grouped by source question.
+%
+Scored counts retain unresolved-answer exclusions.
+%
+Bold and underline mark the highest and second-highest unrounded means per benchmark, with ties sharing a rank, as in Table~\ref{tab:benchmarks}.}\\
+\toprule
+Model & Benchmark & Questions & Scored & Mean accuracy (\%) \\
+\midrule\endfirsthead
+\multicolumn{5}{l}{\textit{Continued}}\\
+\toprule
+Model & Benchmark & Questions & Scored & Mean accuracy (\%) \\
+\midrule\endhead
+\bottomrule\endfoot
+\modelname{openai}{GPT-OSS-20B} & AIME24 & 30 & 956 & \cid{78.7}{13.0}{9.7} \\
+\modelname{openai}{GPT-OSS-20B} & AIME25 & 30 & 956 & \cid{76.0}{11.4}{10.0} \\
+\modelname{openai}{GPT-OSS-20B} & AMC23 & 40 & 1278 & \cid{97.3}{2.7}{2.1} \\
+\modelname{openai}{GPT-OSS-20B} & MATH-500 & 500 & 500 & \cid{97.0}{1.6}{1.4} \\
+\modelname{openai}{GPT-OSS-20B} & Minerva Math & 272 & 272 & \cid{69.1}{5.9}{5.5} \\
+\modelname{openai}{GPT-OSS-20B} & OlympiadBench & 675 & 674 & \cid{83.2}{2.8}{2.7} \\
+\modelname{nvidia}{\shortstack[l]{Nemotron-3.5-Lightning\\30B-A3B}} & AIME24 & 30 & 960 & \cid{87.8}{12.5}{8.8} \\
+\modelname{nvidia}{\shortstack[l]{Nemotron-3.5-Lightning\\30B-A3B}} & AIME25 & 30 & 960 & \cid{87.2}{11.3}{9.2} \\
+\modelname{nvidia}{\shortstack[l]{Nemotron-3.5-Lightning\\30B-A3B}} & AMC23 & 40 & 1280 & \secondcid{99.8}{0.3}{0.2} \\
+\modelname{nvidia}{\shortstack[l]{Nemotron-3.5-Lightning\\30B-A3B}} & MATH-500 & 500 & 500 & \cid{98.8}{1.0}{0.8} \\
+\modelname{nvidia}{\shortstack[l]{Nemotron-3.5-Lightning\\30B-A3B}} & Minerva Math & 272 & 272 & \cid{73.5}{5.9}{5.1} \\
+\modelname{nvidia}{\shortstack[l]{Nemotron-3.5-Lightning\\30B-A3B}} & OlympiadBench & 675 & 675 & \cid{88.6}{2.4}{2.4} \\
+\modelname{qwen}{Qwen3.5-35B-A3B} & AIME24 & 30 & 960 & \secondcid{94.0}{8.6}{5.4} \\
+\modelname{qwen}{Qwen3.5-35B-A3B} & AIME25 & 30 & 960 & \cid{88.3}{11.3}{9.8} \\
+\modelname{qwen}{Qwen3.5-35B-A3B} & AMC23 & 40 & 1280 & \bestcid{100.0}{0.0}{0.0} \\
+\modelname{qwen}{Qwen3.5-35B-A3B} & MATH-500 & 500 & 500 & \secondcid{99.4}{0.8}{0.6} \\
+\modelname{qwen}{Qwen3.5-35B-A3B} & Minerva Math & 272 & 271 & \cid{73.4}{5.5}{5.5} \\
+\modelname{qwen}{Qwen3.5-35B-A3B} & OlympiadBench & 675 & 675 & \bestcid{92.3}{2.1}{2.1} \\
+\modelname{qwen}{Qwen3.6-35B-A3B} & AIME24 & 30 & 960 & \bestcid{94.8}{7.1}{5.0} \\
+\modelname{qwen}{Qwen3.6-35B-A3B} & AIME25 & 30 & 960 & \bestcid{89.7}{10.9}{9.2} \\
+\modelname{qwen}{Qwen3.6-35B-A3B} & AMC23 & 40 & 1280 & \bestcid{100.0}{0.0}{0.0} \\
+\modelname{qwen}{Qwen3.6-35B-A3B} & MATH-500 & 500 & 500 & \bestcid{99.6}{0.6}{0.4} \\
+\modelname{qwen}{Qwen3.6-35B-A3B} & Minerva Math & 272 & 270 & \secondcid{74.8}{5.6}{5.2} \\
+\modelname{qwen}{Qwen3.6-35B-A3B} & OlympiadBench & 675 & 675 & \secondcid{92.0}{2.1}{1.9} \\
+\modelname{gemma}{Gemma-4-26B-A4B} & AIME24 & 30 & 959 & \cid{90.8}{9.8}{7.2} \\
+\modelname{gemma}{Gemma-4-26B-A4B} & AIME25 & 30 & 948 & \cid{86.8}{10.5}{8.8} \\
+\modelname{gemma}{Gemma-4-26B-A4B} & AMC23 & 40 & 1280 & \cid{99.7}{0.6}{0.3} \\
+\modelname{gemma}{Gemma-4-26B-A4B} & MATH-500 & 500 & 500 & \cid{99.0}{1.0}{0.8} \\
+\modelname{gemma}{Gemma-4-26B-A4B} & Minerva Math & 272 & 271 & \bestcid{75.6}{4.8}{5.2} \\
+\modelname{gemma}{Gemma-4-26B-A4B} & OlympiadBench & 675 & 674 & \cid{90.8}{2.2}{2.1} \\
+\modelname{zhipu}{GLM-4.7-Flash (30B-A3B)} & AIME24 & 30 & 960 & \cid{93.2}{7.7}{4.9} \\
+\modelname{zhipu}{GLM-4.7-Flash (30B-A3B)} & AIME25 & 30 & 960 & \secondcid{89.6}{9.7}{7.6} \\
+\modelname{zhipu}{GLM-4.7-Flash (30B-A3B)} & AMC23 & 40 & 1280 & \cid{99.4}{0.5}{0.4} \\
+\modelname{zhipu}{GLM-4.7-Flash (30B-A3B)} & MATH-500 & 500 & 500 & \cid{98.4}{1.2}{1.0} \\
+\modelname{zhipu}{GLM-4.7-Flash (30B-A3B)} & Minerva Math & 272 & 271 & \cid{73.1}{5.5}{5.2} \\
+\modelname{zhipu}{GLM-4.7-Flash (30B-A3B)} & OlympiadBench & 675 & 674 & \cid{90.5}{2.2}{2.1} \\
+\modelname{qwen}{Qwen3-30B-A3B} & AIME24 & 30 & 960 & \cid{80.2}{14.7}{11.0} \\
+\modelname{qwen}{Qwen3-30B-A3B} & AIME25 & 30 & 960 & \cid{71.1}{13.3}{12.1} \\
+\modelname{qwen}{Qwen3-30B-A3B} & AMC23 & 40 & 1280 & \cid{97.7}{2.5}{1.8} \\
+\modelname{qwen}{Qwen3-30B-A3B} & MATH-500 & 500 & 500 & \cid{98.0}{1.2}{1.2} \\
+\modelname{qwen}{Qwen3-30B-A3B} & Minerva Math & 272 & 271 & \bestcid{75.6}{5.2}{4.8} \\
+\modelname{qwen}{Qwen3-30B-A3B} & OlympiadBench & 675 & 674 & \cid{84.6}{2.8}{2.5} \\
+\modelname{liquid}{LFM2.5-24B-A2B} & AIME24 & 30 & 960 & \cid{86.9}{12.3}{8.4} \\
+\modelname{liquid}{LFM2.5-24B-A2B} & AIME25 & 30 & 960 & \cid{84.4}{9.9}{8.6} \\
+\modelname{liquid}{LFM2.5-24B-A2B} & AMC23 & 40 & 1280 & \cid{97.9}{2.3}{1.7} \\
+\modelname{liquid}{LFM2.5-24B-A2B} & MATH-500 & 500 & 500 & \cid{98.8}{1.0}{0.8} \\
+\modelname{liquid}{LFM2.5-24B-A2B} & Minerva Math & 272 & 271 & \cid{74.2}{5.7}{5.2} \\
+\modelname{liquid}{LFM2.5-24B-A2B} & OlympiadBench & 675 & 675 & \cid{89.0}{2.5}{2.2} \\
+\end{longtable}
+\endgroup

@@ -1,0 +1,8 @@
+model,qualification,native_expert_bytes,compact_expert_bytes,accuracy
+gpt,UNMEASURED,,,UNMEASURED
+nemotron,UNMEASURED,,,UNMEASURED
+qwen35,UNMEASURED,,,UNMEASURED
+qwen36,UNMEASURED,,,UNMEASURED
+gemma,UNMEASURED,,,UNMEASURED
+glm,UNMEASURED,,,UNMEASURED
+qwen330b,UNMEASURED,,,UNMEASURED

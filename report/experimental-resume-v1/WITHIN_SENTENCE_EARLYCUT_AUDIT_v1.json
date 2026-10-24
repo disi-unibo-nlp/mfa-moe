@@ -1,0 +1,83 @@
+{
+ "schema": "within-sentence-earlycut-audit-v1",
+ "frame_sha256": "ed8522b7ade8e926a3b9d9d7e7d4b9065896017ef9ef4ac823af9479f9ab1e45",
+ "inventory_sha256": "d11bf2e712ac2d5579d33c0948f901d29c8d974f891d32624c448483c76c0fbe",
+ "rating_binding_sha256": "797395f9844301cea7da071ed6d96b84ed6686f9d72bfd70bcabb646388ce287",
+ "rating_summary_sha256": "121859f9931276390e3f91e84ce1c5d261e1bb442c10e7c8719e4fd1966b147c",
+ "rating_batch_sha256s": [
+  "3507ced529c13a515a9d207f3adff15547eca51d0d04602fd9550ef8a50a83a0",
+  "1cf482f479c7247098a7ce8ab9dec1d4af6a287b28df1ec17ecb6dd9af40120b",
+  "c3204cc44373b0d87464bb9017c0c781bc54c4fb919e8f5d094553c2085c53ec"
+ ],
+ "joint_pool_sha256": "9f5520111a2233d849d3eeace5b0c7dad2db57ae82fb0c5006fa80a1ffc00e88",
+ "driver_sha256": "17f30de2d52b49e01fa698f7508acb4bc6119128e2b32af50c2d52a535410f49",
+ "parsed_natural_stop_ratings": 86,
+ "paired_agreement": 42,
+ "strata": {
+  "meaningful_headroom_at_least_4": {
+   "rows": 31,
+   "statuses": {
+    "both_false": 28,
+    "both_true": 2,
+    "split": 1
+   },
+   "positive_families": 2,
+   "positive_existing_pool_family_overlap": 0,
+   "positive_records": [
+    {
+     "uid": "abe31d958b1a51cb90b145b1b202d47e4860e30e56831979c80a4205dc516f63",
+     "family": "993ff5562af5067431c46cead82efa65621fb037fe68a0426235776c12fe5add",
+     "prefix_tokens": 477,
+     "token_headroom": 7,
+     "full_sentence_qwen_status": "unresolved",
+     "overlaps_existing_joint_pool_family": false
+    },
+    {
+     "uid": "0fd1ae461e07f86b58c17086b6e4f794d06e3a75d997b679ae86c682864c89f7",
+     "family": "67928e1673c5c7b82613df7d95a765e72dd694296f41d4eb5bd77fa6a549196b",
+     "prefix_tokens": 786,
+     "token_headroom": 4,
+     "full_sentence_qwen_status": "unresolved",
+     "overlaps_existing_joint_pool_family": false
+    }
+   ]
+  },
+  "short_gap_control_headroom_1_to_3": {
+   "rows": 12,
+   "statuses": {
+    "both_true": 3,
+    "both_false": 9
+   },
+   "positive_families": 3,
+   "positive_existing_pool_family_overlap": 2,
+   "positive_records": [
+    {
+     "uid": "f2f36a0901863c2051a570bab6707d2315dc51175c1b8e0da4d829b563f1173d",
+     "family": "b2fbed68b5770889117d45148541a367c98d2a8c1b6c5f73fe5f7e3eda952ac2",
+     "prefix_tokens": 429,
+     "token_headroom": 1,
+     "full_sentence_qwen_status": "unresolved",
+     "overlaps_existing_joint_pool_family": false
+    },
+    {
+     "uid": "374167cf6d3e6b7a61e539a892c0ea6cd3f9908422276fdf583cc53970245c4f",
+     "family": "98d7c0cffaf8664a6014dd716307b620be6f01d17a3c98014465cc1df0250e35",
+     "prefix_tokens": 3243,
+     "token_headroom": 2,
+     "full_sentence_qwen_status": "accepted",
+     "overlaps_existing_joint_pool_family": true
+    },
+    {
+     "uid": "225aa23526952b95a7094a4c60151f7f7d816155ddd73115703426ac585c18f7",
+     "family": "707ab7621174d1305ed9fb7370a65a7984a70d929ccb758a88557e35c8364c4f",
+     "prefix_tokens": 477,
+     "token_headroom": 2,
+     "full_sentence_qwen_status": "unresolved",
+     "overlaps_existing_joint_pool_family": true
+    }
+   ]
+  }
+ },
+ "interpretation": "Agreement is not positive acceptance. Two meaningful earlier cuts are accepted in previously unused discovery families, but only four and seven tokens ahead of the original sentence end, and both corresponding full-sentence Qwen labels were unresolved. This is a discovery-only timing diagnostic, not human validation or a causal transition result. The original outcome excludes the full triggering sentence.",
+ "sha256": "49cdc068c402ba686741a3036c8e65b3c81cf55796acfc27cc5ccf6269aedf28"
+}

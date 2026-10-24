@@ -1,0 +1,44 @@
+{
+ "schema": "x3-32k-timing-pilot-price-v2",
+ "status": "PROPOSED_GPU_HOLD_NEW_STUDY_PRIORITY",
+ "source_price_sha256": "01273a36850d73dbdc52932334dbeca10a2ced440c5eba8892be91e69391ac7c",
+ "manifest_sha256": "8f7c67d6b2a06e425c4f65d2f7c7fecca1b035a9f207500ca53900df890b8377",
+ "manifest_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/resume-v1/x3-timing-pilot-v1/x3-timing-pilot-v1-8f7c67d6b2a06e42.json",
+ "scope": "40 capped requests on four frozen dev-disc long-prefix families; cost-only measurement; no X3 causal estimates",
+ "max_decode_tokens": 1040440,
+ "prefill_tokens_without_cache_reuse": 274110,
+ "components_wall_seconds": {
+  "two_cold_loads_seconds": 1676.0,
+  "generation_seconds": 4172.983818398141,
+  "prefill_seconds": 34.86328693600371,
+  "shutdown_seconds": 196.0
+ },
+ "projected_wall_seconds": 6079.8471053341445,
+ "proposed_job_walltime_seconds": 7200,
+ "projected_walltime_margin_seconds": 1120.1528946658555,
+ "proposed_GPUs": 2,
+ "proposed_stage_ceiling_GPUh": 4.0,
+ "post_run_allowed_fields": [
+  "elapsed",
+  "load",
+  "prefill_tokens",
+  "decoded_tokens",
+  "finish_reason",
+  "per-request wall_seconds",
+  "batch_shape"
+ ],
+ "post_run_embargoed_fields": [
+  "text",
+  "answer",
+  "correctness",
+  "semantic_labels",
+  "routing_effects"
+ ],
+ "prerequisites": [
+  "new-study priority resolved",
+  "frozen capped sampler job plan bound to manifest digest",
+  "Slurm account/partition/QoS and exact two-hour limit verified"
+ ],
+ "full_X3": "still HOLD; separately price 770-request generation, frozen GEPA labels, grading, any NLL, loads, retries and shutdown, then amend 12 GPU-hour ceiling if needed",
+ "sha256": "e0afcc80e0ae538c58014a214f6fb95c972cdc6c7d9216bcab4bc2d4b8dbbab0"
+}

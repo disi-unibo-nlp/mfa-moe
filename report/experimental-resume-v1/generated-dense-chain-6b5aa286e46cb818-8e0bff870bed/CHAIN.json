@@ -1,0 +1,29 @@
+{
+ "schema": "generated-dense-parent-chain-v1",
+ "binding": {
+  "schema": "generated-dense-chain-binding-v1",
+  "stage": "FRESH",
+  "manifest_sha256": "6b5aa286e46cb818969c939346f448a6577b307779041ec2d35d7fce0562f074",
+  "generation_price_sha256": "3fd70bb258ef2563f655d41336814dd0cde1baec4e97ad66e5da90797eb7986a",
+  "measurement_plan_sha256": "bed369437075a26afd658db3b9c285ff3b2270b962beaabeb0f2513d53867a72",
+  "frame_price_dependency": {
+   "path": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/overnight-submissions-v2-6b5aa286e46cb818/GENERATION_CHAIN.json",
+   "sha256": "10e6a1579a359b7acac1298354e7d20ecc39137c2cdd3845002332b8f4a37f97",
+   "job_id": "59351434"
+  },
+  "dense_directory": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/generated-dense/dense-generated-v1-6b5aa286e46c-8e0bff870bed",
+  "chain_driver_sha256": "d5e948906783e107ddca37df1d7127818f299d39923b25b822ad601a9608f847",
+  "dispatcher_sha256": "b4492b353f8a88b1262720f8459b9a736040e0f95260be2d088da20608a171bb",
+  "shared_submit_sha256": "0c142175df5db52fdf00a85d0e8dd46099209a76c5161994b4279332d6c84a10",
+  "wrappers": {
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/prepare_generated_dense_v1.sbatch": "eb09bb620d98abec7add955a0ae0340f55277e50c224deae5767d1299afb7013",
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/dispatch_generated_dense_v1.sbatch": "c0f3c3bc67782291cc4e8126f79c2e4a56064b511257ea01e9ed3b7175d085d7"
+  }
+ },
+ "frame_price_job": "59351434",
+ "dense_cpu_prepare_job": "59351476",
+ "dense_gpu_dispatch_job": "59351482",
+ "dense_directory": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/generated-dense/dense-generated-v1-6b5aa286e46c-8e0bff870bed",
+ "scope": "Saved continuation labeling and trajectory measurement only; no native generation.",
+ "sha256": "bfdd9804f1208e1167891d2c465e1775131a17677bbdd5a2f502bc1f49828759"
+}

@@ -1,0 +1,96 @@
+{
+ "schema": "native-finalization-live-budget-v3",
+ "snapshot_sha256": "584ba3bf92dd7aa30e6bb965f4706866427e7cd550f6b641658c6cffe8ef4691",
+ "queue": "59400764                                                                                            |PENDING|8:00:00|8:00:00|32|gres/gpu:4|1\n59400762                                                                                            |PENDING|8:00:00|8:00:00|32|gres/gpu:4|1\n59405556                                                                                            |PENDING|8:00:00|8:00:00|32|gres/gpu:4|1\n59423291                                                                                            |RUNNING|5:00:00|3:24:59|16|gres/gpu:2|1\n59423349                                                                                            |RUNNING|5:00:00|3:26:17|16|gres/gpu:2|1\n59423380                                                                                            |RUNNING|4:00:00|2:26:57|2|gres/tmpfs:10g|1\n59423305                                                                                            |RUNNING|4:00:00|2:25:03|2|gres/tmpfs:10g|1\n59405561                                                                                            |PENDING|5:00|5:00|1|gres/tmpfs:10g|1\n59405635                                                                                            |PENDING|1:00:00|1:00:00|2|gres/tmpfs:10g|1\n59400766                                                                                            |PENDING|1:00:00|1:00:00|2|gres/tmpfs:10g|1\n",
+ "budget": {
+  "reported_remaining_billing_core_hours": 46650.0,
+  "active_remaining_commitment_billing_core_hours": 891.4877777777779,
+  "uncommitted_reported_billing_core_hours": 45758.51222222222,
+  "commitments": [
+   {
+    "job_or_array": "59400764",
+    "state": "PENDING",
+    "tasks": 1,
+    "remaining_seconds": 28800,
+    "billing_cores_each": 32,
+    "remaining_billing_core_hours": 256.0
+   },
+   {
+    "job_or_array": "59400762",
+    "state": "PENDING",
+    "tasks": 1,
+    "remaining_seconds": 28800,
+    "billing_cores_each": 32,
+    "remaining_billing_core_hours": 256.0
+   },
+   {
+    "job_or_array": "59405556",
+    "state": "PENDING",
+    "tasks": 1,
+    "remaining_seconds": 28800,
+    "billing_cores_each": 32,
+    "remaining_billing_core_hours": 256.0
+   },
+   {
+    "job_or_array": "59423291",
+    "state": "RUNNING",
+    "tasks": 1,
+    "remaining_seconds": 12299,
+    "billing_cores_each": 16,
+    "remaining_billing_core_hours": 54.66222222222222
+   },
+   {
+    "job_or_array": "59423349",
+    "state": "RUNNING",
+    "tasks": 1,
+    "remaining_seconds": 12377,
+    "billing_cores_each": 16,
+    "remaining_billing_core_hours": 55.00888888888889
+   },
+   {
+    "job_or_array": "59423380",
+    "state": "RUNNING",
+    "tasks": 1,
+    "remaining_seconds": 8817,
+    "billing_cores_each": 2,
+    "remaining_billing_core_hours": 4.898333333333333
+   },
+   {
+    "job_or_array": "59423305",
+    "state": "RUNNING",
+    "tasks": 1,
+    "remaining_seconds": 8703,
+    "billing_cores_each": 2,
+    "remaining_billing_core_hours": 4.835
+   },
+   {
+    "job_or_array": "59405561",
+    "state": "PENDING",
+    "tasks": 1,
+    "remaining_seconds": 300,
+    "billing_cores_each": 1,
+    "remaining_billing_core_hours": 0.08333333333333333
+   },
+   {
+    "job_or_array": "59405635",
+    "state": "PENDING",
+    "tasks": 1,
+    "remaining_seconds": 3600,
+    "billing_cores_each": 2,
+    "remaining_billing_core_hours": 2.0
+   },
+   {
+    "job_or_array": "59400766",
+    "state": "PENDING",
+    "tasks": 1,
+    "remaining_seconds": 3600,
+    "billing_cores_each": 2,
+    "remaining_billing_core_hours": 2.0
+   }
+  ],
+  "limit": "Conservative active-resource estimate; saldo can lag usage and future jobs are not yet queue commitments. Preserve the separately recorded generation allowance and project headroom."
+ },
+ "required_immediate_billing_core_hours": 2.0,
+ "scope": "Immediate authorized allocations only; no new quota subdivision or future campaign forecast.",
+ "sha256": "56cb236fe08fed368cf5103b23de0afe81e88c818a5dc88072bfcfeefe2af2cf"
+}

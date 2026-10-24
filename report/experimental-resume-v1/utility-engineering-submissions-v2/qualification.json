@@ -1,0 +1,16 @@
+{
+ "schema": "overnight-submit-receipt-v1",
+ "name": "qualification",
+ "binding": {
+  "plan_sha256": "4fcfe479aecf4afcf2f858f3445cd2d46a2b4fdb308d0488fbc3c5dc9961a443",
+  "gpu_hour_ceiling": 8,
+  "output": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/utility-pair-qualification-v2-4fcfe479aecf4afc",
+  "wrapper_sha256": "d7c286825172ec5861169cdfa00911c79e8792950b0d3456e7d82b81ca5aba6b"
+ },
+ "arguments": [
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/qualify_utility_pair_v2.sbatch"
+ ],
+ "job_id": "59346566",
+ "submission": "59346566",
+ "sha256": "2d27c41cfbc97b9e695c313b37bd90968e646abad32ffecb40b877e44c3ab5a1"
+}

@@ -1,0 +1,16 @@
+{
+ "schema": "overnight-operator-dispatch-submissions-v2",
+ "records": [
+  {
+   "stage": "C",
+   "preparation_job": "59345112",
+   "dispatcher_job": "59345508"
+  },
+  {
+   "stage": "FRESH",
+   "preparation_job": "59345113",
+   "dispatcher_job": "59345513"
+  }
+ ],
+ "sha256": "a27382dbb00996652aa7fc9f4508995e8d4389a97a48805717c1fe0aa459dfd2"
+}

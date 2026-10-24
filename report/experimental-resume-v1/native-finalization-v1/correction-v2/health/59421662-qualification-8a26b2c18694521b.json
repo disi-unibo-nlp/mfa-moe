@@ -1,0 +1,13 @@
+{
+ "schema": "native-finalization-health-v1",
+ "job_id": "59421662",
+ "phase": "qualification",
+ "signal": "ENGINEERING_ENDED_WITHOUT_QUALIFICATION",
+ "cost_sha256": "f2627d169cb309c294bf0b074047747cf8978b52fba6a89372173a1f6725d1f3",
+ "observed_utc": "2026-10-05T16:03:18.443234+00:00",
+ "observer_host": "lrdn0608.leonardo.local",
+ "manifest_sha256": "6cd588eebb3edb4096613fbd49cf25ca6a51f5d6301724e0475784703ac2e7ba",
+ "no_scheduler_polling": true,
+ "no_new_allocation": true,
+ "sha256": "8a26b2c18694521b64ebf5a97a92ffc29ee87241a235684b1870318e6550afaf"
+}

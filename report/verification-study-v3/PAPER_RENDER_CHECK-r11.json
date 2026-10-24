@@ -1,0 +1,18 @@
+{
+  "checked_pages": [
+    1,
+    37
+  ],
+  "installed_runtime_modified": false,
+  "pages": 121,
+  "pdf_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/verification-paper-full-build-20261008-r18/output/main.pdf",
+  "pdf_sha256": "086c5d414f4c6ae66337d6ef5e55866b99516a5665ec88ead4e65fff75c329f1",
+  "rendered_files": {
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/verification-paper-full-build-20261008-r18/verification-page-1.png": "93d308d9bbde5998bc99e9f5517580623874bb6bd53a95657ab270375f3dbff6",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/verification-paper-full-build-20261008-r18/verification-page-37.png": "3924a5790b271e948f98b5c9fbfdc10c04b76a550515eb456d7833573321b176"
+  },
+  "schema": "verification-paper-render-check-v3",
+  "scientific_submissions": 0,
+  "sha256": "6573098c13825904811fe2eae0d35084867a2333d5964b84c5aebe3b7389d811",
+  "visual_result": "PASS: opening scope, all-seven qualification table and full GPT/Nemotron/Qwen3-30B recognition limits fit without clipping or overlap; shared J1 failure remains disclosed."
+}

@@ -1,0 +1,155 @@
+{
+  "actual_reader_load_seconds": 440.00708858296275,
+  "additional_manual_submissions": 0,
+  "campaign_sha256": "57df4a026a7be4c909ece85ac1ebe3dc47c3f27bb53ffcab88e3aa9d82bfbb3b",
+  "exact_disjoint_coverage": true,
+  "fixed_draws_per_item": 2,
+  "frame_sha256": "b7c117261ed90c15fe447a4f5bf446eb0c20d9b1eecedd74743bbd2866548f9a",
+  "health_snapshot_sha256": "465596fe876f3ff37c149dc3d886faedf251d9f347ceb5fd82ff5a5bf5b895a7",
+  "jobs": [
+    {
+      "accounting": {
+        "account": "iscrc_miosr",
+        "comment": "cv3t:f6255a574188cdae16e23d2d41287e3b3ca3253ec8cd0eecb36a67d5463bc166",
+        "elapsed_seconds": 808,
+        "exit_code": "0:0",
+        "partition": "boost_usr_prod",
+        "state": "COMPLETED"
+      },
+      "card_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/submissions/f6255a574188cdae16e23d2d41287e3b3ca3253ec8cd0eecb36a67d5463bc166/JOB_CARD.json",
+      "card_sha256": "f6255a574188cdae16e23d2d41287e3b3ca3253ec8cd0eecb36a67d5463bc166",
+      "job_id": "59665246",
+      "measured_budget": null,
+      "measurement_pilot": true,
+      "price_path": null,
+      "price_sha256": null,
+      "resources": {
+        "billing_core_hours_max": 128.0,
+        "cpus": 16,
+        "gpus": 2,
+        "memory_gb": 120,
+        "partition": "boost_usr_prod",
+        "price_basis": "retained first-role measurement; finite original enrollment",
+        "qos": "normal",
+        "walltime_seconds": 28800
+      },
+      "slice": [
+        49,
+        1
+      ],
+      "submission_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/submissions/f6255a574188cdae16e23d2d41287e3b3ca3253ec8cd0eecb36a67d5463bc166/SUBMISSION.json"
+    },
+    {
+      "accounting": {
+        "account": "iscrc_miosr",
+        "comment": "",
+        "elapsed_seconds": 949,
+        "exit_code": "0:0",
+        "partition": "boost_usr_prod",
+        "state": "RUNNING"
+      },
+      "card_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/submissions/b960cd30e5f236002d1e32a3c3be724eef6a3b4031ec28fe2ace36e24a19253c/JOB_CARD.json",
+      "card_sha256": "b960cd30e5f236002d1e32a3c3be724eef6a3b4031ec28fe2ace36e24a19253c",
+      "job_id": "59666571",
+      "measured_budget": {
+        "billing_core_hours": 60.0,
+        "gpu_count": 2,
+        "measured_seconds": 10304.070381636768,
+        "price_sha256": "0b4d34283efb7ba6c45c6708d1018fb671c3b4ad644b55e27f800b7f1b0756a5",
+        "reservation_seconds": 13481,
+        "walltime_seconds": 13500.0
+      },
+      "measurement_pilot": false,
+      "price_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/autostages-r5/prices/nemotron/reader-712753550af9ce9db57b9c5ca80add53b23a9739b84cd03a59bd56fa739e3739.json",
+      "price_sha256": "0b4d34283efb7ba6c45c6708d1018fb671c3b4ad644b55e27f800b7f1b0756a5",
+      "resources": {
+        "billing_core_hours_max": 60.0,
+        "cpus": 16,
+        "gpus": 2,
+        "memory_gb": 120,
+        "partition": "boost_usr_prod",
+        "price_basis": "actual role maxima; full caps, one complete retry, two loads,1.25 factor plus600 seconds",
+        "qos": "normal",
+        "walltime_seconds": 13500
+      },
+      "slice": [
+        0,
+        49
+      ],
+      "submission_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/submissions/b960cd30e5f236002d1e32a3c3be724eef6a3b4031ec28fe2ace36e24a19253c/SUBMISSION.json"
+    },
+    {
+      "accounting": {
+        "account": "iscrc_miosr",
+        "comment": "",
+        "elapsed_seconds": 832,
+        "exit_code": "0:0",
+        "partition": "boost_usr_prod",
+        "state": "RUNNING"
+      },
+      "card_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/submissions/3fa699f64e78da9650ef1f8dcde1102813621099d49a2b72e74dc49300619579/JOB_CARD.json",
+      "card_sha256": "3fa699f64e78da9650ef1f8dcde1102813621099d49a2b72e74dc49300619579",
+      "job_id": "59666574",
+      "measured_budget": {
+        "billing_core_hours": 90.4,
+        "gpu_count": 2,
+        "measured_seconds": 15770.022980229855,
+        "price_sha256": "0b4d34283efb7ba6c45c6708d1018fb671c3b4ad644b55e27f800b7f1b0756a5",
+        "reservation_seconds": 20313,
+        "walltime_seconds": 20340.0
+      },
+      "measurement_pilot": false,
+      "price_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/autostages-r5/prices/nemotron/reader-712753550af9ce9db57b9c5ca80add53b23a9739b84cd03a59bd56fa739e3739.json",
+      "price_sha256": "0b4d34283efb7ba6c45c6708d1018fb671c3b4ad644b55e27f800b7f1b0756a5",
+      "resources": {
+        "billing_core_hours_max": 90.4,
+        "cpus": 16,
+        "gpus": 2,
+        "memory_gb": 120,
+        "partition": "boost_usr_prod",
+        "price_basis": "actual role maxima; full caps, one complete retry, two loads,1.25 factor plus600 seconds",
+        "qos": "normal",
+        "walltime_seconds": 20340
+      },
+      "slice": [
+        50,
+        78
+      ],
+      "submission_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/submissions/3fa699f64e78da9650ef1f8dcde1102813621099d49a2b72e74dc49300619579/SUBMISSION.json"
+    }
+  ],
+  "largest_input_tokens": 16054,
+  "model": "nemotron",
+  "original_frame_items": 128,
+  "retained_draws": [
+    {
+      "finish_reason": "length",
+      "input_tokens": 16054,
+      "invocation_runtime_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/nemotron/eligibility-ratings/invocations/59665246-1791419158432671758/RUNTIME.json",
+      "invocation_runtime_sha256": "b354e13d5db983afccd4084506037725d744cdadd55dcf8d25dcbbf2b33cc17a",
+      "job_id": "59665246",
+      "output_tokens": 1024,
+      "reader": 0,
+      "seconds": 82.36845999024808,
+      "sha256": "014aaafbac1bcbfae08c1b902b60ea2d7a82f882b55439d6acc799879526ac47",
+      "uid": "53a19a6aecee2a2c62f82d5b8f3e49f9f3270f1c09df3861f6aa7b1732a067d3"
+    },
+    {
+      "finish_reason": "stop",
+      "input_tokens": 16054,
+      "invocation_runtime_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/nemotron/eligibility-ratings/invocations/59665246-1791419158432671758/RUNTIME.json",
+      "invocation_runtime_sha256": "b354e13d5db983afccd4084506037725d744cdadd55dcf8d25dcbbf2b33cc17a",
+      "job_id": "59665246",
+      "output_tokens": 895,
+      "reader": 1,
+      "seconds": 68.18566492386162,
+      "sha256": "acd46e7539480d48f01c19acc63b3c5f0e569fc639e4747fce9025e7fc4f564a",
+      "uid": "53a19a6aecee2a2c62f82d5b8f3e49f9f3270f1c09df3861f6aa7b1732a067d3"
+    }
+  ],
+  "retained_index": 49,
+  "retained_uid": "53a19a6aecee2a2c62f82d5b8f3e49f9f3270f1c09df3861f6aa7b1732a067d3",
+  "schema": "verification-reader-advancement-v3",
+  "scientific_interpretation": "Retained price measurement and accepted original-frame bulk reading; not recognizer qualification or causal success.",
+  "sha256": "57bc6972b362f11e5f5bf37c0ad9ffa7f04d6e3bee60b8fdd11e74b198ac0393"
+}

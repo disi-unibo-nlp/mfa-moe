@@ -1,0 +1,57 @@
+{
+ "schema": "overnight-routing-price-v1",
+ "manifest_sha256": "9c3dc95fda9cf5e9ed03285529f0279d8da7796b3b9f42a4ac9a38b41ad746ab",
+ "shards": [
+  {
+   "start_row": 0,
+   "end_row": 2,
+   "estimated_work_seconds": 3862.5150000000003,
+   "estimated_wall_seconds": 5643.538408889771
+  },
+  {
+   "start_row": 2,
+   "end_row": 4,
+   "estimated_work_seconds": 3957.87,
+   "estimated_wall_seconds": 5738.89340888977
+  },
+  {
+   "start_row": 4,
+   "end_row": 6,
+   "estimated_work_seconds": 3997.875,
+   "estimated_wall_seconds": 5778.8984088897705
+  },
+  {
+   "start_row": 6,
+   "end_row": 8,
+   "estimated_work_seconds": 3984.3150000000005,
+   "estimated_wall_seconds": 5765.338408889771
+  },
+  {
+   "start_row": 8,
+   "end_row": 10,
+   "estimated_work_seconds": 3850.965,
+   "estimated_wall_seconds": 5631.988408889771
+  },
+  {
+   "start_row": 10,
+   "end_row": 12,
+   "estimated_work_seconds": 3848.04,
+   "estimated_wall_seconds": 5629.0634088897705
+  },
+  {
+   "start_row": 12,
+   "end_row": 13,
+   "estimated_work_seconds": 1924.275,
+   "estimated_wall_seconds": 3705.2984088897706
+  }
+ ],
+ "gpus_per_job": 2,
+ "max_wall_seconds": 7200,
+ "reference_price_sha256": "cf4a71364e9f17e1228a67a0bf0ef4f6c5a49904b95fe3ac7f2d9c6e35d24104",
+ "repeat_factor": 1.25,
+ "cold_loads_including_reserve": 9,
+ "estimated_complete_gpu_hours": 22.030592044448856,
+ "status": "PASS_COMPLETE_STAGE_GENERATION_ONLY",
+ "scope": "All assigned prefill, maximum decode, loads, shutdown, 25% repeat work and recovery loads. Blind rating priced separately.",
+ "sha256": "a371d7d97671a49fc9df397595e6778fc4f44486897270c031a741660b23dfc3"
+}

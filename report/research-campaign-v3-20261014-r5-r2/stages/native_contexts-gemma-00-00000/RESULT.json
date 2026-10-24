@@ -1,0 +1,1 @@
+{"detail":{"contexts_sha256":"be8a9d56628627bd2bccd459b980cdd3d378bd63a9e48c5274afccf8d2d54233","status":"complete"},"failure_scope":null,"job_id":"60454660","model":"gemma","seconds":295.9454351151362,"sha256":"45ea7b6821b0aef57ffdb5c5ebe31221216c50aa51fb0acc8f928af170684604","shard_index":0,"stage":"native_contexts","status":"complete","threshold_index":0}

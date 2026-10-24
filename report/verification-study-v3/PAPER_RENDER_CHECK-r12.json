@@ -1,0 +1,20 @@
+{
+  "checked_pages": [
+    1,
+    37,
+    38
+  ],
+  "installed_runtime_modified": false,
+  "pages": 121,
+  "pdf_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/verification-paper-full-build-20261008-r19/output/main.pdf",
+  "pdf_sha256": "5cd74e5dd9ecb47860b71d4c04252df94c5d1f6c7098be252a19ef6752ecc5e5",
+  "rendered_files": {
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/verification-paper-full-build-20261008-r19/verification-page-1.png": "92f1629f9e046d0bbd74cf6db5091b4a9d274ef8deccfcda52d1129e9fe71156",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/verification-paper-full-build-20261008-r19/verification-page-37.png": "0f76b1af340fa323513f1fa8d2b89ef15c489d55a6d844c2eb09debf9d218cde",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/verification-paper-full-build-20261008-r19/verification-page-38.png": "d24ec88855af610731e7953f7fb7f4db69c5320d1146307eb47a4479c31d571d"
+  },
+  "schema": "verification-paper-render-check-v3",
+  "scientific_submissions": 0,
+  "sha256": "ef3a46389ca9a4a257d2ff3e8f9f4f79103ad0244d9b523a189870cfcd0d682e",
+  "visual_result": "PASS: opening scope, all-seven qualification table and full GPT/Nemotron/Gemma/Qwen3-30B recognition limits fit without clipping or overlap; shared J1 failure and unknown-accuracy fallback remain disclosed."
+}

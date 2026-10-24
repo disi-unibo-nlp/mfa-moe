@@ -1,0 +1,18 @@
+{
+  "campaign_sha256": "5012688f04d24db00879118588236c6f1b94d8c636e05a773b7d223697b6bf83",
+  "cancelled_jobs": [
+    "59616013",
+    "59616052",
+    "59616056",
+    "59616060",
+    "59616063",
+    "59616066",
+    "59616070",
+    "59616075"
+  ],
+  "executed_gpu_experiments": 0,
+  "previous_campaign_sha256": "4360749a06639b8cf13581a7f4b252e7d6f3a1525ea649815ecf441d79ae0539",
+  "scheduler_accounting": "59616013|CANCELLED by 133943|0:0\n59616052|CANCELLED by 133943|0:0\n59616056|CANCELLED by 133943|0:0\n59616060|CANCELLED by 133943|0:0\n59616063|CANCELLED by 133943|0:0\n59616066|CANCELLED by 133943|0:0\n59616070|CANCELLED by 133943|0:0\n59616075|CANCELLED by 133943|0:0",
+  "schema": "verification-replacement-receipt-v3",
+  "sha256": "effab009d0cbde37777f12376f014944f34b4d524cd87db624ad93c6f9aaf7db"
+}

@@ -1,0 +1,215 @@
+{
+  "actual_allocated_billing_core_hours": 96.07555555555555,
+  "additional_manual_submissions": 0,
+  "all_stratum_quotas_filled": true,
+  "audit_frame_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/gemma/AUDIT_FRAME.json",
+  "audit_frame_sha256": "40c8b06a92632b44934723fcfe290fdb5d501007ff6cf93529b887ecb8b33046",
+  "audit_prefixes": 128,
+  "campaign_sha256": "57df4a026a7be4c909ece85ac1ebe3dc47c3f27bb53ffcab88e3aa9d82bfbb3b",
+  "controller_elapsed_seconds": 493,
+  "controller_job_id": "59674107",
+  "controller_protection": {
+    "59674668": {
+      "dependency": "afterany:59645811?afterany:59645829?afterany:59645831?afterany:59645840?afterany:59645901?afterany:59666574?afterany:59674100?afterany:59674102?afterany:59674666",
+      "prearm_sha256": "abc841632ba8207afa8fd835f00d9459e19fa7130773b4c218dab46e1e7bdb7f",
+      "queue": {
+        "account": "iscrc_miosr",
+        "comment": "cv3auto:ad0fbab1a5d806decf292bc8a866842c63c24e9c229b06ed4034cf08bef61925",
+        "name": "cv3-auto-r4-successor",
+        "partition": "lrd_all_serial",
+        "reason": "(Dependency)",
+        "state": "PENDING"
+      },
+      "release_sha256": "7c9836db5741555745c9b0bd3892d3ca0272c214cc78ad369c40bafb5770f5c3"
+    },
+    "59674674": {
+      "dependency": "afternotok:59674668",
+      "prearm_sha256": "2e79795416ea5a3ef93868e429cb5e851fd4c936c3ada3af73edc05dc09088de",
+      "queue": {
+        "account": "iscrc_miosr",
+        "comment": "cv3auto:ac864bf088263fa14ec52617100bea41ecbb9ac749446e423e5fe5877e4424c4",
+        "name": "cv3-auto-r4-rescue",
+        "partition": "lrd_all_serial",
+        "reason": "(Dependency)",
+        "state": "PENDING"
+      },
+      "release_sha256": "8ea69c4b9eb36e755669b6937ab0226c887b04e9576632aa00a69aaeee275b61"
+    },
+    "59674676": {
+      "dependency": "afternotok:59674674:59674668",
+      "prearm_sha256": "1278f6afacc673c0dae9c14107daefe7b81841ed08332e68b810961e40615cd5",
+      "queue": {
+        "account": "iscrc_miosr",
+        "comment": "cv3auto:26f9ff3f4a0c37dd8c725a01ba165fc7b83973552ad64c1300507174564f5811",
+        "name": "cv3-auto-r4-rescue",
+        "partition": "lrd_all_serial",
+        "reason": "(Dependency)",
+        "state": "PENDING"
+      },
+      "release_sha256": "7f1ddbe57d2063f30eb2b0d58016a59fddf3d19751102b30cef04726a2605149"
+    }
+  },
+  "controller_result_sha256": "646ea0eb21b8901ad22d93cfc0398986ca1f17b5ab3f4ad070616eb1a74522af",
+  "discovery_manifest_sha256": "1e3407e05ad5867c7a51e0b4b74d33e0e07dcd6bc9882a046b8bf70dcf7ece30",
+  "handoff_sha256": "24698312d702c53ca5545b29c0eb77b817ccb1203c9c3767b39f34da79120795",
+  "missing_discovery_assignments": [],
+  "model": "gemma",
+  "new_causal_and_utility_effects": "NOT_MEASURED",
+  "observed_health_sha256": "86f1c3c8e529f7d0e7e68192f54be6955ecccb39549c07053e503f4111e59cfb",
+  "operational_readiness_files_verified": 29,
+  "original_assignments": 48,
+  "recognizer_status": "NOT_MEASURED",
+  "released_rescue_job_ids": [
+    "59674674",
+    "59674676"
+  ],
+  "retained_reader_card_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/submissions/cce01c5fd8c514242b59acf6fcbc701ce46f52317af1c0a7a4fd27bf08c8d77f/JOB_CARD.json",
+  "retained_reader_card_sha256": "cce01c5fd8c514242b59acf6fcbc701ce46f52317af1c0a7a4fd27bf08c8d77f",
+  "retained_reader_input_shape": {
+    "begin": 47,
+    "count": 1,
+    "frame_sha256": "40c8b06a92632b44934723fcfe290fdb5d501007ff6cf93529b887ecb8b33046",
+    "input_tokens": [
+      14311
+    ],
+    "largest_record_index": 47,
+    "max_input_tokens": 14311,
+    "output_cap": 1024,
+    "reader_contract_sha256": "afca8cdde2519bc72c92e98efd008303c10571a28c57487ede48c3d11b77d4a3",
+    "reader_executor_sha256": "d0f2b65869ab917c1eec3bc9f472c34f4e7d0275c668ee26ae77fc70680cf335",
+    "role": "eligibility",
+    "schema": "verification-reader-input-shape-v3",
+    "sha256": "54117cc29ed89609b53ac93a8fd9fdc4273cca6e824cefd7d0de2ba3f8b34b9a",
+    "uids": [
+      "f8ee06af2bfe7f2a98e885a0bc88a5148e5e3b00d353184d88e7d66cc4a89189"
+    ]
+  },
+  "retained_reader_job_id": "59674666",
+  "retained_reader_observed_queue": {
+    "account": "iscrc_miosr",
+    "comment": "cv3t:cce01c5fd8c514242b59acf6fcbc701ce46f52317af1c0a7a4fd27bf08c8d77f",
+    "name": "cv3t-rate-gemma",
+    "partition": "boost_usr_prod",
+    "reason": "lrdn0437",
+    "state": "RUNNING"
+  },
+  "retained_reader_resources": {
+    "billing_core_hours_max": 128.0,
+    "cpus": 16,
+    "gpus": 2,
+    "memory_gb": 120,
+    "partition": "boost_usr_prod",
+    "price_basis": "retained first-role measurement; finite original enrollment",
+    "qos": "normal",
+    "walltime_seconds": 28800
+  },
+  "retained_reader_submission_sha256": "8c833ec9efad554d70a25301a9a347ec44818f68a68f16b9d40781eccca11f8e",
+  "schema": "verification-discovery-advancement-v3",
+  "scientific_files_verified": 35,
+  "sha256": "fd83f26b5c928c099c0d54dc0a99ba0a6e10133794c3f57c0e9a850933e2717d",
+  "source_receipts": {
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/gemma/discovery/01c2347b3c5eff93404f76911649a04fd4040e1f66d32fd393a20e170c9ad01e.json": "840d3e2e9e336a6b50b5e83d99f7edff1e5feefa833fbb69a96541df7212bc31",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/gemma/discovery/073d86b5b81cd397f77e9e2765b57ce482871ebef1c81125363d7f0edc4b4b59.json": "72f3c3313a1cad0d1ed2963ed3b66cf76ecdbdcefca90ca8fa910542e967d72c",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/gemma/discovery/148386c46f967a939f6476aa114df43cd91cfcffaf50b73f3c8c2539f8779f0d.json": "0aa27a2202bc8cec38be27aa1de5be88e8620d51acf2709120d73135760e112c",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/gemma/discovery/23fda6af0cb41c4e015f4c2d0222bf6f6ff443716a2cb62ad5a5942bcee74b3d.json": "f773884581c436ddcf83dd3ebd7b240deb8e417b7066ccca4a1ac19a5a716eda",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/gemma/discovery/2c102a82656400604dbc7c92e12d5ccf6cf131e412edfd472d0415e5d5a786ab.json": "766617119cd6543ccd728c41cfda3fa509c0c59de8b21180cfae094812c221a5",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/gemma/discovery/2db6c30ad36df4ab22a6029068903dcc668f6517201a415e387211a96a63a6fd.json": "59652d95a8cd0ef65203e4a46d89fa2e10cbe68121239f9e037fbb14a9bef5ec",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/gemma/discovery/2e645ac9042151592d9b1d227f0312e017296a35599f94942e0f0365c5f5cff7.json": "3fa88140ee18a1e098f3419872c92d78f8e3ab4bb68ee340d35c45488e3b49fc",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/gemma/discovery/46188600d7e157a4e3df9f836d34ecb84243152a52f1f912242163906a172591.json": "b686c4f67cb26c16e1c50b219bcb1c3d7e1183b018a99148e241b35452e46062",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/gemma/discovery/55d0ffb64630e089240438d38ef4b27920c71f9229eeb686e79e020cd03b2617.json": "249018d269ac8cb260cdb5ead87d035916ab8f2c8abd56614a66d377ed2dd215",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/gemma/discovery/5d44fb847072e4fdf106a6117f08803fdbd2ae0959ef226fa3632b7472211f2a.json": "bc21294f7964a40a9a2ae79398bd3f8b1b3501d338617c0f0f50ed665ed1782e",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/gemma/discovery/609f6f76a0105c1abdda8f731f71e24b73e9cf33a99f7874298006532e920fef.json": "8e6c4e3c2c51481b00dff09d2e88025fe482bcdd59841efe3889c03c7ef7882a",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/gemma/discovery/678fce92bb0875486369f6d608fa53d8e4162c32e1039b8299b29b0721f1fed7.json": "ec3539456361b21c2081c789e94ed9ed38e4da2c8cc3eefc254412257924907e",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/gemma/discovery/6be0f0bd47afa66b29df228164fba6ee2404ad0fec0b14ea1473ceeada534747.json": "044710eeb915813a919c71e576941d10373b3a4989e24257e2418c25fcd9abab",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/gemma/discovery/6ec4d4b213443511c20d4037ed7220b6b0d12ce3ef1bfdc10d4ae32b3f83bb09.json": "aa2012b7aa03aec463107bba96c87eb09edf77878cf86855f6bc643837cff940",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/gemma/discovery/7659f48681f881524b77796f2e0c5eb172ae8606ab20cafe8756f0a0e0326e98.json": "8ea841eae03634cffd948d5bf8e56b08c09a54677d279b099f10c13976599423",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/gemma/discovery/831ee000ad9d3ab3bdb76721358574aca98f2ac4d96aec5de4545eaf7fa86b5a.json": "d633fe0a39fba73272d49da6e9bcfb1a9a6abe2cc2dd781060936db5a2317968",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/gemma/discovery/855802f16c869e4f8578243029f3a11e91fcb260722c0e109ed2cebf4a37c024.json": "aec8c5d9b0926375cfe382488a694f785c0495f21b7bb1d42c67f1b5869a8bea",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/gemma/discovery/8bb994a67beed7490d051c3ea09802ce49d6ec066a94b70cc4a42ad708245d9f.json": "27a2a30096199acfb4ff5760e5571ceeaa4ee01b4bceaeca019133d29cd6874e",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/gemma/discovery/8be0add5b1876b4db28495e1babc2ef352f77bce5f1a94c16f3cf078a769b800.json": "f49f1a837b126122070e3446d07b09defd7944aa1857ca9bb100fd3912d5d052",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/gemma/discovery/8cbe4402bd5f60487ec819e094e47966686c7763395502cb7caeaa6559c9b6fe.json": "00dea909939b224214cf7a4eef752812dc165f60cce883a305f87d128f5d8c2b",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/gemma/discovery/8e1d44e8295c7df759e9450c65dc8ffb420a3f614003bc47a553245dcb54cda8.json": "efe1f398807f628bd6a6f6b6c41723fbf4611c3b630e3e074dd3ba24e101e197",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/gemma/discovery/8f400a5e884618392118359c08f657b390dc08a42be6d498471cf453689b5d07.json": "d4975424777edb5c8a3c338577cd58901305777ce9e2dfcb30bc161dff13e457",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/gemma/discovery/91b6431bfd1349a81b664242bb83199ca84993d28b2a7758362b7b0761ee7d48.json": "66298f0c2acab94b25466a162835581687eef3626683bdb1948c76bdcd82424e",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/gemma/discovery/9248ccbb7b1fdba60b312a01a8b1dc0e057f50a80da2ccdbf1a569c6a0bc2454.json": "36bfd787c8ce902b9f8e4c89eddf47ffb8d36d63d22e78478e3223efec105e80",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/gemma/discovery/92ab8ca3ea3f0d58962c65e9268ece98ed0a884713ed56e2b0ba955433cf25b0.json": "f4159c507b47ecdb65337c8326c8f1aa2dcf72891f9c2f8412cf3117b9c14d75",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/gemma/discovery/9b365c4d99d13c171042eda5680dfc1d780c1843629e4902f01ded7c4da88dda.json": "b896ce71f44ce17e4c26e8bfa600c09247d64a27c12b7734f9aceddc0144e837",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/gemma/discovery/9c55d5a16535607c6698fc0ac22770c05cd1d48e3f2313447070369f3565349d.json": "d172c188e1d11d0e6eb472fc4cc25e810790450d1355d94876660720ebc27c3a",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/gemma/discovery/9cec092361ee8fd706d5df74a4212c6533ede937a0e150dd03f80dc6282c9f92.json": "cf033de60b479421299028d2ed35fa9a5088629d48e62966f78ac948b6b2fce1",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/gemma/discovery/a7031b57ad8e94696c8eea9262ef4b5ee57acab56a6f3573fd279a589d3abf21.json": "855e2da7172a11c14afbcb5f7276760b64f24f9b0e1a1504a9412774bb6a5173",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/gemma/discovery/ad0547545a6f180b3e79024ed0aac8a4cd2448e1a341d5a16fd6d547c4d709c0.json": "892ee70865a0b6276e60e95a74c5339057d075e3e9afd3079e310ebb6fc5eb6b",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/gemma/discovery/aee88c3305acddd6e38f85969c22a935e4a34410f1e7291df937405143693cd6.json": "c6847a7ddacdf2ca64fe355fb001f09f8ca1f8678929a15eac38c061acb2ae19",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/gemma/discovery/b1abc0eddadd5e95d6bdbd41c2b5b2b97a91bf9070c413badc4d1ad86a6805a0.json": "21f9df6a1b29f2cc7e3f8723930bb92532a1f4a60392c3d0135b0306a4854653",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/gemma/discovery/b1fb67272148927ac453077e8789e986a32f55d3cbb24d48363a62f2fb644a06.json": "503fc97eeec53051a5c6b8ac003964bfefd3bbfa6112dd22b7b46efec9fbd4af",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/gemma/discovery/b2a80ad7f0c59ab8abad036412cba7df4ea62d4ecee9d6f0e4d21247f03f3460.json": "8e1fdda2749241f81027193669305c1d8ca4e6bf0c9823812a6be1f8d3575556",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/gemma/discovery/b6878d8957285a38244b33679368758b5d5408603428c18e68becee4c160a8bc.json": "016ebe700119a65811a4be626c71d0e07586f65e4018e3d75535524aa6abe42c",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/gemma/discovery/b9724a9891fbf570be679cad3a1bde49a163a98bcf38f88bbe21145c4c56f102.json": "fd695cc272bd7c99da5150c32d80b785d5214718c74b42b1ac5f422bd2b564fd",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/gemma/discovery/bcab39c3a34b3f7eef75447cb2b0fffa6dce8f545d4e72b5a4fdaca1d01c9e30.json": "211fa164156eb223ce2db57efb54f90e61a28c8406cadedda7698b61db7f576f",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/gemma/discovery/c07c14a082e768ea2f2f81925f00fc303eaa3332c8d6fa1415d7468fb670f1e4.json": "f90681251dd314b8e6380314f731d671c7f1da32f49cb289818928d94d569315",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/gemma/discovery/c0b82f50d3f32f64ab2092b77e40a027e3190a2f4a69767f8117e96ac9859e72.json": "8d5301cd9ee3c167af8892d918e856c6bd232e23332fb314e1cdbe9cacc5e8c4",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/gemma/discovery/c46ce9ec24e08d664763a6a2a37e0fa4798525d184a19ed1314133f71b91a843.json": "20afd8cdda39ef031fa195801138a780d8378dae3faa9b5933078c4b64cbc777",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/gemma/discovery/ce69771fe47f02f56b61175a00c63f2661c44daeaf93e9c1cd182adc02638d6c.json": "c3c1c88c4190f6dde1721f45e7339eb89619a0740df41ca5d2836ae4697d2f90",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/gemma/discovery/d45dda138deb2e3ed674c36fe1fd6c3aebc3aca14072fdaf09beb54dda7b2e9f.json": "91b6c0287588d4508b86d037a59671478c2d9364cb2525b9f88069c93d2faeec",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/gemma/discovery/dd1f4a1d2097f9f0f0ab7d277b3a519477063bf3ee2512e3811fd3678d4c1700.json": "da4d516fa0cfaddd50e09234b25890b17d63a0a26a7956866321b2611fdedcc5",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/gemma/discovery/e287dfdafdf7e74703979e7b87dca50d49f1d485f961bebfbe380b9389e6d379.json": "9a2e985a766750ce044436133ec15c373daf99c45d59d67d7065c03949512056",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/gemma/discovery/ea412f65e57313c812cd22adcbcc53508d8cbb9f33b9c30d145250bbcbd18c22.json": "86da9fb3a8599d3ce56763c104963ebee6f26772f5cf612734907438466d42ef",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/gemma/discovery/ec25435933da0dcab77babd73c09445a6b2793fbbd5d37c0af0ca37f1ac138f2.json": "a56085298e63dbd00263a77c77b1318e303888711ed858450e0243eef3b7e6f7",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/gemma/discovery/ed83f212ef6f5260d08a65999c4a2d51be7726783a5819066b1727cfa1445b35.json": "20d6448033c21ed3fc4fafb9ae8444528b3cc7aa7ab01312fdc706e44093d0ab",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/gemma/discovery/fe2fb396056717634c1e6645f2e1f87bd642d5c3b11526d9040a27e1da5a337d.json": "de466aa41809b8cc72dd6efe8ca0064d9ebd9615babfbf4b32e7e7eea1631e65"
+  },
+  "successful_discovery_allocations": {
+    "59631988": {
+      "account": "iscrc_miosr",
+      "actual_allocated_billing_core_hours": 4.088888888888889,
+      "allocated_cpus": 16,
+      "assignments": 1,
+      "elapsed_seconds": 920,
+      "exit_code": "0:0",
+      "partition": "boost_usr_prod",
+      "state": "COMPLETED"
+    },
+    "59645874": {
+      "account": "iscrc_miosr",
+      "actual_allocated_billing_core_hours": 34.64,
+      "allocated_cpus": 16,
+      "assignments": 23,
+      "elapsed_seconds": 7794,
+      "exit_code": "0:0",
+      "partition": "boost_usr_prod",
+      "state": "COMPLETED"
+    },
+    "59645879": {
+      "account": "iscrc_miosr",
+      "actual_allocated_billing_core_hours": 51.346666666666664,
+      "allocated_cpus": 16,
+      "assignments": 23,
+      "elapsed_seconds": 11553,
+      "exit_code": "0:0",
+      "partition": "boost_usr_prod",
+      "state": "COMPLETED"
+    },
+    "59645883": {
+      "account": "iscrc_miosr",
+      "actual_allocated_billing_core_hours": 6.0,
+      "allocated_cpus": 16,
+      "assignments": 1,
+      "elapsed_seconds": 1350,
+      "exit_code": "0:0",
+      "partition": "boost_usr_prod",
+      "state": "COMPLETED"
+    }
+  },
+  "successor_job_id": "59674668",
+  "successor_wait_job_ids": [
+    "59645811",
+    "59645829",
+    "59645831",
+    "59645840",
+    "59645901",
+    "59666574",
+    "59674100",
+    "59674102",
+    "59674666"
+  ],
+  "supersedes_status": "Gemma discovery/audit waiting; original partial shard evidence remains preserved."
+}

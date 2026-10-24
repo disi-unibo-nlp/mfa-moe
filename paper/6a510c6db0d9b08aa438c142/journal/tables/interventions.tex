@@ -1,0 +1,52 @@
+% Source cells: preserved guiding_weighting_table.tex, all thirteen rows.
+% Native SPSD comparison layout, adapted to CL with readable type and no resize.
+\begin{table}[tb]
+\centering\small
+\caption{All complete stochastic global-steering comparisons.
+%
+Mean accuracy changes from each matched native baseline are percentage points, with 95\% confidence intervals as subscripts.
+%
+Bold and underline mark the largest and second-largest point means within each model and weighting.
+%
+Attempt weighting is primary.
+%
+Problem weighting is a secondary sensitivity.
+%
+Intervals resample source problems within benchmarks and have no multiplicity correction.
+%
+Execution profiles and concurrency differ across some policies.
+%
+$c$ is execution concurrency.
+%
+Fixed uses lift-scaled score bias; Strong moves scores beyond the native maximum or minimum.
+%
+Positive and negative identify target-set accuracy lift, while $+$ and $-$ denote promotion and suppression.
+%
+Margin adjusts the top-$k$ selection gap toward its calibrated interval.}
+\label{tab:historical-interventions}
+\setlength{\tabcolsep}{2pt}
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{@{}lcc@{}}
+\toprule
+Policy & Mean attempt-weighted $\Delta$ & Mean problem-weighted $\Delta$ \\
+\midrule
+\multicolumn{3}{l}{\modelname{qwen}{Qwen3.5-35B-A3B}}\\
+Fixed positive $+1$ & \cid{-0.29}{0.86}{0.94} & \secondcid{+0.39}{1.90}{1.92} \\
+Fixed positive $+2$ & \cid{-2.80}{2.36}{2.08} & \cid{-0.68}{2.08}{2.01} \\
+Fixed positive $-1$ & \bestcid{+1.08}{1.22}{1.29} & \bestcid{+1.14}{1.89}{1.80} \\
+Margin ($c=16$) & \cid{+0.07}{0.93}{0.94} & \cid{-1.66}{2.01}{2.11} \\
+Margin ($c=25$) & \secondcid{+0.93}{0.93}{0.93} & \cid{-0.12}{1.95}{1.92} \\
+\midrule
+\multicolumn{3}{l}{\modelname{openai}{GPT-OSS-20B}}\\
+Fixed positive $+1$ & \secondcid{0.00}{2.15}{2.01} & \secondcid{+0.42}{2.79}{2.70} \\
+Fixed positive $+2$ & \cid{-3.30}{2.86}{2.37} & \cid{-0.10}{3.02}{3.18} \\
+Fixed positive $-1$ & \cid{-1.00}{2.44}{2.22} & \cid{-0.51}{2.90}{3.00} \\
+Fixed negative $+1$ & \bestcid{+0.57}{2.15}{2.08} & \bestcid{+2.35}{2.93}{3.09} \\
+Strong positive $+1$ & \cid{-61.65}{7.67}{8.24} & \cid{-50.15}{4.73}{4.70} \\
+Strong positive $-1$ & \cid{-2.22}{1.94}{1.79} & \cid{-0.83}{2.93}{3.06} \\
+Strong negative $+1$ & \cid{-59.57}{7.67}{8.17} & \cid{-49.13}{4.67}{4.57} \\
+Margin ($c=25$) & \cid{-0.86}{2.01}{2.01} & \cid{-0.50}{2.99}{2.96} \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}

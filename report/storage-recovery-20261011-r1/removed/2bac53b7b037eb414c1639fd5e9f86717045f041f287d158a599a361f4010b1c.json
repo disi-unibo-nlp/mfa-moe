@@ -1,0 +1,1 @@
+{"accounting": {"elapsed_seconds": 128, "start": "2026-09-25T18:11:28", "state": "FAILED"}, "estimated_allocated_bytes": 4096, "job_id": "58626939_9", "path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/campaign-v3/runtime/gen-gpt-58626939_9/torch", "sha256": "42d5e8672b344c9b3331dfeaa6503628e823391e57c578160eefca5778676970"}

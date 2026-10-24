@@ -1,0 +1,119 @@
+{
+  "schema_version": 1,
+  "status": "pass",
+  "revision": "2026-10-14 signed CI deviations after author-review round 1",
+  "contract": "Compute lower error = original estimate minus original lower limit and upper error = original upper limit minus original estimate; round each error only after subtraction. Preserve the independently rounded original mean and source-based rank. Equal displayed errors print plus/minus; unequal errors print separate signed deviations.",
+  "macro_interface": {
+    "active": [
+      "cid",
+      "bestcid",
+      "secondcid"
+    ],
+    "arguments": [
+      "display_mean",
+      "lower_error",
+      "upper_error"
+    ],
+    "legacy_endpoint_macros_retained": true,
+    "legacy_endpoint_calls_in_active_displays": 0
+  },
+  "migration": {
+    "populated_ci_displays": 337,
+    "unique_calls_including_blank": 267,
+    "corrected_error_pairs": 66
+  },
+  "precision_boundary": {
+    "original_precision_real_ci_displays": 186,
+    "historical_rounded_source_ci_displays": 39,
+    "historical_table_cells": 35,
+    "historical_numeric_prose_displays": 4,
+    "historical_sources": [
+      "guiding_weighting_table.tex",
+      "probe_grouped_summary_table.tex",
+      "model_analysis_main.tex",
+      "verification_study.tex",
+      "prior supplied historical semantic contrast against matched random"
+    ],
+    "historical_policy": "Use only retained supplied precision. No finer endpoints or extra significant digits are inferred.",
+    "explicitly_authorized_mock_ci_displays": 112,
+    "mock_source": "figures/journal/data/routing_mock.json",
+    "mock_policy": "Illustrative mock means and intervals remain separately disclosed and require replacement."
+  },
+  "verification": {
+    "ordered_populated_table_cells": 466,
+    "real_and_diagnostic_table_cells": 354,
+    "mock_table_cells": 112,
+    "ordered_numeric_prose_ci_displays": 14,
+    "negative_control_count": 15,
+    "negative_controls": [
+      "model_row_swap_rejected",
+      "benchmark_header_swap_rejected",
+      "changed_ci_rejected",
+      "silently_symmetrized_ci_rejected",
+      "symmetric_original_false_asymmetry_rejected",
+      "errors_from_rounded_endpoints_rejected",
+      "swapped_signed_deviations_rejected",
+      "transposed_state_header_swap_rejected",
+      "forced_table_stretch_rejected",
+      "wrong_best_mark_rejected",
+      "invented_missing_ci_rejected",
+      "changed_prefix_baseline_bound_rejected",
+      "narrative_false_asymmetry_rejected",
+      "changed_merged_fixture_context_rejected",
+      "default_export_preserves_tables_and_manifest"
+    ],
+    "actual_printed_shape_test_count": 5,
+    "actual_printed_shape_tests": [
+      {
+        "case": "symmetric",
+        "expected_pdf_text": "17.27\u00b14.27",
+        "observed_pdf_text": "17.27\u00b14.27",
+        "status": "pass"
+      },
+      {
+        "case": "asymmetric",
+        "expected_pdf_text": "76.0+10.0\u221211.4",
+        "observed_pdf_text": "76.0+10.0\u221211.4",
+        "status": "pass"
+      },
+      {
+        "case": "zero",
+        "expected_pdf_text": "100.0\u00b10.0",
+        "observed_pdf_text": "100.0\u00b10.0",
+        "status": "pass"
+      },
+      {
+        "case": "best",
+        "expected_pdf_text": "94.0+5.4\u22128.6",
+        "observed_pdf_text": "94.0+5.4\u22128.6",
+        "status": "pass"
+      },
+      {
+        "case": "second",
+        "expected_pdf_text": "89.6+7.6\u22129.7",
+        "observed_pdf_text": "89.6+7.6\u22129.7",
+        "status": "pass"
+      }
+    ],
+    "fixture_compile_exit_code": 0,
+    "fixture_compile_offline": true,
+    "fixture_compile_seconds": 2.175575943896547,
+    "fixture_pdf_sha256": "6db9083ed5b1035b1fc9eb92961e0cbb096310b6be3fa48e956ab186c549a31c",
+    "macro_block_sha256": "2d450dcdc2db0608194199781c75a4199b314d14d6d91ae10e8296b5f62379ff",
+    "local_proof_directory": ".paper-review/ci-deviations-20261014"
+  },
+  "source_sha256": {
+    "figures/journal/data/benchmark_cells.csv": "4d62c6dcdfaa0f233bb2ba7441837d222683bd27ead9a8e08f91e775c9b5b2ea",
+    "figures/journal/data/routing_readout.csv": "5ae4a2796fec817512c480b079bc867f709e45eb57cd2d70ed4e8eab01b9d0f2",
+    "figures/journal/data/anticipation.csv": "81bd7739b2812042aaae315e7a22354507264fe5ced5fbe3b8d763fd076a05ec",
+    "figures/journal/data/native_dynamics.json": "ff8072297e7b400bd580b6ae9172cb2f3d03f758828a5d7ae211229fa234df3b",
+    "figures/journal/data/routing_mock.json": "15054800fad7cc6ab81ff2431e5dc2504f5bc1b1951e19d3560a4aab8b647881",
+    "guiding_weighting_table.tex": "287b32e3f5467156f4c03a88dbf7e3ed487b08719b617228dd19a902e1647cbb",
+    "probe_grouped_summary_table.tex": "25796e6269fac684f1e33036f2eaaec89a8ff28c9a348da20ab92c7c9a8f0bee"
+  },
+  "new_fitting": false,
+  "new_resampling": false,
+  "new_inference": false,
+  "scientific_values_reestimated": false,
+  "historical_record_notice": "Describes the 2026-10-14 signed-error edition. The author requested symmetric enclosing plus-minus displays on 2026-10-15; see CI_PRESENTATION.json and PM_LAYOUT_AUDIT.json."
+}

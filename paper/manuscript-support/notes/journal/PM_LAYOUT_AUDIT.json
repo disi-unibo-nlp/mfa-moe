@@ -1,0 +1,222 @@
+{
+  "revision": "2026-10-15 plus-minus and compact figure layout",
+  "status": "pass",
+  "ci_presentation": "mean +/- max(original lower deviation, original upper deviation); symmetric enclosing display, original nominal coverage not reestimated",
+  "original_data_files_unchanged": true,
+  "figures": {
+    "overview": {
+      "source_sha256": "686de95a4281ac1498523cbfd23c11886e3ae0a49bd74d368853050ddaa9f46f",
+      "pdf_sha256": "60f1b21868db84cafc16c24532ea002d7bf43048052dea58a65667f86ba7316b",
+      "dimensions_pt": [
+        386.25,
+        167.7100067138672
+      ],
+      "prior_dimensions_pt": [
+        386.25,
+        167.7100067138672
+      ],
+      "height_at_equal_width_change_percent": 0.0,
+      "rotations_degrees": [],
+      "source_pdf_style_and_data_binding_pass": true,
+      "offline": true,
+      "expected_numeric_labels": 18,
+      "expected_label_multiset_present": true
+    },
+    "conditioning": {
+      "source_sha256": "2f16a39feddfeeb45d26e5eb5828a10f268dbd4231079e1e90d999303308fcf2",
+      "pdf_sha256": "230b9f7f87d7efc151d4e4ac335ac502ab983941120e794b600248997f9d9e77",
+      "dimensions_pt": [
+        386.25,
+        225.5
+      ],
+      "prior_dimensions_pt": [
+        386.25,
+        225.5
+      ],
+      "height_at_equal_width_change_percent": 0.0,
+      "rotations_degrees": [],
+      "source_pdf_style_and_data_binding_pass": true,
+      "offline": true,
+      "expected_numeric_labels": 24,
+      "expected_label_multiset_present": true
+    },
+    "readout": {
+      "source_sha256": "977cead3e8d63894ec40fb65f52611678d455daf96f0e90e7ac1901327a8e69a",
+      "pdf_sha256": "e4c2f6bc429834db9401fe56131785104f2c2a025fe10c474c581925eec0ab9d",
+      "dimensions_pt": [
+        375.7799987792969,
+        188.16000366210938
+      ],
+      "prior_dimensions_pt": [
+        376.9200134277344,
+        185.2100067138672
+      ],
+      "height_at_equal_width_change_percent": 1.900989830246691,
+      "rotations_degrees": [
+        90.0
+      ],
+      "source_pdf_style_and_data_binding_pass": true,
+      "offline": true,
+      "expected_numeric_labels": 14,
+      "expected_label_multiset_present": true
+    },
+    "selection": {
+      "source_sha256": "bea20a94b00fa63dc194b324a7683f8e02d696ec1b73e38050c01eb8145691e7",
+      "pdf_sha256": "81f155e155bdd39fd3636f419e0e1abf1e5c6c419e65d8bf68fb92ab9128bdd9",
+      "dimensions_pt": [
+        388.5899963378906,
+        232.02999877929688
+      ],
+      "prior_dimensions_pt": [
+        388.5899963378906,
+        254.41000366210938
+      ],
+      "height_at_equal_width_change_percent": -8.796825816855913,
+      "rotations_degrees": [],
+      "source_pdf_style_and_data_binding_pass": true,
+      "offline": true,
+      "expected_numeric_labels": 42,
+      "expected_label_multiset_present": true
+    },
+    "occupancy": {
+      "source_sha256": "211561ae763e75c19f04210212a6773c241de706c73544ab94afd241eaf08dec",
+      "pdf_sha256": "5757764efd5563b332f5d237d38befcac75106c3b819fc908ca5966da8c0ac57",
+      "dimensions_pt": [
+        381.6300048828125,
+        261.6000061035156
+      ],
+      "prior_dimensions_pt": [
+        381.6300048828125,
+        286.30999755859375
+      ],
+      "height_at_equal_width_change_percent": -8.630502485342383,
+      "rotations_degrees": [
+        90.0
+      ],
+      "source_pdf_style_and_data_binding_pass": true,
+      "offline": true,
+      "expected_numeric_labels": 49,
+      "expected_label_multiset_present": true
+    },
+    "next_state": {
+      "source_sha256": "cfea934f9c8017904fb0f2a1f49f914bd3c67624c00634c7c4ec89464b806785",
+      "pdf_sha256": "d07d6ed56c8f59693ccd38a6c5a7f0bf720fd3815c563d033461da9241ee534d",
+      "dimensions_pt": [
+        359.0799865722656,
+        152.33999633789062
+      ],
+      "prior_dimensions_pt": [
+        359.0799865722656,
+        164.75999450683594
+      ],
+      "height_at_equal_width_change_percent": -7.5382365762521335,
+      "rotations_degrees": [
+        0.0
+      ],
+      "source_pdf_style_and_data_binding_pass": true,
+      "offline": true,
+      "expected_numeric_labels": 12,
+      "expected_label_multiset_present": true
+    },
+    "state_transitions": {
+      "source_sha256": "8d9fb64d3021f80bf6f9a01607b31f4dd219b481a12ec257f3e68cc4168110cf",
+      "pdf_sha256": "b424ce6f110d15193417a98f786583887fb5bb606750db8f3482c4c9f53a50e7",
+      "dimensions_pt": [
+        422.6199951171875,
+        259.7799987792969
+      ],
+      "prior_dimensions_pt": [
+        383.44000244140625,
+        296.94000244140625
+      ],
+      "height_at_equal_width_change_percent": -20.624882582457516,
+      "rotations_degrees": [
+        90.0
+      ],
+      "source_pdf_style_and_data_binding_pass": true,
+      "offline": true,
+      "expected_numeric_labels": 0,
+      "expected_label_multiset_present": true
+    },
+    "transition_summary": {
+      "source_sha256": "7066efc1374544bf7f236712a7e52bcae2df1efb680bc0c7f831d6f27f75f32c",
+      "pdf_sha256": "e26dae3d8e7d5076a773daded6bdd450e6eeaa4c7bd5e2ac481fc8eb903aa387",
+      "dimensions_pt": [
+        369.20001220703125,
+        282.79998779296875
+      ],
+      "prior_dimensions_pt": [
+        376.54998779296875,
+        279.8500061035156
+      ],
+      "height_at_equal_width_change_percent": 3.065899244425263,
+      "rotations_degrees": [
+        90.0
+      ],
+      "source_pdf_style_and_data_binding_pass": true,
+      "offline": true,
+      "expected_numeric_labels": 28,
+      "expected_label_multiset_present": true
+    },
+    "routing_mock": {
+      "source_sha256": "b816e83b777cb46bc1c028584f47248f2da0b830216cf74a33de7c4c9f8ff97c",
+      "pdf_sha256": "5d9bc4532e83a1d84b7df51f37521ff03c6847a57ab1ea62a62b4999c2c47cf2",
+      "dimensions_pt": [
+        361.4800109863281,
+        266.9200134277344
+      ],
+      "prior_dimensions_pt": [
+        366.05999755859375,
+        274.0799865722656
+      ],
+      "height_at_equal_width_change_percent": -1.378455574450299,
+      "rotations_degrees": [
+        90.0
+      ],
+      "source_pdf_style_and_data_binding_pass": true,
+      "offline": true,
+      "expected_numeric_labels": 56,
+      "expected_label_multiset_present": true,
+      "actual_vertical_numeric_value_spans": 56
+    }
+  },
+  "table_check": ".paper-review/pm-layout-20261015/TABLE_CHECK.json",
+  "visual_review": {
+    "round_1": {
+      "items": 99,
+      "substantive_failures": 1,
+      "failure": "LAY-010 stranded pending word in Figure 3 caption",
+      "evidence_validated": true
+    },
+    "round_2": {
+      "changed_rendered_pages": [
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20
+      ],
+      "unchanged_rendered_pages": 31,
+      "caption_tail_resolved": true,
+      "new_layout_findings": 0
+    },
+    "review_sources": ".paper-review/pm-layout-20261015/",
+    "native_verdict_file": ".paper-review/verdicts.md"
+  },
+  "new_fitting": false,
+  "new_resampling": false,
+  "new_inference": false,
+  "remote_publication": false,
+  "pdf_ci_readback": {
+    "source_snapshot": "source-round-29",
+    "expected_ci_displays": 337,
+    "distinct_ci_displays": 250,
+    "missing_expected_pdf_strings": {},
+    "page_count": 38,
+    "plus_minus_glyph_count": 343
+  },
+  "integrated_build": "f565b0ae46ed1c4ce3e72c7fcd2a89700c3a7db164cd7a642d253c15bc11f50a",
+  "historical_record_notice": "Verified the preceding plus-minus and figure-layout edition. Subsequent author-directed prose and sentence-formatting changes are recorded in PROSE_FORMAT_AUDIT.json."
+}

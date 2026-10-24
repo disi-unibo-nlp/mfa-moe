@@ -1,0 +1,19 @@
+{
+ "schema": "overnight-submit-receipt-v1",
+ "name": "prepare",
+ "binding": {
+  "code_freeze_sha256": "035cfac8878e978ee386496ab1383713b512304acbadc6bd89d64f3e3e07fa26",
+  "preserved_failed_preparation_job": "59346127",
+  "complete_gpu_hour_ceiling": 20,
+  "files": {
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/prepare_mechanism_semantic_cap_recovery_v2.sbatch": "c9ca8bf413300b623c1bc9765573be4a9c7065b83cbd1c7539f99145c635c9be",
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/dispatch_mechanism_semantic_cap_recovery_v2.sbatch": "0ed26be47c1e067830f865d0691c7477e07de3bb47a517853173a32ce82df097"
+  }
+ },
+ "arguments": [
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/prepare_mechanism_semantic_cap_recovery_v2.sbatch"
+ ],
+ "job_id": "59346633",
+ "submission": "59346633",
+ "sha256": "f13be7dba48ebad3b375244b204e9f4704760554b55558b0b410be9b1ff7c7cb"
+}

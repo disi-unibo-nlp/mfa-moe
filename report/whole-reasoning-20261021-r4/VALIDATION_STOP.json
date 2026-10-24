@@ -1,0 +1,1 @@
+{"reason": "cpu_validation_failed", "native": {"state": "FAILED", "exit_code": "1:0", "elapsed": 296, "cpus": 4, "tres": "billing=4,cpu=4,mem=24G,node=1", "start": "2026-10-21T09:38:46", "end": "2026-10-21T09:43:42"}}

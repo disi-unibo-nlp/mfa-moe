@@ -1,0 +1,62 @@
+{
+  "schema": "user-directed-experiment-stop-v1",
+  "status": "STOPPED_BY_USER",
+  "user_instruction": "wait. Stop all the things in the queu. Let'ìs reason a bit more on the experiments beacause we lost control of the experimetnts and claims once again",
+  "scope": "All owned pending and running Slurm jobs, including both verification and expert-memory scientific jobs, controllers and failure guards.",
+  "hostname": "login01.leonardo.local",
+  "user": "lmolfett",
+  "queue_before": "59708591|cv3t-rate-glm|lmolfett|PENDING|0:00|(Priority)\n59717269|em1-qualification|lmolfett|PENDING|0:00|(Dependency)\n59717268|em1-qualification|lmolfett|PENDING|0:00|(Dependency)\n59717266|em1-qualification|lmolfett|PENDING|0:00|(Dependency)\n59717261|em1-qualification|lmolfett|PENDING|0:00|(Dependency)\n59717256|em1-qualification|lmolfett|PENDING|0:00|(Dependency)\n59717247|em1-qualification|lmolfett|PENDING|0:00|(Dependency)\n59645811|cv3-run-qwen35|lmolfett|RUNNING|14:42:38|lrdn3111\n59717241|em1-qualification|lmolfett|RUNNING|10:24|lrdn0641\n59720001|ems1-handoff|lmolfett|PENDING|0:00|(Dependency)\n59719999|ems1-handoff|lmolfett|PENDING|0:00|(Dependency)\n59719965|ems1-handoff|lmolfett|PENDING|0:00|(Dependency)\n59711151|cv3-auto-r4-rescue|lmolfett|PENDING|0:00|(Dependency)\n59711148|cv3-auto-r4-rescue|lmolfett|PENDING|0:00|(Dependency)\n59711143|cv3-auto-r4-successor|lmolfett|PENDING|0:00|(Dependency)\n",
+  "queue_after": "",
+  "exact_job_ids": [
+    "59720001",
+    "59719999",
+    "59719965",
+    "59711151",
+    "59711148",
+    "59711143",
+    "59708591",
+    "59717269",
+    "59717268",
+    "59717266",
+    "59717261",
+    "59717256",
+    "59717247",
+    "59717241",
+    "59645811"
+  ],
+  "terminal_accounting": "59645811|cv3-run-qwen35|lmolfett|CANCELLED by 133943|0:0|52993|16|billing=16,cpu=16,gres/gpu=2,mem=120G,node=1\n59708591|cv3t-rate-glm|lmolfett|CANCELLED by 133943|0:0|0|0|\n59711143|cv3-auto-r4-successor|lmolfett|CANCELLED by 133943|0:0|0|0|\n59711148|cv3-auto-r4-rescue|lmolfett|CANCELLED by 133943|0:0|0|0|\n59711151|cv3-auto-r4-rescue|lmolfett|CANCELLED by 133943|0:0|0|0|\n59717241|em1-qualification|lmolfett|CANCELLED by 133943|0:0|659|16|billing=16,cpu=16,gres/gpu=2,mem=120G,node=1\n59717247|em1-qualification|lmolfett|CANCELLED by 133943|0:0|0|0|\n59717256|em1-qualification|lmolfett|CANCELLED by 133943|0:0|0|0|\n59717261|em1-qualification|lmolfett|CANCELLED by 133943|0:0|0|0|\n59717266|em1-qualification|lmolfett|CANCELLED by 133943|0:0|0|0|\n59717268|em1-qualification|lmolfett|CANCELLED by 133943|0:0|0|0|\n59717269|em1-qualification|lmolfett|CANCELLED by 133943|0:0|0|0|\n59719965|ems1-handoff|lmolfett|CANCELLED by 133943|0:0|0|0|\n59719999|ems1-handoff|lmolfett|CANCELLED by 133943|0:0|0|0|\n59720001|ems1-handoff|lmolfett|CANCELLED by 133943|0:0|0|0|\n",
+  "verified_cancelled_jobs": 15,
+  "previously_running_jobs": [
+    "59645811",
+    "59717241"
+  ],
+  "previously_pending_count": 13,
+  "continuation": "All six queued continuation controllers/guards cancelled; no automatic resumption is authorized.",
+  "authorization": "This stop supersedes earlier execution/continuation authorization, including ADR06 and ADR11. No new sbatch, requeue, release, controller/bootstrap or scientific retry until the user explicitly authorizes resumed/revised work.",
+  "preservation": "Existing files, completed results, original campaign sources, historical receipts and accepted submission identities are preserved. User-directed cancellations are not scientific FAIL or null-effect evidence; unfinished assignments stay incomplete/unmeasured.",
+  "historical_reuse_inspection": {
+    "question_roster": "report/verification-study-v3/qwen35/DISCOVERY_ASSIGNMENTS.json",
+    "identity_tables_root": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/v3_analysis/results-r2",
+    "matching_discovery_questions_by_model": {
+      "gpt": 48,
+      "nemotron": 48,
+      "qwen35": 48,
+      "qwen36": 48,
+      "gemma": 48,
+      "glm": 48,
+      "qwen330b": 48
+    },
+    "identity_rule": "Match discovery question_id against historical dataset|source_problem_id, dataset|problem_id, or the bare historical ID.",
+    "limitation": "This proves question identity overlap only. It is not a complete text/token/routing tensor compatibility audit. ADR20261008 08 explicitly records that exhaustive necessity audit was not established."
+  },
+  "observed_utc": "2026-10-08T13:58:44.127389+00:00",
+  "documentation_changes": [
+    "paper/wiki/README.md",
+    "paper/wiki/NEXT_EXPERIMENTS.md",
+    "paper/wiki/AUTOMATION_STATUS.md",
+    "paper/wiki/MODEL_COVERAGE.md",
+    "paper/wiki/EXPERIMENT_STATUS.md",
+    "AGENTS.md",
+    "paper/wiki/DECISIONS.md"
+  ]
+}

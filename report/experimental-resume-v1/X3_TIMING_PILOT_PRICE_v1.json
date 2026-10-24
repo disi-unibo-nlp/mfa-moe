@@ -1,0 +1,74 @@
+{
+ "schema": "x3-32k-timing-pilot-price-v1",
+ "status": "CPU_PREPARED_GPU_HOLD",
+ "job_id": "59182720",
+ "driver_sha256": "1649d21d36841d7d888a228525584a08cf750ede927706c0b3baf9585fc5881b",
+ "manifest_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/resume-v1/x3-timing-pilot-v1/x3-timing-pilot-v1-8f7c67d6b2a06e42.json",
+ "manifest_sha256": "8f7c67d6b2a06e425c4f65d2f7c7fecca1b035a9f207500ca53900df890b8377",
+ "selection_sha256": "0ecb13095d5ef60fd83270d2017150c6cdcd7a5c2cc3b79b1dd126ebf7cfd122",
+ "eligibility_sha256": "bf1425d987cbea417115574928ee5a2ece46c3c194f1e0d6280cf6ae53381508",
+ "selected_questions": [
+  {
+   "question": "olympiad|olympiad_2024",
+   "family": "0b2a5976ee93d10cff9108be8e9cc592b7519e6c724ecf0cbec214d59122e900",
+   "prefix_len": 4251,
+   "native_completion_tokens": 38180
+  },
+  {
+   "question": "olympiad|olympiad_1854",
+   "family": "1b8c3e7cc03eb4055ad504c782b763336ba17da040b85c2a115dc7eb1d23f714",
+   "prefix_len": 4849,
+   "native_completion_tokens": 67328
+  },
+  {
+   "question": "olympiad|olympiad_1866",
+   "family": "5b0eaf95956aeb0e7f5f06e86f847500bf57ffa0b839b495bb979218cbbad740",
+   "prefix_len": 5257,
+   "native_completion_tokens": 58197
+  },
+  {
+   "question": "olympiad|olympiad_2914",
+   "family": "800c81574401f7a6b104c7902f4030f5ab324217b6520736cfc73d7c09a06f8a",
+   "prefix_len": 12671,
+   "native_completion_tokens": 40022
+  }
+ ],
+ "selection_rule": "four distinct non-confirm-connected families among registered first64 firing rows with native trace >=32768 tokens; positions 0, floor(n/3), floor(2n/3), n-1 after ascending prefix length",
+ "requests": 40,
+ "max_decode_tokens": 1040440,
+ "prefill_tokens_without_cache_reuse": 274110,
+ "stress_assumptions": {
+  "historical_generation_derate": 0.75,
+  "additional_context_slowdown": 2.0,
+  "prefill_rate_slowdown": 2.0,
+  "repeat_work": 1.25,
+  "cold_loads": 2
+ },
+ "components_wall_seconds": {
+  "two_cold_loads_seconds": 1676.0,
+  "generation_seconds": 4172.983818398141,
+  "prefill_seconds": 34.86328693600371,
+  "shutdown_seconds": 196.0
+ },
+ "projected_wall_seconds": 6079.8471053341445,
+ "projected_GPUh_two_A100": 3.377692836296747,
+ "suggested_rounded_GPUh_ceiling": 3.5,
+ "measurement_outputs_allowed": [
+  "elapsed",
+  "load",
+  "prefill_tokens",
+  "decoded_tokens",
+  "finish_reason",
+  "per-request wall_seconds",
+  "batch_shape"
+ ],
+ "measurement_outputs_embargoed": [
+  "text",
+  "answer",
+  "correctness",
+  "semantic_labels",
+  "routing_effects"
+ ],
+ "interpretation": "Separate X3 cost-only pilot. Model generations are not X3 causal estimates and are not added to registered 96-question analysis. No GPU job has been submitted.",
+ "sha256": "01273a36850d73dbdc52932334dbeca10a2ced440c5eba8892be91e69391ac7c"
+}

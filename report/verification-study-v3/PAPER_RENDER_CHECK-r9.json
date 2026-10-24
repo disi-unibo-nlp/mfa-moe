@@ -1,0 +1,16 @@
+{
+  "checked_pages": [
+    37
+  ],
+  "installed_runtime_modified": false,
+  "pages": 121,
+  "pdf_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/verification-paper-full-build-20261008-r15/output/main.pdf",
+  "pdf_sha256": "36cc117fac8a4facbdcc07d91ee618b28e55df62ae8c14cd408d4302b9209945",
+  "rendered_files": {
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/verification-paper-full-build-20261008-r15/verification-page-37.png": "022c9a1577da94d4df40e5a6b319624248025cac950e364288da8cfe76299c24"
+  },
+  "schema": "verification-paper-render-check-v3",
+  "scientific_submissions": 0,
+  "sha256": "be05526642d454a37db5bdeb7cc9e6f7a809b6de33bcb710cb799953aa4631b3",
+  "visual_result": "PASS: all-seven qualification table and full GPT/Nemotron recognition limits with shared J1 fallback fit without clipping or overlap."
+}

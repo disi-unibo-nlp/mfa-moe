@@ -1,0 +1,11 @@
+{
+ "schema": "native-finalization-start-signal-v1",
+ "signal": "START_DEPENDENCY_RELEASED",
+ "watched_job_id": "59428024",
+ "producer_job_id": "59428759",
+ "manifest_sha256": "02400561137e8ae86087c54f5ee685eb4cb71a40a953efb6c1827be7d93ef925",
+ "observed_utc": "2026-10-05T17:29:01.944911+00:00",
+ "exact_job_readback": "59428024|RUNNING|0:0|2026-10-05T19:24:43|billing=16,cpu=16,gres/gpu=2,mem=120G,node=1\n",
+ "role": "One-shot orchestration signal; excluded from scientific outcomes.",
+ "sha256": "a8bd2c711b872180f965882f4f03039ce298e40d8cc6a0041a15b7021ddfc69c"
+}

@@ -1,0 +1,14 @@
+{
+ "schema": "native-finalization-health-v1",
+ "job_id": "59429841",
+ "phase": "preparation",
+ "signal": "PREPARED",
+ "readiness_sha256": "9b1d3f4bea382029cca170331e29f8197e2338526d182eb1071980c76f0a5d2b",
+ "snapshot": "one initial or termination-triggered read; no repeated file checks",
+ "observed_utc": "2026-10-05T17:57:09.920995+00:00",
+ "observer_host": "login05.leonardo.local",
+ "manifest_sha256": "b5f8f361cbe7ddffbdfa1ced12c4a3fba52a73fe958a52b73caaeb367eb0e008",
+ "no_scheduler_polling": true,
+ "no_new_allocation": true,
+ "sha256": "79646c6b3489199a5469e124ca9bf01b8e96c7d47cd823eb58fd49ae227cc8d7"
+}

@@ -1,0 +1,9 @@
+{
+ "schema": "utility-generation-attachment-v4",
+ "proposal_sha256": "ce86e4bcaa9c5c4a12f9c9456f118662dccdb57ed355f952cabc9617a83152fa",
+ "manifest_sha256": "6b5aa286e46cb818969c939346f448a6577b307779041ec2d35d7fce0562f074",
+ "fresh_generation_dispatch_job": "59349585",
+ "reader_dispatch_job": "59351437",
+ "next_attachment_job": "59351478",
+ "sha256": "55b6a51e6060871ee801c8dd847b6ab565cd3e12bba4988873697564d5a4eda0"
+}

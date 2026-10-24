@@ -1,0 +1,25 @@
+{
+ "schema": "overnight-submit-attempt-v1",
+ "name": "a-routing-engagement-attach",
+ "binding": {
+  "plan_sha256": "ebe96bfe774d526ef4683170a93f3de8215466a429b9feb900b1db6fd870113d",
+  "files": {
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/submit_overnight_operational_recovery_v3.py": "664c2dc72e83f683601a2209576db5890ad8c2f1f9938d2a2a5f9585dc530c04",
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/dispatch_overnight_readers_v1.py": "0c142175df5db52fdf00a85d0e8dd46099209a76c5161994b4279332d6c84a10",
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/submit_routing_first_stage_v2.sbatch": "add959578a5df2beec57546df8e2166250e97a981c407f6ef4eb1c02b776ec57"
+  },
+  "stage": "A"
+ },
+ "arguments": [
+  "--job-name=routing-engagement-A-attach",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/submit_routing_first_stage_v2.sbatch",
+  "--stage",
+  "A",
+  "--frame-price-job",
+  "59347821"
+ ],
+ "time_ns": 1791150247980142631,
+ "dispatcher_job_id": null,
+ "removed_parent_environment_keys": [],
+ "sha256": "86f3e4ccde656f53c5a4a205aeb160d0ff979a7e5c9cc53cf29c1c4164ed0bde"
+}

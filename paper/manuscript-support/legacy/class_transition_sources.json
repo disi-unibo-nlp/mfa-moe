@@ -1,0 +1,23 @@
+{
+  "results/correlation_pipeline/reasoning-vllm-v1/analysis/unsloth--Qwen3.5-35B-A3B/trace_features.csv": "375c29be3be1c8bab9dc6383d3f3a5a4662cb57540ba1c6a49dc6fc15f3730e8",
+  "results/correlation_pipeline/reasoning-vllm-v1/annotations/Qwen--Qwen3.5-35B-A3B-GPTQ-Int4/math500/annotations.jsonl": "8413934ad32dcfb193c8170857f9782c7dcc61fdc947e4c9e6ff970da7de713c",
+  "results/correlation_pipeline/reasoning-vllm-v1/annotations/Qwen--Qwen3.5-35B-A3B-GPTQ-Int4/aime24/annotations.jsonl": "9ed0691453726f0758d0aee16621bf2a0240cc4a25bf00e23c1795eb375836a9",
+  "results/correlation_pipeline/reasoning-vllm-v1/annotations/Qwen--Qwen3.5-35B-A3B-GPTQ-Int4/aime25/annotations.jsonl": "1e9dd55440e69d0546d82b8757a67e516b1a21ee5f3db8aa5530dadcbca74df9",
+  "results/correlation_pipeline/reasoning-vllm-v1/annotations/Qwen--Qwen3.5-35B-A3B-GPTQ-Int4/olympiad/annotations.jsonl": "feffe95fabf6d12a1860814c6abd88813514494f1eccd362c14b64749fb5f6c0",
+  "results/correlation_pipeline/reasoning-vllm-v1/annotations/Qwen--Qwen3.5-35B-A3B-GPTQ-Int4/amc23/annotations.jsonl": "1caaf548155da670ca28cb9ad55dd8d499a47e3ef07be1df57767f232f4fecd1",
+  "results/correlation_pipeline/reasoning-vllm-v1/annotations/Qwen--Qwen3.5-35B-A3B-GPTQ-Int4/minerva/annotations.jsonl": "86bf0f18aced4da0f696db3da42c280d6ec07f275d9aaea4e92d9f3153961a31",
+  "results/correlation_pipeline/gemma-nvfp4-nf4/reasoning-vllm-v1/analysis/google--gemma-4-26B-A4B-it/trace_features.csv": "8cbcd2f8c4549256e45e93ddefb741e6f905b055213394678b327d59c4222003",
+  "results/correlation_pipeline/gemma-nvfp4-nf4/reasoning-vllm-v1/annotations/nvidia--Gemma-4-26B-A4B-NVFP4/math500/annotations.jsonl": "8ceadf7a958af7ee30a78caf41a0cd973a5df44dd253526af844b2ff02176eda",
+  "results/correlation_pipeline/gemma-nvfp4-nf4/reasoning-vllm-v1/annotations/nvidia--Gemma-4-26B-A4B-NVFP4/aime24/annotations.jsonl": "23d6426cf497f92e66c753cb10cd8ba0384859e28c24f3fb68d6cdfaf0edd52f",
+  "results/correlation_pipeline/gemma-nvfp4-nf4/reasoning-vllm-v1/annotations/nvidia--Gemma-4-26B-A4B-NVFP4/aime25/annotations.jsonl": "0a68f12710631d352d7ce0c803fb2d4b8614b183e1f38d2fab7f90a42a641d81",
+  "results/correlation_pipeline/gemma-nvfp4-nf4/reasoning-vllm-v1/annotations/nvidia--Gemma-4-26B-A4B-NVFP4/olympiad/annotations.jsonl": "dbd2fb34b5b5ae7caa6d6f020754cf73f077e0c4d1d7b04b307af132f88ecbeb",
+  "results/correlation_pipeline/gemma-nvfp4-nf4/reasoning-vllm-v1/annotations/nvidia--Gemma-4-26B-A4B-NVFP4/amc23/annotations.jsonl": "005f7866b302ad5e2c9828eb2aa4b6b7034f02384f7832bf86e52ef94ee01106",
+  "results/correlation_pipeline/gemma-nvfp4-nf4/reasoning-vllm-v1/annotations/nvidia--Gemma-4-26B-A4B-NVFP4/minerva/annotations.jsonl": "1f493b39ee26985810d6c7069bc2443c75c50ebbb8d8f0b133bffbd320f84961",
+  "results/correlation_pipeline/gpt-oss-20b/reasoning-vllm-v1/analysis/openai--gpt-oss-20b/trace_features.csv": "fa9c6a2a1aa5bce522f9add35b3730320909ce3ec8e3cf2a19fbee4f5c5c40ad",
+  "results/correlation_pipeline/gpt-oss-20b/reasoning-vllm-v1/annotations/openai--gpt-oss-20b/math500/annotations.jsonl": "6fab5c350eb7d86d0f5a821db35e74a1da44c534615bbfd5de2fae52045dc6b4",
+  "results/correlation_pipeline/gpt-oss-20b/reasoning-vllm-v1/annotations/openai--gpt-oss-20b/aime24/annotations.jsonl": "64db099f348789a3e17f97c9cfbe522e027e2c0944fa7a06d33bf2a2c1ca504a",
+  "results/correlation_pipeline/gpt-oss-20b/reasoning-vllm-v1/annotations/openai--gpt-oss-20b/aime25/annotations.jsonl": "c395508ebe280590fe5f78f6b262bb2dca7400b692647114a89f3c1c0a73f8ad",
+  "results/correlation_pipeline/gpt-oss-20b/reasoning-vllm-v1/annotations/openai--gpt-oss-20b/olympiad/annotations.jsonl": "d4d575fefba0aae4bf526e79074ec0d80bfbc0708efa1d71e2e0ceebf68bfb93",
+  "results/correlation_pipeline/gpt-oss-20b/reasoning-vllm-v1/annotations/openai--gpt-oss-20b/amc23/annotations.jsonl": "d9fe34e1b851aaff4110f950bf4b8ec8e2f892b50964d79ec34abb1702005e7d",
+  "results/correlation_pipeline/gpt-oss-20b/reasoning-vllm-v1/annotations/openai--gpt-oss-20b/minerva/annotations.jsonl": "9d55ee1f862341640dc5eb251df552d9f5d694a9eac8162dafd55b851bed2d40"
+}

@@ -1,0 +1,3368 @@
+[
+ {
+  "id": "rk1c:gpt/A:switch_rate",
+  "population": "A exact-ID-clean dev+tune, sparse adjacent labels",
+  "intervention": "native observational",
+  "estimate": 0.6101095158963141,
+  "uncertainty": [
+   0.596851171663973,
+   0.6227202262541971
+  ],
+  "multiplicity_family": "descriptive nominal intervals",
+  "status": "CLEAN_DESCRIPTIVE",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/reasoning-kinematics/rk1c/results.json",
+  "interpretation": "Sparse gaps are excluded. Transition association does not establish causal relaxation or an optimal sequence."
+ },
+ {
+  "id": "rk1c:gpt/A:EP",
+  "population": "A exact-ID-clean dev+tune, sparse adjacent labels",
+  "intervention": "native observational",
+  "estimate": 0.022390605364103353,
+  "uncertainty": [
+   0.018379943414096146,
+   0.034703436796913616
+  ],
+  "multiplicity_family": "descriptive nominal intervals",
+  "status": "CLEAN_DESCRIPTIVE",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/reasoning-kinematics/rk1c/results.json",
+  "interpretation": "Sparse gaps are excluded. Transition association does not establish causal relaxation or an optimal sequence."
+ },
+ {
+  "id": "rk1c:qwen36/A:switch_rate",
+  "population": "A exact-ID-clean dev+tune, sparse adjacent labels",
+  "intervention": "native observational",
+  "estimate": 0.6104970628840783,
+  "uncertainty": [
+   0.5867133671105078,
+   0.6316098531645404
+  ],
+  "multiplicity_family": "descriptive nominal intervals",
+  "status": "CLEAN_DESCRIPTIVE",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/reasoning-kinematics/rk1c/results.json",
+  "interpretation": "Sparse gaps are excluded. Transition association does not establish causal relaxation or an optimal sequence."
+ },
+ {
+  "id": "rk1c:qwen36/A:EP",
+  "population": "A exact-ID-clean dev+tune, sparse adjacent labels",
+  "intervention": "native observational",
+  "estimate": 0.04519018995404418,
+  "uncertainty": [
+   0.034604728392134576,
+   0.09257605177041246
+  ],
+  "multiplicity_family": "descriptive nominal intervals",
+  "status": "CLEAN_DESCRIPTIVE",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/reasoning-kinematics/rk1c/results.json",
+  "interpretation": "Sparse gaps are excluded. Transition association does not establish causal relaxation or an optimal sequence."
+ },
+ {
+  "id": "rk1c:gemma/A:switch_rate",
+  "population": "A exact-ID-clean dev+tune, sparse adjacent labels",
+  "intervention": "native observational",
+  "estimate": 0.49008946136000087,
+  "uncertainty": [
+   0.4359247391262203,
+   0.5494557216966086
+  ],
+  "multiplicity_family": "descriptive nominal intervals",
+  "status": "CLEAN_DESCRIPTIVE",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/reasoning-kinematics/rk1c/results.json",
+  "interpretation": "Sparse gaps are excluded. Transition association does not establish causal relaxation or an optimal sequence."
+ },
+ {
+  "id": "rk1c:gemma/A:EP",
+  "population": "A exact-ID-clean dev+tune, sparse adjacent labels",
+  "intervention": "native observational",
+  "estimate": 0.04374415501098442,
+  "uncertainty": [
+   0.03199581273713523,
+   0.07295548516518184
+  ],
+  "multiplicity_family": "descriptive nominal intervals",
+  "status": "CLEAN_DESCRIPTIVE",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/reasoning-kinematics/rk1c/results.json",
+  "interpretation": "Sparse gaps are excluded. Transition association does not establish causal relaxation or an optimal sequence."
+ },
+ {
+  "id": "rk1c:glm/A:switch_rate",
+  "population": "A exact-ID-clean dev+tune, sparse adjacent labels",
+  "intervention": "native observational",
+  "estimate": 0.5432120983793293,
+  "uncertainty": [
+   0.4601429054744838,
+   0.603290705644613
+  ],
+  "multiplicity_family": "descriptive nominal intervals",
+  "status": "CLEAN_DESCRIPTIVE",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/reasoning-kinematics/rk1c/results.json",
+  "interpretation": "Sparse gaps are excluded. Transition association does not establish causal relaxation or an optimal sequence."
+ },
+ {
+  "id": "rk1c:glm/A:EP",
+  "population": "A exact-ID-clean dev+tune, sparse adjacent labels",
+  "intervention": "native observational",
+  "estimate": 0.013952699618152209,
+  "uncertainty": [
+   0.010927475795308882,
+   0.03725971085324569
+  ],
+  "multiplicity_family": "descriptive nominal intervals",
+  "status": "CLEAN_DESCRIPTIVE",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/reasoning-kinematics/rk1c/results.json",
+  "interpretation": "Sparse gaps are excluded. Transition association does not establish causal relaxation or an optimal sequence."
+ },
+ {
+  "id": "rk1c:nemotron/A:switch_rate",
+  "population": "A exact-ID-clean dev+tune, sparse adjacent labels",
+  "intervention": "native observational",
+  "estimate": 0.5985931860650837,
+  "uncertainty": [
+   0.5766263467557018,
+   0.6192148304666538
+  ],
+  "multiplicity_family": "descriptive nominal intervals",
+  "status": "CLEAN_DESCRIPTIVE",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/reasoning-kinematics/rk1c/results.json",
+  "interpretation": "Sparse gaps are excluded. Transition association does not establish causal relaxation or an optimal sequence."
+ },
+ {
+  "id": "rk1c:nemotron/A:EP",
+  "population": "A exact-ID-clean dev+tune, sparse adjacent labels",
+  "intervention": "native observational",
+  "estimate": 0.023879166201936915,
+  "uncertainty": [
+   0.017942830831901093,
+   0.04528928838915369
+  ],
+  "multiplicity_family": "descriptive nominal intervals",
+  "status": "CLEAN_DESCRIPTIVE",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/reasoning-kinematics/rk1c/results.json",
+  "interpretation": "Sparse gaps are excluded. Transition association does not establish causal relaxation or an optimal sequence."
+ },
+ {
+  "id": "rk1c:qwen330b/A:switch_rate",
+  "population": "A exact-ID-clean dev+tune, sparse adjacent labels",
+  "intervention": "native observational",
+  "estimate": 0.5993620669187602,
+  "uncertainty": [
+   0.5515489840403689,
+   0.6376991220676597
+  ],
+  "multiplicity_family": "descriptive nominal intervals",
+  "status": "CLEAN_DESCRIPTIVE",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/reasoning-kinematics/rk1c/results.json",
+  "interpretation": "Sparse gaps are excluded. Transition association does not establish causal relaxation or an optimal sequence."
+ },
+ {
+  "id": "rk1c:qwen330b/A:EP",
+  "population": "A exact-ID-clean dev+tune, sparse adjacent labels",
+  "intervention": "native observational",
+  "estimate": 0.04742014121336311,
+  "uncertainty": [
+   0.035933815363588334,
+   0.07304772628667808
+  ],
+  "multiplicity_family": "descriptive nominal intervals",
+  "status": "CLEAN_DESCRIPTIVE",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/reasoning-kinematics/rk1c/results.json",
+  "interpretation": "Sparse gaps are excluded. Transition association does not establish causal relaxation or an optimal sequence."
+ },
+ {
+  "id": "rk1c:qwen35/A:switch_rate",
+  "population": "A exact-ID-clean dev+tune, sparse adjacent labels",
+  "intervention": "native observational",
+  "estimate": 0.6136728241571971,
+  "uncertainty": [
+   0.5959652616171374,
+   0.6300570533315696
+  ],
+  "multiplicity_family": "descriptive nominal intervals",
+  "status": "CLEAN_DESCRIPTIVE",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/reasoning-kinematics/rk1c/results.json",
+  "interpretation": "Sparse gaps are excluded. Transition association does not establish causal relaxation or an optimal sequence."
+ },
+ {
+  "id": "rk1c:qwen35/A:EP",
+  "population": "A exact-ID-clean dev+tune, sparse adjacent labels",
+  "intervention": "native observational",
+  "estimate": 0.05967879476577787,
+  "uncertainty": [
+   0.03885767561471698,
+   0.09380222229733688
+  ],
+  "multiplicity_family": "descriptive nominal intervals",
+  "status": "CLEAN_DESCRIPTIVE",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/reasoning-kinematics/rk1c/results.json",
+  "interpretation": "Sparse gaps are excluded. Transition association does not establish causal relaxation or an optimal sequence."
+ },
+ {
+  "id": "R3B:gpt",
+  "population": "A dev+tune, 522 questions",
+  "intervention": "correct-minus-wrong Explore persistence, within-attempt composition reference",
+  "estimate": 0.004754051888823052,
+  "uncertainty": {
+   "lo": -0.05923781191216111,
+   "hi": 0.0729708032453162,
+   "n_valid": 2000
+  },
+  "multiplicity_family": "seven-model Holm family",
+  "status": "IMPRECISE_COMPOSITION_CONTROL",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/forum/tests/r3_dynamics_validity/estimates.json",
+  "interpretation": "An interval spanning zero neither proves composition explains the association nor establishes equivalence."
+ },
+ {
+  "id": "R3B:qwen36",
+  "population": "A dev+tune, 522 questions",
+  "intervention": "correct-minus-wrong Explore persistence, within-attempt composition reference",
+  "estimate": -0.04580600565664722,
+  "uncertainty": {
+   "lo": -0.2409270860501575,
+   "hi": 0.17032271296608537,
+   "n_valid": 2000
+  },
+  "multiplicity_family": "seven-model Holm family",
+  "status": "IMPRECISE_COMPOSITION_CONTROL",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/forum/tests/r3_dynamics_validity/estimates.json",
+  "interpretation": "An interval spanning zero neither proves composition explains the association nor establishes equivalence."
+ },
+ {
+  "id": "R3B:gemma",
+  "population": "A dev+tune, 522 questions",
+  "intervention": "correct-minus-wrong Explore persistence, within-attempt composition reference",
+  "estimate": -0.011705402845410065,
+  "uncertainty": {
+   "lo": -0.1592509719704874,
+   "hi": 0.13326429207656784,
+   "n_valid": 2000
+  },
+  "multiplicity_family": "seven-model Holm family",
+  "status": "IMPRECISE_COMPOSITION_CONTROL",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/forum/tests/r3_dynamics_validity/estimates.json",
+  "interpretation": "An interval spanning zero neither proves composition explains the association nor establishes equivalence."
+ },
+ {
+  "id": "R3B:glm",
+  "population": "A dev+tune, 522 questions",
+  "intervention": "correct-minus-wrong Explore persistence, within-attempt composition reference",
+  "estimate": 0.01946925241869632,
+  "uncertainty": {
+   "lo": -0.14838354804171966,
+   "hi": 0.13551213484079877,
+   "n_valid": 2000
+  },
+  "multiplicity_family": "seven-model Holm family",
+  "status": "IMPRECISE_COMPOSITION_CONTROL",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/forum/tests/r3_dynamics_validity/estimates.json",
+  "interpretation": "An interval spanning zero neither proves composition explains the association nor establishes equivalence."
+ },
+ {
+  "id": "R3B:nemotron",
+  "population": "A dev+tune, 522 questions",
+  "intervention": "correct-minus-wrong Explore persistence, within-attempt composition reference",
+  "estimate": -0.018539537661665606,
+  "uncertainty": {
+   "lo": -0.1020558230004256,
+   "hi": 0.07038746110926758,
+   "n_valid": 2000
+  },
+  "multiplicity_family": "seven-model Holm family",
+  "status": "IMPRECISE_COMPOSITION_CONTROL",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/forum/tests/r3_dynamics_validity/estimates.json",
+  "interpretation": "An interval spanning zero neither proves composition explains the association nor establishes equivalence."
+ },
+ {
+  "id": "R3B:qwen330b",
+  "population": "A dev+tune, 522 questions",
+  "intervention": "correct-minus-wrong Explore persistence, within-attempt composition reference",
+  "estimate": -0.030884538374868875,
+  "uncertainty": {
+   "lo": -0.13343973359503375,
+   "hi": 0.07455245273543207,
+   "n_valid": 2000
+  },
+  "multiplicity_family": "seven-model Holm family",
+  "status": "IMPRECISE_COMPOSITION_CONTROL",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/forum/tests/r3_dynamics_validity/estimates.json",
+  "interpretation": "An interval spanning zero neither proves composition explains the association nor establishes equivalence."
+ },
+ {
+  "id": "R3B:qwen35",
+  "population": "A dev+tune, 522 questions",
+  "intervention": "correct-minus-wrong Explore persistence, within-attempt composition reference",
+  "estimate": 0.013095708694903119,
+  "uncertainty": {
+   "lo": -0.17241332997027703,
+   "hi": 0.19883438372226048,
+   "n_valid": 2000
+  },
+  "multiplicity_family": "seven-model Holm family",
+  "status": "IMPRECISE_COMPOSITION_CONTROL",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/forum/tests/r3_dynamics_validity/estimates.json",
+  "interpretation": "An interval spanning zero neither proves composition explains the association nor establishes equivalence."
+ },
+ {
+  "id": "R3B:measurement",
+  "population": "six non-test validation documents, 407 units / 401 adjacent pairs",
+  "intervention": "LLM judge versus human labels",
+  "estimate": 0.08986503271803703,
+  "uncertainty": [
+   0.013804783521782953,
+   0.17397251912851763
+  ],
+  "multiplicity_family": "descriptive document bootstrap",
+  "status": "MEASUREMENT_LIMITATION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/forum/tests/r3_dynamics_validity/estimates.json",
+  "interpretation": "This is not seven-model or target-domain semantic validation."
+ },
+ {
+  "id": "S3:cached:gpt",
+  "population": "1547 questions; HISTORICAL_CONFIRM_EXPOSED",
+  "intervention": "routing features added to token identity and position baseline",
+  "estimate": -0.10851495271136356,
+  "uncertainty": [
+   -0.11600521892477068,
+   -0.10102468649795644
+  ],
+  "multiplicity_family": "seven-model Bonferroni normal approximation",
+  "status": "HISTORICAL_CONFIRM_EXPOSED",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/depth-paths/results/s3/readout/gpt.json",
+  "interpretation": "Cached baseline lacks judge-context control; this does not establish controllability."
+ },
+ {
+  "id": "S3:cached:glm",
+  "population": "1547 questions; HISTORICAL_CONFIRM_EXPOSED",
+  "intervention": "routing features added to token identity and position baseline",
+  "estimate": -0.1446996789562132,
+  "uncertainty": [
+   -0.15382106149895483,
+   -0.13557829641347155
+  ],
+  "multiplicity_family": "seven-model Bonferroni normal approximation",
+  "status": "HISTORICAL_CONFIRM_EXPOSED",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/depth-paths/results/s3/readout/glm.json",
+  "interpretation": "Cached baseline lacks judge-context control; this does not establish controllability."
+ },
+ {
+  "id": "S3:cached:qwen330b",
+  "population": "1547 questions; HISTORICAL_CONFIRM_EXPOSED",
+  "intervention": "routing features added to token identity and position baseline",
+  "estimate": -0.12987587358646596,
+  "uncertainty": [
+   -0.13759572578866303,
+   -0.12215602138426891
+  ],
+  "multiplicity_family": "seven-model Bonferroni normal approximation",
+  "status": "HISTORICAL_CONFIRM_EXPOSED",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/depth-paths/results/s3/readout/qwen330b.json",
+  "interpretation": "Cached baseline lacks judge-context control; this does not establish controllability."
+ },
+ {
+  "id": "S3:cached:qwen36",
+  "population": "522 questions; EXACT_ID_CLEAN",
+  "intervention": "routing features added to token identity and position baseline",
+  "estimate": -0.2223433450896332,
+  "uncertainty": [
+   -0.23621279194313768,
+   -0.2084738982361287
+  ],
+  "multiplicity_family": "seven-model Bonferroni normal approximation",
+  "status": "EXACT_ID_CLEAN",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/depth-paths/results/s3/readout/qwen36.json",
+  "interpretation": "Cached baseline lacks judge-context control; this does not establish controllability."
+ },
+ {
+  "id": "DP:historical-correctness",
+  "population": "HISTORICAL_CONFIRM_EXPOSED GPT A",
+  "intervention": "selected F1/F2/F3 beyond historical controls",
+  "estimate": 0.0007910060695620935,
+  "uncertainty": [
+   -0.0016874600253671077,
+   0.0030778051371230975
+  ],
+  "multiplicity_family": "historical primary, nominal interval",
+  "status": "NOT_EXCLUDED",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/depth-paths/results/resume-v1/results.json",
+  "interpretation": "The nominal matched-population interval is not an equivalence certificate. No clean correctness claim is derived from this cache."
+ },
+ {
+  "id": "R3D:S3:gpt:judge_context",
+  "population": "exact-ID-clean dev+tune; 522 questions / 509 frozen families",
+  "intervention": "routing added to judge_context baseline",
+  "estimate": -0.07858361463272384,
+  "uncertainty": [
+   -0.09566878042562169,
+   -0.06178950982489568
+  ],
+  "multiplicity_family": "seven-model Bonferroni; full registered family incomplete",
+  "status": "CLEAN_CELL_REGISTERED_FAMILY_INCOMPLETE",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/forum/tests/r3_context/readout/gpt/judge_context/result.json",
+  "interpretation": "Completed checkpoint only; confirm-connected-family exclusion sensitivity and full seven-model family remain incomplete."
+ },
+ {
+  "id": "R3D:S3:gpt:token_identity",
+  "population": "exact-ID-clean dev+tune; 522 questions / 509 frozen families",
+  "intervention": "routing added to token_identity baseline",
+  "estimate": -0.14330126017916212,
+  "uncertainty": [
+   -0.156667454613604,
+   -0.13140847662662458
+  ],
+  "multiplicity_family": "seven-model Bonferroni; full registered family incomplete",
+  "status": "CLEAN_CELL_REGISTERED_FAMILY_INCOMPLETE",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/forum/tests/r3_context/readout/gpt/token_identity/result.json",
+  "interpretation": "Completed checkpoint only; confirm-connected-family exclusion sensitivity and full seven-model family remain incomplete."
+ },
+ {
+  "id": "R3D:S3:qwen36:token_identity",
+  "population": "exact-ID-clean dev+tune; 522 questions / 509 frozen families",
+  "intervention": "routing added to token_identity baseline",
+  "estimate": -0.21929285769013757,
+  "uncertainty": [
+   -0.23235814023660958,
+   -0.20551565145942075
+  ],
+  "multiplicity_family": "seven-model Bonferroni; full registered family incomplete",
+  "status": "CLEAN_CELL_REGISTERED_FAMILY_INCOMPLETE",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/forum/tests/r3_context/readout/qwen36/token_identity/result.json",
+  "interpretation": "Completed checkpoint only; confirm-connected-family exclusion sensitivity and full seven-model family remain incomplete."
+ },
+ {
+  "id": "K1:bound",
+  "population": "original matched native K1 population",
+  "intervention": "matched transition-associated turnover",
+  "estimate": null,
+  "uncertainty": null,
+  "multiplicity_family": "original K family",
+  "status": "NARROW_MATCHED_POPULATION_BOUND",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/forum/tests/r3_integrity/estimates.v2.json",
+  "interpretation": "MDE does not establish equivalence or causal relaxation."
+ },
+ {
+  "id": "K2:anticipation",
+  "population": "original K2 pipeline and evaluated populations",
+  "intervention": "16/32-token kinematic augmentation",
+  "estimate": null,
+  "uncertainty": null,
+  "multiplicity_family": "original within-K2 then K family",
+  "status": "INCONCLUSIVE",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/forum/tests/r3_integrity/estimates.v2.json",
+  "interpretation": "Missing or rounded cells do not pass the original gate."
+ },
+ {
+  "id": "G2:baseline",
+  "population": "accepted X1 benchmark reading",
+  "intervention": "native versus card-v3 routing",
+  "estimate": null,
+  "uncertainty": null,
+  "multiplicity_family": "registered G2 benchmark checks",
+  "status": "ACCEPTED_NON_REJECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/DECISIONS.md",
+  "interpretation": "Accepted non-rejection does not establish engine equivalence; raw Q3 failure and adjudication remain separate."
+ },
+ {
+  "id": "G3:dose",
+  "population": "39 eligible of 48 dev-cal questions; two seeds; 6630 same-prefix branches",
+  "intervention": "legacy X2 dose grid",
+  "estimate": {
+   "-1": "reweight_m1_L1_landmark",
+   "1": "reweight_p2_BAND_landmark"
+  },
+  "uncertainty": null,
+  "multiplicity_family": "registered point-estimate dose-selection screens",
+  "status": "REGISTERED_MATCHING_COMPLETE_DOSE_ONLY",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/G3_DOSE_SUPPORT_AMENDMENT.json",
+  "interpretation": "Strict ±10% random-dose support leaves 2 of 42 target cells passing G3; the earlier saved analysis counted 6. Dose selection does not establish semantic steering."
+ },
+ {
+  "id": "new:trajectory",
+  "population": "family-disjoint discovery / mechanism parent pools",
+  "intervention": "frozen local template versus native, random and reverse order",
+  "estimate": null,
+  "uncertainty": null,
+  "multiplicity_family": "nine mechanism contrasts",
+  "status": "HELD_QUALIFICATION_ELIGIBILITY_PRICING",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/STUDY_GATES.json",
+  "interpretation": "No causal semantic-control result or universal optimal trajectory is established."
+ },
+ {
+  "id": "new:utility",
+  "population": "96-family parent pool, original prompts, 16k endpoint",
+  "intervention": "frozen policy versus native",
+  "estimate": null,
+  "uncertainty": null,
+  "multiplicity_family": "three joint utility contrasts",
+  "status": "HELD_PRICING",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/STUDY_GATES.json",
+  "interpretation": "Similar observed accuracy cannot establish retention without a chosen noninferiority margin; do not extrapolate past 16k."
+ },
+ {
+  "id": "X2:bias_p0.5_L1_landmark:marker_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_p0.5_L1_landmark",
+  "estimate": -0.0751201923076923,
+  "uncertainty": [
+   -1.7649886313895675,
+   1.614748246774183
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_p0.5_L1_landmark:degeneration_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_p0.5_L1_landmark",
+  "estimate": 0.0,
+  "uncertainty": [
+   -0.21278268400393052,
+   0.21278268400393052
+  ],
+  "multiplicity_family": "564 diagnostic contrasts; conservative independent-family binary bound",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_p0.5_L1_landmark:native_NLL_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_p0.5_L1_landmark",
+  "estimate": 0.0050824495146307444,
+  "uncertainty": [
+   -0.041725717270359584,
+   0.05189061629962107
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_p0.5_L1_landmark:marker_E_minus_matched_M",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_p0.5_L1_landmark",
+  "estimate": -0.0751201923076923,
+  "uncertainty": [
+   -1.4943414227028469,
+   1.3441010380874623
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "UNMATCHED_RANDOM_DOSE_DIAGNOSTIC",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Random expert dose fell outside registered ±10% support; this E-minus-M estimate is not a matched-control result. Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "dense-judge:parsed-stop-coverage",
+  "population": "200 balanced historical sparse-label fixtures from 48 discovery families",
+  "intervention": "new direct offline Qwen3.8-27B class prompt",
+  "estimate": 0.995,
+  "uncertainty": [
+   0.9837837837837838,
+   1.0
+  ],
+  "multiplicity_family": "two descriptive operational intervals; 5000 family-clustered bootstrap draws, no rejection claim",
+  "status": "QUALIFIED_CLASS_MEASUREMENT_ONLY",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/DENSE_JUDGE_PARITY_AUDIT.json",
+  "interpretation": "Parsed stop coverage is operational. This LLM audit does not qualify a semantic transition or online detector."
+ },
+ {
+  "id": "dense-judge:historical-class-agreement",
+  "population": "200 balanced historical sparse-label fixtures from 48 discovery families",
+  "intervention": "new direct offline Qwen3.8-27B class prompt versus historical model-derived labels",
+  "estimate": 0.87,
+  "uncertainty": [
+   0.8258706467661692,
+   0.9162303664921466
+  ],
+  "multiplicity_family": "two descriptive operational intervals; 5000 family-clustered bootstrap draws, no rejection claim",
+  "status": "QUALIFIED_CLASS_MEASUREMENT_ONLY",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/DENSE_JUDGE_PARITY_AUDIT.json",
+  "interpretation": "Historical labels are also LLM outputs, not human ground truth. Agreement supports exploratory class measurement only."
+ },
+ {
+  "id": "X2:bias_p1_L1_landmark:marker_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_p1_L1_landmark",
+  "estimate": 0.1752804487179487,
+  "uncertainty": [
+   -1.1397320823020805,
+   1.4902929797379778
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_p1_L1_landmark:degeneration_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_p1_L1_landmark",
+  "estimate": 0.0,
+  "uncertainty": [
+   -0.21278268400393052,
+   0.21278268400393052
+  ],
+  "multiplicity_family": "564 diagnostic contrasts; conservative independent-family binary bound",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_p1_L1_landmark:native_NLL_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_p1_L1_landmark",
+  "estimate": -0.008578321142169155,
+  "uncertainty": [
+   -0.047955735055775064,
+   0.03079909277143675
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_p1_L1_landmark:marker_E_minus_matched_M",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_p1_L1_landmark",
+  "estimate": 0.20032051282051283,
+  "uncertainty": [
+   -0.8687429682870746,
+   1.2693839939281002
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "UNMATCHED_RANDOM_DOSE_DIAGNOSTIC",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Random expert dose fell outside registered ±10% support; this E-minus-M estimate is not a matched-control result. Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_p2_L1_landmark:marker_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_p2_L1_landmark",
+  "estimate": 0.5258413461538461,
+  "uncertainty": [
+   -1.5839014799120732,
+   2.6355841722197657
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_p2_L1_landmark:degeneration_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_p2_L1_landmark",
+  "estimate": 0.0,
+  "uncertainty": [
+   -0.21278268400393052,
+   0.21278268400393052
+  ],
+  "multiplicity_family": "564 diagnostic contrasts; conservative independent-family binary bound",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_p2_L1_landmark:native_NLL_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_p2_L1_landmark",
+  "estimate": 0.002136946505134121,
+  "uncertainty": [
+   -0.03376718296202007,
+   0.03804107597228831
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_p2_L1_landmark:marker_E_minus_matched_M",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_p2_L1_landmark",
+  "estimate": 0.8263221153846154,
+  "uncertainty": [
+   -0.8573387379054338,
+   2.509982968674665
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "UNMATCHED_RANDOM_DOSE_DIAGNOSTIC",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Random expert dose fell outside registered ±10% support; this E-minus-M estimate is not a matched-control result. Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_p4_L1_landmark:marker_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_p4_L1_landmark",
+  "estimate": 0.5258413461538461,
+  "uncertainty": [
+   -1.5244085563088214,
+   2.576091248616514
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_p4_L1_landmark:degeneration_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_p4_L1_landmark",
+  "estimate": 0.0,
+  "uncertainty": [
+   -0.21278268400393052,
+   0.21278268400393052
+  ],
+  "multiplicity_family": "564 diagnostic contrasts; conservative independent-family binary bound",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_p4_L1_landmark:native_NLL_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_p4_L1_landmark",
+  "estimate": 0.015255296612031075,
+  "uncertainty": [
+   -0.027988267256868003,
+   0.05849886048093015
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_p4_L1_landmark:marker_E_minus_matched_M",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_p4_L1_landmark",
+  "estimate": 0.10016025641025642,
+  "uncertainty": [
+   -1.5780264902604504,
+   1.7783470030809632
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "UNMATCHED_RANDOM_DOSE_DIAGNOSTIC",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Random expert dose fell outside registered ±10% support; this E-minus-M estimate is not a matched-control result. Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_m0.5_L1_landmark:marker_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_m0.5_L1_landmark",
+  "estimate": -0.025040064102564104,
+  "uncertainty": [
+   -1.5941829812286585,
+   1.5441028530235303
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_m0.5_L1_landmark:degeneration_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_m0.5_L1_landmark",
+  "estimate": 0.0,
+  "uncertainty": [
+   -0.21278268400393052,
+   0.21278268400393052
+  ],
+  "multiplicity_family": "564 diagnostic contrasts; conservative independent-family binary bound",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_m0.5_L1_landmark:native_NLL_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_m0.5_L1_landmark",
+  "estimate": 0.00316322651262279,
+  "uncertainty": [
+   -0.04468423942602181,
+   0.05101069245126739
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_m0.5_L1_landmark:marker_E_minus_matched_M",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_m0.5_L1_landmark",
+  "estimate": 0.0,
+  "uncertainty": [
+   -1.2083839474983784,
+   1.2083839474983784
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "UNMATCHED_RANDOM_DOSE_DIAGNOSTIC",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Random expert dose fell outside registered ±10% support; this E-minus-M estimate is not a matched-control result. Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_m1_L1_landmark:marker_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_m1_L1_landmark",
+  "estimate": -0.22536057692307693,
+  "uncertainty": [
+   -1.8099971062915021,
+   1.3592759524453484
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_m1_L1_landmark:degeneration_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_m1_L1_landmark",
+  "estimate": 0.0,
+  "uncertainty": [
+   -0.21278268400393052,
+   0.21278268400393052
+  ],
+  "multiplicity_family": "564 diagnostic contrasts; conservative independent-family binary bound",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_m1_L1_landmark:native_NLL_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_m1_L1_landmark",
+  "estimate": 0.0024344207615223422,
+  "uncertainty": [
+   -0.05121585181285258,
+   0.056084693335897266
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_m1_L1_landmark:marker_E_minus_matched_M",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_m1_L1_landmark",
+  "estimate": -0.5759214743589743,
+  "uncertainty": [
+   -2.1389863457225897,
+   0.9871433970046412
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "UNMATCHED_RANDOM_DOSE_DIAGNOSTIC",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Random expert dose fell outside registered ±10% support; this E-minus-M estimate is not a matched-control result. Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_m2_L1_landmark:marker_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_m2_L1_landmark",
+  "estimate": -0.025040064102564104,
+  "uncertainty": [
+   -1.9225816553394433,
+   1.872501527134315
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_m2_L1_landmark:degeneration_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_m2_L1_landmark",
+  "estimate": 0.0,
+  "uncertainty": [
+   -0.21278268400393052,
+   0.21278268400393052
+  ],
+  "multiplicity_family": "564 diagnostic contrasts; conservative independent-family binary bound",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_m2_L1_landmark:native_NLL_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_m2_L1_landmark",
+  "estimate": 0.009389170688242668,
+  "uncertainty": [
+   -0.05747833488210068,
+   0.07625667625858602
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_m2_L1_landmark:marker_E_minus_matched_M",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_m2_L1_landmark",
+  "estimate": -0.37560096153846156,
+  "uncertainty": [
+   -2.007585810860623,
+   1.2563838877836995
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "UNMATCHED_RANDOM_DOSE_DIAGNOSTIC",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Random expert dose fell outside registered ±10% support; this E-minus-M estimate is not a matched-control result. Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_m4_L1_landmark:marker_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_m4_L1_landmark",
+  "estimate": -0.3505608974358974,
+  "uncertainty": [
+   -1.7706761255451546,
+   1.06955433067336
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_m4_L1_landmark:degeneration_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_m4_L1_landmark",
+  "estimate": 0.0,
+  "uncertainty": [
+   -0.21278268400393052,
+   0.21278268400393052
+  ],
+  "multiplicity_family": "564 diagnostic contrasts; conservative independent-family binary bound",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_m4_L1_landmark:native_NLL_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_m4_L1_landmark",
+  "estimate": 0.0049109666364155575,
+  "uncertainty": [
+   -0.046581575774733736,
+   0.056403509047564845
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_m4_L1_landmark:marker_E_minus_matched_M",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_m4_L1_landmark",
+  "estimate": -0.7011217948717948,
+  "uncertainty": [
+   -2.3507042406201255,
+   0.948460650876536
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "UNMATCHED_RANDOM_DOSE_DIAGNOSTIC",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Random expert dose fell outside registered ±10% support; this E-minus-M estimate is not a matched-control result. Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:force_p_L1_landmark:marker_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "force_p_L1_landmark",
+  "estimate": -0.22536057692307693,
+  "uncertainty": [
+   -1.9230967533036885,
+   1.4723755994575347
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:force_p_L1_landmark:degeneration_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "force_p_L1_landmark",
+  "estimate": 0.0,
+  "uncertainty": [
+   -0.21278268400393052,
+   0.21278268400393052
+  ],
+  "multiplicity_family": "564 diagnostic contrasts; conservative independent-family binary bound",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:force_p_L1_landmark:native_NLL_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "force_p_L1_landmark",
+  "estimate": 0.0013142446619949545,
+  "uncertainty": [
+   -0.05302945231540336,
+   0.05565794163939328
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:force_p_L1_landmark:marker_E_minus_matched_M",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "force_p_L1_landmark",
+  "estimate": -0.0751201923076923,
+  "uncertainty": [
+   -1.511674029350364,
+   1.3614336447349795
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:force_m_L1_landmark:marker_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "force_m_L1_landmark",
+  "estimate": -0.025040064102564104,
+  "uncertainty": [
+   -1.7009564330753117,
+   1.6508763048701836
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:force_m_L1_landmark:degeneration_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "force_m_L1_landmark",
+  "estimate": 0.0,
+  "uncertainty": [
+   -0.21278268400393052,
+   0.21278268400393052
+  ],
+  "multiplicity_family": "564 diagnostic contrasts; conservative independent-family binary bound",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:force_m_L1_landmark:native_NLL_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "force_m_L1_landmark",
+  "estimate": 0.006489025142714006,
+  "uncertainty": [
+   -0.050405034663858345,
+   0.06338308494928636
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:force_m_L1_landmark:marker_E_minus_matched_M",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "force_m_L1_landmark",
+  "estimate": -0.025040064102564104,
+  "uncertainty": [
+   -1.3644377438370845,
+   1.3143576156319563
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "UNMATCHED_RANDOM_DOSE_DIAGNOSTIC",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Random expert dose fell outside registered ±10% support; this E-minus-M estimate is not a matched-control result. Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:reweight_p1_L1_landmark:marker_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "reweight_p1_L1_landmark",
+  "estimate": 0.3255208333333333,
+  "uncertainty": [
+   -1.144653917642095,
+   1.7956955843087614
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:reweight_p1_L1_landmark:degeneration_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "reweight_p1_L1_landmark",
+  "estimate": 0.0,
+  "uncertainty": [
+   -0.21278268400393052,
+   0.21278268400393052
+  ],
+  "multiplicity_family": "564 diagnostic contrasts; conservative independent-family binary bound",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:reweight_p1_L1_landmark:native_NLL_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "reweight_p1_L1_landmark",
+  "estimate": -0.001249596215485224,
+  "uncertainty": [
+   -0.04746311401273813,
+   0.04496392158176768
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:reweight_p1_L1_landmark:marker_E_minus_matched_M",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "reweight_p1_L1_landmark",
+  "estimate": 0.500801282051282,
+  "uncertainty": [
+   -0.5412081324022405,
+   1.5428106965048047
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "UNMATCHED_RANDOM_DOSE_DIAGNOSTIC",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Random expert dose fell outside registered ±10% support; this E-minus-M estimate is not a matched-control result. Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:reweight_p2_L1_landmark:marker_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "reweight_p2_L1_landmark",
+  "estimate": 0.025040064102564104,
+  "uncertainty": [
+   -1.3597816606231978,
+   1.409861788828326
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:reweight_p2_L1_landmark:degeneration_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "reweight_p2_L1_landmark",
+  "estimate": 0.0,
+  "uncertainty": [
+   -0.21278268400393052,
+   0.21278268400393052
+  ],
+  "multiplicity_family": "564 diagnostic contrasts; conservative independent-family binary bound",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:reweight_p2_L1_landmark:native_NLL_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "reweight_p2_L1_landmark",
+  "estimate": -0.0002707613472068349,
+  "uncertainty": [
+   -0.04371126596328182,
+   0.04316974326886815
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:reweight_p2_L1_landmark:marker_E_minus_matched_M",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "reweight_p2_L1_landmark",
+  "estimate": -0.2754407051282051,
+  "uncertainty": [
+   -1.655442450663047,
+   1.1045610404066368
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "UNMATCHED_RANDOM_DOSE_DIAGNOSTIC",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Random expert dose fell outside registered ±10% support; this E-minus-M estimate is not a matched-control result. Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:reweight_m1_L1_landmark:marker_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "reweight_m1_L1_landmark",
+  "estimate": -0.40064102564102566,
+  "uncertainty": [
+   -1.8400633395254204,
+   1.038781288243369
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:reweight_m1_L1_landmark:degeneration_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "reweight_m1_L1_landmark",
+  "estimate": 0.0,
+  "uncertainty": [
+   -0.21278268400393052,
+   0.21278268400393052
+  ],
+  "multiplicity_family": "564 diagnostic contrasts; conservative independent-family binary bound",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:reweight_m1_L1_landmark:native_NLL_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "reweight_m1_L1_landmark",
+  "estimate": -0.007714420309528323,
+  "uncertainty": [
+   -0.05475694461435192,
+   0.039328103995295266
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:reweight_m1_L1_landmark:marker_E_minus_matched_M",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "reweight_m1_L1_landmark",
+  "estimate": -0.500801282051282,
+  "uncertainty": [
+   -1.6661436190308714,
+   0.6645410549283074
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:reweight_m2_L1_landmark:marker_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "reweight_m2_L1_landmark",
+  "estimate": 0.3505608974358974,
+  "uncertainty": [
+   -1.3179554083975082,
+   2.019077203269303
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:reweight_m2_L1_landmark:degeneration_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "reweight_m2_L1_landmark",
+  "estimate": 0.0,
+  "uncertainty": [
+   -0.21278268400393052,
+   0.21278268400393052
+  ],
+  "multiplicity_family": "564 diagnostic contrasts; conservative independent-family binary bound",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:reweight_m2_L1_landmark:native_NLL_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "reweight_m2_L1_landmark",
+  "estimate": -0.002543906186073531,
+  "uncertainty": [
+   -0.059929799007972205,
+   0.054841986635825145
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:reweight_m2_L1_landmark:marker_E_minus_matched_M",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "reweight_m2_L1_landmark",
+  "estimate": 0.250400641025641,
+  "uncertainty": [
+   -1.1094506306503142,
+   1.6102519127015962
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "UNMATCHED_RANDOM_DOSE_DIAGNOSTIC",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Random expert dose fell outside registered ±10% support; this E-minus-M estimate is not a matched-control result. Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_p0.5_BAND_landmark:marker_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_p0.5_BAND_landmark",
+  "estimate": 0.47576121794871795,
+  "uncertainty": [
+   -1.03213010500339,
+   1.9836525409008257
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_p0.5_BAND_landmark:degeneration_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_p0.5_BAND_landmark",
+  "estimate": 0.0,
+  "uncertainty": [
+   -0.21278268400393052,
+   0.21278268400393052
+  ],
+  "multiplicity_family": "564 diagnostic contrasts; conservative independent-family binary bound",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_p0.5_BAND_landmark:native_NLL_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_p0.5_BAND_landmark",
+  "estimate": -0.004371135823375025,
+  "uncertainty": [
+   -0.04839383338717927,
+   0.03965156174042922
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_p0.5_BAND_landmark:marker_E_minus_matched_M",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_p0.5_BAND_landmark",
+  "estimate": 0.1752804487179487,
+  "uncertainty": [
+   -1.3407951611356963,
+   1.6913560585715937
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "UNMATCHED_RANDOM_DOSE_DIAGNOSTIC",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Random expert dose fell outside registered ±10% support; this E-minus-M estimate is not a matched-control result. Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_p1_BAND_landmark:marker_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_p1_BAND_landmark",
+  "estimate": -0.3255208333333333,
+  "uncertainty": [
+   -2.235063861373358,
+   1.5840221947066915
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_p1_BAND_landmark:degeneration_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_p1_BAND_landmark",
+  "estimate": 0.0,
+  "uncertainty": [
+   -0.21278268400393052,
+   0.21278268400393052
+  ],
+  "multiplicity_family": "564 diagnostic contrasts; conservative independent-family binary bound",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_p1_BAND_landmark:native_NLL_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_p1_BAND_landmark",
+  "estimate": 0.020152917329505932,
+  "uncertainty": [
+   -0.039495120284376795,
+   0.07980095494338865
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_p1_BAND_landmark:marker_E_minus_matched_M",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_p1_BAND_landmark",
+  "estimate": -0.40064102564102566,
+  "uncertainty": [
+   -1.2436955226766053,
+   0.442413471394554
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "UNMATCHED_RANDOM_DOSE_DIAGNOSTIC",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Random expert dose fell outside registered ±10% support; this E-minus-M estimate is not a matched-control result. Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_p2_BAND_landmark:marker_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_p2_BAND_landmark",
+  "estimate": 0.5258413461538461,
+  "uncertainty": [
+   -1.790778664036392,
+   2.8424613563440846
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_p2_BAND_landmark:degeneration_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_p2_BAND_landmark",
+  "estimate": 0.0,
+  "uncertainty": [
+   -0.21278268400393052,
+   0.21278268400393052
+  ],
+  "multiplicity_family": "564 diagnostic contrasts; conservative independent-family binary bound",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_p2_BAND_landmark:native_NLL_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_p2_BAND_landmark",
+  "estimate": 0.013120943163486146,
+  "uncertainty": [
+   -0.045523227971395804,
+   0.0717651142983681
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_p2_BAND_landmark:marker_E_minus_matched_M",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_p2_BAND_landmark",
+  "estimate": 0.6510416666666666,
+  "uncertainty": [
+   -1.0889667390501514,
+   2.3910500723834844
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "UNMATCHED_RANDOM_DOSE_DIAGNOSTIC",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Random expert dose fell outside registered ±10% support; this E-minus-M estimate is not a matched-control result. Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_p4_BAND_landmark:marker_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_p4_BAND_landmark",
+  "estimate": 0.47576121794871795,
+  "uncertainty": [
+   -1.0073062798266625,
+   1.9588287157240982
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_p4_BAND_landmark:degeneration_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_p4_BAND_landmark",
+  "estimate": 0.0,
+  "uncertainty": [
+   -0.21278268400393052,
+   0.21278268400393052
+  ],
+  "multiplicity_family": "564 diagnostic contrasts; conservative independent-family binary bound",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_p4_BAND_landmark:native_NLL_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_p4_BAND_landmark",
+  "estimate": 0.14601977316480474,
+  "uncertainty": [
+   0.07840988968977754,
+   0.21362965663983197
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_p4_BAND_landmark:marker_E_minus_matched_M",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_p4_BAND_landmark",
+  "estimate": -0.37560096153846156,
+  "uncertainty": [
+   -2.363142966698839,
+   1.6119410436219161
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_m0.5_BAND_landmark:marker_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_m0.5_BAND_landmark",
+  "estimate": -0.025040064102564104,
+  "uncertainty": [
+   -1.4187689553261327,
+   1.3686888271210045
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_m0.5_BAND_landmark:degeneration_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_m0.5_BAND_landmark",
+  "estimate": 0.0,
+  "uncertainty": [
+   -0.21278268400393052,
+   0.21278268400393052
+  ],
+  "multiplicity_family": "564 diagnostic contrasts; conservative independent-family binary bound",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_m0.5_BAND_landmark:native_NLL_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_m0.5_BAND_landmark",
+  "estimate": -0.004819048987735262,
+  "uncertainty": [
+   -0.05638141161873959,
+   0.046743313643269065
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_m0.5_BAND_landmark:marker_E_minus_matched_M",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_m0.5_BAND_landmark",
+  "estimate": -0.20032051282051283,
+  "uncertainty": [
+   -1.573407223630568,
+   1.1727661979895425
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "UNMATCHED_RANDOM_DOSE_DIAGNOSTIC",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Random expert dose fell outside registered ±10% support; this E-minus-M estimate is not a matched-control result. Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_m1_BAND_landmark:marker_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_m1_BAND_landmark",
+  "estimate": -0.025040064102564104,
+  "uncertainty": [
+   -1.7446882122840048,
+   1.6946080840788766
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_m1_BAND_landmark:degeneration_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_m1_BAND_landmark",
+  "estimate": 0.0,
+  "uncertainty": [
+   -0.21278268400393052,
+   0.21278268400393052
+  ],
+  "multiplicity_family": "564 diagnostic contrasts; conservative independent-family binary bound",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_m1_BAND_landmark:native_NLL_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_m1_BAND_landmark",
+  "estimate": -0.008472304826252431,
+  "uncertainty": [
+   -0.05708296275699205,
+   0.0401383531044872
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_m1_BAND_landmark:marker_E_minus_matched_M",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_m1_BAND_landmark",
+  "estimate": -0.05008012820512821,
+  "uncertainty": [
+   -1.8843637982657255,
+   1.7842035418554691
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_m2_BAND_landmark:marker_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_m2_BAND_landmark",
+  "estimate": 0.37560096153846156,
+  "uncertainty": [
+   -0.5763415936292285,
+   1.3275435167061516
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_m2_BAND_landmark:degeneration_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_m2_BAND_landmark",
+  "estimate": 0.0,
+  "uncertainty": [
+   -0.21278268400393052,
+   0.21278268400393052
+  ],
+  "multiplicity_family": "564 diagnostic contrasts; conservative independent-family binary bound",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_m2_BAND_landmark:native_NLL_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_m2_BAND_landmark",
+  "estimate": 0.01232523760656207,
+  "uncertainty": [
+   -0.038143610122310906,
+   0.06279408533543505
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_m2_BAND_landmark:marker_E_minus_matched_M",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_m2_BAND_landmark",
+  "estimate": 0.3505608974358974,
+  "uncertainty": [
+   -1.154170769904244,
+   1.8552925647760388
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "UNMATCHED_RANDOM_DOSE_DIAGNOSTIC",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Random expert dose fell outside registered ±10% support; this E-minus-M estimate is not a matched-control result. Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_m4_BAND_landmark:marker_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_m4_BAND_landmark",
+  "estimate": 0.05008012820512821,
+  "uncertainty": [
+   -1.4909052915497885,
+   1.5910655479600448
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_m4_BAND_landmark:degeneration_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_m4_BAND_landmark",
+  "estimate": 0.0,
+  "uncertainty": [
+   -0.21278268400393052,
+   0.21278268400393052
+  ],
+  "multiplicity_family": "564 diagnostic contrasts; conservative independent-family binary bound",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_m4_BAND_landmark:native_NLL_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_m4_BAND_landmark",
+  "estimate": -0.008234514745439613,
+  "uncertainty": [
+   -0.04735153597754294,
+   0.03088250648666372
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_m4_BAND_landmark:marker_E_minus_matched_M",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_m4_BAND_landmark",
+  "estimate": 0.025040064102564104,
+  "uncertainty": [
+   -1.5983676434924483,
+   1.6484477716975765
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "UNMATCHED_RANDOM_DOSE_DIAGNOSTIC",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Random expert dose fell outside registered ±10% support; this E-minus-M estimate is not a matched-control result. Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:force_p_BAND_landmark:marker_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "force_p_BAND_landmark",
+  "estimate": 0.3255208333333333,
+  "uncertainty": [
+   -1.4773575232383944,
+   2.128399189905061
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:force_p_BAND_landmark:degeneration_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "force_p_BAND_landmark",
+  "estimate": 0.0,
+  "uncertainty": [
+   -0.21278268400393052,
+   0.21278268400393052
+  ],
+  "multiplicity_family": "564 diagnostic contrasts; conservative independent-family binary bound",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:force_p_BAND_landmark:native_NLL_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "force_p_BAND_landmark",
+  "estimate": 0.03541827250372148,
+  "uncertainty": [
+   -0.026756283852082542,
+   0.0975928288595255
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:force_p_BAND_landmark:marker_E_minus_matched_M",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "force_p_BAND_landmark",
+  "estimate": 0.025040064102564104,
+  "uncertainty": [
+   -1.7442628619832328,
+   1.794342990188361
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:force_m_BAND_landmark:marker_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "force_m_BAND_landmark",
+  "estimate": 0.05008012820512821,
+  "uncertainty": [
+   -1.4909052915497885,
+   1.5910655479600448
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:force_m_BAND_landmark:degeneration_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "force_m_BAND_landmark",
+  "estimate": 0.0,
+  "uncertainty": [
+   -0.21278268400393052,
+   0.21278268400393052
+  ],
+  "multiplicity_family": "564 diagnostic contrasts; conservative independent-family binary bound",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:force_m_BAND_landmark:native_NLL_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "force_m_BAND_landmark",
+  "estimate": 0.003664656767572363,
+  "uncertainty": [
+   -0.042086294415860905,
+   0.04941560795100563
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:force_m_BAND_landmark:marker_E_minus_matched_M",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "force_m_BAND_landmark",
+  "estimate": 0.20032051282051283,
+  "uncertainty": [
+   -1.208353745920148,
+   1.6089947715611737
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "UNMATCHED_RANDOM_DOSE_DIAGNOSTIC",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Random expert dose fell outside registered ±10% support; this E-minus-M estimate is not a matched-control result. Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:reweight_p1_BAND_landmark:marker_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "reweight_p1_BAND_landmark",
+  "estimate": -0.20032051282051283,
+  "uncertainty": [
+   -2.0021425984159706,
+   1.601501572774945
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:reweight_p1_BAND_landmark:degeneration_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "reweight_p1_BAND_landmark",
+  "estimate": 0.0,
+  "uncertainty": [
+   -0.21278268400393052,
+   0.21278268400393052
+  ],
+  "multiplicity_family": "564 diagnostic contrasts; conservative independent-family binary bound",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:reweight_p1_BAND_landmark:native_NLL_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "reweight_p1_BAND_landmark",
+  "estimate": -0.0039217270438204575,
+  "uncertainty": [
+   -0.05031812727215146,
+   0.042474673184510536
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:reweight_p1_BAND_landmark:marker_E_minus_matched_M",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "reweight_p1_BAND_landmark",
+  "estimate": -0.47576121794871795,
+  "uncertainty": [
+   -1.7428495700163569,
+   0.7913271341189211
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:reweight_p2_BAND_landmark:marker_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "reweight_p2_BAND_landmark",
+  "estimate": 0.7011217948717948,
+  "uncertainty": [
+   -1.153290139172932,
+   2.5555337289165214
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:reweight_p2_BAND_landmark:degeneration_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "reweight_p2_BAND_landmark",
+  "estimate": 0.0,
+  "uncertainty": [
+   -0.21278268400393052,
+   0.21278268400393052
+  ],
+  "multiplicity_family": "564 diagnostic contrasts; conservative independent-family binary bound",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:reweight_p2_BAND_landmark:native_NLL_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "reweight_p2_BAND_landmark",
+  "estimate": 0.013879430891500896,
+  "uncertainty": [
+   -0.03798202403474474,
+   0.06574088581774652
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:reweight_p2_BAND_landmark:marker_E_minus_matched_M",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "reweight_p2_BAND_landmark",
+  "estimate": 1.0266426282051282,
+  "uncertainty": [
+   -0.7034907157508576,
+   2.756775972161114
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:reweight_m1_BAND_landmark:marker_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "reweight_m1_BAND_landmark",
+  "estimate": 0.05008012820512821,
+  "uncertainty": [
+   -1.0505707950360206,
+   1.150731051446277
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:reweight_m1_BAND_landmark:degeneration_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "reweight_m1_BAND_landmark",
+  "estimate": 0.0,
+  "uncertainty": [
+   -0.21278268400393052,
+   0.21278268400393052
+  ],
+  "multiplicity_family": "564 diagnostic contrasts; conservative independent-family binary bound",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:reweight_m1_BAND_landmark:native_NLL_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "reweight_m1_BAND_landmark",
+  "estimate": -0.007831222413565323,
+  "uncertainty": [
+   -0.05501424004416006,
+   0.0393517952170294
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:reweight_m1_BAND_landmark:marker_E_minus_matched_M",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "reweight_m1_BAND_landmark",
+  "estimate": 0.1252003205128205,
+  "uncertainty": [
+   -1.2113516102282946,
+   1.4617522512539356
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "UNMATCHED_RANDOM_DOSE_DIAGNOSTIC",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Random expert dose fell outside registered ±10% support; this E-minus-M estimate is not a matched-control result. Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:reweight_m2_BAND_landmark:marker_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "reweight_m2_BAND_landmark",
+  "estimate": -0.250400641025641,
+  "uncertainty": [
+   -1.663797103038962,
+   1.16299582098768
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:reweight_m2_BAND_landmark:degeneration_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "reweight_m2_BAND_landmark",
+  "estimate": 0.0,
+  "uncertainty": [
+   -0.21278268400393052,
+   0.21278268400393052
+  ],
+  "multiplicity_family": "564 diagnostic contrasts; conservative independent-family binary bound",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:reweight_m2_BAND_landmark:native_NLL_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "reweight_m2_BAND_landmark",
+  "estimate": -0.012365194956208773,
+  "uncertainty": [
+   -0.07098192509188203,
+   0.04625153517946448
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:reweight_m2_BAND_landmark:marker_E_minus_matched_M",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "reweight_m2_BAND_landmark",
+  "estimate": -0.5508814102564102,
+  "uncertainty": [
+   -1.8838676113964619,
+   0.7821047908836413
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "UNMATCHED_RANDOM_DOSE_DIAGNOSTIC",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Random expert dose fell outside registered ±10% support; this E-minus-M estimate is not a matched-control result. Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_p0.5_ALL_landmark:marker_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_p0.5_ALL_landmark",
+  "estimate": -0.20032051282051283,
+  "uncertainty": [
+   -1.995261686001607,
+   1.5946206603605815
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_p0.5_ALL_landmark:degeneration_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_p0.5_ALL_landmark",
+  "estimate": 0.0,
+  "uncertainty": [
+   -0.21278268400393052,
+   0.21278268400393052
+  ],
+  "multiplicity_family": "564 diagnostic contrasts; conservative independent-family binary bound",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_p0.5_ALL_landmark:native_NLL_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_p0.5_ALL_landmark",
+  "estimate": 0.0020924804458585153,
+  "uncertainty": [
+   -0.03905243260017373,
+   0.04323739349189076
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_p0.5_ALL_landmark:marker_E_minus_matched_M",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_p0.5_ALL_landmark",
+  "estimate": -0.1252003205128205,
+  "uncertainty": [
+   -1.375652217603713,
+   1.125251576578072
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "UNMATCHED_RANDOM_DOSE_DIAGNOSTIC",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Random expert dose fell outside registered ±10% support; this E-minus-M estimate is not a matched-control result. Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_p1_ALL_landmark:marker_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_p1_ALL_landmark",
+  "estimate": -0.3255208333333333,
+  "uncertainty": [
+   -1.8775852417887606,
+   1.226543575122094
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_p1_ALL_landmark:degeneration_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_p1_ALL_landmark",
+  "estimate": 0.0,
+  "uncertainty": [
+   -0.21278268400393052,
+   0.21278268400393052
+  ],
+  "multiplicity_family": "564 diagnostic contrasts; conservative independent-family binary bound",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_p1_ALL_landmark:native_NLL_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_p1_ALL_landmark",
+  "estimate": 0.03635136398963084,
+  "uncertainty": [
+   -0.016526507156033314,
+   0.08922923513529499
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_p1_ALL_landmark:marker_E_minus_matched_M",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_p1_ALL_landmark",
+  "estimate": -0.5258413461538461,
+  "uncertainty": [
+   -2.12125376753763,
+   1.0695710752299377
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_p2_ALL_landmark:marker_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_p2_ALL_landmark",
+  "estimate": 0.10016025641025642,
+  "uncertainty": [
+   -1.678265153362394,
+   1.8785856661829068
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_p2_ALL_landmark:degeneration_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_p2_ALL_landmark",
+  "estimate": 0.0,
+  "uncertainty": [
+   -0.21278268400393052,
+   0.21278268400393052
+  ],
+  "multiplicity_family": "564 diagnostic contrasts; conservative independent-family binary bound",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_p2_ALL_landmark:native_NLL_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_p2_ALL_landmark",
+  "estimate": 0.18462754693388078,
+  "uncertainty": [
+   0.10551267627328884,
+   0.2637424175944727
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_p2_ALL_landmark:marker_E_minus_matched_M",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_p2_ALL_landmark",
+  "estimate": -0.1252003205128205,
+  "uncertainty": [
+   -2.2602086378170574,
+   2.009807996791416
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_p4_ALL_landmark:marker_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_p4_ALL_landmark",
+  "estimate": -0.7762419871794872,
+  "uncertainty": [
+   -2.8345236361511006,
+   1.2820396617921261
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_p4_ALL_landmark:degeneration_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_p4_ALL_landmark",
+  "estimate": 0.0,
+  "uncertainty": [
+   -0.21278268400393052,
+   0.21278268400393052
+  ],
+  "multiplicity_family": "564 diagnostic contrasts; conservative independent-family binary bound",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_p4_ALL_landmark:native_NLL_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_p4_ALL_landmark",
+  "estimate": 1.0739568904101178,
+  "uncertainty": [
+   0.8348547889568276,
+   1.313058991863408
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_p4_ALL_landmark:marker_E_minus_matched_M",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_p4_ALL_landmark",
+  "estimate": -0.5508814102564102,
+  "uncertainty": [
+   -2.008049346306883,
+   0.9062865257940623
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_m0.5_ALL_landmark:marker_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_m0.5_ALL_landmark",
+  "estimate": -0.40064102564102566,
+  "uncertainty": [
+   -2.171557216469539,
+   1.370275165187488
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_m0.5_ALL_landmark:degeneration_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_m0.5_ALL_landmark",
+  "estimate": 0.0,
+  "uncertainty": [
+   -0.21278268400393052,
+   0.21278268400393052
+  ],
+  "multiplicity_family": "564 diagnostic contrasts; conservative independent-family binary bound",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_m0.5_ALL_landmark:native_NLL_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_m0.5_ALL_landmark",
+  "estimate": -0.012081514071727138,
+  "uncertainty": [
+   -0.06536553384375414,
+   0.04120250570029987
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_m0.5_ALL_landmark:marker_E_minus_matched_M",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_m0.5_ALL_landmark",
+  "estimate": -0.8764022435897436,
+  "uncertainty": [
+   -2.4636396553196613,
+   0.7108351681401743
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "UNMATCHED_RANDOM_DOSE_DIAGNOSTIC",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Random expert dose fell outside registered ±10% support; this E-minus-M estimate is not a matched-control result. Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_m1_ALL_landmark:marker_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_m1_ALL_landmark",
+  "estimate": 0.47576121794871795,
+  "uncertainty": [
+   -1.260961739405034,
+   2.2124841753024698
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_m1_ALL_landmark:degeneration_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_m1_ALL_landmark",
+  "estimate": 0.0,
+  "uncertainty": [
+   -0.21278268400393052,
+   0.21278268400393052
+  ],
+  "multiplicity_family": "564 diagnostic contrasts; conservative independent-family binary bound",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_m1_ALL_landmark:native_NLL_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_m1_ALL_landmark",
+  "estimate": 0.03033345303495472,
+  "uncertainty": [
+   -0.028039074065836094,
+   0.08870598013574553
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_m1_ALL_landmark:marker_E_minus_matched_M",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_m1_ALL_landmark",
+  "estimate": 0.0751201923076923,
+  "uncertainty": [
+   -1.6365755692929327,
+   1.7868159539083173
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "UNMATCHED_RANDOM_DOSE_DIAGNOSTIC",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Random expert dose fell outside registered ±10% support; this E-minus-M estimate is not a matched-control result. Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_m2_ALL_landmark:marker_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_m2_ALL_landmark",
+  "estimate": 0.05008012820512821,
+  "uncertainty": [
+   -2.1855476220106005,
+   2.285707878420857
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_m2_ALL_landmark:degeneration_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_m2_ALL_landmark",
+  "estimate": 0.0,
+  "uncertainty": [
+   -0.21278268400393052,
+   0.21278268400393052
+  ],
+  "multiplicity_family": "564 diagnostic contrasts; conservative independent-family binary bound",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_m2_ALL_landmark:native_NLL_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_m2_ALL_landmark",
+  "estimate": 0.028244573542348574,
+  "uncertainty": [
+   -0.016513323234108822,
+   0.07300247031880597
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_m2_ALL_landmark:marker_E_minus_matched_M",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_m2_ALL_landmark",
+  "estimate": -0.3505608974358974,
+  "uncertainty": [
+   -2.6918402646507307,
+   1.990718469778936
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "UNMATCHED_RANDOM_DOSE_DIAGNOSTIC",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Random expert dose fell outside registered ±10% support; this E-minus-M estimate is not a matched-control result. Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_m4_ALL_landmark:marker_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_m4_ALL_landmark",
+  "estimate": 0.250400641025641,
+  "uncertainty": [
+   -1.5823255446246225,
+   2.0831268266759047
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_m4_ALL_landmark:degeneration_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_m4_ALL_landmark",
+  "estimate": 0.0,
+  "uncertainty": [
+   -0.21278268400393052,
+   0.21278268400393052
+  ],
+  "multiplicity_family": "564 diagnostic contrasts; conservative independent-family binary bound",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_m4_ALL_landmark:native_NLL_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_m4_ALL_landmark",
+  "estimate": 0.026047036250094042,
+  "uncertainty": [
+   -0.027858299079991263,
+   0.07995237158017934
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:bias_m4_ALL_landmark:marker_E_minus_matched_M",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "bias_m4_ALL_landmark",
+  "estimate": -0.1502403846153846,
+  "uncertainty": [
+   -1.7510135497934178,
+   1.4505327805626487
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "UNMATCHED_RANDOM_DOSE_DIAGNOSTIC",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Random expert dose fell outside registered ±10% support; this E-minus-M estimate is not a matched-control result. Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:force_p_ALL_landmark:marker_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "force_p_ALL_landmark",
+  "estimate": 0.025040064102564104,
+  "uncertainty": [
+   -1.5361967793674285,
+   1.5862769075725567
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:force_p_ALL_landmark:degeneration_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "force_p_ALL_landmark",
+  "estimate": 0.0,
+  "uncertainty": [
+   -0.21278268400393052,
+   0.21278268400393052
+  ],
+  "multiplicity_family": "564 diagnostic contrasts; conservative independent-family binary bound",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:force_p_ALL_landmark:native_NLL_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "force_p_ALL_landmark",
+  "estimate": 0.11525876987792963,
+  "uncertainty": [
+   0.05099790967073976,
+   0.1795196300851195
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:force_p_ALL_landmark:marker_E_minus_matched_M",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "force_p_ALL_landmark",
+  "estimate": 0.025040064102564104,
+  "uncertainty": [
+   -1.559796684677788,
+   1.6098768128829162
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:force_m_ALL_landmark:marker_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "force_m_ALL_landmark",
+  "estimate": 0.3505608974358974,
+  "uncertainty": [
+   -1.5074407206260267,
+   2.2085625154978215
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:force_m_ALL_landmark:degeneration_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "force_m_ALL_landmark",
+  "estimate": 0.0,
+  "uncertainty": [
+   -0.21278268400393052,
+   0.21278268400393052
+  ],
+  "multiplicity_family": "564 diagnostic contrasts; conservative independent-family binary bound",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:force_m_ALL_landmark:native_NLL_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "force_m_ALL_landmark",
+  "estimate": 0.017369294350751973,
+  "uncertainty": [
+   -0.02983291914419729,
+   0.06457150784570123
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:force_m_ALL_landmark:marker_E_minus_matched_M",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "force_m_ALL_landmark",
+  "estimate": -0.025040064102564104,
+  "uncertainty": [
+   -1.3827897355795649,
+   1.3327096073744367
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "UNMATCHED_RANDOM_DOSE_DIAGNOSTIC",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Random expert dose fell outside registered ±10% support; this E-minus-M estimate is not a matched-control result. Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:reweight_p1_ALL_landmark:marker_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "reweight_p1_ALL_landmark",
+  "estimate": 0.6260016025641025,
+  "uncertainty": [
+   -0.8200185563494365,
+   2.0720217614776417
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:reweight_p1_ALL_landmark:degeneration_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "reweight_p1_ALL_landmark",
+  "estimate": 0.0,
+  "uncertainty": [
+   -0.21278268400393052,
+   0.21278268400393052
+  ],
+  "multiplicity_family": "564 diagnostic contrasts; conservative independent-family binary bound",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:reweight_p1_ALL_landmark:native_NLL_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "reweight_p1_ALL_landmark",
+  "estimate": 0.006837301005747516,
+  "uncertainty": [
+   -0.0442351662313274,
+   0.057909768242822436
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:reweight_p1_ALL_landmark:marker_E_minus_matched_M",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "reweight_p1_ALL_landmark",
+  "estimate": 0.5759214743589743,
+  "uncertainty": [
+   -0.5983716044168003,
+   1.7502145531347488
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "UNMATCHED_RANDOM_DOSE_DIAGNOSTIC",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Random expert dose fell outside registered ±10% support; this E-minus-M estimate is not a matched-control result. Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:reweight_p2_ALL_landmark:marker_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "reweight_p2_ALL_landmark",
+  "estimate": 0.22536057692307693,
+  "uncertainty": [
+   -1.7736426015985123,
+   2.2243637554446662
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:reweight_p2_ALL_landmark:degeneration_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "reweight_p2_ALL_landmark",
+  "estimate": 0.0,
+  "uncertainty": [
+   -0.21278268400393052,
+   0.21278268400393052
+  ],
+  "multiplicity_family": "564 diagnostic contrasts; conservative independent-family binary bound",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:reweight_p2_ALL_landmark:native_NLL_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "reweight_p2_ALL_landmark",
+  "estimate": 0.10352826721272163,
+  "uncertainty": [
+   0.018577754681829095,
+   0.18847877974361416
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:reweight_p2_ALL_landmark:marker_E_minus_matched_M",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "reweight_p2_ALL_landmark",
+  "estimate": 0.3004807692307692,
+  "uncertainty": [
+   -1.6014034103254813,
+   2.20236494878702
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "UNMATCHED_RANDOM_DOSE_DIAGNOSTIC",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Random expert dose fell outside registered ±10% support; this E-minus-M estimate is not a matched-control result. Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:reweight_m1_ALL_landmark:marker_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "reweight_m1_ALL_landmark",
+  "estimate": -0.40064102564102566,
+  "uncertainty": [
+   -2.136267451501255,
+   1.3349854002192036
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:reweight_m1_ALL_landmark:degeneration_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "reweight_m1_ALL_landmark",
+  "estimate": 0.0,
+  "uncertainty": [
+   -0.21278268400393052,
+   0.21278268400393052
+  ],
+  "multiplicity_family": "564 diagnostic contrasts; conservative independent-family binary bound",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:reweight_m1_ALL_landmark:native_NLL_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "reweight_m1_ALL_landmark",
+  "estimate": 0.00757001746890535,
+  "uncertainty": [
+   -0.04422479169359359,
+   0.05936482663140429
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:reweight_m1_ALL_landmark:marker_E_minus_matched_M",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "reweight_m1_ALL_landmark",
+  "estimate": -0.5759214743589743,
+  "uncertainty": [
+   -1.9628037764867519,
+   0.8109608277688033
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "UNMATCHED_RANDOM_DOSE_DIAGNOSTIC",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Random expert dose fell outside registered ±10% support; this E-minus-M estimate is not a matched-control result. Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:reweight_m2_ALL_landmark:marker_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "reweight_m2_ALL_landmark",
+  "estimate": 0.42568108974358976,
+  "uncertainty": [
+   -1.3033515436711514,
+   2.154713723158331
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:reweight_m2_ALL_landmark:degeneration_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "reweight_m2_ALL_landmark",
+  "estimate": 0.0,
+  "uncertainty": [
+   -0.21278268400393052,
+   0.21278268400393052
+  ],
+  "multiplicity_family": "564 diagnostic contrasts; conservative independent-family binary bound",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:reweight_m2_ALL_landmark:native_NLL_E_minus_N",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "reweight_m2_ALL_landmark",
+  "estimate": 0.012636334424154053,
+  "uncertainty": [
+   -0.03231291105969915,
+   0.05758557990800725
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "DIAGNOSTIC_DOSE_SELECTION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "X2:reweight_m2_ALL_landmark:marker_E_minus_matched_M",
+  "population": "39 eligible dev-cal questions, same prefix and paired seeds; nine ineligible questions not replaced",
+  "intervention": "reweight_m2_ALL_landmark",
+  "estimate": 0.2754407051282051,
+  "uncertainty": [
+   -1.9098030618014825,
+   2.460684472057893
+  ],
+  "multiplicity_family": "564 potential diagnostic contrasts, approximate family-clustered Bonferroni t intervals",
+  "status": "UNMATCHED_RANDOM_DOSE_DIAGNOSTIC",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+  "interpretation": "Random expert dose fell outside registered ±10% support; this E-minus-M estimate is not a matched-control result. Literal lexical markers are not substantive semantic verification. Boundary intervals and dose screens do not establish accuracy retention or steering."
+ },
+ {
+  "id": "native-discovery:gate-velocity-per-64-token-step",
+  "population": "48 frozen, family-disjoint Qwen3.6 native discovery traces; 12,274 full 64-reasoning-token windows",
+  "intervention": "none; observational native routing",
+  "estimate": 0.41598759015223674,
+  "uncertainty": [
+   0.4039430215443195,
+   0.427287128006515
+  ],
+  "multiplicity_family": "three descriptive native-motion scalars; Bonferroni percentile family bootstrap, 5,000 replicates",
+  "status": "DESCRIPTIVE_NO_CAUSAL_CONTROL_CLAIM",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/dense-discovery/fixed-window-routes-84a85c92-363dbe1b/MOTION_UNCERTAINTY.json",
+  "interpretation": "TV change in selected-gate distribution between consecutive full windows, averaged across layers then equally across frozen families. The approximate interval describes discovery-family heterogeneity, not a representative population or semantic control."
+ },
+ {
+  "id": "native-discovery:gate-acceleration-second-difference",
+  "population": "48 frozen, family-disjoint Qwen3.6 native discovery traces; complete triples of 64-reasoning-token windows",
+  "intervention": "none; observational native routing",
+  "estimate": 0.7158813918564583,
+  "uncertainty": [
+   0.6958780255140509,
+   0.735477512542418
+  ],
+  "multiplicity_family": "three descriptive native-motion scalars; Bonferroni percentile family bootstrap, 5,000 replicates",
+  "status": "DESCRIPTIVE_NO_CAUSAL_CONTROL_CLAIM",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/dense-discovery/fixed-window-routes-84a85c92-363dbe1b/MOTION_UNCERTAINTY.json",
+  "interpretation": "L1/2 magnitude of the second difference of consecutive gate-distribution windows, averaged across layers then equally across frozen families. It is not an optimal acceleration pattern."
+ },
+ {
+  "id": "native-discovery:frequent-expert-turnover",
+  "population": "48 frozen, family-disjoint Qwen3.6 native discovery traces; complete pairs of 64-reasoning-token windows",
+  "intervention": "none; observational native routing",
+  "estimate": 0.544310148458941,
+  "uncertainty": [
+   0.5256474462936115,
+   0.5633436106032051
+  ],
+  "multiplicity_family": "three descriptive native-motion scalars; Bonferroni percentile family bootstrap, 5,000 replicates",
+  "status": "DESCRIPTIVE_NO_CAUSAL_CONTROL_CLAIM",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/dense-discovery/fixed-window-routes-84a85c92-363dbe1b/MOTION_UNCERTAINTY.json",
+  "interpretation": "One minus top-eight expert-set overlap divided by eight between complete windows, averaged across layers then equally across frozen families. Exposure and turnover do not establish useful reasoning control."
+ },
+ {
+  "id": "R3D:S3:v2:gpt:token_identity",
+  "population": "522 exact-ID-clean dev+tune questions; 509 frozen duplicate families; 37549 sentences",
+  "intervention": "observational routing features added to token_identity baseline",
+  "estimate": -0.14330126017916212,
+  "uncertainty": [
+   -0.156667454613604,
+   -0.13140847662662458
+  ],
+  "multiplicity_family": "seven-model Bonferroni percentile family within this baseline mode",
+  "status": "CLEAN_OBSERVATIONAL_PREDICTIVE_GAIN",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/forum/tests/r3_context/readout-results.v3.json",
+  "interpretation": "The completed seven-model clean family supersedes earlier incomplete-cell status. Held-out routing association does not establish causal steering; judge-context control is retrospective, not an online detector."
+ },
+ {
+  "id": "R3D:S3:v2:gpt:judge_context",
+  "population": "522 exact-ID-clean dev+tune questions; 509 frozen duplicate families; 37549 sentences",
+  "intervention": "observational routing features added to judge_context baseline",
+  "estimate": -0.07858361463272384,
+  "uncertainty": [
+   -0.09566878042562169,
+   -0.06178950982489568
+  ],
+  "multiplicity_family": "seven-model Bonferroni percentile family within this baseline mode",
+  "status": "CLEAN_OBSERVATIONAL_PREDICTIVE_GAIN",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/forum/tests/r3_context/readout-results.v3.json",
+  "interpretation": "The completed seven-model clean family supersedes earlier incomplete-cell status. Held-out routing association does not establish causal steering; judge-context control is retrospective, not an online detector."
+ },
+ {
+  "id": "R3D:S3:v2:gpt:judge_context:lexical_excess",
+  "population": "522 exact-ID-clean dev+tune questions; 509 frozen duplicate families; 37549 sentences",
+  "intervention": "routing gain minus class-within-token/position lexical-null gain",
+  "estimate": -0.08091924425865914,
+  "uncertainty": [
+   -0.08999212725001861,
+   -0.07150491103689935
+  ],
+  "multiplicity_family": "seven-model Bonferroni percentile family; separately reported excess contrast",
+  "status": "CLEAN_OBSERVATIONAL_EXCESS_OVER_LEXICAL_NULL",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/forum/tests/r3_context/readout-results.v3.json",
+  "interpretation": "Retrospective judge-context control and within-stratum null; not a deployable class trigger or causal effect."
+ },
+ {
+  "id": "R3D:S3:v2:qwen36:token_identity",
+  "population": "522 exact-ID-clean dev+tune questions; 509 frozen duplicate families; 35484 sentences",
+  "intervention": "observational routing features added to token_identity baseline",
+  "estimate": -0.21929285769013757,
+  "uncertainty": [
+   -0.23235814023660958,
+   -0.20551565145942075
+  ],
+  "multiplicity_family": "seven-model Bonferroni percentile family within this baseline mode",
+  "status": "CLEAN_OBSERVATIONAL_PREDICTIVE_GAIN",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/forum/tests/r3_context/readout-results.v3.json",
+  "interpretation": "The completed seven-model clean family supersedes earlier incomplete-cell status. Held-out routing association does not establish causal steering; judge-context control is retrospective, not an online detector."
+ },
+ {
+  "id": "R3D:S3:v2:qwen36:judge_context",
+  "population": "522 exact-ID-clean dev+tune questions; 509 frozen duplicate families; 35484 sentences",
+  "intervention": "observational routing features added to judge_context baseline",
+  "estimate": -0.13898656770369988,
+  "uncertainty": [
+   -0.15276229393558602,
+   -0.12601263668030233
+  ],
+  "multiplicity_family": "seven-model Bonferroni percentile family within this baseline mode",
+  "status": "CLEAN_OBSERVATIONAL_PREDICTIVE_GAIN",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/forum/tests/r3_context/readout-results.v3.json",
+  "interpretation": "The completed seven-model clean family supersedes earlier incomplete-cell status. Held-out routing association does not establish causal steering; judge-context control is retrospective, not an online detector."
+ },
+ {
+  "id": "R3D:S3:v2:qwen36:judge_context:lexical_excess",
+  "population": "522 exact-ID-clean dev+tune questions; 509 frozen duplicate families; 35484 sentences",
+  "intervention": "routing gain minus class-within-token/position lexical-null gain",
+  "estimate": -0.15056636231214543,
+  "uncertainty": [
+   -0.15974220512257667,
+   -0.14145638731936208
+  ],
+  "multiplicity_family": "seven-model Bonferroni percentile family; separately reported excess contrast",
+  "status": "CLEAN_OBSERVATIONAL_EXCESS_OVER_LEXICAL_NULL",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/forum/tests/r3_context/readout-results.v3.json",
+  "interpretation": "Retrospective judge-context control and within-stratum null; not a deployable class trigger or causal effect."
+ },
+ {
+  "id": "R3D:S3:v2:gemma:token_identity",
+  "population": "522 exact-ID-clean dev+tune questions; 509 frozen duplicate families; 31902 sentences",
+  "intervention": "observational routing features added to token_identity baseline",
+  "estimate": -0.1922950609705562,
+  "uncertainty": [
+   -0.206625299183211,
+   -0.17950079833591714
+  ],
+  "multiplicity_family": "seven-model Bonferroni percentile family within this baseline mode",
+  "status": "CLEAN_OBSERVATIONAL_PREDICTIVE_GAIN",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/forum/tests/r3_context/readout-results.v3.json",
+  "interpretation": "The completed seven-model clean family supersedes earlier incomplete-cell status. Held-out routing association does not establish causal steering; judge-context control is retrospective, not an online detector."
+ },
+ {
+  "id": "R3D:S3:v2:gemma:judge_context",
+  "population": "522 exact-ID-clean dev+tune questions; 509 frozen duplicate families; 31902 sentences",
+  "intervention": "observational routing features added to judge_context baseline",
+  "estimate": -0.14866122598237297,
+  "uncertainty": [
+   -0.16135619156515577,
+   -0.13692044882182558
+  ],
+  "multiplicity_family": "seven-model Bonferroni percentile family within this baseline mode",
+  "status": "CLEAN_OBSERVATIONAL_PREDICTIVE_GAIN",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/forum/tests/r3_context/readout-results.v3.json",
+  "interpretation": "The completed seven-model clean family supersedes earlier incomplete-cell status. Held-out routing association does not establish causal steering; judge-context control is retrospective, not an online detector."
+ },
+ {
+  "id": "R3D:S3:v2:gemma:judge_context:lexical_excess",
+  "population": "522 exact-ID-clean dev+tune questions; 509 frozen duplicate families; 31902 sentences",
+  "intervention": "routing gain minus class-within-token/position lexical-null gain",
+  "estimate": -0.1326170313940491,
+  "uncertainty": [
+   -0.14437462477659926,
+   -0.12183487843709617
+  ],
+  "multiplicity_family": "seven-model Bonferroni percentile family; separately reported excess contrast",
+  "status": "CLEAN_OBSERVATIONAL_EXCESS_OVER_LEXICAL_NULL",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/forum/tests/r3_context/readout-results.v3.json",
+  "interpretation": "Retrospective judge-context control and within-stratum null; not a deployable class trigger or causal effect."
+ },
+ {
+  "id": "R3D:S3:v2:glm:token_identity",
+  "population": "522 exact-ID-clean dev+tune questions; 509 frozen duplicate families; 38931 sentences",
+  "intervention": "observational routing features added to token_identity baseline",
+  "estimate": -0.18217345228065962,
+  "uncertainty": [
+   -0.1958569537019384,
+   -0.16840479167729994
+  ],
+  "multiplicity_family": "seven-model Bonferroni percentile family within this baseline mode",
+  "status": "CLEAN_OBSERVATIONAL_PREDICTIVE_GAIN",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/forum/tests/r3_context/readout-results.v3.json",
+  "interpretation": "The completed seven-model clean family supersedes earlier incomplete-cell status. Held-out routing association does not establish causal steering; judge-context control is retrospective, not an online detector."
+ },
+ {
+  "id": "R3D:S3:v2:glm:judge_context",
+  "population": "522 exact-ID-clean dev+tune questions; 509 frozen duplicate families; 38931 sentences",
+  "intervention": "observational routing features added to judge_context baseline",
+  "estimate": -0.13679456652459812,
+  "uncertainty": [
+   -0.15302262924201498,
+   -0.12035417130925732
+  ],
+  "multiplicity_family": "seven-model Bonferroni percentile family within this baseline mode",
+  "status": "CLEAN_OBSERVATIONAL_PREDICTIVE_GAIN",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/forum/tests/r3_context/readout-results.v3.json",
+  "interpretation": "The completed seven-model clean family supersedes earlier incomplete-cell status. Held-out routing association does not establish causal steering; judge-context control is retrospective, not an online detector."
+ },
+ {
+  "id": "R3D:S3:v2:glm:judge_context:lexical_excess",
+  "population": "522 exact-ID-clean dev+tune questions; 509 frozen duplicate families; 38931 sentences",
+  "intervention": "routing gain minus class-within-token/position lexical-null gain",
+  "estimate": -0.11638544025461896,
+  "uncertainty": [
+   -0.12693492922934235,
+   -0.10628394360328772
+  ],
+  "multiplicity_family": "seven-model Bonferroni percentile family; separately reported excess contrast",
+  "status": "CLEAN_OBSERVATIONAL_EXCESS_OVER_LEXICAL_NULL",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/forum/tests/r3_context/readout-results.v3.json",
+  "interpretation": "Retrospective judge-context control and within-stratum null; not a deployable class trigger or causal effect."
+ },
+ {
+  "id": "R3D:S3:v2:nemotron:token_identity",
+  "population": "522 exact-ID-clean dev+tune questions; 509 frozen duplicate families; 35334 sentences",
+  "intervention": "observational routing features added to token_identity baseline",
+  "estimate": -0.19827900078981672,
+  "uncertainty": [
+   -0.21270168536067083,
+   -0.18495084228084488
+  ],
+  "multiplicity_family": "seven-model Bonferroni percentile family within this baseline mode",
+  "status": "CLEAN_OBSERVATIONAL_PREDICTIVE_GAIN",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/forum/tests/r3_context/readout-results.v3.json",
+  "interpretation": "The completed seven-model clean family supersedes earlier incomplete-cell status. Held-out routing association does not establish causal steering; judge-context control is retrospective, not an online detector."
+ },
+ {
+  "id": "R3D:S3:v2:nemotron:judge_context",
+  "population": "522 exact-ID-clean dev+tune questions; 509 frozen duplicate families; 35334 sentences",
+  "intervention": "observational routing features added to judge_context baseline",
+  "estimate": -0.13721437464548697,
+  "uncertainty": [
+   -0.15628287233129554,
+   -0.11819183955329762
+  ],
+  "multiplicity_family": "seven-model Bonferroni percentile family within this baseline mode",
+  "status": "CLEAN_OBSERVATIONAL_PREDICTIVE_GAIN",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/forum/tests/r3_context/readout-results.v3.json",
+  "interpretation": "The completed seven-model clean family supersedes earlier incomplete-cell status. Held-out routing association does not establish causal steering; judge-context control is retrospective, not an online detector."
+ },
+ {
+  "id": "R3D:S3:v2:nemotron:judge_context:lexical_excess",
+  "population": "522 exact-ID-clean dev+tune questions; 509 frozen duplicate families; 35334 sentences",
+  "intervention": "routing gain minus class-within-token/position lexical-null gain",
+  "estimate": -0.13970910985054583,
+  "uncertainty": [
+   -0.15246414469305822,
+   -0.12732561944747608
+  ],
+  "multiplicity_family": "seven-model Bonferroni percentile family; separately reported excess contrast",
+  "status": "CLEAN_OBSERVATIONAL_EXCESS_OVER_LEXICAL_NULL",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/forum/tests/r3_context/readout-results.v3.json",
+  "interpretation": "Retrospective judge-context control and within-stratum null; not a deployable class trigger or causal effect."
+ },
+ {
+  "id": "R3D:S3:v2:qwen330b:token_identity",
+  "population": "522 exact-ID-clean dev+tune questions; 509 frozen duplicate families; 36445 sentences",
+  "intervention": "observational routing features added to token_identity baseline",
+  "estimate": -0.12620545486816365,
+  "uncertainty": [
+   -0.14308860921844174,
+   -0.11186227985644064
+  ],
+  "multiplicity_family": "seven-model Bonferroni percentile family within this baseline mode",
+  "status": "CLEAN_OBSERVATIONAL_PREDICTIVE_GAIN",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/forum/tests/r3_context/readout-results.v3.json",
+  "interpretation": "The completed seven-model clean family supersedes earlier incomplete-cell status. Held-out routing association does not establish causal steering; judge-context control is retrospective, not an online detector."
+ },
+ {
+  "id": "R3D:S3:v2:qwen330b:judge_context",
+  "population": "522 exact-ID-clean dev+tune questions; 509 frozen duplicate families; 36445 sentences",
+  "intervention": "observational routing features added to judge_context baseline",
+  "estimate": -0.09426616249992864,
+  "uncertainty": [
+   -0.10928574961030324,
+   -0.08100145668798638
+  ],
+  "multiplicity_family": "seven-model Bonferroni percentile family within this baseline mode",
+  "status": "CLEAN_OBSERVATIONAL_PREDICTIVE_GAIN",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/forum/tests/r3_context/readout-results.v3.json",
+  "interpretation": "The completed seven-model clean family supersedes earlier incomplete-cell status. Held-out routing association does not establish causal steering; judge-context control is retrospective, not an online detector."
+ },
+ {
+  "id": "R3D:S3:v2:qwen330b:judge_context:lexical_excess",
+  "population": "522 exact-ID-clean dev+tune questions; 509 frozen duplicate families; 36445 sentences",
+  "intervention": "routing gain minus class-within-token/position lexical-null gain",
+  "estimate": -0.10739134279742761,
+  "uncertainty": [
+   -0.11519074666478465,
+   -0.0996925188601655
+  ],
+  "multiplicity_family": "seven-model Bonferroni percentile family; separately reported excess contrast",
+  "status": "CLEAN_OBSERVATIONAL_EXCESS_OVER_LEXICAL_NULL",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/forum/tests/r3_context/readout-results.v3.json",
+  "interpretation": "Retrospective judge-context control and within-stratum null; not a deployable class trigger or causal effect."
+ },
+ {
+  "id": "R3D:S3:v2:qwen35:token_identity",
+  "population": "522 exact-ID-clean dev+tune questions; 509 frozen duplicate families; 34740 sentences",
+  "intervention": "observational routing features added to token_identity baseline",
+  "estimate": -0.23176597296869797,
+  "uncertainty": [
+   -0.24385510189681675,
+   -0.21955056011908214
+  ],
+  "multiplicity_family": "seven-model Bonferroni percentile family within this baseline mode",
+  "status": "CLEAN_OBSERVATIONAL_PREDICTIVE_GAIN",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/forum/tests/r3_context/readout-results.v3.json",
+  "interpretation": "The completed seven-model clean family supersedes earlier incomplete-cell status. Held-out routing association does not establish causal steering; judge-context control is retrospective, not an online detector."
+ },
+ {
+  "id": "R3D:S3:v2:qwen35:judge_context",
+  "population": "522 exact-ID-clean dev+tune questions; 509 frozen duplicate families; 34740 sentences",
+  "intervention": "observational routing features added to judge_context baseline",
+  "estimate": -0.1408987450738076,
+  "uncertainty": [
+   -0.15358938028668598,
+   -0.12780910071283405
+  ],
+  "multiplicity_family": "seven-model Bonferroni percentile family within this baseline mode",
+  "status": "CLEAN_OBSERVATIONAL_PREDICTIVE_GAIN",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/forum/tests/r3_context/readout-results.v3.json",
+  "interpretation": "The completed seven-model clean family supersedes earlier incomplete-cell status. Held-out routing association does not establish causal steering; judge-context control is retrospective, not an online detector."
+ },
+ {
+  "id": "R3D:S3:v2:qwen35:judge_context:lexical_excess",
+  "population": "522 exact-ID-clean dev+tune questions; 509 frozen duplicate families; 34740 sentences",
+  "intervention": "routing gain minus class-within-token/position lexical-null gain",
+  "estimate": -0.15373816245136668,
+  "uncertainty": [
+   -0.162551488187738,
+   -0.1452898302484944
+  ],
+  "multiplicity_family": "seven-model Bonferroni percentile family; separately reported excess contrast",
+  "status": "CLEAN_OBSERVATIONAL_EXCESS_OVER_LEXICAL_NULL",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/forum/tests/r3_context/readout-results.v3.json",
+  "interpretation": "Retrospective judge-context control and within-stratum null; not a deployable class trigger or causal effect."
+ },
+ {
+  "id": "R3D:A1:v2:gpt:next:composition16",
+  "population": "GPT exact-ID-clean A; 509 questions, 10209 adjacent sentence pairs; frozen family folds",
+  "intervention": "observational routing augmentation beyond past text/history and training-only current-class estimate",
+  "estimate": -0.020727580413222313,
+  "uncertainty": [
+   -0.025479533993344634,
+   -0.016012209011163018
+  ],
+  "multiplicity_family": "six GPT primary contrasts; Bonferroni percentile CI6; Holm bootstrap p=0.00239952",
+  "status": "CLEAN_OBSERVATIONAL_ADVANCES_PREDICTIVE_GATE",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/forum/tests/r3_context/anticipation-results.json",
+  "interpretation": "P is candidate-minus-baseline loss in nats per pair; negative favors routing. The registered advancement threshold is P≤−0.005; 5/5 repeats favor routing. An observational prediction improvement cannot identify useful causal routing action."
+ },
+ {
+  "id": "R3D:A1:v2:gpt:next-contained:composition16",
+  "population": "GPT exact-ID-clean A; 308 questions, 797 adjacent sentence pairs; frozen family folds",
+  "intervention": "observational routing augmentation beyond past text/history and training-only current-class estimate",
+  "estimate": -0.015701325610280037,
+  "uncertainty": [
+   -0.0257488582874319,
+   -0.006470268084022262
+  ],
+  "multiplicity_family": "six GPT primary contrasts; Bonferroni percentile CI6; Holm bootstrap p=0.00239952",
+  "status": "CLEAN_OBSERVATIONAL_CONTAINED_SENSITIVITY",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/forum/tests/r3_context/anticipation-results.json",
+  "interpretation": "P is candidate-minus-baseline loss in nats per pair; negative favors routing. The registered advancement threshold is P≤−0.005; 5/5 repeats favor routing. An observational prediction improvement cannot identify useful causal routing action."
+ },
+ {
+  "id": "R3D:K2:v2:gpt:switch:k16",
+  "population": "GPT exact-ID-clean A; 509 questions, 10209 adjacent sentence pairs; frozen family folds",
+  "intervention": "observational routing augmentation beyond past text/history and training-only current-class estimate",
+  "estimate": -0.0026408268604427576,
+  "uncertainty": [
+   -0.004921902042324751,
+   -0.0003566922637330432
+  ],
+  "multiplicity_family": "six GPT primary contrasts; Bonferroni percentile CI6; Holm bootstrap p=0.00719856",
+  "status": "CLEAN_OBSERVATIONAL_SWITCH_PRACTICAL_GATE_FAIL",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/forum/tests/r3_context/anticipation-results.json",
+  "interpretation": "P is candidate-minus-baseline loss in nats per pair; negative favors routing. The registered advancement threshold is P≤−0.005; 5/5 repeats favor routing. An observational prediction improvement cannot identify useful causal routing action."
+ },
+ {
+  "id": "R3D:K2:v2:gpt:switch-contained:k16",
+  "population": "GPT exact-ID-clean A; 308 questions, 797 adjacent sentence pairs; frozen family folds",
+  "intervention": "observational routing augmentation beyond past text/history and training-only current-class estimate",
+  "estimate": 0.000668597174808383,
+  "uncertainty": [
+   -0.0024750484636027574,
+   0.0035786693710172708
+  ],
+  "multiplicity_family": "six GPT primary contrasts; Bonferroni percentile CI6; Holm bootstrap p=0.567487",
+  "status": "CLEAN_OBSERVATIONAL_SWITCH_PRACTICAL_GATE_FAIL",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/forum/tests/r3_context/anticipation-results.json",
+  "interpretation": "P is candidate-minus-baseline loss in nats per pair; negative favors routing. The registered advancement threshold is P≤−0.005; 1/5 repeats favor routing. An observational prediction improvement cannot identify useful causal routing action."
+ },
+ {
+  "id": "R3D:K2:v2:gpt:dest:k16",
+  "population": "GPT exact-ID-clean A; 509 questions, 6264 adjacent sentence pairs; frozen family folds",
+  "intervention": "observational routing augmentation beyond past text/history and training-only current-class estimate",
+  "estimate": -0.011031167581677437,
+  "uncertainty": [
+   -0.018401562610907935,
+   -0.004054327849784646
+  ],
+  "multiplicity_family": "six GPT primary contrasts; Bonferroni percentile CI6; Holm bootstrap p=0.00239952",
+  "status": "CLEAN_OBSERVATIONAL_IMPRECISE_SENSITIVITIES",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/forum/tests/r3_context/anticipation-results.json",
+  "interpretation": "P is candidate-minus-baseline loss in nats per pair; negative favors routing. The registered advancement threshold is P≤−0.005; 5/5 repeats favor routing. An observational prediction improvement cannot identify useful causal routing action."
+ },
+ {
+  "id": "R3D:K2:v2:gpt:dest-contained:k16",
+  "population": "GPT exact-ID-clean A; 223 questions, 428 adjacent sentence pairs; frozen family folds",
+  "intervention": "observational routing augmentation beyond past text/history and training-only current-class estimate",
+  "estimate": -0.005892764311283827,
+  "uncertainty": [
+   -0.018303874064854713,
+   0.006497291716059867
+  ],
+  "multiplicity_family": "six GPT primary contrasts; Bonferroni percentile CI6; Holm bootstrap p=0.440712",
+  "status": "CLEAN_OBSERVATIONAL_CONTAINED_SENSITIVITY",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/forum/tests/r3_context/anticipation-results.json",
+  "interpretation": "P is candidate-minus-baseline loss in nats per pair; negative favors routing. The registered advancement threshold is P≤−0.005; 5/5 repeats favor routing. An observational prediction improvement cannot identify useful causal routing action."
+ },
+ {
+  "id": "R3D:replication:v2:qwen36:next:composition16",
+  "population": "Qwen3.6 exact-ID-clean A; 494 questions, 2492 adjacent pairs",
+  "intervention": "observational same-direction routing augmentation beyond past text/history",
+  "estimate": -0.05570080503821373,
+  "uncertainty": [
+   -0.06944131650807087,
+   -0.041535172023166665
+  ],
+  "multiplicity_family": "model-specific descriptive replication; CI6 from saved driver",
+  "status": "SAME_DIRECTION_REPLICATION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/forum/tests/r3_context/anticipation-results.json",
+  "interpretation": "Replication is population-specific. GPT destination contained and Qwen destination intervals span zero; same direction does not establish a transportable causal controller."
+ },
+ {
+  "id": "R3D:replication:v2:qwen36:next-contained:composition16",
+  "population": "Qwen3.6 exact-ID-clean A; 160 questions, 213 adjacent pairs",
+  "intervention": "observational same-direction routing augmentation beyond past text/history",
+  "estimate": -0.034382160753011703,
+  "uncertainty": [
+   -0.04927373591063105,
+   -0.020113633062654068
+  ],
+  "multiplicity_family": "model-specific descriptive replication; CI6 from saved driver",
+  "status": "SAME_DIRECTION_REPLICATION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/forum/tests/r3_context/anticipation-results.json",
+  "interpretation": "Replication is population-specific. GPT destination contained and Qwen destination intervals span zero; same direction does not establish a transportable causal controller."
+ },
+ {
+  "id": "R3D:replication:v2:qwen36:dest:k16",
+  "population": "Qwen3.6 exact-ID-clean A; 453 questions, 1531 adjacent pairs",
+  "intervention": "observational same-direction routing augmentation beyond past text/history",
+  "estimate": -0.007869111374020576,
+  "uncertainty": [
+   -0.01829906621363168,
+   0.0029649077130698433
+  ],
+  "multiplicity_family": "model-specific descriptive replication; CI6 from saved driver",
+  "status": "SAME_DIRECTION_IMPRECISE_REPLICATION",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/forum/tests/r3_context/anticipation-results.json",
+  "interpretation": "Replication is population-specific. GPT destination contained and Qwen destination intervals span zero; same direction does not establish a transportable causal controller."
+ },
+ {
+  "id": "R3D:A1:v2:gpt:next:composition_antic",
+  "population": "GPT exact-ID-clean A; 509 questions, 10209 pairs",
+  "intervention": "secondary observational anticipation-composition augmentation",
+  "estimate": -0.004372844938188791,
+  "uncertainty": [
+   -0.008012669324784621,
+   -0.0007939590450554995
+  ],
+  "multiplicity_family": "secondary profile; CI6 descriptive and not an additional primary contrast",
+  "status": "BELOW_PRACTICAL_GATE_REPLICATION_INCOMPLETE",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/forum/tests/r3_context/anticipation-results.json",
+  "interpretation": "P does not reach −0.005, and saved Qwen A1_antic replication is marked incomplete."
+ },
+ {
+  "id": "R3E:B1:v2:gpt:clean",
+  "population": "509 exact-ID-clean GPT A questions; 496 frozen families; 527099 labelled tokens before the frequent-ID filter",
+  "intervention": "observational class-associated routing gain after clean grouped fold refit",
+  "estimate": 0.008385083803142606,
+  "uncertainty": [
+   0.008044066258242057,
+   0.008737086187417087
+  ],
+  "multiplicity_family": "family-clustered 5,000-bootstrap nominal 95% interval; five CV repeats",
+  "status": "CLEAN_OBSERVATIONAL_PREDICTIVE_GAIN",
+  "source": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/resume-v1/r3e-b1-clean-v2/result.json",
+  "interpretation": "All five repeats favor routing. The frequent-ID filter drops 364978 tokens (69.2%); no correctness outcome was read. This is not a causal steering effect or endpoint accuracy improvement."
+ }
+]

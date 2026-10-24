@@ -1,0 +1,80 @@
+# F-0003: Execute the whole-reasoning efficiency experiment
+- status: active
+- date: 2026-10-20
+- request: "Alignment v2: stop the 512-token rescue and run the whole-reasoning (SteerMoE-style) efficiency experiment"; amended by "Alignment v3: fix four launch blockers, then run the whole experiment tonight".
+- purpose: Measure strict accuracy and reasoning length against matched random and native, retaining capped and missing outcomes as bounds.
+- acceptance: 129 frozen families; up to 3096 GPT and 2838 Qwen rows, with non-nominated cells excluded; source-bound fresh execution; allocated full CPU suite/prepare and passing 48-row per-model canaries; six shared simultaneous contrasts and mandatory companions/manipulation/dose reporting. Continuous 64-slot admission, 2 GPT/7 Qwen unheld shards, relative fluency gates and a monitor whose deadline/errors never stop production. New GPU-hours at most 72, retained r3 0.346111 separately; CPU-only core-hours at most 16; science cutoff 2026-10-23 05:30 Europe/Rome.
+- keywords: whole, efficiency, SteerMoE, routing, canary, budget
+- paths: src/steering, tests/steering, scripts/steering
+- decisions: D-0002
+
+## Tasks
+
+- [x] F-0003.1 Freeze r3 terminal accounting and supersede its unfinished 512-token plan; preserve all historical receipts; evidence: native sacct readback 2026-10-20, unchanged r3 TERMINAL.json, and report/whole-reasoning-20261020/README.md. Queue empty; r3 GPU 0.346111 hours and prior CPU 0.903333 core-hours remain recorded.
+- [x] F-0003.2 Implement D1 control-feasible global sign-stable RD nominations with exact layer/quintile/role controls, matching all70 saved GPT DP cells and preserving Qwen/GPT suppress exact ranks; rebuild both doses and record retained RD per cell; evidence: source95d4cb0, CPU61577861 COMPLETED0:0, report/whole-reasoning-20261020-r3/NOMINATION_AUDIT.json and NOMINATION_CHANGES.csv. All210 cells qualified; 3096GPT/2838Qwen rows executable at both doses.
+- [x] F-0003.3 Implement dual operator, absolute prompt/reasoning scope, closure/recompute behavior and aggregate dose/full audit captures; focused tests including real short Unix socket; evidence: report/whole-reasoning-20261020/LOCAL_VALIDATION.json and FINAL_FOCUSED_TESTS.log. The >2048-token chunk, re-prefill, prompt Harmony suffix, native answer and generated-position-zero contracts pass; immutable-copy allocated verification remains F-0003.6.
+- [x] F-0003.4 Correct bounded metric inference, missing benchmarks, signed matrices, occupancy companions and main log-total link; threaded scoring and replay-based reasoning counts; evidence: 17 effects regressions, 11 final focused checks and three replay/closeout checks passed, with six bounded primary exports even for entirely missing production. See LOCAL_VALIDATION.json, REPLAY_CLOSEOUT_TESTS.log and tests/study/test_effects.py. Fresh real analyses remain F-0003.8.
+- [x] F-0003.5 Record section4 endpoints, v3 decisions, within-family repeat-noise SD/MDE using driver accuracy (SUSPECTED), AGENTS/F-0003/D-0002 and CPU/GPU reservations; commit and materialize immutable whole r3 release; evidence: source95d4cb0, RELEASE.json, RESOURCE_PLAN.json and allocated SD_MDE.json. Main manifests/outcomes contain zero native_repeat pairs; no paired SD is estimable and no between-family substitute is used. Planning does not gate science.
+- [ ] F-0003.6 Run one allocated full study suite plus prepare with WORK staging, then the same eight-family/48-row full-allowance canaries; synthetic relative gates and declared fluency-only half-dose fallback must pass.
+- [ ] F-0003.7 Submit 2 GPT165-minute/7 Qwen240-minute two-GPU shards, all unheld afterok at 64 in flight without family barriers; native/efficiency tier precedes other promote rows; enforce relative early gates, quarter projection, storage and cutoff.
+- [ ] F-0003.8 Queue eight-CPU/90-minute extraction with each model's shards and eight-CPU/120-minute analysis afterany both extractions; separate worker tokenizers, visible extraction failures, not_in_design cells, point-observed closed reasoning and unit-level coverage failures; fresh corrected main/strong analyses and link qualification disclosure.
+- [ ] F-0003.9 Supervise to terminal accounting and report actual nominations, completeness, six primaries, companions, dose, exploratory link and occupancy with per-model verdicts.
+- [ ] F-0003.10 Record real component walkthrough and final checks without manuscript edits or remote pushes.
+- [x] F-0003.11 Test and deploy the one-CPU/2-GB/16-hour monitor: deadline and exceptions never publish STOP or cancel production, transient accounting/quota errors retry after60s, frozen projections use actual planned maxima; queue dependent work independently and guard actual CPU use; evidence:184 allocated tests, source95d4cb0 and accepted/running monitor61578500. CPU-only workers enforce cumulative15.5core-hours with0.5 shutdown margin; actual final accounting remains F-0003.9.
+- [ ] F-0003.12 Correct the measured all-layer callback bottleneck with batched row-exact operator/counter/audit work; preserve the original r3 qualification/failures and charge0.842222GPU-hours; validate the new source on CPUs and allocated canaries, then admit the same production population under remaining72/16limits. Original165/240-minute shard limits are maxima; bind any budget-required reduction before submission. Preserve purged-dependency semantics with native proofs.
+- [ ] F-0003.13 Diagnose the actual GPT rank-capture disagreement with lossless per-rank records and first-error-preserving cleanup; allocate at most2GPUs/15minutes after a fresh full CPU qualification. This engineering command cannot qualify or launch production. Keep Qwen's existing owner graph and reserve every cross-release actual/maximal charge before any further GPT allocation; evidence: five focused lifecycle/admission/resource checks pass, allocated diagnostic pending.
+
+F-0003.6 allocated validation is complete: CPU61577861 COMPLETED0:0 after288s,
+184tests passed in67.626s after both-dose preparation. Canary outcomes remain
+pending. The allocated audit confirms70 exact DP matches; full-dose GPT
+promote replaced185 deactivation nominations across35cells, retaining
+94.25754–99.73353% RD; half-dose replaced3 across35cells, retaining
+99.91228–100%. Other targets and all activation selections are unchanged.
+Evidence: report/whole-reasoning-20261020-r3/CPU_VALIDATION.json,
+NOMINATION_AUDIT.json and NOMINATION_CHANGES.csv.
+
+The batched source3a848b4 also passed all190allocated tests in CPU61580365
+(149s,0.165556core-hours); no GPU was released from it. Its final engineering
+correction uses deterministic contiguous segment sums, because floating
+atomic groups could disagree between ranks. Seven focused graph/operator/
+counter/audit/recompute tests pass. Continue the deterministic subdirectory;
+its1.637778CPU/0.842222GPU-hour prior retains every allocation and local charge.
+
+Final source16cf599 then passed all190allocated tests in CPU61581053; its
+73.767-second test stage follows fresh main/half preparation for both models.
+All70 GPT promote DP matches and all210qualified cells remain unchanged.
+Evidence: report/whole-reasoning-20261020-r3-batched/deterministic/CPU_VALIDATION.json.
+Final canaries GPT61581237/Qwen61581238 and monitor61581239 started23:42:29
+Rome. Native resource readbacks are preserved in that root's JOBS.json and
+OBSERVED_LAUNCH.json. Passing CPU tests do not establish a passing canary.
+W-0002 now traces the final source and allocated nomination evidence.
+GPT61581237 then failed1:0 after545s on strict tensor-parallel capture
+agreement. Three canary units completed; none is production. GPT extraction
+61581597 completed0:0 in227s with zero production units/failures. Qwen's
+canary61581238 continues; the software gate prevents GPT production and the
+fluency-only half-dose fallback. W-0003 traces one actual completed GPT canary
+unit and explicitly preserves the later allocation failure.
+The separate diagnostic source6d4341f passed all194allocated tests in
+CPU61583800 (170s,0.188889core-hours); both-dose preparation preserves all70
+DP matches. GPT61584000 is accepted for2GPUs/15minutes and cannot launch
+production. Its admission reserves63.645278GPU-hours with Qwen's optional
+half-dose and full production maxima, without admitting further GPT science.
+
+## Results
+
+| Metric | Dataset | Baseline | Result | Evidence |
+|---|---|---|---|---|
+| R3 engineering | Superseded 512-token rescue | 61554207/61554215 | Both FAILED 1:0; 312/311 seconds; 0.346111 GPU-hours | Native sacct readback 2026-10-20; original r3 TERMINAL.json |
+| Focused whole contracts | Synthetic nomination/operator/prompt and all-missing scientific closeout fixtures | New design lacked contracts | 22 tests passed in 41.281 seconds; additional horizon/gate/signed checks and three replay/closeout checks passed | report/whole-reasoning-20261020/LOCAL_VALIDATION.json; repeated test counts are not added |
+| Actual staging and entitlement | login05.leonardo.local, lmolfett | Required live authorization evidence | Native iscrc_miosr/normal association, empty queue, project quota20149688; no new jobs at snapshot | report/whole-reasoning-20261020/PREFLIGHT.json and HISTORICAL_ACCOUNTING.json |
+| First whole allocated validation | Immutable abbcffd release; 165 study tests | Required before discovery and canaries | FAILED 61565142: one incomplete-sentence fixture assertion and one archived data-path fixture error. Canary jobs cancelled with zero allocation; all seven jobs terminal, 0 GPU-hours / 0.407778 CPU core-hours retained | report/whole-reasoning-20261020/TERMINAL.json and logs/whole-validate-61565142.err |
+| Focused correction | Same frozen whole experiment | Failed fixtures and supervisor path | Ten tests passed, including cumulative usage/projection and immediate stop on validation failure; pooled native planning retains paired family covariance | report/whole-reasoning-20261020-r2/LOCAL_VALIDATION.json and PRIOR_USAGE.json |
+| Actual whole control feasibility | Frozen discovery nominations; no whole outcomes | Requested within-layer quintile matching with cell-local exclusions | GPT main promote 0/35 feasible, suppress 20/20; three frequency bins would make 35/35 promote cells feasible, requiring a user amendment. Qwen all 50 cells exact-count feasible at both doses; 2838 unique executable rows per manifest | report/whole-reasoning-20261020-r2/FEASIBILITY.md and CONTROL_FEASIBILITY.json; Qwen CPU61566702 COMPLETED 0:0 |
+| Completed-output extraction correction | GPT Harmony replay fixture, native usage reasoning count zero | Helper import was outside worker scope | Seven replay reasoning tokens and strict-correct answer extracted; nine extraction/closeout/gate tests passed in 41.043 seconds | tests/study/test_whole.py; report/whole-reasoning-20261020-r2/extraction-fix.time |
+| Current whole accounting | All accepted jobs in both whole attempts plus Qwen feasibility | No failures reset | New GPU 0; allocated CPU 0.541667 core-hours plus conservative local charge 0.1. No canary or production outcome; matching amendment and concurrent-session clarification pending | report/whole-reasoning-20261020-r2/CURRENT_STATUS.json; both TERMINAL.json records and qwen-feasibility/TERMINAL.json |
+| Inactive control-feasible nomination proposal | Original GPT discovery candidates; fixed positive activations and opposite-polarity exclusions | Exact-ranked main promote cannot admit quintile controls | All 35 main and all 35 half promote cells admit exact layer/quintile/role controls at unchanged doses and layer caps. Main retains 94.258–99.734% of original deactivation RD; half retains 99.912–100%. Exact dynamic-program optima independently match all main integer-program optima. No nomination rule changed or approved | report/whole-reasoning-20261020-r2/CONTROL_FEASIBLE_RD_REVIEW.md and CONTROL_FEASIBLE_RD_BOTH_DOSES.json |
+| Canary historical feasibility review | Eight outcome-independent family hashes per model; original saved native traces only | Fixed canary allowance 4096, at most two capped steered units | Original native completion length exceeds 4096 in 2/8 GPT and 7/8 Qwen families. Disclosed risk only; selection and gates unchanged, no new canary outcome | report/whole-reasoning-20261020-r2/CANARY_NATIVE_LENGTH_FEASIBILITY.json; final twelve-job readback and 0.641667/16 CPU charge in CONTROL_REVIEW_ACCOUNTING.json |
+| V3 allocated validation | Rebuilt GPT/Qwen main and half-dose manifests; full study suite | No allocated qualification of the corrected nominations | CPU61577861 COMPLETED0:0, 288s/0.32CPU core-hours; 184tests pass; 210cells qualified; all70 GPT promote DP targets/controls match | report/whole-reasoning-20261020-r3/CPU_VALIDATION.json; NOMINATION_AUDIT.json; native sacct |
+| V3 nomination changes | 35GPT promote cells per dose; same frozen discovery data | Exact-ranked deactivation RD | Main185 pair replacements total, retained RD94.25754–99.73353%; half3 replacements, retained RD99.91228–100%; every Qwen/GPT suppress target and every activation unchanged | report/whole-reasoning-20261020-r3/NOMINATION_CHANGES.csv; W-0002 |
+| Paired planning evidence | Main driver manifests and outcome tables, GPT/Qwen | Requested native_repeat−native noise | Zero historical native_repeat assignments/pairs; paired SD/MDE unavailable, marked SUSPECTED; no fallback SD or science gate | report/whole-reasoning-20261020-r3/SD_MDE.json; historical driver ASSIGNMENTS.json arm counts |
+| Whole-hook engineering throughput |48GPT canary rows; checkpoints22:49:55/22:51:56 | Main-study per-sequence speed assumed transportable to all-layer instrumentation |3216tokens/121s =26.5785aggregate tok/s,0.5537per sequence; zero completed units. GPT/Qwen/monitor canceled at758s;0.842222GPU-h and0.210556monitor core-h retained; no production | report/whole-reasoning-20261020-r3/PERFORMANCE_HALT.json and TERMINAL.json |

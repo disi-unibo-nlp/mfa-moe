@@ -1,0 +1,27 @@
+{
+  "schema": "causal-micro-screen-job-inventory-v1",
+  "population": "frozen discovery-family candidate prefixes",
+  "entries": [
+    {
+      "job_id": "59176972",
+      "stage": "qual4-v1",
+      "state": "FAILED",
+      "exit_code": "1:0",
+      "elapsed_seconds": 11,
+      "allocated_gpus": 2,
+      "charged_GPU_hours_upper_bound": 0.006111111111111111,
+      "failure": "runner constructed a qualified TargetSet with unsorted expert IDs (189, 9) at layer 28; model load and inference did not begin",
+      "generation_requests_completed": 0,
+      "manifest_sha256": "837dd4d99ba79a0367d73ea37567d008158cef3b59f83196b2083b51f4b1194c",
+      "driver_sha256": "65f3ad3cfc27995872cc31e780ab34589d9029c7ae2527a4381842ea99d6e9b4",
+      "preserved_output": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/micro-screen-qual4-837dd4d99ba79a03",
+      "preserved_binding_file_sha256": "25828b8370bdb4093bbf37a9fad69f8ea7f40de9ca21226032ac160ff4f4e057",
+      "error_log": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/logs/st-boundary-qual4-59176972.err",
+      "error_log_file_sha256": "bd9d92d9cf9922d7a332b6b9425454b910d0b73286ac8982d93f5bc08b13c50d",
+      "successor_manifest_sha256": "6dbc0af8df3408806685947c747eaf7f923e5f8845322b246792c07b5b950b5a",
+      "successor_driver_sha256": "1c0c3f0768fd853bc7ce8654b257ccf3cc00c9bcd332ca6f55b93fa5a784816d",
+      "status": "PRESERVED_FAILED_ENGINE_PREFLIGHT_NOT_CAUSAL_DATA"
+    }
+  ],
+  "sha256": "1bc19ca295403a31f67a21843ee0dea0a80900fbdb910332ec97e5304ca6efbf"
+}

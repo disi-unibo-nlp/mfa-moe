@@ -1,0 +1,29 @@
+{
+ "schema": "routing-first-stage-chain-v2",
+ "binding": {
+  "schema": "routing-first-stage-chain-binding-v2",
+  "stage": "B",
+  "manifest_sha256": "9c3dc95fda9cf5e9ed03285529f0279d8da7796b3b9f42a4ac9a38b41ad746ab",
+  "generation_price_sha256": "a371d7d97671a49fc9df397595e6778fc4f44486897270c031a741660b23dfc3",
+  "plan_sha256": "ebe96bfe774d526ef4683170a93f3de8215466a429b9feb900b1db6fd870113d",
+  "frame_price_dependency": {
+   "source": "explicit_authorized_frame_price_job",
+   "job_id": "59347824"
+  },
+  "analysis_directory": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/routing-first-stage/routing-first-stage-v2-9c3dc95fda9cf5e9-ebe96bfe774d",
+  "wrapper_sha256": "d7d54cca2dc221c8f25f82b621f14879880dc154aa0e3faaba7b032a402e64b8",
+  "resources": {
+   "partition": "lrd_all_viz",
+   "cpus": 2,
+   "memory_GiB": 16,
+   "wall_seconds": 7200,
+   "maximum_CPU_core_hours": 4.0,
+   "GPU_hours": 0.0
+  }
+ },
+ "frame_price_job": "59347824",
+ "analysis_job": "59348109",
+ "analysis_directory": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/routing-first-stage/routing-first-stage-v2-9c3dc95fda9cf5e9-ebe96bfe774d",
+ "scope": "Already saved routes and telemetry; CPU only.",
+ "sha256": "4abb2ce96179f846ae59fa6546b0af451ac650a3ee7040ae03ae633cb59aeecd"
+}

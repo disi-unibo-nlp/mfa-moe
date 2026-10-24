@@ -1,0 +1,53 @@
+{
+  "arguments": [
+    "--frame",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/J1/AUDIT_FRAME.json",
+    "--output",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/J1/audit",
+    "--begin",
+    "44",
+    "--count",
+    "31"
+  ],
+  "artifact": "retained original audit verdicts with three fixed draws, exact invocation prices and eventual full100 deployment qualification",
+  "claim": "C4/C5 all-seven: qualify the unchanged common offline grader against the original100-item audit",
+  "decision_if_failure": "retain committed items, reconcile exact job and attempts, keep incomplete/unqualified accuracy explicit; never change labels or thresholds",
+  "extension": {
+    "kind": "j1-audit-slice",
+    "parameters": {
+      "begin": 44,
+      "count": 31,
+      "frame": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/J1/AUDIT_FRAME.json",
+      "output": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/J1/audit"
+    }
+  },
+  "finite_assignments": 31,
+  "measurement_pilot": false,
+  "missing_cell": "remaining original shared J1 audit items; no final residual grading until complete exact-deployment PASS",
+  "model": "gpt",
+  "orchestration_file_sha256": "e6e95f61dbe0bedb3ed701eec465f092cef477f8b7fdb6a18a057129f8f11ffe",
+  "population": "frozen_J1_audit",
+  "prerequisites": [
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/J1/AUDIT_FRAME.json"
+  ],
+  "price_event_sha256": "6852f97f34f12bc7b91e90d8650eb2fca1b182d7fc0b4ab6be6239bac2512e19",
+  "price_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/gpt/prices-by-event/c07825c3c40ccc4e92f105827a707086a0ac1948cfb00d51b2a4c5dc6bb0b4aa.json",
+  "priced_work": {
+    "j1_generation": 786432,
+    "j1_load": 2
+  },
+  "resources": {
+    "billing_core_hours_max": 379.46666666666664,
+    "cpus": 16,
+    "gpus": 2,
+    "memory_gb": 120,
+    "partition": "boost_usr_prod",
+    "price_basis": "actual shared J1 load and prefill-inclusive token prices; full3x8192 cap/item, one full-item/cold-load recovery,1.25 factor plus600seconds",
+    "qos": "normal",
+    "walltime_seconds": 85380
+  },
+  "reuse": "original full audit frame, original UID seeds, pinned r4 Reader.grade; completed verdicts and live disjoint slices reused",
+  "schema": "verification-task-request-v3",
+  "sha256": "4a62d667d43181562e8fa931e4df09deeb26b51e8d58b95b4794e35ab5a9df8c",
+  "stage": "j1-audit"
+}

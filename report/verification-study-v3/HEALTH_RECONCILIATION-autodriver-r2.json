@@ -1,0 +1,49 @@
+{
+  "campaign_sha256": "57df4a026a7be4c909ece85ac1ebe3dc47c3f27bb53ffcab88e3aa9d82bfbb3b",
+  "cancelled_unstarted_observers": [
+    {
+      "elapsed_seconds": 0,
+      "exit_code": "0:0",
+      "job_id": "59645560",
+      "state": "CANCELLED by 133943"
+    },
+    {
+      "elapsed_seconds": 0,
+      "exit_code": "0:0",
+      "job_id": "59645571",
+      "state": "CANCELLED by 133943"
+    },
+    {
+      "elapsed_seconds": 0,
+      "exit_code": "0:0",
+      "job_id": "59645576",
+      "state": "CANCELLED by 133943"
+    },
+    {
+      "elapsed_seconds": 0,
+      "exit_code": "0:0",
+      "job_id": "59645580",
+      "state": "CANCELLED by 133943"
+    },
+    {
+      "elapsed_seconds": 0,
+      "exit_code": "0:0",
+      "job_id": "59645598",
+      "state": "CANCELLED by 133943"
+    }
+  ],
+  "observed_epoch": 1791408654.340689,
+  "prepared_proof_sha256": "0b8d97beb9f9ce662fc37cb33fab257095557d647adb4eb422fe80f7a38d4b1e",
+  "preserved_scientific_job_ids": [
+    "59645552",
+    "59645569",
+    "59645573",
+    "59645578",
+    "59645583"
+  ],
+  "replacement_controller_job_id": "59652006",
+  "replacement_prearm_sha256": "8cc9c4fcb5145cb572ef879b8a2e130c75daa7e65b8339587209510e33a8868d",
+  "schema": "verification-health-observer-reconciliation-v3",
+  "scientific_jobs_cancelled": [],
+  "sha256": "a615713bdbc1c4d228e69e23552af3d65ce8bdf7c38244ca7198f4b899aa56f8"
+}

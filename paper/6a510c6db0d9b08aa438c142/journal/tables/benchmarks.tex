@@ -1,0 +1,35 @@
+% Adapted from SPSD tab:main-results and SYNCO tab:mainRes.
+% Destination adaptation: SPSD grouped benchmark columns, SYNCO model icons and caption-only key; naturally sized body.
+\begin{table}[tb]
+\centering\small
+\caption{Mean native mathematical accuracy (\%) under each model's card profile, with question-bootstrap 95\% confidence intervals as subscripts ($\pm$ the larger original one-sided margin).
+%
+Repeated attempts stay grouped by source question.
+%
+Scores condition on adjudicated attempts.
+%
+Bold and underline identify the largest and second-largest unrounded means within each benchmark, with ties sharing a rank.
+%
+Minerva and Olympiad denote Minerva Math and OlympiadBench.}
+\label{tab:benchmarks}
+\setlength{\tabcolsep}{1.5pt}
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{@{}lcccccc@{}}
+\toprule
+ & \multicolumn{3}{c}{Competition mathematics} & \multicolumn{3}{c}{Quantitative reasoning}\\
+\cmidrule(lr){2-4}\cmidrule(lr){5-7}
+Model & AIME24 & AIME25 & AMC23 & MATH-500 & Minerva & Olympiad \\
+\midrule
+\modelname{openai}{GPT-OSS-20B} & \cid{78.7}{13.0}{9.7} & \cid{76.0}{11.4}{10.0} & \cid{97.3}{2.7}{2.1} & \cid{97.0}{1.6}{1.4} & \cid{69.1}{5.9}{5.5} & \cid{83.2}{2.8}{2.7} \\
+\modelname{nvidia}{Nemotron-3.5-Lightning-30B-A3B} & \cid{87.8}{12.5}{8.8} & \cid{87.2}{11.3}{9.2} & \secondcid{99.8}{0.3}{0.2} & \cid{98.8}{1.0}{0.8} & \cid{73.5}{5.9}{5.1} & \cid{88.6}{2.4}{2.4} \\
+\modelname{qwen}{Qwen3.5-35B-A3B} & \secondcid{94.0}{8.6}{5.4} & \cid{88.3}{11.3}{9.8} & \bestcid{100.0}{0.0}{0.0} & \secondcid{99.4}{0.8}{0.6} & \cid{73.4}{5.5}{5.5} & \bestcid{92.3}{2.1}{2.1} \\
+\modelname{qwen}{Qwen3.6-35B-A3B} & \bestcid{94.8}{7.1}{5.0} & \bestcid{89.7}{10.9}{9.2} & \bestcid{100.0}{0.0}{0.0} & \bestcid{99.6}{0.6}{0.4} & \secondcid{74.8}{5.6}{5.2} & \secondcid{92.0}{2.1}{1.9} \\
+\modelname{gemma}{Gemma-4-26B-A4B} & \cid{90.8}{9.8}{7.2} & \cid{86.8}{10.5}{8.8} & \cid{99.7}{0.6}{0.3} & \cid{99.0}{1.0}{0.8} & \bestcid{75.6}{4.8}{5.2} & \cid{90.8}{2.2}{2.1} \\
+\modelname{zhipu}{GLM-4.7-Flash (30B-A3B)} & \cid{93.2}{7.7}{4.9} & \secondcid{89.6}{9.7}{7.6} & \cid{99.4}{0.5}{0.4} & \cid{98.4}{1.2}{1.0} & \cid{73.1}{5.5}{5.2} & \cid{90.5}{2.2}{2.1} \\
+\modelname{qwen}{Qwen3-30B-A3B} & \cid{80.2}{14.7}{11.0} & \cid{71.1}{13.3}{12.1} & \cid{97.7}{2.5}{1.8} & \cid{98.0}{1.2}{1.2} & \bestcid{75.6}{5.2}{4.8} & \cid{84.6}{2.8}{2.5} \\
+\modelname{liquid}{LFM2.5-24B-A2B} & \cid{86.9}{12.3}{8.4} & \cid{84.4}{9.9}{8.6} & \cid{97.9}{2.3}{1.7} & \cid{98.8}{1.0}{0.8} & \cid{74.2}{5.7}{5.2} & \cid{89.0}{2.5}{2.2} \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+
+\end{table}

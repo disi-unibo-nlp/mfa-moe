@@ -1,0 +1,18 @@
+{
+ "schema": "overnight-submit-receipt-v1",
+ "name": "prepare",
+ "binding": {
+  "workload": "outcome-independent reader-cap sensitivity preparation",
+  "complete_gpu_hour_ceiling": 20,
+  "files": {
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/prepare_mechanism_semantic_cap_recovery_v1.sbatch": "f665976c016d3c6945da922de17a2da0637e0907dfa5cfb093facd312656fece",
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/mechanism_semantic_cap_recovery_v1.py": "106731968f3a932440bfe160892cb39ae9a8aafea60dd6888ea0029897d2627d"
+  }
+ },
+ "arguments": [
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/prepare_mechanism_semantic_cap_recovery_v1.sbatch"
+ ],
+ "job_id": "59346127",
+ "submission": "59346127",
+ "sha256": "2c0479f6a525d7fb004023e6124e8282cdc768f8d4c3c0086c306e24f4f34c8d"
+}

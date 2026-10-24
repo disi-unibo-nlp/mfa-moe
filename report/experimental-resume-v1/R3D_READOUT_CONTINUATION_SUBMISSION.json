@@ -1,0 +1,18 @@
+{
+  "schema": "r3d-readout-continuation-submission-v1",
+  "job_id": 59109995,
+  "submitted_local": "2026-10-01T17:22:07",
+  "verified_initial_state": "PENDING",
+  "verified_user": "lmolfett",
+  "verified_account": "iscrc_miosr",
+  "partition": "boost_usr_prod",
+  "qos": "normal",
+  "cpus": 4,
+  "memory": "64G",
+  "gpu_count": 0,
+  "walltime": "24:00:00",
+  "maximum_CPU_core_hours": 96,
+  "driver_sha256": "1de08eae6e8d85e352d091c829b33598d2a848b2a9b28f1937a14d687d749037",
+  "budget_amendment": "report/experimental-resume-v1/R3D_READOUT_CONTINUATION.md",
+  "status": "FAILED after 91 seconds; canonical specification seal matched but tuple/list Python equality rejected resume; see R3D_READOUT_CONTINUATION.md"
+}

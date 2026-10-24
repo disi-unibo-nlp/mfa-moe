@@ -1,0 +1,33 @@
+{
+ "schema": "legacy-X3-resource-amendment-v1",
+ "status": "SEALED",
+ "original_ceiling_GPU_h": 12.0,
+ "ceiling_total_GPU_h": 65.0,
+ "already_spent_X3_GPU_h": 1.7444444444444445,
+ "prior_jobs": [
+  {
+   "id": 59185118,
+   "elapsed_seconds": 972,
+   "gpus": 2,
+   "status": "COMPLETED"
+  },
+  {
+   "id": 59194916,
+   "elapsed_seconds": 2168,
+   "gpus": 2,
+   "status": "COMPLETED"
+  }
+ ],
+ "authorization": "User authorized all needed GPU hours and long jobs without a fixed cap in this session; the legacy X3 amendment is versioned separately from the new steering study.",
+ "population": "frozen 96 dev-disc questions, 77 fires, 19 retained nonfires, two seeds, N/E-/M-/E+/M+; 770 new requests",
+ "exclusions": "E4 and dev-spare escalation require their own fully priced additions and execution qualifications",
+ "priority": "new routing-action feasibility/discovery retains launch priority; builder keeps this hold",
+ "source_sha256": {
+  "inventory": "12113e3d16e70f57786e7585e40b2cfc0c94f70e5a2e274e4d447dbd58b0ed0c",
+  "eligibility": "bf1425d987cbea417115574928ee5a2ece46c3c194f1e0d6280cf6ae53381508",
+  "selection": "0ecb13095d5ef60fd83270d2017150c6cdcd7a5c2cc3b79b1dd126ebf7cfd122",
+  "native_label_density": "0c0778f096c5e46cea276a1b59dc3e3d9fd8416c6600a272ac63fb54ec1ecafa",
+  "timing_status_file": "1e3072e7ffc13819e793e0e33cb6bb5bea396aa82c2bcb51e486264aa439d811"
+ },
+ "sha256": "021cc266983ab450a3cc9bb13e5f66d5401785320b721c132e8620880c154f19"
+}

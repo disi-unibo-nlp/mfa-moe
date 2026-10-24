@@ -1,0 +1,6652 @@
+{
+ "schema": "native-parent-eligibility-audit-v1",
+ "job_id": "59110695",
+ "family_freeze_sha256": "592a71b1fa2223a29168ee29afae73de406b3a4d4408d38b69080bee152143f6",
+ "input_sha256": {
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/family-freeze.json": "0835287393adf5e144ef43531f7f245ea7fd30c3f23765d1576e811b7b9a67e9",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/dynamics-routing/results/qwen36/A/sentences.parquet": "0ba43ca5758070ee74589a2e4132e76aee25c46462cf7d5e6665e9bfeacf021e",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/v3_analysis/results-r2/qwen36/A/attempts.parquet": "0bb74888589d634de44bdbcc285019dd1ec95d99b0df55a3224f1b2d1e4f37e3"
+ },
+ "note": "Historical labels are sparse; adjacent-pair counts are lower bounds and candidate-to-verify is an upper bound without prefix semantics. This does not establish behavioral eligibility.",
+ "stages": {
+  "discovery": {
+   "families": 48,
+   "questions_with_native_attempt": 48,
+   "with_any_label": 48,
+   "with_verify": 46,
+   "with_adjacent_explore_to_commit": 3,
+   "with_adjacent_candidate_to_verify_upper_bound": 20,
+   "records": [
+    {
+     "family": "6825f10257492d7a05d15e1947436b04b8e0801eb0dc71a1d69baa492d8bd982",
+     "question": "olympiad|olympiad_2442",
+     "native_label_count": 61,
+     "class_counts": {
+      "Read": 6,
+      "Monitor": 3,
+      "Analyze": 22,
+      "Implement": 16,
+      "Verify": 11,
+      "Plan": 1,
+      "Explore": 2
+     },
+     "adjacent_pair_counts": {
+      "Analyze>Read": 1,
+      "Analyze>Verify": 1,
+      "Analyze>Analyze": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "fe413656eb88bcd59b91fafc8491dfc9b6106bd5eeeead02398d8ee95f45c3f8",
+     "question": "amc23|amc23_28",
+     "native_label_count": 39,
+     "class_counts": {
+      "Read": 4,
+      "Plan": 4,
+      "Implement": 13,
+      "Analyze": 4,
+      "Monitor": 3,
+      "Verify": 6,
+      "Explore": 5
+     },
+     "adjacent_pair_counts": {
+      "Plan>Implement": 1,
+      "Implement>Analyze": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "800c81574401f7a6b104c7902f4030f5ab324217b6520736cfc73d7c09a06f8a",
+     "question": "olympiad|olympiad_2914",
+     "native_label_count": 163,
+     "class_counts": {
+      "Read": 5,
+      "Monitor": 13,
+      "Implement": 33,
+      "Explore": 21,
+      "Verify": 30,
+      "Analyze": 55,
+      "Plan": 6
+     },
+     "adjacent_pair_counts": {
+      "Analyze>Read": 1,
+      "Verify>Verify": 2,
+      "Explore>Verify": 1,
+      "Implement>Implement": 2,
+      "Implement>Verify": 1,
+      "Implement>Read": 1,
+      "Analyze>Analyze": 2,
+      "Explore>Explore": 1,
+      "Monitor>Analyze": 1,
+      "Analyze>Monitor": 1,
+      "Implement>Explore": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "5454cf7129ec92c7698315f2e0146ed667e3895beec0d805905cfe3caf8e153c",
+     "question": "olympiad|olympiad_2798",
+     "native_label_count": 79,
+     "class_counts": {
+      "Read": 9,
+      "Explore": 12,
+      "Plan": 2,
+      "Analyze": 26,
+      "Monitor": 9,
+      "Verify": 13,
+      "Implement": 8
+     },
+     "adjacent_pair_counts": {
+      "Analyze>Explore": 1,
+      "Analyze>Read": 1,
+      "Verify>Read": 1,
+      "Read>Read": 1,
+      "Explore>Read": 1,
+      "Read>Analyze": 1,
+      "Analyze>Analyze": 1,
+      "Verify>Monitor": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "6332f3952a4d310f59b492e2d5cfbe5d42d4d7b9eea81a06bdeec6ad10bcd2db",
+     "question": "math500|math500_test/algebra/2570.json",
+     "native_label_count": 25,
+     "class_counts": {
+      "Analyze": 1,
+      "Implement": 7,
+      "Verify": 6,
+      "Monitor": 11
+     },
+     "adjacent_pair_counts": {
+      "Monitor>Implement": 1,
+      "Implement>Verify": 2,
+      "Monitor>Monitor": 1,
+      "Monitor>Verify": 1
+     },
+     "has_verify": true,
+     "has_explore": false,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "ae67a99c9c6ecc2d48874f9e193fe42078abe04a9eb42201d47df1b95312881c",
+     "question": "olympiad|olympiad_3079",
+     "native_label_count": 136,
+     "class_counts": {
+      "Implement": 65,
+      "Plan": 4,
+      "Analyze": 31,
+      "Verify": 23,
+      "Monitor": 7,
+      "Explore": 4,
+      "Read": 2
+     },
+     "adjacent_pair_counts": {
+      "Explore>Verify": 1,
+      "Analyze>Analyze": 3,
+      "Analyze>Implement": 2,
+      "Implement>Implement": 2,
+      "Verify>Analyze": 2
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "74254b23b19519bf3cdeef518ee196f773cfe00e19b2ac5d58fb5f4511cee707",
+     "question": "olympiad|olympiad_3082",
+     "native_label_count": 133,
+     "class_counts": {
+      "Analyze": 36,
+      "Plan": 8,
+      "Verify": 19,
+      "Explore": 25,
+      "Implement": 33,
+      "Monitor": 7,
+      "Read": 5
+     },
+     "adjacent_pair_counts": {
+      "Explore>Plan": 1,
+      "Monitor>Analyze": 1,
+      "Explore>Analyze": 1,
+      "Explore>Verify": 1,
+      "Read>Implement": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": true,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "4f5f62a271804f66bfa38042e820f38f7a0b5f2b9b7a87ff62cdb58b07ead678",
+     "question": "olympiad|olympiad_2445",
+     "native_label_count": 21,
+     "class_counts": {
+      "Read": 4,
+      "Monitor": 5,
+      "Analyze": 2,
+      "Implement": 6,
+      "Plan": 1,
+      "Explore": 1,
+      "Verify": 2
+     },
+     "adjacent_pair_counts": {
+      "Implement>Monitor": 1,
+      "Monitor>Analyze": 1,
+      "Explore>Verify": 1,
+      "Monitor>Implement": 1,
+      "Monitor>Read": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "ec47e896ec807987bdd073e3f44aca15adb1f4e475208ba011b62aa0b06c2c6c",
+     "question": "olympiad|olympiad_2727",
+     "native_label_count": 43,
+     "class_counts": {
+      "Read": 3,
+      "Implement": 15,
+      "Analyze": 10,
+      "Monitor": 2,
+      "Verify": 6,
+      "Plan": 5,
+      "Explore": 2
+     },
+     "adjacent_pair_counts": {
+      "Implement>Implement": 2,
+      "Analyze>Monitor": 1,
+      "Verify>Verify": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "f5f2880171dac17ac29f10527d0398d26e859c729d70eaa39445d71e5299825e",
+     "question": "aime24|aime24_67",
+     "native_label_count": 59,
+     "class_counts": {
+      "Plan": 4,
+      "Implement": 18,
+      "Analyze": 11,
+      "Explore": 7,
+      "Monitor": 3,
+      "Verify": 11,
+      "Read": 5
+     },
+     "adjacent_pair_counts": {
+      "Verify>Explore": 1,
+      "Read>Plan": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "00bfb4aac61f3d15220bc24ec149bff7d52daae64328216584692a8974416e86",
+     "question": "olympiad|olympiad_2351",
+     "native_label_count": 14,
+     "class_counts": {
+      "Monitor": 3,
+      "Read": 1,
+      "Analyze": 3,
+      "Implement": 7
+     },
+     "adjacent_pair_counts": {
+      "Analyze>Implement": 1,
+      "Implement>Implement": 1
+     },
+     "has_verify": false,
+     "has_explore": false,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "98d7c0cffaf8664a6014dd716307b620be6f01d17a3c98014465cc1df0250e35",
+     "question": "math500|math500_test/intermediate_algebra/1126.json",
+     "native_label_count": 19,
+     "class_counts": {
+      "Analyze": 4,
+      "Monitor": 4,
+      "Implement": 8,
+      "Verify": 2,
+      "Plan": 1
+     },
+     "adjacent_pair_counts": {
+      "Implement>Verify": 1
+     },
+     "has_verify": true,
+     "has_explore": false,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "707ab7621174d1305ed9fb7370a65a7984a70d929ccb758a88557e35c8364c4f",
+     "question": "olympiad|olympiad_2746",
+     "native_label_count": 37,
+     "class_counts": {
+      "Read": 9,
+      "Monitor": 6,
+      "Plan": 4,
+      "Implement": 9,
+      "Verify": 5,
+      "Explore": 1,
+      "Analyze": 3
+     },
+     "adjacent_pair_counts": {
+      "Implement>Verify": 1,
+      "Plan>Plan": 1,
+      "Implement>Implement": 2,
+      "Read>Plan": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "27d2363267233b2ce6ff74234da783dc554b6edc7cf44024de5238dc9f067586",
+     "question": "math500|math500_test/prealgebra/1865.json",
+     "native_label_count": 44,
+     "class_counts": {
+      "Read": 7,
+      "Plan": 4,
+      "Monitor": 17,
+      "Implement": 7,
+      "Explore": 2,
+      "Verify": 4,
+      "Analyze": 3
+     },
+     "adjacent_pair_counts": {
+      "Read>Read": 1,
+      "Analyze>Plan": 1,
+      "Monitor>Monitor": 2,
+      "Explore>Monitor": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "59493910d6f987ddb5f17d95ecc9e7e0d23bd36f856c8200153b8e53128d4490",
+     "question": "math500|math500_test/algebra/1837.json",
+     "native_label_count": 52,
+     "class_counts": {
+      "Analyze": 20,
+      "Read": 6,
+      "Implement": 11,
+      "Verify": 8,
+      "Explore": 5,
+      "Monitor": 2
+     },
+     "adjacent_pair_counts": {},
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "96e6320e8bd05cc4d7234ffd23d2a4fd8f73c35fb306da771c9867fefda0559b",
+     "question": "olympiad|olympiad_2907",
+     "native_label_count": 16,
+     "class_counts": {
+      "Read": 2,
+      "Monitor": 1,
+      "Plan": 2,
+      "Analyze": 2,
+      "Implement": 8,
+      "Verify": 1
+     },
+     "adjacent_pair_counts": {
+      "Implement>Implement": 2,
+      "Implement>Analyze": 1
+     },
+     "has_verify": true,
+     "has_explore": false,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "3367fc3d3cb10721c5ca4d2dab40e29e369042f3e801709985eb83b35caffac1",
+     "question": "math500|math500_test/prealgebra/1807.json",
+     "native_label_count": 22,
+     "class_counts": {
+      "Read": 1,
+      "Monitor": 3,
+      "Analyze": 3,
+      "Explore": 2,
+      "Implement": 8,
+      "Plan": 1,
+      "Verify": 4
+     },
+     "adjacent_pair_counts": {
+      "Analyze>Explore": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "52543cd453052b5d707943b34a1ec31df532d3be7c1a15dbcb51f49e99028f61",
+     "question": "olympiad|olympiad_2601",
+     "native_label_count": 32,
+     "class_counts": {
+      "Explore": 2,
+      "Implement": 8,
+      "Plan": 6,
+      "Analyze": 10,
+      "Verify": 3,
+      "Monitor": 2,
+      "Read": 1
+     },
+     "adjacent_pair_counts": {
+      "Plan>Implement": 1,
+      "Verify>Monitor": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "7c51cc705eaaa49e75c76878c8a6b8d02d4518391cb71779a4fe5fba7852d941",
+     "question": "olympiad|olympiad_2489",
+     "native_label_count": 91,
+     "class_counts": {
+      "Analyze": 22,
+      "Implement": 29,
+      "Verify": 11,
+      "Read": 4,
+      "Explore": 11,
+      "Monitor": 8,
+      "Plan": 6
+     },
+     "adjacent_pair_counts": {
+      "Plan>Implement": 1,
+      "Analyze>Analyze": 1,
+      "Implement>Verify": 1,
+      "Implement>Implement": 1,
+      "Explore>Analyze": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "550fd432263445b7a658cbf3f7b32ad019cc13b611f7f4df5094527f0a938047",
+     "question": "olympiad|olympiad_2493",
+     "native_label_count": 25,
+     "class_counts": {
+      "Read": 4,
+      "Analyze": 5,
+      "Plan": 2,
+      "Verify": 3,
+      "Implement": 7,
+      "Monitor": 4
+     },
+     "adjacent_pair_counts": {},
+     "has_verify": true,
+     "has_explore": false,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "9494cd0594ccab56a7cae7dd6cdd09e81704a31333e2be8bb7958a4f1c31c6c8",
+     "question": "olympiad|olympiad_3037",
+     "native_label_count": 102,
+     "class_counts": {
+      "Plan": 3,
+      "Analyze": 34,
+      "Verify": 12,
+      "Explore": 19,
+      "Monitor": 11,
+      "Implement": 14,
+      "Read": 9
+     },
+     "adjacent_pair_counts": {
+      "Explore>Monitor": 1,
+      "Verify>Explore": 1,
+      "Analyze>Implement": 1,
+      "Analyze>Analyze": 2,
+      "Implement>Verify": 1,
+      "Monitor>Analyze": 1,
+      "Implement>Implement": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "ab015c38c561307237f1d9f12b40aac5bc6b79d7838cc302e16a59c01effc212",
+     "question": "olympiad|olympiad_2777",
+     "native_label_count": 18,
+     "class_counts": {
+      "Analyze": 4,
+      "Implement": 3,
+      "Verify": 2,
+      "Plan": 3,
+      "Monitor": 6
+     },
+     "adjacent_pair_counts": {
+      "Verify>Verify": 1
+     },
+     "has_verify": true,
+     "has_explore": false,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "d6ae4ef46b2c4f3b62f45bc6e349fd688412934445ba76de81f0f3bf15ada027",
+     "question": "math500|math500_test/intermediate_algebra/591.json",
+     "native_label_count": 56,
+     "class_counts": {
+      "Read": 3,
+      "Explore": 8,
+      "Analyze": 12,
+      "Verify": 7,
+      "Implement": 16,
+      "Monitor": 8,
+      "Plan": 2
+     },
+     "adjacent_pair_counts": {
+      "Monitor>Explore": 1,
+      "Verify>Monitor": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "7e97810d4ff8730d30541a719c4ccc4b5f7dc9862da5c3c812d6705efc43110d",
+     "question": "olympiad|olympiad_2841",
+     "native_label_count": 38,
+     "class_counts": {
+      "Monitor": 6,
+      "Analyze": 4,
+      "Read": 3,
+      "Implement": 12,
+      "Verify": 6,
+      "Explore": 3,
+      "Plan": 4
+     },
+     "adjacent_pair_counts": {
+      "Plan>Plan": 1,
+      "Read>Implement": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "f29be5e1006c6e1dd939dee3b790fdde598a51f41761a18a4ff5edfd80f3df07",
+     "question": "aime25|aime25_7",
+     "native_label_count": 73,
+     "class_counts": {
+      "Monitor": 9,
+      "Analyze": 21,
+      "Implement": 18,
+      "Verify": 10,
+      "Read": 4,
+      "Explore": 10,
+      "Plan": 1
+     },
+     "adjacent_pair_counts": {
+      "Explore>Explore": 1,
+      "Analyze>Analyze": 1,
+      "Analyze>Implement": 1,
+      "Verify>Implement": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "1b8c3e7cc03eb4055ad504c782b763336ba17da040b85c2a115dc7eb1d23f714",
+     "question": "olympiad|olympiad_1854",
+     "native_label_count": 275,
+     "class_counts": {
+      "Analyze": 130,
+      "Monitor": 18,
+      "Explore": 55,
+      "Implement": 34,
+      "Verify": 31,
+      "Read": 3,
+      "Plan": 4
+     },
+     "adjacent_pair_counts": {
+      "Explore>Implement": 1,
+      "Analyze>Analyze": 5,
+      "Explore>Explore": 2,
+      "Analyze>Explore": 1,
+      "Explore>Verify": 1,
+      "Explore>Analyze": 3,
+      "Verify>Verify": 2,
+      "Analyze>Verify": 2,
+      "Implement>Implement": 1,
+      "Analyze>Monitor": 1,
+      "Verify>Implement": 1,
+      "Verify>Explore": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": true,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "b2b7f6c88970465e284c37b9fdec74e0588f38a406110c4f7f36a615ebfaf5da",
+     "question": "olympiad|olympiad_2653",
+     "native_label_count": 40,
+     "class_counts": {
+      "Read": 2,
+      "Implement": 10,
+      "Analyze": 11,
+      "Verify": 9,
+      "Plan": 3,
+      "Monitor": 5
+     },
+     "adjacent_pair_counts": {
+      "Implement>Plan": 1,
+      "Implement>Implement": 1,
+      "Verify>Implement": 1,
+      "Analyze>Analyze": 1
+     },
+     "has_verify": true,
+     "has_explore": false,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "72e0c2d09051061648ed7d5706bca4e2ce52798d1530a39e2befa0c6076eeb7b",
+     "question": "olympiad|olympiad_2735",
+     "native_label_count": 80,
+     "class_counts": {
+      "Analyze": 13,
+      "Explore": 5,
+      "Verify": 10,
+      "Implement": 39,
+      "Monitor": 6,
+      "Plan": 6,
+      "Read": 1
+     },
+     "adjacent_pair_counts": {
+      "Implement>Implement": 2,
+      "Plan>Implement": 1,
+      "Explore>Analyze": 1,
+      "Verify>Explore": 1,
+      "Monitor>Plan": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "fff0f7ae0efb38815249ca8438b8d015ad1348e758b06f5a91ccf288fb481337",
+     "question": "math500|math500_test/prealgebra/1251.json",
+     "native_label_count": 32,
+     "class_counts": {
+      "Analyze": 5,
+      "Plan": 5,
+      "Verify": 7,
+      "Explore": 6,
+      "Read": 1,
+      "Implement": 6,
+      "Monitor": 2
+     },
+     "adjacent_pair_counts": {
+      "Verify>Analyze": 1,
+      "Verify>Explore": 1,
+      "Explore>Explore": 1,
+      "Analyze>Verify": 1,
+      "Implement>Implement": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "f94a4ce465e54b537ef463ea6e3b8fe0148b5cbdb437b3ca294c9cdc099e341a",
+     "question": "math500|math500_test/precalculus/1105.json",
+     "native_label_count": 13,
+     "class_counts": {
+      "Analyze": 1,
+      "Implement": 3,
+      "Monitor": 9
+     },
+     "adjacent_pair_counts": {
+      "Analyze>Implement": 1
+     },
+     "has_verify": false,
+     "has_explore": false,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "9f6de64123e79af466d77c24675abb4fa45f391964e54f226f7508115cd1b66d",
+     "question": "olympiad|olympiad_1845",
+     "native_label_count": 244,
+     "class_counts": {
+      "Analyze": 56,
+      "Implement": 72,
+      "Verify": 28,
+      "Read": 4,
+      "Monitor": 18,
+      "Explore": 57,
+      "Plan": 9
+     },
+     "adjacent_pair_counts": {
+      "Monitor>Explore": 1,
+      "Plan>Implement": 1,
+      "Implement>Implement": 3,
+      "Implement>Analyze": 4,
+      "Explore>Plan": 1,
+      "Explore>Verify": 1,
+      "Verify>Implement": 1,
+      "Analyze>Plan": 1,
+      "Analyze>Explore": 2,
+      "Explore>Analyze": 1,
+      "Explore>Monitor": 1,
+      "Analyze>Analyze": 1,
+      "Analyze>Implement": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": true,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "45cb78a1df75e9c0052ca94e400d2007351ead1d91a9f1e3042e806639cb8670",
+     "question": "olympiad|olympiad_2839",
+     "native_label_count": 93,
+     "class_counts": {
+      "Analyze": 28,
+      "Implement": 15,
+      "Verify": 13,
+      "Monitor": 14,
+      "Explore": 13,
+      "Read": 5,
+      "Plan": 5
+     },
+     "adjacent_pair_counts": {
+      "Explore>Analyze": 1,
+      "Explore>Explore": 1,
+      "Implement>Monitor": 1,
+      "Analyze>Implement": 1,
+      "Monitor>Analyze": 1,
+      "Analyze>Analyze": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "348d9687a043c916ed7d09f2b566c0d74893f0743b9fa825bf161208be593804",
+     "question": "aime24|aime24_65",
+     "native_label_count": 61,
+     "class_counts": {
+      "Analyze": 17,
+      "Monitor": 6,
+      "Implement": 16,
+      "Plan": 5,
+      "Read": 4,
+      "Verify": 7,
+      "Explore": 6
+     },
+     "adjacent_pair_counts": {
+      "Monitor>Analyze": 2,
+      "Analyze>Analyze": 1,
+      "Implement>Plan": 1,
+      "Explore>Explore": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "eee15807710ee7873a219abd0c07a9f2075da668d35575207b6b945f13305137",
+     "question": "minerva|minerva_76",
+     "native_label_count": 100,
+     "class_counts": {
+      "Implement": 3,
+      "Monitor": 49,
+      "Explore": 15,
+      "Plan": 12,
+      "Analyze": 10,
+      "Read": 5,
+      "Verify": 6
+     },
+     "adjacent_pair_counts": {
+      "Implement>Monitor": 1,
+      "Monitor>Monitor": 3,
+      "Explore>Verify": 1,
+      "Monitor>Plan": 1,
+      "Analyze>Plan": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "993ff5562af5067431c46cead82efa65621fb037fe68a0426235776c12fe5add",
+     "question": "olympiad|olympiad_2725",
+     "native_label_count": 73,
+     "class_counts": {
+      "Read": 7,
+      "Analyze": 17,
+      "Explore": 18,
+      "Monitor": 12,
+      "Implement": 11,
+      "Verify": 7,
+      "Plan": 1
+     },
+     "adjacent_pair_counts": {
+      "Read>Analyze": 2,
+      "Analyze>Explore": 2,
+      "Analyze>Monitor": 2,
+      "Monitor>Analyze": 1,
+      "Read>Monitor": 1,
+      "Explore>Analyze": 2,
+      "Monitor>Verify": 1,
+      "Implement>Explore": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "a7b8df19041f966b35b0f2daad20092af03a86a7423d19c37b9bc61adc476fd6",
+     "question": "olympiad|olympiad_2126",
+     "native_label_count": 160,
+     "class_counts": {
+      "Analyze": 85,
+      "Verify": 21,
+      "Implement": 28,
+      "Monitor": 11,
+      "Explore": 12,
+      "Plan": 2,
+      "Read": 1
+     },
+     "adjacent_pair_counts": {
+      "Analyze>Analyze": 5,
+      "Verify>Explore": 1,
+      "Analyze>Explore": 1,
+      "Implement>Analyze": 1,
+      "Implement>Verify": 1,
+      "Analyze>Verify": 1,
+      "Implement>Implement": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "9d9ec1487c5d634f86ae97fca43b0f72a814c369baa2f2384aa88dec35978f5c",
+     "question": "olympiad|olympiad_2792",
+     "native_label_count": 91,
+     "class_counts": {
+      "Analyze": 42,
+      "Explore": 7,
+      "Verify": 13,
+      "Implement": 25,
+      "Plan": 2,
+      "Monitor": 2
+     },
+     "adjacent_pair_counts": {
+      "Verify>Analyze": 2,
+      "Analyze>Implement": 1,
+      "Analyze>Analyze": 4,
+      "Implement>Implement": 1,
+      "Verify>Explore": 1,
+      "Verify>Implement": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "681f70af1260cf260825f9322b492adad415ab0a4cdff83393ec14a6dfd165dd",
+     "question": "olympiad|olympiad_1675",
+     "native_label_count": 185,
+     "class_counts": {
+      "Analyze": 47,
+      "Implement": 54,
+      "Explore": 43,
+      "Verify": 16,
+      "Plan": 13,
+      "Read": 5,
+      "Monitor": 7
+     },
+     "adjacent_pair_counts": {
+      "Explore>Analyze": 4,
+      "Analyze>Analyze": 2,
+      "Analyze>Implement": 4,
+      "Plan>Analyze": 1,
+      "Explore>Explore": 2,
+      "Implement>Implement": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "67928e1673c5c7b82613df7d95a765e72dd694296f41d4eb5bd77fa6a549196b",
+     "question": "olympiad|olympiad_2334",
+     "native_label_count": 30,
+     "class_counts": {
+      "Implement": 15,
+      "Verify": 4,
+      "Monitor": 2,
+      "Plan": 2,
+      "Analyze": 5,
+      "Read": 2
+     },
+     "adjacent_pair_counts": {
+      "Analyze>Analyze": 1
+     },
+     "has_verify": true,
+     "has_explore": false,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "e0d8227ee3fb089454d992e1065a282f9fd8a39a32e7fd0bec4827eae8ca1446",
+     "question": "olympiad|olympiad_2506",
+     "native_label_count": 40,
+     "class_counts": {
+      "Monitor": 4,
+      "Implement": 6,
+      "Analyze": 11,
+      "Verify": 10,
+      "Plan": 4,
+      "Read": 2,
+      "Explore": 3
+     },
+     "adjacent_pair_counts": {
+      "Verify>Analyze": 1,
+      "Implement>Plan": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "b2fbed68b5770889117d45148541a367c98d2a8c1b6c5f73fe5f7e3eda952ac2",
+     "question": "math500|math500_test/prealgebra/153.json",
+     "native_label_count": 16,
+     "class_counts": {
+      "Monitor": 3,
+      "Analyze": 5,
+      "Implement": 5,
+      "Verify": 2,
+      "Explore": 1
+     },
+     "adjacent_pair_counts": {},
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "cb29cac11a2366d8754b75ac881c7b2786645be6cf34d6d23d5b5f43bd8e8d04",
+     "question": "olympiad|olympiad_2962",
+     "native_label_count": 84,
+     "class_counts": {
+      "Analyze": 28,
+      "Plan": 2,
+      "Implement": 21,
+      "Monitor": 8,
+      "Explore": 12,
+      "Read": 3,
+      "Verify": 10
+     },
+     "adjacent_pair_counts": {
+      "Explore>Monitor": 1,
+      "Explore>Explore": 1,
+      "Explore>Read": 1,
+      "Implement>Implement": 1,
+      "Read>Analyze": 1,
+      "Monitor>Monitor": 1,
+      "Analyze>Analyze": 2
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "730298a853730be798458e327441b4ee24174b92cb5dba0f74230a87955bee4c",
+     "question": "math500|math500_test/algebra/2486.json",
+     "native_label_count": 22,
+     "class_counts": {
+      "Implement": 6,
+      "Read": 1,
+      "Verify": 5,
+      "Monitor": 6,
+      "Plan": 4
+     },
+     "adjacent_pair_counts": {
+      "Verify>Implement": 1,
+      "Monitor>Verify": 1,
+      "Plan>Plan": 1
+     },
+     "has_verify": true,
+     "has_explore": false,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "7369e53b0447dbc9969dba9a7bbcc91d3597bb083f6862bbe7480086ef0e6603",
+     "question": "amc23|amc23_32",
+     "native_label_count": 237,
+     "class_counts": {
+      "Implement": 190,
+      "Monitor": 7,
+      "Analyze": 21,
+      "Verify": 15,
+      "Plan": 1,
+      "Explore": 3
+     },
+     "adjacent_pair_counts": {
+      "Analyze>Monitor": 1,
+      "Implement>Implement": 11,
+      "Analyze>Analyze": 1,
+      "Verify>Verify": 2,
+      "Implement>Verify": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "421df3311b63519148633d7f05bf01edde6ac27c0dd0af1360ea511ec72f8fc1",
+     "question": "olympiad|olympiad_2339",
+     "native_label_count": 15,
+     "class_counts": {
+      "Monitor": 8,
+      "Implement": 5,
+      "Analyze": 1,
+      "Verify": 1
+     },
+     "adjacent_pair_counts": {
+      "Monitor>Monitor": 1,
+      "Analyze>Implement": 1
+     },
+     "has_verify": true,
+     "has_explore": false,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "49ec3c017e319d5cd2434f5e06b4ac2f238fc41bb7c50ed90a99481328187dc6",
+     "question": "olympiad|olympiad_2799",
+     "native_label_count": 22,
+     "class_counts": {
+      "Read": 1,
+      "Implement": 11,
+      "Plan": 4,
+      "Analyze": 4,
+      "Verify": 2
+     },
+     "adjacent_pair_counts": {
+      "Implement>Implement": 1,
+      "Plan>Plan": 1
+     },
+     "has_verify": true,
+     "has_explore": false,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "6494e4f831e13dddbce16e0998f963598de7e9e907149cc29baadf62d22c5834",
+     "question": "math500|math500_test/algebra/251.json",
+     "native_label_count": 15,
+     "class_counts": {
+      "Monitor": 7,
+      "Analyze": 2,
+      "Plan": 2,
+      "Implement": 2,
+      "Verify": 1,
+      "Read": 1
+     },
+     "adjacent_pair_counts": {
+      "Monitor>Analyze": 1,
+      "Monitor>Monitor": 2
+     },
+     "has_verify": true,
+     "has_explore": false,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "29cc45551546f60dfdd6c11bb74844950c5c81bb611825509d86bd244697ef37",
+     "question": "olympiad|olympiad_2203",
+     "native_label_count": 58,
+     "class_counts": {
+      "Explore": 6,
+      "Verify": 5,
+      "Implement": 24,
+      "Analyze": 13,
+      "Plan": 1,
+      "Monitor": 8,
+      "Read": 1
+     },
+     "adjacent_pair_counts": {
+      "Implement>Implement": 3
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    }
+   ]
+  },
+  "mechanism": {
+   "families": 128,
+   "questions_with_native_attempt": 128,
+   "with_any_label": 128,
+   "with_verify": 122,
+   "with_adjacent_explore_to_commit": 7,
+   "with_adjacent_candidate_to_verify_upper_bound": 54,
+   "records": [
+    {
+     "family": "6d196ba31a84d09bdee62bfee9e16859f73257671cd6a6445701628d3a0fca1f",
+     "question": "math500|math500_test/prealgebra/2037.json",
+     "native_label_count": 10,
+     "class_counts": {
+      "Monitor": 7,
+      "Analyze": 1,
+      "Implement": 2
+     },
+     "adjacent_pair_counts": {
+      "Monitor>Monitor": 2,
+      "Implement>Monitor": 1
+     },
+     "has_verify": false,
+     "has_explore": false,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "b1920476885d794ef593331c3d1d9d0122845ee9abe4006752e08776d0a66dc3",
+     "question": "olympiad|olympiad_1697",
+     "native_label_count": 340,
+     "class_counts": {
+      "Analyze": 142,
+      "Read": 7,
+      "Explore": 55,
+      "Implement": 88,
+      "Monitor": 16,
+      "Plan": 12,
+      "Verify": 20
+     },
+     "adjacent_pair_counts": {
+      "Explore>Explore": 2,
+      "Plan>Analyze": 1,
+      "Explore>Analyze": 2,
+      "Read>Analyze": 2,
+      "Analyze>Analyze": 7,
+      "Implement>Implement": 3,
+      "Analyze>Explore": 1,
+      "Verify>Explore": 1,
+      "Plan>Implement": 1,
+      "Analyze>Implement": 2,
+      "Verify>Verify": 1,
+      "Monitor>Verify": 1,
+      "Implement>Explore": 1,
+      "Implement>Verify": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "73d9a9f1e22a6ce3132e1b91a8966a2c5cbce68bf53c85719c8f25816c422b1f",
+     "question": "olympiad|olympiad_1782",
+     "native_label_count": 193,
+     "class_counts": {
+      "Analyze": 69,
+      "Read": 6,
+      "Verify": 27,
+      "Explore": 28,
+      "Implement": 38,
+      "Monitor": 20,
+      "Plan": 5
+     },
+     "adjacent_pair_counts": {
+      "Analyze>Analyze": 4,
+      "Implement>Implement": 2,
+      "Implement>Monitor": 2,
+      "Explore>Verify": 2,
+      "Analyze>Explore": 2,
+      "Explore>Analyze": 1,
+      "Monitor>Analyze": 1,
+      "Read>Analyze": 1,
+      "Implement>Analyze": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "7c92c36319266ffdd7aa1e171cc827f9176b99071636c0ec03d77e4379cab175",
+     "question": "olympiad|olympiad_1879",
+     "native_label_count": 79,
+     "class_counts": {
+      "Analyze": 23,
+      "Explore": 15,
+      "Implement": 20,
+      "Read": 2,
+      "Plan": 8,
+      "Verify": 7,
+      "Monitor": 4
+     },
+     "adjacent_pair_counts": {
+      "Implement>Implement": 1,
+      "Plan>Implement": 1,
+      "Analyze>Plan": 1,
+      "Explore>Verify": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "6e401c27b9e126d63a1c551aab1343443d373e1a552872d3f8adcd850f3ca3ed",
+     "question": "math500|math500_test/intermediate_algebra/515.json",
+     "native_label_count": 20,
+     "class_counts": {
+      "Plan": 2,
+      "Read": 3,
+      "Analyze": 5,
+      "Monitor": 5,
+      "Explore": 1,
+      "Implement": 4
+     },
+     "adjacent_pair_counts": {
+      "Implement>Monitor": 1
+     },
+     "has_verify": false,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "ac655706ea8c1441b8c371648e7ae297231efd64e89f0a11d49d6818242e4482",
+     "question": "minerva|minerva_127",
+     "native_label_count": 36,
+     "class_counts": {
+      "Read": 2,
+      "Monitor": 15,
+      "Implement": 3,
+      "Plan": 8,
+      "Analyze": 6,
+      "Verify": 1,
+      "Explore": 1
+     },
+     "adjacent_pair_counts": {
+      "Monitor>Plan": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "e5e198e4a5eded3dd510ae02e6ef86612f5ded912882a55bf20ca519fee63954",
+     "question": "olympiad|olympiad_3010",
+     "native_label_count": 114,
+     "class_counts": {
+      "Analyze": 41,
+      "Implement": 35,
+      "Read": 4,
+      "Explore": 13,
+      "Verify": 13,
+      "Monitor": 7,
+      "Plan": 1
+     },
+     "adjacent_pair_counts": {
+      "Analyze>Analyze": 1,
+      "Implement>Implement": 1,
+      "Explore>Analyze": 1,
+      "Implement>Analyze": 2,
+      "Implement>Verify": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "5870a32a75ef2e67c551f0933cb28f6228ecb95113ffde87813accece5ea4624",
+     "question": "math500|math500_test/algebra/621.json",
+     "native_label_count": 17,
+     "class_counts": {
+      "Monitor": 2,
+      "Read": 2,
+      "Analyze": 3,
+      "Implement": 7,
+      "Verify": 1,
+      "Explore": 1,
+      "Plan": 1
+     },
+     "adjacent_pair_counts": {
+      "Monitor>Read": 1,
+      "Analyze>Analyze": 1,
+      "Implement>Implement": 2,
+      "Analyze>Implement": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "3f5a34a7437b01b01ed526a846fb842df1c9a4997f8287651ca8e8eb343ee2b0",
+     "question": "olympiad|olympiad_1614",
+     "native_label_count": 232,
+     "class_counts": {
+      "Read": 9,
+      "Monitor": 28,
+      "Analyze": 71,
+      "Verify": 41,
+      "Implement": 43,
+      "Explore": 38,
+      "Plan": 2
+     },
+     "adjacent_pair_counts": {
+      "Monitor>Read": 1,
+      "Verify>Analyze": 1,
+      "Implement>Monitor": 2,
+      "Analyze>Analyze": 1,
+      "Implement>Implement": 3,
+      "Analyze>Plan": 1,
+      "Explore>Explore": 1,
+      "Explore>Verify": 1,
+      "Verify>Implement": 1,
+      "Implement>Analyze": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "99d80b1fb8a113ccffb9f8dec77ca53b116ac148d7a0563e25da728eeb39d2c0",
+     "question": "olympiad|olympiad_2651",
+     "native_label_count": 17,
+     "class_counts": {
+      "Monitor": 3,
+      "Read": 2,
+      "Plan": 2,
+      "Implement": 7,
+      "Verify": 3
+     },
+     "adjacent_pair_counts": {
+      "Plan>Implement": 1,
+      "Verify>Implement": 1,
+      "Implement>Verify": 1,
+      "Monitor>Monitor": 1
+     },
+     "has_verify": true,
+     "has_explore": false,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "cbf8eae27bcc2e841c47b5cbe180df8b959c74b12bc88bb0ac7bc321679c6393",
+     "question": "minerva|minerva_229",
+     "native_label_count": 23,
+     "class_counts": {
+      "Implement": 8,
+      "Monitor": 7,
+      "Analyze": 1,
+      "Verify": 3,
+      "Read": 1,
+      "Plan": 1,
+      "Explore": 2
+     },
+     "adjacent_pair_counts": {},
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "1ca4d3d11e259eb5ce1c1acb23b11cb547239fd13634bc997a35176d5a5b8208",
+     "question": "math500|math500_test/intermediate_algebra/662.json",
+     "native_label_count": 50,
+     "class_counts": {
+      "Read": 1,
+      "Implement": 24,
+      "Explore": 3,
+      "Monitor": 6,
+      "Verify": 6,
+      "Analyze": 7,
+      "Plan": 3
+     },
+     "adjacent_pair_counts": {
+      "Verify>Implement": 1,
+      "Implement>Analyze": 1,
+      "Explore>Explore": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "d80332f5a3d4b81f86d9c92323d0623298c47a91f98a92d35d41165d868ab417",
+     "question": "olympiad|olympiad_3101",
+     "native_label_count": 12,
+     "class_counts": {
+      "Plan": 1,
+      "Implement": 4,
+      "Verify": 4,
+      "Read": 1,
+      "Monitor": 2
+     },
+     "adjacent_pair_counts": {
+      "Plan>Implement": 1,
+      "Implement>Implement": 1,
+      "Implement>Verify": 1,
+      "Read>Monitor": 1,
+      "Verify>Verify": 1,
+      "Verify>Monitor": 1
+     },
+     "has_verify": true,
+     "has_explore": false,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "e5a9f29d2dc47669b6c16a890a88d4fc3b2a29384e94af33e3e549890580eca5",
+     "question": "olympiad|olympiad_2570",
+     "native_label_count": 24,
+     "class_counts": {
+      "Monitor": 2,
+      "Read": 1,
+      "Plan": 6,
+      "Analyze": 1,
+      "Implement": 6,
+      "Verify": 7,
+      "Explore": 1
+     },
+     "adjacent_pair_counts": {
+      "Plan>Analyze": 1,
+      "Implement>Verify": 1,
+      "Verify>Verify": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "1374c82dbfc8dd41ba77d4f04b62dbeadd91ac54cb1fac8642dbe5e3cc77c6f4",
+     "question": "olympiad|olympiad_2661",
+     "native_label_count": 17,
+     "class_counts": {
+      "Monitor": 5,
+      "Analyze": 4,
+      "Implement": 4,
+      "Read": 3,
+      "Verify": 1
+     },
+     "adjacent_pair_counts": {
+      "Analyze>Monitor": 1,
+      "Monitor>Analyze": 1,
+      "Implement>Implement": 1,
+      "Verify>Monitor": 1
+     },
+     "has_verify": true,
+     "has_explore": false,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "29adbb330ba0014ea2cb58a6780415b4f0e08ae767ff6e79ac44379f6cb292cb",
+     "question": "olympiad|olympiad_1838",
+     "native_label_count": 367,
+     "class_counts": {
+      "Analyze": 111,
+      "Plan": 15,
+      "Read": 7,
+      "Explore": 68,
+      "Monitor": 25,
+      "Implement": 116,
+      "Verify": 25
+     },
+     "adjacent_pair_counts": {
+      "Analyze>Monitor": 1,
+      "Explore>Analyze": 1,
+      "Explore>Explore": 1,
+      "Implement>Implement": 3,
+      "Explore>Verify": 2,
+      "Analyze>Implement": 1,
+      "Analyze>Analyze": 2,
+      "Plan>Implement": 1,
+      "Implement>Verify": 1,
+      "Analyze>Verify": 1,
+      "Plan>Explore": 1,
+      "Implement>Explore": 1,
+      "Plan>Analyze": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "7812e548c75a46cba1678be234cc9998725248d2dc45f5f9f04d39e7b8d1cd97",
+     "question": "olympiad|olympiad_3015",
+     "native_label_count": 107,
+     "class_counts": {
+      "Implement": 32,
+      "Analyze": 39,
+      "Explore": 12,
+      "Verify": 14,
+      "Monitor": 7,
+      "Read": 1,
+      "Plan": 2
+     },
+     "adjacent_pair_counts": {
+      "Explore>Explore": 1,
+      "Analyze>Implement": 1,
+      "Implement>Monitor": 1,
+      "Verify>Verify": 1,
+      "Implement>Verify": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "173d7b2b9a4d5cd8987c41e7b6a8be1d18a507ea052c1b93cc546f8ba5f5cb82",
+     "question": "math500|math500_test/geometry/483.json",
+     "native_label_count": 17,
+     "class_counts": {
+      "Read": 1,
+      "Analyze": 1,
+      "Plan": 2,
+      "Implement": 9,
+      "Monitor": 2,
+      "Verify": 2
+     },
+     "adjacent_pair_counts": {},
+     "has_verify": true,
+     "has_explore": false,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "ea91e88dea3fa533eaf969d0ab0580799fed308d3bbd03f3d6ce2ac1cc361749",
+     "question": "olympiad|olympiad_2744",
+     "native_label_count": 101,
+     "class_counts": {
+      "Read": 14,
+      "Explore": 8,
+      "Analyze": 37,
+      "Monitor": 10,
+      "Implement": 18,
+      "Verify": 12,
+      "Plan": 2
+     },
+     "adjacent_pair_counts": {
+      "Read>Read": 2
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "f52b18ea8a1d5c4911829dc876b675ea99e9a63dc88641a04cde8547b2b568df",
+     "question": "olympiad|olympiad_3097",
+     "native_label_count": 35,
+     "class_counts": {
+      "Analyze": 4,
+      "Implement": 8,
+      "Read": 2,
+      "Verify": 7,
+      "Explore": 3,
+      "Monitor": 9,
+      "Plan": 2
+     },
+     "adjacent_pair_counts": {
+      "Analyze>Implement": 1,
+      "Monitor>Verify": 1,
+      "Monitor>Monitor": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "696fc27a610762024825e9ad89ba64f7f3e740fcd5b2af6facf1de8179252c8b",
+     "question": "olympiad|olympiad_2553",
+     "native_label_count": 40,
+     "class_counts": {
+      "Implement": 9,
+      "Analyze": 7,
+      "Verify": 9,
+      "Read": 2,
+      "Monitor": 7,
+      "Plan": 3,
+      "Explore": 3
+     },
+     "adjacent_pair_counts": {
+      "Analyze>Monitor": 1,
+      "Read>Explore": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "db7c09e159b3cb2f46a25745fa481aa6a017d7ed9cc1d021b3e9b3ac52e2d567",
+     "question": "math500|math500_test/intermediate_algebra/991.json",
+     "native_label_count": 58,
+     "class_counts": {
+      "Read": 5,
+      "Implement": 26,
+      "Plan": 4,
+      "Verify": 8,
+      "Explore": 7,
+      "Analyze": 3,
+      "Monitor": 5
+     },
+     "adjacent_pair_counts": {
+      "Implement>Analyze": 1,
+      "Implement>Verify": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "b7f3b6c21ee955207e33012a176e8682de7b1b7571d5994337037abc57d8d1b5",
+     "question": "aime25|aime25_21",
+     "native_label_count": 79,
+     "class_counts": {
+      "Implement": 23,
+      "Analyze": 25,
+      "Monitor": 7,
+      "Verify": 13,
+      "Explore": 8,
+      "Plan": 2,
+      "Read": 1
+     },
+     "adjacent_pair_counts": {
+      "Implement>Implement": 2,
+      "Analyze>Implement": 1,
+      "Explore>Explore": 1,
+      "Verify>Verify": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "88fdc72538d0a6a2d692ad86fd01b90b94aa982d41ec79b9ffd21ff3a7acb360",
+     "question": "math500|math500_test/prealgebra/1558.json",
+     "native_label_count": 26,
+     "class_counts": {
+      "Monitor": 7,
+      "Read": 4,
+      "Analyze": 4,
+      "Implement": 5,
+      "Plan": 2,
+      "Verify": 3,
+      "Explore": 1
+     },
+     "adjacent_pair_counts": {
+      "Monitor>Monitor": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "cacaf73d7b198c0b64caa22686400bd9d1071d23c9132db9018871af819b1291",
+     "question": "olympiad|olympiad_2440",
+     "native_label_count": 16,
+     "class_counts": {
+      "Read": 3,
+      "Explore": 2,
+      "Plan": 1,
+      "Implement": 1,
+      "Monitor": 6,
+      "Analyze": 3
+     },
+     "adjacent_pair_counts": {
+      "Read>Read": 1,
+      "Monitor>Monitor": 3
+     },
+     "has_verify": false,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "d8c9b2885e230f7f3ab2932b3176f1f2187a92aeb46c905529a1be49be227fc2",
+     "question": "minerva|minerva_2",
+     "native_label_count": 31,
+     "class_counts": {
+      "Explore": 3,
+      "Monitor": 7,
+      "Analyze": 7,
+      "Implement": 6,
+      "Read": 5,
+      "Verify": 3
+     },
+     "adjacent_pair_counts": {
+      "Analyze>Explore": 1,
+      "Monitor>Read": 1,
+      "Read>Analyze": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "13473832de87cba0ebca22a3d207c4d39ceb0af7ae89d6a5692d954537f0e04b",
+     "question": "aime24|aime24_66",
+     "native_label_count": 88,
+     "class_counts": {
+      "Analyze": 31,
+      "Explore": 8,
+      "Verify": 18,
+      "Implement": 25,
+      "Read": 1,
+      "Plan": 2,
+      "Monitor": 3
+     },
+     "adjacent_pair_counts": {
+      "Analyze>Analyze": 3,
+      "Implement>Implement": 1,
+      "Verify>Plan": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "7042018c5073efffa1f5fdf10ae9d47db2bca691f75a65681e3cf6e7e7f47882",
+     "question": "minerva|minerva_250",
+     "native_label_count": 16,
+     "class_counts": {
+      "Read": 2,
+      "Analyze": 5,
+      "Plan": 1,
+      "Implement": 2,
+      "Explore": 1,
+      "Monitor": 5
+     },
+     "adjacent_pair_counts": {
+      "Explore>Read": 1,
+      "Analyze>Monitor": 1,
+      "Implement>Monitor": 1
+     },
+     "has_verify": false,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "081f9b6230de10f9fba47648cfdd3233ccd8cdc1db66782c1c3febea75cc7cef",
+     "question": "olympiad|olympiad_2545",
+     "native_label_count": 99,
+     "class_counts": {
+      "Analyze": 21,
+      "Read": 7,
+      "Verify": 18,
+      "Explore": 9,
+      "Implement": 32,
+      "Plan": 5,
+      "Monitor": 7
+     },
+     "adjacent_pair_counts": {
+      "Plan>Implement": 1,
+      "Verify>Implement": 1,
+      "Implement>Implement": 1,
+      "Explore>Verify": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "7c35645d806e00273bcdf6e5073a09c394d231ada6491853d20776822862990d",
+     "question": "olympiad|olympiad_2729",
+     "native_label_count": 49,
+     "class_counts": {
+      "Plan": 2,
+      "Implement": 11,
+      "Analyze": 18,
+      "Verify": 8,
+      "Monitor": 5,
+      "Read": 2,
+      "Explore": 3
+     },
+     "adjacent_pair_counts": {
+      "Implement>Implement": 1,
+      "Analyze>Analyze": 1,
+      "Implement>Analyze": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "2e4a711b7dd04a4785cb83983ecccbea5889c3af19735a910153d39152185b0f",
+     "question": "math500|math500_test/prealgebra/2066.json",
+     "native_label_count": 37,
+     "class_counts": {
+      "Implement": 12,
+      "Analyze": 8,
+      "Explore": 2,
+      "Read": 1,
+      "Verify": 5,
+      "Monitor": 6,
+      "Plan": 3
+     },
+     "adjacent_pair_counts": {
+      "Explore>Explore": 1,
+      "Implement>Implement": 1,
+      "Monitor>Monitor": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "a343f49039e24d7c7415cdbb10b77a4da7a9da709dad11338b7e98a0d8894706",
+     "question": "olympiad|olympiad_3089",
+     "native_label_count": 24,
+     "class_counts": {
+      "Monitor": 7,
+      "Implement": 6,
+      "Plan": 2,
+      "Analyze": 3,
+      "Verify": 3,
+      "Read": 1,
+      "Explore": 2
+     },
+     "adjacent_pair_counts": {
+      "Read>Monitor": 1,
+      "Monitor>Monitor": 1,
+      "Implement>Analyze": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "76507e7a4d72f0636c5d38d21bc9f69fca56f2302378cfb1cd9e5385c78b2778",
+     "question": "olympiad|olympiad_2370",
+     "native_label_count": 22,
+     "class_counts": {
+      "Analyze": 5,
+      "Monitor": 1,
+      "Plan": 4,
+      "Implement": 10,
+      "Explore": 1,
+      "Verify": 1
+     },
+     "adjacent_pair_counts": {
+      "Analyze>Implement": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "20b35ce8d5d74fd8d29fd05943023262966f54f086f46c2871f48f3118b61abe",
+     "question": "olympiad|olympiad_2040",
+     "native_label_count": 229,
+     "class_counts": {
+      "Analyze": 81,
+      "Explore": 32,
+      "Verify": 17,
+      "Monitor": 24,
+      "Implement": 63,
+      "Read": 2,
+      "Plan": 10
+     },
+     "adjacent_pair_counts": {
+      "Explore>Verify": 1,
+      "Monitor>Analyze": 1,
+      "Read>Read": 1,
+      "Explore>Implement": 1,
+      "Monitor>Implement": 1,
+      "Verify>Implement": 1,
+      "Implement>Analyze": 1,
+      "Analyze>Explore": 1,
+      "Implement>Implement": 1,
+      "Analyze>Analyze": 1,
+      "Analyze>Verify": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": true,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "fda9535b6e25a348a4cc86bb44bcc3ca70f7a008bfa77fca75e7b04efdc516f8",
+     "question": "minerva|minerva_196",
+     "native_label_count": 25,
+     "class_counts": {
+      "Analyze": 9,
+      "Read": 1,
+      "Implement": 8,
+      "Monitor": 3,
+      "Verify": 2,
+      "Plan": 2
+     },
+     "adjacent_pair_counts": {
+      "Analyze>Implement": 1,
+      "Implement>Monitor": 1
+     },
+     "has_verify": true,
+     "has_explore": false,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "f3b8129c5206c7f047fb0879d004fa6db475e9201e8983f307d4d69e60249686",
+     "question": "olympiad|olympiad_2423",
+     "native_label_count": 24,
+     "class_counts": {
+      "Explore": 1,
+      "Implement": 8,
+      "Plan": 4,
+      "Monitor": 5,
+      "Analyze": 5,
+      "Verify": 1
+     },
+     "adjacent_pair_counts": {
+      "Implement>Plan": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "7db03a1d8e94205ab5d08fbecbe276159faf6091019046464309c1960bd095ec",
+     "question": "aime25|aime25_19",
+     "native_label_count": 186,
+     "class_counts": {
+      "Read": 16,
+      "Analyze": 87,
+      "Verify": 21,
+      "Explore": 19,
+      "Monitor": 17,
+      "Implement": 24,
+      "Plan": 2
+     },
+     "adjacent_pair_counts": {
+      "Analyze>Verify": 3,
+      "Monitor>Explore": 1,
+      "Analyze>Explore": 1,
+      "Read>Read": 1,
+      "Monitor>Monitor": 1,
+      "Analyze>Analyze": 3,
+      "Analyze>Implement": 1,
+      "Implement>Implement": 1,
+      "Monitor>Analyze": 1,
+      "Implement>Read": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "ec7d834fe4ff94f494fbdb50a02be3014e8fd375baa929f491bd37c447038fbe",
+     "question": "olympiad|olympiad_2897",
+     "native_label_count": 61,
+     "class_counts": {
+      "Verify": 10,
+      "Implement": 11,
+      "Analyze": 17,
+      "Monitor": 8,
+      "Explore": 12,
+      "Read": 3
+     },
+     "adjacent_pair_counts": {
+      "Read>Analyze": 1,
+      "Verify>Analyze": 1,
+      "Analyze>Monitor": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "be612dce378ec5caf572e500a9cc2471cdf6bb43bdbf987aec9f240be419aa44",
+     "question": "olympiad|olympiad_3095",
+     "native_label_count": 41,
+     "class_counts": {
+      "Explore": 16,
+      "Monitor": 10,
+      "Analyze": 4,
+      "Plan": 2,
+      "Read": 1,
+      "Implement": 7,
+      "Verify": 1
+     },
+     "adjacent_pair_counts": {
+      "Explore>Monitor": 1,
+      "Explore>Explore": 1,
+      "Monitor>Monitor": 1,
+      "Implement>Monitor": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "719871d19b9b4b5bd304959bc937326091cb34af4e493994ea923793fca37fb5",
+     "question": "olympiad|olympiad_2961",
+     "native_label_count": 13,
+     "class_counts": {
+      "Monitor": 3,
+      "Read": 1,
+      "Analyze": 3,
+      "Implement": 3,
+      "Verify": 2,
+      "Plan": 1
+     },
+     "adjacent_pair_counts": {
+      "Monitor>Read": 1,
+      "Verify>Monitor": 1
+     },
+     "has_verify": true,
+     "has_explore": false,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "5c32a046bb4487a5a002d8547a76174c40f3e1824c606bcf4974810b9e0afebd",
+     "question": "minerva|minerva_157",
+     "native_label_count": 30,
+     "class_counts": {
+      "Analyze": 4,
+      "Monitor": 12,
+      "Implement": 6,
+      "Plan": 2,
+      "Verify": 2,
+      "Read": 2,
+      "Explore": 2
+     },
+     "adjacent_pair_counts": {
+      "Implement>Plan": 1,
+      "Implement>Implement": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "bdfe3ad79700b74cd4c88b5c441b41a6603ea852e5ec3c75d6a6e2e2d5a15cfc",
+     "question": "olympiad|olympiad_2742",
+     "native_label_count": 114,
+     "class_counts": {
+      "Analyze": 25,
+      "Verify": 20,
+      "Implement": 43,
+      "Explore": 8,
+      "Monitor": 10,
+      "Read": 6,
+      "Plan": 2
+     },
+     "adjacent_pair_counts": {
+      "Implement>Explore": 1,
+      "Implement>Analyze": 1,
+      "Analyze>Analyze": 1,
+      "Implement>Monitor": 1,
+      "Verify>Explore": 1,
+      "Implement>Implement": 2,
+      "Verify>Monitor": 1,
+      "Analyze>Implement": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "7c1114a55ac83e2ec058f107aa8f43ef5d7c23b41d68e84f15bd94c68782761e",
+     "question": "amc23|amc23_2",
+     "native_label_count": 16,
+     "class_counts": {
+      "Monitor": 6,
+      "Analyze": 2,
+      "Explore": 2,
+      "Verify": 1,
+      "Implement": 2,
+      "Plan": 3
+     },
+     "adjacent_pair_counts": {
+      "Analyze>Analyze": 1,
+      "Verify>Implement": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "439a8bd253238f61a92911ba6cd501dec73f8e3a47859202dc9f57391d31b86a",
+     "question": "olympiad|olympiad_2656",
+     "native_label_count": 40,
+     "class_counts": {
+      "Read": 6,
+      "Analyze": 6,
+      "Explore": 7,
+      "Monitor": 5,
+      "Implement": 9,
+      "Plan": 2,
+      "Verify": 5
+     },
+     "adjacent_pair_counts": {
+      "Analyze>Verify": 1,
+      "Verify>Implement": 1,
+      "Analyze>Implement": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "d72a51a2c8e01ccda0490c2169f61b13d6d002d7b08e018a5c64a3ce72ad0b16",
+     "question": "olympiad|olympiad_2037",
+     "native_label_count": 229,
+     "class_counts": {
+      "Read": 11,
+      "Analyze": 84,
+      "Verify": 21,
+      "Monitor": 28,
+      "Explore": 43,
+      "Implement": 39,
+      "Plan": 3
+     },
+     "adjacent_pair_counts": {
+      "Verify>Implement": 1,
+      "Implement>Analyze": 1,
+      "Analyze>Analyze": 3,
+      "Verify>Monitor": 1,
+      "Explore>Analyze": 2,
+      "Plan>Analyze": 1,
+      "Monitor>Implement": 1,
+      "Analyze>Explore": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "6814662e5eb6ac3aac534ae008e2355b259aa4d2a793139131668b937795eb7a",
+     "question": "olympiad|olympiad_2236",
+     "native_label_count": 20,
+     "class_counts": {
+      "Implement": 6,
+      "Plan": 2,
+      "Analyze": 4,
+      "Read": 1,
+      "Verify": 4,
+      "Monitor": 2,
+      "Explore": 1
+     },
+     "adjacent_pair_counts": {
+      "Implement>Implement": 1,
+      "Verify>Verify": 1,
+      "Explore>Analyze": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "e2beedb07827a1d46510175cd887193bd7afc214d0a068a362d50d80ae3d5b7e",
+     "question": "math500|math500_test/prealgebra/307.json",
+     "native_label_count": 13,
+     "class_counts": {
+      "Monitor": 8,
+      "Analyze": 1,
+      "Plan": 1,
+      "Verify": 3
+     },
+     "adjacent_pair_counts": {
+      "Monitor>Monitor": 4,
+      "Verify>Verify": 1
+     },
+     "has_verify": true,
+     "has_explore": false,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "c6b4e280468f3351066103fc4d5128f2bae14b704d05f865fdc7a7fe941a6449",
+     "question": "olympiad|olympiad_1618",
+     "native_label_count": 115,
+     "class_counts": {
+      "Analyze": 32,
+      "Implement": 60,
+      "Verify": 10,
+      "Plan": 6,
+      "Explore": 2,
+      "Monitor": 4,
+      "Read": 1
+     },
+     "adjacent_pair_counts": {
+      "Plan>Implement": 1,
+      "Implement>Analyze": 1,
+      "Implement>Monitor": 1,
+      "Implement>Implement": 3
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "ce6ded5d9d282fe50b7f694b659bbf955263946b0b419a43ba08a9ebe76dfe87",
+     "question": "math500|math500_test/prealgebra/996.json",
+     "native_label_count": 12,
+     "class_counts": {
+      "Read": 2,
+      "Analyze": 1,
+      "Implement": 3,
+      "Verify": 5,
+      "Monitor": 1
+     },
+     "adjacent_pair_counts": {
+      "Implement>Verify": 1,
+      "Verify>Implement": 1,
+      "Monitor>Verify": 1,
+      "Verify>Verify": 1
+     },
+     "has_verify": true,
+     "has_explore": false,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "6fcbcde1a386b11f772df5aae596429da4f1fbfa09af58f369ced8821aa0fea8",
+     "question": "olympiad|olympiad_2859",
+     "native_label_count": 97,
+     "class_counts": {
+      "Implement": 35,
+      "Monitor": 13,
+      "Verify": 22,
+      "Explore": 9,
+      "Plan": 4,
+      "Analyze": 11,
+      "Read": 3
+     },
+     "adjacent_pair_counts": {
+      "Implement>Implement": 1,
+      "Verify>Explore": 1,
+      "Implement>Plan": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "393eb34d9094223f792a3bd0066ff51945fc2d46854f551963e603c9c821f3ee",
+     "question": "olympiad|olympiad_2778",
+     "native_label_count": 24,
+     "class_counts": {
+      "Implement": 9,
+      "Verify": 5,
+      "Read": 2,
+      "Monitor": 2,
+      "Plan": 2,
+      "Analyze": 4
+     },
+     "adjacent_pair_counts": {
+      "Implement>Implement": 1,
+      "Monitor>Plan": 1
+     },
+     "has_verify": true,
+     "has_explore": false,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "bdcedb2456c577940324ec963784418fa25728aa039c92a6647da2bc7ad33cd1",
+     "question": "math500|math500_test/prealgebra/1995.json",
+     "native_label_count": 14,
+     "class_counts": {
+      "Monitor": 3,
+      "Analyze": 2,
+      "Plan": 5,
+      "Implement": 3,
+      "Verify": 1
+     },
+     "adjacent_pair_counts": {
+      "Plan>Plan": 1,
+      "Implement>Plan": 1,
+      "Plan>Analyze": 1
+     },
+     "has_verify": true,
+     "has_explore": false,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "bcdc01d4bda63d11b83ca440632588ec9ed36c114648e4fdd632123687b38e49",
+     "question": "amc23|amc23_27",
+     "native_label_count": 75,
+     "class_counts": {
+      "Analyze": 24,
+      "Plan": 4,
+      "Explore": 8,
+      "Verify": 14,
+      "Implement": 15,
+      "Read": 3,
+      "Monitor": 7
+     },
+     "adjacent_pair_counts": {
+      "Explore>Verify": 1,
+      "Verify>Verify": 1,
+      "Implement>Read": 1,
+      "Read>Analyze": 1,
+      "Analyze>Analyze": 3,
+      "Verify>Implement": 1,
+      "Monitor>Implement": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "493941e0a87c3c5b10c2d6fa3609be82ceaa0eeb8ec2496a1f375ae10a9fe1e5",
+     "question": "olympiad|olympiad_2748",
+     "native_label_count": 74,
+     "class_counts": {
+      "Explore": 8,
+      "Analyze": 18,
+      "Verify": 14,
+      "Implement": 19,
+      "Read": 5,
+      "Plan": 3,
+      "Monitor": 7
+     },
+     "adjacent_pair_counts": {
+      "Explore>Analyze": 1,
+      "Explore>Implement": 1,
+      "Verify>Monitor": 1,
+      "Implement>Explore": 1,
+      "Analyze>Analyze": 1,
+      "Analyze>Explore": 1,
+      "Verify>Implement": 1,
+      "Verify>Analyze": 1,
+      "Implement>Implement": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": true,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "a5f5eb4d69a7e0e3af7ed24536dd6874c6df42500d6f110c88b78f4e46ca5b28",
+     "question": "olympiad|olympiad_2075",
+     "native_label_count": 89,
+     "class_counts": {
+      "Implement": 16,
+      "Plan": 5,
+      "Explore": 9,
+      "Verify": 11,
+      "Analyze": 39,
+      "Monitor": 7,
+      "Read": 2
+     },
+     "adjacent_pair_counts": {
+      "Analyze>Implement": 1,
+      "Verify>Verify": 1,
+      "Implement>Implement": 1,
+      "Analyze>Analyze": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "41a5dc43b2b1762481b16e224d11223e22f9d01b072beb8e1ddfaafaf8bd6fba",
+     "question": "olympiad|olympiad_2858",
+     "native_label_count": 60,
+     "class_counts": {
+      "Implement": 23,
+      "Analyze": 8,
+      "Verify": 16,
+      "Monitor": 4,
+      "Read": 3,
+      "Plan": 4,
+      "Explore": 2
+     },
+     "adjacent_pair_counts": {
+      "Implement>Analyze": 1,
+      "Implement>Plan": 1,
+      "Verify>Plan": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "b0b306ad23f8faba796fbee2d8a87e9d48782e8d620230614735a468e9e3decd",
+     "question": "olympiad|olympiad_2821",
+     "native_label_count": 121,
+     "class_counts": {
+      "Verify": 22,
+      "Analyze": 22,
+      "Monitor": 15,
+      "Read": 5,
+      "Explore": 9,
+      "Plan": 6,
+      "Implement": 42
+     },
+     "adjacent_pair_counts": {
+      "Monitor>Read": 1,
+      "Analyze>Monitor": 1,
+      "Monitor>Analyze": 1,
+      "Implement>Monitor": 1,
+      "Read>Read": 1,
+      "Implement>Implement": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "cc48d8e264c03a0aad534bd2c10c05c94367a65451fe36464ab7560732390c0f",
+     "question": "math500|math500_test/intermediate_algebra/1508.json",
+     "native_label_count": 80,
+     "class_counts": {
+      "Analyze": 24,
+      "Implement": 19,
+      "Plan": 2,
+      "Read": 6,
+      "Verify": 15,
+      "Explore": 10,
+      "Monitor": 4
+     },
+     "adjacent_pair_counts": {
+      "Analyze>Implement": 1,
+      "Explore>Verify": 1,
+      "Monitor>Monitor": 1,
+      "Verify>Implement": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "03ed005ab045df39047db6ca2b511486eace6719618b7bb370d66c04b623b586",
+     "question": "olympiad|olympiad_1766",
+     "native_label_count": 107,
+     "class_counts": {
+      "Explore": 11,
+      "Analyze": 29,
+      "Monitor": 5,
+      "Verify": 16,
+      "Implement": 40,
+      "Plan": 3,
+      "Read": 3
+     },
+     "adjacent_pair_counts": {
+      "Verify>Analyze": 1,
+      "Explore>Analyze": 2,
+      "Implement>Verify": 1,
+      "Implement>Implement": 2,
+      "Verify>Implement": 1,
+      "Verify>Verify": 1,
+      "Analyze>Explore": 1,
+      "Explore>Implement": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": true,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "f7cdc930b3e9c66c8fb8a8eb2c7f70ef65fb6e95dd93bb1f14f11fc2ee15b15d",
+     "question": "minerva|minerva_47",
+     "native_label_count": 53,
+     "class_counts": {
+      "Read": 3,
+      "Analyze": 13,
+      "Plan": 4,
+      "Implement": 15,
+      "Verify": 9,
+      "Explore": 3,
+      "Monitor": 6
+     },
+     "adjacent_pair_counts": {
+      "Implement>Implement": 1,
+      "Monitor>Monitor": 1,
+      "Analyze>Analyze": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "f519766089ce7cc8a8620f27cd027b62021a7058474014289812145f42595e8d",
+     "question": "aime25|aime25_2",
+     "native_label_count": 71,
+     "class_counts": {
+      "Analyze": 19,
+      "Read": 7,
+      "Plan": 3,
+      "Verify": 15,
+      "Monitor": 8,
+      "Implement": 15,
+      "Explore": 4
+     },
+     "adjacent_pair_counts": {
+      "Analyze>Analyze": 1,
+      "Read>Plan": 1,
+      "Read>Monitor": 2,
+      "Explore>Analyze": 2,
+      "Analyze>Verify": 1,
+      "Verify>Monitor": 1,
+      "Monitor>Read": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "a59aa248501ea61fcc0f8ccd319362e633f6345adb3915383d4f0fbf3d323b71",
+     "question": "math500|math500_test/prealgebra/874.json",
+     "native_label_count": 124,
+     "class_counts": {
+      "Monitor": 5,
+      "Analyze": 62,
+      "Implement": 19,
+      "Verify": 10,
+      "Read": 15,
+      "Explore": 13
+     },
+     "adjacent_pair_counts": {
+      "Analyze>Implement": 1,
+      "Analyze>Explore": 2
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "59a6b6e693b4ed336d12b52c2b2e387b0c10b8d6520c397ad8406f4f7c8477ad",
+     "question": "math500|math500_test/algebra/1842.json",
+     "native_label_count": 12,
+     "class_counts": {
+      "Analyze": 1,
+      "Read": 3,
+      "Plan": 3,
+      "Monitor": 3,
+      "Implement": 2
+     },
+     "adjacent_pair_counts": {
+      "Monitor>Read": 1,
+      "Monitor>Monitor": 1,
+      "Plan>Implement": 1
+     },
+     "has_verify": false,
+     "has_explore": false,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "c7cd69e8ed2d1f0c9b3ab9a481fbc82ec6df8e09c6ed0b675f08c4044b51b7eb",
+     "question": "amc23|amc23_14",
+     "native_label_count": 54,
+     "class_counts": {
+      "Analyze": 20,
+      "Implement": 16,
+      "Verify": 5,
+      "Plan": 3,
+      "Monitor": 3,
+      "Read": 1,
+      "Explore": 6
+     },
+     "adjacent_pair_counts": {
+      "Monitor>Implement": 1,
+      "Implement>Analyze": 1,
+      "Analyze>Analyze": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "35a9ddc2bc4458b801528d04ea49bc7049311cc839acb2e0b4c5c73c080f492a",
+     "question": "math500|math500_test/algebra/246.json",
+     "native_label_count": 17,
+     "class_counts": {
+      "Monitor": 3,
+      "Implement": 7,
+      "Verify": 3,
+      "Explore": 1,
+      "Analyze": 2,
+      "Plan": 1
+     },
+     "adjacent_pair_counts": {},
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "cf2df7f39393cbfdd76a5991541117f296830f135888f92192001a1d099b32ed",
+     "question": "amc23|amc23_29",
+     "native_label_count": 47,
+     "class_counts": {
+      "Read": 3,
+      "Implement": 7,
+      "Plan": 1,
+      "Verify": 7,
+      "Explore": 2,
+      "Analyze": 20,
+      "Monitor": 7
+     },
+     "adjacent_pair_counts": {
+      "Analyze>Analyze": 1,
+      "Analyze>Implement": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "cee0263739d3e2a7ebce61c2be4fadea32c1fe2f4405426f1d1c104a7e3303c9",
+     "question": "olympiad|olympiad_2536",
+     "native_label_count": 30,
+     "class_counts": {
+      "Read": 5,
+      "Analyze": 9,
+      "Plan": 4,
+      "Verify": 3,
+      "Implement": 8,
+      "Monitor": 1
+     },
+     "adjacent_pair_counts": {
+      "Read>Read": 1,
+      "Implement>Analyze": 1
+     },
+     "has_verify": true,
+     "has_explore": false,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "7c4732963c0fc636f825c2865a3ff4659d32f9bd88a3d06d6b4b0a69f3edddbd",
+     "question": "math500|math500_test/geometry/229.json",
+     "native_label_count": 105,
+     "class_counts": {
+      "Read": 6,
+      "Analyze": 27,
+      "Implement": 33,
+      "Verify": 14,
+      "Explore": 15,
+      "Plan": 2,
+      "Monitor": 8
+     },
+     "adjacent_pair_counts": {
+      "Implement>Analyze": 1,
+      "Monitor>Explore": 1,
+      "Monitor>Implement": 1,
+      "Read>Explore": 1,
+      "Analyze>Implement": 1,
+      "Analyze>Read": 1,
+      "Implement>Implement": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "b498dcabf4b8cca356bfd2cb72fb3f4759acbe70e26f60f1584c8615ddd439d4",
+     "question": "math500|math500_test/algebra/109.json",
+     "native_label_count": 21,
+     "class_counts": {
+      "Plan": 2,
+      "Implement": 8,
+      "Verify": 2,
+      "Monitor": 5,
+      "Read": 2,
+      "Analyze": 2
+     },
+     "adjacent_pair_counts": {
+      "Implement>Read": 1
+     },
+     "has_verify": true,
+     "has_explore": false,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "a552bf007474dcc61a62b9abe61e51f50e6b415378eda286ab66bf01f222a8a7",
+     "question": "math500|math500_test/intermediate_algebra/607.json",
+     "native_label_count": 65,
+     "class_counts": {
+      "Read": 1,
+      "Implement": 40,
+      "Verify": 9,
+      "Analyze": 4,
+      "Explore": 4,
+      "Monitor": 2,
+      "Plan": 5
+     },
+     "adjacent_pair_counts": {
+      "Explore>Monitor": 1,
+      "Plan>Analyze": 1,
+      "Implement>Plan": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "9379b2836d2cc64d80de956d1ea5aa1f94c294754974273b75811e1795413f43",
+     "question": "olympiad|olympiad_2830",
+     "native_label_count": 29,
+     "class_counts": {
+      "Read": 6,
+      "Implement": 6,
+      "Explore": 2,
+      "Verify": 5,
+      "Analyze": 6,
+      "Monitor": 3,
+      "Plan": 1
+     },
+     "adjacent_pair_counts": {
+      "Analyze>Read": 1,
+      "Verify>Implement": 1,
+      "Read>Read": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "faba7ac59f7fe12174de98b2fd9488d0aa9cecafa9bbbdeea0ed543e2c4e0a3f",
+     "question": "olympiad|olympiad_2063",
+     "native_label_count": 104,
+     "class_counts": {
+      "Read": 3,
+      "Implement": 28,
+      "Analyze": 38,
+      "Explore": 17,
+      "Verify": 12,
+      "Plan": 1,
+      "Monitor": 5
+     },
+     "adjacent_pair_counts": {
+      "Analyze>Analyze": 1,
+      "Implement>Verify": 1,
+      "Implement>Implement": 1,
+      "Analyze>Explore": 1,
+      "Analyze>Implement": 1,
+      "Implement>Monitor": 1,
+      "Monitor>Monitor": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "6b56f8cc42854fbfd8871e9a17ce045ea245335d8e823e2917282e38d6b62a2d",
+     "question": "olympiad|olympiad_2287",
+     "native_label_count": 45,
+     "class_counts": {
+      "Analyze": 5,
+      "Implement": 13,
+      "Plan": 2,
+      "Verify": 9,
+      "Monitor": 6,
+      "Read": 6,
+      "Explore": 4
+     },
+     "adjacent_pair_counts": {
+      "Explore>Explore": 1,
+      "Monitor>Explore": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "f1b4218199e5f6fe3683254e82353f8bb0418ddbc6adf7f9667313b2de535a23",
+     "question": "olympiad|olympiad_2064",
+     "native_label_count": 153,
+     "class_counts": {
+      "Read": 3,
+      "Analyze": 71,
+      "Explore": 40,
+      "Verify": 9,
+      "Monitor": 15,
+      "Plan": 1,
+      "Implement": 14
+     },
+     "adjacent_pair_counts": {
+      "Analyze>Analyze": 2,
+      "Explore>Analyze": 1,
+      "Explore>Verify": 1,
+      "Explore>Explore": 1,
+      "Implement>Analyze": 1,
+      "Analyze>Explore": 1,
+      "Verify>Explore": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "3fbbaff73137a98fb0bca38074d2bfefe75f86ab011cad3c09b0dd99d4544fac",
+     "question": "math500|math500_test/precalculus/703.json",
+     "native_label_count": 82,
+     "class_counts": {
+      "Analyze": 28,
+      "Monitor": 6,
+      "Implement": 27,
+      "Plan": 3,
+      "Explore": 8,
+      "Verify": 10
+     },
+     "adjacent_pair_counts": {
+      "Implement>Implement": 1,
+      "Implement>Explore": 1,
+      "Plan>Implement": 1,
+      "Explore>Verify": 1,
+      "Verify>Verify": 1,
+      "Implement>Monitor": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "86b0389af7da770c6b6ef6b8e98ebddc3364d87330d069fab9a325c4dda3712c",
+     "question": "olympiad|olympiad_2955",
+     "native_label_count": 70,
+     "class_counts": {
+      "Read": 3,
+      "Plan": 4,
+      "Analyze": 10,
+      "Implement": 26,
+      "Monitor": 10,
+      "Verify": 9,
+      "Explore": 8
+     },
+     "adjacent_pair_counts": {
+      "Read>Plan": 1,
+      "Monitor>Implement": 1,
+      "Implement>Monitor": 1,
+      "Implement>Implement": 1,
+      "Explore>Monitor": 1,
+      "Implement>Verify": 1,
+      "Analyze>Explore": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "ec491783aadd1e96f8c3b79410d89e610e9dfec8d8d17dc05052df8127e7b76f",
+     "question": "minerva|minerva_72",
+     "native_label_count": 21,
+     "class_counts": {
+      "Read": 1,
+      "Monitor": 6,
+      "Analyze": 6,
+      "Plan": 2,
+      "Implement": 5,
+      "Verify": 1
+     },
+     "adjacent_pair_counts": {
+      "Monitor>Analyze": 1,
+      "Analyze>Plan": 1,
+      "Implement>Implement": 1
+     },
+     "has_verify": true,
+     "has_explore": false,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "de9df52b2ccceeaf3f10140d9b76b2c805ac85b77692bbb9a2182e5be189f12b",
+     "question": "olympiad|olympiad_3078",
+     "native_label_count": 33,
+     "class_counts": {
+      "Plan": 4,
+      "Implement": 12,
+      "Verify": 8,
+      "Monitor": 4,
+      "Read": 1,
+      "Explore": 3,
+      "Analyze": 1
+     },
+     "adjacent_pair_counts": {
+      "Monitor>Verify": 1,
+      "Implement>Implement": 2
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "2050893e3dbdcbdcfc488218511a9bb406b74e2bdab4223f5f977c0bafcf4050",
+     "question": "minerva|minerva_261",
+     "native_label_count": 46,
+     "class_counts": {
+      "Read": 6,
+      "Analyze": 8,
+      "Explore": 1,
+      "Monitor": 14,
+      "Verify": 6,
+      "Plan": 7,
+      "Implement": 4
+     },
+     "adjacent_pair_counts": {
+      "Monitor>Read": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "991c1440fd6162de1b0f58a366416100dccbcc6280762da850155eec9668e5b4",
+     "question": "olympiad|olympiad_1882",
+     "native_label_count": 115,
+     "class_counts": {
+      "Analyze": 50,
+      "Read": 8,
+      "Explore": 15,
+      "Monitor": 9,
+      "Plan": 2,
+      "Implement": 11,
+      "Verify": 20
+     },
+     "adjacent_pair_counts": {
+      "Analyze>Analyze": 5,
+      "Read>Explore": 1,
+      "Read>Monitor": 1,
+      "Verify>Explore": 1,
+      "Explore>Implement": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": true,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "5faecfa9c6a0693f75de5af9a5afd0d9466b339c193fa5ed96e278244cdc527d",
+     "question": "olympiad|olympiad_2280",
+     "native_label_count": 32,
+     "class_counts": {
+      "Plan": 5,
+      "Analyze": 3,
+      "Implement": 10,
+      "Explore": 1,
+      "Verify": 4,
+      "Monitor": 5,
+      "Read": 4
+     },
+     "adjacent_pair_counts": {
+      "Plan>Explore": 1,
+      "Analyze>Verify": 1,
+      "Read>Implement": 1,
+      "Read>Analyze": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "b6c9fedfd5588eafa27fd40cae2a6c00d2ee6b28c5407ec48bb195ac116a94cd",
+     "question": "math500|math500_test/counting_and_probability/282.json",
+     "native_label_count": 151,
+     "class_counts": {
+      "Plan": 7,
+      "Explore": 11,
+      "Analyze": 31,
+      "Implement": 50,
+      "Verify": 18,
+      "Read": 14,
+      "Monitor": 20
+     },
+     "adjacent_pair_counts": {
+      "Read>Implement": 1,
+      "Read>Analyze": 1,
+      "Implement>Analyze": 1,
+      "Explore>Verify": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "063c91b8bdbd2e2bce31283d495687550f3fd56b82d94a0a994f1785d5d280d3",
+     "question": "olympiad|olympiad_1970",
+     "native_label_count": 212,
+     "class_counts": {
+      "Read": 1,
+      "Analyze": 79,
+      "Plan": 9,
+      "Implement": 46,
+      "Explore": 33,
+      "Verify": 31,
+      "Monitor": 13
+     },
+     "adjacent_pair_counts": {
+      "Analyze>Analyze": 5,
+      "Plan>Implement": 1,
+      "Implement>Implement": 2,
+      "Verify>Verify": 1,
+      "Implement>Explore": 1,
+      "Explore>Explore": 1,
+      "Analyze>Verify": 1,
+      "Explore>Implement": 1,
+      "Implement>Analyze": 1,
+      "Explore>Verify": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": true,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "e87b7e359c67d1cd9003546c9d7a71afe336e360068fe0c9693fbddf074104f5",
+     "question": "minerva|minerva_96",
+     "native_label_count": 14,
+     "class_counts": {
+      "Read": 1,
+      "Plan": 4,
+      "Monitor": 3,
+      "Implement": 3,
+      "Verify": 3
+     },
+     "adjacent_pair_counts": {
+      "Implement>Verify": 1,
+      "Plan>Plan": 2
+     },
+     "has_verify": true,
+     "has_explore": false,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "2dbdd72cd44c8e6f5de7939e82de86638243a34d071a622940e2c6b9f1ffea28",
+     "question": "math500|math500_test/intermediate_algebra/690.json",
+     "native_label_count": 44,
+     "class_counts": {
+      "Implement": 10,
+      "Read": 7,
+      "Verify": 6,
+      "Analyze": 12,
+      "Explore": 5,
+      "Monitor": 3,
+      "Plan": 1
+     },
+     "adjacent_pair_counts": {
+      "Explore>Analyze": 1,
+      "Analyze>Read": 1,
+      "Explore>Verify": 1,
+      "Analyze>Explore": 1,
+      "Read>Read": 1,
+      "Read>Monitor": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "341272c10e57547ad6bef99094090f5dc3d61b7cb310f0745554ed5e3ef23620",
+     "question": "minerva|minerva_266",
+     "native_label_count": 36,
+     "class_counts": {
+      "Plan": 1,
+      "Implement": 11,
+      "Analyze": 12,
+      "Verify": 1,
+      "Monitor": 6,
+      "Read": 3,
+      "Explore": 2
+     },
+     "adjacent_pair_counts": {
+      "Analyze>Analyze": 1,
+      "Implement>Implement": 1,
+      "Monitor>Analyze": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "bd8dc5d99623e3fbf08a4edb9b6892896daed3b122be0ca72df0d37aef5dc06b",
+     "question": "olympiad|olympiad_2469",
+     "native_label_count": 35,
+     "class_counts": {
+      "Analyze": 8,
+      "Implement": 12,
+      "Plan": 2,
+      "Monitor": 7,
+      "Read": 2,
+      "Explore": 1,
+      "Verify": 3
+     },
+     "adjacent_pair_counts": {
+      "Monitor>Implement": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "77fd0e655928dec52ab63ae9b4409b8457b3a52059b53c4f385ffae232358796",
+     "question": "olympiad|olympiad_2975",
+     "native_label_count": 114,
+     "class_counts": {
+      "Explore": 12,
+      "Analyze": 41,
+      "Read": 10,
+      "Verify": 16,
+      "Implement": 20,
+      "Monitor": 14,
+      "Plan": 1
+     },
+     "adjacent_pair_counts": {
+      "Analyze>Read": 1,
+      "Explore>Analyze": 2,
+      "Implement>Implement": 1,
+      "Analyze>Monitor": 1,
+      "Analyze>Implement": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "0e87fa42b04c1ebbf6a92832cfbcc059ac85caaeecdb83490e45581a47ef3594",
+     "question": "olympiad|olympiad_3011",
+     "native_label_count": 87,
+     "class_counts": {
+      "Explore": 10,
+      "Implement": 22,
+      "Analyze": 32,
+      "Monitor": 10,
+      "Verify": 11,
+      "Plan": 1,
+      "Read": 1
+     },
+     "adjacent_pair_counts": {
+      "Verify>Analyze": 1,
+      "Analyze>Analyze": 2,
+      "Explore>Monitor": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "a0ad44e1ffa88bdd40667753e78ef9f970833f7af232c92fcc19ebd8300bb0ba",
+     "question": "olympiad|olympiad_2713",
+     "native_label_count": 82,
+     "class_counts": {
+      "Verify": 13,
+      "Explore": 7,
+      "Analyze": 22,
+      "Implement": 29,
+      "Monitor": 7,
+      "Read": 1,
+      "Plan": 3
+     },
+     "adjacent_pair_counts": {
+      "Analyze>Analyze": 2,
+      "Implement>Implement": 1,
+      "Implement>Verify": 1,
+      "Verify>Implement": 2,
+      "Analyze>Implement": 1,
+      "Verify>Verify": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "21a6d636eb15a772fc1f0bc930acf311c36a037f6bbd41e1486feb9b5251567f",
+     "question": "math500|math500_test/intermediate_algebra/1166.json",
+     "native_label_count": 74,
+     "class_counts": {
+      "Read": 3,
+      "Implement": 23,
+      "Plan": 6,
+      "Analyze": 12,
+      "Monitor": 9,
+      "Verify": 13,
+      "Explore": 8
+     },
+     "adjacent_pair_counts": {
+      "Verify>Explore": 1,
+      "Monitor>Read": 1,
+      "Implement>Implement": 2,
+      "Explore>Implement": 1,
+      "Monitor>Explore": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": true,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "2f24f936b2971ea7da8365e7ba9792e1b43a25a7b3f9f4a56d439100e86d3c20",
+     "question": "olympiad|olympiad_2733",
+     "native_label_count": 130,
+     "class_counts": {
+      "Analyze": 18,
+      "Monitor": 17,
+      "Implement": 70,
+      "Plan": 4,
+      "Explore": 2,
+      "Verify": 17,
+      "Read": 2
+     },
+     "adjacent_pair_counts": {
+      "Implement>Implement": 2,
+      "Verify>Monitor": 1,
+      "Plan>Implement": 1,
+      "Monitor>Analyze": 3,
+      "Implement>Monitor": 1,
+      "Analyze>Verify": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "d7dad68a049efed827bb0602b08b0038d3e712e918ccc02db4b7bc445d18dad1",
+     "question": "math500|math500_test/number_theory/928.json",
+     "native_label_count": 18,
+     "class_counts": {
+      "Plan": 4,
+      "Implement": 8,
+      "Verify": 2,
+      "Monitor": 3,
+      "Analyze": 1
+     },
+     "adjacent_pair_counts": {
+      "Plan>Plan": 1
+     },
+     "has_verify": true,
+     "has_explore": false,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "8f0cbde38f183a380773866cb71b7353c2869f34bba5dd8927d76dc355fa9bd6",
+     "question": "math500|math500_test/prealgebra/1961.json",
+     "native_label_count": 23,
+     "class_counts": {
+      "Read": 2,
+      "Analyze": 2,
+      "Implement": 4,
+      "Verify": 3,
+      "Monitor": 11,
+      "Explore": 1
+     },
+     "adjacent_pair_counts": {
+      "Monitor>Monitor": 3,
+      "Monitor>Read": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "346aa3bbc21d019e8c7f15ae70c184d85353aa8c88bad79e72b66a24e1bb6c19",
+     "question": "minerva|minerva_110",
+     "native_label_count": 40,
+     "class_counts": {
+      "Monitor": 11,
+      "Implement": 11,
+      "Plan": 9,
+      "Analyze": 4,
+      "Read": 3,
+      "Verify": 1,
+      "Explore": 1
+     },
+     "adjacent_pair_counts": {
+      "Analyze>Plan": 1,
+      "Plan>Implement": 2
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "1fe5379fd73131b96f8549b009b6a7401547d805eeb7cfa5180526b617347c1e",
+     "question": "olympiad|olympiad_3087",
+     "native_label_count": 114,
+     "class_counts": {
+      "Analyze": 51,
+      "Explore": 26,
+      "Plan": 4,
+      "Read": 2,
+      "Monitor": 7,
+      "Implement": 15,
+      "Verify": 9
+     },
+     "adjacent_pair_counts": {
+      "Analyze>Analyze": 3,
+      "Verify>Explore": 1,
+      "Verify>Analyze": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "1e6a0acf89d52a3a063862d69dec5bca17eda49ea741ec491457d11f3e1376db",
+     "question": "minerva|minerva_222",
+     "native_label_count": 41,
+     "class_counts": {
+      "Implement": 22,
+      "Analyze": 6,
+      "Verify": 6,
+      "Monitor": 5,
+      "Read": 1,
+      "Explore": 1
+     },
+     "adjacent_pair_counts": {
+      "Analyze>Verify": 1,
+      "Implement>Implement": 2,
+      "Implement>Verify": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "5c4e64d00492799cdb9aeed6c628db52cc9cdc9fc8f4c3284e157a1c8e0bd457",
+     "question": "amc23|amc23_15",
+     "native_label_count": 80,
+     "class_counts": {
+      "Read": 2,
+      "Verify": 9,
+      "Implement": 29,
+      "Analyze": 21,
+      "Monitor": 5,
+      "Plan": 8,
+      "Explore": 6
+     },
+     "adjacent_pair_counts": {
+      "Verify>Analyze": 1,
+      "Analyze>Monitor": 1,
+      "Monitor>Plan": 2,
+      "Implement>Implement": 2,
+      "Implement>Analyze": 1,
+      "Verify>Implement": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "4af0f340202049c38ad2554d19b6c8c0f05ecb16a5ac87339232440dfe400817",
+     "question": "math500|math500_test/intermediate_algebra/345.json",
+     "native_label_count": 115,
+     "class_counts": {
+      "Analyze": 46,
+      "Implement": 30,
+      "Monitor": 14,
+      "Explore": 4,
+      "Read": 4,
+      "Verify": 15,
+      "Plan": 2
+     },
+     "adjacent_pair_counts": {
+      "Analyze>Explore": 1,
+      "Monitor>Read": 1,
+      "Implement>Verify": 2,
+      "Analyze>Analyze": 4,
+      "Verify>Analyze": 1,
+      "Plan>Analyze": 1,
+      "Verify>Explore": 1,
+      "Analyze>Implement": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "c0a52e412fa3913df0dd93ed7f7b23acc24a12160dbb39edbfce61b2f9f76a3e",
+     "question": "math500|math500_test/intermediate_algebra/2015.json",
+     "native_label_count": 72,
+     "class_counts": {
+      "Analyze": 26,
+      "Implement": 20,
+      "Explore": 4,
+      "Verify": 12,
+      "Monitor": 8,
+      "Plan": 1,
+      "Read": 1
+     },
+     "adjacent_pair_counts": {
+      "Verify>Analyze": 1,
+      "Implement>Verify": 2,
+      "Analyze>Analyze": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "b5f77364e9381028490cde1924e9a123a5cdd86991135e893caf35cec9cf85c2",
+     "question": "olympiad|olympiad_2461",
+     "native_label_count": 53,
+     "class_counts": {
+      "Analyze": 7,
+      "Implement": 18,
+      "Plan": 5,
+      "Verify": 9,
+      "Monitor": 7,
+      "Explore": 5,
+      "Read": 2
+     },
+     "adjacent_pair_counts": {
+      "Verify>Explore": 1,
+      "Monitor>Implement": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "8e0ca0c7d295d00bfcbb9b474b3db2e4664a95892a5d59c97cfaa8544ed3a6e8",
+     "question": "olympiad|olympiad_2855",
+     "native_label_count": 19,
+     "class_counts": {
+      "Analyze": 3,
+      "Read": 3,
+      "Implement": 7,
+      "Monitor": 5,
+      "Explore": 1
+     },
+     "adjacent_pair_counts": {
+      "Implement>Implement": 1
+     },
+     "has_verify": false,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "0b69234ffc28b67d36f845df8b3be2fe643e738b53eb33ea042f89f15e696bdb",
+     "question": "olympiad|olympiad_2544",
+     "native_label_count": 35,
+     "class_counts": {
+      "Analyze": 15,
+      "Plan": 2,
+      "Implement": 5,
+      "Verify": 7,
+      "Explore": 4,
+      "Monitor": 2
+     },
+     "adjacent_pair_counts": {
+      "Verify>Verify": 1,
+      "Analyze>Analyze": 1,
+      "Verify>Monitor": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "400f4b5401a76d82f229bf6dec6f985e33bddbb60d7c9c3ec6ddf50c36e1c55d",
+     "question": "minerva|minerva_60",
+     "native_label_count": 33,
+     "class_counts": {
+      "Read": 5,
+      "Analyze": 7,
+      "Monitor": 11,
+      "Implement": 3,
+      "Verify": 6,
+      "Explore": 1
+     },
+     "adjacent_pair_counts": {
+      "Monitor>Monitor": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "f77b8b6377f0ceff557ec3e3dc12e349f4360533d8b7e150d99d4910250c3354",
+     "question": "math500|math500_test/prealgebra/1840.json",
+     "native_label_count": 15,
+     "class_counts": {
+      "Monitor": 7,
+      "Read": 1,
+      "Implement": 4,
+      "Analyze": 1,
+      "Plan": 1,
+      "Verify": 1
+     },
+     "adjacent_pair_counts": {
+      "Read>Monitor": 1,
+      "Implement>Monitor": 1,
+      "Monitor>Analyze": 1,
+      "Verify>Implement": 1
+     },
+     "has_verify": true,
+     "has_explore": false,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "5a52ee6888cf0c250bbeeff2cb9e69d1f09744e3215b31a0f6c36c141d2f4f00",
+     "question": "olympiad|olympiad_2441",
+     "native_label_count": 28,
+     "class_counts": {
+      "Read": 1,
+      "Analyze": 3,
+      "Verify": 4,
+      "Plan": 5,
+      "Implement": 10,
+      "Monitor": 5
+     },
+     "adjacent_pair_counts": {
+      "Implement>Verify": 1,
+      "Implement>Implement": 2,
+      "Plan>Plan": 1,
+      "Monitor>Plan": 1,
+      "Verify>Implement": 1
+     },
+     "has_verify": true,
+     "has_explore": false,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "74950d7d26241fd8fbc87b1654edd734ad9eb1f46c59a28a8d644108bb3c03fc",
+     "question": "aime24|aime24_70",
+     "native_label_count": 110,
+     "class_counts": {
+      "Read": 8,
+      "Analyze": 37,
+      "Verify": 12,
+      "Explore": 22,
+      "Monitor": 6,
+      "Plan": 3,
+      "Implement": 22
+     },
+     "adjacent_pair_counts": {
+      "Implement>Implement": 1,
+      "Explore>Explore": 1,
+      "Verify>Implement": 1,
+      "Analyze>Read": 1,
+      "Analyze>Analyze": 1,
+      "Read>Monitor": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "437fc41dd18fef7d53fbf4aae0ba21d671cff6ccfd8154c08267eb1946faddd6",
+     "question": "math500|math500_test/intermediate_algebra/1981.json",
+     "native_label_count": 32,
+     "class_counts": {
+      "Monitor": 5,
+      "Analyze": 11,
+      "Plan": 2,
+      "Read": 1,
+      "Verify": 5,
+      "Implement": 5,
+      "Explore": 3
+     },
+     "adjacent_pair_counts": {
+      "Verify>Verify": 1,
+      "Verify>Monitor": 1,
+      "Explore>Analyze": 1,
+      "Analyze>Analyze": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "c3e0a8d592bc2c342748fed948da766652d1b853f188e8dba536f146ad7cbbdc",
+     "question": "olympiad|olympiad_1641",
+     "native_label_count": 232,
+     "class_counts": {
+      "Read": 4,
+      "Analyze": 74,
+      "Monitor": 24,
+      "Explore": 30,
+      "Implement": 55,
+      "Verify": 41,
+      "Plan": 4
+     },
+     "adjacent_pair_counts": {
+      "Explore>Monitor": 2,
+      "Analyze>Verify": 1,
+      "Analyze>Analyze": 4,
+      "Verify>Analyze": 1,
+      "Implement>Implement": 1,
+      "Analyze>Monitor": 1,
+      "Implement>Verify": 1,
+      "Implement>Explore": 1,
+      "Analyze>Implement": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "d8f38d5129b19e794dc8c7a2165df4c1a75369ca4aa9e783041e0b61dddf0051",
+     "question": "math500|math500_test/intermediate_algebra/986.json",
+     "native_label_count": 27,
+     "class_counts": {
+      "Analyze": 9,
+      "Implement": 10,
+      "Verify": 5,
+      "Monitor": 1,
+      "Read": 1,
+      "Explore": 1
+     },
+     "adjacent_pair_counts": {
+      "Verify>Analyze": 1,
+      "Analyze>Verify": 1,
+      "Implement>Verify": 1,
+      "Verify>Monitor": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "4cb7eed4e618323d77c5ec1eab92d11022f98ae2132fb89d3794e79b82c25ec1",
+     "question": "olympiad|olympiad_2349",
+     "native_label_count": 73,
+     "class_counts": {
+      "Analyze": 19,
+      "Implement": 29,
+      "Explore": 5,
+      "Monitor": 6,
+      "Verify": 9,
+      "Read": 4,
+      "Plan": 1
+     },
+     "adjacent_pair_counts": {
+      "Analyze>Implement": 1,
+      "Plan>Analyze": 1,
+      "Analyze>Analyze": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "6b993d3ce60450f5b5e3b9b0ed1dae3aec296a667d0017d3d259b8795b8c411b",
+     "question": "olympiad|olympiad_2786",
+     "native_label_count": 27,
+     "class_counts": {
+      "Read": 9,
+      "Analyze": 8,
+      "Explore": 2,
+      "Plan": 1,
+      "Implement": 3,
+      "Verify": 4
+     },
+     "adjacent_pair_counts": {
+      "Analyze>Analyze": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "1f35a27f5e4c59b37e4a43a826607f043b28075836e312f5513a69392256bd1f",
+     "question": "olympiad|olympiad_2857",
+     "native_label_count": 60,
+     "class_counts": {
+      "Read": 8,
+      "Analyze": 14,
+      "Implement": 15,
+      "Verify": 7,
+      "Plan": 2,
+      "Explore": 7,
+      "Monitor": 7
+     },
+     "adjacent_pair_counts": {
+      "Analyze>Implement": 1,
+      "Implement>Implement": 2,
+      "Verify>Implement": 1,
+      "Read>Read": 2
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "ef981aedd639442e4b3861f77a4fb541c2fe0780c70f6e604d0d7c905882d427",
+     "question": "minerva|minerva_225",
+     "native_label_count": 95,
+     "class_counts": {
+      "Analyze": 15,
+      "Implement": 30,
+      "Monitor": 13,
+      "Read": 8,
+      "Verify": 16,
+      "Plan": 6,
+      "Explore": 7
+     },
+     "adjacent_pair_counts": {
+      "Implement>Monitor": 1,
+      "Implement>Implement": 2,
+      "Explore>Verify": 1,
+      "Implement>Verify": 3,
+      "Verify>Implement": 1,
+      "Verify>Verify": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "6a45636a01f79891aaa21b653af9852fbc27c27a286ac0e369dc9468b8e0b47a",
+     "question": "math500|math500_test/intermediate_algebra/582.json",
+     "native_label_count": 77,
+     "class_counts": {
+      "Analyze": 30,
+      "Implement": 14,
+      "Verify": 16,
+      "Explore": 8,
+      "Monitor": 6,
+      "Read": 3
+     },
+     "adjacent_pair_counts": {
+      "Implement>Analyze": 3,
+      "Analyze>Analyze": 2,
+      "Explore>Analyze": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "d7eb2ff007bfe623f85f8bf78753b6fea02274c03fb06fd166502c0a541e7efd",
+     "question": "aime24|aime24_89",
+     "native_label_count": 146,
+     "class_counts": {
+      "Read": 7,
+      "Analyze": 66,
+      "Monitor": 11,
+      "Verify": 26,
+      "Explore": 11,
+      "Plan": 3,
+      "Implement": 22
+     },
+     "adjacent_pair_counts": {
+      "Analyze>Analyze": 2,
+      "Monitor>Analyze": 1,
+      "Analyze>Implement": 1,
+      "Analyze>Verify": 3,
+      "Implement>Monitor": 1,
+      "Implement>Implement": 4,
+      "Analyze>Explore": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "c3768f9f34235556674294feb5d32275f03e7c81e64ab3600797c0c3ecc49c0d",
+     "question": "olympiad|olympiad_2831",
+     "native_label_count": 33,
+     "class_counts": {
+      "Implement": 11,
+      "Plan": 2,
+      "Monitor": 8,
+      "Explore": 2,
+      "Analyze": 5,
+      "Read": 3,
+      "Verify": 2
+     },
+     "adjacent_pair_counts": {
+      "Explore>Plan": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": true,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "657e66af6834072e371c441d892363a6272828fee62f85d04905b1b6b20b9187",
+     "question": "math500|math500_test/prealgebra/914.json",
+     "native_label_count": 16,
+     "class_counts": {
+      "Monitor": 3,
+      "Analyze": 4,
+      "Read": 1,
+      "Verify": 4,
+      "Explore": 3,
+      "Implement": 1
+     },
+     "adjacent_pair_counts": {
+      "Verify>Implement": 1,
+      "Implement>Verify": 1,
+      "Verify>Monitor": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "dd5198b9b9f0f3e6e8fad212919388af704dbc7c9cb58144029c7a39f306d4a8",
+     "question": "math500|math500_test/prealgebra/1044.json",
+     "native_label_count": 37,
+     "class_counts": {
+      "Monitor": 4,
+      "Analyze": 3,
+      "Read": 7,
+      "Implement": 15,
+      "Plan": 5,
+      "Verify": 2,
+      "Explore": 1
+     },
+     "adjacent_pair_counts": {
+      "Implement>Verify": 1,
+      "Read>Analyze": 1,
+      "Analyze>Verify": 1,
+      "Implement>Implement": 1,
+      "Implement>Plan": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "d425da4fdbf1ab3738151fa1c2c6d9f07fbe355036c1e00240278d3f357ee563",
+     "question": "olympiad|olympiad_2797",
+     "native_label_count": 91,
+     "class_counts": {
+      "Read": 13,
+      "Analyze": 27,
+      "Monitor": 10,
+      "Plan": 4,
+      "Implement": 10,
+      "Verify": 10,
+      "Explore": 17
+     },
+     "adjacent_pair_counts": {
+      "Monitor>Plan": 1,
+      "Analyze>Analyze": 1,
+      "Analyze>Read": 1,
+      "Analyze>Explore": 1,
+      "Explore>Explore": 1,
+      "Explore>Verify": 1,
+      "Explore>Read": 1,
+      "Implement>Implement": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "02c681f2e30927193fea6ab09d563b8ffff227530f66ab18ef265a8b2971209c",
+     "question": "olympiad|olympiad_2949",
+     "native_label_count": 86,
+     "class_counts": {
+      "Analyze": 21,
+      "Implement": 22,
+      "Plan": 5,
+      "Explore": 12,
+      "Verify": 20,
+      "Monitor": 6
+     },
+     "adjacent_pair_counts": {
+      "Verify>Verify": 1,
+      "Verify>Analyze": 1,
+      "Explore>Analyze": 1,
+      "Monitor>Monitor": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "5d2cf5d04280fc70f7e9acbae1e47427c9c2c6028b3d5719cc923029c6561a2e",
+     "question": "olympiad|olympiad_2644",
+     "native_label_count": 58,
+     "class_counts": {
+      "Analyze": 21,
+      "Monitor": 6,
+      "Verify": 7,
+      "Implement": 14,
+      "Read": 3,
+      "Explore": 4,
+      "Plan": 3
+     },
+     "adjacent_pair_counts": {
+      "Analyze>Monitor": 1,
+      "Verify>Plan": 1,
+      "Verify>Monitor": 1,
+      "Implement>Analyze": 1,
+      "Implement>Verify": 1,
+      "Analyze>Analyze": 1,
+      "Analyze>Explore": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "874ddda2af091c0c3c1b362805098dacf87bcb23f9c53c4a7fcac280ac6b8d7a",
+     "question": "olympiad|olympiad_2851",
+     "native_label_count": 70,
+     "class_counts": {
+      "Implement": 22,
+      "Verify": 10,
+      "Explore": 10,
+      "Analyze": 22,
+      "Read": 3,
+      "Monitor": 3
+     },
+     "adjacent_pair_counts": {
+      "Implement>Implement": 1,
+      "Monitor>Explore": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "335d6fa7610820729ee8ebab2c68c9bdf30a0d54e4da8191708aa90898962d07",
+     "question": "olympiad|olympiad_3036",
+     "native_label_count": 20,
+     "class_counts": {
+      "Monitor": 5,
+      "Implement": 5,
+      "Plan": 1,
+      "Read": 1,
+      "Verify": 1,
+      "Analyze": 7
+     },
+     "adjacent_pair_counts": {
+      "Implement>Plan": 1,
+      "Analyze>Implement": 1
+     },
+     "has_verify": true,
+     "has_explore": false,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "3fe7405be1051f2c6807d3929e1229e5212c6b1bc6f84f50402c1712d92d8084",
+     "question": "math500|math500_test/intermediate_algebra/158.json",
+     "native_label_count": 30,
+     "class_counts": {
+      "Analyze": 4,
+      "Implement": 12,
+      "Plan": 3,
+      "Explore": 2,
+      "Verify": 3,
+      "Monitor": 5,
+      "Read": 1
+     },
+     "adjacent_pair_counts": {
+      "Implement>Implement": 1,
+      "Implement>Verify": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "9f13317fd9968d3438bc9b9592cb36a8c717408921a690e6ebd9eacb4d66ee04",
+     "question": "math500|math500_test/number_theory/1055.json",
+     "native_label_count": 28,
+     "class_counts": {
+      "Monitor": 6,
+      "Explore": 2,
+      "Implement": 6,
+      "Verify": 7,
+      "Plan": 1,
+      "Analyze": 2,
+      "Read": 4
+     },
+     "adjacent_pair_counts": {
+      "Implement>Implement": 1,
+      "Implement>Verify": 2,
+      "Verify>Implement": 1,
+      "Verify>Plan": 1,
+      "Analyze>Verify": 1,
+      "Analyze>Read": 1,
+      "Read>Read": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "436186d3a4a8f73d36b089043f609142f9fe19ce01c89853547b17f32e2bbf42",
+     "question": "olympiad|olympiad_3099",
+     "native_label_count": 22,
+     "class_counts": {
+      "Monitor": 3,
+      "Read": 6,
+      "Plan": 2,
+      "Verify": 2,
+      "Analyze": 3,
+      "Explore": 2,
+      "Implement": 4
+     },
+     "adjacent_pair_counts": {
+      "Explore>Read": 1,
+      "Monitor>Read": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "87eae0863d8cb93700fc3c37cc542f90041ed2b3e8a8c54c84d25412db5cc682",
+     "question": "minerva|minerva_82",
+     "native_label_count": 32,
+     "class_counts": {
+      "Monitor": 11,
+      "Analyze": 6,
+      "Verify": 3,
+      "Implement": 5,
+      "Read": 5,
+      "Plan": 2
+     },
+     "adjacent_pair_counts": {
+      "Read>Plan": 1,
+      "Analyze>Analyze": 1,
+      "Plan>Analyze": 1,
+      "Monitor>Monitor": 1
+     },
+     "has_verify": true,
+     "has_explore": false,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    }
+   ]
+  },
+  "utility": {
+   "families": 96,
+   "questions_with_native_attempt": 96,
+   "with_any_label": 96,
+   "with_verify": 92,
+   "with_adjacent_explore_to_commit": 7,
+   "with_adjacent_candidate_to_verify_upper_bound": 37,
+   "records": [
+    {
+     "family": "c138ab74b7d78da1f1c24a83b62085fa2072e66d7f66be1ecd24af317ed173ce",
+     "question": "olympiad|olympiad_2388",
+     "native_label_count": 15,
+     "class_counts": {
+      "Analyze": 1,
+      "Plan": 1,
+      "Implement": 6,
+      "Verify": 2,
+      "Monitor": 2,
+      "Explore": 2,
+      "Read": 1
+     },
+     "adjacent_pair_counts": {
+      "Analyze>Plan": 1,
+      "Verify>Verify": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "12247c7cf3d87a6b258e67a4338ba3095842c61fa00abdcb516e327d79c4f83f",
+     "question": "math500|math500_test/number_theory/634.json",
+     "native_label_count": 25,
+     "class_counts": {
+      "Read": 1,
+      "Implement": 9,
+      "Analyze": 8,
+      "Explore": 2,
+      "Verify": 4,
+      "Plan": 1
+     },
+     "adjacent_pair_counts": {
+      "Explore>Verify": 1,
+      "Verify>Verify": 1,
+      "Implement>Implement": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "463b0dd63126a05f2b87a6993e165e8e4ef7024e1f0868862f73911f9e271dcf",
+     "question": "math500|math500_test/algebra/518.json",
+     "native_label_count": 25,
+     "class_counts": {
+      "Read": 3,
+      "Analyze": 3,
+      "Implement": 5,
+      "Plan": 4,
+      "Monitor": 6,
+      "Verify": 3,
+      "Explore": 1
+     },
+     "adjacent_pair_counts": {
+      "Plan>Plan": 1,
+      "Monitor>Read": 1,
+      "Implement>Implement": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "d407414aa701d5e470ad099832ba632a9811aaffe53e81f195422c267d9ed7ea",
+     "question": "math500|math500_test/intermediate_algebra/754.json",
+     "native_label_count": 40,
+     "class_counts": {
+      "Analyze": 12,
+      "Monitor": 5,
+      "Explore": 3,
+      "Implement": 14,
+      "Plan": 1,
+      "Verify": 3,
+      "Read": 2
+     },
+     "adjacent_pair_counts": {
+      "Verify>Implement": 1,
+      "Monitor>Monitor": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "908c174582f2f67a9f85725325cda9c0f3f61e6e3416fe5f6f679f239bf5aa40",
+     "question": "math500|math500_test/prealgebra/977.json",
+     "native_label_count": 14,
+     "class_counts": {
+      "Read": 2,
+      "Verify": 4,
+      "Monitor": 4,
+      "Implement": 2,
+      "Plan": 2
+     },
+     "adjacent_pair_counts": {
+      "Read>Read": 1,
+      "Plan>Implement": 1,
+      "Verify>Monitor": 1
+     },
+     "has_verify": true,
+     "has_explore": false,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "44c67668953b2df370b33e1c356a519e872b1cf829ba760a0d00318a011f469b",
+     "question": "olympiad|olympiad_2466",
+     "native_label_count": 16,
+     "class_counts": {
+      "Read": 1,
+      "Plan": 2,
+      "Implement": 4,
+      "Verify": 1,
+      "Monitor": 7,
+      "Analyze": 1
+     },
+     "adjacent_pair_counts": {},
+     "has_verify": true,
+     "has_explore": false,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "d606edcfc9156f651625bddd1d20fbfa44f9d92582054d8215f0fa0396f5495d",
+     "question": "math500|math500_test/algebra/1814.json",
+     "native_label_count": 18,
+     "class_counts": {
+      "Analyze": 5,
+      "Read": 1,
+      "Implement": 3,
+      "Verify": 2,
+      "Explore": 2,
+      "Plan": 1,
+      "Monitor": 4
+     },
+     "adjacent_pair_counts": {
+      "Monitor>Monitor": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "49ac4f12fa528a31323828d6e2cbcf830d14e3efbe0ad4facd6a174ed5a12f94",
+     "question": "math500|math500_test/counting_and_probability/508.json",
+     "native_label_count": 15,
+     "class_counts": {
+      "Monitor": 3,
+      "Analyze": 4,
+      "Read": 1,
+      "Explore": 1,
+      "Plan": 3,
+      "Implement": 3
+     },
+     "adjacent_pair_counts": {
+      "Analyze>Read": 1,
+      "Analyze>Implement": 1,
+      "Plan>Monitor": 1
+     },
+     "has_verify": false,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "e28c349a82e8caaac07533f0dbfd1b73347c70861e2c898c370909b42e7d4990",
+     "question": "olympiad|olympiad_1662",
+     "native_label_count": 266,
+     "class_counts": {
+      "Analyze": 83,
+      "Verify": 35,
+      "Explore": 52,
+      "Monitor": 24,
+      "Implement": 60,
+      "Plan": 9,
+      "Read": 3
+     },
+     "adjacent_pair_counts": {
+      "Explore>Explore": 3,
+      "Analyze>Analyze": 2,
+      "Implement>Implement": 3,
+      "Analyze>Implement": 2,
+      "Implement>Explore": 2,
+      "Analyze>Monitor": 1,
+      "Explore>Verify": 1,
+      "Explore>Analyze": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "d1aaed7a188a3ae478689923c2ab96edb86c692f4ea4ad1e70507a4f3e7a9a90",
+     "question": "olympiad|olympiad_2425",
+     "native_label_count": 26,
+     "class_counts": {
+      "Read": 1,
+      "Analyze": 6,
+      "Implement": 6,
+      "Monitor": 2,
+      "Verify": 7,
+      "Plan": 4
+     },
+     "adjacent_pair_counts": {
+      "Implement>Analyze": 1
+     },
+     "has_verify": true,
+     "has_explore": false,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "75df8c03e51bc3d9102229ccfdcc8fc02f8708dca54b2ccc7bba36c03a22702b",
+     "question": "minerva|minerva_206",
+     "native_label_count": 66,
+     "class_counts": {
+      "Analyze": 18,
+      "Plan": 3,
+      "Implement": 16,
+      "Monitor": 7,
+      "Explore": 12,
+      "Verify": 9,
+      "Read": 1
+     },
+     "adjacent_pair_counts": {
+      "Monitor>Plan": 1,
+      "Implement>Verify": 2,
+      "Explore>Implement": 1,
+      "Monitor>Read": 1,
+      "Verify>Analyze": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": true,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "42816e4df93c52c2355b8e7b329056d704a7863a35cf364c5f5cf7586d8e1c92",
+     "question": "minerva|minerva_6",
+     "native_label_count": 35,
+     "class_counts": {
+      "Plan": 5,
+      "Analyze": 5,
+      "Explore": 4,
+      "Implement": 10,
+      "Read": 2,
+      "Verify": 4,
+      "Monitor": 5
+     },
+     "adjacent_pair_counts": {
+      "Plan>Implement": 1,
+      "Implement>Read": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "e8dd0f84ed34c5a6011d5241855dc3f4cdce3bcc1533ced9ef288b65ae03aa29",
+     "question": "olympiad|olympiad_2740",
+     "native_label_count": 147,
+     "class_counts": {
+      "Analyze": 43,
+      "Verify": 20,
+      "Explore": 17,
+      "Read": 8,
+      "Implement": 43,
+      "Plan": 3,
+      "Monitor": 13
+     },
+     "adjacent_pair_counts": {
+      "Analyze>Verify": 1,
+      "Implement>Implement": 3,
+      "Verify>Implement": 2,
+      "Implement>Analyze": 1,
+      "Monitor>Explore": 1,
+      "Analyze>Implement": 1,
+      "Analyze>Analyze": 2,
+      "Analyze>Monitor": 2,
+      "Verify>Analyze": 1,
+      "Monitor>Analyze": 1,
+      "Implement>Verify": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "e38f4791cef0b135935f7df7c55a471b1a15b113d87ffa8a4fa5221d90e579d9",
+     "question": "olympiad|olympiad_2648",
+     "native_label_count": 17,
+     "class_counts": {
+      "Analyze": 6,
+      "Plan": 2,
+      "Implement": 3,
+      "Read": 3,
+      "Verify": 3
+     },
+     "adjacent_pair_counts": {},
+     "has_verify": true,
+     "has_explore": false,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "809fe94041813e7806fe6456c3d625adc9cc585645baf3ebd806209054658a32",
+     "question": "math500|math500_test/algebra/529.json",
+     "native_label_count": 20,
+     "class_counts": {
+      "Read": 3,
+      "Analyze": 5,
+      "Monitor": 4,
+      "Implement": 4,
+      "Plan": 1,
+      "Verify": 3
+     },
+     "adjacent_pair_counts": {
+      "Analyze>Analyze": 1,
+      "Implement>Analyze": 1,
+      "Analyze>Implement": 1,
+      "Read>Implement": 1,
+      "Implement>Verify": 1,
+      "Monitor>Monitor": 1
+     },
+     "has_verify": true,
+     "has_explore": false,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "9ad3e1a9d26d34f1b8275380a7cb8d24c95c5cea2ee2e5dbe382cf6a5c21478d",
+     "question": "math500|math500_test/prealgebra/1555.json",
+     "native_label_count": 16,
+     "class_counts": {
+      "Analyze": 3,
+      "Implement": 6,
+      "Monitor": 4,
+      "Read": 1,
+      "Verify": 1,
+      "Plan": 1
+     },
+     "adjacent_pair_counts": {
+      "Analyze>Analyze": 1,
+      "Read>Verify": 1
+     },
+     "has_verify": true,
+     "has_explore": false,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "ad341ffe71141b92e68b0f36e48e748dc467051277af30e39278e702ec3465c5",
+     "question": "olympiad|olympiad_3080",
+     "native_label_count": 85,
+     "class_counts": {
+      "Analyze": 22,
+      "Monitor": 3,
+      "Implement": 40,
+      "Explore": 4,
+      "Verify": 7,
+      "Plan": 6,
+      "Read": 3
+     },
+     "adjacent_pair_counts": {
+      "Analyze>Analyze": 1,
+      "Implement>Analyze": 1,
+      "Analyze>Implement": 2,
+      "Implement>Implement": 2
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "9948656e0778dde10f388561ef7fd902117a7b1bea1f50f18d8e5db11bc25932",
+     "question": "math500|math500_test/algebra/1098.json",
+     "native_label_count": 11,
+     "class_counts": {
+      "Monitor": 5,
+      "Analyze": 1,
+      "Plan": 3,
+      "Implement": 2
+     },
+     "adjacent_pair_counts": {
+      "Plan>Implement": 1,
+      "Implement>Monitor": 1
+     },
+     "has_verify": false,
+     "has_explore": false,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "dbefef771805d891c91c780a685507bd3d9f47b1f525eb14f7f28ef523a8898f",
+     "question": "olympiad|olympiad_2193",
+     "native_label_count": 123,
+     "class_counts": {
+      "Read": 4,
+      "Plan": 9,
+      "Implement": 45,
+      "Analyze": 25,
+      "Verify": 18,
+      "Explore": 16,
+      "Monitor": 6
+     },
+     "adjacent_pair_counts": {
+      "Plan>Implement": 1,
+      "Implement>Implement": 3,
+      "Explore>Analyze": 2,
+      "Analyze>Implement": 2,
+      "Monitor>Analyze": 1,
+      "Monitor>Implement": 1,
+      "Implement>Explore": 1,
+      "Implement>Verify": 1,
+      "Analyze>Analyze": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "e9b77b087dcdc1cd448dc0a3bc84231315f4c53143d9963e57580da040246cb3",
+     "question": "olympiad|olympiad_2151",
+     "native_label_count": 121,
+     "class_counts": {
+      "Analyze": 25,
+      "Implement": 47,
+      "Read": 7,
+      "Explore": 18,
+      "Monitor": 10,
+      "Verify": 12,
+      "Plan": 2
+     },
+     "adjacent_pair_counts": {
+      "Monitor>Explore": 2,
+      "Monitor>Plan": 1,
+      "Explore>Explore": 1,
+      "Implement>Implement": 3
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "5d044d4a863ce519e2e65bbe98c4da94132e4e6cdc620b1a5ce3f5376d7d4beb",
+     "question": "olympiad|olympiad_1998",
+     "native_label_count": 107,
+     "class_counts": {
+      "Explore": 18,
+      "Analyze": 50,
+      "Verify": 8,
+      "Implement": 18,
+      "Plan": 5,
+      "Monitor": 7,
+      "Read": 1
+     },
+     "adjacent_pair_counts": {
+      "Analyze>Analyze": 2,
+      "Implement>Plan": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "a15f25a97df16ea611c6030244f9e3952c8486b4ab675063bcd2c146787103e3",
+     "question": "math500|math500_test/number_theory/572.json",
+     "native_label_count": 13,
+     "class_counts": {
+      "Implement": 5,
+      "Verify": 1,
+      "Analyze": 1,
+      "Monitor": 5,
+      "Plan": 1
+     },
+     "adjacent_pair_counts": {
+      "Implement>Verify": 1,
+      "Implement>Implement": 3,
+      "Monitor>Monitor": 2
+     },
+     "has_verify": true,
+     "has_explore": false,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "6e87b0906d10a38e217d2d0bbb14739b6a3ca58f4f504acad05094d5bb045eb4",
+     "question": "olympiad|olympiad_2926",
+     "native_label_count": 20,
+     "class_counts": {
+      "Monitor": 4,
+      "Read": 3,
+      "Explore": 1,
+      "Analyze": 5,
+      "Verify": 4,
+      "Plan": 1,
+      "Implement": 2
+     },
+     "adjacent_pair_counts": {
+      "Analyze>Analyze": 1,
+      "Verify>Verify": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "ece850668ebf77bdce5e560491725c7272e55f12d5239f28544610d7f5e189a4",
+     "question": "olympiad|olympiad_2403",
+     "native_label_count": 18,
+     "class_counts": {
+      "Implement": 4,
+      "Analyze": 3,
+      "Plan": 2,
+      "Read": 1,
+      "Verify": 5,
+      "Explore": 2,
+      "Monitor": 1
+     },
+     "adjacent_pair_counts": {
+      "Implement>Implement": 1,
+      "Implement>Plan": 1,
+      "Analyze>Read": 1,
+      "Verify>Explore": 1,
+      "Explore>Explore": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "573c5d63a8db5392c90265b7444bb8ef85c5199903fd49de0eb56ff2098844a0",
+     "question": "olympiad|olympiad_2565",
+     "native_label_count": 199,
+     "class_counts": {
+      "Explore": 80,
+      "Analyze": 36,
+      "Read": 24,
+      "Monitor": 25,
+      "Plan": 7,
+      "Implement": 23,
+      "Verify": 4
+     },
+     "adjacent_pair_counts": {
+      "Read>Read": 1,
+      "Analyze>Explore": 1,
+      "Explore>Implement": 1,
+      "Monitor>Explore": 2,
+      "Explore>Verify": 1,
+      "Implement>Implement": 1,
+      "Monitor>Monitor": 1,
+      "Analyze>Analyze": 1,
+      "Analyze>Read": 1,
+      "Read>Explore": 1,
+      "Explore>Monitor": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": true,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "b7e8a72e80ebb0722e5f3f076f2221a442bd547d2eec08f2fdab4f74a74d770e",
+     "question": "math500|math500_test/algebra/1078.json",
+     "native_label_count": 30,
+     "class_counts": {
+      "Read": 1,
+      "Implement": 6,
+      "Plan": 6,
+      "Verify": 5,
+      "Explore": 1,
+      "Monitor": 5,
+      "Analyze": 6
+     },
+     "adjacent_pair_counts": {
+      "Monitor>Monitor": 1,
+      "Plan>Analyze": 1,
+      "Implement>Verify": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "ad9fa446038bc3f2a3f04f1e89f7b258c551bc7a3835533d6630780081be950e",
+     "question": "amc23|amc23_44",
+     "native_label_count": 11,
+     "class_counts": {
+      "Monitor": 5,
+      "Plan": 1,
+      "Implement": 3,
+      "Analyze": 1,
+      "Verify": 1
+     },
+     "adjacent_pair_counts": {},
+     "has_verify": true,
+     "has_explore": false,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "8c0e9cb2133f62402ecb53bf4bfed0d54b63e9c67df8846549aec3e9299a0fc6",
+     "question": "olympiad|olympiad_2986",
+     "native_label_count": 36,
+     "class_counts": {
+      "Read": 6,
+      "Analyze": 5,
+      "Implement": 12,
+      "Monitor": 2,
+      "Verify": 4,
+      "Explore": 5,
+      "Plan": 2
+     },
+     "adjacent_pair_counts": {
+      "Verify>Monitor": 1,
+      "Plan>Implement": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "ca905577c9c3e553006ec5efe2d7a36b3d1a962e14112ff826b0ee455d6ef250",
+     "question": "math500|math500_test/precalculus/826.json",
+     "native_label_count": 43,
+     "class_counts": {
+      "Plan": 6,
+      "Implement": 12,
+      "Analyze": 10,
+      "Monitor": 5,
+      "Verify": 6,
+      "Read": 1,
+      "Explore": 3
+     },
+     "adjacent_pair_counts": {
+      "Implement>Monitor": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "1d19ffd264ade6de3f7a1a1a844e3fe1d34969b2646f228b8814034495257b39",
+     "question": "math500|math500_test/intermediate_algebra/1247.json",
+     "native_label_count": 66,
+     "class_counts": {
+      "Analyze": 24,
+      "Read": 4,
+      "Verify": 12,
+      "Implement": 11,
+      "Explore": 10,
+      "Monitor": 5
+     },
+     "adjacent_pair_counts": {
+      "Read>Verify": 1,
+      "Verify>Analyze": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "863d6a33f5ab93831e3eda619958d2c222cc268e4e7087591bbde6700dedd169",
+     "question": "minerva|minerva_218",
+     "native_label_count": 71,
+     "class_counts": {
+      "Analyze": 18,
+      "Explore": 17,
+      "Verify": 6,
+      "Monitor": 13,
+      "Implement": 10,
+      "Read": 5,
+      "Plan": 2
+     },
+     "adjacent_pair_counts": {
+      "Explore>Monitor": 1,
+      "Read>Monitor": 1,
+      "Read>Read": 1,
+      "Monitor>Plan": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "293f1fc8100fdd6fc8658527154b8f92d7d009760fa1634e00d5dfd54d158fd1",
+     "question": "minerva|minerva_156",
+     "native_label_count": 81,
+     "class_counts": {
+      "Read": 5,
+      "Analyze": 24,
+      "Plan": 2,
+      "Explore": 22,
+      "Implement": 14,
+      "Verify": 6,
+      "Monitor": 8
+     },
+     "adjacent_pair_counts": {
+      "Implement>Implement": 1,
+      "Verify>Verify": 1,
+      "Verify>Analyze": 1,
+      "Explore>Explore": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "f2b6b681e8360c91aea3114bc2c4957970881544618516282cf032906bcec93a",
+     "question": "math500|math500_test/prealgebra/1907.json",
+     "native_label_count": 18,
+     "class_counts": {
+      "Read": 2,
+      "Monitor": 4,
+      "Plan": 5,
+      "Implement": 5,
+      "Explore": 1,
+      "Verify": 1
+     },
+     "adjacent_pair_counts": {
+      "Read>Read": 1,
+      "Plan>Monitor": 2,
+      "Plan>Plan": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "476dcea3f2204b4c00e1f35ea23c7416f4d9502cfbb710d729adaf1609674374",
+     "question": "math500|math500_test/algebra/1787.json",
+     "native_label_count": 34,
+     "class_counts": {
+      "Monitor": 8,
+      "Read": 6,
+      "Plan": 4,
+      "Implement": 6,
+      "Verify": 2,
+      "Analyze": 7,
+      "Explore": 1
+     },
+     "adjacent_pair_counts": {
+      "Monitor>Read": 1,
+      "Monitor>Plan": 1,
+      "Implement>Verify": 1,
+      "Read>Monitor": 1,
+      "Analyze>Analyze": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "f59c27e97c5f8942becd2298f60a4c10903fe2e16aa9ee9f5181768025082ba7",
+     "question": "minerva|minerva_142",
+     "native_label_count": 12,
+     "class_counts": {
+      "Read": 3,
+      "Analyze": 2,
+      "Monitor": 2,
+      "Verify": 2,
+      "Plan": 2,
+      "Explore": 1
+     },
+     "adjacent_pair_counts": {},
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "f90ff1ef1dea4e42a82a4846bebc807c4c1e6b419aa2a08bc1fbbd3d6e2a9115",
+     "question": "olympiad|olympiad_2099",
+     "native_label_count": 137,
+     "class_counts": {
+      "Read": 9,
+      "Analyze": 36,
+      "Plan": 5,
+      "Verify": 23,
+      "Monitor": 10,
+      "Explore": 12,
+      "Implement": 42
+     },
+     "adjacent_pair_counts": {
+      "Analyze>Monitor": 1,
+      "Explore>Verify": 1,
+      "Implement>Implement": 2,
+      "Analyze>Implement": 1,
+      "Implement>Analyze": 1,
+      "Explore>Monitor": 1,
+      "Monitor>Implement": 1,
+      "Explore>Explore": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "aac1de523f024979dc4b47e8e6a021eae3a07298950347d636559a1cc56eecb2",
+     "question": "math500|math500_test/intermediate_algebra/117.json",
+     "native_label_count": 73,
+     "class_counts": {
+      "Analyze": 19,
+      "Read": 2,
+      "Implement": 29,
+      "Plan": 8,
+      "Verify": 7,
+      "Monitor": 6,
+      "Explore": 2
+     },
+     "adjacent_pair_counts": {
+      "Implement>Analyze": 1,
+      "Implement>Plan": 1,
+      "Implement>Verify": 1,
+      "Verify>Monitor": 1,
+      "Analyze>Monitor": 1,
+      "Analyze>Analyze": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "da6576675125a2eb3102586f503d9b2a0557fbdd17fae6f3ab63889c9b40bed0",
+     "question": "math500|math500_test/prealgebra/846.json",
+     "native_label_count": 16,
+     "class_counts": {
+      "Monitor": 5,
+      "Read": 1,
+      "Implement": 9,
+      "Plan": 1
+     },
+     "adjacent_pair_counts": {
+      "Implement>Implement": 1,
+      "Monitor>Monitor": 1
+     },
+     "has_verify": false,
+     "has_explore": false,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "6da642a3c262e565e7559eeaff03329e9c98ad23e8a5faa62c088c782bab15c8",
+     "question": "minerva|minerva_122",
+     "native_label_count": 17,
+     "class_counts": {
+      "Monitor": 4,
+      "Analyze": 2,
+      "Plan": 4,
+      "Implement": 7
+     },
+     "adjacent_pair_counts": {
+      "Analyze>Monitor": 1,
+      "Implement>Monitor": 1
+     },
+     "has_verify": false,
+     "has_explore": false,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "f2fc48bf4ae18e1eb81c3dc60e6f20217ea39b7969b16a0f91b0aa8cd7f39375",
+     "question": "math500|math500_test/counting_and_probability/51.json",
+     "native_label_count": 28,
+     "class_counts": {
+      "Read": 1,
+      "Monitor": 7,
+      "Analyze": 8,
+      "Implement": 8,
+      "Verify": 2,
+      "Plan": 2
+     },
+     "adjacent_pair_counts": {
+      "Read>Monitor": 1,
+      "Monitor>Analyze": 1,
+      "Analyze>Analyze": 1,
+      "Implement>Monitor": 1,
+      "Monitor>Monitor": 1
+     },
+     "has_verify": true,
+     "has_explore": false,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "d9f0a51a8931ce71c84a97e9ebc207ee5a0d8f78a3032728e5ae94e82d512320",
+     "question": "olympiad|olympiad_2507",
+     "native_label_count": 29,
+     "class_counts": {
+      "Read": 4,
+      "Verify": 1,
+      "Analyze": 7,
+      "Implement": 4,
+      "Plan": 3,
+      "Monitor": 8,
+      "Explore": 2
+     },
+     "adjacent_pair_counts": {
+      "Read>Read": 1,
+      "Monitor>Plan": 1,
+      "Plan>Monitor": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "3bca817ff06efa7ce589c437fd93d0817e8600b67c24601a1998956f0e370ab7",
+     "question": "olympiad|olympiad_2611",
+     "native_label_count": 135,
+     "class_counts": {
+      "Analyze": 20,
+      "Implement": 71,
+      "Plan": 3,
+      "Monitor": 7,
+      "Read": 4,
+      "Verify": 16,
+      "Explore": 14
+     },
+     "adjacent_pair_counts": {
+      "Read>Analyze": 1,
+      "Implement>Implement": 5,
+      "Verify>Implement": 3,
+      "Implement>Verify": 1,
+      "Explore>Analyze": 1,
+      "Analyze>Implement": 2
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "e12c442dcd0e64fb87f51dc56aa25e519886adf2d271a6259b015579ff920a32",
+     "question": "math500|math500_test/algebra/2430.json",
+     "native_label_count": 23,
+     "class_counts": {
+      "Plan": 3,
+      "Verify": 2,
+      "Implement": 9,
+      "Read": 1,
+      "Monitor": 5,
+      "Analyze": 3
+     },
+     "adjacent_pair_counts": {
+      "Verify>Implement": 1,
+      "Plan>Plan": 1
+     },
+     "has_verify": true,
+     "has_explore": false,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "3e36840f6387ac06fb46d7e324409868b10834c4975d1ef18ca615af0867dcb3",
+     "question": "math500|math500_test/prealgebra/1113.json",
+     "native_label_count": 28,
+     "class_counts": {
+      "Implement": 13,
+      "Plan": 6,
+      "Monitor": 5,
+      "Read": 1,
+      "Verify": 1,
+      "Explore": 1,
+      "Analyze": 1
+     },
+     "adjacent_pair_counts": {},
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "4b7569168251d62ee57cf8053b77f0c6563e425833a4d4763ad890e4d2e38bd6",
+     "question": "minerva|minerva_182",
+     "native_label_count": 53,
+     "class_counts": {
+      "Monitor": 4,
+      "Analyze": 25,
+      "Implement": 7,
+      "Plan": 6,
+      "Read": 4,
+      "Explore": 3,
+      "Verify": 4
+     },
+     "adjacent_pair_counts": {
+      "Plan>Analyze": 2,
+      "Analyze>Analyze": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "02f6b785f868d738ac88445f6e6972fab1f2d680977973d288584ecadc24f8d3",
+     "question": "math500|math500_test/algebra/694.json",
+     "native_label_count": 16,
+     "class_counts": {
+      "Analyze": 3,
+      "Implement": 3,
+      "Verify": 1,
+      "Monitor": 8,
+      "Read": 1
+     },
+     "adjacent_pair_counts": {
+      "Monitor>Monitor": 1
+     },
+     "has_verify": true,
+     "has_explore": false,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "0d36fc1aa107ef5a7b3bad5d01b4144fb96f17a05e48d024cdb48c0f09eb3dbc",
+     "question": "math500|math500_test/algebra/2779.json",
+     "native_label_count": 22,
+     "class_counts": {
+      "Implement": 12,
+      "Verify": 2,
+      "Monitor": 2,
+      "Analyze": 4,
+      "Plan": 1,
+      "Explore": 1
+     },
+     "adjacent_pair_counts": {
+      "Implement>Analyze": 1,
+      "Analyze>Analyze": 1,
+      "Implement>Plan": 1,
+      "Plan>Implement": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "139ff13193804cf5b5a16139f5e7f97669930ef54f05f6d9280528adc06a7f74",
+     "question": "math500|math500_test/precalculus/625.json",
+     "native_label_count": 21,
+     "class_counts": {
+      "Monitor": 6,
+      "Analyze": 2,
+      "Plan": 3,
+      "Read": 1,
+      "Verify": 3,
+      "Implement": 5,
+      "Explore": 1
+     },
+     "adjacent_pair_counts": {
+      "Plan>Read": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "2a66c785c0c332b46c0c2d1956828e70a49e77296fe8b32fb16d296d6fda7130",
+     "question": "olympiad|olympiad_2793",
+     "native_label_count": 167,
+     "class_counts": {
+      "Read": 6,
+      "Explore": 23,
+      "Monitor": 24,
+      "Analyze": 41,
+      "Implement": 49,
+      "Plan": 2,
+      "Verify": 22
+     },
+     "adjacent_pair_counts": {
+      "Implement>Implement": 4,
+      "Implement>Monitor": 1,
+      "Verify>Monitor": 1,
+      "Verify>Analyze": 1,
+      "Verify>Verify": 1,
+      "Analyze>Analyze": 1,
+      "Verify>Implement": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "8c340c0e70805660c414198aba8d3ed8ba2ce145598bf4c9be74d431e931592e",
+     "question": "minerva|minerva_10",
+     "native_label_count": 23,
+     "class_counts": {
+      "Monitor": 8,
+      "Analyze": 6,
+      "Plan": 2,
+      "Read": 2,
+      "Verify": 3,
+      "Implement": 1,
+      "Explore": 1
+     },
+     "adjacent_pair_counts": {
+      "Plan>Analyze": 1,
+      "Analyze>Monitor": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "92385ab1bb8c98733848146b54e59f0d72a4ace7b9a3941a859c3531e0e4afa8",
+     "question": "olympiad|olympiad_2765",
+     "native_label_count": 66,
+     "class_counts": {
+      "Monitor": 8,
+      "Read": 11,
+      "Analyze": 20,
+      "Verify": 11,
+      "Implement": 9,
+      "Explore": 6,
+      "Plan": 1
+     },
+     "adjacent_pair_counts": {
+      "Read>Analyze": 1,
+      "Explore>Explore": 1,
+      "Explore>Verify": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "f09f7f735bd4d8e9b6eef5009870bc52dfa0a5cc2aefdf3a2ab0b5db95b9fb58",
+     "question": "minerva|minerva_208",
+     "native_label_count": 60,
+     "class_counts": {
+      "Analyze": 13,
+      "Monitor": 6,
+      "Implement": 19,
+      "Verify": 7,
+      "Plan": 4,
+      "Explore": 7,
+      "Read": 4
+     },
+     "adjacent_pair_counts": {
+      "Implement>Implement": 1,
+      "Analyze>Analyze": 1,
+      "Explore>Implement": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": true,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "82a2015c705a4ff6a07710b375311669b90ea0530c2ba616a170f284f8c2fc65",
+     "question": "olympiad|olympiad_1678",
+     "native_label_count": 115,
+     "class_counts": {
+      "Analyze": 27,
+      "Plan": 7,
+      "Verify": 21,
+      "Implement": 41,
+      "Monitor": 7,
+      "Explore": 10,
+      "Read": 2
+     },
+     "adjacent_pair_counts": {
+      "Implement>Verify": 1,
+      "Verify>Verify": 1,
+      "Plan>Implement": 1,
+      "Implement>Implement": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "a6f53194ad809ecb4d1c28177565a6e3596a3490ecc879e52efc0d2a16ec8e09",
+     "question": "minerva|minerva_87",
+     "native_label_count": 20,
+     "class_counts": {
+      "Read": 1,
+      "Monitor": 9,
+      "Analyze": 1,
+      "Explore": 1,
+      "Implement": 6,
+      "Plan": 1,
+      "Verify": 1
+     },
+     "adjacent_pair_counts": {
+      "Implement>Monitor": 1,
+      "Implement>Plan": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "5329ec1903a20a3d6a2e38d62429e6a25956b7afee2c775d30a9eb182ac9cb62",
+     "question": "minerva|minerva_212",
+     "native_label_count": 80,
+     "class_counts": {
+      "Monitor": 12,
+      "Analyze": 9,
+      "Explore": 24,
+      "Verify": 9,
+      "Plan": 1,
+      "Implement": 22,
+      "Read": 3
+     },
+     "adjacent_pair_counts": {
+      "Explore>Explore": 1,
+      "Explore>Verify": 1,
+      "Analyze>Implement": 1,
+      "Implement>Implement": 1,
+      "Verify>Verify": 1,
+      "Explore>Monitor": 1,
+      "Implement>Verify": 1,
+      "Explore>Analyze": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "5210288df37aa3efe0d28c28ec662156fb840cdacaac7a163157896c43465252",
+     "question": "olympiad|olympiad_3021",
+     "native_label_count": 83,
+     "class_counts": {
+      "Plan": 2,
+      "Analyze": 28,
+      "Read": 6,
+      "Verify": 11,
+      "Implement": 9,
+      "Monitor": 11,
+      "Explore": 16
+     },
+     "adjacent_pair_counts": {
+      "Analyze>Analyze": 1,
+      "Verify>Implement": 1,
+      "Implement>Verify": 1,
+      "Explore>Verify": 1,
+      "Explore>Monitor": 2,
+      "Monitor>Explore": 1,
+      "Explore>Analyze": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "68adf5f18e444cffc8f058b8de6767a55c487aca16676159895d0c59e559a21e",
+     "question": "olympiad|olympiad_2922",
+     "native_label_count": 16,
+     "class_counts": {
+      "Monitor": 2,
+      "Plan": 3,
+      "Verify": 3,
+      "Explore": 1,
+      "Implement": 7
+     },
+     "adjacent_pair_counts": {
+      "Implement>Implement": 3
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "723c8307d524b306aebeefc0ca3f94b933103b0df389ac4ef57e34c6fe6ba30a",
+     "question": "olympiad|olympiad_2902",
+     "native_label_count": 64,
+     "class_counts": {
+      "Verify": 9,
+      "Analyze": 19,
+      "Implement": 10,
+      "Monitor": 9,
+      "Explore": 12,
+      "Read": 4,
+      "Plan": 1
+     },
+     "adjacent_pair_counts": {
+      "Analyze>Analyze": 1,
+      "Analyze>Implement": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "6dab3ec8e79764b6ae10c0e7f1f57f7db5ee7748d0b76c592c7f6b48ab88a5f5",
+     "question": "olympiad|olympiad_2845",
+     "native_label_count": 39,
+     "class_counts": {
+      "Analyze": 12,
+      "Verify": 9,
+      "Implement": 7,
+      "Explore": 7,
+      "Monitor": 3,
+      "Read": 1
+     },
+     "adjacent_pair_counts": {
+      "Explore>Explore": 1,
+      "Monitor>Explore": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "0a629797b37b0832cb1b3fa36246fa29d5a5fdbd368303cbb7a16f8d2a909e8b",
+     "question": "olympiad|olympiad_1873",
+     "native_label_count": 136,
+     "class_counts": {
+      "Analyze": 34,
+      "Implement": 40,
+      "Monitor": 17,
+      "Plan": 7,
+      "Verify": 22,
+      "Explore": 15,
+      "Read": 1
+     },
+     "adjacent_pair_counts": {
+      "Explore>Explore": 1,
+      "Implement>Verify": 1,
+      "Implement>Explore": 1,
+      "Verify>Monitor": 1,
+      "Monitor>Verify": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "f019a1a7dc1da52106439a299e648136b7dc0bb6af718304a729e8d28a4686e5",
+     "question": "math500|math500_test/intermediate_algebra/1992.json",
+     "native_label_count": 21,
+     "class_counts": {
+      "Monitor": 5,
+      "Implement": 8,
+      "Analyze": 2,
+      "Plan": 2,
+      "Verify": 3,
+      "Read": 1
+     },
+     "adjacent_pair_counts": {
+      "Monitor>Monitor": 1
+     },
+     "has_verify": true,
+     "has_explore": false,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "519a3efdf6978552dd870f7326ac7612fbd1deff65c33546f750a2ba9d20f17f",
+     "question": "math500|math500_test/geometry/456.json",
+     "native_label_count": 18,
+     "class_counts": {
+      "Monitor": 6,
+      "Plan": 5,
+      "Implement": 3,
+      "Analyze": 3,
+      "Verify": 1
+     },
+     "adjacent_pair_counts": {
+      "Monitor>Plan": 1,
+      "Plan>Plan": 1
+     },
+     "has_verify": true,
+     "has_explore": false,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "1b2d072ed8789a3f4fa408417c5d897f4e04e87c451ef48760af3954a6168fe3",
+     "question": "olympiad|olympiad_3022",
+     "native_label_count": 36,
+     "class_counts": {
+      "Plan": 2,
+      "Monitor": 6,
+      "Verify": 8,
+      "Implement": 7,
+      "Read": 1,
+      "Analyze": 9,
+      "Explore": 3
+     },
+     "adjacent_pair_counts": {
+      "Read>Analyze": 1,
+      "Monitor>Monitor": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "37304433cbd07bd5f0c15aa62a130c89d99d82f032b56365b730a42e5e2355c9",
+     "question": "olympiad|olympiad_2710",
+     "native_label_count": 69,
+     "class_counts": {
+      "Analyze": 18,
+      "Implement": 15,
+      "Verify": 11,
+      "Explore": 6,
+      "Plan": 4,
+      "Monitor": 6,
+      "Read": 9
+     },
+     "adjacent_pair_counts": {
+      "Implement>Implement": 1,
+      "Explore>Read": 1,
+      "Implement>Analyze": 1,
+      "Implement>Monitor": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "c9d920f67d3b136983d191f299f94396c92bd6ecfdb7e43f9283a839f166c7a8",
+     "question": "olympiad|olympiad_2787",
+     "native_label_count": 19,
+     "class_counts": {
+      "Read": 1,
+      "Implement": 8,
+      "Plan": 2,
+      "Verify": 4,
+      "Analyze": 3,
+      "Monitor": 1
+     },
+     "adjacent_pair_counts": {
+      "Implement>Analyze": 1
+     },
+     "has_verify": true,
+     "has_explore": false,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "93834b62716f149310fbb8c07f25c671747421158abd265df2c7a4e1fa9e6e78",
+     "question": "olympiad|olympiad_2482",
+     "native_label_count": 23,
+     "class_counts": {
+      "Plan": 4,
+      "Implement": 8,
+      "Monitor": 5,
+      "Verify": 4,
+      "Analyze": 1,
+      "Read": 1
+     },
+     "adjacent_pair_counts": {
+      "Implement>Plan": 1,
+      "Verify>Implement": 1,
+      "Monitor>Plan": 1
+     },
+     "has_verify": true,
+     "has_explore": false,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "ebeee91a23bf643c5f2098d59507e4ba5f23ed9a778aeb7764ec89ab04001511",
+     "question": "minerva|minerva_181",
+     "native_label_count": 21,
+     "class_counts": {
+      "Read": 4,
+      "Monitor": 5,
+      "Analyze": 3,
+      "Implement": 7,
+      "Verify": 1,
+      "Plan": 1
+     },
+     "adjacent_pair_counts": {
+      "Implement>Verify": 1,
+      "Analyze>Analyze": 1
+     },
+     "has_verify": true,
+     "has_explore": false,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "d869cbda16168b035f1e511dae4276b5d9c03be1dd635d8b9dfe4d93172f01a5",
+     "question": "olympiad|olympiad_2726",
+     "native_label_count": 66,
+     "class_counts": {
+      "Analyze": 16,
+      "Explore": 14,
+      "Verify": 9,
+      "Implement": 17,
+      "Monitor": 6,
+      "Read": 4
+     },
+     "adjacent_pair_counts": {
+      "Explore>Analyze": 2,
+      "Verify>Verify": 1,
+      "Analyze>Analyze": 1,
+      "Implement>Implement": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "baa2306ff56de663d6d5a244bf4b6f4fc4f89070e774f9898dd601fb742f8be0",
+     "question": "olympiad|olympiad_2275",
+     "native_label_count": 19,
+     "class_counts": {
+      "Read": 2,
+      "Plan": 3,
+      "Implement": 4,
+      "Monitor": 7,
+      "Verify": 2,
+      "Analyze": 1
+     },
+     "adjacent_pair_counts": {
+      "Monitor>Monitor": 3,
+      "Implement>Plan": 1,
+      "Verify>Monitor": 1
+     },
+     "has_verify": true,
+     "has_explore": false,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "20ae881c88575e3954ad8aca1b66792b34f718a9b70c89a852b91e52ecdc8bd2",
+     "question": "olympiad|olympiad_2738",
+     "native_label_count": 76,
+     "class_counts": {
+      "Plan": 3,
+      "Implement": 26,
+      "Verify": 18,
+      "Analyze": 17,
+      "Explore": 6,
+      "Monitor": 6
+     },
+     "adjacent_pair_counts": {
+      "Implement>Implement": 2,
+      "Verify>Monitor": 1,
+      "Analyze>Verify": 1,
+      "Monitor>Implement": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "ff14acaaf8deeaed7a75826e9a5a8a48649b7a59396fd972b1e68acc33c1d456",
+     "question": "olympiad|olympiad_3044",
+     "native_label_count": 23,
+     "class_counts": {
+      "Plan": 3,
+      "Implement": 8,
+      "Monitor": 3,
+      "Verify": 2,
+      "Read": 1,
+      "Analyze": 3,
+      "Explore": 3
+     },
+     "adjacent_pair_counts": {
+      "Implement>Analyze": 1,
+      "Analyze>Analyze": 1,
+      "Explore>Explore": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "e85fdbe55e83399dbba718c5765f05d14672bec6ee821f3ee4d14f573869c075",
+     "question": "olympiad|olympiad_2325",
+     "native_label_count": 18,
+     "class_counts": {
+      "Read": 3,
+      "Implement": 5,
+      "Verify": 5,
+      "Analyze": 1,
+      "Monitor": 4
+     },
+     "adjacent_pair_counts": {
+      "Monitor>Monitor": 1,
+      "Verify>Implement": 1
+     },
+     "has_verify": true,
+     "has_explore": false,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "0c10504b81dba5b6c5aa617722ae0d6e5a8fe88d2b86580be3096ba3971a08d3",
+     "question": "minerva|minerva_240",
+     "native_label_count": 64,
+     "class_counts": {
+      "Analyze": 12,
+      "Read": 7,
+      "Explore": 10,
+      "Implement": 18,
+      "Monitor": 6,
+      "Plan": 8,
+      "Verify": 3
+     },
+     "adjacent_pair_counts": {
+      "Plan>Analyze": 1,
+      "Plan>Implement": 1,
+      "Explore>Analyze": 2,
+      "Implement>Plan": 1,
+      "Analyze>Analyze": 1,
+      "Read>Verify": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "eaadca3ffe7a74cdfaeb14dea8aafa331bb2a3b953d1f6073ad99c60351792f3",
+     "question": "olympiad|olympiad_3006",
+     "native_label_count": 116,
+     "class_counts": {
+      "Analyze": 54,
+      "Monitor": 6,
+      "Explore": 11,
+      "Read": 4,
+      "Verify": 17,
+      "Plan": 3,
+      "Implement": 21
+     },
+     "adjacent_pair_counts": {
+      "Analyze>Read": 1,
+      "Implement>Implement": 1,
+      "Implement>Explore": 1,
+      "Analyze>Analyze": 2,
+      "Monitor>Analyze": 1,
+      "Verify>Verify": 1,
+      "Analyze>Implement": 1,
+      "Verify>Implement": 1,
+      "Verify>Analyze": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "7de3357f28b8cdcb7895f6a78e193b8f5ea0f94c6649b6322cd7ddfc48ff40a4",
+     "question": "amc23|amc23_47",
+     "native_label_count": 79,
+     "class_counts": {
+      "Analyze": 32,
+      "Plan": 3,
+      "Verify": 12,
+      "Monitor": 5,
+      "Implement": 21,
+      "Read": 2,
+      "Explore": 4
+     },
+     "adjacent_pair_counts": {
+      "Implement>Analyze": 1,
+      "Analyze>Verify": 1,
+      "Analyze>Implement": 1,
+      "Verify>Analyze": 1,
+      "Implement>Verify": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "58f4134908532d6cadfbab5f5bf20684a78ee61d46d6f9a528275edcd8e659f6",
+     "question": "olympiad|olympiad_2084",
+     "native_label_count": 127,
+     "class_counts": {
+      "Plan": 7,
+      "Verify": 23,
+      "Implement": 18,
+      "Explore": 23,
+      "Monitor": 10,
+      "Analyze": 44,
+      "Read": 2
+     },
+     "adjacent_pair_counts": {
+      "Verify>Analyze": 1,
+      "Explore>Analyze": 1,
+      "Plan>Verify": 1,
+      "Implement>Monitor": 1,
+      "Implement>Explore": 1,
+      "Explore>Implement": 1,
+      "Analyze>Analyze": 2,
+      "Analyze>Explore": 1,
+      "Analyze>Verify": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": true,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "9eb7781d6348824404e1b2ae1a6856d724a6fa518e207a7018831eba047636e1",
+     "question": "olympiad|olympiad_2924",
+     "native_label_count": 74,
+     "class_counts": {
+      "Verify": 10,
+      "Analyze": 15,
+      "Explore": 5,
+      "Implement": 27,
+      "Monitor": 9,
+      "Plan": 5,
+      "Read": 3
+     },
+     "adjacent_pair_counts": {
+      "Analyze>Analyze": 1,
+      "Implement>Implement": 2
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "ead07286bfe177ff4eb1cec70c5e667eafa10bb60bb059e178629e805680db03",
+     "question": "math500|math500_test/precalculus/580.json",
+     "native_label_count": 35,
+     "class_counts": {
+      "Read": 4,
+      "Plan": 6,
+      "Analyze": 4,
+      "Monitor": 4,
+      "Implement": 14,
+      "Verify": 2,
+      "Explore": 1
+     },
+     "adjacent_pair_counts": {
+      "Plan>Plan": 1,
+      "Implement>Implement": 2,
+      "Read>Monitor": 1,
+      "Implement>Plan": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "cd634e1eb29f9696a8cec5fea1c1279dc88fba679e733bdd10fd1eec308d874e",
+     "question": "math500|math500_test/algebra/2159.json",
+     "native_label_count": 36,
+     "class_counts": {
+      "Plan": 5,
+      "Monitor": 12,
+      "Verify": 3,
+      "Analyze": 4,
+      "Implement": 11,
+      "Explore": 1
+     },
+     "adjacent_pair_counts": {
+      "Verify>Implement": 1,
+      "Implement>Implement": 4
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "4ec37a9bf13f218b67e525ce2e53b4efd43dafa91005ee4918ea5f0a7eca8f3e",
+     "question": "math500|math500_test/intermediate_algebra/1123.json",
+     "native_label_count": 36,
+     "class_counts": {
+      "Implement": 12,
+      "Verify": 8,
+      "Analyze": 10,
+      "Monitor": 4,
+      "Explore": 1,
+      "Plan": 1
+     },
+     "adjacent_pair_counts": {
+      "Verify>Monitor": 1,
+      "Implement>Explore": 1,
+      "Verify>Implement": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "033677ab37dc608db0de69e4bea24dd2b33e11678c91c83d65128c47da20b130",
+     "question": "olympiad|olympiad_2660",
+     "native_label_count": 56,
+     "class_counts": {
+      "Read": 6,
+      "Implement": 6,
+      "Analyze": 20,
+      "Monitor": 10,
+      "Verify": 5,
+      "Explore": 9
+     },
+     "adjacent_pair_counts": {
+      "Analyze>Analyze": 2,
+      "Explore>Explore": 1,
+      "Read>Explore": 1,
+      "Monitor>Explore": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "93a5f57a642f8129090ef3f028412681faad3d2b3f7c165017b622b1c13dcb85",
+     "question": "math500|math500_test/precalculus/398.json",
+     "native_label_count": 40,
+     "class_counts": {
+      "Read": 2,
+      "Analyze": 19,
+      "Plan": 5,
+      "Implement": 6,
+      "Verify": 2,
+      "Explore": 2,
+      "Monitor": 4
+     },
+     "adjacent_pair_counts": {
+      "Analyze>Plan": 1,
+      "Verify>Analyze": 1,
+      "Implement>Analyze": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "9da20393d6fafe31d14af93f4d9916dce63a9a2253b75a29731ab737cd389f3a",
+     "question": "olympiad|olympiad_2472",
+     "native_label_count": 109,
+     "class_counts": {
+      "Implement": 29,
+      "Plan": 3,
+      "Analyze": 44,
+      "Verify": 5,
+      "Monitor": 10,
+      "Read": 9,
+      "Explore": 9
+     },
+     "adjacent_pair_counts": {
+      "Verify>Analyze": 1,
+      "Implement>Implement": 1,
+      "Analyze>Analyze": 1,
+      "Monitor>Implement": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "faf6b4fb64c1ff5778a748a600a597717cd675ac8b0cf82743584c4abd7c0978",
+     "question": "olympiad|olympiad_2904",
+     "native_label_count": 12,
+     "class_counts": {
+      "Read": 2,
+      "Implement": 6,
+      "Verify": 2,
+      "Plan": 2
+     },
+     "adjacent_pair_counts": {
+      "Implement>Verify": 1,
+      "Implement>Implement": 1,
+      "Plan>Plan": 1
+     },
+     "has_verify": true,
+     "has_explore": false,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "b5a50deaf1d3bcc5760258ed4b0962746088e863f9d4cfb0055da6239fbd043b",
+     "question": "minerva|minerva_237",
+     "native_label_count": 28,
+     "class_counts": {
+      "Read": 3,
+      "Implement": 8,
+      "Verify": 2,
+      "Monitor": 12,
+      "Plan": 3
+     },
+     "adjacent_pair_counts": {
+      "Read>Read": 1,
+      "Monitor>Monitor": 1,
+      "Plan>Monitor": 1,
+      "Verify>Monitor": 1
+     },
+     "has_verify": true,
+     "has_explore": false,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "680c23f1c39149e7f6ce30d7a2de26ada3d64d9702801f7866a5c129d9081c5f",
+     "question": "olympiad|olympiad_2706",
+     "native_label_count": 31,
+     "class_counts": {
+      "Monitor": 4,
+      "Analyze": 10,
+      "Implement": 9,
+      "Verify": 5,
+      "Plan": 3
+     },
+     "adjacent_pair_counts": {
+      "Plan>Analyze": 2,
+      "Analyze>Analyze": 1,
+      "Implement>Implement": 1,
+      "Monitor>Analyze": 1
+     },
+     "has_verify": true,
+     "has_explore": false,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "1b4e14eb6d84d788673e25b06f1a0fa5fb5110f6c6fd6bb4156c619976bd0b69",
+     "question": "olympiad|olympiad_2501",
+     "native_label_count": 63,
+     "class_counts": {
+      "Analyze": 11,
+      "Implement": 24,
+      "Plan": 4,
+      "Verify": 12,
+      "Explore": 5,
+      "Monitor": 7
+     },
+     "adjacent_pair_counts": {
+      "Implement>Analyze": 1,
+      "Implement>Verify": 2,
+      "Monitor>Explore": 1,
+      "Explore>Monitor": 1,
+      "Implement>Explore": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "ac81df35ee35f8f23aae2c9b7ab24e3c0cdd3f1a6ad0f4810537eb3badb4e963",
+     "question": "math500|math500_test/prealgebra/631.json",
+     "native_label_count": 106,
+     "class_counts": {
+      "Read": 10,
+      "Analyze": 38,
+      "Monitor": 11,
+      "Implement": 18,
+      "Verify": 14,
+      "Plan": 3,
+      "Explore": 12
+     },
+     "adjacent_pair_counts": {
+      "Verify>Analyze": 1,
+      "Analyze>Verify": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "74c871fc723b4d06bfb3585736c72fb0253dee22023236a4519b8ef9aa3d4ec5",
+     "question": "aime25|aime25_29",
+     "native_label_count": 311,
+     "class_counts": {
+      "Monitor": 34,
+      "Analyze": 126,
+      "Implement": 49,
+      "Plan": 10,
+      "Read": 10,
+      "Verify": 31,
+      "Explore": 51
+     },
+     "adjacent_pair_counts": {
+      "Read>Plan": 1,
+      "Analyze>Analyze": 3,
+      "Monitor>Monitor": 2,
+      "Explore>Explore": 1,
+      "Implement>Verify": 1,
+      "Implement>Implement": 2,
+      "Implement>Analyze": 1,
+      "Analyze>Explore": 2,
+      "Explore>Implement": 1,
+      "Monitor>Verify": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": true,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "4672d62a469b8e12dcb9ed04bdfed126109bf6774b780c0a4112ae773f2b07eb",
+     "question": "olympiad|olympiad_2969",
+     "native_label_count": 66,
+     "class_counts": {
+      "Read": 8,
+      "Plan": 5,
+      "Verify": 9,
+      "Explore": 13,
+      "Implement": 16,
+      "Monitor": 7,
+      "Analyze": 8
+     },
+     "adjacent_pair_counts": {
+      "Monitor>Explore": 1,
+      "Plan>Plan": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "17e16f440cca7aae3351c1b5cbaa640d04c9e5bff0ca9e367ae4f2b7de4ca672",
+     "question": "olympiad|olympiad_2022",
+     "native_label_count": 146,
+     "class_counts": {
+      "Analyze": 50,
+      "Implement": 40,
+      "Monitor": 11,
+      "Verify": 19,
+      "Explore": 16,
+      "Read": 4,
+      "Plan": 6
+     },
+     "adjacent_pair_counts": {
+      "Analyze>Analyze": 3,
+      "Explore>Analyze": 1,
+      "Implement>Verify": 1,
+      "Verify>Analyze": 1,
+      "Verify>Implement": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "37abf1e06bf9d557ec84ed668da3373151332e7d3e4ea104ce0fbf4c03cf96f7",
+     "question": "math500|math500_test/precalculus/1146.json",
+     "native_label_count": 38,
+     "class_counts": {
+      "Implement": 21,
+      "Analyze": 8,
+      "Read": 1,
+      "Explore": 4,
+      "Monitor": 2,
+      "Verify": 1,
+      "Plan": 1
+     },
+     "adjacent_pair_counts": {
+      "Implement>Analyze": 2,
+      "Implement>Explore": 1,
+      "Explore>Monitor": 1,
+      "Explore>Analyze": 1,
+      "Analyze>Implement": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "696619bf8bcc6f8e9e8dff468f52f7d444dd976f6883fd2b1909dd90cb9e802d",
+     "question": "olympiad|olympiad_2082",
+     "native_label_count": 228,
+     "class_counts": {
+      "Analyze": 96,
+      "Implement": 35,
+      "Explore": 39,
+      "Verify": 20,
+      "Plan": 13,
+      "Read": 4,
+      "Monitor": 21
+     },
+     "adjacent_pair_counts": {
+      "Analyze>Explore": 1,
+      "Plan>Explore": 1,
+      "Analyze>Read": 1,
+      "Explore>Explore": 1,
+      "Implement>Analyze": 1,
+      "Explore>Implement": 1,
+      "Explore>Monitor": 1,
+      "Monitor>Plan": 1,
+      "Explore>Verify": 1,
+      "Explore>Analyze": 1,
+      "Implement>Verify": 1,
+      "Monitor>Analyze": 2,
+      "Verify>Verify": 1,
+      "Monitor>Explore": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": true,
+     "has_adjacent_candidate_to_verify_upper_bound": true
+    },
+    {
+     "family": "6a43ad2dbf37dd48dbd92e20415fa9087c11fa4a655f2b6f267dac5819739e25",
+     "question": "math500|math500_test/number_theory/1032.json",
+     "native_label_count": 19,
+     "class_counts": {
+      "Read": 1,
+      "Analyze": 8,
+      "Explore": 3,
+      "Implement": 1,
+      "Monitor": 3,
+      "Plan": 1,
+      "Verify": 2
+     },
+     "adjacent_pair_counts": {
+      "Explore>Implement": 1,
+      "Plan>Analyze": 1,
+      "Verify>Monitor": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": true,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "865d6da756ccaad34c66cae6d3413fe3c993434bd4417f0e5fae8acd0e35f521",
+     "question": "minerva|minerva_54",
+     "native_label_count": 33,
+     "class_counts": {
+      "Analyze": 6,
+      "Implement": 9,
+      "Monitor": 5,
+      "Read": 3,
+      "Plan": 5,
+      "Verify": 4,
+      "Explore": 1
+     },
+     "adjacent_pair_counts": {
+      "Analyze>Implement": 1,
+      "Read>Plan": 1,
+      "Verify>Implement": 1
+     },
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    },
+    {
+     "family": "210d79679d8cb47cc46dba40c4fc3f5e1a2aeb17270032525ee5ad0c8880464a",
+     "question": "olympiad|olympiad_2300",
+     "native_label_count": 53,
+     "class_counts": {
+      "Analyze": 13,
+      "Monitor": 6,
+      "Read": 5,
+      "Implement": 8,
+      "Verify": 12,
+      "Explore": 7,
+      "Plan": 2
+     },
+     "adjacent_pair_counts": {},
+     "has_verify": true,
+     "has_explore": true,
+     "has_plan_or_implement": true,
+     "has_adjacent_explore_to_commit": false,
+     "has_adjacent_candidate_to_verify_upper_bound": false
+    }
+   ]
+  }
+ }
+}

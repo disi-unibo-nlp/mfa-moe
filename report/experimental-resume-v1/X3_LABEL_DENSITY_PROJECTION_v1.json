@@ -1,0 +1,633 @@
+{
+ "schema": "legacy-X3-native-label-density-projection-v1",
+ "status": "COMPLETE_NATIVE_PROXY",
+ "job_id": "59204465",
+ "price_sha256": "a0d1306698d74e2bb2c4b252ad04ca306cec03fdb3af6fd021ff439758b38eef",
+ "eligibility_sha256": "bf1425d987cbea417115574928ee5a2ece46c3c194f1e0d6280cf6ae53381508",
+ "selection_sha256": "0ecb13095d5ef60fd83270d2017150c6cdcd7a5c2cc3b79b1dd126ebf7cfd122",
+ "tokenizer_sha256": "5f9e4d4901a92b997e463c1f46055088b6cca5ca61a6522d1b9f64c4bb81cb42",
+ "window": 512,
+ "native_sources": 77,
+ "native_units": 2538,
+ "two_seed_five_arm_proxy_units": 25380,
+ "rows": [
+  {
+   "question": "olympiad|olympiad_2349",
+   "long_endpoint": true,
+   "native_512_units": 18,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 16652,
+   "parent_replay_sha256": "e65daa9935a30f63b5b244d4c88c85128e6bf6bfc33a1a3b44ee479da723ac7d"
+  },
+  {
+   "question": "olympiad|olympiad_2986",
+   "long_endpoint": true,
+   "native_512_units": 38,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 2570,
+   "parent_replay_sha256": "14bf8b38edc81a61446a9e75a467b006bf2cc4e0c05c32f20a5db48982e45f8e"
+  },
+  {
+   "question": "aime24|aime24_65",
+   "long_endpoint": true,
+   "native_512_units": 35,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 10542,
+   "parent_replay_sha256": "2b79e2941fbb08496e49f6d1e57d1849b7f46c00b69d5ea6785a99fa67e63e28"
+  },
+  {
+   "question": "olympiad|olympiad_2790",
+   "long_endpoint": true,
+   "native_512_units": 35,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 12675,
+   "parent_replay_sha256": "8e8d91a22f8532f7594d385df2c7f561104a1fe7d98b12c3f03226c8b53f5d00"
+  },
+  {
+   "question": "olympiad|olympiad_3082",
+   "long_endpoint": true,
+   "native_512_units": 34,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 28511,
+   "parent_replay_sha256": "9085d24dfa4e3ab491388a62ca18963c8c67e50bcafa77adf982758ed9f99792"
+  },
+  {
+   "question": "olympiad|olympiad_2848",
+   "long_endpoint": true,
+   "native_512_units": 30,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 11999,
+   "parent_replay_sha256": "40a825a135dcbc92c90ee7861c3cdf77c0e3833f06f4bff7f53f58743c3f6e69"
+  },
+  {
+   "question": "olympiad|olympiad_2126",
+   "long_endpoint": true,
+   "native_512_units": 30,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 27750,
+   "parent_replay_sha256": "e1c9c96cd32ea1eb95305a79c86d8d32470d4cd0e91cdbd6cf2bcf6232c2bc6e"
+  },
+  {
+   "question": "aime25|aime25_2",
+   "long_endpoint": true,
+   "native_512_units": 37,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 9104,
+   "parent_replay_sha256": "45fc20a95f4bfe298a81e56f7f09f7bec4c27372bf34f28be5f75a4c569f42c4"
+  },
+  {
+   "question": "olympiad|olympiad_2924",
+   "long_endpoint": true,
+   "native_512_units": 31,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 10940,
+   "parent_replay_sha256": "e5df79dfe1fbffeed3177970c11192857210f866b07ff4eba0942e8e01a6437f"
+  },
+  {
+   "question": "olympiad|olympiad_2738",
+   "long_endpoint": true,
+   "native_512_units": 38,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 13226,
+   "parent_replay_sha256": "d28ec680134fa88fadaeabfebf1d58678502b02b4ce1e9f3d3e9c0f6e9a3bb15"
+  },
+  {
+   "question": "olympiad|olympiad_2996",
+   "long_endpoint": true,
+   "native_512_units": 33,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 14546,
+   "parent_replay_sha256": "07f934cb46311f09f6fff520135b3c3cb0b91f480d92707f2e9fd9d83f563278"
+  },
+  {
+   "question": "olympiad|olympiad_2748",
+   "long_endpoint": true,
+   "native_512_units": 24,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 13255,
+   "parent_replay_sha256": "58970d15181d3481044fc8f7c3cc06b1a8446f85d7eebc22f14f1b7a9b0b57ae"
+  },
+  {
+   "question": "aime25|aime25_4",
+   "long_endpoint": true,
+   "native_512_units": 24,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 21985,
+   "parent_replay_sha256": "be116eff6542ec8427ffaae2255a248526ca83f3b674c7b8acbc9efa91df65d5"
+  },
+  {
+   "question": "olympiad|olympiad_2994",
+   "long_endpoint": true,
+   "native_512_units": 55,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 24714,
+   "parent_replay_sha256": "804bb26b412ac3295936beca4bda78adf2b2313a4a9b9889faf729b4c91d97bd"
+  },
+  {
+   "question": "olympiad|olympiad_3080",
+   "long_endpoint": true,
+   "native_512_units": 25,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 20694,
+   "parent_replay_sha256": "abf22be474e8f96595fdfcfd3cc1387e7ecde58998d85b019fa0b795fa5f59c9"
+  },
+  {
+   "question": "olympiad|olympiad_2523",
+   "long_endpoint": true,
+   "native_512_units": 37,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 3621,
+   "parent_replay_sha256": "78bc9bf73dd76396e32b977189f3b82a47ecdf530c05bd380c60061477d04f1b"
+  },
+  {
+   "question": "olympiad|olympiad_2713",
+   "long_endpoint": true,
+   "native_512_units": 24,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 17299,
+   "parent_replay_sha256": "18849270a27882eaee7743f47e9f19f2509311075bd834fecd96a20d3ebf5125"
+  },
+  {
+   "question": "olympiad|olympiad_2739",
+   "long_endpoint": true,
+   "native_512_units": 24,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 7964,
+   "parent_replay_sha256": "89a797145b6b5c345d2665642b9faae84f18777f2d61c60d7110a10759eead95"
+  },
+  {
+   "question": "olympiad|olympiad_3022",
+   "long_endpoint": true,
+   "native_512_units": 36,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 1348,
+   "parent_replay_sha256": "79240578ab18a35b4a282164d738a86e2d8720124f4d0675e563156619035033"
+  },
+  {
+   "question": "olympiad|olympiad_2489",
+   "long_endpoint": true,
+   "native_512_units": 44,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 12803,
+   "parent_replay_sha256": "ecf1b2604c34acf30ae37a36f923ae953ee62c7220e16e46519e950abb4fccfb"
+  },
+  {
+   "question": "olympiad|olympiad_2024",
+   "long_endpoint": true,
+   "native_512_units": 30,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 28517,
+   "parent_replay_sha256": "3d4e6b969f0f8f4928d0459c447d91e0ce71c58849abd18820feb2721144ca5c"
+  },
+  {
+   "question": "olympiad|olympiad_2469",
+   "long_endpoint": true,
+   "native_512_units": 16,
+   "native_window_reasoning_tokens": 298,
+   "native_suffix_tokens_used": 1083,
+   "parent_replay_sha256": "eb7b63249cf35aa96df42d829177932da4337d0fc229572cc11c80de6c5b0cd0"
+  },
+  {
+   "question": "amc23|amc23_47",
+   "long_endpoint": true,
+   "native_512_units": 45,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 11205,
+   "parent_replay_sha256": "00cebf70466b29199bbd522276bcc0eb3d10a20038fc7afe2ec679673e3ff227"
+  },
+  {
+   "question": "olympiad|olympiad_3015",
+   "long_endpoint": true,
+   "native_512_units": 29,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 26121,
+   "parent_replay_sha256": "cb8cf873c6f877d61417389dfb876cb2364c6815ac430e9ec6e328ce4f35bb30"
+  },
+  {
+   "question": "olympiad|olympiad_2914",
+   "long_endpoint": true,
+   "native_512_units": 38,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 20097,
+   "parent_replay_sha256": "3a89e4ef267af97ec52ad18328e336bb28edc2641e29275ce3ba3d0bada3209c"
+  },
+  {
+   "question": "olympiad|olympiad_2490",
+   "long_endpoint": true,
+   "native_512_units": 46,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 18215,
+   "parent_replay_sha256": "1f139e293493e4833d0a783d526a26e70c6c3d90a479c343298bbbd0bef3fa14"
+  },
+  {
+   "question": "olympiad|olympiad_3037",
+   "long_endpoint": true,
+   "native_512_units": 24,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 17723,
+   "parent_replay_sha256": "7b42bae8b2472ae3c497b60902f8bdf82a81fcc76fa4eef962c3c95279a29221"
+  },
+  {
+   "question": "olympiad|olympiad_2847",
+   "long_endpoint": true,
+   "native_512_units": 34,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 2404,
+   "parent_replay_sha256": "f52fb47dcccd585f89360f29eaa093e77060665f3032e8a1adec9a01d7e7cd4d"
+  },
+  {
+   "question": "olympiad|olympiad_2995",
+   "long_endpoint": true,
+   "native_512_units": 36,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 10871,
+   "parent_replay_sha256": "b54f1a8c9a99e3e25179d60c9a84743183f676d60bcb718168c492ce619e57e9"
+  },
+  {
+   "question": "olympiad|olympiad_2611",
+   "long_endpoint": true,
+   "native_512_units": 49,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 26215,
+   "parent_replay_sha256": "c231f71e1d5e6a5def73bd773c3b6d8b987e3d389db95168d2ad2c414ab937fc"
+  },
+  {
+   "question": "olympiad|olympiad_2798",
+   "long_endpoint": true,
+   "native_512_units": 34,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 9677,
+   "parent_replay_sha256": "05747bf14cd4ffbefb10f58593310a093e14808a26cc6de1c64246fdefbee7be"
+  },
+  {
+   "question": "olympiad|olympiad_2831",
+   "long_endpoint": true,
+   "native_512_units": 39,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 1945,
+   "parent_replay_sha256": "62052d68f37dc857cbf083d92b39fa729de48c59452fb177c54c08afbd915bc0"
+  },
+  {
+   "question": "olympiad|olympiad_1854",
+   "long_endpoint": true,
+   "native_512_units": 39,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 27919,
+   "parent_replay_sha256": "27cd0d9468acf4249e9bdfd3d40949d4c40bce2c6efd00db83e0ba99657f34c1"
+  },
+  {
+   "question": "olympiad|olympiad_2796",
+   "long_endpoint": true,
+   "native_512_units": 31,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 22493,
+   "parent_replay_sha256": "53c6c85da1c66b831d9d03f84711379a15639aedb82818bbe48ec096fbe60baf"
+  },
+  {
+   "question": "olympiad|olympiad_2555",
+   "long_endpoint": true,
+   "native_512_units": 47,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 18266,
+   "parent_replay_sha256": "a53dfa3453a248c21b261b0230d643a76937da293f06e3c6771ca8cac55c649d"
+  },
+  {
+   "question": "aime24|aime24_67",
+   "long_endpoint": true,
+   "native_512_units": 28,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 7705,
+   "parent_replay_sha256": "28f839fe4a36ad09059053d51977a9b48f0a89614d44fab47c6ba62893a06d7f"
+  },
+  {
+   "question": "olympiad|olympiad_2993",
+   "long_endpoint": true,
+   "native_512_units": 34,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 20027,
+   "parent_replay_sha256": "34a28a97674a872549c041bb0528c342cac1152183242ed91774f2ecb0525765"
+  },
+  {
+   "question": "aime24|aime24_66",
+   "long_endpoint": true,
+   "native_512_units": 29,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 26201,
+   "parent_replay_sha256": "8891655913b33d0f4275e0ce806e0d7937c8ef4be1ca9d5f03a422c8ad36e3ae"
+  },
+  {
+   "question": "olympiad|olympiad_3000",
+   "long_endpoint": true,
+   "native_512_units": 30,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 28069,
+   "parent_replay_sha256": "745c889374e33987d2b1e6f977a146efd3a731b1e2a553c338de28187e49c769"
+  },
+  {
+   "question": "olympiad|olympiad_1766",
+   "long_endpoint": true,
+   "native_512_units": 28,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 26790,
+   "parent_replay_sha256": "9176a6bac53048de743b73394a22d10aa4c259fd4a4257176bacca0e73e8752c"
+  },
+  {
+   "question": "olympiad|olympiad_2647",
+   "long_endpoint": true,
+   "native_512_units": 26,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 25789,
+   "parent_replay_sha256": "d9fa23b4b7f9f05020caa891b14dcae8fae9e777946d55a2281cc8383239c04a"
+  },
+  {
+   "question": "olympiad|olympiad_1866",
+   "long_endpoint": true,
+   "native_512_units": 36,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 27511,
+   "parent_replay_sha256": "e4a19f02e41f2b5de54ced95121035b9cc7229d7f8447b38c76d4d75caf438f2"
+  },
+  {
+   "question": "olympiad|olympiad_1659",
+   "long_endpoint": true,
+   "native_512_units": 33,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 24129,
+   "parent_replay_sha256": "7a1d18b057b1d990458200b5c33f26e10ede84c33d103ea5140ad98076a9e4d4"
+  },
+  {
+   "question": "aime25|aime25_7",
+   "long_endpoint": true,
+   "native_512_units": 26,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 11440,
+   "parent_replay_sha256": "71bdadc0c7d4422beb190215d1746cff0c2b0e04670834a5a14b46955127256a"
+  },
+  {
+   "question": "olympiad|olympiad_3004",
+   "long_endpoint": true,
+   "native_512_units": 38,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 16914,
+   "parent_replay_sha256": "8a1935734e63eff06cac63d6161e6996ab29c465d83a3143791f9294d0e939c5"
+  },
+  {
+   "question": "amc23|amc23_28",
+   "long_endpoint": true,
+   "native_512_units": 33,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 5522,
+   "parent_replay_sha256": "0ff87504739b9adde980c0558999fd0f169c15f011e016de1e2ec21778034697"
+  },
+  {
+   "question": "olympiad|olympiad_3021",
+   "long_endpoint": true,
+   "native_512_units": 35,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 13660,
+   "parent_replay_sha256": "036d05bc87f3cf118652eda6e07cf6ffce5179add9379c25aec57f5e8a5151f6"
+  },
+  {
+   "question": "amc23|amc23_16",
+   "long_endpoint": true,
+   "native_512_units": 37,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 11182,
+   "parent_replay_sha256": "507813d075f431535b1cc05a776ac36782f6ea061f693642fa14b6aafb75cdf3"
+  },
+  {
+   "question": "olympiad|olympiad_2625",
+   "long_endpoint": true,
+   "native_512_units": 29,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 20013,
+   "parent_replay_sha256": "50921e48cc102a7807b2f628fe72ceaedbe28e1265b8f92945a2529c43c53b01"
+  },
+  {
+   "question": "olympiad|olympiad_1879",
+   "long_endpoint": true,
+   "native_512_units": 30,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 21939,
+   "parent_replay_sha256": "00b27d87392c00801aca2da2a4729502c5e9db9e9fbcbde0db4e78ddce4dcbcd"
+  },
+  {
+   "question": "olympiad|olympiad_2569",
+   "long_endpoint": false,
+   "native_512_units": 40,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 1024,
+   "parent_replay_sha256": "77f54e51925e4ac74de1e41fd18aef94f56e979953f7c11381904d0ce31e7f11"
+  },
+  {
+   "question": "olympiad|olympiad_3081",
+   "long_endpoint": false,
+   "native_512_units": 31,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 1024,
+   "parent_replay_sha256": "fee32369125b4af649a56420efba70c762ce78564b8380c4b80ca846d4789356"
+  },
+  {
+   "question": "olympiad|olympiad_2171",
+   "long_endpoint": false,
+   "native_512_units": 25,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 1024,
+   "parent_replay_sha256": "d8e48fccd6a6b590d84c6e5a53eb88aef13720ab659edf3ddc6f83b8dc662a1d"
+  },
+  {
+   "question": "olympiad|olympiad_2571",
+   "long_endpoint": false,
+   "native_512_units": 28,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 1024,
+   "parent_replay_sha256": "5e60b182297736d91f23343327ca90edce5ca713328136b457916d69545d5d81"
+  },
+  {
+   "question": "olympiad|olympiad_3007",
+   "long_endpoint": false,
+   "native_512_units": 27,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 1024,
+   "parent_replay_sha256": "42b7f423480f4b3b065393856edbb58fb331dc269416a3f3c96f3600c478fa15"
+  },
+  {
+   "question": "olympiad|olympiad_2725",
+   "long_endpoint": false,
+   "native_512_units": 40,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 1024,
+   "parent_replay_sha256": "f214c6cf5a9f49bd4332632bac4228b2f1698ca37b36e46317d13b6258c34b47"
+  },
+  {
+   "question": "olympiad|olympiad_2706",
+   "long_endpoint": false,
+   "native_512_units": 33,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 1024,
+   "parent_replay_sha256": "5cc1e945cdd88255bb8ac7a185efe821c77993454dc67690d7e1e14acde38539"
+  },
+  {
+   "question": "olympiad|olympiad_1697",
+   "long_endpoint": false,
+   "native_512_units": 36,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 1024,
+   "parent_replay_sha256": "91e5cf8e9978b6e5f70f8e91060dbaa97d56eb870f8b63d1c993f111d84e0983"
+  },
+  {
+   "question": "olympiad|olympiad_2510",
+   "long_endpoint": false,
+   "native_512_units": 21,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 1024,
+   "parent_replay_sha256": "197f39a6fdb9e4e0ae32f335cecc6b5b38db94535e060e9ca092446553aeae9b"
+  },
+  {
+   "question": "olympiad|olympiad_2744",
+   "long_endpoint": false,
+   "native_512_units": 35,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 1024,
+   "parent_replay_sha256": "42defbae2194bd95bcd6310936c3446ec4394679b1901867cc29f4bcf8b32a3c"
+  },
+  {
+   "question": "olympiad|olympiad_2841",
+   "long_endpoint": false,
+   "native_512_units": 29,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 1024,
+   "parent_replay_sha256": "5ab053574ed660df850ce959c2b2c1a0dc1dd08b467fc30698e1293a5a45fe84"
+  },
+  {
+   "question": "olympiad|olympiad_2037",
+   "long_endpoint": false,
+   "native_512_units": 30,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 1024,
+   "parent_replay_sha256": "0303d677b6caf9b01913c42f346cc6fe251655a41d2841cd708c2b1ad657b404"
+  },
+  {
+   "question": "olympiad|olympiad_3097",
+   "long_endpoint": false,
+   "native_512_units": 38,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 1024,
+   "parent_replay_sha256": "3a193c341f33c6d57e1074f6634449583d15f8bd70d16c5f0c2fb26a3cbea418"
+  },
+  {
+   "question": "olympiad|olympiad_2064",
+   "long_endpoint": false,
+   "native_512_units": 31,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 1024,
+   "parent_replay_sha256": "1b029856ceb125409933986448c1097dd1f595e503a82d10b567a9748131a605"
+  },
+  {
+   "question": "olympiad|olympiad_1845",
+   "long_endpoint": false,
+   "native_512_units": 35,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 1024,
+   "parent_replay_sha256": "3cd5a6a78083006c6dae0966d030535cb84f81f23b0d612721e3cd1aff30379b"
+  },
+  {
+   "question": "olympiad|olympiad_3001",
+   "long_endpoint": false,
+   "native_512_units": 32,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 1024,
+   "parent_replay_sha256": "a19126344f893bcdb11d7597b48c03952e570303772be851e49f656c0de858d2"
+  },
+  {
+   "question": "olympiad|olympiad_2461",
+   "long_endpoint": false,
+   "native_512_units": 26,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 1024,
+   "parent_replay_sha256": "b4b1f9e455713fd4c8c9e6487c91a57fa03931bcfad90027e1b37f3429f6a4af"
+  },
+  {
+   "question": "olympiad|olympiad_1970",
+   "long_endpoint": false,
+   "native_512_units": 28,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 1024,
+   "parent_replay_sha256": "0f046bf029b53af8b7d1ce5c20518eb4cd306a7b0955cefb45d47e8167d5507d"
+  },
+  {
+   "question": "olympiad|olympiad_2040",
+   "long_endpoint": false,
+   "native_512_units": 32,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 1024,
+   "parent_replay_sha256": "3b3965e91f5d58a18807614ae58f1c54e1704aa739ce035aa2434c814a3af4cf"
+  },
+  {
+   "question": "aime25|aime25_19",
+   "long_endpoint": false,
+   "native_512_units": 47,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 1024,
+   "parent_replay_sha256": "90b06714d43ee46b03ff8007d0b85525a22a66998fa0267cf4cee81a377a7260"
+  },
+  {
+   "question": "olympiad|olympiad_2740",
+   "long_endpoint": false,
+   "native_512_units": 21,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 1024,
+   "parent_replay_sha256": "c4e615a8471ec924e09c3cef1bbbc2636f0c80bcccd850a1e7754e1b6a55cccc"
+  },
+  {
+   "question": "olympiad|olympiad_2902",
+   "long_endpoint": false,
+   "native_512_units": 40,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 1024,
+   "parent_replay_sha256": "4346a69cb7c79d59c30b7939c89dd8c83d44751641a2eb56f3f2c66184f306a8"
+  },
+  {
+   "question": "olympiad|olympiad_2741",
+   "long_endpoint": false,
+   "native_512_units": 23,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 1024,
+   "parent_replay_sha256": "df78af7455680691f21a300fe68817b64327b4f77e5b374c98c2f9f166c19ce4"
+  },
+  {
+   "question": "aime25|aime25_11",
+   "long_endpoint": false,
+   "native_512_units": 33,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 1024,
+   "parent_replay_sha256": "0de06fbf07387125f18efa43f34d9d1aa58bd84ef613c85bb1ca772ee4804dd2"
+  },
+  {
+   "question": "olympiad|olympiad_2715",
+   "long_endpoint": false,
+   "native_512_units": 42,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 1024,
+   "parent_replay_sha256": "db60c94e8a2d4c7e3e6cc1b64422832c3cb79a12917f74fd005273b1ba2ac860"
+  },
+  {
+   "question": "olympiad|olympiad_3011",
+   "long_endpoint": false,
+   "native_512_units": 32,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 1024,
+   "parent_replay_sha256": "ee5bac79a167afa42d5de06c084439367e2b30275b346fb387ba1946af4e2ebe"
+  },
+  {
+   "question": "olympiad|olympiad_2955",
+   "long_endpoint": false,
+   "native_512_units": 42,
+   "native_window_reasoning_tokens": 512,
+   "native_suffix_tokens_used": 1024,
+   "parent_replay_sha256": "240b7958c9880e33c48b917cb91bdfc7d53dab9b93ac772bdc5f96243d063e5d"
+  }
+ ],
+ "interpretation": "Native sample_00 sentence counts in the exact registered X3 scoring window; 10x multiplication is a planning proxy for two seeds and five arms, not treatment-invariant observed unit count. Reprice actual GEPA units after intervention generation.",
+ "sha256": "0c0778f096c5e46cea276a1b59dc3e3d9fd8416c6600a272ac63fb54ec1ecafa"
+}

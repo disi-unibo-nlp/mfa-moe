@@ -1,0 +1,50 @@
+{
+ "schema": "transition-v22-qwen-12-scout-price-v1",
+ "job_id": "59179022",
+ "status": "PASS_NORMAL_1H_ONLY",
+ "frame_sha256": "d8f50b7e4c309716d054fafa52cc22e2b77c3c9bb4b9bbdef829fe303271863a",
+ "rating_driver_sha256": "5423563a703b953e401caa8831064d41ed511739d735df43b1bf080abd19f2ee",
+ "rubric_sha256": "84bf517481c4f7d3ddb94e05e2a940e89ca4fffce8336c1e3f6300a1bf374225",
+ "parity_sha256": "cfd88c8a002ac6b3ca3901b992d483f8f257681658ac558603b6ea7c8d6da707",
+ "rows": 12,
+ "ratings": 24,
+ "prompt_tokens_exact_twice": 72524,
+ "prompt_tokens_min": 451,
+ "prompt_tokens_max": 7683,
+ "prompt_tokens_sorted": [
+  451,
+  736,
+  821,
+  1220,
+  1785,
+  2266,
+  2482,
+  3582,
+  4453,
+  5279,
+  5504,
+  7683
+ ],
+ "max_decode_tokens": 24576,
+ "prior_short_context_decode_tokens_per_s": 134.49267971894108,
+ "stress_decode_tokens_per_s": 43.71012090865585,
+ "stress_prefill_tokens_per_s": 4914.0160052745105,
+ "stress_assumptions": {
+  "context_slowdown": 2.0,
+  "rate_factor": 0.65,
+  "repeat_work": 1.25,
+  "cold_load_factor": 1.25
+ },
+ "components_seconds": {
+  "cold_load": 903.1955660125823,
+  "decode": 702.8120572852628,
+  "prefill": 18.44825086094439,
+  "shutdown": 196.0
+ },
+ "projected_wall_seconds": 1820.4558741587894,
+ "debug_30m_gate": "FAIL",
+ "normal_1h_gpu_hour_ceiling": 2.0,
+ "projected_gpu_hours": 1.0113643745326608,
+ "interpretation": "All-capped 1024-token pricing with 2x long-context slowdown stress. Scout directly measures full-prefix load/prefill/decode and parse coverage; it does not estimate detector accuracy. A 30-minute debug slot requires additional margin and is not assumed safe.",
+ "sha256": "fb7a8483090c1659afe1e94cffb73d40c45c274fe1ff6009dbb1c6fee126196c"
+}

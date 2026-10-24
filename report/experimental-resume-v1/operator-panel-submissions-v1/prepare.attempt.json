@@ -1,0 +1,17 @@
+{
+ "schema": "overnight-submit-attempt-v1",
+ "name": "prepare",
+ "binding": {
+  "operations_sha256": "b61bc98be974f5848da96c8c0bdcfd6faa0466dd696ba14f82a006438599f71e",
+  "phase": "prepare",
+  "extra": {}
+ },
+ "arguments": [
+  "--job-name=operator-panel-prepare",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/operator_panel_cpu_v1.sbatch"
+ ],
+ "time_ns": 1791202110698968843,
+ "dispatcher_job_id": null,
+ "removed_parent_environment_keys": [],
+ "sha256": "dbcc90792ce49dbc7ecc56137cfe91841a0073208e1aac4b3c80884a272ddd1d"
+}

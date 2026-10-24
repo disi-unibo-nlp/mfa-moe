@@ -1,0 +1,1 @@
+{"accounting": {"elapsed_seconds": 3, "start": "2026-10-04T21:23:35", "state": "FAILED"}, "estimated_allocated_bytes": 4096, "job_id": "59346750", "path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/mechanism-cap-recovery-runtime-59346750/torch", "sha256": "3b490c1bb5f0801acf672a7ed77fea36b66f7793dc12922948173426f493f817"}

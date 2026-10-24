@@ -1,0 +1,117 @@
+{
+ "schema": "approach-online-gate-discovery-v1",
+ "job_id": "59204381",
+ "agreement_sha256": "f15c5b8e283daf24b77ec72a910f013c0c47deb355628b42275891e56cefb43e",
+ "burden_sha256": "fb1348945323a404a0d82d70da10daf0c3ab306b8c61b2a93214c74e7385e16a",
+ "joint_pool_sha256": "9f5520111a2233d849d3eeace5b0c7dad2db57ae82fb0c5006fa80a1ffc00e88",
+ "driver_sha256": "af4e0400155f27a4b7ba29dc8c23a23caa74ea191f250cac68d8bee77e3045fa",
+ "rule": "At each completed approach_to_commit lexical fire through the 16384 output-token horizon, ask two independent unsteered native-model start-only questions on the actual current prefix; accept only two strict natural-stop true answers; ambiguous/failure abstains; stop at reasoning closure. This is a discovery proposal, not qualified utility policy.",
+ "rated_stratified_windows": {
+  "fires": 35,
+  "nonfires": 48,
+  "families": 48,
+  "nonfire_qwen_accepted": 1,
+  "fire_statuses": {
+   "qwen_rejected": 21,
+   "native_accepted": 9,
+   "native_rejected": 24,
+   "qwen_accepted": 12,
+   "native_split": 2,
+   "qwen_split": 2
+  }
+ },
+ "rates": {
+  "qwen_two_reader_accepted_among_lexical_fires": {
+   "numerator": 12,
+   "denominator": 35,
+   "estimate": 0.34285714285714286,
+   "interval": {
+    "method": "discovery-family cluster bootstrap, fixed seed, 20000 resamples",
+    "resamples_with_denominator": 20000,
+    "lower_95": 0.2,
+    "upper_95": 0.5
+   }
+  },
+  "qwen_two_reader_rejected_among_lexical_fires": {
+   "numerator": 21,
+   "denominator": 35,
+   "estimate": 0.6,
+   "interval": {
+    "method": "discovery-family cluster bootstrap, fixed seed, 20000 resamples",
+    "resamples_with_denominator": 20000,
+    "lower_95": 0.4444444444444444,
+    "upper_95": 0.75
+   }
+  },
+  "native_two_reader_accepted_among_lexical_fires": {
+   "numerator": 9,
+   "denominator": 35,
+   "estimate": 0.2571428571428571,
+   "interval": {
+    "method": "discovery-family cluster bootstrap, fixed seed, 20000 resamples",
+    "resamples_with_denominator": 20000,
+    "lower_95": 0.125,
+    "upper_95": 0.4146341463414634
+   }
+  },
+  "qwen_accepted_among_native_accepted": {
+   "numerator": 6,
+   "denominator": 9,
+   "estimate": 0.6666666666666666,
+   "interval": {
+    "method": "discovery-family cluster bootstrap, fixed seed, 20000 resamples",
+    "resamples_with_denominator": 19999,
+    "lower_95": 0.3,
+    "upper_95": 1.0
+   }
+  },
+  "qwen_rejected_among_native_accepted": {
+   "numerator": 3,
+   "denominator": 9,
+   "estimate": 0.3333333333333333,
+   "interval": {
+    "method": "discovery-family cluster bootstrap, fixed seed, 20000 resamples",
+    "resamples_with_denominator": 19996,
+    "lower_95": 0.0,
+    "upper_95": 0.7
+   }
+  },
+  "native_accepted_among_qwen_accepted": {
+   "numerator": 6,
+   "denominator": 12,
+   "estimate": 0.5,
+   "interval": {
+    "method": "discovery-family cluster bootstrap, fixed seed, 20000 resamples",
+    "resamples_with_denominator": 20000,
+    "lower_95": 0.25,
+    "upper_95": 0.75
+   }
+  }
+ },
+ "all_native_discovery_burden": {
+  "all_approach_fires": 42,
+  "within_16384_prefix": 39,
+  "one_query_prompt_tokens": 82487,
+  "two_query_prompt_tokens": 164974,
+  "two_query_response_cap_tokens": 4992,
+  "late_8193_to_16384_fires": 3
+ },
+ "global_family_disjoint_exact_pool": {
+  "approach_rows": 5,
+  "prefix_tokens": [
+   178,
+   198,
+   208,
+   257,
+   269
+  ],
+  "at_or_before_tokens": {
+   "128": 0,
+   "256": 3,
+   "512": 5,
+   "1024": 5
+  }
+ },
+ "interpretation": "These are descriptive discovery-family, LLM-audited start rates from a stratified window sample; the cluster bootstrap is uncertainty within these families, not independent validation. One Qwen-approved nonfire among 48 cannot estimate live recall because fires/nonfires were sampled separately. Side-query burden is cached-native, not steered online execution.",
+ "sha256": "5b2ea952a1120fe72ee677b7544b66088e2667404075100d2938394f851c37df"
+}

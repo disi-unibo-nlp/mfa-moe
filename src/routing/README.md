@@ -1,0 +1,57 @@
+# src/routing
+
+The analyses of native routing, with no intervention: does routing say which reasoning state a sentence is in, or which comes next, beyond what its text says? How do states follow one another? How should experts be kept when the budget is small? Everything here runs on the CPU from finished captures, labels and receipts. Launchers are in [`scripts/routing`](../../scripts/routing/README.md); run a module with `python -m routing.NAME` and `PYTHONPATH=src`.
+
+Terms used below: a state is one of the seven sentence labels. RIG, the routing information gain, is the held-out loss of a model that sees text only minus the loss of the same model with routing added, in nats per sentence (positive favors routing). Questions, not attempts, are the unit: folds hold whole question families and intervals resample families.
+
+| Module | Question it answers | Command | Output | Paper |
+| --- | --- | --- | --- | --- |
+| `readout.py` | Does routing tell a sentence's state beyond its text? Seven models, five family folds, five token-permutation nulls, three inner folds for the penalty, run twice (token identity only, and with the judge's previous, current and next sentence). About 19 core-hours. | `python -m routing.readout --out DIR [--workers 4]` | `DIR/readout-results.v3.json`, one JSON per model | Figure `readout`, table `readout` |
+| `lfm_readout.py` | The same for LFM2.5 on its own 522 questions. | `python -m routing.lfm readout --out DIR` | `DIR/READOUT_RESULTS.json` (inputs checked against the published `lfm25/READOUT_RESULTS.json`, which is never rewritten) | Same |
+| `anticipation.py` | Does routing in the last 16 or 32 tokens of a sentence predict the next state beyond the past text and class history? GPT-OSS and Qwen3.6. About 84 core-hours. | `python -m routing.anticipation --out DIR [--workers 4]` | `DIR/anticipation-results.json` | Figure `next_state`, table `next_state` |
+| `next_state.py` | Next state from the current sentence for all eight models: three nested classifiers (the current state only; plus text and position; plus routing). | `python -m routing.next_state run --model M`, then `collect` | `<model>/NEXT_STATE.json`, `driver/NEXT_STATE.json` | Not yet. It will replace the anticipation figure. |
+| `selection.py` | How much of the least-covered state is kept when a fixed share of experts is retained, with state-balanced versus frequency-based selection, scored on held-out families. | `python -m routing.selection export OUT_DIR [--campaign DIR]` | `OUT_DIR/selection_coverage.csv` | Figure `selection`, tables `selection`, `selection_folds` |
+| `dynamics.py` | State occupancy, dwell, transitions and re-entries per attempt, and expert nominations per state, from the labelled sentences. | `python -m routing.dynamics CAMPAIGN_DIR MODEL... [--out NEW_ROOT]` | `DYNAMICS.json`, `NATIVE_DYNAMICS_SUMMARY.json`, `NOMINATIONS.json` per model | Figures `occupancy`, `state_transitions`, `transition_summary`; tables `occupancy`, `state_transitions` |
+| `sentence_table.py` | Qwen3.6's labelled-sentence table on all of its 1,486 question families, rebuilt from its saved traces and original judge labels (the stored table covers 509). Checked against the saved class counts and the old table. | `python -m routing.sentence_table rebuild --model qwen36` | `transition-pairs/qwen36/sentences.parquet`, `SENTENCES.json` | Figure `state_transitions` and its table (Qwen3.6 rows) |
+| `transition_pairs.py` | Which state follows Read, Verify (or any chosen) sentences, for all eight models: judges the unlabelled next sentences with each model's original judge setup, then redoes the native-dynamics panel with them as destinations only. | `python -m routing.transition_pairs plan\|judge\|summary\|collect --model M` | `transition-pairs/<model>/<variant>/PAIR_PLAN.json`, `NATIVE_DYNAMICS_SUMMARY.json`, `driver/TRANSITION_PAIRS.<variant>.json` | Figure `state_transitions`, table `state_transitions` (the next-state cells that are otherwise not estimable) |
+| `lfm.py` | The GPU-free LFM2.5 stages: `materialize`, `derive` (counts, trajectories, selection coverage, nominations), `readout`, `dynamics`. | `python -m routing.lfm STAGE` | files in `report/final-routing-20261015-r1/lfm25/` | The LFM2.5 rows of the exhibits above |
+| `efficiency_link.py` | Does the state of a sentence go with how many tokens remain, and with correctness, at the same position of the same question? Eight models. | `python -m routing.efficiency_link table\|publish\|driver-test\|all` | `driver/EFFICIENCY_LINK_V2.json` | Table `efficiency_link`; chooses the experts of whole-reasoning steering |
+| `lexical.py` | The lexical classifier that labels the sentences of steered continuations, so the judge is not rerun. Cross-fitted by family fold. | `python -m routing.lexical --out DIR` | five fold classifiers in `DIR` | Appendix, lexical reading of continuations |
+| `benchmark_accuracy.py` | Accuracy, capped rate, token budget and error share per model, benchmark and corpus, with question-clustered intervals. | `python -m routing.benchmark_accuracy OUT_DIR` | `accuracy.csv`, `budget.csv`, `continuation.csv`, `errors.csv`, `length_gap.csv`, `summary.md` | Tables `benchmarks`, `benchmark_details` |
+| `benchmark_inventory.py` | The per-model inventory of the generated corpora. | `python -m routing.benchmark_inventory OUT_DIR` | CSV tables, receipts, a TeX table | Same |
+
+Inputs and rules:
+
+- `dynamics` reads a campaign folder with `CAMPAIGN.json` (`report/research-campaign-v3-20261014-r5-r2`). With `--out` it recomputes everything into a new folder and only reads the campaign; without it, an existing nomination file is kept and only the summaries are redone.
+- `readout`, `anticipation` and `next_state` read saved caches outside the repository (`ANALYSIS` in `src/store.py`) and compare their inputs with the frozen specification of the first run (`FROZEN.readout.v3.json`). `readout` and `anticipation` write to a new folder. `readout` reports a model whose cache is incomplete as INCOMPLETE and produces nothing for it; `anticipation` leaves missing cells incomplete. Neither recomputes a tensor, and the fixed grid and windows are never searched or widened.
+- `efficiency_link.py` runs the frozen estimator of `efficiency_link_prereg.py` unchanged on eight models. That file keeps its original import line because its bytes are bound by the pre-registration hash, so `efficiency_link.py` loads it by path. Do not edit it. The seven original cells must equal the pre-registered ones. LFM2.5's signs were estimated after its interventions ran, and the receipt says so.
+- `sentence_table` and `transition_pairs` read the same campaign folder as `dynamics`, the saved label files under `ANALYSIS`, and the traces. `transition_pairs` reproduces the published panel from the original sample alone (to 1e-12) before it adds a label, and labels enter only as the destination of a pair whose source is an original label. Occupancy, dwell and re-entry never read them. Its `judge` step is the one GPU step in this folder; it runs `steering.pulse.annotate_rows`, the same engine as the LFM2.5 labels. A rerun of `rebuild`, `plan` or `summary` into the same folders must reproduce the existing tables and receipts, or it stops: tables byte for byte, receipts apart from `module_sha256`, which records the code that wrote them and is not part of what they say (`store.publish(..., provenance=...)`). A relaunch of the whole chain therefore finishes.
+- `next_state` uses the machinery of `readout_fit.py` and `readout_analysis.py` unchanged, with the next state as target, and the same 522 questions.
+
+## Other files
+
+| File | What it does |
+| --- | --- |
+| `readout_fit.py`, `readout_analysis.py` | The frozen mathematics of the readout (multinomial ridge, family folds, nulls, bootstrap). Shared by `readout`, `lfm_readout` and `next_state`. |
+| `readout_text.py` | Hashed word and character n-gram features of a sentence (2^18 buckets, sublinear tf, fold-fitted idf). |
+| [`dp/`](dp/README.md), [`dynrt/`](dynrt/README.md), [`rkin/`](rkin/README.md) | Helper packages the readout and anticipation drivers import. |
+| [`lexical_data/`](lexical_data/README.md) | Builders of the lexical tables (provenance). |
+
+## Where the helper packages came from
+
+`dp/`, `dynrt/` and `rkin/` are the import closure (23 modules) of the two drivers `readout.py` and `anticipation.py`, copied from `/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/forum/tests/r3_context/code/`, which is what the frozen first runs hashed. `readout.py` and `anticipation.py` were copies of the earlier scripts `r3d_readout.py` and `r3d_anticipation.py`. Imports were rewritten to `routing.*`; functions nothing used were removed; their root paths come from `store.ANALYSIS`. The drivers now write to a new `--out` folder, compare their inputs with the first run's frozen specification, record the hashes of the `routing` modules that ran, and refuse to run outside a Slurm batch job (they need `SLURM_JOB_ID` and `SLURMD_NODENAME`: the serial partition's nodes are called login08 and login13, and an `salloc` shell on a login node has no `SLURMD_NODENAME`). No fitting or scoring code changed. A one-CPU smoke run passed the input check, and the 37 GPT readout fold checkpoints and the first anticipation task it finished were bit-identical to the first run's. Neither driver can be rerun in full cheaply (19 and 84 core-hours).
+
+`benchmark_accuracy.py` is a copy of an earlier outcome analysis. `benchmark_inventory.py` is a copy of `report/model-analysis-review-20261008/build_inventory.py`, which stays in that report folder, with the output folder as its argument.
+
+Tests: [`tests/routing`](../../tests/routing/README.md).
+
+<!-- ledger:begin -->
+## Ledger
+
+Decisions and features that govern this folder (generated by `ledger sync`):
+
+- [F-0009](../../docs/ledger/features/F-0009-lfm2-5-on-its-own-efficiency-link-signs.md) [active 4/6] LFM2.5 on its own efficiency-link signs
+- [F-0011](../../docs/ledger/features/F-0011-next-state-prediction-from-routing-for-all-eight-models.md) [active 2/4] Next-state prediction from routing for all eight models
+- [F-0012](../../docs/ledger/features/F-0012-every-paper-exhibit-on-all-eight-models.md) [active 1/8] Every paper exhibit on all eight models
+
+<!-- ledger:end -->

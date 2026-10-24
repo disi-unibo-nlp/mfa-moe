@@ -1,0 +1,18 @@
+{
+  "accounting": "59633083|CANCELLED by 133943|0\n59633088|CANCELLED by 133943|0\n59633110|CANCELLED by 133943|0\n59633119|CANCELLED by 133943|0\n59633127|CANCELLED by 133943|0\n59633139|CANCELLED by 133943|0\n59633146|CANCELLED by 133943|0",
+  "new_observer_version": "r2",
+  "queue": "",
+  "r1_source_and_events": "PRESERVED",
+  "schema": "verification-health-reconciliation-v3",
+  "scientific_jobs_affected": 0,
+  "sha256": "5db87f86efa8264840c350f28a8f6dc91ba9bd753d2eaae6f1d5c9d217392e72",
+  "targets": [
+    "59633083",
+    "59633088",
+    "59633110",
+    "59633119",
+    "59633127",
+    "59633139",
+    "59633146"
+  ]
+}

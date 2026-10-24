@@ -1,0 +1,41 @@
+% Native SYNCO tab:mainRes grouped diagnostic columns and caption-only key.
+% Complete label-coverage and transition tables merged on identical model identity.
+% Source: native_dynamics.json, unchanged saved means and interval endpoints.
+\begin{table}[tb]
+\centering\small
+\caption{Annotation coverage and native state dynamics, with whole-family-bootstrap, model-specific simultaneous 95\% confidence intervals as subscripts.
+%
+Coverage is the labelled fraction of completion tokens.
+%
+Transition probabilities condition on the current state and next observed sentence boundary.
+%
+Missing-label gaps are not bridged.
+%
+Benchmarks and supported families receive equal weight.
+%
+Verify dwell includes contiguous labelled runs censored by coverage boundaries.
+%
+Qwen3.6's three transition intervals and LFM2.5's Verify persistence interval are unavailable under the saved support gate.
+%
+\textrm{An}, \textrm{Im}, and \textrm{Ve} denote Analyze, Implement, and Verify; n/e marks an unestimated interval.}
+\label{tab:state-transitions}\label{tab:label-coverage}
+\setlength{\tabcolsep}{2.5pt}
+\begin{adjustbox}{max width=\linewidth}
+\begin{tabular}{@{}lrccccc@{}}
+\toprule
+ & \multicolumn{2}{c}{Annotation} & \multicolumn{3}{c}{Transitions (\%)} & Dwell \\
+\cmidrule(lr){2-3}\cmidrule(lr){4-6}\cmidrule(lr){7-7}
+Model & Families & Coverage (\%) & \textrm{An} $\to$ \textrm{Im} & \textrm{Im} $\to$ \textrm{Ve} & \textrm{Ve} $\to$ \textrm{Ve} & \textrm{Ve} (tokens) \\
+\midrule
+\modelname{openai}{GPT-OSS-20B} & 1,486 & \cid{28.16}{0.93}{0.93} & \cid{24.17}{6.03}{6.03} & \cid{17.27}{4.27}{4.27} & \cid{25.29}{6.17}{6.17} & \cid{16.18}{1.06}{1.06} \\
+\modelname{nvidia}{\shortstack[l]{Nemotron-3.5-Lightning\\30B-A3B}} & 1,486 & \cid{20.83}{1.17}{1.17} & \cid{21.31}{6.37}{6.37} & \cid{16.90}{4.93}{4.93} & \cid{26.73}{7.90}{7.90} & \cid{21.05}{1.96}{1.96} \\
+\modelname{qwen}{Qwen3.5-35B-A3B} & 1,486 & \cid{8.06}{0.26}{0.26} & \cid{14.79}{5.22}{5.22} & \cid{15.43}{5.96}{5.96} & \cid{28.43}{9.90}{9.90} & \cid{14.35}{1.24}{1.24} \\
+\modelname{qwen}{Qwen3.6-35B-A3B} & 509 & \cid{7.80}{0.39}{0.39} & $18.78_{\mathrm{n/e}}$ & $13.32_{\mathrm{n/e}}$ & $27.63_{\mathrm{n/e}}$ & \cid{13.67}{1.49}{1.49} \\
+\modelname{gemma}{Gemma-4-26B-A4B} & 1,486 & \cid{16.27}{0.58}{0.58} & \cid{26.56}{6.57}{6.57} & \cid{16.89}{4.10}{4.10} & \cid{29.86}{8.36}{8.36} & \cid{17.95}{1.33}{1.33} \\
+\modelname{zhipu}{GLM-4.7-Flash (30B-A3B)} & 1,486 & \cid{16.79}{1.22}{1.22} & \cid{21.13}{6.58}{6.58} & \cid{19.92}{6.71}{6.71} & \cid{34.54}{8.76}{8.76} & \cid{21.12}{1.33}{1.33} \\
+\modelname{qwen}{Qwen3-30B-A3B} & 1,486 & \cid{15.90}{0.80}{0.80} & \cid{16.28}{4.73}{4.73} & \cid{20.33}{4.81}{4.81} & \cid{34.26}{6.83}{6.83} & \cid{16.53}{1.69}{1.69} \\
+\modelname{liquid}{LFM2.5-24B-A2B} & 1,486 & \cid{9.96}{0.82}{0.82} & \cid{16.21}{7.70}{7.70} & \cid{15.83}{6.37}{6.37} & $30.61_{\mathrm{n/e}}$ & \cid{16.39}{2.04}{2.04} \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}

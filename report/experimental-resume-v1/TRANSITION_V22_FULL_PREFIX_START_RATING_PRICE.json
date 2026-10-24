@@ -1,0 +1,36 @@
+{
+ "schema": "transition-v22-fullprefix-start-rating-price-v1",
+ "job_id": "59177080",
+ "status": "HOLD_CONTEXT_MATCHED_THROUGHPUT",
+ "frame_sha256": "6c10499bf71c7223b5c90fa6c2a1b13e13e9fb5c9c2af584d3ba67b4272290b2",
+ "rating_driver_sha256": "30a2382302564d66c28d1729bbc2499dd163ea51db983a8063d4785ff0b45497",
+ "rubric_sha256": "84bf517481c4f7d3ddb94e05e2a940e89ca4fffce8336c1e3f6300a1bf374225",
+ "parity_sha256": "cfd88c8a002ac6b3ca3901b992d483f8f257681658ac558603b6ea7c8d6da707",
+ "rows": 372,
+ "ratings": 744,
+ "prompt_tokens_exact_twice": 1518938,
+ "prompt_tokens_min": 245,
+ "prompt_tokens_max": 8358,
+ "prompt_tokens_p50": 889,
+ "prompt_tokens_p90": 7036,
+ "max_decode_tokens": 761856,
+ "observed_parity_decode_tokens_per_s": 134.49267971894108,
+ "pessimistic_decode_tokens_per_s": 43.71012090865585,
+ "pessimistic_prefill_tokens_per_s": 4914.0160052745105,
+ "repeat_work_factor": 1.25,
+ "context_slowdown_stress_factor": 2.0,
+ "components_seconds": {
+  "decode": 21787.173775843148,
+  "prefill": 386.3789816642925,
+  "two_cold_loads": 1806.3911320251646,
+  "two_shutdowns": 392
+ },
+ "complete_stage_projected_GPU_h": 13.539968827518114,
+ "allocation_plan": {
+  "first_slice_GPU_h_max": 12.0,
+  "one_recovery_GPU_h_max": 4.0,
+  "combined_GPU_h_ceiling": 16.0
+ },
+ "interpretation": "Exact prompt IDs and all-capped 1024-token pricing with assumed 2x long-context slowdown; 12-prefix context-matched GPU replay must measure actual throughput and turn this HOLD into a complete-stage PASS before submission. Two same-model full-prefix start readers; same discovery families, no human truth; target-window ratings are a separate stage",
+ "sha256": "06ed7e36a5a7418afa4fbbba74d0f20a0ee61d07c54029cd8f4b84e82050ec6b"
+}

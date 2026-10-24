@@ -1,0 +1,11 @@
+{
+ "schema": "extension-veto-format-chain-v1",
+ "job_id": "59348469",
+ "binding": {
+  "plan_sha256": "6b2fe84a01e8170046acaff3f359ef1cc81ab076edd0045f0a69efa8a97f248f",
+  "wrapper_sha256": "e44191156d3cf6e098945cd7c0350e4898039c5ffd2280ad622aae2f43ae587a",
+  "shared_submit_sha256": "0c142175df5db52fdf00a85d0e8dd46099209a76c5161994b4279332d6c84a10"
+ },
+ "GPU_hours": 0,
+ "sha256": "b839ffbddd97bc62a2ee1ee54a8d47096f4ed524ea963bfe173c1d2c37e9a9c5"
+}

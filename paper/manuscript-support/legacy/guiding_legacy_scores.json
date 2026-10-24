@@ -1,0 +1,4240 @@
+{
+  "identity_guiding": {
+    "results/moe_identity_guiding/oss_global/variants/negative_fixed/strength_1/sampling/full": {
+      "num_examples": 1395,
+      "calibration_overlap": [],
+      "baseline": {
+        "accuracy": 0.6903225806451613,
+        "mean_generated_tokens": 6497.163440860215,
+        "truncated": 74
+      },
+      "guided": {
+        "accuracy": 0.7060931899641577,
+        "mean_generated_tokens": 6899.749103942652,
+        "truncated": 87
+      },
+      "accuracy_delta": 0.01577060931899643,
+      "mean_generated_tokens_delta": 402.58566308243735,
+      "wrong_to_right": 111,
+      "right_to_wrong": 89,
+      "bootstrap": {
+        "method": "paired_dataset_stratified_problem_percentile",
+        "replicates": 5000,
+        "seed": 42,
+        "workers": 1,
+        "confidence_level": 0.95,
+        "weighting": "attempt_weighted",
+        "overall": {
+          "num_problems": 465,
+          "num_attempts": 1395,
+          "accuracy_delta": 0.015770609318996417,
+          "ci95": [
+            -0.007168458781362007,
+            0.03870967741935484
+          ],
+          "limited_problem_support": true
+        },
+        "datasets": {
+          "aime24": {
+            "num_problems": 9,
+            "num_attempts": 288,
+            "accuracy_delta": -0.013888888888888888,
+            "ci95": [
+              -0.059027777777777776,
+              0.027777777777777776
+            ],
+            "limited_problem_support": true
+          },
+          "aime25": {
+            "num_problems": 9,
+            "num_attempts": 288,
+            "accuracy_delta": -0.006944444444444444,
+            "ci95": [
+              -0.09375,
+              0.0763888888888889
+            ],
+            "limited_problem_support": true
+          },
+          "amc23": {
+            "num_problems": 12,
+            "num_attempts": 384,
+            "accuracy_delta": 0.013020833333333334,
+            "ci95": [
+              -0.005208333333333333,
+              0.03125
+            ],
+            "limited_problem_support": false
+          },
+          "math500": {
+            "num_problems": 150,
+            "num_attempts": 150,
+            "accuracy_delta": 0.04,
+            "ci95": [
+              -0.006666666666666667,
+              0.08666666666666667
+            ],
+            "limited_problem_support": false
+          },
+          "minerva": {
+            "num_problems": 82,
+            "num_attempts": 82,
+            "accuracy_delta": -0.012195121951219513,
+            "ci95": [
+              -0.07317073170731707,
+              0.036585365853658534
+            ],
+            "limited_problem_support": false
+          },
+          "olympiad": {
+            "num_problems": 203,
+            "num_attempts": 203,
+            "accuracy_delta": 0.08866995073891626,
+            "ci95": [
+              0.034482758620689655,
+              0.14285714285714285
+            ],
+            "limited_problem_support": false
+          }
+        }
+      }
+    },
+    "results/moe_identity_guiding/oss_global/variants/negative_paper_eps_0.01/strength_1/sampling/full": {
+      "num_examples": 1395,
+      "calibration_overlap": [],
+      "baseline": {
+        "accuracy": 0.6903225806451613,
+        "mean_generated_tokens": 6497.163440860215,
+        "truncated": 74
+      },
+      "guided": {
+        "accuracy": 0.14982078853046596,
+        "mean_generated_tokens": 23639.347670250896,
+        "truncated": 815
+      },
+      "accuracy_delta": -0.5405017921146953,
+      "mean_generated_tokens_delta": 17142.18422939068,
+      "wrong_to_right": 12,
+      "right_to_wrong": 766,
+      "bootstrap": {
+        "method": "paired_dataset_stratified_problem_percentile",
+        "replicates": 5000,
+        "seed": 42,
+        "workers": 1,
+        "confidence_level": 0.95,
+        "weighting": "attempt_weighted",
+        "overall": {
+          "num_problems": 465,
+          "num_attempts": 1395,
+          "accuracy_delta": -0.5405017921146953,
+          "ci95": [
+            -0.6193548387096774,
+            -0.45663082437275987
+          ],
+          "limited_problem_support": true
+        },
+        "datasets": {
+          "aime24": {
+            "num_problems": 9,
+            "num_attempts": 288,
+            "accuracy_delta": -0.5555555555555556,
+            "ci95": [
+              -0.7986111111111112,
+              -0.3054687500000013
+            ],
+            "limited_problem_support": true
+          },
+          "aime25": {
+            "num_problems": 9,
+            "num_attempts": 288,
+            "accuracy_delta": -0.7256944444444444,
+            "ci95": [
+              -0.8819444444444444,
+              -0.5173611111111112
+            ],
+            "limited_problem_support": true
+          },
+          "amc23": {
+            "num_problems": 12,
+            "num_attempts": 384,
+            "accuracy_delta": -0.6614583333333334,
+            "ci95": [
+              -0.8229166666666666,
+              -0.484375
+            ],
+            "limited_problem_support": false
+          },
+          "math500": {
+            "num_problems": 150,
+            "num_attempts": 150,
+            "accuracy_delta": -0.38666666666666666,
+            "ci95": [
+              -0.47333333333333333,
+              -0.3
+            ],
+            "limited_problem_support": false
+          },
+          "minerva": {
+            "num_problems": 82,
+            "num_attempts": 82,
+            "accuracy_delta": -0.07317073170731707,
+            "ci95": [
+              -0.15853658536585366,
+              0.012195121951219513
+            ],
+            "limited_problem_support": false
+          },
+          "olympiad": {
+            "num_problems": 203,
+            "num_attempts": 203,
+            "accuracy_delta": -0.33004926108374383,
+            "ci95": [
+              -0.39901477832512317,
+              -0.26108374384236455
+            ],
+            "limited_problem_support": false
+          }
+        }
+      }
+    },
+    "results/moe_identity_guiding/oss_global/variants/positive_paper_eps_0.01/strength_-1/sampling/full": {
+      "num_examples": 1395,
+      "calibration_overlap": [],
+      "baseline": {
+        "accuracy": 0.6903225806451613,
+        "mean_generated_tokens": 6497.163440860215,
+        "truncated": 74
+      },
+      "guided": {
+        "accuracy": 0.6831541218637993,
+        "mean_generated_tokens": 6697.526164874552,
+        "truncated": 106
+      },
+      "accuracy_delta": -0.007168458781361964,
+      "mean_generated_tokens_delta": 200.3627240143369,
+      "wrong_to_right": 96,
+      "right_to_wrong": 106,
+      "bootstrap": {
+        "method": "paired_dataset_stratified_problem_percentile",
+        "replicates": 5000,
+        "seed": 42,
+        "workers": 1,
+        "confidence_level": 0.95,
+        "weighting": "attempt_weighted",
+        "overall": {
+          "num_problems": 465,
+          "num_attempts": 1395,
+          "accuracy_delta": -0.007168458781362007,
+          "ci95": [
+            -0.02795698924731183,
+            0.012186379928315413
+          ],
+          "limited_problem_support": true
+        },
+        "datasets": {
+          "aime24": {
+            "num_problems": 9,
+            "num_attempts": 288,
+            "accuracy_delta": -0.03125,
+            "ci95": [
+              -0.0763888888888889,
+              0.003472222222222222
+            ],
+            "limited_problem_support": true
+          },
+          "aime25": {
+            "num_problems": 9,
+            "num_attempts": 288,
+            "accuracy_delta": -0.034722222222222224,
+            "ci95": [
+              -0.10069444444444445,
+              0.020833333333333332
+            ],
+            "limited_problem_support": true
+          },
+          "amc23": {
+            "num_problems": 12,
+            "num_attempts": 384,
+            "accuracy_delta": -0.0078125,
+            "ci95": [
+              -0.0390625,
+              0.015625
+            ],
+            "limited_problem_support": false
+          },
+          "math500": {
+            "num_problems": 150,
+            "num_attempts": 150,
+            "accuracy_delta": 0.02666666666666667,
+            "ci95": [
+              -0.02,
+              0.07333333333333333
+            ],
+            "limited_problem_support": false
+          },
+          "minerva": {
+            "num_problems": 82,
+            "num_attempts": 82,
+            "accuracy_delta": 0.0,
+            "ci95": [
+              -0.06097560975609756,
+              0.06097560975609756
+            ],
+            "limited_problem_support": false
+          },
+          "olympiad": {
+            "num_problems": 203,
+            "num_attempts": 203,
+            "accuracy_delta": 0.03940886699507389,
+            "ci95": [
+              -0.009852216748768473,
+              0.09359605911330049
+            ],
+            "limited_problem_support": false
+          }
+        }
+      }
+    },
+    "results/moe_identity_guiding/oss_global/variants/positive_paper_eps_0.01/strength_1/sampling/full": {
+      "num_examples": 1395,
+      "calibration_overlap": [],
+      "baseline": {
+        "accuracy": 0.6903225806451613,
+        "mean_generated_tokens": 6497.163440860215,
+        "truncated": 74
+      },
+      "guided": {
+        "accuracy": 0.13189964157706094,
+        "mean_generated_tokens": 22488.512544802867,
+        "truncated": 670
+      },
+      "accuracy_delta": -0.5584229390681004,
+      "mean_generated_tokens_delta": 15991.349103942652,
+      "wrong_to_right": 11,
+      "right_to_wrong": 790,
+      "bootstrap": {
+        "method": "paired_dataset_stratified_problem_percentile",
+        "replicates": 5000,
+        "seed": 42,
+        "workers": 1,
+        "confidence_level": 0.95,
+        "weighting": "attempt_weighted",
+        "overall": {
+          "num_problems": 465,
+          "num_attempts": 1395,
+          "accuracy_delta": -0.5584229390681004,
+          "ci95": [
+            -0.6344086021505376,
+            -0.47453405017921174
+          ],
+          "limited_problem_support": true
+        },
+        "datasets": {
+          "aime24": {
+            "num_problems": 9,
+            "num_attempts": 288,
+            "accuracy_delta": -0.5555555555555556,
+            "ci95": [
+              -0.7986111111111112,
+              -0.3054687500000013
+            ],
+            "limited_problem_support": true
+          },
+          "aime25": {
+            "num_problems": 9,
+            "num_attempts": 288,
+            "accuracy_delta": -0.7465277777777778,
+            "ci95": [
+              -0.8993055555555556,
+              -0.5416666666666666
+            ],
+            "limited_problem_support": true
+          },
+          "amc23": {
+            "num_problems": 12,
+            "num_attempts": 384,
+            "accuracy_delta": -0.703125,
+            "ci95": [
+              -0.8619791666666666,
+              -0.5285807291666677
+            ],
+            "limited_problem_support": false
+          },
+          "math500": {
+            "num_problems": 150,
+            "num_attempts": 150,
+            "accuracy_delta": -0.4,
+            "ci95": [
+              -0.4866666666666667,
+              -0.31333333333333335
+            ],
+            "limited_problem_support": false
+          },
+          "minerva": {
+            "num_problems": 82,
+            "num_attempts": 82,
+            "accuracy_delta": -0.036585365853658534,
+            "ci95": [
+              -0.12195121951219512,
+              0.04878048780487805
+            ],
+            "limited_problem_support": false
+          },
+          "olympiad": {
+            "num_problems": 203,
+            "num_attempts": 203,
+            "accuracy_delta": -0.3497536945812808,
+            "ci95": [
+              -0.4187192118226601,
+              -0.2857142857142857
+            ],
+            "limited_problem_support": false
+          }
+        }
+      }
+    },
+    "results/moe_identity_guiding/oss_strength_-1/sampling/full": {
+      "num_examples": 1395,
+      "calibration_overlap": [],
+      "baseline": {
+        "accuracy": 0.6903225806451613,
+        "mean_generated_tokens": 6497.163440860215,
+        "truncated": 74
+      },
+      "guided": {
+        "accuracy": 0.6917562724014337,
+        "mean_generated_tokens": 6370.886738351254,
+        "truncated": 60
+      },
+      "accuracy_delta": 0.0014336917562723928,
+      "mean_generated_tokens_delta": -126.27670250896062,
+      "wrong_to_right": 97,
+      "right_to_wrong": 95,
+      "bootstrap": {
+        "method": "paired_dataset_stratified_problem_percentile",
+        "replicates": 5000,
+        "seed": 42,
+        "workers": 1,
+        "confidence_level": 0.95,
+        "weighting": "attempt_weighted",
+        "overall": {
+          "num_problems": 465,
+          "num_attempts": 1395,
+          "accuracy_delta": 0.0014336917562724014,
+          "ci95": [
+            -0.026523297491039426,
+            0.026523297491039426
+          ],
+          "limited_problem_support": true
+        },
+        "datasets": {
+          "aime24": {
+            "num_problems": 9,
+            "num_attempts": 288,
+            "accuracy_delta": -0.024305555555555556,
+            "ci95": [
+              -0.11458333333333333,
+              0.059027777777777776
+            ],
+            "limited_problem_support": true
+          },
+          "aime25": {
+            "num_problems": 9,
+            "num_attempts": 288,
+            "accuracy_delta": -0.013888888888888888,
+            "ci95": [
+              -0.10416666666666667,
+              0.05555555555555555
+            ],
+            "limited_problem_support": true
+          },
+          "amc23": {
+            "num_problems": 12,
+            "num_attempts": 384,
+            "accuracy_delta": 0.0078125,
+            "ci95": [
+              -0.005208333333333333,
+              0.020833333333333332
+            ],
+            "limited_problem_support": false
+          },
+          "math500": {
+            "num_problems": 150,
+            "num_attempts": 150,
+            "accuracy_delta": 0.02666666666666667,
+            "ci95": [
+              -0.02666666666666667,
+              0.08
+            ],
+            "limited_problem_support": false
+          },
+          "minerva": {
+            "num_problems": 82,
+            "num_attempts": 82,
+            "accuracy_delta": 0.0,
+            "ci95": [
+              -0.04878048780487805,
+              0.04878048780487805
+            ],
+            "limited_problem_support": false
+          },
+          "olympiad": {
+            "num_problems": 203,
+            "num_attempts": 203,
+            "accuracy_delta": 0.029556650246305417,
+            "ci95": [
+              -0.019704433497536946,
+              0.07881773399014778
+            ],
+            "limited_problem_support": false
+          }
+        }
+      }
+    },
+    "results/moe_identity_guiding/oss_strength_1/sampling/full": {
+      "num_examples": 1395,
+      "calibration_overlap": [],
+      "baseline": {
+        "accuracy": 0.6903225806451613,
+        "mean_generated_tokens": 6497.163440860215,
+        "truncated": 74
+      },
+      "guided": {
+        "accuracy": 0.6953405017921147,
+        "mean_generated_tokens": 6580.133333333333,
+        "truncated": 72
+      },
+      "accuracy_delta": 0.00501792114695343,
+      "mean_generated_tokens_delta": 82.9698924731183,
+      "wrong_to_right": 92,
+      "right_to_wrong": 85,
+      "bootstrap": {
+        "method": "paired_dataset_stratified_problem_percentile",
+        "replicates": 5000,
+        "seed": 42,
+        "workers": 1,
+        "confidence_level": 0.95,
+        "weighting": "attempt_weighted",
+        "overall": {
+          "num_problems": 465,
+          "num_attempts": 1395,
+          "accuracy_delta": 0.005017921146953405,
+          "ci95": [
+            -0.017921146953405017,
+            0.025806451612903226
+          ],
+          "limited_problem_support": true
+        },
+        "datasets": {
+          "aime24": {
+            "num_problems": 9,
+            "num_attempts": 288,
+            "accuracy_delta": 0.006944444444444444,
+            "ci95": [
+              -0.04513888888888889,
+              0.059027777777777776
+            ],
+            "limited_problem_support": true
+          },
+          "aime25": {
+            "num_problems": 9,
+            "num_attempts": 288,
+            "accuracy_delta": 0.006944444444444444,
+            "ci95": [
+              -0.07291666666666667,
+              0.0763888888888889
+            ],
+            "limited_problem_support": true
+          },
+          "amc23": {
+            "num_problems": 12,
+            "num_attempts": 384,
+            "accuracy_delta": -0.018229166666666668,
+            "ci95": [
+              -0.041666666666666664,
+              -0.0026041666666666665
+            ],
+            "limited_problem_support": false
+          },
+          "math500": {
+            "num_problems": 150,
+            "num_attempts": 150,
+            "accuracy_delta": 0.04,
+            "ci95": [
+              -0.013333333333333334,
+              0.09349999999999759
+            ],
+            "limited_problem_support": false
+          },
+          "minerva": {
+            "num_problems": 82,
+            "num_attempts": 82,
+            "accuracy_delta": 0.0,
+            "ci95": [
+              -0.036585365853658534,
+              0.036585365853658534
+            ],
+            "limited_problem_support": false
+          },
+          "olympiad": {
+            "num_problems": 203,
+            "num_attempts": 203,
+            "accuracy_delta": 0.019704433497536946,
+            "ci95": [
+              -0.024630541871921183,
+              0.06403940886699508
+            ],
+            "limited_problem_support": false
+          }
+        }
+      }
+    },
+    "results/moe_identity_guiding/oss_strength_2/sampling/full": {
+      "num_examples": 1395,
+      "calibration_overlap": [],
+      "baseline": {
+        "accuracy": 0.6903225806451613,
+        "mean_generated_tokens": 6497.163440860215,
+        "truncated": 74
+      },
+      "guided": {
+        "accuracy": 0.6759856630824372,
+        "mean_generated_tokens": 8628.890322580644,
+        "truncated": 164
+      },
+      "accuracy_delta": -0.014336917562724039,
+      "mean_generated_tokens_delta": 2131.7268817204294,
+      "wrong_to_right": 94,
+      "right_to_wrong": 114,
+      "bootstrap": {
+        "method": "paired_dataset_stratified_problem_percentile",
+        "replicates": 5000,
+        "seed": 42,
+        "workers": 1,
+        "confidence_level": 0.95,
+        "weighting": "attempt_weighted",
+        "overall": {
+          "num_problems": 465,
+          "num_attempts": 1395,
+          "accuracy_delta": -0.014336917562724014,
+          "ci95": [
+            -0.04372759856630824,
+            0.01003584229390681
+          ],
+          "limited_problem_support": true
+        },
+        "datasets": {
+          "aime24": {
+            "num_problems": 9,
+            "num_attempts": 288,
+            "accuracy_delta": -0.0798611111111111,
+            "ci95": [
+              -0.125,
+              -0.034722222222222224
+            ],
+            "limited_problem_support": true
+          },
+          "aime25": {
+            "num_problems": 9,
+            "num_attempts": 288,
+            "accuracy_delta": -0.06944444444444445,
+            "ci95": [
+              -0.19444444444444445,
+              0.024305555555555556
+            ],
+            "limited_problem_support": true
+          },
+          "amc23": {
+            "num_problems": 12,
+            "num_attempts": 384,
+            "accuracy_delta": -0.0026041666666666665,
+            "ci95": [
+              -0.015625,
+              0.013020833333333334
+            ],
+            "limited_problem_support": false
+          },
+          "math500": {
+            "num_problems": 150,
+            "num_attempts": 150,
+            "accuracy_delta": 0.05333333333333334,
+            "ci95": [
+              0.006666666666666667,
+              0.1
+            ],
+            "limited_problem_support": false
+          },
+          "minerva": {
+            "num_problems": 82,
+            "num_attempts": 82,
+            "accuracy_delta": 0.012195121951219513,
+            "ci95": [
+              -0.036585365853658534,
+              0.06097560975609756
+            ],
+            "limited_problem_support": false
+          },
+          "olympiad": {
+            "num_problems": 203,
+            "num_attempts": 203,
+            "accuracy_delta": 0.07389162561576355,
+            "ci95": [
+              0.019704433497536946,
+              0.12807881773399016
+            ],
+            "limited_problem_support": false
+          }
+        }
+      }
+    },
+    "results/moe_identity_guiding/qwen_global/sampling/full": {
+      "num_examples": 1395,
+      "calibration_overlap": [],
+      "baseline": {
+        "accuracy": 0.739068100358423,
+        "mean_generated_tokens": 13862.92329749104,
+        "truncated": 140
+      },
+      "guided": {
+        "accuracy": 0.7354838709677419,
+        "mean_generated_tokens": 13706.05734767025,
+        "truncated": 146
+      },
+      "accuracy_delta": -0.0035842293906810374,
+      "mean_generated_tokens_delta": -156.86594982078896,
+      "wrong_to_right": 39,
+      "right_to_wrong": 44,
+      "bootstrap": {
+        "method": "paired_dataset_stratified_problem_percentile",
+        "replicates": 5000,
+        "seed": 42,
+        "workers": 1,
+        "confidence_level": 0.95,
+        "weighting": "attempt_weighted",
+        "overall": {
+          "num_problems": 465,
+          "num_attempts": 1395,
+          "accuracy_delta": -0.0035842293906810036,
+          "ci95": [
+            -0.012903225806451613,
+            0.005734767025089606
+          ],
+          "limited_problem_support": true
+        },
+        "datasets": {
+          "aime24": {
+            "num_problems": 9,
+            "num_attempts": 288,
+            "accuracy_delta": -0.027777777777777776,
+            "ci95": [
+              -0.041666666666666664,
+              -0.013888888888888888
+            ],
+            "limited_problem_support": true
+          },
+          "aime25": {
+            "num_problems": 9,
+            "num_attempts": 288,
+            "accuracy_delta": 0.0,
+            "ci95": [
+              -0.017361111111111112,
+              0.027777777777777776
+            ],
+            "limited_problem_support": true
+          },
+          "amc23": {
+            "num_problems": 12,
+            "num_attempts": 384,
+            "accuracy_delta": 0.0,
+            "ci95": [
+              -0.015625,
+              0.015625
+            ],
+            "limited_problem_support": false
+          },
+          "math500": {
+            "num_problems": 150,
+            "num_attempts": 150,
+            "accuracy_delta": 0.0,
+            "ci95": [
+              -0.02666666666666667,
+              0.02666666666666667
+            ],
+            "limited_problem_support": false
+          },
+          "minerva": {
+            "num_problems": 82,
+            "num_attempts": 82,
+            "accuracy_delta": 0.024390243902439025,
+            "ci95": [
+              -0.036585365853658534,
+              0.08536585365853659
+            ],
+            "limited_problem_support": false
+          },
+          "olympiad": {
+            "num_problems": 203,
+            "num_attempts": 203,
+            "accuracy_delta": 0.0049261083743842365,
+            "ci95": [
+              -0.029556650246305417,
+              0.034482758620689655
+            ],
+            "limited_problem_support": false
+          }
+        }
+      }
+    },
+    "results/moe_identity_guiding/qwen_strength_-1/sampling/full": {
+      "num_examples": 1395,
+      "calibration_overlap": [],
+      "baseline": {
+        "accuracy": 0.7318996415770609,
+        "mean_generated_tokens": 13830.25376344086,
+        "truncated": 154
+      },
+      "guided": {
+        "accuracy": 0.7397849462365591,
+        "mean_generated_tokens": 13919.205734767025,
+        "truncated": 138
+      },
+      "accuracy_delta": 0.007885304659498216,
+      "mean_generated_tokens_delta": 88.95197132616522,
+      "wrong_to_right": 47,
+      "right_to_wrong": 36,
+      "bootstrap": {
+        "method": "paired_dataset_stratified_problem_percentile",
+        "replicates": 5000,
+        "seed": 42,
+        "workers": 1,
+        "confidence_level": 0.95,
+        "weighting": "attempt_weighted",
+        "overall": {
+          "num_problems": 465,
+          "num_attempts": 1395,
+          "accuracy_delta": 0.007885304659498209,
+          "ci95": [
+            -0.005017921146953405,
+            0.02078853046594982
+          ],
+          "limited_problem_support": true
+        },
+        "datasets": {
+          "aime24": {
+            "num_problems": 9,
+            "num_attempts": 288,
+            "accuracy_delta": 0.013888888888888888,
+            "ci95": [
+              -0.020833333333333332,
+              0.04861111111111111
+            ],
+            "limited_problem_support": true
+          },
+          "aime25": {
+            "num_problems": 9,
+            "num_attempts": 288,
+            "accuracy_delta": 0.020833333333333332,
+            "ci95": [
+              -0.013888888888888888,
+              0.0625
+            ],
+            "limited_problem_support": true
+          },
+          "amc23": {
+            "num_problems": 12,
+            "num_attempts": 384,
+            "accuracy_delta": 0.0,
+            "ci95": [
+              -0.0078125,
+              0.0078125
+            ],
+            "limited_problem_support": false
+          },
+          "math500": {
+            "num_problems": 150,
+            "num_attempts": 150,
+            "accuracy_delta": -0.006666666666666667,
+            "ci95": [
+              -0.04,
+              0.02
+            ],
+            "limited_problem_support": false
+          },
+          "minerva": {
+            "num_problems": 82,
+            "num_attempts": 82,
+            "accuracy_delta": -0.012195121951219513,
+            "ci95": [
+              -0.07317073170731707,
+              0.04878048780487805
+            ],
+            "limited_problem_support": false
+          },
+          "olympiad": {
+            "num_problems": 203,
+            "num_attempts": 203,
+            "accuracy_delta": 0.014778325123152709,
+            "ci95": [
+              -0.014778325123152709,
+              0.04926108374384237
+            ],
+            "limited_problem_support": false
+          }
+        }
+      }
+    },
+    "results/moe_identity_guiding/qwen_strength_2/sampling/full": {
+      "num_examples": 1395,
+      "calibration_overlap": [],
+      "baseline": {
+        "accuracy": 0.7318996415770609,
+        "mean_generated_tokens": 13830.25376344086,
+        "truncated": 154
+      },
+      "guided": {
+        "accuracy": 0.7003584229390681,
+        "mean_generated_tokens": 14091.924014336917,
+        "truncated": 169
+      },
+      "accuracy_delta": -0.03154121863799275,
+      "mean_generated_tokens_delta": 261.67025089605704,
+      "wrong_to_right": 44,
+      "right_to_wrong": 88,
+      "bootstrap": {
+        "method": "paired_dataset_stratified_problem_percentile",
+        "replicates": 5000,
+        "seed": 42,
+        "workers": 1,
+        "confidence_level": 0.95,
+        "weighting": "attempt_weighted",
+        "overall": {
+          "num_problems": 465,
+          "num_attempts": 1395,
+          "accuracy_delta": -0.031541218637992835,
+          "ci95": [
+            -0.055197132616487454,
+            -0.010752688172043012
+          ],
+          "limited_problem_support": true
+        },
+        "datasets": {
+          "aime24": {
+            "num_problems": 9,
+            "num_attempts": 288,
+            "accuracy_delta": -0.059027777777777776,
+            "ci95": [
+              -0.125,
+              -0.006944444444444444
+            ],
+            "limited_problem_support": true
+          },
+          "aime25": {
+            "num_problems": 9,
+            "num_attempts": 288,
+            "accuracy_delta": -0.017361111111111112,
+            "ci95": [
+              -0.06944444444444445,
+              0.03125
+            ],
+            "limited_problem_support": true
+          },
+          "amc23": {
+            "num_problems": 12,
+            "num_attempts": 384,
+            "accuracy_delta": -0.046875,
+            "ci95": [
+              -0.10423177083333332,
+              -0.0078125
+            ],
+            "limited_problem_support": false
+          },
+          "math500": {
+            "num_problems": 150,
+            "num_attempts": 150,
+            "accuracy_delta": -0.006666666666666667,
+            "ci95": [
+              -0.03333333333333333,
+              0.02
+            ],
+            "limited_problem_support": false
+          },
+          "minerva": {
+            "num_problems": 82,
+            "num_attempts": 82,
+            "accuracy_delta": 0.012195121951219513,
+            "ci95": [
+              -0.04878048780487805,
+              0.07317073170731707
+            ],
+            "limited_problem_support": false
+          },
+          "olympiad": {
+            "num_problems": 203,
+            "num_attempts": 203,
+            "accuracy_delta": -0.019704433497536946,
+            "ci95": [
+              -0.059113300492610835,
+              0.019704433497536946
+            ],
+            "limited_problem_support": false
+          }
+        }
+      }
+    }
+  },
+  "margin_guiding": {
+    "results/moe_margin_guiding/qwen_global/sampling/full": {
+      "num_examples": 1395,
+      "calibration_overlap": [],
+      "baseline": {
+        "accuracy": 0.7383512544802867,
+        "mean_generated_tokens": 13847.76129032258,
+        "truncated": 144
+      },
+      "guided": {
+        "accuracy": 0.7369175627240143,
+        "mean_generated_tokens": 13839.855197132616,
+        "truncated": 143
+      },
+      "accuracy_delta": -0.0014336917562723928,
+      "mean_generated_tokens_delta": -7.90609318996394,
+      "wrong_to_right": 39,
+      "right_to_wrong": 41,
+      "bootstrap": {
+        "method": "paired_dataset_stratified_problem_percentile",
+        "replicates": 5000,
+        "seed": 42,
+        "workers": 1,
+        "confidence_level": 0.95,
+        "weighting": "attempt_weighted",
+        "overall": {
+          "num_problems": 465,
+          "num_attempts": 1395,
+          "accuracy_delta": -0.0014336917562724014,
+          "ci95": [
+            -0.011469534050179211,
+            0.008602150537634409
+          ],
+          "limited_problem_support": true
+        },
+        "datasets": {
+          "aime24": {
+            "num_problems": 9,
+            "num_attempts": 288,
+            "accuracy_delta": 0.013888888888888888,
+            "ci95": [
+              -0.006944444444444444,
+              0.03819444444444445
+            ],
+            "limited_problem_support": true
+          },
+          "aime25": {
+            "num_problems": 9,
+            "num_attempts": 288,
+            "accuracy_delta": 0.010416666666666666,
+            "ci95": [
+              -0.010416666666666666,
+              0.03133680555555429
+            ],
+            "limited_problem_support": true
+          },
+          "amc23": {
+            "num_problems": 12,
+            "num_attempts": 384,
+            "accuracy_delta": 0.0,
+            "ci95": [
+              -0.010416666666666666,
+              0.010416666666666666
+            ],
+            "limited_problem_support": false
+          },
+          "math500": {
+            "num_problems": 150,
+            "num_attempts": 150,
+            "accuracy_delta": -0.013333333333333334,
+            "ci95": [
+              -0.04666666666666667,
+              0.02
+            ],
+            "limited_problem_support": false
+          },
+          "minerva": {
+            "num_problems": 82,
+            "num_attempts": 82,
+            "accuracy_delta": -0.024390243902439025,
+            "ci95": [
+              -0.08536585365853659,
+              0.04878048780487805
+            ],
+            "limited_problem_support": false
+          },
+          "olympiad": {
+            "num_problems": 203,
+            "num_attempts": 203,
+            "accuracy_delta": -0.024630541871921183,
+            "ci95": [
+              -0.054187192118226604,
+              0.0049261083743842365
+            ],
+            "limited_problem_support": false
+          }
+        }
+      }
+    },
+    "results/moe_margin_guiding/qwen_strength_1/sampling/full": {
+      "num_examples": 1395,
+      "calibration_overlap": [],
+      "baseline": {
+        "accuracy": 0.7318996415770609,
+        "mean_generated_tokens": 13830.25376344086,
+        "truncated": 154
+      },
+      "guided": {
+        "accuracy": 0.7426523297491039,
+        "mean_generated_tokens": 13810.063082437277,
+        "truncated": 146
+      },
+      "accuracy_delta": 0.010752688172043001,
+      "mean_generated_tokens_delta": -20.19068100358345,
+      "wrong_to_right": 47,
+      "right_to_wrong": 32,
+      "bootstrap": {
+        "method": "paired_dataset_stratified_problem_percentile",
+        "replicates": 5000,
+        "seed": 42,
+        "workers": 1,
+        "confidence_level": 0.95,
+        "weighting": "attempt_weighted",
+        "overall": {
+          "num_problems": 465,
+          "num_attempts": 1395,
+          "accuracy_delta": 0.010752688172043012,
+          "ci95": [
+            0.0014336917562724014,
+            0.02078853046594982
+          ],
+          "limited_problem_support": true
+        },
+        "datasets": {
+          "aime24": {
+            "num_problems": 9,
+            "num_attempts": 288,
+            "accuracy_delta": 0.024305555555555556,
+            "ci95": [
+              0.0,
+              0.05555555555555555
+            ],
+            "limited_problem_support": true
+          },
+          "aime25": {
+            "num_problems": 9,
+            "num_attempts": 288,
+            "accuracy_delta": 0.024305555555555556,
+            "ci95": [
+              0.010416666666666666,
+              0.041666666666666664
+            ],
+            "limited_problem_support": true
+          },
+          "amc23": {
+            "num_problems": 12,
+            "num_attempts": 384,
+            "accuracy_delta": 0.0026041666666666665,
+            "ci95": [
+              0.0,
+              0.0078125
+            ],
+            "limited_problem_support": false
+          },
+          "math500": {
+            "num_problems": 150,
+            "num_attempts": 150,
+            "accuracy_delta": 0.0,
+            "ci95": [
+              -0.02666666666666667,
+              0.02666666666666667
+            ],
+            "limited_problem_support": false
+          },
+          "minerva": {
+            "num_problems": 82,
+            "num_attempts": 82,
+            "accuracy_delta": 0.012195121951219513,
+            "ci95": [
+              -0.06097560975609756,
+              0.08536585365853659
+            ],
+            "limited_problem_support": false
+          },
+          "olympiad": {
+            "num_problems": 203,
+            "num_attempts": 203,
+            "accuracy_delta": -0.0049261083743842365,
+            "ci95": [
+              -0.034482758620689655,
+              0.024630541871921183
+            ],
+            "limited_problem_support": false
+          }
+        }
+      }
+    },
+    "results/moe_margin_guiding/oss_strength_1/sampling/full": {
+      "num_examples": 1395,
+      "calibration_overlap": [],
+      "baseline": {
+        "accuracy": 0.6903225806451613,
+        "mean_generated_tokens": 6497.163440860215,
+        "truncated": 74
+      },
+      "guided": {
+        "accuracy": 0.6587813620071684,
+        "mean_generated_tokens": 6409.352688172043,
+        "truncated": 83
+      },
+      "accuracy_delta": -0.03154121863799286,
+      "mean_generated_tokens_delta": -87.81075268817222,
+      "wrong_to_right": 88,
+      "right_to_wrong": 132,
+      "bootstrap": {
+        "method": "paired_dataset_stratified_problem_percentile",
+        "replicates": 5000,
+        "seed": 42,
+        "workers": 1,
+        "confidence_level": 0.95,
+        "weighting": "attempt_weighted",
+        "overall": {
+          "num_problems": 465,
+          "num_attempts": 1395,
+          "accuracy_delta": -0.031541218637992835,
+          "ci95": [
+            -0.05591397849462366,
+            -0.007885304659498209
+          ],
+          "limited_problem_support": true
+        },
+        "datasets": {
+          "aime24": {
+            "num_problems": 9,
+            "num_attempts": 288,
+            "accuracy_delta": -0.041666666666666664,
+            "ci95": [
+              -0.09375,
+              0.010416666666666666
+            ],
+            "limited_problem_support": true
+          },
+          "aime25": {
+            "num_problems": 9,
+            "num_attempts": 288,
+            "accuracy_delta": -0.006944444444444444,
+            "ci95": [
+              -0.0763888888888889,
+              0.0625
+            ],
+            "limited_problem_support": true
+          },
+          "amc23": {
+            "num_problems": 12,
+            "num_attempts": 384,
+            "accuracy_delta": -0.046875,
+            "ci95": [
+              -0.09114583333333333,
+              -0.010416666666666666
+            ],
+            "limited_problem_support": false
+          },
+          "math500": {
+            "num_problems": 150,
+            "num_attempts": 150,
+            "accuracy_delta": -0.04,
+            "ci95": [
+              -0.09333333333333334,
+              0.013333333333333334
+            ],
+            "limited_problem_support": false
+          },
+          "minerva": {
+            "num_problems": 82,
+            "num_attempts": 82,
+            "accuracy_delta": 0.012195121951219513,
+            "ci95": [
+              -0.06097560975609756,
+              0.08536585365853659
+            ],
+            "limited_problem_support": false
+          },
+          "olympiad": {
+            "num_problems": 203,
+            "num_attempts": 203,
+            "accuracy_delta": -0.034482758620689655,
+            "ci95": [
+              -0.08866995073891626,
+              0.019704433497536946
+            ],
+            "limited_problem_support": false
+          }
+        }
+      }
+    }
+  },
+  "guiding_sensitivity": {
+    "method": "paired_dataset_stratified_problem_percentile",
+    "replicates": 5000,
+    "seed": 42,
+    "source_sha256": {
+      "results/moe_identity_guiding/qwen_global/sampling/full/baseline/manifest.json": "8cb629c0b522318ce6efd2e510c9c135cbe4a9017a2fae8b86a9d80935f2321d",
+      "results/moe_identity_guiding/qwen_global/sampling/full/baseline/generations.jsonl": "5e9e09192eae57eea96985c1ca942670767c987fa2ad08fb501212b875875889",
+      "results/moe_identity_guiding/qwen_global/sampling/full/guided/manifest.json": "4d524c03936cb3bd04ac0bdac001fa0254325ac1ab27938ed255e1da65a193b4",
+      "results/moe_identity_guiding/qwen_global/sampling/full/guided/generations.jsonl": "af3b9bd7efa25c7f2722b84fc33da400c7f3b418383f1860ed87a149a81ac2b6",
+      "results/moe_identity_guiding/qwen_strength_2/sampling/full/baseline/manifest.json": "a9c17a0f2b75bd677e4dd4bdbaeb3b8986211454c9495a4c22ce7310d187a61d",
+      "results/moe_identity_guiding/qwen_strength_2/sampling/full/baseline/generations.jsonl": "6c9c2c3406653dff0f91a8e95806a5769f52b5700e6a8b431ad9e6e7dd3394ba",
+      "results/moe_identity_guiding/qwen_strength_2/sampling/full/guided/manifest.json": "4078f2409be00a0dedb6d3b434786046553c8cc0883a944b99f5ef81445181a5",
+      "results/moe_identity_guiding/qwen_strength_2/sampling/full/guided/generations.jsonl": "bece7ce23790075c3ce6ddc1ee06f3d7b28eac2421e722c6e24b351fb0e932e0",
+      "results/moe_identity_guiding/qwen_strength_-1/sampling/full/baseline/manifest.json": "e921e692ca78ea6b0bcc711a819d23a3b4bde7b0a68a242bf938ea2eae4e2e87",
+      "results/moe_identity_guiding/qwen_strength_-1/sampling/full/baseline/generations.jsonl": "6c9c2c3406653dff0f91a8e95806a5769f52b5700e6a8b431ad9e6e7dd3394ba",
+      "results/moe_identity_guiding/qwen_strength_-1/sampling/full/guided/manifest.json": "2906a5cb43028956b33474090a486457dff91c9db24d3d6eabdeeb89b4a1193f",
+      "results/moe_identity_guiding/qwen_strength_-1/sampling/full/guided/generations.jsonl": "dbf6d0070ed9f483419bf73c47452ce8fc6a140f19035327b54774926f265d69",
+      "results/moe_identity_guiding/oss_strength_1/sampling/full/baseline/manifest.json": "6ce7fdd5edebde6003e3063a534a84ec7b3dd927befc2026fa057ae9b0a79bf2",
+      "results/moe_identity_guiding/oss_strength_1/sampling/full/baseline/generations.jsonl": "559db7d3c7c363be53a3778eb749fc68c48448af798d655ae39d11ae970dc437",
+      "results/moe_identity_guiding/oss_strength_1/sampling/full/guided/manifest.json": "7ac4368849d162b9378749e2affb97afc20ba5c8025ba58f63b4e2f46a74f8c1",
+      "results/moe_identity_guiding/oss_strength_1/sampling/full/guided/generations.jsonl": "718d4f551f89d1193489dbee6616f37e49c47afae18edb4ff57f34590f6b0ced",
+      "results/moe_identity_guiding/oss_strength_2/sampling/full/baseline/manifest.json": "94f01008fdd277398671dd8359ec61f64f689f3820ad565332582c3f5e4d93b8",
+      "results/moe_identity_guiding/oss_strength_2/sampling/full/baseline/generations.jsonl": "559db7d3c7c363be53a3778eb749fc68c48448af798d655ae39d11ae970dc437",
+      "results/moe_identity_guiding/oss_strength_2/sampling/full/guided/manifest.json": "7e14a29bc2c5f7bc44ac3980bf82c6aa2616c63405aed2cb79c337c7878d937e",
+      "results/moe_identity_guiding/oss_strength_2/sampling/full/guided/generations.jsonl": "f18182f255b949503722679d459bdb1f56bc839e5abb2416989f429fc884932b",
+      "results/moe_identity_guiding/oss_strength_-1/sampling/full/baseline/manifest.json": "a67a3398a8fd6f23f525414b217afa953b6c5c06ee76e7fb78c32e3b80831b6d",
+      "results/moe_identity_guiding/oss_strength_-1/sampling/full/baseline/generations.jsonl": "559db7d3c7c363be53a3778eb749fc68c48448af798d655ae39d11ae970dc437",
+      "results/moe_identity_guiding/oss_strength_-1/sampling/full/guided/manifest.json": "ca557cd77ae8025e3b0c88db3dd6053d746c2a9ec755bfeaf4002c3756a85ec9",
+      "results/moe_identity_guiding/oss_strength_-1/sampling/full/guided/generations.jsonl": "a86e39557364e164b74f304c7af49e3824a7c2c59a764266f7c3a60f005c8b65",
+      "results/moe_identity_guiding/oss_global/variants/negative_fixed/strength_1/sampling/full/baseline/manifest.json": "a8a107b82ed4104015f4f16e2491ec798329f1542f6261b6f0b385b2975c3635",
+      "results/moe_identity_guiding/oss_global/variants/negative_fixed/strength_1/sampling/full/baseline/generations.jsonl": "559db7d3c7c363be53a3778eb749fc68c48448af798d655ae39d11ae970dc437",
+      "results/moe_identity_guiding/oss_global/variants/negative_fixed/strength_1/sampling/full/guided/manifest.json": "5aacddcc4760f27f69e723a59f8b02add6335477f7722572c06c18baba529538",
+      "results/moe_identity_guiding/oss_global/variants/negative_fixed/strength_1/sampling/full/guided/generations.jsonl": "6e61bd010a38e72752823683444618d58480b3b8fb2b091bfe1884446f5e798e",
+      "results/moe_identity_guiding/oss_global/variants/positive_paper_eps_0.01/strength_1/sampling/full/baseline/manifest.json": "02a5b8741fb1ad043a8560ed5c72e285cb77d329a0b59c669a3ca226e7a76759",
+      "results/moe_identity_guiding/oss_global/variants/positive_paper_eps_0.01/strength_1/sampling/full/baseline/generations.jsonl": "559db7d3c7c363be53a3778eb749fc68c48448af798d655ae39d11ae970dc437",
+      "results/moe_identity_guiding/oss_global/variants/positive_paper_eps_0.01/strength_1/sampling/full/guided/manifest.json": "a9ca3715a0931082b75bea5fa939c238bcd93e78983a08c69b20fe5f5d3c0f8c",
+      "results/moe_identity_guiding/oss_global/variants/positive_paper_eps_0.01/strength_1/sampling/full/guided/generations.jsonl": "7c449e81f8c9de57fb9a77040d1c12f9ce90f2fb04b2138e8a8b6cd802338fde",
+      "results/moe_identity_guiding/oss_global/variants/positive_paper_eps_0.01/strength_-1/sampling/full/baseline/manifest.json": "0bb80851f137ba2bd9d1c999ce87ad76ed1ca192c9d40f949fc4625ca28edad0",
+      "results/moe_identity_guiding/oss_global/variants/positive_paper_eps_0.01/strength_-1/sampling/full/baseline/generations.jsonl": "559db7d3c7c363be53a3778eb749fc68c48448af798d655ae39d11ae970dc437",
+      "results/moe_identity_guiding/oss_global/variants/positive_paper_eps_0.01/strength_-1/sampling/full/guided/manifest.json": "694c1055d32a2a8ec5482c104b87ec0348d22f0680e1f14815ef4302ea58d1c0",
+      "results/moe_identity_guiding/oss_global/variants/positive_paper_eps_0.01/strength_-1/sampling/full/guided/generations.jsonl": "958e8869401751b2114b21f09d0107f4189d0a03dd12784ebe270cf704852fbd",
+      "results/moe_identity_guiding/oss_global/variants/negative_paper_eps_0.01/strength_1/sampling/full/baseline/manifest.json": "373e2ea3413104ad49c39d70a335ddac97b5018e8419ccec1bcbb663389c627b",
+      "results/moe_identity_guiding/oss_global/variants/negative_paper_eps_0.01/strength_1/sampling/full/baseline/generations.jsonl": "559db7d3c7c363be53a3778eb749fc68c48448af798d655ae39d11ae970dc437",
+      "results/moe_identity_guiding/oss_global/variants/negative_paper_eps_0.01/strength_1/sampling/full/guided/manifest.json": "47196c37a181800670b3d114b679f42c7f4c72d2ffd6804ca2e03b502aff5450",
+      "results/moe_identity_guiding/oss_global/variants/negative_paper_eps_0.01/strength_1/sampling/full/guided/generations.jsonl": "ad050935f199c5e55ac54aedf1d17c08b44ee9fcab149ef29bac300c56130aaa",
+      "results/moe_margin_guiding/qwen_global/sampling/full/baseline/manifest.json": "f980b9199d07ed7fee26178874ad646f12816c461208f114454b60228ba7b7ea",
+      "results/moe_margin_guiding/qwen_global/sampling/full/baseline/generations.jsonl": "562d50dc46625b606e38c83d4d58915239c64d047db6c216bcec84164ae6229c",
+      "results/moe_margin_guiding/qwen_global/sampling/full/guided/manifest.json": "ad3508e53296807a7a2b9cdd6940d5da2edfbfbbadcc3d7700bfb0fd8af1d15b",
+      "results/moe_margin_guiding/qwen_global/sampling/full/guided/generations.jsonl": "5fc1da9a7ff244300820a51cf6c9141a5687bda4e480352814f58410a97874a3",
+      "results/moe_margin_guiding/qwen_strength_1/sampling/full/baseline/manifest.json": "4772637cccd9f8d179cd0e1fdc23f52415a503a90c6222d4444563b402a6c086",
+      "results/moe_margin_guiding/qwen_strength_1/sampling/full/baseline/generations.jsonl": "6c9c2c3406653dff0f91a8e95806a5769f52b5700e6a8b431ad9e6e7dd3394ba",
+      "results/moe_margin_guiding/qwen_strength_1/sampling/full/guided/manifest.json": "963ace9c697d47bc5fd7d3df7df8ab42f1342024f7867a9d0b9cf1d5ce6db458",
+      "results/moe_margin_guiding/qwen_strength_1/sampling/full/guided/generations.jsonl": "ed0654fd12d00f94351ecefd8c55fce82e7cfcc2f2404e0b059a2f502962709e",
+      "results/moe_margin_guiding/oss_strength_1/sampling/full/baseline/manifest.json": "a0dbdbe1e7afa3154622871138b9870591b195f10ba2bfd34ec3f86d65792fef",
+      "results/moe_margin_guiding/oss_strength_1/sampling/full/baseline/generations.jsonl": "559db7d3c7c363be53a3778eb749fc68c48448af798d655ae39d11ae970dc437",
+      "results/moe_margin_guiding/oss_strength_1/sampling/full/guided/manifest.json": "0ba496790d6256365d9d82237902ce4c6bc8429b40f15d4b68410eee78e6663d",
+      "results/moe_margin_guiding/oss_strength_1/sampling/full/guided/generations.jsonl": "432e436c38f87de5a9316010fe58dd094a9b85a767a1450f854b074beb3650fd"
+    },
+    "runs": {
+      "results/moe_identity_guiding/qwen_global/sampling/full": {
+        "label": "Qwen fixed positive +1",
+        "num_problems": 465,
+        "num_attempts": 1395,
+        "attempt_weighted": {
+          "baseline_accuracy": 0.739068100358423,
+          "guided_accuracy": 0.7354838709677419,
+          "accuracy_delta": -0.0035842293906810036,
+          "ci95": [
+            -0.012903225806451613,
+            0.005734767025089606
+          ]
+        },
+        "problem_weighted": {
+          "baseline_accuracy": 0.5255376344086021,
+          "guided_accuracy": 0.5314516129032258,
+          "accuracy_delta": 0.005913978494623656,
+          "ci95": [
+            -0.013373655913978495,
+            0.025067204301075268
+          ]
+        },
+        "datasets": {
+          "aime24": {
+            "num_problems": 9,
+            "num_attempts": 288,
+            "baseline_correct": 185,
+            "guided_correct": 177,
+            "net_correct": -8,
+            "accuracy_delta": -0.027777777777777776,
+            "ci95": [
+              -0.041666666666666664,
+              -0.013888888888888888
+            ],
+            "improved_problems": 0,
+            "worsened_problems": 6,
+            "unchanged_problems": 3
+          },
+          "aime25": {
+            "num_problems": 9,
+            "num_attempts": 288,
+            "baseline_correct": 246,
+            "guided_correct": 246,
+            "net_correct": 0,
+            "accuracy_delta": 0.0,
+            "ci95": [
+              -0.017361111111111112,
+              0.027777777777777776
+            ],
+            "improved_problems": 1,
+            "worsened_problems": 3,
+            "unchanged_problems": 5
+          },
+          "amc23": {
+            "num_problems": 12,
+            "num_attempts": 384,
+            "baseline_correct": 381,
+            "guided_correct": 381,
+            "net_correct": 0,
+            "accuracy_delta": 0.0,
+            "ci95": [
+              -0.015625,
+              0.015625
+            ],
+            "improved_problems": 1,
+            "worsened_problems": 1,
+            "unchanged_problems": 10
+          },
+          "math500": {
+            "num_problems": 150,
+            "num_attempts": 150,
+            "baseline_correct": 106,
+            "guided_correct": 106,
+            "net_correct": 0,
+            "accuracy_delta": 0.0,
+            "ci95": [
+              -0.02666666666666667,
+              0.02666666666666667
+            ],
+            "improved_problems": 2,
+            "worsened_problems": 2,
+            "unchanged_problems": 146
+          },
+          "minerva": {
+            "num_problems": 82,
+            "num_attempts": 82,
+            "baseline_correct": 16,
+            "guided_correct": 18,
+            "net_correct": 2,
+            "accuracy_delta": 0.024390243902439025,
+            "ci95": [
+              -0.036585365853658534,
+              0.08536585365853659
+            ],
+            "improved_problems": 4,
+            "worsened_problems": 2,
+            "unchanged_problems": 76
+          },
+          "olympiad": {
+            "num_problems": 203,
+            "num_attempts": 203,
+            "baseline_correct": 97,
+            "guided_correct": 98,
+            "net_correct": 1,
+            "accuracy_delta": 0.0049261083743842365,
+            "ci95": [
+              -0.029556650246305417,
+              0.034482758620689655
+            ],
+            "improved_problems": 6,
+            "worsened_problems": 5,
+            "unchanged_problems": 192
+          }
+        },
+        "comparison": {
+          "num_examples": 1395,
+          "calibration_overlap": [],
+          "baseline": {
+            "accuracy": 0.739068100358423,
+            "mean_generated_tokens": 13862.92329749104,
+            "truncated": 140
+          },
+          "guided": {
+            "accuracy": 0.7354838709677419,
+            "mean_generated_tokens": 13706.05734767025,
+            "truncated": 146
+          },
+          "accuracy_delta": -0.0035842293906810374,
+          "mean_generated_tokens_delta": -156.86594982078896,
+          "wrong_to_right": 39,
+          "right_to_wrong": 44,
+          "bootstrap": {
+            "method": "paired_dataset_stratified_problem_percentile",
+            "replicates": 5000,
+            "seed": 42,
+            "workers": 1,
+            "confidence_level": 0.95,
+            "weighting": "attempt_weighted",
+            "overall": {
+              "num_problems": 465,
+              "num_attempts": 1395,
+              "accuracy_delta": -0.0035842293906810036,
+              "ci95": [
+                -0.012903225806451613,
+                0.005734767025089606
+              ],
+              "limited_problem_support": true
+            },
+            "datasets": {
+              "aime24": {
+                "num_problems": 9,
+                "num_attempts": 288,
+                "accuracy_delta": -0.027777777777777776,
+                "ci95": [
+                  -0.041666666666666664,
+                  -0.013888888888888888
+                ],
+                "limited_problem_support": true
+              },
+              "aime25": {
+                "num_problems": 9,
+                "num_attempts": 288,
+                "accuracy_delta": 0.0,
+                "ci95": [
+                  -0.017361111111111112,
+                  0.027777777777777776
+                ],
+                "limited_problem_support": true
+              },
+              "amc23": {
+                "num_problems": 12,
+                "num_attempts": 384,
+                "accuracy_delta": 0.0,
+                "ci95": [
+                  -0.015625,
+                  0.015625
+                ],
+                "limited_problem_support": false
+              },
+              "math500": {
+                "num_problems": 150,
+                "num_attempts": 150,
+                "accuracy_delta": 0.0,
+                "ci95": [
+                  -0.02666666666666667,
+                  0.02666666666666667
+                ],
+                "limited_problem_support": false
+              },
+              "minerva": {
+                "num_problems": 82,
+                "num_attempts": 82,
+                "accuracy_delta": 0.024390243902439025,
+                "ci95": [
+                  -0.036585365853658534,
+                  0.08536585365853659
+                ],
+                "limited_problem_support": false
+              },
+              "olympiad": {
+                "num_problems": 203,
+                "num_attempts": 203,
+                "accuracy_delta": 0.0049261083743842365,
+                "ci95": [
+                  -0.029556650246305417,
+                  0.034482758620689655
+                ],
+                "limited_problem_support": false
+              }
+            }
+          }
+        }
+      },
+      "results/moe_identity_guiding/qwen_strength_2/sampling/full": {
+        "label": "Qwen fixed positive +2",
+        "num_problems": 465,
+        "num_attempts": 1395,
+        "attempt_weighted": {
+          "baseline_accuracy": 0.7318996415770609,
+          "guided_accuracy": 0.7003584229390681,
+          "accuracy_delta": -0.031541218637992835,
+          "ci95": [
+            -0.055197132616487454,
+            -0.010752688172043012
+          ]
+        },
+        "problem_weighted": {
+          "baseline_accuracy": 0.5248655913978495,
+          "guided_accuracy": 0.5135752688172043,
+          "accuracy_delta": -0.01129032258064516,
+          "ci95": [
+            -0.03387096774193549,
+            0.010954301075268817
+          ]
+        },
+        "datasets": {
+          "aime24": {
+            "num_problems": 9,
+            "num_attempts": 288,
+            "baseline_correct": 178,
+            "guided_correct": 161,
+            "net_correct": -17,
+            "accuracy_delta": -0.059027777777777776,
+            "ci95": [
+              -0.125,
+              -0.006944444444444444
+            ],
+            "improved_problems": 1,
+            "worsened_problems": 5,
+            "unchanged_problems": 3
+          },
+          "aime25": {
+            "num_problems": 9,
+            "num_attempts": 288,
+            "baseline_correct": 242,
+            "guided_correct": 237,
+            "net_correct": -5,
+            "accuracy_delta": -0.017361111111111112,
+            "ci95": [
+              -0.06944444444444445,
+              0.03125
+            ],
+            "improved_problems": 2,
+            "worsened_problems": 3,
+            "unchanged_problems": 4
+          },
+          "amc23": {
+            "num_problems": 12,
+            "num_attempts": 384,
+            "baseline_correct": 382,
+            "guided_correct": 364,
+            "net_correct": -18,
+            "accuracy_delta": -0.046875,
+            "ci95": [
+              -0.10423177083333332,
+              -0.0078125
+            ],
+            "improved_problems": 0,
+            "worsened_problems": 4,
+            "unchanged_problems": 8
+          },
+          "math500": {
+            "num_problems": 150,
+            "num_attempts": 150,
+            "baseline_correct": 103,
+            "guided_correct": 102,
+            "net_correct": -1,
+            "accuracy_delta": -0.006666666666666667,
+            "ci95": [
+              -0.03333333333333333,
+              0.02
+            ],
+            "improved_problems": 2,
+            "worsened_problems": 3,
+            "unchanged_problems": 145
+          },
+          "minerva": {
+            "num_problems": 82,
+            "num_attempts": 82,
+            "baseline_correct": 20,
+            "guided_correct": 21,
+            "net_correct": 1,
+            "accuracy_delta": 0.012195121951219513,
+            "ci95": [
+              -0.04878048780487805,
+              0.07317073170731707
+            ],
+            "improved_problems": 4,
+            "worsened_problems": 3,
+            "unchanged_problems": 75
+          },
+          "olympiad": {
+            "num_problems": 203,
+            "num_attempts": 203,
+            "baseline_correct": 96,
+            "guided_correct": 92,
+            "net_correct": -4,
+            "accuracy_delta": -0.019704433497536946,
+            "ci95": [
+              -0.059113300492610835,
+              0.019704433497536946
+            ],
+            "improved_problems": 6,
+            "worsened_problems": 10,
+            "unchanged_problems": 187
+          }
+        },
+        "comparison": {
+          "num_examples": 1395,
+          "calibration_overlap": [],
+          "baseline": {
+            "accuracy": 0.7318996415770609,
+            "mean_generated_tokens": 13830.25376344086,
+            "truncated": 154
+          },
+          "guided": {
+            "accuracy": 0.7003584229390681,
+            "mean_generated_tokens": 14091.924014336917,
+            "truncated": 169
+          },
+          "accuracy_delta": -0.03154121863799275,
+          "mean_generated_tokens_delta": 261.67025089605704,
+          "wrong_to_right": 44,
+          "right_to_wrong": 88,
+          "bootstrap": {
+            "method": "paired_dataset_stratified_problem_percentile",
+            "replicates": 5000,
+            "seed": 42,
+            "workers": 1,
+            "confidence_level": 0.95,
+            "weighting": "attempt_weighted",
+            "overall": {
+              "num_problems": 465,
+              "num_attempts": 1395,
+              "accuracy_delta": -0.031541218637992835,
+              "ci95": [
+                -0.055197132616487454,
+                -0.010752688172043012
+              ],
+              "limited_problem_support": true
+            },
+            "datasets": {
+              "aime24": {
+                "num_problems": 9,
+                "num_attempts": 288,
+                "accuracy_delta": -0.059027777777777776,
+                "ci95": [
+                  -0.125,
+                  -0.006944444444444444
+                ],
+                "limited_problem_support": true
+              },
+              "aime25": {
+                "num_problems": 9,
+                "num_attempts": 288,
+                "accuracy_delta": -0.017361111111111112,
+                "ci95": [
+                  -0.06944444444444445,
+                  0.03125
+                ],
+                "limited_problem_support": true
+              },
+              "amc23": {
+                "num_problems": 12,
+                "num_attempts": 384,
+                "accuracy_delta": -0.046875,
+                "ci95": [
+                  -0.10423177083333332,
+                  -0.0078125
+                ],
+                "limited_problem_support": false
+              },
+              "math500": {
+                "num_problems": 150,
+                "num_attempts": 150,
+                "accuracy_delta": -0.006666666666666667,
+                "ci95": [
+                  -0.03333333333333333,
+                  0.02
+                ],
+                "limited_problem_support": false
+              },
+              "minerva": {
+                "num_problems": 82,
+                "num_attempts": 82,
+                "accuracy_delta": 0.012195121951219513,
+                "ci95": [
+                  -0.04878048780487805,
+                  0.07317073170731707
+                ],
+                "limited_problem_support": false
+              },
+              "olympiad": {
+                "num_problems": 203,
+                "num_attempts": 203,
+                "accuracy_delta": -0.019704433497536946,
+                "ci95": [
+                  -0.059113300492610835,
+                  0.019704433497536946
+                ],
+                "limited_problem_support": false
+              }
+            }
+          }
+        }
+      },
+      "results/moe_identity_guiding/qwen_strength_-1/sampling/full": {
+        "label": "Qwen fixed positive -1",
+        "num_problems": 465,
+        "num_attempts": 1395,
+        "attempt_weighted": {
+          "baseline_accuracy": 0.7318996415770609,
+          "guided_accuracy": 0.7397849462365591,
+          "accuracy_delta": 0.007885304659498209,
+          "ci95": [
+            -0.005017921146953405,
+            0.02078853046594982
+          ]
+        },
+        "problem_weighted": {
+          "baseline_accuracy": 0.5248655913978495,
+          "guided_accuracy": 0.5276881720430108,
+          "accuracy_delta": 0.00282258064516129,
+          "ci95": [
+            -0.017271505376344087,
+            0.023256048387096728
+          ]
+        },
+        "datasets": {
+          "aime24": {
+            "num_problems": 9,
+            "num_attempts": 288,
+            "baseline_correct": 178,
+            "guided_correct": 182,
+            "net_correct": 4,
+            "accuracy_delta": 0.013888888888888888,
+            "ci95": [
+              -0.020833333333333332,
+              0.04861111111111111
+            ],
+            "improved_problems": 4,
+            "worsened_problems": 2,
+            "unchanged_problems": 3
+          },
+          "aime25": {
+            "num_problems": 9,
+            "num_attempts": 288,
+            "baseline_correct": 242,
+            "guided_correct": 248,
+            "net_correct": 6,
+            "accuracy_delta": 0.020833333333333332,
+            "ci95": [
+              -0.013888888888888888,
+              0.0625
+            ],
+            "improved_problems": 3,
+            "worsened_problems": 1,
+            "unchanged_problems": 5
+          },
+          "amc23": {
+            "num_problems": 12,
+            "num_attempts": 384,
+            "baseline_correct": 382,
+            "guided_correct": 382,
+            "net_correct": 0,
+            "accuracy_delta": 0.0,
+            "ci95": [
+              -0.0078125,
+              0.0078125
+            ],
+            "improved_problems": 1,
+            "worsened_problems": 1,
+            "unchanged_problems": 10
+          },
+          "math500": {
+            "num_problems": 150,
+            "num_attempts": 150,
+            "baseline_correct": 103,
+            "guided_correct": 102,
+            "net_correct": -1,
+            "accuracy_delta": -0.006666666666666667,
+            "ci95": [
+              -0.04,
+              0.02
+            ],
+            "improved_problems": 2,
+            "worsened_problems": 3,
+            "unchanged_problems": 145
+          },
+          "minerva": {
+            "num_problems": 82,
+            "num_attempts": 82,
+            "baseline_correct": 20,
+            "guided_correct": 19,
+            "net_correct": -1,
+            "accuracy_delta": -0.012195121951219513,
+            "ci95": [
+              -0.07317073170731707,
+              0.04878048780487805
+            ],
+            "improved_problems": 3,
+            "worsened_problems": 4,
+            "unchanged_problems": 75
+          },
+          "olympiad": {
+            "num_problems": 203,
+            "num_attempts": 203,
+            "baseline_correct": 96,
+            "guided_correct": 99,
+            "net_correct": 3,
+            "accuracy_delta": 0.014778325123152709,
+            "ci95": [
+              -0.014778325123152709,
+              0.04926108374384237
+            ],
+            "improved_problems": 7,
+            "worsened_problems": 4,
+            "unchanged_problems": 192
+          }
+        },
+        "comparison": {
+          "num_examples": 1395,
+          "calibration_overlap": [],
+          "baseline": {
+            "accuracy": 0.7318996415770609,
+            "mean_generated_tokens": 13830.25376344086,
+            "truncated": 154
+          },
+          "guided": {
+            "accuracy": 0.7397849462365591,
+            "mean_generated_tokens": 13919.205734767025,
+            "truncated": 138
+          },
+          "accuracy_delta": 0.007885304659498216,
+          "mean_generated_tokens_delta": 88.95197132616522,
+          "wrong_to_right": 47,
+          "right_to_wrong": 36,
+          "bootstrap": {
+            "method": "paired_dataset_stratified_problem_percentile",
+            "replicates": 5000,
+            "seed": 42,
+            "workers": 1,
+            "confidence_level": 0.95,
+            "weighting": "attempt_weighted",
+            "overall": {
+              "num_problems": 465,
+              "num_attempts": 1395,
+              "accuracy_delta": 0.007885304659498209,
+              "ci95": [
+                -0.005017921146953405,
+                0.02078853046594982
+              ],
+              "limited_problem_support": true
+            },
+            "datasets": {
+              "aime24": {
+                "num_problems": 9,
+                "num_attempts": 288,
+                "accuracy_delta": 0.013888888888888888,
+                "ci95": [
+                  -0.020833333333333332,
+                  0.04861111111111111
+                ],
+                "limited_problem_support": true
+              },
+              "aime25": {
+                "num_problems": 9,
+                "num_attempts": 288,
+                "accuracy_delta": 0.020833333333333332,
+                "ci95": [
+                  -0.013888888888888888,
+                  0.0625
+                ],
+                "limited_problem_support": true
+              },
+              "amc23": {
+                "num_problems": 12,
+                "num_attempts": 384,
+                "accuracy_delta": 0.0,
+                "ci95": [
+                  -0.0078125,
+                  0.0078125
+                ],
+                "limited_problem_support": false
+              },
+              "math500": {
+                "num_problems": 150,
+                "num_attempts": 150,
+                "accuracy_delta": -0.006666666666666667,
+                "ci95": [
+                  -0.04,
+                  0.02
+                ],
+                "limited_problem_support": false
+              },
+              "minerva": {
+                "num_problems": 82,
+                "num_attempts": 82,
+                "accuracy_delta": -0.012195121951219513,
+                "ci95": [
+                  -0.07317073170731707,
+                  0.04878048780487805
+                ],
+                "limited_problem_support": false
+              },
+              "olympiad": {
+                "num_problems": 203,
+                "num_attempts": 203,
+                "accuracy_delta": 0.014778325123152709,
+                "ci95": [
+                  -0.014778325123152709,
+                  0.04926108374384237
+                ],
+                "limited_problem_support": false
+              }
+            }
+          }
+        }
+      },
+      "results/moe_identity_guiding/oss_strength_1/sampling/full": {
+        "label": "GPT-OSS fixed positive +1",
+        "num_problems": 465,
+        "num_attempts": 1395,
+        "attempt_weighted": {
+          "baseline_accuracy": 0.6903225806451613,
+          "guided_accuracy": 0.6953405017921147,
+          "accuracy_delta": 0.005017921146953405,
+          "ci95": [
+            -0.017921146953405017,
+            0.025806451612903226
+          ]
+        },
+        "problem_weighted": {
+          "baseline_accuracy": 0.5188844086021506,
+          "guided_accuracy": 0.5401881720430107,
+          "accuracy_delta": 0.021303763440860216,
+          "ci95": [
+            -0.0060500672043010744,
+            0.04979838709677419
+          ]
+        },
+        "datasets": {
+          "aime24": {
+            "num_problems": 9,
+            "num_attempts": 288,
+            "baseline_correct": 160,
+            "guided_correct": 162,
+            "net_correct": 2,
+            "accuracy_delta": 0.006944444444444444,
+            "ci95": [
+              -0.04513888888888889,
+              0.059027777777777776
+            ],
+            "improved_problems": 3,
+            "worsened_problems": 1,
+            "unchanged_problems": 5
+          },
+          "aime25": {
+            "num_problems": 9,
+            "num_attempts": 288,
+            "baseline_correct": 218,
+            "guided_correct": 220,
+            "net_correct": 2,
+            "accuracy_delta": 0.006944444444444444,
+            "ci95": [
+              -0.07291666666666667,
+              0.0763888888888889
+            ],
+            "improved_problems": 4,
+            "worsened_problems": 2,
+            "unchanged_problems": 3
+          },
+          "amc23": {
+            "num_problems": 12,
+            "num_attempts": 384,
+            "baseline_correct": 367,
+            "guided_correct": 360,
+            "net_correct": -7,
+            "accuracy_delta": -0.018229166666666668,
+            "ci95": [
+              -0.041666666666666664,
+              -0.0026041666666666665
+            ],
+            "improved_problems": 0,
+            "worsened_problems": 4,
+            "unchanged_problems": 8
+          },
+          "math500": {
+            "num_problems": 150,
+            "num_attempts": 150,
+            "baseline_correct": 109,
+            "guided_correct": 115,
+            "net_correct": 6,
+            "accuracy_delta": 0.04,
+            "ci95": [
+              -0.013333333333333334,
+              0.09349999999999759
+            ],
+            "improved_problems": 12,
+            "worsened_problems": 6,
+            "unchanged_problems": 132
+          },
+          "minerva": {
+            "num_problems": 82,
+            "num_attempts": 82,
+            "baseline_correct": 14,
+            "guided_correct": 14,
+            "net_correct": 0,
+            "accuracy_delta": 0.0,
+            "ci95": [
+              -0.036585365853658534,
+              0.036585365853658534
+            ],
+            "improved_problems": 1,
+            "worsened_problems": 1,
+            "unchanged_problems": 80
+          },
+          "olympiad": {
+            "num_problems": 203,
+            "num_attempts": 203,
+            "baseline_correct": 95,
+            "guided_correct": 99,
+            "net_correct": 4,
+            "accuracy_delta": 0.019704433497536946,
+            "ci95": [
+              -0.024630541871921183,
+              0.06403940886699508
+            ],
+            "improved_problems": 13,
+            "worsened_problems": 9,
+            "unchanged_problems": 181
+          }
+        },
+        "comparison": {
+          "num_examples": 1395,
+          "calibration_overlap": [],
+          "baseline": {
+            "accuracy": 0.6903225806451613,
+            "mean_generated_tokens": 6497.163440860215,
+            "truncated": 74
+          },
+          "guided": {
+            "accuracy": 0.6953405017921147,
+            "mean_generated_tokens": 6580.133333333333,
+            "truncated": 72
+          },
+          "accuracy_delta": 0.00501792114695343,
+          "mean_generated_tokens_delta": 82.9698924731183,
+          "wrong_to_right": 92,
+          "right_to_wrong": 85,
+          "bootstrap": {
+            "method": "paired_dataset_stratified_problem_percentile",
+            "replicates": 5000,
+            "seed": 42,
+            "workers": 1,
+            "confidence_level": 0.95,
+            "weighting": "attempt_weighted",
+            "overall": {
+              "num_problems": 465,
+              "num_attempts": 1395,
+              "accuracy_delta": 0.005017921146953405,
+              "ci95": [
+                -0.017921146953405017,
+                0.025806451612903226
+              ],
+              "limited_problem_support": true
+            },
+            "datasets": {
+              "aime24": {
+                "num_problems": 9,
+                "num_attempts": 288,
+                "accuracy_delta": 0.006944444444444444,
+                "ci95": [
+                  -0.04513888888888889,
+                  0.059027777777777776
+                ],
+                "limited_problem_support": true
+              },
+              "aime25": {
+                "num_problems": 9,
+                "num_attempts": 288,
+                "accuracy_delta": 0.006944444444444444,
+                "ci95": [
+                  -0.07291666666666667,
+                  0.0763888888888889
+                ],
+                "limited_problem_support": true
+              },
+              "amc23": {
+                "num_problems": 12,
+                "num_attempts": 384,
+                "accuracy_delta": -0.018229166666666668,
+                "ci95": [
+                  -0.041666666666666664,
+                  -0.0026041666666666665
+                ],
+                "limited_problem_support": false
+              },
+              "math500": {
+                "num_problems": 150,
+                "num_attempts": 150,
+                "accuracy_delta": 0.04,
+                "ci95": [
+                  -0.013333333333333334,
+                  0.09349999999999759
+                ],
+                "limited_problem_support": false
+              },
+              "minerva": {
+                "num_problems": 82,
+                "num_attempts": 82,
+                "accuracy_delta": 0.0,
+                "ci95": [
+                  -0.036585365853658534,
+                  0.036585365853658534
+                ],
+                "limited_problem_support": false
+              },
+              "olympiad": {
+                "num_problems": 203,
+                "num_attempts": 203,
+                "accuracy_delta": 0.019704433497536946,
+                "ci95": [
+                  -0.024630541871921183,
+                  0.06403940886699508
+                ],
+                "limited_problem_support": false
+              }
+            }
+          }
+        }
+      },
+      "results/moe_identity_guiding/oss_strength_2/sampling/full": {
+        "label": "GPT-OSS fixed positive +2",
+        "num_problems": 465,
+        "num_attempts": 1395,
+        "attempt_weighted": {
+          "baseline_accuracy": 0.6903225806451613,
+          "guided_accuracy": 0.6759856630824372,
+          "accuracy_delta": -0.014336917562724014,
+          "ci95": [
+            -0.04372759856630824,
+            0.01003584229390681
+          ]
+        },
+        "problem_weighted": {
+          "baseline_accuracy": 0.5188844086021506,
+          "guided_accuracy": 0.5675403225806451,
+          "accuracy_delta": 0.04865591397849462,
+          "ci95": [
+            0.020766129032258066,
+            0.07856686827956982
+          ]
+        },
+        "datasets": {
+          "aime24": {
+            "num_problems": 9,
+            "num_attempts": 288,
+            "baseline_correct": 160,
+            "guided_correct": 137,
+            "net_correct": -23,
+            "accuracy_delta": -0.0798611111111111,
+            "ci95": [
+              -0.125,
+              -0.034722222222222224
+            ],
+            "improved_problems": 0,
+            "worsened_problems": 6,
+            "unchanged_problems": 3
+          },
+          "aime25": {
+            "num_problems": 9,
+            "num_attempts": 288,
+            "baseline_correct": 218,
+            "guided_correct": 198,
+            "net_correct": -20,
+            "accuracy_delta": -0.06944444444444445,
+            "ci95": [
+              -0.19444444444444445,
+              0.024305555555555556
+            ],
+            "improved_problems": 2,
+            "worsened_problems": 5,
+            "unchanged_problems": 2
+          },
+          "amc23": {
+            "num_problems": 12,
+            "num_attempts": 384,
+            "baseline_correct": 367,
+            "guided_correct": 366,
+            "net_correct": -1,
+            "accuracy_delta": -0.0026041666666666665,
+            "ci95": [
+              -0.015625,
+              0.013020833333333334
+            ],
+            "improved_problems": 1,
+            "worsened_problems": 3,
+            "unchanged_problems": 8
+          },
+          "math500": {
+            "num_problems": 150,
+            "num_attempts": 150,
+            "baseline_correct": 109,
+            "guided_correct": 117,
+            "net_correct": 8,
+            "accuracy_delta": 0.05333333333333334,
+            "ci95": [
+              0.006666666666666667,
+              0.1
+            ],
+            "improved_problems": 11,
+            "worsened_problems": 3,
+            "unchanged_problems": 136
+          },
+          "minerva": {
+            "num_problems": 82,
+            "num_attempts": 82,
+            "baseline_correct": 14,
+            "guided_correct": 15,
+            "net_correct": 1,
+            "accuracy_delta": 0.012195121951219513,
+            "ci95": [
+              -0.036585365853658534,
+              0.06097560975609756
+            ],
+            "improved_problems": 3,
+            "worsened_problems": 2,
+            "unchanged_problems": 77
+          },
+          "olympiad": {
+            "num_problems": 203,
+            "num_attempts": 203,
+            "baseline_correct": 95,
+            "guided_correct": 110,
+            "net_correct": 15,
+            "accuracy_delta": 0.07389162561576355,
+            "ci95": [
+              0.019704433497536946,
+              0.12807881773399016
+            ],
+            "improved_problems": 23,
+            "worsened_problems": 8,
+            "unchanged_problems": 172
+          }
+        },
+        "comparison": {
+          "num_examples": 1395,
+          "calibration_overlap": [],
+          "baseline": {
+            "accuracy": 0.6903225806451613,
+            "mean_generated_tokens": 6497.163440860215,
+            "truncated": 74
+          },
+          "guided": {
+            "accuracy": 0.6759856630824372,
+            "mean_generated_tokens": 8628.890322580644,
+            "truncated": 164
+          },
+          "accuracy_delta": -0.014336917562724039,
+          "mean_generated_tokens_delta": 2131.7268817204294,
+          "wrong_to_right": 94,
+          "right_to_wrong": 114,
+          "bootstrap": {
+            "method": "paired_dataset_stratified_problem_percentile",
+            "replicates": 5000,
+            "seed": 42,
+            "workers": 1,
+            "confidence_level": 0.95,
+            "weighting": "attempt_weighted",
+            "overall": {
+              "num_problems": 465,
+              "num_attempts": 1395,
+              "accuracy_delta": -0.014336917562724014,
+              "ci95": [
+                -0.04372759856630824,
+                0.01003584229390681
+              ],
+              "limited_problem_support": true
+            },
+            "datasets": {
+              "aime24": {
+                "num_problems": 9,
+                "num_attempts": 288,
+                "accuracy_delta": -0.0798611111111111,
+                "ci95": [
+                  -0.125,
+                  -0.034722222222222224
+                ],
+                "limited_problem_support": true
+              },
+              "aime25": {
+                "num_problems": 9,
+                "num_attempts": 288,
+                "accuracy_delta": -0.06944444444444445,
+                "ci95": [
+                  -0.19444444444444445,
+                  0.024305555555555556
+                ],
+                "limited_problem_support": true
+              },
+              "amc23": {
+                "num_problems": 12,
+                "num_attempts": 384,
+                "accuracy_delta": -0.0026041666666666665,
+                "ci95": [
+                  -0.015625,
+                  0.013020833333333334
+                ],
+                "limited_problem_support": false
+              },
+              "math500": {
+                "num_problems": 150,
+                "num_attempts": 150,
+                "accuracy_delta": 0.05333333333333334,
+                "ci95": [
+                  0.006666666666666667,
+                  0.1
+                ],
+                "limited_problem_support": false
+              },
+              "minerva": {
+                "num_problems": 82,
+                "num_attempts": 82,
+                "accuracy_delta": 0.012195121951219513,
+                "ci95": [
+                  -0.036585365853658534,
+                  0.06097560975609756
+                ],
+                "limited_problem_support": false
+              },
+              "olympiad": {
+                "num_problems": 203,
+                "num_attempts": 203,
+                "accuracy_delta": 0.07389162561576355,
+                "ci95": [
+                  0.019704433497536946,
+                  0.12807881773399016
+                ],
+                "limited_problem_support": false
+              }
+            }
+          }
+        }
+      },
+      "results/moe_identity_guiding/oss_strength_-1/sampling/full": {
+        "label": "GPT-OSS fixed positive -1",
+        "num_problems": 465,
+        "num_attempts": 1395,
+        "attempt_weighted": {
+          "baseline_accuracy": 0.6903225806451613,
+          "guided_accuracy": 0.6917562724014337,
+          "accuracy_delta": 0.0014336917562724014,
+          "ci95": [
+            -0.026523297491039426,
+            0.026523297491039426
+          ]
+        },
+        "problem_weighted": {
+          "baseline_accuracy": 0.5188844086021506,
+          "guided_accuracy": 0.5398521505376344,
+          "accuracy_delta": 0.020967741935483872,
+          "ci95": [
+            -0.007930107526881721,
+            0.05040490591397847
+          ]
+        },
+        "datasets": {
+          "aime24": {
+            "num_problems": 9,
+            "num_attempts": 288,
+            "baseline_correct": 160,
+            "guided_correct": 153,
+            "net_correct": -7,
+            "accuracy_delta": -0.024305555555555556,
+            "ci95": [
+              -0.11458333333333333,
+              0.059027777777777776
+            ],
+            "improved_problems": 2,
+            "worsened_problems": 3,
+            "unchanged_problems": 4
+          },
+          "aime25": {
+            "num_problems": 9,
+            "num_attempts": 288,
+            "baseline_correct": 218,
+            "guided_correct": 214,
+            "net_correct": -4,
+            "accuracy_delta": -0.013888888888888888,
+            "ci95": [
+              -0.10416666666666667,
+              0.05555555555555555
+            ],
+            "improved_problems": 2,
+            "worsened_problems": 3,
+            "unchanged_problems": 4
+          },
+          "amc23": {
+            "num_problems": 12,
+            "num_attempts": 384,
+            "baseline_correct": 367,
+            "guided_correct": 370,
+            "net_correct": 3,
+            "accuracy_delta": 0.0078125,
+            "ci95": [
+              -0.005208333333333333,
+              0.020833333333333332
+            ],
+            "improved_problems": 3,
+            "worsened_problems": 1,
+            "unchanged_problems": 8
+          },
+          "math500": {
+            "num_problems": 150,
+            "num_attempts": 150,
+            "baseline_correct": 109,
+            "guided_correct": 113,
+            "net_correct": 4,
+            "accuracy_delta": 0.02666666666666667,
+            "ci95": [
+              -0.02666666666666667,
+              0.08
+            ],
+            "improved_problems": 10,
+            "worsened_problems": 6,
+            "unchanged_problems": 134
+          },
+          "minerva": {
+            "num_problems": 82,
+            "num_attempts": 82,
+            "baseline_correct": 14,
+            "guided_correct": 14,
+            "net_correct": 0,
+            "accuracy_delta": 0.0,
+            "ci95": [
+              -0.04878048780487805,
+              0.04878048780487805
+            ],
+            "improved_problems": 2,
+            "worsened_problems": 2,
+            "unchanged_problems": 78
+          },
+          "olympiad": {
+            "num_problems": 203,
+            "num_attempts": 203,
+            "baseline_correct": 95,
+            "guided_correct": 101,
+            "net_correct": 6,
+            "accuracy_delta": 0.029556650246305417,
+            "ci95": [
+              -0.019704433497536946,
+              0.07881773399014778
+            ],
+            "improved_problems": 16,
+            "worsened_problems": 10,
+            "unchanged_problems": 177
+          }
+        },
+        "comparison": {
+          "num_examples": 1395,
+          "calibration_overlap": [],
+          "baseline": {
+            "accuracy": 0.6903225806451613,
+            "mean_generated_tokens": 6497.163440860215,
+            "truncated": 74
+          },
+          "guided": {
+            "accuracy": 0.6917562724014337,
+            "mean_generated_tokens": 6370.886738351254,
+            "truncated": 60
+          },
+          "accuracy_delta": 0.0014336917562723928,
+          "mean_generated_tokens_delta": -126.27670250896062,
+          "wrong_to_right": 97,
+          "right_to_wrong": 95,
+          "bootstrap": {
+            "method": "paired_dataset_stratified_problem_percentile",
+            "replicates": 5000,
+            "seed": 42,
+            "workers": 1,
+            "confidence_level": 0.95,
+            "weighting": "attempt_weighted",
+            "overall": {
+              "num_problems": 465,
+              "num_attempts": 1395,
+              "accuracy_delta": 0.0014336917562724014,
+              "ci95": [
+                -0.026523297491039426,
+                0.026523297491039426
+              ],
+              "limited_problem_support": true
+            },
+            "datasets": {
+              "aime24": {
+                "num_problems": 9,
+                "num_attempts": 288,
+                "accuracy_delta": -0.024305555555555556,
+                "ci95": [
+                  -0.11458333333333333,
+                  0.059027777777777776
+                ],
+                "limited_problem_support": true
+              },
+              "aime25": {
+                "num_problems": 9,
+                "num_attempts": 288,
+                "accuracy_delta": -0.013888888888888888,
+                "ci95": [
+                  -0.10416666666666667,
+                  0.05555555555555555
+                ],
+                "limited_problem_support": true
+              },
+              "amc23": {
+                "num_problems": 12,
+                "num_attempts": 384,
+                "accuracy_delta": 0.0078125,
+                "ci95": [
+                  -0.005208333333333333,
+                  0.020833333333333332
+                ],
+                "limited_problem_support": false
+              },
+              "math500": {
+                "num_problems": 150,
+                "num_attempts": 150,
+                "accuracy_delta": 0.02666666666666667,
+                "ci95": [
+                  -0.02666666666666667,
+                  0.08
+                ],
+                "limited_problem_support": false
+              },
+              "minerva": {
+                "num_problems": 82,
+                "num_attempts": 82,
+                "accuracy_delta": 0.0,
+                "ci95": [
+                  -0.04878048780487805,
+                  0.04878048780487805
+                ],
+                "limited_problem_support": false
+              },
+              "olympiad": {
+                "num_problems": 203,
+                "num_attempts": 203,
+                "accuracy_delta": 0.029556650246305417,
+                "ci95": [
+                  -0.019704433497536946,
+                  0.07881773399014778
+                ],
+                "limited_problem_support": false
+              }
+            }
+          }
+        }
+      },
+      "results/moe_identity_guiding/oss_global/variants/negative_fixed/strength_1/sampling/full": {
+        "label": "GPT-OSS fixed negative +1",
+        "num_problems": 465,
+        "num_attempts": 1395,
+        "attempt_weighted": {
+          "baseline_accuracy": 0.6903225806451613,
+          "guided_accuracy": 0.7060931899641577,
+          "accuracy_delta": 0.015770609318996417,
+          "ci95": [
+            -0.007168458781362007,
+            0.03870967741935484
+          ]
+        },
+        "problem_weighted": {
+          "baseline_accuracy": 0.5188844086021506,
+          "guided_accuracy": 0.5682795698924731,
+          "accuracy_delta": 0.04939516129032258,
+          "ci95": [
+            0.020495631720430108,
+            0.0790994623655914
+          ]
+        },
+        "datasets": {
+          "aime24": {
+            "num_problems": 9,
+            "num_attempts": 288,
+            "baseline_correct": 160,
+            "guided_correct": 156,
+            "net_correct": -4,
+            "accuracy_delta": -0.013888888888888888,
+            "ci95": [
+              -0.059027777777777776,
+              0.027777777777777776
+            ],
+            "improved_problems": 2,
+            "worsened_problems": 3,
+            "unchanged_problems": 4
+          },
+          "aime25": {
+            "num_problems": 9,
+            "num_attempts": 288,
+            "baseline_correct": 218,
+            "guided_correct": 216,
+            "net_correct": -2,
+            "accuracy_delta": -0.006944444444444444,
+            "ci95": [
+              -0.09375,
+              0.0763888888888889
+            ],
+            "improved_problems": 3,
+            "worsened_problems": 3,
+            "unchanged_problems": 3
+          },
+          "amc23": {
+            "num_problems": 12,
+            "num_attempts": 384,
+            "baseline_correct": 367,
+            "guided_correct": 372,
+            "net_correct": 5,
+            "accuracy_delta": 0.013020833333333334,
+            "ci95": [
+              -0.005208333333333333,
+              0.03125
+            ],
+            "improved_problems": 4,
+            "worsened_problems": 2,
+            "unchanged_problems": 6
+          },
+          "math500": {
+            "num_problems": 150,
+            "num_attempts": 150,
+            "baseline_correct": 109,
+            "guided_correct": 115,
+            "net_correct": 6,
+            "accuracy_delta": 0.04,
+            "ci95": [
+              -0.006666666666666667,
+              0.08666666666666667
+            ],
+            "improved_problems": 9,
+            "worsened_problems": 3,
+            "unchanged_problems": 138
+          },
+          "minerva": {
+            "num_problems": 82,
+            "num_attempts": 82,
+            "baseline_correct": 14,
+            "guided_correct": 13,
+            "net_correct": -1,
+            "accuracy_delta": -0.012195121951219513,
+            "ci95": [
+              -0.07317073170731707,
+              0.036585365853658534
+            ],
+            "improved_problems": 2,
+            "worsened_problems": 3,
+            "unchanged_problems": 77
+          },
+          "olympiad": {
+            "num_problems": 203,
+            "num_attempts": 203,
+            "baseline_correct": 95,
+            "guided_correct": 113,
+            "net_correct": 18,
+            "accuracy_delta": 0.08866995073891626,
+            "ci95": [
+              0.034482758620689655,
+              0.14285714285714285
+            ],
+            "improved_problems": 26,
+            "worsened_problems": 8,
+            "unchanged_problems": 169
+          }
+        },
+        "comparison": {
+          "num_examples": 1395,
+          "calibration_overlap": [],
+          "baseline": {
+            "accuracy": 0.6903225806451613,
+            "mean_generated_tokens": 6497.163440860215,
+            "truncated": 74
+          },
+          "guided": {
+            "accuracy": 0.7060931899641577,
+            "mean_generated_tokens": 6899.749103942652,
+            "truncated": 87
+          },
+          "accuracy_delta": 0.01577060931899643,
+          "mean_generated_tokens_delta": 402.58566308243735,
+          "wrong_to_right": 111,
+          "right_to_wrong": 89,
+          "bootstrap": {
+            "method": "paired_dataset_stratified_problem_percentile",
+            "replicates": 5000,
+            "seed": 42,
+            "workers": 1,
+            "confidence_level": 0.95,
+            "weighting": "attempt_weighted",
+            "overall": {
+              "num_problems": 465,
+              "num_attempts": 1395,
+              "accuracy_delta": 0.015770609318996417,
+              "ci95": [
+                -0.007168458781362007,
+                0.03870967741935484
+              ],
+              "limited_problem_support": true
+            },
+            "datasets": {
+              "aime24": {
+                "num_problems": 9,
+                "num_attempts": 288,
+                "accuracy_delta": -0.013888888888888888,
+                "ci95": [
+                  -0.059027777777777776,
+                  0.027777777777777776
+                ],
+                "limited_problem_support": true
+              },
+              "aime25": {
+                "num_problems": 9,
+                "num_attempts": 288,
+                "accuracy_delta": -0.006944444444444444,
+                "ci95": [
+                  -0.09375,
+                  0.0763888888888889
+                ],
+                "limited_problem_support": true
+              },
+              "amc23": {
+                "num_problems": 12,
+                "num_attempts": 384,
+                "accuracy_delta": 0.013020833333333334,
+                "ci95": [
+                  -0.005208333333333333,
+                  0.03125
+                ],
+                "limited_problem_support": false
+              },
+              "math500": {
+                "num_problems": 150,
+                "num_attempts": 150,
+                "accuracy_delta": 0.04,
+                "ci95": [
+                  -0.006666666666666667,
+                  0.08666666666666667
+                ],
+                "limited_problem_support": false
+              },
+              "minerva": {
+                "num_problems": 82,
+                "num_attempts": 82,
+                "accuracy_delta": -0.012195121951219513,
+                "ci95": [
+                  -0.07317073170731707,
+                  0.036585365853658534
+                ],
+                "limited_problem_support": false
+              },
+              "olympiad": {
+                "num_problems": 203,
+                "num_attempts": 203,
+                "accuracy_delta": 0.08866995073891626,
+                "ci95": [
+                  0.034482758620689655,
+                  0.14285714285714285
+                ],
+                "limited_problem_support": false
+              }
+            }
+          }
+        }
+      },
+      "results/moe_identity_guiding/oss_global/variants/positive_paper_eps_0.01/strength_1/sampling/full": {
+        "label": "GPT-OSS paper positive +1",
+        "num_problems": 465,
+        "num_attempts": 1395,
+        "attempt_weighted": {
+          "baseline_accuracy": 0.6903225806451613,
+          "guided_accuracy": 0.13189964157706094,
+          "accuracy_delta": -0.5584229390681004,
+          "ci95": [
+            -0.6344086021505376,
+            -0.47453405017921174
+          ]
+        },
+        "problem_weighted": {
+          "baseline_accuracy": 0.5188844086021506,
+          "guided_accuracy": 0.18736559139784947,
+          "accuracy_delta": -0.3315188172043011,
+          "ci95": [
+            -0.37392641129032256,
+            -0.28803595430107526
+          ]
+        },
+        "datasets": {
+          "aime24": {
+            "num_problems": 9,
+            "num_attempts": 288,
+            "baseline_correct": 160,
+            "guided_correct": 0,
+            "net_correct": -160,
+            "accuracy_delta": -0.5555555555555556,
+            "ci95": [
+              -0.7986111111111112,
+              -0.3054687500000013
+            ],
+            "improved_problems": 0,
+            "worsened_problems": 7,
+            "unchanged_problems": 2
+          },
+          "aime25": {
+            "num_problems": 9,
+            "num_attempts": 288,
+            "baseline_correct": 218,
+            "guided_correct": 3,
+            "net_correct": -215,
+            "accuracy_delta": -0.7465277777777778,
+            "ci95": [
+              -0.8993055555555556,
+              -0.5416666666666666
+            ],
+            "improved_problems": 0,
+            "worsened_problems": 9,
+            "unchanged_problems": 0
+          },
+          "amc23": {
+            "num_problems": 12,
+            "num_attempts": 384,
+            "baseline_correct": 367,
+            "guided_correct": 97,
+            "net_correct": -270,
+            "accuracy_delta": -0.703125,
+            "ci95": [
+              -0.8619791666666666,
+              -0.5285807291666677
+            ],
+            "improved_problems": 0,
+            "worsened_problems": 12,
+            "unchanged_problems": 0
+          },
+          "math500": {
+            "num_problems": 150,
+            "num_attempts": 150,
+            "baseline_correct": 109,
+            "guided_correct": 49,
+            "net_correct": -60,
+            "accuracy_delta": -0.4,
+            "ci95": [
+              -0.4866666666666667,
+              -0.31333333333333335
+            ],
+            "improved_problems": 3,
+            "worsened_problems": 63,
+            "unchanged_problems": 84
+          },
+          "minerva": {
+            "num_problems": 82,
+            "num_attempts": 82,
+            "baseline_correct": 14,
+            "guided_correct": 11,
+            "net_correct": -3,
+            "accuracy_delta": -0.036585365853658534,
+            "ci95": [
+              -0.12195121951219512,
+              0.04878048780487805
+            ],
+            "improved_problems": 4,
+            "worsened_problems": 7,
+            "unchanged_problems": 71
+          },
+          "olympiad": {
+            "num_problems": 203,
+            "num_attempts": 203,
+            "baseline_correct": 95,
+            "guided_correct": 24,
+            "net_correct": -71,
+            "accuracy_delta": -0.3497536945812808,
+            "ci95": [
+              -0.4187192118226601,
+              -0.2857142857142857
+            ],
+            "improved_problems": 1,
+            "worsened_problems": 72,
+            "unchanged_problems": 130
+          }
+        },
+        "comparison": {
+          "num_examples": 1395,
+          "calibration_overlap": [],
+          "baseline": {
+            "accuracy": 0.6903225806451613,
+            "mean_generated_tokens": 6497.163440860215,
+            "truncated": 74
+          },
+          "guided": {
+            "accuracy": 0.13189964157706094,
+            "mean_generated_tokens": 22488.512544802867,
+            "truncated": 670
+          },
+          "accuracy_delta": -0.5584229390681004,
+          "mean_generated_tokens_delta": 15991.349103942652,
+          "wrong_to_right": 11,
+          "right_to_wrong": 790,
+          "bootstrap": {
+            "method": "paired_dataset_stratified_problem_percentile",
+            "replicates": 5000,
+            "seed": 42,
+            "workers": 1,
+            "confidence_level": 0.95,
+            "weighting": "attempt_weighted",
+            "overall": {
+              "num_problems": 465,
+              "num_attempts": 1395,
+              "accuracy_delta": -0.5584229390681004,
+              "ci95": [
+                -0.6344086021505376,
+                -0.47453405017921174
+              ],
+              "limited_problem_support": true
+            },
+            "datasets": {
+              "aime24": {
+                "num_problems": 9,
+                "num_attempts": 288,
+                "accuracy_delta": -0.5555555555555556,
+                "ci95": [
+                  -0.7986111111111112,
+                  -0.3054687500000013
+                ],
+                "limited_problem_support": true
+              },
+              "aime25": {
+                "num_problems": 9,
+                "num_attempts": 288,
+                "accuracy_delta": -0.7465277777777778,
+                "ci95": [
+                  -0.8993055555555556,
+                  -0.5416666666666666
+                ],
+                "limited_problem_support": true
+              },
+              "amc23": {
+                "num_problems": 12,
+                "num_attempts": 384,
+                "accuracy_delta": -0.703125,
+                "ci95": [
+                  -0.8619791666666666,
+                  -0.5285807291666677
+                ],
+                "limited_problem_support": false
+              },
+              "math500": {
+                "num_problems": 150,
+                "num_attempts": 150,
+                "accuracy_delta": -0.4,
+                "ci95": [
+                  -0.4866666666666667,
+                  -0.31333333333333335
+                ],
+                "limited_problem_support": false
+              },
+              "minerva": {
+                "num_problems": 82,
+                "num_attempts": 82,
+                "accuracy_delta": -0.036585365853658534,
+                "ci95": [
+                  -0.12195121951219512,
+                  0.04878048780487805
+                ],
+                "limited_problem_support": false
+              },
+              "olympiad": {
+                "num_problems": 203,
+                "num_attempts": 203,
+                "accuracy_delta": -0.3497536945812808,
+                "ci95": [
+                  -0.4187192118226601,
+                  -0.2857142857142857
+                ],
+                "limited_problem_support": false
+              }
+            }
+          }
+        }
+      },
+      "results/moe_identity_guiding/oss_global/variants/positive_paper_eps_0.01/strength_-1/sampling/full": {
+        "label": "GPT-OSS paper positive -1",
+        "num_problems": 465,
+        "num_attempts": 1395,
+        "attempt_weighted": {
+          "baseline_accuracy": 0.6903225806451613,
+          "guided_accuracy": 0.6831541218637993,
+          "accuracy_delta": -0.007168458781362007,
+          "ci95": [
+            -0.02795698924731183,
+            0.012186379928315413
+          ]
+        },
+        "problem_weighted": {
+          "baseline_accuracy": 0.5188844086021506,
+          "guided_accuracy": 0.5432123655913978,
+          "accuracy_delta": 0.02432795698924731,
+          "ci95": [
+            -0.004571572580645161,
+            0.054840389784946215
+          ]
+        },
+        "datasets": {
+          "aime24": {
+            "num_problems": 9,
+            "num_attempts": 288,
+            "baseline_correct": 160,
+            "guided_correct": 151,
+            "net_correct": -9,
+            "accuracy_delta": -0.03125,
+            "ci95": [
+              -0.0763888888888889,
+              0.003472222222222222
+            ],
+            "improved_problems": 1,
+            "worsened_problems": 3,
+            "unchanged_problems": 5
+          },
+          "aime25": {
+            "num_problems": 9,
+            "num_attempts": 288,
+            "baseline_correct": 218,
+            "guided_correct": 208,
+            "net_correct": -10,
+            "accuracy_delta": -0.034722222222222224,
+            "ci95": [
+              -0.10069444444444445,
+              0.020833333333333332
+            ],
+            "improved_problems": 3,
+            "worsened_problems": 4,
+            "unchanged_problems": 2
+          },
+          "amc23": {
+            "num_problems": 12,
+            "num_attempts": 384,
+            "baseline_correct": 367,
+            "guided_correct": 364,
+            "net_correct": -3,
+            "accuracy_delta": -0.0078125,
+            "ci95": [
+              -0.0390625,
+              0.015625
+            ],
+            "improved_problems": 3,
+            "worsened_problems": 3,
+            "unchanged_problems": 6
+          },
+          "math500": {
+            "num_problems": 150,
+            "num_attempts": 150,
+            "baseline_correct": 109,
+            "guided_correct": 113,
+            "net_correct": 4,
+            "accuracy_delta": 0.02666666666666667,
+            "ci95": [
+              -0.02,
+              0.07333333333333333
+            ],
+            "improved_problems": 9,
+            "worsened_problems": 5,
+            "unchanged_problems": 136
+          },
+          "minerva": {
+            "num_problems": 82,
+            "num_attempts": 82,
+            "baseline_correct": 14,
+            "guided_correct": 14,
+            "net_correct": 0,
+            "accuracy_delta": 0.0,
+            "ci95": [
+              -0.06097560975609756,
+              0.06097560975609756
+            ],
+            "improved_problems": 3,
+            "worsened_problems": 3,
+            "unchanged_problems": 76
+          },
+          "olympiad": {
+            "num_problems": 203,
+            "num_attempts": 203,
+            "baseline_correct": 95,
+            "guided_correct": 103,
+            "net_correct": 8,
+            "accuracy_delta": 0.03940886699507389,
+            "ci95": [
+              -0.009852216748768473,
+              0.09359605911330049
+            ],
+            "improved_problems": 18,
+            "worsened_problems": 10,
+            "unchanged_problems": 175
+          }
+        },
+        "comparison": {
+          "num_examples": 1395,
+          "calibration_overlap": [],
+          "baseline": {
+            "accuracy": 0.6903225806451613,
+            "mean_generated_tokens": 6497.163440860215,
+            "truncated": 74
+          },
+          "guided": {
+            "accuracy": 0.6831541218637993,
+            "mean_generated_tokens": 6697.526164874552,
+            "truncated": 106
+          },
+          "accuracy_delta": -0.007168458781361964,
+          "mean_generated_tokens_delta": 200.3627240143369,
+          "wrong_to_right": 96,
+          "right_to_wrong": 106,
+          "bootstrap": {
+            "method": "paired_dataset_stratified_problem_percentile",
+            "replicates": 5000,
+            "seed": 42,
+            "workers": 1,
+            "confidence_level": 0.95,
+            "weighting": "attempt_weighted",
+            "overall": {
+              "num_problems": 465,
+              "num_attempts": 1395,
+              "accuracy_delta": -0.007168458781362007,
+              "ci95": [
+                -0.02795698924731183,
+                0.012186379928315413
+              ],
+              "limited_problem_support": true
+            },
+            "datasets": {
+              "aime24": {
+                "num_problems": 9,
+                "num_attempts": 288,
+                "accuracy_delta": -0.03125,
+                "ci95": [
+                  -0.0763888888888889,
+                  0.003472222222222222
+                ],
+                "limited_problem_support": true
+              },
+              "aime25": {
+                "num_problems": 9,
+                "num_attempts": 288,
+                "accuracy_delta": -0.034722222222222224,
+                "ci95": [
+                  -0.10069444444444445,
+                  0.020833333333333332
+                ],
+                "limited_problem_support": true
+              },
+              "amc23": {
+                "num_problems": 12,
+                "num_attempts": 384,
+                "accuracy_delta": -0.0078125,
+                "ci95": [
+                  -0.0390625,
+                  0.015625
+                ],
+                "limited_problem_support": false
+              },
+              "math500": {
+                "num_problems": 150,
+                "num_attempts": 150,
+                "accuracy_delta": 0.02666666666666667,
+                "ci95": [
+                  -0.02,
+                  0.07333333333333333
+                ],
+                "limited_problem_support": false
+              },
+              "minerva": {
+                "num_problems": 82,
+                "num_attempts": 82,
+                "accuracy_delta": 0.0,
+                "ci95": [
+                  -0.06097560975609756,
+                  0.06097560975609756
+                ],
+                "limited_problem_support": false
+              },
+              "olympiad": {
+                "num_problems": 203,
+                "num_attempts": 203,
+                "accuracy_delta": 0.03940886699507389,
+                "ci95": [
+                  -0.009852216748768473,
+                  0.09359605911330049
+                ],
+                "limited_problem_support": false
+              }
+            }
+          }
+        }
+      },
+      "results/moe_identity_guiding/oss_global/variants/negative_paper_eps_0.01/strength_1/sampling/full": {
+        "label": "GPT-OSS paper negative +1",
+        "num_problems": 465,
+        "num_attempts": 1395,
+        "attempt_weighted": {
+          "baseline_accuracy": 0.6903225806451613,
+          "guided_accuracy": 0.14982078853046596,
+          "accuracy_delta": -0.5405017921146953,
+          "ci95": [
+            -0.6193548387096774,
+            -0.45663082437275987
+          ]
+        },
+        "problem_weighted": {
+          "baseline_accuracy": 0.5188844086021506,
+          "guided_accuracy": 0.19529569892473117,
+          "accuracy_delta": -0.3235887096774194,
+          "ci95": [
+            -0.36640120967741935,
+            -0.2799731182795699
+          ]
+        },
+        "datasets": {
+          "aime24": {
+            "num_problems": 9,
+            "num_attempts": 288,
+            "baseline_correct": 160,
+            "guided_correct": 0,
+            "net_correct": -160,
+            "accuracy_delta": -0.5555555555555556,
+            "ci95": [
+              -0.7986111111111112,
+              -0.3054687500000013
+            ],
+            "improved_problems": 0,
+            "worsened_problems": 7,
+            "unchanged_problems": 2
+          },
+          "aime25": {
+            "num_problems": 9,
+            "num_attempts": 288,
+            "baseline_correct": 218,
+            "guided_correct": 9,
+            "net_correct": -209,
+            "accuracy_delta": -0.7256944444444444,
+            "ci95": [
+              -0.8819444444444444,
+              -0.5173611111111112
+            ],
+            "improved_problems": 0,
+            "worsened_problems": 8,
+            "unchanged_problems": 1
+          },
+          "amc23": {
+            "num_problems": 12,
+            "num_attempts": 384,
+            "baseline_correct": 367,
+            "guided_correct": 113,
+            "net_correct": -254,
+            "accuracy_delta": -0.6614583333333334,
+            "ci95": [
+              -0.8229166666666666,
+              -0.484375
+            ],
+            "improved_problems": 0,
+            "worsened_problems": 12,
+            "unchanged_problems": 0
+          },
+          "math500": {
+            "num_problems": 150,
+            "num_attempts": 150,
+            "baseline_correct": 109,
+            "guided_correct": 51,
+            "net_correct": -58,
+            "accuracy_delta": -0.38666666666666666,
+            "ci95": [
+              -0.47333333333333333,
+              -0.3
+            ],
+            "improved_problems": 3,
+            "worsened_problems": 61,
+            "unchanged_problems": 86
+          },
+          "minerva": {
+            "num_problems": 82,
+            "num_attempts": 82,
+            "baseline_correct": 14,
+            "guided_correct": 8,
+            "net_correct": -6,
+            "accuracy_delta": -0.07317073170731707,
+            "ci95": [
+              -0.15853658536585366,
+              0.012195121951219513
+            ],
+            "improved_problems": 3,
+            "worsened_problems": 9,
+            "unchanged_problems": 70
+          },
+          "olympiad": {
+            "num_problems": 203,
+            "num_attempts": 203,
+            "baseline_correct": 95,
+            "guided_correct": 28,
+            "net_correct": -67,
+            "accuracy_delta": -0.33004926108374383,
+            "ci95": [
+              -0.39901477832512317,
+              -0.26108374384236455
+            ],
+            "improved_problems": 3,
+            "worsened_problems": 70,
+            "unchanged_problems": 130
+          }
+        },
+        "comparison": {
+          "num_examples": 1395,
+          "calibration_overlap": [],
+          "baseline": {
+            "accuracy": 0.6903225806451613,
+            "mean_generated_tokens": 6497.163440860215,
+            "truncated": 74
+          },
+          "guided": {
+            "accuracy": 0.14982078853046596,
+            "mean_generated_tokens": 23639.347670250896,
+            "truncated": 815
+          },
+          "accuracy_delta": -0.5405017921146953,
+          "mean_generated_tokens_delta": 17142.18422939068,
+          "wrong_to_right": 12,
+          "right_to_wrong": 766,
+          "bootstrap": {
+            "method": "paired_dataset_stratified_problem_percentile",
+            "replicates": 5000,
+            "seed": 42,
+            "workers": 1,
+            "confidence_level": 0.95,
+            "weighting": "attempt_weighted",
+            "overall": {
+              "num_problems": 465,
+              "num_attempts": 1395,
+              "accuracy_delta": -0.5405017921146953,
+              "ci95": [
+                -0.6193548387096774,
+                -0.45663082437275987
+              ],
+              "limited_problem_support": true
+            },
+            "datasets": {
+              "aime24": {
+                "num_problems": 9,
+                "num_attempts": 288,
+                "accuracy_delta": -0.5555555555555556,
+                "ci95": [
+                  -0.7986111111111112,
+                  -0.3054687500000013
+                ],
+                "limited_problem_support": true
+              },
+              "aime25": {
+                "num_problems": 9,
+                "num_attempts": 288,
+                "accuracy_delta": -0.7256944444444444,
+                "ci95": [
+                  -0.8819444444444444,
+                  -0.5173611111111112
+                ],
+                "limited_problem_support": true
+              },
+              "amc23": {
+                "num_problems": 12,
+                "num_attempts": 384,
+                "accuracy_delta": -0.6614583333333334,
+                "ci95": [
+                  -0.8229166666666666,
+                  -0.484375
+                ],
+                "limited_problem_support": false
+              },
+              "math500": {
+                "num_problems": 150,
+                "num_attempts": 150,
+                "accuracy_delta": -0.38666666666666666,
+                "ci95": [
+                  -0.47333333333333333,
+                  -0.3
+                ],
+                "limited_problem_support": false
+              },
+              "minerva": {
+                "num_problems": 82,
+                "num_attempts": 82,
+                "accuracy_delta": -0.07317073170731707,
+                "ci95": [
+                  -0.15853658536585366,
+                  0.012195121951219513
+                ],
+                "limited_problem_support": false
+              },
+              "olympiad": {
+                "num_problems": 203,
+                "num_attempts": 203,
+                "accuracy_delta": -0.33004926108374383,
+                "ci95": [
+                  -0.39901477832512317,
+                  -0.26108374384236455
+                ],
+                "limited_problem_support": false
+              }
+            }
+          }
+        }
+      },
+      "results/moe_margin_guiding/qwen_global/sampling/full": {
+        "label": "Qwen margin (c=16)",
+        "num_problems": 465,
+        "num_attempts": 1395,
+        "attempt_weighted": {
+          "baseline_accuracy": 0.7383512544802867,
+          "guided_accuracy": 0.7369175627240143,
+          "accuracy_delta": -0.0014336917562724014,
+          "ci95": [
+            -0.011469534050179211,
+            0.008602150537634409
+          ]
+        },
+        "problem_weighted": {
+          "baseline_accuracy": 0.5421370967741935,
+          "guided_accuracy": 0.523252688172043,
+          "accuracy_delta": -0.018884408602150536,
+          "ci95": [
+            -0.039919354838709675,
+            0.0006720430107526882
+          ]
+        },
+        "datasets": {
+          "aime24": {
+            "num_problems": 9,
+            "num_attempts": 288,
+            "baseline_correct": 180,
+            "guided_correct": 184,
+            "net_correct": 4,
+            "accuracy_delta": 0.013888888888888888,
+            "ci95": [
+              -0.006944444444444444,
+              0.03819444444444445
+            ],
+            "improved_problems": 3,
+            "worsened_problems": 1,
+            "unchanged_problems": 5
+          },
+          "aime25": {
+            "num_problems": 9,
+            "num_attempts": 288,
+            "baseline_correct": 243,
+            "guided_correct": 246,
+            "net_correct": 3,
+            "accuracy_delta": 0.010416666666666666,
+            "ci95": [
+              -0.010416666666666666,
+              0.03133680555555429
+            ],
+            "improved_problems": 3,
+            "worsened_problems": 2,
+            "unchanged_problems": 4
+          },
+          "amc23": {
+            "num_problems": 12,
+            "num_attempts": 384,
+            "baseline_correct": 380,
+            "guided_correct": 380,
+            "net_correct": 0,
+            "accuracy_delta": 0.0,
+            "ci95": [
+              -0.010416666666666666,
+              0.010416666666666666
+            ],
+            "improved_problems": 2,
+            "worsened_problems": 2,
+            "unchanged_problems": 8
+          },
+          "math500": {
+            "num_problems": 150,
+            "num_attempts": 150,
+            "baseline_correct": 106,
+            "guided_correct": 104,
+            "net_correct": -2,
+            "accuracy_delta": -0.013333333333333334,
+            "ci95": [
+              -0.04666666666666667,
+              0.02
+            ],
+            "improved_problems": 2,
+            "worsened_problems": 4,
+            "unchanged_problems": 144
+          },
+          "minerva": {
+            "num_problems": 82,
+            "num_attempts": 82,
+            "baseline_correct": 20,
+            "guided_correct": 18,
+            "net_correct": -2,
+            "accuracy_delta": -0.024390243902439025,
+            "ci95": [
+              -0.08536585365853659,
+              0.04878048780487805
+            ],
+            "improved_problems": 3,
+            "worsened_problems": 5,
+            "unchanged_problems": 74
+          },
+          "olympiad": {
+            "num_problems": 203,
+            "num_attempts": 203,
+            "baseline_correct": 101,
+            "guided_correct": 96,
+            "net_correct": -5,
+            "accuracy_delta": -0.024630541871921183,
+            "ci95": [
+              -0.054187192118226604,
+              0.0049261083743842365
+            ],
+            "improved_problems": 2,
+            "worsened_problems": 7,
+            "unchanged_problems": 194
+          }
+        },
+        "comparison": {
+          "num_examples": 1395,
+          "calibration_overlap": [],
+          "baseline": {
+            "accuracy": 0.7383512544802867,
+            "mean_generated_tokens": 13847.76129032258,
+            "truncated": 144
+          },
+          "guided": {
+            "accuracy": 0.7369175627240143,
+            "mean_generated_tokens": 13839.855197132616,
+            "truncated": 143
+          },
+          "accuracy_delta": -0.0014336917562723928,
+          "mean_generated_tokens_delta": -7.90609318996394,
+          "wrong_to_right": 39,
+          "right_to_wrong": 41,
+          "bootstrap": {
+            "method": "paired_dataset_stratified_problem_percentile",
+            "replicates": 5000,
+            "seed": 42,
+            "workers": 1,
+            "confidence_level": 0.95,
+            "weighting": "attempt_weighted",
+            "overall": {
+              "num_problems": 465,
+              "num_attempts": 1395,
+              "accuracy_delta": -0.0014336917562724014,
+              "ci95": [
+                -0.011469534050179211,
+                0.008602150537634409
+              ],
+              "limited_problem_support": true
+            },
+            "datasets": {
+              "aime24": {
+                "num_problems": 9,
+                "num_attempts": 288,
+                "accuracy_delta": 0.013888888888888888,
+                "ci95": [
+                  -0.006944444444444444,
+                  0.03819444444444445
+                ],
+                "limited_problem_support": true
+              },
+              "aime25": {
+                "num_problems": 9,
+                "num_attempts": 288,
+                "accuracy_delta": 0.010416666666666666,
+                "ci95": [
+                  -0.010416666666666666,
+                  0.03133680555555429
+                ],
+                "limited_problem_support": true
+              },
+              "amc23": {
+                "num_problems": 12,
+                "num_attempts": 384,
+                "accuracy_delta": 0.0,
+                "ci95": [
+                  -0.010416666666666666,
+                  0.010416666666666666
+                ],
+                "limited_problem_support": false
+              },
+              "math500": {
+                "num_problems": 150,
+                "num_attempts": 150,
+                "accuracy_delta": -0.013333333333333334,
+                "ci95": [
+                  -0.04666666666666667,
+                  0.02
+                ],
+                "limited_problem_support": false
+              },
+              "minerva": {
+                "num_problems": 82,
+                "num_attempts": 82,
+                "accuracy_delta": -0.024390243902439025,
+                "ci95": [
+                  -0.08536585365853659,
+                  0.04878048780487805
+                ],
+                "limited_problem_support": false
+              },
+              "olympiad": {
+                "num_problems": 203,
+                "num_attempts": 203,
+                "accuracy_delta": -0.024630541871921183,
+                "ci95": [
+                  -0.054187192118226604,
+                  0.0049261083743842365
+                ],
+                "limited_problem_support": false
+              }
+            }
+          }
+        }
+      },
+      "results/moe_margin_guiding/qwen_strength_1/sampling/full": {
+        "label": "Qwen margin (c=25)",
+        "num_problems": 465,
+        "num_attempts": 1395,
+        "attempt_weighted": {
+          "baseline_accuracy": 0.7318996415770609,
+          "guided_accuracy": 0.7426523297491039,
+          "accuracy_delta": 0.010752688172043012,
+          "ci95": [
+            0.0014336917562724014,
+            0.02078853046594982
+          ]
+        },
+        "problem_weighted": {
+          "baseline_accuracy": 0.5248655913978495,
+          "guided_accuracy": 0.5258736559139785,
+          "accuracy_delta": 0.0010080645161290322,
+          "ci95": [
+            -0.018548387096774192,
+            0.02070060483870965
+          ]
+        },
+        "datasets": {
+          "aime24": {
+            "num_problems": 9,
+            "num_attempts": 288,
+            "baseline_correct": 178,
+            "guided_correct": 185,
+            "net_correct": 7,
+            "accuracy_delta": 0.024305555555555556,
+            "ci95": [
+              0.0,
+              0.05555555555555555
+            ],
+            "improved_problems": 4,
+            "worsened_problems": 1,
+            "unchanged_problems": 4
+          },
+          "aime25": {
+            "num_problems": 9,
+            "num_attempts": 288,
+            "baseline_correct": 242,
+            "guided_correct": 249,
+            "net_correct": 7,
+            "accuracy_delta": 0.024305555555555556,
+            "ci95": [
+              0.010416666666666666,
+              0.041666666666666664
+            ],
+            "improved_problems": 5,
+            "worsened_problems": 0,
+            "unchanged_problems": 4
+          },
+          "amc23": {
+            "num_problems": 12,
+            "num_attempts": 384,
+            "baseline_correct": 382,
+            "guided_correct": 383,
+            "net_correct": 1,
+            "accuracy_delta": 0.0026041666666666665,
+            "ci95": [
+              0.0,
+              0.0078125
+            ],
+            "improved_problems": 1,
+            "worsened_problems": 0,
+            "unchanged_problems": 11
+          },
+          "math500": {
+            "num_problems": 150,
+            "num_attempts": 150,
+            "baseline_correct": 103,
+            "guided_correct": 103,
+            "net_correct": 0,
+            "accuracy_delta": 0.0,
+            "ci95": [
+              -0.02666666666666667,
+              0.02666666666666667
+            ],
+            "improved_problems": 2,
+            "worsened_problems": 2,
+            "unchanged_problems": 146
+          },
+          "minerva": {
+            "num_problems": 82,
+            "num_attempts": 82,
+            "baseline_correct": 20,
+            "guided_correct": 21,
+            "net_correct": 1,
+            "accuracy_delta": 0.012195121951219513,
+            "ci95": [
+              -0.06097560975609756,
+              0.08536585365853659
+            ],
+            "improved_problems": 5,
+            "worsened_problems": 4,
+            "unchanged_problems": 73
+          },
+          "olympiad": {
+            "num_problems": 203,
+            "num_attempts": 203,
+            "baseline_correct": 96,
+            "guided_correct": 95,
+            "net_correct": -1,
+            "accuracy_delta": -0.0049261083743842365,
+            "ci95": [
+              -0.034482758620689655,
+              0.024630541871921183
+            ],
+            "improved_problems": 4,
+            "worsened_problems": 5,
+            "unchanged_problems": 194
+          }
+        },
+        "comparison": {
+          "num_examples": 1395,
+          "calibration_overlap": [],
+          "baseline": {
+            "accuracy": 0.7318996415770609,
+            "mean_generated_tokens": 13830.25376344086,
+            "truncated": 154
+          },
+          "guided": {
+            "accuracy": 0.7426523297491039,
+            "mean_generated_tokens": 13810.063082437277,
+            "truncated": 146
+          },
+          "accuracy_delta": 0.010752688172043001,
+          "mean_generated_tokens_delta": -20.19068100358345,
+          "wrong_to_right": 47,
+          "right_to_wrong": 32,
+          "bootstrap": {
+            "method": "paired_dataset_stratified_problem_percentile",
+            "replicates": 5000,
+            "seed": 42,
+            "workers": 1,
+            "confidence_level": 0.95,
+            "weighting": "attempt_weighted",
+            "overall": {
+              "num_problems": 465,
+              "num_attempts": 1395,
+              "accuracy_delta": 0.010752688172043012,
+              "ci95": [
+                0.0014336917562724014,
+                0.02078853046594982
+              ],
+              "limited_problem_support": true
+            },
+            "datasets": {
+              "aime24": {
+                "num_problems": 9,
+                "num_attempts": 288,
+                "accuracy_delta": 0.024305555555555556,
+                "ci95": [
+                  0.0,
+                  0.05555555555555555
+                ],
+                "limited_problem_support": true
+              },
+              "aime25": {
+                "num_problems": 9,
+                "num_attempts": 288,
+                "accuracy_delta": 0.024305555555555556,
+                "ci95": [
+                  0.010416666666666666,
+                  0.041666666666666664
+                ],
+                "limited_problem_support": true
+              },
+              "amc23": {
+                "num_problems": 12,
+                "num_attempts": 384,
+                "accuracy_delta": 0.0026041666666666665,
+                "ci95": [
+                  0.0,
+                  0.0078125
+                ],
+                "limited_problem_support": false
+              },
+              "math500": {
+                "num_problems": 150,
+                "num_attempts": 150,
+                "accuracy_delta": 0.0,
+                "ci95": [
+                  -0.02666666666666667,
+                  0.02666666666666667
+                ],
+                "limited_problem_support": false
+              },
+              "minerva": {
+                "num_problems": 82,
+                "num_attempts": 82,
+                "accuracy_delta": 0.012195121951219513,
+                "ci95": [
+                  -0.06097560975609756,
+                  0.08536585365853659
+                ],
+                "limited_problem_support": false
+              },
+              "olympiad": {
+                "num_problems": 203,
+                "num_attempts": 203,
+                "accuracy_delta": -0.0049261083743842365,
+                "ci95": [
+                  -0.034482758620689655,
+                  0.024630541871921183
+                ],
+                "limited_problem_support": false
+              }
+            }
+          }
+        }
+      },
+      "results/moe_margin_guiding/oss_strength_1/sampling/full": {
+        "label": "GPT-OSS margin (c=25)",
+        "num_problems": 465,
+        "num_attempts": 1395,
+        "attempt_weighted": {
+          "baseline_accuracy": 0.6903225806451613,
+          "guided_accuracy": 0.6587813620071684,
+          "accuracy_delta": -0.031541218637992835,
+          "ci95": [
+            -0.05591397849462366,
+            -0.007885304659498209
+          ]
+        },
+        "problem_weighted": {
+          "baseline_accuracy": 0.5188844086021506,
+          "guided_accuracy": 0.4909274193548387,
+          "accuracy_delta": -0.02795698924731183,
+          "ci95": [
+            -0.05961525537634408,
+            0.0035635080645161047
+          ]
+        },
+        "datasets": {
+          "aime24": {
+            "num_problems": 9,
+            "num_attempts": 288,
+            "baseline_correct": 160,
+            "guided_correct": 148,
+            "net_correct": -12,
+            "accuracy_delta": -0.041666666666666664,
+            "ci95": [
+              -0.09375,
+              0.010416666666666666
+            ],
+            "improved_problems": 2,
+            "worsened_problems": 4,
+            "unchanged_problems": 3
+          },
+          "aime25": {
+            "num_problems": 9,
+            "num_attempts": 288,
+            "baseline_correct": 218,
+            "guided_correct": 216,
+            "net_correct": -2,
+            "accuracy_delta": -0.006944444444444444,
+            "ci95": [
+              -0.0763888888888889,
+              0.0625
+            ],
+            "improved_problems": 2,
+            "worsened_problems": 5,
+            "unchanged_problems": 2
+          },
+          "amc23": {
+            "num_problems": 12,
+            "num_attempts": 384,
+            "baseline_correct": 367,
+            "guided_correct": 349,
+            "net_correct": -18,
+            "accuracy_delta": -0.046875,
+            "ci95": [
+              -0.09114583333333333,
+              -0.010416666666666666
+            ],
+            "improved_problems": 0,
+            "worsened_problems": 6,
+            "unchanged_problems": 6
+          },
+          "math500": {
+            "num_problems": 150,
+            "num_attempts": 150,
+            "baseline_correct": 109,
+            "guided_correct": 103,
+            "net_correct": -6,
+            "accuracy_delta": -0.04,
+            "ci95": [
+              -0.09333333333333334,
+              0.013333333333333334
+            ],
+            "improved_problems": 5,
+            "worsened_problems": 11,
+            "unchanged_problems": 134
+          },
+          "minerva": {
+            "num_problems": 82,
+            "num_attempts": 82,
+            "baseline_correct": 14,
+            "guided_correct": 15,
+            "net_correct": 1,
+            "accuracy_delta": 0.012195121951219513,
+            "ci95": [
+              -0.06097560975609756,
+              0.08536585365853659
+            ],
+            "improved_problems": 5,
+            "worsened_problems": 4,
+            "unchanged_problems": 73
+          },
+          "olympiad": {
+            "num_problems": 203,
+            "num_attempts": 203,
+            "baseline_correct": 95,
+            "guided_correct": 88,
+            "net_correct": -7,
+            "accuracy_delta": -0.034482758620689655,
+            "ci95": [
+              -0.08866995073891626,
+              0.019704433497536946
+            ],
+            "improved_problems": 12,
+            "worsened_problems": 19,
+            "unchanged_problems": 172
+          }
+        },
+        "comparison": {
+          "num_examples": 1395,
+          "calibration_overlap": [],
+          "baseline": {
+            "accuracy": 0.6903225806451613,
+            "mean_generated_tokens": 6497.163440860215,
+            "truncated": 74
+          },
+          "guided": {
+            "accuracy": 0.6587813620071684,
+            "mean_generated_tokens": 6409.352688172043,
+            "truncated": 83
+          },
+          "accuracy_delta": -0.03154121863799286,
+          "mean_generated_tokens_delta": -87.81075268817222,
+          "wrong_to_right": 88,
+          "right_to_wrong": 132,
+          "bootstrap": {
+            "method": "paired_dataset_stratified_problem_percentile",
+            "replicates": 5000,
+            "seed": 42,
+            "workers": 1,
+            "confidence_level": 0.95,
+            "weighting": "attempt_weighted",
+            "overall": {
+              "num_problems": 465,
+              "num_attempts": 1395,
+              "accuracy_delta": -0.031541218637992835,
+              "ci95": [
+                -0.05591397849462366,
+                -0.007885304659498209
+              ],
+              "limited_problem_support": true
+            },
+            "datasets": {
+              "aime24": {
+                "num_problems": 9,
+                "num_attempts": 288,
+                "accuracy_delta": -0.041666666666666664,
+                "ci95": [
+                  -0.09375,
+                  0.010416666666666666
+                ],
+                "limited_problem_support": true
+              },
+              "aime25": {
+                "num_problems": 9,
+                "num_attempts": 288,
+                "accuracy_delta": -0.006944444444444444,
+                "ci95": [
+                  -0.0763888888888889,
+                  0.0625
+                ],
+                "limited_problem_support": true
+              },
+              "amc23": {
+                "num_problems": 12,
+                "num_attempts": 384,
+                "accuracy_delta": -0.046875,
+                "ci95": [
+                  -0.09114583333333333,
+                  -0.010416666666666666
+                ],
+                "limited_problem_support": false
+              },
+              "math500": {
+                "num_problems": 150,
+                "num_attempts": 150,
+                "accuracy_delta": -0.04,
+                "ci95": [
+                  -0.09333333333333334,
+                  0.013333333333333334
+                ],
+                "limited_problem_support": false
+              },
+              "minerva": {
+                "num_problems": 82,
+                "num_attempts": 82,
+                "accuracy_delta": 0.012195121951219513,
+                "ci95": [
+                  -0.06097560975609756,
+                  0.08536585365853659
+                ],
+                "limited_problem_support": false
+              },
+              "olympiad": {
+                "num_problems": 203,
+                "num_attempts": 203,
+                "accuracy_delta": -0.034482758620689655,
+                "ci95": [
+                  -0.08866995073891626,
+                  0.019704433497536946
+                ],
+                "limited_problem_support": false
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "partial": {
+    "status": "interrupted_partial",
+    "completed_attempts": 494,
+    "planned_attempts": 1395,
+    "remaining_attempts": 901,
+    "overall": {
+      "attempts": 494,
+      "problems": 16,
+      "baseline": {
+        "correct": 348,
+        "accuracy": 0.7044534412955465,
+        "mean_tokens": 19351.755060728745,
+        "median_tokens": 17252.5,
+        "limit_hits": 110,
+        "finish_reasons": {
+          "length": 110,
+          "stop": 384
+        }
+      },
+      "guided": {
+        "correct": 4,
+        "accuracy": 0.008097165991902834,
+        "mean_tokens": 32768,
+        "median_tokens": 32768.0,
+        "limit_hits": 494,
+        "finish_reasons": {
+          "length": 494
+        }
+      },
+      "accuracy_delta_pp": -69.63562753036437,
+      "mean_tokens_delta": 13416.244939271255,
+      "wrong_to_right": 4,
+      "right_to_wrong": 348
+    },
+    "datasets": {
+      "aime24": {
+        "planned_attempts": 288,
+        "completed_attempts": 288,
+        "summary": {
+          "attempts": 288,
+          "problems": 9,
+          "baseline": {
+            "correct": 178,
+            "accuracy": 0.6180555555555556,
+            "mean_tokens": 20947.322916666668,
+            "median_tokens": 21399.5,
+            "limit_hits": 74,
+            "finish_reasons": {
+              "length": 74,
+              "stop": 214
+            }
+          },
+          "guided": {
+            "correct": 0,
+            "accuracy": 0.0,
+            "mean_tokens": 32768,
+            "median_tokens": 32768.0,
+            "limit_hits": 288,
+            "finish_reasons": {
+              "length": 288
+            }
+          },
+          "accuracy_delta_pp": -61.80555555555556,
+          "mean_tokens_delta": 11820.677083333332,
+          "wrong_to_right": 0,
+          "right_to_wrong": 178
+        }
+      },
+      "aime25": {
+        "planned_attempts": 288,
+        "completed_attempts": 206,
+        "summary": {
+          "attempts": 206,
+          "problems": 7,
+          "baseline": {
+            "correct": 170,
+            "accuracy": 0.8252427184466019,
+            "mean_tokens": 17121.058252427185,
+            "median_tokens": 16131.0,
+            "limit_hits": 36,
+            "finish_reasons": {
+              "stop": 170,
+              "length": 36
+            }
+          },
+          "guided": {
+            "correct": 4,
+            "accuracy": 0.019417475728155338,
+            "mean_tokens": 32768,
+            "median_tokens": 32768.0,
+            "limit_hits": 206,
+            "finish_reasons": {
+              "length": 206
+            }
+          },
+          "accuracy_delta_pp": -80.58252427184466,
+          "mean_tokens_delta": 15646.941747572815,
+          "wrong_to_right": 4,
+          "right_to_wrong": 170
+        }
+      },
+      "amc23": {
+        "planned_attempts": 384,
+        "completed_attempts": 0,
+        "summary": null
+      },
+      "math500": {
+        "planned_attempts": 150,
+        "completed_attempts": 0,
+        "summary": null
+      },
+      "minerva": {
+        "planned_attempts": 82,
+        "completed_attempts": 0,
+        "summary": null
+      },
+      "olympiad": {
+        "planned_attempts": 203,
+        "completed_attempts": 0,
+        "summary": null
+      }
+    },
+    "source_sha256": {
+      "results/moe_identity_guiding/qwen_global/variants/positive_paper_eps_0.01/strength_1/sampling/full/baseline/manifest.json": "ad19a5a4ad5a63cb88e1ba044c476a1d372c8999f8f232a554aaa43f10c09601",
+      "results/moe_identity_guiding/qwen_global/variants/positive_paper_eps_0.01/strength_1/sampling/full/guided/manifest.json": "4e51a957c0b6d2d0d70ec7d3f4f37ca19d9d26123a1cc27184090a5319d25ce1",
+      "results/moe_identity_guiding/qwen_global/variants/positive_paper_eps_0.01/strength_1/sampling/full/baseline/generations.jsonl": "6c9c2c3406653dff0f91a8e95806a5769f52b5700e6a8b431ad9e6e7dd3394ba",
+      "results/moe_identity_guiding/qwen_global/variants/positive_paper_eps_0.01/strength_1/sampling/full/guided/generations.jsonl": "71764cb4ece19c6b8134623836ae3f04e916a9ae8953eacd5489d7c6e75bb996"
+    },
+    "limitations": "Completed-ID subset only; scheduling, benchmark order and output length can affect completion. No full-run estimate or causal population claim; no intervals reported for this selected partial cohort."
+  }
+}

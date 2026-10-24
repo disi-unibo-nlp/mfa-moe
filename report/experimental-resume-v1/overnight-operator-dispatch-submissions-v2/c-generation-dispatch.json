@@ -1,0 +1,22 @@
+{
+ "schema": "overnight-submit-receipt-v1",
+ "name": "c-generation-dispatch",
+ "binding": {
+  "stage": "C",
+  "preparation_job": "59345112",
+  "phase": "generation",
+  "files": {
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/dispatch_overnight_stage_v2.sbatch": "af3304131d6517f3c99793f812524ae8f743309a6100ae44d39bbdd46eefbe55",
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/dispatch_overnight_stage_v2.py": "c57592c89ff11fbe2cc387f533b2e64bfd4ee5e7de704104e425a095e8adc1fa",
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/prepare_overnight_operator_stage_v2.py": "a936c3f059412d26a385d5211d4c1cb047a72ffd1aa073a82fe402c70feee711"
+  }
+ },
+ "arguments": [
+  "--dependency=afterok:59345112",
+  "--job-name=st-overnight-C-launch-v2",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/dispatch_overnight_stage_v2.sbatch"
+ ],
+ "job_id": "59345508",
+ "submission": "59345508",
+ "sha256": "01f2fe493d79437112f5d8f3d3f8c0b4b8b4fabadbf9dd6cb522535b34e5c839"
+}

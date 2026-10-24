@@ -1,0 +1,44 @@
+{
+ "schema": "overnight-routing-price-v2",
+ "reference_price_sha256": "cf4a71364e9f17e1228a67a0bf0ef4f6c5a49904b95fe3ac7f2d9c6e35d24104",
+ "shards": [
+  {
+   "start_row": 0,
+   "end_row": 4,
+   "transition": "candidate_to_verify",
+   "estimated_work_seconds": 2781.82,
+   "estimated_wall_seconds": 4562.84340888977
+  },
+  {
+   "start_row": 4,
+   "end_row": 8,
+   "transition": "candidate_to_verify",
+   "estimated_work_seconds": 2928.2800000000007,
+   "estimated_wall_seconds": 4709.303408889771
+  },
+  {
+   "start_row": 8,
+   "end_row": 12,
+   "transition": "approach_to_commit",
+   "estimated_work_seconds": 2583.72,
+   "estimated_wall_seconds": 4364.74340888977
+  },
+  {
+   "start_row": 12,
+   "end_row": 13,
+   "transition": "approach_to_commit",
+   "estimated_work_seconds": 647.3199999999999,
+   "estimated_wall_seconds": 2428.34340888977
+  }
+ ],
+ "gpus_per_job": 2,
+ "max_wall_seconds": 7200,
+ "cold_loads_including_reserve": 5,
+ "repeat_factor": 1.25,
+ "preemption_reserve_seconds_per_job": 900,
+ "estimated_complete_gpu_hours": 9.414587246916028,
+ "status": "PASS_COMPLETE_STAGE_GENERATION_ONLY",
+ "scope": "All assigned generations, full caps and prefix preparation,25%repeat work,cold/recovery loads,shutdown and900sreserve perjob. Blind ratings priced separately.",
+ "manifest_sha256": "65e402b7e4fea3febb7e63a8acce9aa022cc22381315c56b46390c4ed3445ffd",
+ "sha256": "50479ab0fdf55cfbbb1bc864e89cbacf974662d190dd9828ea5a0b50c8ce813c"
+}

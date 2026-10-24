@@ -1,0 +1,172 @@
+\section{Discussion and Limitations}
+\label{sec:discussion}
+
+\subsection{Routing carries information beyond text}
+
+The eight-model readout demonstrates information about assigned reasoning states beyond the declared text baseline.
+%
+Its lexical null tests the original alignment of route paths under token-identity and absolute-position controls.
+%
+The shared direction across models supports the use of routing as an additional measurement of visible reasoning.
+%
+The target remains an automatically assigned sentence label, and the result does not establish a latent cognitive module or a dedicated expert for that reasoning activity.
+%
+
+The retrospective baseline makes the supported claim particularly specific.
+%
+It observes the sentence being classified and the same neighbouring context as the annotation reader.
+%
+This controls for substantial text information, but it also means that the classifier is evaluated after the target text exists.
+%
+The two-model next-state analysis supplies separate prospective evidence.
+%
+Extending that claim to the other models requires their own temporally valid evaluation.
+%
+
+\subsection{Unequal state mass does not guarantee a coverage gain}
+
+Class balancing changes how training allocations are weighted.
+%
+A common class contributes many selected slots to frequency, while the balanced criterion gives each supported class equal weight.
+%
+The observed occupancy distributions show substantial inequality in labelled token mass.
+%
+Such inequality makes the balancing comparison meaningful, but does not determine its result.
+%
+The useful experts for a rare class may already be retained by frequency, or a balanced ranking may displace experts that cover several classes together.
+%
+
+The five-fold reversal in Qwen3.5 and Qwen3.6 shows that this trade-off survives changes in which families are held out.
+%
+The positive effects in the other six models establish a different allocation pattern under the same budget.
+%
+Neither pattern selects a universal pruning rule.
+%
+Gemma and Qwen3-30B also show that a selector can have near-complete native coverage with a small difference between criteria.
+%
+A large coverage gain and a high absolute coverage answer different deployment questions.
+%
+
+The comparison is restricted to labelled-token frequency.
+%
+Conventional all-token frequency and output-aware criteria use additional information, and the random arm conditions on one fixed priority set per model.
+%
+Coverage is averaged across routed layers, so it can also hide a concentrated loss at a particular layer.
+%
+The per-layer and per-class records remain necessary when interpreting any proposed removal.
+%
+
+\subsection{Sparse labels bound the scientific claim}
+
+The reader assigns labels to visible language.
+%
+Its external validation and prompt-selection tests do not establish perfect agreement on each model's generated mathematical text.
+%
+Labels are also sparse, and gaps prevent complete reconstruction of reasoning trajectories.
+%
+Reporting coverage alongside occupancy retains this limitation in the state-distribution analysis.
+%
+
+The independent problem unit is a duplicate family for the routing analyses and a response for the external SAT probes.
+%
+Sentences, tokens, and repeated branches remain dependent measurements within those units.
+%
+The original readout intervals condition on saved fits, and the retention comparison reports fold stability with overlapping training sets.
+%
+The native-dynamics intervals use their own model-specific simultaneous panels.
+%
+None of these summaries supplies variation over repeated model generations or a new simultaneous test across the complete collection of studies.
+%
+
+The analysis covers mathematical problem solving under the retained model and decoding profiles.
+%
+It does not establish transfer to other reasoning domains, other quantizations, or a changed route-selection implementation.
+%
+Expert identities and score semantics are local to the model.
+%
+Historical correlations with correctness (\mbox{Appendix~\ref{app:associations}}) also depend on problem difficulty, length, and termination.
+%
+
+\subsection{Nominated experts shape the computation without selecting the state}
+
+The paired continuations separate two properties that the earlier evidence could not distinguish.
+%
+Routing carries information about the present and next reasoning state, and native states differ in how much reasoning remains after them.
+%
+Changing which experts compute a short pulse at a reasoning boundary nevertheless leaves the next state, the state occupancy over hundreds of tokens, and the generation cost within narrow intervals of the matched random edit.
+%
+Forcing the nominated sets at three depths throughout the analysis window does not change this result and lowers mean accuracy for both target and control sets.
+%
+Steering the nominated experts from the first prompt token until the reasoning closes removes the brevity of the pulse as an explanation.
+%
+These sustained edits change length and accuracy well beyond matched random edits, so the nominated identities matter for the computation, yet the occupancy of the steered state barely moves.
+%
+The routes that accompany a reasoning activity therefore record it, and sustained edits to them alter how the activity is carried out instead of selecting another activity.
+%
+
+Two observations constrain the interpretation of the sustained edits.
+%
+The largest accuracy losses follow the suppression of Implement and Analyze, the states that hold most of the native reasoning (Section~\ref{sec:dynamics-results}), which is consistent with removing experts that execute the solution rather than experts that schedule it.
+%
+Promoting the states that precede longer remaining reasoning lengthens the solutions of GPT-OSS-20B several-fold, in the direction of the native association, whereas promoting the states that precede shorter reasoning shortens no solution beyond its interval.
+%
+This asymmetry suggests that an edit can add the computation associated with a state but cannot remove the need for it.
+%
+The experiment does not isolate this mechanism, which would require an intervention on the computation that decides the next activity.
+%
+
+Several properties of the design bound these conclusions.
+%
+Nomination ranks experts by their inclusion excess for a class, so the target sets may track lexical form or position rather than the computation that decides the next activity.
+%
+The pulsed edits change one layer at a fixed central count, and the sustained edits follow the counts of SteerMoE, which break the reasoning of GPT-OSS-20B and GLM-4.7-Flash at full strength, so a narrower nomination might separate state selection from damage to the computation.
+%
+The pulsed continuations start from frozen prefixes in the middle of solutions, whereas the sustained edits start from the first prompt token, and neither adapts the edit to the state the model is in.
+%
+The lexical readout attenuates occupancy contrasts by its Youden index, yet the corrected intervals of the pulsed edits remain near zero.
+%
+Capped and unfinished continuations keep their outcome bounds, which widen the intervals of the models with the longest solutions.
+%
+A different nomination criterion, an adaptive edit that tracks the current state, or a readout of hidden-state change might still reveal a controllable route.
+%
+
+The accuracy results also carry a practical caution.
+%
+Every pulsed arm has a lower mean accuracy than native routing, and the stronger exploratory edit lowers it by about one and a half points.
+%
+These losses lie within simultaneous intervals that include zero, so they do not establish harm, but they show that a routing edit is not free of cost.
+%
+Sustained edits make the cost explicit, since suppressing an execution state lowers accuracy by more than forty points in two models.
+%
+A non-significant accuracy difference alone cannot establish that accuracy is retained.
+%
+
+\section{Conclusion}
+\label{sec:conclusion}
+
+Routing interventions alter the sparse computation performed by MoE LLMs while retaining their weights.
+%
+In mathematical problem solving, native routes carry information about visible reasoning states, and states such as verification precede shorter remaining reasoning.
+%
+The observed state transitions distinguish entry into verification from persistence within it.
+%
+State balancing changes which activities a limited expert set covers, with an advantage that depends on the model.
+%
+Activating or deactivating the experts nominated for a reasoning state at a sentence boundary, however, changes neither the following state nor the cost and accuracy of the solution beyond matched random edits.
+%
+Steering the same experts throughout the reasoning changes length and accuracy beyond matched random edits in a state-specific way, but it barely moves the steered state and shortens no solution at retained accuracy.
+%
+Routing therefore reveals reasoning states more readily than it controls them, and its nominated experts take part in the computation of a state rather than in the choice of the state.
+%
+Efficient reasoning through routing will require interventions that change the computation deciding the next activity rather than the experts that accompany it.
+%
+
+\paragraph{Data and code availability}
+The analysis implementation, compact result tables, editable figure sources, and manuscript are maintained in the project repository.
+%
+Model revisions and the retained statistical estimates are documented in the supplementary material.
+%
+Model weights remain subject to their original licenses.
+%
+Bulk routing captures are not included in the manuscript source package.
+%

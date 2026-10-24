@@ -1,0 +1,308 @@
+{
+ "schema": "gptoss-fullprefix-start-panel-agreement-v2",
+ "panel_sha256": "9e81a6b6f25fe8c308ae66d88ea08b8ea24e7737856bc37f775f64a3e0ab5081",
+ "gpt_binding_sha256": "05f6fd750a7a83a3ef7e2a495008724a914f5f4495a20ced758f3840f2203a5a",
+ "gpt_summary_sha256": "3927b9c88a5832e4e00c33e8af7ca0068db0582e006021182e60085e070357a0",
+ "gpt_batch_sha256s": [
+  "b8d16439f2f7eaaad2e9c644a4276792bf8b2522f7babdd4665c0206b8a7d3f9",
+  "cabec275338489bc368e91da69dce0ff9e53210cd9afbee46da412be58b29bd9",
+  "c1708637ae158afe6d769ac041a3e9e1185f59600cb3217fe985702e598cdd09",
+  "a20351a6a5d77b48f109abc1886ddc906a380de28e1f3943a76cc3a34a17a759",
+  "d9b769704ca6c2cccc021777a84890214313fdc8002e0fa86dc84aa4028910d3",
+  "46bd6caded0b9df8713542ff5af6543791251ce26be479acb9233db5d97194a4",
+  "fb82e31ef2015b23697b612e16e43ff7a329f0771a16e95110e5c86071fa1f4c"
+ ],
+ "qwen_native_agreement_sha256": "f15c5b8e283daf24b77ec72a910f013c0c47deb355628b42275891e56cefb43e",
+ "driver_sha256": "8139a7aa5e95d1d44d913feba63ac0eddb06b62daa7319e23fc8a4317a806349",
+ "counts": {
+  "qwen_approved_selected_start|candidate_to_verify|rows": 12,
+  "qwen_approved_selected_start|candidate_to_verify|gpt_true": 10,
+  "qwen_approved_selected_start|candidate_to_verify|qwen_native_gpt_joint_true": 2,
+  "qwen_approved_selected_start|approach_to_commit|rows": 10,
+  "qwen_approved_selected_start|approach_to_commit|gpt_true": 7,
+  "qwen_approved_selected_start|approach_to_commit|qwen_native_gpt_joint_true": 5,
+  "qwen_approved_selected_start|failed_check_to_revise|rows": 1,
+  "qwen_approved_selected_start|failed_check_to_revise|gpt_true": 0,
+  "qwen_approved_selected_start|failed_check_to_revise|qwen_native_gpt_joint_true": 0,
+  "frozen_disagreement_or_negative_control|candidate_to_verify|rows": 2,
+  "frozen_disagreement_or_negative_control|candidate_to_verify|gpt_true": 2,
+  "frozen_disagreement_or_negative_control|candidate_to_verify|qwen_native_gpt_joint_true": 0,
+  "frozen_disagreement_or_negative_control|approach_to_commit|rows": 2,
+  "frozen_disagreement_or_negative_control|approach_to_commit|gpt_true": 2,
+  "frozen_disagreement_or_negative_control|approach_to_commit|qwen_native_gpt_joint_true": 0
+ },
+ "records": [
+  {
+   "uid": "4921785e83e97db16d89f221e27c0d3adc9843a1afea8a85d4a462990907161c",
+   "family": "6332f3952a4d310f59b492e2d5cfbe5d42d4d7b9eea81a06bdeec6ad10bcd2db",
+   "transition": "candidate_to_verify",
+   "role": "qwen_approved_selected_start",
+   "qwen_status": "accepted",
+   "native_status": "rejected",
+   "gpt_start": true,
+   "gpt_raw_completion_sha256": "87679dd78093526eee8bf0f22bfddd080c42b85e3e425cb2c3e37e219a3eb949"
+  },
+  {
+   "uid": "c5eafa30a009f74bc9108ff672b40150434514ccad3bc9e28138f0e663ace8db",
+   "family": "fe413656eb88bcd59b91fafc8491dfc9b6106bd5eeeead02398d8ee95f45c3f8",
+   "transition": "candidate_to_verify",
+   "role": "qwen_approved_selected_start",
+   "qwen_status": "accepted",
+   "native_status": "rejected",
+   "gpt_start": false,
+   "gpt_raw_completion_sha256": "5a0a67932e814f91d522100efc42ffd3b84c79d35e6a99e05f459cbfd07da447"
+  },
+  {
+   "uid": "ed151bc46b3fc9945b4af057c2e87040221e07bbdd06d7675246875d42c5b98f",
+   "family": "3367fc3d3cb10721c5ca4d2dab40e29e369042f3e801709985eb83b35caffac1",
+   "transition": "candidate_to_verify",
+   "role": "qwen_approved_selected_start",
+   "qwen_status": "accepted",
+   "native_status": "rejected",
+   "gpt_start": true,
+   "gpt_raw_completion_sha256": "d946bf9d88adb1f1c8ce492115ec7e469d7788e9791302d7e4eb35f9df391a01"
+  },
+  {
+   "uid": "374167cf6d3e6b7a61e539a892c0ea6cd3f9908422276fdf583cc53970245c4f",
+   "family": "98d7c0cffaf8664a6014dd716307b620be6f01d17a3c98014465cc1df0250e35",
+   "transition": "candidate_to_verify",
+   "role": "qwen_approved_selected_start",
+   "qwen_status": "accepted",
+   "native_status": "accepted",
+   "gpt_start": true,
+   "gpt_raw_completion_sha256": "456813d0134b5598f4112aa606797b3857a0d75c46c43365f7ab02da91522d4a"
+  },
+  {
+   "uid": "4fa56be8c827baa56a45c4ead3f701b06dbba86ce4f8a8265b5c9ff1df3253b9",
+   "family": "730298a853730be798458e327441b4ee24174b92cb5dba0f74230a87955bee4c",
+   "transition": "candidate_to_verify",
+   "role": "qwen_approved_selected_start",
+   "qwen_status": "accepted",
+   "native_status": "rejected",
+   "gpt_start": true,
+   "gpt_raw_completion_sha256": "75f4de3a7be186896c58c484492ea682db1934fe70deddb6a1459a75eacbcdae"
+  },
+  {
+   "uid": "655e2f5270eb8103ef41211d43436349ccaed7ef3c67b553e81e98aa876eeac6",
+   "family": "550fd432263445b7a658cbf3f7b32ad019cc13b611f7f4df5094527f0a938047",
+   "transition": "candidate_to_verify",
+   "role": "qwen_approved_selected_start",
+   "qwen_status": "accepted",
+   "native_status": "rejected",
+   "gpt_start": true,
+   "gpt_raw_completion_sha256": "1761d4b20462b8ee4895d12774fac4712bc99f71cde0c7fd016d1b58586f3b18"
+  },
+  {
+   "uid": "3143bcc1e556f3b1e4f4cae0a323253dc45bc75812973d6b76be094d79c80f32",
+   "family": "707ab7621174d1305ed9fb7370a65a7984a70d929ccb758a88557e35c8364c4f",
+   "transition": "candidate_to_verify",
+   "role": "qwen_approved_selected_start",
+   "qwen_status": "accepted",
+   "native_status": "split",
+   "gpt_start": true,
+   "gpt_raw_completion_sha256": "d0c837aeddee95f95e423982f7a25275c261cec5c4476e19728c80b1e8753175"
+  },
+  {
+   "uid": "e669c7e4cf3a3b1815337c6732bbbe4c2ed64cb75a1d0421b9255757bacbb6d9",
+   "family": "eee15807710ee7873a219abd0c07a9f2075da668d35575207b6b945f13305137",
+   "transition": "candidate_to_verify",
+   "role": "qwen_approved_selected_start",
+   "qwen_status": "accepted",
+   "native_status": "rejected",
+   "gpt_start": true,
+   "gpt_raw_completion_sha256": "d9dd6bef6b8b6c86d6d278601f3b6c2c099df5cf7e97be1bc307d8dc91252353"
+  },
+  {
+   "uid": "e518cfc48f2dc95bdafe537d0327275ae941b76520f56c1ad6a6f3608cfba532",
+   "family": "00bfb4aac61f3d15220bc24ec149bff7d52daae64328216584692a8974416e86",
+   "transition": "candidate_to_verify",
+   "role": "qwen_approved_selected_start",
+   "qwen_status": "accepted",
+   "native_status": "accepted",
+   "gpt_start": false,
+   "gpt_raw_completion_sha256": "be14433c92e91443a7984dbbfb533101f42a4849a9dee7a82f715cf2271ab838"
+  },
+  {
+   "uid": "510442a7894dd0f0d7fb044e464d5b90366a21bb8e2908f56fcc2687dc77a57b",
+   "family": "1b8c3e7cc03eb4055ad504c782b763336ba17da040b85c2a115dc7eb1d23f714",
+   "transition": "candidate_to_verify",
+   "role": "qwen_approved_selected_start",
+   "qwen_status": "accepted",
+   "native_status": "rejected",
+   "gpt_start": true,
+   "gpt_raw_completion_sha256": "3a4721ab6a77535d0ba2fa36b45264991c8df92c8ba9f875428db64ecf1b2060"
+  },
+  {
+   "uid": "f4c1ca457cdc44ea043124089bdac8849fe3e564bef18aa2630c0f2e5c222920",
+   "family": "b2fbed68b5770889117d45148541a367c98d2a8c1b6c5f73fe5f7e3eda952ac2",
+   "transition": "candidate_to_verify",
+   "role": "qwen_approved_selected_start",
+   "qwen_status": "accepted",
+   "native_status": "rejected",
+   "gpt_start": true,
+   "gpt_raw_completion_sha256": "51629ef428b31fa12a0abc341e22498625ae47d4a86875465978157b1a692e18"
+  },
+  {
+   "uid": "241ef799f70721de8b4454fed4939188b770e186c5396695c7fd73534e307d47",
+   "family": "52543cd453052b5d707943b34a1ec31df532d3be7c1a15dbcb51f49e99028f61",
+   "transition": "candidate_to_verify",
+   "role": "qwen_approved_selected_start",
+   "qwen_status": "accepted",
+   "native_status": "accepted",
+   "gpt_start": true,
+   "gpt_raw_completion_sha256": "7e37e342d7f30a8ecf8cca687a64772657c2519353e2b980a4a1581a89823d5c"
+  },
+  {
+   "uid": "4b2451cfa0fc80e3d9c395c18f6f972c1094dd7161e58cf00f92b810d456c7b6",
+   "family": "800c81574401f7a6b104c7902f4030f5ab324217b6520736cfc73d7c09a06f8a",
+   "transition": "approach_to_commit",
+   "role": "qwen_approved_selected_start",
+   "qwen_status": "accepted",
+   "native_status": "split",
+   "gpt_start": false,
+   "gpt_raw_completion_sha256": "17013aa080269ac5a91df7c189d642b3286854900d228c9452e00cff928e4ee9"
+  },
+  {
+   "uid": "1e82e862eae88e90aa66f82001738c01407c1a74ee682607cd1d6823751efb44",
+   "family": "fe413656eb88bcd59b91fafc8491dfc9b6106bd5eeeead02398d8ee95f45c3f8",
+   "transition": "approach_to_commit",
+   "role": "qwen_approved_selected_start",
+   "qwen_status": "accepted",
+   "native_status": "split",
+   "gpt_start": true,
+   "gpt_raw_completion_sha256": "728878789e6453ada678cc1cd7dc1ef6433c1d4c65bb75cbabf6f88f3c4eb9e1"
+  },
+  {
+   "uid": "3565609b8fc3910243de5a237a88b092130e92bf2834b390971d99e3edbfa0bf",
+   "family": "5454cf7129ec92c7698315f2e0146ed667e3895beec0d805905cfe3caf8e153c",
+   "transition": "approach_to_commit",
+   "role": "qwen_approved_selected_start",
+   "qwen_status": "accepted",
+   "native_status": "rejected",
+   "gpt_start": true,
+   "gpt_raw_completion_sha256": "6d4a59a0d6e1f5173b19e067df8c8fb8083cf3525f6215e0161406a10f8fc44d"
+  },
+  {
+   "uid": "932f97b9eea9562c8ffbc3dc33f86983c9a0ab356b136d3ebdae1150d5d2c685",
+   "family": "29cc45551546f60dfdd6c11bb74844950c5c81bb611825509d86bd244697ef37",
+   "transition": "approach_to_commit",
+   "role": "qwen_approved_selected_start",
+   "qwen_status": "accepted",
+   "native_status": "accepted",
+   "gpt_start": true,
+   "gpt_raw_completion_sha256": "fccd25721885723316492899dede88d1650a83f34167af8b85bbdd1f6bc7cdd8"
+  },
+  {
+   "uid": "3ba599ae622ca702a9ef526dffc0f417573903b0f4eff00de272f385afde1d64",
+   "family": "f5f2880171dac17ac29f10527d0398d26e859c729d70eaa39445d71e5299825e",
+   "transition": "approach_to_commit",
+   "role": "qwen_approved_selected_start",
+   "qwen_status": "accepted",
+   "native_status": "accepted",
+   "gpt_start": true,
+   "gpt_raw_completion_sha256": "f21eff10fe820f7a6573eba47205fcf8db0fb188e873e94b7794eecad54ce9fd"
+  },
+  {
+   "uid": "e3c5f1dfad0e6c03b8d1920f16249812806229451aea451ab5a52fccc8914f25",
+   "family": "cb29cac11a2366d8754b75ac881c7b2786645be6cf34d6d23d5b5f43bd8e8d04",
+   "transition": "approach_to_commit",
+   "role": "qwen_approved_selected_start",
+   "qwen_status": "accepted",
+   "native_status": "accepted",
+   "gpt_start": true,
+   "gpt_raw_completion_sha256": "06fff5e363cab629be7905455b1a542e7f9d7a25be9e48a08bd89022136de23c"
+  },
+  {
+   "uid": "25969097c21a3cc93f61e92b597d597519c68c7958918a3bda742b3df9995c07",
+   "family": "fff0f7ae0efb38815249ca8438b8d015ad1348e758b06f5a91ccf288fb481337",
+   "transition": "approach_to_commit",
+   "role": "qwen_approved_selected_start",
+   "qwen_status": "accepted",
+   "native_status": "accepted",
+   "gpt_start": true,
+   "gpt_raw_completion_sha256": "dd5e3553b412a2fec47721313e87682aa2e5f8ccb5ce64c820a03491d7069cb0"
+  },
+  {
+   "uid": "6f1affaa925372442e8ec4f4bac98a0445535adb1d2243020f4127ffab20c54a",
+   "family": "d6ae4ef46b2c4f3b62f45bc6e349fd688412934445ba76de81f0f3bf15ada027",
+   "transition": "approach_to_commit",
+   "role": "qwen_approved_selected_start",
+   "qwen_status": "accepted",
+   "native_status": "accepted",
+   "gpt_start": true,
+   "gpt_raw_completion_sha256": "59eed28b863695d45e400aa03e09fb55b1d65d119a5b95034c4045b4fb518d8b"
+  },
+  {
+   "uid": "82ab837cc7c6137f7b88b4233850f4d5c0d687226d772796e69a3952de61277f",
+   "family": "59493910d6f987ddb5f17d95ecc9e7e0d23bd36f856c8200153b8e53128d4490",
+   "transition": "approach_to_commit",
+   "role": "qwen_approved_selected_start",
+   "qwen_status": "accepted",
+   "native_status": "rejected",
+   "gpt_start": false,
+   "gpt_raw_completion_sha256": "e2080061a99fb15185f907538b48d6b42c1a15b14c8a9ad372b6bb3121c2f1a5"
+  },
+  {
+   "uid": "3dc3ea96ef34bd0512f7fa5e6e9e25add4a623ebc397786bdf19d223806f8828",
+   "family": "45cb78a1df75e9c0052ca94e400d2007351ead1d91a9f1e3042e806639cb8670",
+   "transition": "approach_to_commit",
+   "role": "qwen_approved_selected_start",
+   "qwen_status": "accepted",
+   "native_status": "rejected",
+   "gpt_start": false,
+   "gpt_raw_completion_sha256": "6faa6ecfbdcde33fe38dedba9689d63f9fc912eda8920678bb0f7da08080687c"
+  },
+  {
+   "uid": "9e2b4cba8e55525cfd7cab727d9f3072e915516b4d2260147582145155405eeb",
+   "family": "59493910d6f987ddb5f17d95ecc9e7e0d23bd36f856c8200153b8e53128d4490",
+   "transition": "failed_check_to_revise",
+   "role": "qwen_approved_selected_start",
+   "qwen_status": "accepted",
+   "native_status": "rejected",
+   "gpt_start": false,
+   "gpt_raw_completion_sha256": "e08c248c5701e698139fbdf13f4f6ac7f9544f214c538be1a647b73fdaeb2815"
+  },
+  {
+   "uid": "17969c3af4f3924920ca9c9906f1a04c7303d1e950fb26c33aa21a3ece12a22b",
+   "family": "d6ae4ef46b2c4f3b62f45bc6e349fd688412934445ba76de81f0f3bf15ada027",
+   "transition": "candidate_to_verify",
+   "role": "frozen_disagreement_or_negative_control",
+   "qwen_status": "split",
+   "native_status": "accepted",
+   "gpt_start": true,
+   "gpt_raw_completion_sha256": "4d14bb3ad77fd9b791da89d01fea8240d7cae90f5dce4aa187955cff57624252"
+  },
+  {
+   "uid": "26020cb348ca7b04dc448060071c070a359ac86cbbf4a9188c77afe6eb49762f",
+   "family": "fff0f7ae0efb38815249ca8438b8d015ad1348e758b06f5a91ccf288fb481337",
+   "transition": "approach_to_commit",
+   "role": "frozen_disagreement_or_negative_control",
+   "qwen_status": "split",
+   "native_status": "rejected",
+   "gpt_start": true,
+   "gpt_raw_completion_sha256": "a143dc443f0de28f239ce6ea63f82f7da4b2b0cf255e0646f1be48f69f68d6d8"
+  },
+  {
+   "uid": "2dfd1211acf8dd21bfa50826d3cf477e4ec86789ac53b7a7da48115974446e65",
+   "family": "98d7c0cffaf8664a6014dd716307b620be6f01d17a3c98014465cc1df0250e35",
+   "transition": "approach_to_commit",
+   "role": "frozen_disagreement_or_negative_control",
+   "qwen_status": "rejected",
+   "native_status": "accepted",
+   "gpt_start": true,
+   "gpt_raw_completion_sha256": "be5077145cce3bcf9a03127f3210957f1ce356c4db48d4ad79c73768bcdb187b"
+  },
+  {
+   "uid": "2ef5d44b4d41aa216122a5204196ee01e8a42fee55232deeb3a0d4bad7c577a9",
+   "family": "4f5f62a271804f66bfa38042e820f38f7a0b5f2b9b7a87ff62cdb58b07ead678",
+   "transition": "candidate_to_verify",
+   "role": "frozen_disagreement_or_negative_control",
+   "qwen_status": "rejected",
+   "native_status": "rejected",
+   "gpt_start": true,
+   "gpt_raw_completion_sha256": "f3223d87e0279fe50ee63a773b2feefcfee1c270cd607f41e2fc5d84e419f5cb"
+  }
+ ],
+ "interpretation": "Discovery-only arm-blind third-family LLM measurement audit. GPT-OSS says true on two Qwen-agreed negative controls; none of these votes establishes human truth, transition control or an independently validated eligibility rule.",
+ "sha256": "ce55474859cc6c857f7950403825990bc9242aef9f06d3ad6070b1881026143d"
+}

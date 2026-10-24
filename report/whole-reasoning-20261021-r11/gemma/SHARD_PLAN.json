@@ -1,0 +1,1 @@
+{"approved_maximum_minutes":240,"committed_gpu_hours":96.0,"gpu_ceiling":150.0,"minutes":240,"model":"gemma","other_future_maximum_gpu_hours":24.0,"reason":"full allocation maxima plus all charged predecessor costs stay within the GPU ceiling","sha256":"1bc3c4ca952a157da2265a67ec1955bc6f6e6f290a19787fe0af444f7158b5d0","shards":3}

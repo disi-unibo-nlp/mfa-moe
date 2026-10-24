@@ -1,0 +1,21 @@
+{
+ "schema": "utility-prerequisite-resolution-v4",
+ "proposal_sha256": "ce86e4bcaa9c5c4a12f9c9456f118662dccdb57ed355f952cabc9617a83152fa",
+ "manifest_sha256": "6b5aa286e46cb818969c939346f448a6577b307779041ec2d35d7fce0562f074",
+ "accounting": "59379614|COMPLETED|0:0\n",
+ "decisions": [
+  {
+   "kind": "reader_dispatch",
+   "job_id": "59379614",
+   "state": "COMPLETED",
+   "exit_code": "0:0",
+   "decision": "SATISFIED_ACCOUNTING_AND_SEALED_ARTIFACT_OMIT_SLURM_EDGE",
+   "sealed_artifacts": {
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/overnight-submissions-v2-6b5aa286e46cb818/MEASUREMENT_CHAIN.json": "522a0d607562c01ae086b9b3c1f67cae6e2ae1331b60515c68463074a42e74f1",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/overnight-submissions-v2-6b5aa286e46cb818/analysis.attempt.json": "03ae5ec6f302ca7f185633a4363242e64992aed4ce374a31afe1a8175871ff37",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/overnight-submissions-v2-6b5aa286e46cb818/analysis.json": "65289d2e4e620912b5cd77a4b50bd45ece4abe74289def47773147858bd443f2"
+   }
+  }
+ ],
+ "sha256": "511272866d119497d762e4d6ea72cb57d2f7d35c6768d93f44905b1a722eef21"
+}

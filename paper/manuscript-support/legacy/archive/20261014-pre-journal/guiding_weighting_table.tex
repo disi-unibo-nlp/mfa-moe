@@ -1,0 +1,25 @@
+\begin{table*}[ht]
+\centering\small
+\caption{Sensitivity to the evaluation unit: accuracy changes and 95\% intervals in percentage points. Attempt weighting is the primary statistic; equal-problem weighting first averages correctness over each problem's attempts and then averages the 465 problems. Both use the same 5,000 paired, dataset-stratified problem resamples (seed 42). Equal problem weights are not equal benchmark weights. This is a secondary exploratory analysis without multiplicity adjustment.}
+\label{tab:guiding-weighting}
+\resizebox{\textwidth}{!}{%
+\begin{tabular}{lrrrr}
+\toprule
+Condition & Attempt change & 95\% CI & Problem change & 95\% CI \\
+\midrule
+Qwen fixed positive +1 & -0.29 & [-1.15, +0.65] & +0.39 & [-1.51, +2.31] \\
+Qwen fixed positive +2 & -2.80 & [-5.16, -0.72] & -0.68 & [-2.76, +1.33] \\
+Qwen fixed positive -1 & +1.08 & [-0.14, +2.37] & +1.14 & [-0.75, +2.94] \\
+GPT-OSS fixed positive +1 & +0.00 & [-2.15, +2.01] & +0.42 & [-2.37, +3.12] \\
+GPT-OSS fixed positive +2 & -3.30 & [-6.16, -0.93] & -0.10 & [-3.12, +3.08] \\
+GPT-OSS fixed positive -1 & -1.00 & [-3.44, +1.22] & -0.51 & [-3.41, +2.49] \\
+GPT-OSS fixed negative +1 & +0.57 & [-1.58, +2.65] & +2.35 & [-0.58, +5.44] \\
+GPT-OSS paper positive +1 & -61.65 & [-69.32, -53.41] & -50.15 & [-54.88, -45.45] \\
+GPT-OSS paper positive -1 & -2.22 & [-4.16, -0.43] & -0.83 & [-3.76, +2.23] \\
+GPT-OSS paper negative +1 & -59.57 & [-67.24, -51.40] & -49.13 & [-53.80, -44.56] \\
+Qwen margin (c=16) & +0.07 & [-0.86, +1.01] & -1.66 & [-3.67, +0.45] \\
+Qwen margin (c=25) & +0.93 & [+0.00, +1.86] & -0.12 & [-2.07, +1.80] \\
+GPT-OSS margin (c=25) & -0.86 & [-2.87, +1.15] & -0.50 & [-3.49, +2.46] \\
+\bottomrule
+\end{tabular}}
+\end{table*}

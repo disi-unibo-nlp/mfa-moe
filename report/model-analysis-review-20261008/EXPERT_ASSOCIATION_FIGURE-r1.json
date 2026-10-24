@@ -1,0 +1,376 @@
+{
+  "schema": "saved-expert-association-figure-v1",
+  "source": {
+    "path": "report/model-analysis-review-20261008/expert_usage_correctness_saved.csv",
+    "sha256": "2e5f4ac0baba51ebe960c9f213d0d24b8fae205b99dd12fdb8ed19e699d2fbe4"
+  },
+  "script": {
+    "path": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/paper/export_expert_association_figure_r1.py",
+    "sha256": "c38ee33d4239cc02141990d955627094083c9f18e38910e68cf77f686a97cc44"
+  },
+  "selection": "All seven models x seven states; pooled cls_expert / usage_all / mean / lendiff_frac; no result-sign or significance selection.",
+  "n_cells": 49,
+  "new_fits": 0,
+  "new_inference": 0,
+  "values": [
+    {
+      "model": "gpt",
+      "state": "Read",
+      "r": -0.0393794949923684,
+      "q": 0.3571841499376466,
+      "n_questions": 1546
+    },
+    {
+      "model": "gpt",
+      "state": "Analyze",
+      "r": -0.0390408061865024,
+      "q": 0.3571841499376466,
+      "n_questions": 1546
+    },
+    {
+      "model": "gpt",
+      "state": "Plan",
+      "r": -0.0410005165822597,
+      "q": 0.3571841499376466,
+      "n_questions": 1546
+    },
+    {
+      "model": "gpt",
+      "state": "Implement",
+      "r": 0.0266899675846048,
+      "q": 0.4433104342942156,
+      "n_questions": 1546
+    },
+    {
+      "model": "gpt",
+      "state": "Explore",
+      "r": -0.0082204700587125,
+      "q": 0.8321382676358791,
+      "n_questions": 1546
+    },
+    {
+      "model": "gpt",
+      "state": "Verify",
+      "r": -0.0420720446952186,
+      "q": 0.3571841499376466,
+      "n_questions": 1546
+    },
+    {
+      "model": "gpt",
+      "state": "Monitor",
+      "r": -0.0314420605711195,
+      "q": 0.4433104342942156,
+      "n_questions": 1546
+    },
+    {
+      "model": "nemotron",
+      "state": "Read",
+      "r": -0.0446005293835695,
+      "q": 0.2812834983575348,
+      "n_questions": 1547
+    },
+    {
+      "model": "nemotron",
+      "state": "Analyze",
+      "r": 0.0088236851423936,
+      "q": 0.9469904213612568,
+      "n_questions": 1547
+    },
+    {
+      "model": "nemotron",
+      "state": "Plan",
+      "r": -0.0254649063194372,
+      "q": 0.7426339169442862,
+      "n_questions": 1547
+    },
+    {
+      "model": "nemotron",
+      "state": "Implement",
+      "r": 0.0097032925630719,
+      "q": 0.9469904213612568,
+      "n_questions": 1547
+    },
+    {
+      "model": "nemotron",
+      "state": "Explore",
+      "r": 0.0037372205817246,
+      "q": 0.9469904213612568,
+      "n_questions": 1547
+    },
+    {
+      "model": "nemotron",
+      "state": "Verify",
+      "r": 0.0218741630257489,
+      "q": 0.8217422284944874,
+      "n_questions": 1547
+    },
+    {
+      "model": "nemotron",
+      "state": "Monitor",
+      "r": -0.085288405966813,
+      "q": 0.0170830598677967,
+      "n_questions": 1547
+    },
+    {
+      "model": "qwen35",
+      "state": "Read",
+      "r": -0.0201781724151702,
+      "q": 0.5633613771120841,
+      "n_questions": 1546
+    },
+    {
+      "model": "qwen35",
+      "state": "Analyze",
+      "r": 0.0917940093373225,
+      "q": 0.0021983285554308,
+      "n_questions": 1546
+    },
+    {
+      "model": "qwen35",
+      "state": "Plan",
+      "r": 0.0285034483592256,
+      "q": 0.3961301628893015,
+      "n_questions": 1546
+    },
+    {
+      "model": "qwen35",
+      "state": "Implement",
+      "r": -0.0315602794019463,
+      "q": 0.3492981399370657,
+      "n_questions": 1546
+    },
+    {
+      "model": "qwen35",
+      "state": "Explore",
+      "r": -0.0417346064299491,
+      "q": 0.2140523486961358,
+      "n_questions": 1546
+    },
+    {
+      "model": "qwen35",
+      "state": "Verify",
+      "r": -0.097237086308727,
+      "q": 0.0021983285554308,
+      "n_questions": 1546
+    },
+    {
+      "model": "qwen35",
+      "state": "Monitor",
+      "r": -0.0769744732471216,
+      "q": 0.0088535801914509,
+      "n_questions": 1546
+    },
+    {
+      "model": "qwen36",
+      "state": "Read",
+      "r": -0.0578675849796313,
+      "q": 0.0719709070760463,
+      "n_questions": 1545
+    },
+    {
+      "model": "qwen36",
+      "state": "Analyze",
+      "r": 0.0818346380866829,
+      "q": 0.0092569118571963,
+      "n_questions": 1545
+    },
+    {
+      "model": "qwen36",
+      "state": "Plan",
+      "r": -0.0470739539306576,
+      "q": 0.0975483403690471,
+      "n_questions": 1545
+    },
+    {
+      "model": "qwen36",
+      "state": "Implement",
+      "r": -0.0386803023435079,
+      "q": 0.1700675233158299,
+      "n_questions": 1545
+    },
+    {
+      "model": "qwen36",
+      "state": "Explore",
+      "r": 0.0112239603411681,
+      "q": 0.6931722910726974,
+      "n_questions": 1545
+    },
+    {
+      "model": "qwen36",
+      "state": "Verify",
+      "r": -0.1007913420457989,
+      "q": 0.0009732297603812,
+      "n_questions": 1545
+    },
+    {
+      "model": "qwen36",
+      "state": "Monitor",
+      "r": -0.099540342836752,
+      "q": 0.0009732297603812,
+      "n_questions": 1545
+    },
+    {
+      "model": "gemma",
+      "state": "Read",
+      "r": 0.0248059822289872,
+      "q": 0.548015858206546,
+      "n_questions": 1545
+    },
+    {
+      "model": "gemma",
+      "state": "Analyze",
+      "r": 0.0383392050519072,
+      "q": 0.4120549919630137,
+      "n_questions": 1545
+    },
+    {
+      "model": "gemma",
+      "state": "Plan",
+      "r": 0.0426577711307244,
+      "q": 0.4120549919630137,
+      "n_questions": 1545
+    },
+    {
+      "model": "gemma",
+      "state": "Implement",
+      "r": 0.0137336936798084,
+      "q": 0.6528683213915861,
+      "n_questions": 1545
+    },
+    {
+      "model": "gemma",
+      "state": "Explore",
+      "r": 0.0341076911214343,
+      "q": 0.4765295203415274,
+      "n_questions": 1545
+    },
+    {
+      "model": "gemma",
+      "state": "Verify",
+      "r": -0.013899876403937,
+      "q": 0.6528683213915861,
+      "n_questions": 1545
+    },
+    {
+      "model": "gemma",
+      "state": "Monitor",
+      "r": -0.025202808164409,
+      "q": 0.548015858206546,
+      "n_questions": 1545
+    },
+    {
+      "model": "glm",
+      "state": "Read",
+      "r": 0.0179596490218911,
+      "q": 0.8332084388150317,
+      "n_questions": 1545
+    },
+    {
+      "model": "glm",
+      "state": "Analyze",
+      "r": -0.0179262408498095,
+      "q": 0.8332084388150317,
+      "n_questions": 1545
+    },
+    {
+      "model": "glm",
+      "state": "Plan",
+      "r": 0.0030633709294175,
+      "q": 0.9927832478390528,
+      "n_questions": 1545
+    },
+    {
+      "model": "glm",
+      "state": "Implement",
+      "r": -0.0071269841529106,
+      "q": 0.9540885249859984,
+      "n_questions": 1545
+    },
+    {
+      "model": "glm",
+      "state": "Explore",
+      "r": -0.0150548418434517,
+      "q": 0.8332084388150317,
+      "n_questions": 1545
+    },
+    {
+      "model": "glm",
+      "state": "Verify",
+      "r": -0.0158621498007679,
+      "q": 0.8332084388150317,
+      "n_questions": 1545
+    },
+    {
+      "model": "glm",
+      "state": "Monitor",
+      "r": 0.0002309754083815,
+      "q": 0.9927832478390528,
+      "n_questions": 1545
+    },
+    {
+      "model": "qwen330b",
+      "state": "Read",
+      "r": -0.0530726592367019,
+      "q": 0.1865745605698536,
+      "n_questions": 1545
+    },
+    {
+      "model": "qwen330b",
+      "state": "Analyze",
+      "r": -0.0080773704860322,
+      "q": 0.9507537365130316,
+      "n_questions": 1545
+    },
+    {
+      "model": "qwen330b",
+      "state": "Plan",
+      "r": 0.0026238537288545,
+      "q": 0.9507537365130316,
+      "n_questions": 1545
+    },
+    {
+      "model": "qwen330b",
+      "state": "Implement",
+      "r": 0.0481582030312212,
+      "q": 0.1946324586176377,
+      "n_questions": 1545
+    },
+    {
+      "model": "qwen330b",
+      "state": "Explore",
+      "r": -0.0154631072841636,
+      "q": 0.880061645137464,
+      "n_questions": 1545
+    },
+    {
+      "model": "qwen330b",
+      "state": "Verify",
+      "r": -0.0526276905958964,
+      "q": 0.1865745605698536,
+      "n_questions": 1545
+    },
+    {
+      "model": "qwen330b",
+      "state": "Monitor",
+      "r": -0.0608763590513147,
+      "q": 0.1865745605698536,
+      "n_questions": 1545
+    }
+  ],
+  "interpretation": "Saved same-cohort exploratory nuisance-adjusted association, not held-out keep-set validity or a deletion effect. Stars retain the source q-values; no new multiplicity calculation. Existing intervals and full counts remain in the CSV.",
+  "outputs": [
+    {
+      "path": "report/model-analysis-review-20261008/expert_usage_correctness_mean_all.csv",
+      "sha256": "69c3e839755fe56ffc0033bb651a0cdca044babc99310aef0d57987b4a76cc5b"
+    },
+    {
+      "path": "paper/6a510c6db0d9b08aa438c142/generated/model_analysis_review/expert_usage_correctness.pdf",
+      "sha256": "48531020f36d1859f57632adcc252338df8b0f29c250c24b2e08456d0f701c9c"
+    },
+    {
+      "path": "paper/6a510c6db0d9b08aa438c142/generated/model_analysis_review/expert_usage_correctness.png",
+      "sha256": "d9996482db2e3e40ca175d89add212dbae54a4d6769c42d13bc634a6f751c869"
+    }
+  ],
+  "elapsed_seconds": 15.301
+}

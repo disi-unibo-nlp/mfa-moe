@@ -1,0 +1,950 @@
+{
+ "schema": "G3-dose-support-amendment-v1",
+ "protocol_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/PREREG_steering_v1.v0.3.md",
+ "protocol_file_sha256": "4483782220d3e556e6a33c4596679f8292fee3a9beb4e6d6a6309f0e899a8932",
+ "source_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/estimates.json",
+ "source_file_sha256": "0d749c936d761aa5d73cf69f610ade7bb216949fa894ec4dc91edf212278b5e3",
+ "prior_selection_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/x2-resume-v1/analysis/G3_SELECTION.json",
+ "prior_selection_file_sha256": "280689cf0f80b9a65ee8ee30dc47e8abbe09833256fce7bb069e8dad95f26d01",
+ "population": "39 eligible of 48 dev-cal questions; two seeds; 42 target cells",
+ "rule": "each random set must have a same-operator dose ratio in [0.90, 1.10]; otherwise that target cell is ineligible",
+ "prior_passing_cells": 6,
+ "registered_passing_cells": 2,
+ "prior_selected": {
+  "-1": "reweight_m1_L1_landmark",
+  "1": "reweight_p2_BAND_landmark"
+ },
+ "registered_selected": {
+  "-1": "reweight_m1_L1_landmark",
+  "1": "reweight_p2_BAND_landmark"
+ },
+ "selection_changed": false,
+ "cells": [
+  {
+   "policy": "bias_p0.5_L1_landmark",
+   "prior_G3_pass": false,
+   "registered_G3_pass": false,
+   "registered_random_dose_support": false,
+   "random_dose_ratios": [
+    1.0579002140176779,
+    1.4545131972259333
+   ],
+   "random_magnitudes": [
+    0.5,
+    1.0
+   ],
+   "checks": {
+    "positive_dose": true,
+    "random_dose_support": false,
+    "degeneration_increase_le_3pp": true,
+    "marker_change_ge_15percent": false,
+    "target_random_same_direction_half_effect": true,
+    "native_NLL_increase_le_point10": true
+   }
+  },
+  {
+   "policy": "bias_p1_L1_landmark",
+   "prior_G3_pass": false,
+   "registered_G3_pass": false,
+   "registered_random_dose_support": false,
+   "random_dose_ratios": [
+    1.2391981400084453,
+    0.623008954342379
+   ],
+   "random_magnitudes": [
+    1.0,
+    1.0
+   ],
+   "checks": {
+    "positive_dose": true,
+    "random_dose_support": false,
+    "degeneration_increase_le_3pp": true,
+    "marker_change_ge_15percent": false,
+    "target_random_same_direction_half_effect": true,
+    "native_NLL_increase_le_point10": true
+   }
+  },
+  {
+   "policy": "bias_p2_L1_landmark",
+   "prior_G3_pass": false,
+   "registered_G3_pass": false,
+   "registered_random_dose_support": false,
+   "random_dose_ratios": [
+    1.268626300397249,
+    0.6697770872946016
+   ],
+   "random_magnitudes": [
+    2.0,
+    2.0
+   ],
+   "checks": {
+    "positive_dose": true,
+    "random_dose_support": false,
+    "degeneration_increase_le_3pp": true,
+    "marker_change_ge_15percent": true,
+    "target_random_same_direction_half_effect": true,
+    "native_NLL_increase_le_point10": true
+   }
+  },
+  {
+   "policy": "bias_p4_L1_landmark",
+   "prior_G3_pass": false,
+   "registered_G3_pass": false,
+   "registered_random_dose_support": false,
+   "random_dose_ratios": [
+    1.131351500367849,
+    0.8803860481144516
+   ],
+   "random_magnitudes": [
+    4.0,
+    4.0
+   ],
+   "checks": {
+    "positive_dose": true,
+    "random_dose_support": false,
+    "degeneration_increase_le_3pp": true,
+    "marker_change_ge_15percent": true,
+    "target_random_same_direction_half_effect": false,
+    "native_NLL_increase_le_point10": true
+   }
+  },
+  {
+   "policy": "bias_m0.5_L1_landmark",
+   "prior_G3_pass": false,
+   "registered_G3_pass": false,
+   "registered_random_dose_support": false,
+   "random_dose_ratios": [
+    0.8460180552929826,
+    1.0939651901479923
+   ],
+   "random_magnitudes": [
+    0.5,
+    1.0
+   ],
+   "checks": {
+    "positive_dose": true,
+    "random_dose_support": false,
+    "degeneration_increase_le_3pp": true,
+    "marker_change_ge_15percent": false,
+    "target_random_same_direction_half_effect": false,
+    "native_NLL_increase_le_point10": true
+   }
+  },
+  {
+   "policy": "bias_m1_L1_landmark",
+   "prior_G3_pass": false,
+   "registered_G3_pass": false,
+   "registered_random_dose_support": false,
+   "random_dose_ratios": [
+    0.9004094907516696,
+    0.8722413710119524
+   ],
+   "random_magnitudes": [
+    4.0,
+    4.0
+   ],
+   "checks": {
+    "positive_dose": true,
+    "random_dose_support": false,
+    "degeneration_increase_le_3pp": true,
+    "marker_change_ge_15percent": false,
+    "target_random_same_direction_half_effect": true,
+    "native_NLL_increase_le_point10": true
+   }
+  },
+  {
+   "policy": "bias_m2_L1_landmark",
+   "prior_G3_pass": false,
+   "registered_G3_pass": false,
+   "registered_random_dose_support": false,
+   "random_dose_ratios": [
+    0.7549904169669397,
+    0.7313715405713676
+   ],
+   "random_magnitudes": [
+    4.0,
+    4.0
+   ],
+   "checks": {
+    "positive_dose": true,
+    "random_dose_support": false,
+    "degeneration_increase_le_3pp": true,
+    "marker_change_ge_15percent": false,
+    "target_random_same_direction_half_effect": true,
+    "native_NLL_increase_le_point10": true
+   }
+  },
+  {
+   "policy": "bias_m4_L1_landmark",
+   "prior_G3_pass": false,
+   "registered_G3_pass": false,
+   "registered_random_dose_support": false,
+   "random_dose_ratios": [
+    0.7584947897369458,
+    0.7347662836753028
+   ],
+   "random_magnitudes": [
+    4.0,
+    4.0
+   ],
+   "checks": {
+    "positive_dose": true,
+    "random_dose_support": false,
+    "degeneration_increase_le_3pp": true,
+    "marker_change_ge_15percent": false,
+    "target_random_same_direction_half_effect": true,
+    "native_NLL_increase_le_point10": true
+   }
+  },
+  {
+   "policy": "force_p_L1_landmark",
+   "prior_G3_pass": false,
+   "registered_G3_pass": false,
+   "registered_random_dose_support": true,
+   "random_dose_ratios": [
+    1.028381994608268,
+    1.0271117756926265
+   ],
+   "random_magnitudes": [
+    0.0,
+    0.0
+   ],
+   "checks": {
+    "positive_dose": true,
+    "random_dose_support": true,
+    "degeneration_increase_le_3pp": true,
+    "marker_change_ge_15percent": false,
+    "target_random_same_direction_half_effect": false,
+    "native_NLL_increase_le_point10": true
+   }
+  },
+  {
+   "policy": "force_m_L1_landmark",
+   "prior_G3_pass": false,
+   "registered_G3_pass": false,
+   "registered_random_dose_support": false,
+   "random_dose_ratios": [
+    0.7102696327140561,
+    0.7020133615739337
+   ],
+   "random_magnitudes": [
+    0.0,
+    0.0
+   ],
+   "checks": {
+    "positive_dose": true,
+    "random_dose_support": false,
+    "degeneration_increase_le_3pp": true,
+    "marker_change_ge_15percent": false,
+    "target_random_same_direction_half_effect": true,
+    "native_NLL_increase_le_point10": true
+   }
+  },
+  {
+   "policy": "reweight_p1_L1_landmark",
+   "prior_G3_pass": false,
+   "registered_G3_pass": false,
+   "registered_random_dose_support": false,
+   "random_dose_ratios": [
+    0.8369401004137791,
+    0.8110813134051754
+   ],
+   "random_magnitudes": [
+    1.0,
+    1.0
+   ],
+   "checks": {
+    "positive_dose": true,
+    "random_dose_support": false,
+    "degeneration_increase_le_3pp": true,
+    "marker_change_ge_15percent": false,
+    "target_random_same_direction_half_effect": true,
+    "native_NLL_increase_le_point10": true
+   }
+  },
+  {
+   "policy": "reweight_p2_L1_landmark",
+   "prior_G3_pass": false,
+   "registered_G3_pass": false,
+   "registered_random_dose_support": false,
+   "random_dose_ratios": [
+    0.9179996395233514,
+    0.7733374196306794
+   ],
+   "random_magnitudes": [
+    2.0,
+    2.0
+   ],
+   "checks": {
+    "positive_dose": true,
+    "random_dose_support": false,
+    "degeneration_increase_le_3pp": true,
+    "marker_change_ge_15percent": false,
+    "target_random_same_direction_half_effect": false,
+    "native_NLL_increase_le_point10": true
+   }
+  },
+  {
+   "policy": "reweight_m1_L1_landmark",
+   "prior_G3_pass": true,
+   "registered_G3_pass": true,
+   "registered_random_dose_support": true,
+   "random_dose_ratios": [
+    1.042215780500557,
+    1.0604771490941396
+   ],
+   "random_magnitudes": [
+    2.0,
+    2.0
+   ],
+   "checks": {
+    "positive_dose": true,
+    "random_dose_support": true,
+    "degeneration_increase_le_3pp": true,
+    "marker_change_ge_15percent": true,
+    "target_random_same_direction_half_effect": true,
+    "native_NLL_increase_le_point10": true
+   }
+  },
+  {
+   "policy": "reweight_m2_L1_landmark",
+   "prior_G3_pass": false,
+   "registered_G3_pass": false,
+   "registered_random_dose_support": false,
+   "random_dose_ratios": [
+    0.6781645330385438,
+    0.6900471131497027
+   ],
+   "random_magnitudes": [
+    2.0,
+    2.0
+   ],
+   "checks": {
+    "positive_dose": true,
+    "random_dose_support": false,
+    "degeneration_increase_le_3pp": true,
+    "marker_change_ge_15percent": false,
+    "target_random_same_direction_half_effect": true,
+    "native_NLL_increase_le_point10": true
+   }
+  },
+  {
+   "policy": "bias_p0.5_BAND_landmark",
+   "prior_G3_pass": false,
+   "registered_G3_pass": false,
+   "registered_random_dose_support": false,
+   "random_dose_ratios": [
+    1.145165293114801,
+    0.941343862900317
+   ],
+   "random_magnitudes": [
+    0.5,
+    0.5
+   ],
+   "checks": {
+    "positive_dose": true,
+    "random_dose_support": false,
+    "degeneration_increase_le_3pp": true,
+    "marker_change_ge_15percent": true,
+    "target_random_same_direction_half_effect": false,
+    "native_NLL_increase_le_point10": true
+   }
+  },
+  {
+   "policy": "bias_p1_BAND_landmark",
+   "prior_G3_pass": false,
+   "registered_G3_pass": false,
+   "registered_random_dose_support": false,
+   "random_dose_ratios": [
+    1.1825151396386429,
+    0.9560990954252506
+   ],
+   "random_magnitudes": [
+    1.0,
+    1.0
+   ],
+   "checks": {
+    "positive_dose": true,
+    "random_dose_support": false,
+    "degeneration_increase_le_3pp": true,
+    "marker_change_ge_15percent": false,
+    "target_random_same_direction_half_effect": true,
+    "native_NLL_increase_le_point10": true
+   }
+  },
+  {
+   "policy": "bias_p2_BAND_landmark",
+   "prior_G3_pass": true,
+   "registered_G3_pass": false,
+   "registered_random_dose_support": false,
+   "random_dose_ratios": [
+    1.198471254684089,
+    1.0444152733368914
+   ],
+   "random_magnitudes": [
+    2.0,
+    2.0
+   ],
+   "checks": {
+    "positive_dose": true,
+    "random_dose_support": false,
+    "degeneration_increase_le_3pp": true,
+    "marker_change_ge_15percent": true,
+    "target_random_same_direction_half_effect": true,
+    "native_NLL_increase_le_point10": true
+   }
+  },
+  {
+   "policy": "bias_p4_BAND_landmark",
+   "prior_G3_pass": false,
+   "registered_G3_pass": false,
+   "registered_random_dose_support": true,
+   "random_dose_ratios": [
+    1.055639942716347,
+    0.9816354900764414
+   ],
+   "random_magnitudes": [
+    4.0,
+    4.0
+   ],
+   "checks": {
+    "positive_dose": true,
+    "random_dose_support": true,
+    "degeneration_increase_le_3pp": true,
+    "marker_change_ge_15percent": true,
+    "target_random_same_direction_half_effect": false,
+    "native_NLL_increase_le_point10": false
+   }
+  },
+  {
+   "policy": "bias_m0.5_BAND_landmark",
+   "prior_G3_pass": false,
+   "registered_G3_pass": false,
+   "registered_random_dose_support": false,
+   "random_dose_ratios": [
+    1.197179874271069,
+    1.245748788662498
+   ],
+   "random_magnitudes": [
+    1.0,
+    1.0
+   ],
+   "checks": {
+    "positive_dose": true,
+    "random_dose_support": false,
+    "degeneration_increase_le_3pp": true,
+    "marker_change_ge_15percent": false,
+    "target_random_same_direction_half_effect": true,
+    "native_NLL_increase_le_point10": true
+   }
+  },
+  {
+   "policy": "bias_m1_BAND_landmark",
+   "prior_G3_pass": false,
+   "registered_G3_pass": false,
+   "registered_random_dose_support": true,
+   "random_dose_ratios": [
+    0.9190081564497213,
+    0.9731061761293117
+   ],
+   "random_magnitudes": [
+    2.0,
+    4.0
+   ],
+   "checks": {
+    "positive_dose": true,
+    "random_dose_support": true,
+    "degeneration_increase_le_3pp": true,
+    "marker_change_ge_15percent": false,
+    "target_random_same_direction_half_effect": true,
+    "native_NLL_increase_le_point10": true
+   }
+  },
+  {
+   "policy": "bias_m2_BAND_landmark",
+   "prior_G3_pass": false,
+   "registered_G3_pass": false,
+   "registered_random_dose_support": false,
+   "random_dose_ratios": [
+    0.7868114818252291,
+    0.8331276572902481
+   ],
+   "random_magnitudes": [
+    2.0,
+    4.0
+   ],
+   "checks": {
+    "positive_dose": true,
+    "random_dose_support": false,
+    "degeneration_increase_le_3pp": true,
+    "marker_change_ge_15percent": false,
+    "target_random_same_direction_half_effect": true,
+    "native_NLL_increase_le_point10": true
+   }
+  },
+  {
+   "policy": "bias_m4_BAND_landmark",
+   "prior_G3_pass": false,
+   "registered_G3_pass": false,
+   "registered_random_dose_support": false,
+   "random_dose_ratios": [
+    0.787799876104548,
+    0.8341742340490136
+   ],
+   "random_magnitudes": [
+    2.0,
+    4.0
+   ],
+   "checks": {
+    "positive_dose": true,
+    "random_dose_support": false,
+    "degeneration_increase_le_3pp": true,
+    "marker_change_ge_15percent": false,
+    "target_random_same_direction_half_effect": true,
+    "native_NLL_increase_le_point10": true
+   }
+  },
+  {
+   "policy": "force_p_BAND_landmark",
+   "prior_G3_pass": false,
+   "registered_G3_pass": false,
+   "registered_random_dose_support": true,
+   "random_dose_ratios": [
+    1.0150931766426194,
+    1.013855268939428
+   ],
+   "random_magnitudes": [
+    0.0,
+    0.0
+   ],
+   "checks": {
+    "positive_dose": true,
+    "random_dose_support": true,
+    "degeneration_increase_le_3pp": true,
+    "marker_change_ge_15percent": false,
+    "target_random_same_direction_half_effect": false,
+    "native_NLL_increase_le_point10": true
+   }
+  },
+  {
+   "policy": "force_m_BAND_landmark",
+   "prior_G3_pass": false,
+   "registered_G3_pass": false,
+   "registered_random_dose_support": false,
+   "random_dose_ratios": [
+    0.792500040857488,
+    0.8412726749315115
+   ],
+   "random_magnitudes": [
+    0.0,
+    0.0
+   ],
+   "checks": {
+    "positive_dose": true,
+    "random_dose_support": false,
+    "degeneration_increase_le_3pp": true,
+    "marker_change_ge_15percent": false,
+    "target_random_same_direction_half_effect": true,
+    "native_NLL_increase_le_point10": true
+   }
+  },
+  {
+   "policy": "reweight_p1_BAND_landmark",
+   "prior_G3_pass": false,
+   "registered_G3_pass": false,
+   "registered_random_dose_support": true,
+   "random_dose_ratios": [
+    0.9716607102749494,
+    0.9343338117603149
+   ],
+   "random_magnitudes": [
+    1.0,
+    1.0
+   ],
+   "checks": {
+    "positive_dose": true,
+    "random_dose_support": true,
+    "degeneration_increase_le_3pp": true,
+    "marker_change_ge_15percent": false,
+    "target_random_same_direction_half_effect": true,
+    "native_NLL_increase_le_point10": true
+   }
+  },
+  {
+   "policy": "reweight_p2_BAND_landmark",
+   "prior_G3_pass": true,
+   "registered_G3_pass": true,
+   "registered_random_dose_support": true,
+   "random_dose_ratios": [
+    0.9971487261664798,
+    0.9459614025652124
+   ],
+   "random_magnitudes": [
+    2.0,
+    2.0
+   ],
+   "checks": {
+    "positive_dose": true,
+    "random_dose_support": true,
+    "degeneration_increase_le_3pp": true,
+    "marker_change_ge_15percent": true,
+    "target_random_same_direction_half_effect": true,
+    "native_NLL_increase_le_point10": true
+   }
+  },
+  {
+   "policy": "reweight_m1_BAND_landmark",
+   "prior_G3_pass": false,
+   "registered_G3_pass": false,
+   "registered_random_dose_support": false,
+   "random_dose_ratios": [
+    1.1703858588786096,
+    0.867091018622513
+   ],
+   "random_magnitudes": [
+    2.0,
+    1.0
+   ],
+   "checks": {
+    "positive_dose": true,
+    "random_dose_support": false,
+    "degeneration_increase_le_3pp": true,
+    "marker_change_ge_15percent": false,
+    "target_random_same_direction_half_effect": true,
+    "native_NLL_increase_le_point10": true
+   }
+  },
+  {
+   "policy": "reweight_m2_BAND_landmark",
+   "prior_G3_pass": false,
+   "registered_G3_pass": false,
+   "registered_random_dose_support": false,
+   "random_dose_ratios": [
+    0.8335576346647326,
+    0.870752570874037
+   ],
+   "random_magnitudes": [
+    2.0,
+    2.0
+   ],
+   "checks": {
+    "positive_dose": true,
+    "random_dose_support": false,
+    "degeneration_increase_le_3pp": true,
+    "marker_change_ge_15percent": false,
+    "target_random_same_direction_half_effect": true,
+    "native_NLL_increase_le_point10": true
+   }
+  },
+  {
+   "policy": "bias_p0.5_ALL_landmark",
+   "prior_G3_pass": false,
+   "registered_G3_pass": false,
+   "registered_random_dose_support": false,
+   "random_dose_ratios": [
+    0.8723438734523109,
+    0.8851698972716874
+   ],
+   "random_magnitudes": [
+    0.5,
+    0.5
+   ],
+   "checks": {
+    "positive_dose": true,
+    "random_dose_support": false,
+    "degeneration_increase_le_3pp": true,
+    "marker_change_ge_15percent": false,
+    "target_random_same_direction_half_effect": true,
+    "native_NLL_increase_le_point10": true
+   }
+  },
+  {
+   "policy": "bias_p1_ALL_landmark",
+   "prior_G3_pass": false,
+   "registered_G3_pass": false,
+   "registered_random_dose_support": true,
+   "random_dose_ratios": [
+    0.9096576212264805,
+    0.9489633471842599
+   ],
+   "random_magnitudes": [
+    1.0,
+    1.0
+   ],
+   "checks": {
+    "positive_dose": true,
+    "random_dose_support": true,
+    "degeneration_increase_le_3pp": true,
+    "marker_change_ge_15percent": false,
+    "target_random_same_direction_half_effect": true,
+    "native_NLL_increase_le_point10": true
+   }
+  },
+  {
+   "policy": "bias_p2_ALL_landmark",
+   "prior_G3_pass": false,
+   "registered_G3_pass": false,
+   "registered_random_dose_support": true,
+   "random_dose_ratios": [
+    0.9126610703080729,
+    0.9804860899158633
+   ],
+   "random_magnitudes": [
+    2.0,
+    2.0
+   ],
+   "checks": {
+    "positive_dose": true,
+    "random_dose_support": true,
+    "degeneration_increase_le_3pp": true,
+    "marker_change_ge_15percent": false,
+    "target_random_same_direction_half_effect": false,
+    "native_NLL_increase_le_point10": false
+   }
+  },
+  {
+   "policy": "bias_p4_ALL_landmark",
+   "prior_G3_pass": false,
+   "registered_G3_pass": false,
+   "registered_random_dose_support": true,
+   "random_dose_ratios": [
+    0.9711678904924056,
+    0.9847053191732725
+   ],
+   "random_magnitudes": [
+    4.0,
+    4.0
+   ],
+   "checks": {
+    "positive_dose": true,
+    "random_dose_support": true,
+    "degeneration_increase_le_3pp": true,
+    "marker_change_ge_15percent": true,
+    "target_random_same_direction_half_effect": true,
+    "native_NLL_increase_le_point10": false
+   }
+  },
+  {
+   "policy": "bias_m0.5_ALL_landmark",
+   "prior_G3_pass": true,
+   "registered_G3_pass": false,
+   "registered_random_dose_support": false,
+   "random_dose_ratios": [
+    0.8179824206954946,
+    0.8185446365554069
+   ],
+   "random_magnitudes": [
+    0.5,
+    0.5
+   ],
+   "checks": {
+    "positive_dose": true,
+    "random_dose_support": false,
+    "degeneration_increase_le_3pp": true,
+    "marker_change_ge_15percent": true,
+    "target_random_same_direction_half_effect": true,
+    "native_NLL_increase_le_point10": true
+   }
+  },
+  {
+   "policy": "bias_m1_ALL_landmark",
+   "prior_G3_pass": false,
+   "registered_G3_pass": false,
+   "registered_random_dose_support": false,
+   "random_dose_ratios": [
+    0.9203651551968602,
+    0.8696227105460037
+   ],
+   "random_magnitudes": [
+    2.0,
+    2.0
+   ],
+   "checks": {
+    "positive_dose": true,
+    "random_dose_support": false,
+    "degeneration_increase_le_3pp": true,
+    "marker_change_ge_15percent": false,
+    "target_random_same_direction_half_effect": false,
+    "native_NLL_increase_le_point10": true
+   }
+  },
+  {
+   "policy": "bias_m2_ALL_landmark",
+   "prior_G3_pass": false,
+   "registered_G3_pass": false,
+   "registered_random_dose_support": false,
+   "random_dose_ratios": [
+    0.8264529447232496,
+    0.7808881571306695
+   ],
+   "random_magnitudes": [
+    2.0,
+    2.0
+   ],
+   "checks": {
+    "positive_dose": true,
+    "random_dose_support": false,
+    "degeneration_increase_le_3pp": true,
+    "marker_change_ge_15percent": false,
+    "target_random_same_direction_half_effect": false,
+    "native_NLL_increase_le_point10": true
+   }
+  },
+  {
+   "policy": "bias_m4_ALL_landmark",
+   "prior_G3_pass": false,
+   "registered_G3_pass": false,
+   "registered_random_dose_support": false,
+   "random_dose_ratios": [
+    0.8312444961295548,
+    0.7854155361803256
+   ],
+   "random_magnitudes": [
+    2.0,
+    2.0
+   ],
+   "checks": {
+    "positive_dose": true,
+    "random_dose_support": false,
+    "degeneration_increase_le_3pp": true,
+    "marker_change_ge_15percent": false,
+    "target_random_same_direction_half_effect": false,
+    "native_NLL_increase_le_point10": true
+   }
+  },
+  {
+   "policy": "force_p_ALL_landmark",
+   "prior_G3_pass": false,
+   "registered_G3_pass": false,
+   "registered_random_dose_support": true,
+   "random_dose_ratios": [
+    1.0263901205381816,
+    1.0281645423720933
+   ],
+   "random_magnitudes": [
+    0.0,
+    0.0
+   ],
+   "checks": {
+    "positive_dose": true,
+    "random_dose_support": true,
+    "degeneration_increase_le_3pp": true,
+    "marker_change_ge_15percent": false,
+    "target_random_same_direction_half_effect": true,
+    "native_NLL_increase_le_point10": false
+   }
+  },
+  {
+   "policy": "force_m_ALL_landmark",
+   "prior_G3_pass": false,
+   "registered_G3_pass": false,
+   "registered_random_dose_support": false,
+   "random_dose_ratios": [
+    0.8203482497967728,
+    0.7756086530809797
+   ],
+   "random_magnitudes": [
+    0.0,
+    0.0
+   ],
+   "checks": {
+    "positive_dose": true,
+    "random_dose_support": false,
+    "degeneration_increase_le_3pp": true,
+    "marker_change_ge_15percent": false,
+    "target_random_same_direction_half_effect": false,
+    "native_NLL_increase_le_point10": true
+   }
+  },
+  {
+   "policy": "reweight_p1_ALL_landmark",
+   "prior_G3_pass": true,
+   "registered_G3_pass": false,
+   "registered_random_dose_support": false,
+   "random_dose_ratios": [
+    0.8783607136519127,
+    0.9160506695219006
+   ],
+   "random_magnitudes": [
+    1.0,
+    1.0
+   ],
+   "checks": {
+    "positive_dose": true,
+    "random_dose_support": false,
+    "degeneration_increase_le_3pp": true,
+    "marker_change_ge_15percent": true,
+    "target_random_same_direction_half_effect": true,
+    "native_NLL_increase_le_point10": true
+   }
+  },
+  {
+   "policy": "reweight_p2_ALL_landmark",
+   "prior_G3_pass": false,
+   "registered_G3_pass": false,
+   "registered_random_dose_support": false,
+   "random_dose_ratios": [
+    0.8774488844979441,
+    0.9225534371444307
+   ],
+   "random_magnitudes": [
+    2.0,
+    2.0
+   ],
+   "checks": {
+    "positive_dose": true,
+    "random_dose_support": false,
+    "degeneration_increase_le_3pp": true,
+    "marker_change_ge_15percent": false,
+    "target_random_same_direction_half_effect": true,
+    "native_NLL_increase_le_point10": false
+   }
+  },
+  {
+   "policy": "reweight_m1_ALL_landmark",
+   "prior_G3_pass": true,
+   "registered_G3_pass": false,
+   "registered_random_dose_support": false,
+   "random_dose_ratios": [
+    0.8523164653879696,
+    1.1848117112783372
+   ],
+   "random_magnitudes": [
+    1.0,
+    2.0
+   ],
+   "checks": {
+    "positive_dose": true,
+    "random_dose_support": false,
+    "degeneration_increase_le_3pp": true,
+    "marker_change_ge_15percent": true,
+    "target_random_same_direction_half_effect": true,
+    "native_NLL_increase_le_point10": true
+   }
+  },
+  {
+   "policy": "reweight_m2_ALL_landmark",
+   "prior_G3_pass": false,
+   "registered_G3_pass": false,
+   "registered_random_dose_support": false,
+   "random_dose_ratios": [
+    0.8126770111780738,
+    0.7975027243825825
+   ],
+   "random_magnitudes": [
+    2.0,
+    2.0
+   ],
+   "checks": {
+    "positive_dose": true,
+    "random_dose_support": false,
+    "degeneration_increase_le_3pp": true,
+    "marker_change_ge_15percent": false,
+    "target_random_same_direction_half_effect": true,
+    "native_NLL_increase_le_point10": true
+   }
+  }
+ ],
+ "interpretation": "point-estimate dose selection only; off-band E-minus-M comparisons are unmatched diagnostics, not registered controls; no semantic steering claim",
+ "sha256": "4915666875f1f8f35bf65cecc6dd2d88e5d15d31376e50110b106361030388cf"
+}

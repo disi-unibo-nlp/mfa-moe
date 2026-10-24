@@ -1,0 +1,31 @@
+{
+ "schema": "overnight-measurement-chain-v2",
+ "binding": {
+  "manifest_sha256": "6b5aa286e46cb818969c939346f448a6577b307779041ec2d35d7fce0562f074",
+  "frame_sha256": "c8d56005fb77d164d17a558a2c53424b863112534cdf5f40850a19077201a993",
+  "price_sha256": "6a244abeed24210c36202bdfc6ba9401e0c055b53135438e6c2ddfd79418ad87",
+  "envelope_sha256": "79fb5210b6065bce2e865183d44e173dc787b15862cd7276fddd1481185e2889",
+  "recovery_provenance": {
+   "amendment_sha256": "ae2dc509e2951056e315322a6c9f887bfae07b74c82a9aac4dd7f63b40e3bada",
+   "context_adapter_sha256": "4c1aaea00014fdf8f12164c2f1a9ce070edccf70ca8aea83ffd3becc534f2f76",
+   "source_normalizer_sha256": "19dceced9aca5320540960bbf1987e8f1e57605cb1549a19e00a1e4d7985549f",
+   "source_frame_sha256": "6a8b55ff69995bb7337bb97a52f6f9e6b056bb9b2de75bb64830be1e20ffc2d7",
+   "source_enrollment_sha256": "7190b1dc34f8cc6e9aeac337dc66f993cd91ce139972112333f076887d4cb5ee",
+   "source_selection_sha256": "23758cee43febfc61a941024e2141554d3aef86bb91601e224b4ab61f48c00f6",
+   "source_units_sha256": "2270d9e9bbe6934a2ab0497e50bb93617e555171d38d3f2dd7f89fa070359579",
+   "enrolled_uid_order_sha256": "2e5bede303fa7bb046a8c621f95b5ff19c9f01a26ee89eae3557d1d2bec2fda1",
+   "normalized_records": 134,
+   "normalized_context_sha256": "0a38092042aee6a67e4782664aa4eed6a055223a8e37d950a5bbbb182c55a1d3",
+   "scientific_functions_unchanged": true
+  },
+  "wrapper_hashes": {
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/rate_overnight_semantics_fresh_adapter_v1.sbatch": "8132087b6104e10321455fd7ddacf516769ee225ae625211cbf8405290bb609b",
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/analyze_overnight_semantics_fresh_adapter_v1.sbatch": "d5825e980298ee3d1aec1c08a367f4975fd0b03a668cf4724e5ba45a80450886"
+  }
+ },
+ "reader_job": "59380006",
+ "analysis_job": "59380008",
+ "analysis_output": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/OVERNIGHT_FRESH_COMPARISON_ANALYSIS_v2",
+ "recovery_amendment_sha256": "ae2dc509e2951056e315322a6c9f887bfae07b74c82a9aac4dd7f63b40e3bada",
+ "sha256": "522a0d607562c01ae086b9b3c1f67cae6e2ae1331b60515c68463074a42e74f1"
+}

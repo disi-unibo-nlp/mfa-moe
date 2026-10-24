@@ -1,0 +1,10 @@
+{
+ "schema": "utility-generation-attachment-v4",
+ "proposal_sha256": "ce86e4bcaa9c5c4a12f9c9456f118662dccdb57ed355f952cabc9617a83152fa",
+ "manifest_sha256": "6b5aa286e46cb818969c939346f448a6577b307779041ec2d35d7fce0562f074",
+ "fresh_generation_dispatch_job": "59349585",
+ "reader_dispatch_job": "59379614",
+ "next_attachment_job": "59380075",
+ "pilot_operational_recovery_sha256": "383f1a2d5c7d18e09be5a364a5fb285f9a19ab242ad508ae91d48a487b0154b6",
+ "sha256": "167690db6434255887db7dede88c41ff09c22d4594691c05290a22626589e927"
+}

@@ -1,0 +1,43 @@
+{
+ "schema": "r3e-clean-b1-price-v1",
+ "status": "READY_CPU",
+ "preflight_seal": "379936ac93c90f7ebc119c5fee69ac8548c2f152defa458c28c921b583bbd610",
+ "driver_sha256": "76a8996f0503250c18c361c443b767b486ac2c7fca02a192677d76ba319c6202",
+ "sbatch_sha256": "33110ed3fe770378e6fc89ee58a13f07b0c78cf1b173c11f986362088ce221e7",
+ "workload": {
+  "clean_questions": 509,
+  "clean_families": 496,
+  "layer_pairs": 43,
+  "outer_folds": 5,
+  "repeats": 5,
+  "whole_topk_permutations": 20,
+  "within_token_class_shuffles": 20,
+  "bootstraps": 5000,
+  "sign_flips": 10000
+ },
+ "historical_anchor": {
+  "job_id": "59024489",
+  "state": "COMPLETED",
+  "elapsed_seconds": 270,
+  "cpus": 8,
+  "questions": 1510,
+  "outer_folds": 4,
+  "repeats": 5
+ },
+ "linear_projected_wall_seconds": 113.76655629139073,
+ "fourfold_stress_plus_setup_seconds": 755.0662251655629,
+ "slurm": {
+  "account": "iscrc_miosr",
+  "partition": "boost_usr_prod",
+  "qos": "normal",
+  "cpus": 8,
+  "memory": "64G",
+  "gpus": 0,
+  "wall_seconds": 1800
+ },
+ "max_core_hours": 4.0,
+ "max_gpu_hours": 0.0,
+ "dependency": "sealed R3E_CLEAN_PREFLIGHT_v1.json; existing frozen GPT A token cache",
+ "scope": "outcome-blind clean B1 observational refit; B4 feature freeze and correctness remain separate",
+ "sha256": "dfbeb78e186fb5a1061cd1bafd36affab4da5a05a8fca306ce1b1ee07bd39bc9"
+}

@@ -1,0 +1,24 @@
+{
+ "schema": "overnight-submit-receipt-v1",
+ "name": "cap-qualification",
+ "binding": {
+  "manifest_sha256": "f87b514ad8b7125e741391b36303491f8cf82f30d73e491347975d683d38f9aa",
+  "files": {
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/submit_overnight_operational_recovery_v3.py": "664c2dc72e83f683601a2209576db5890ad8c2f1f9938d2a2a5f9585dc530c04",
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/dispatch_overnight_readers_v1.py": "0c142175df5db52fdf00a85d0e8dd46099209a76c5161994b4279332d6c84a10",
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/run_mechanism_semantic_cap_recovery_v2.sbatch": "43a8d997377e82db81e7c5c9712df9213c14005a23a24c572f5af7fa03fad5f8",
+   "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/analyze_mechanism_semantic_cap_recovery_v2.sbatch": "c3647053e178b44c7239a59dba325370845ffc248fce90b8accee5e72b4427c4"
+  },
+  "previous_failed_qualification_job": "59346750",
+  "preservation": "Previous job failed at srun affinity before model launch; cancelled children had zero runtime. Same prompts, seeds, UIDs, caps and source bindings."
+ },
+ "arguments": [
+  "--time=01:00:00",
+  "--job-name=mechanism-cap-qual-affinity-r1",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/run_mechanism_semantic_cap_recovery_v2.sbatch"
+ ],
+ "job_id": "59347889",
+ "submission": "59347889",
+ "removed_parent_environment_keys": [],
+ "sha256": "c0c2bc720ad791d15dcb26a6a424f8b4872b99ec3da932da56936047a11a0d23"
+}

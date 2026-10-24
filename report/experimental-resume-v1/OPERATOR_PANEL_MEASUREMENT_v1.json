@@ -1,0 +1,45 @@
+{
+ "schema": "operator-panel-measurement-v1",
+ "plan_sha256": "3052666a270235e49d6cfa502776ef6c3b1658aadeddfaa6c4b154de5f4175bb",
+ "source_files": {
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/utility_outcomes_v3.py": "544b2facea68aa6f7e38eebaf0cf37f3440ef650a24c3fab1df6a05ceee87486",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/utility_outcomes_v3.sbatch": "fae498fc2cdeb92843b009e2f7eb4c56a90e77dc6b187b2bb94dcdc823252743",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/utility_scout_v1.py": "394ad3f840e2f9bae686059d703af1b7e9208589ecfee04759dee268309afb67",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/code/s1-9a61e32f48c04c24/moe_steer/score.py": "8df581d49908179ced31c5914aada3166983ac966927bab7020b816028b57613",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/code/s1-9a61e32f48c04c24/moe_steer/engine.py": "0214fa6a97927180964c0114a71b4c758bcc407fe30275df2c0a3a40748780d2",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/addenda/ordered/9727c10299b71e7a/moe_exp_src/moe_exp/correlation_pipeline/answer_equivalence.py": "5ed66ae640513141df97bfe6d8d21af9afe254230c1011db35c1237be4a5633a",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/addenda/ordered/9727c10299b71e7a/moe_exp_src/moe_exp/correlation_pipeline/outcomes.py": "e0335357188c10f69cdeefc6f974d3c4bcdac46c97c22ae734ef241179f21a83",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/addenda/ordered/9727c10299b71e7a/moe_exp_src/moe_exp/correlation_pipeline/scoring.py": "2b76e1c34ffc4176388590e04be4232bdb63c4b0904646db83ad7eabd0504f2d",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/addenda/ordered/9727c10299b71e7a/moe_exp_src/moe_exp/models/token_replay.py": "3e266f8322cd90c8cbc9bcbe9e4ff9cd81312b947187cd9ef0569004bfded460",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/operator_panel_outcomes_v1.py": "90201681eb2a128965181e3e91e676c0b1577251869753c3e9fd7209cc21f7f1",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/operator_panel_orchestration_v1.py": "45a8345831eecf223954e98f580d98625a11c5c1ee98513e1a0ba052b42258b1",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/operator_panel_cpu_v1.sbatch": "656538487ee104abfd65069cd7f2ae2cae1b663fefc8fda1cb6aaa1806582ee2",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/operator_panel_legacy_lengths_v1.py": "5b8ee7dabd65159f9b89acd68dd0dafc78d36e4d56aea1a58a85a78f8d39697b"
+ },
+ "question_table_sha256": "a0df904735d354251250fc3ec0ae78fe7378500eaa8b0d92dd5ad4479596d97a",
+ "grading_chain_plan_sha256": "de108d8736ea5969d2e03260c2e4bb1a18064d59dfc0ee4cb0588d8e3d6e0313",
+ "inference": {
+  "endpoints": [
+   "operational_correct",
+   "reasoning_tokens",
+   "tokens"
+  ],
+  "operators": [
+   "bias",
+   "force",
+   "reweight"
+  ],
+  "primary_comparisons": 9,
+  "bootstrap_replicates": 50000,
+  "bootstrap_seed": 20261005,
+  "alpha": 0.05,
+  "method": "Paired family bootstrap; simultaneous max absolute standardized mean deviation using original standard errors across all nine effects.",
+  "estimator": "Within-seed operator minus native; mean over two seeds then equal mean over families.",
+  "unknowns": "Identification bounds with accuracy in [0,1] and length in [0,16384]. No complete joint intervals with missing endpoints.",
+  "claim_limit": "Exploratory effects and uncertainty; no equivalence or accuracy-retention margin."
+ },
+ "reasoning": "Verified tokenizer </think> singleton; count generated IDs before first closing marker, excluding that marker. Report answer-region IDs and boundary status. Unclosed caps count generated reasoning inside the budget; unclosed natural stops have unknown region lengths.",
+ "accuracy": "Frozen strict/J1 scorer; naturally stopped strict-rejected answers get arm-blind J1. Caps and committed errors operationally wrong. Missing execution/unfinished grades unknown. Completed UNCERTAIN retains original operational-wrong convention and is disclosed.",
+ "supplement": "CPU-only A/B/C/fresh generated continuation lengths; 1024/1024/256/1024-token horizons; no pooling with original-prompt 16k endpoints.",
+ "sha256": "34600f41ebd956ae7a972487f2b28c9e6289a3d596521eeb220bee7e8cdb3751"
+}

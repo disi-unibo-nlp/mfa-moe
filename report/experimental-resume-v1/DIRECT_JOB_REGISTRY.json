@@ -1,0 +1,929 @@
+{
+  "schema": "experimental-resume-direct-slurm-jobs-v1",
+  "authorization": "RESOURCE_AUTHORIZATION_2026-10-02_v2.json",
+  "jobs": [
+    {
+      "job_id": 59109995,
+      "task": "r3d-readout-extended",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/forum/tests/r3_context/readout-results.v3.json"
+    },
+    {
+      "job_id": 59110273,
+      "task": "r3d-hash-audit",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/R3D_FROZEN_INPUT_AUDIT.json"
+    },
+    {
+      "job_id": 59110512,
+      "task": "native-parent-audit",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/NATIVE_PARENT_ELIGIBILITY_AUDIT.json"
+    },
+    {
+      "job_id": 59110653,
+      "task": "r3d-spec-audit",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/R3D_SPEC_AUDIT.json"
+    },
+    {
+      "job_id": 59110695,
+      "task": "native-parent-audit-v2",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/NATIVE_PARENT_ELIGIBILITY_AUDIT.json"
+    },
+    {
+      "job_id": 59110943,
+      "task": "r3d-readout-resume",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/forum/tests/r3_context/readout-results.v3.json"
+    },
+    {
+      "job_id": 59111185,
+      "task": "native-prefix-audit",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/NATIVE_PREFIX_CANDIDATE_AUDIT.json"
+    },
+    {
+      "job_id": 59111360,
+      "task": "r3d-anticipation-resume",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/forum/tests/r3_context/anticipation-results.json"
+    },
+    {
+      "job_id": 59115320,
+      "task": "r3d-anticipation-guard-1",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/forum/tests/r3_context/anticipation-guard-v1/job-59115320-end.json"
+    },
+    {
+      "job_id": 59115408,
+      "task": "r3d-anticipation-guard-2",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/forum/tests/r3_context/anticipation-guard-v1/job-59115408-end.json"
+    },
+    {
+      "job_id": 59115420,
+      "task": "r3d-anticipation-guard-3",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/forum/tests/r3_context/anticipation-guard-v1/job-59115420-end.json"
+    },
+    {
+      "job_id": 59115433,
+      "task": "r3d-anticipation-guard-4",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/forum/tests/r3_context/anticipation-guard-v1/job-59115433-end.json"
+    },
+    {
+      "job_id": 59115442,
+      "task": "r3d-anticipation-guard-5",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/forum/tests/r3_context/anticipation-guard-v1/job-59115442-end.json"
+    },
+    {
+      "job_id": 59115443,
+      "task": "r3d-anticipation-guard-6",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/forum/tests/r3_context/anticipation-guard-v1/job-59115443-end.json"
+    },
+    {
+      "job_id": 59111670,
+      "task": "discovery-examples",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/DISCOVERY_LABEL_EXAMPLES.json"
+    },
+    {
+      "job_id": 59112371,
+      "task": "judge-parity-fixtures",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/dense-judge-parity/FIXTURES.json"
+    },
+    {
+      "job_id": 59112590,
+      "task": "dense-judge-parity",
+      "unit": "GPU-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/dense-judge-parity/results-8e939bee-2341bac1/PARITY.json"
+    },
+    {
+      "job_id": 59112750,
+      "task": "dense-discovery-prepare",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/dense-discovery/UNITS.json"
+    },
+    {
+      "job_id": 59114230,
+      "task": "dense-discovery-labels",
+      "unit": "GPU-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/dense-discovery/results-84a85c92-b2633756/SUMMARY.json"
+    },
+    {
+      "job_id": 59114313,
+      "task": "dense-discovery-class-summary",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/dense-discovery/results-84a85c92-b2633756/CLASS_DYNAMICS.json"
+    },
+    {
+      "job_id": 59116442,
+      "task": "m9-matched-prefix-replay",
+      "unit": "GPU-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/m9-resume-v1/replay-63772b26-b56cf988/REPLAY.json"
+    },
+    {
+      "job_id": 59116916,
+      "task": "dense-discovery-native-routes",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/dense-discovery/route-profiles-84a85c92-40c3d3b0/SUMMARY.json"
+    },
+    {
+      "job_id": 59117029,
+      "task": "m9-matched-prefix-replay-frozen-tree",
+      "unit": "GPU-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/m9-resume-v1/replay-63772b26-b56cf988-tree9a61/REPLAY.json"
+    },
+    {
+      "job_id": 59117172,
+      "task": "dense-discovery-route-summary",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/dense-discovery/route-profiles-84a85c92-40c3d3b0/NATIVE_ROUTE_SUMMARY.json"
+    },
+    {
+      "job_id": 59117940,
+      "task": "transition-audit-fixtures",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/dense-discovery/TRANSITION_AUDIT_FIXTURES.json"
+    },
+    {
+      "job_id": 59118998,
+      "task": "m9-deterministic-replay-adjudication",
+      "unit": "GPU-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/m9-resume-v1/replay-deterministic-63772b26-ea7f3a93/REPLAY.json"
+    },
+    {
+      "job_id": 59120703,
+      "task": "m9-batch-divergence-diagnostic",
+      "unit": "GPU-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/m9-resume-v1/replay-diagnostic-63772b26-eab702b3/REPLAY.json"
+    },
+    {
+      "job_id": 59120873,
+      "task": "transition-candidates-unlabeled",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/dense-discovery/TRANSITION_AUDIT_CANDIDATES.json"
+    },
+    {
+      "job_id": 59120940,
+      "task": "transition-rating-complete-price",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/TRANSITION_RATING_COMPLETE_PRICE.json"
+    },
+    {
+      "job_id": 59121002,
+      "task": "transition-rating-complete-price-recovery",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/TRANSITION_RATING_COMPLETE_PRICE.json"
+    },
+    {
+      "job_id": 59121048,
+      "task": "transition-rating-complete-price-v2",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/TRANSITION_RATING_COMPLETE_PRICE_v2.json"
+    },
+    {
+      "job_id": 59121106,
+      "task": "transition-rating-complete-price-v3",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/TRANSITION_RATING_COMPLETE_PRICE_v3.json"
+    },
+    {
+      "job_id": 59121216,
+      "task": "transition-two-reader-audit-v2",
+      "unit": "GPU-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/dense-discovery/ratings-f5b2e28c-74c16a5d/SUMMARY.json"
+    },
+    {
+      "job_id": 59121293,
+      "task": "transition-detector-discovery-audit",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/TRANSITION_DETECTOR_DISCOVERY_AUDIT.json"
+    },
+    {
+      "job_id": 59121394,
+      "task": "native-fixed-window-routing-motion-first-attempt",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/dense-discovery/fixed-window-routes-84a85c92-363dbe1b/SUMMARY.json"
+    },
+    {
+      "job_id": 59121495,
+      "task": "native-fixed-window-routing-motion-recovery",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/dense-discovery/fixed-window-routes-84a85c92-363dbe1b/SUMMARY.json"
+    },
+    {
+      "job_id": 59121502,
+      "task": "native-routing-motion-figure",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/dense-discovery/fixed-window-routes-84a85c92-363dbe1b/ROUTING_MOTION_FIGURE.json"
+    },
+    {
+      "job_id": 59121573,
+      "task": "native-routing-motion-intervals",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/dense-discovery/fixed-window-routes-84a85c92-363dbe1b/MOTION_UNCERTAINTY.json"
+    },
+    {
+      "job_id": 59121759,
+      "task": "dense-discovery-class-figure",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/dense-discovery/results-84a85c92-b2633756/CLASS_DYNAMICS_FIGURE.json"
+    },
+    {
+      "job_id": 59172945,
+      "task": "r3d-qwen-sidecar-first-attempt",
+      "unit": "CPU core-h"
+    },
+    {
+      "job_id": 59173234,
+      "task": "r3d-qwen-sidecar",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/resume-v1/r3d-anticipation-qwen-shard-v1/result.json"
+    },
+    {
+      "job_id": 59180550,
+      "task": "r3d-gpt-destination-sidecar",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/resume-v1/r3d-anticipation-gpt-dest-shard-v1/result.json"
+    },
+    {
+      "job_id": 59176972,
+      "task": "causal-micro-screen-qual4-v1-failed",
+      "unit": "GPU-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/micro-screen-qual4-837dd4d99ba79a03/BINDING.json"
+    },
+    {
+      "job_id": 59177790,
+      "task": "causal-micro-screen-qual4-v2-failed",
+      "unit": "GPU-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/micro-screen-qual4-6dbc0af8df340880/BINDING.json"
+    },
+    {
+      "job_id": 59180099,
+      "task": "causal-micro-screen-qual4-v3",
+      "unit": "GPU-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/micro-screen-qual4-ac4c9651e71fe067/SUMMARY.json"
+    },
+    {
+      "job_id": 59181974,
+      "task": "causal-micro-screen-first-stage",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/micro-screen-first-stage-qual4-ac4c9651e71fe067/FIRST_STAGE.json"
+    },
+    {
+      "job_id": 59182208,
+      "task": "causal-micro-screen-blind-frame",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/micro-screen-blind-qual4-ac4c9651e71fe067/BLIND_FRAME.json"
+    },
+    {
+      "job_id": 59179022,
+      "task": "v22-context-scout-price-v1",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/TRANSITION_V22_QWEN_12_SCOUT_PRICE.json"
+    },
+    {
+      "job_id": 59180154,
+      "task": "v22-context-scout-price-v2",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/TRANSITION_V22_QWEN_12_SCOUT_PRICE_v2.json"
+    },
+    {
+      "job_id": 59180589,
+      "task": "v22-context-scout-ratings",
+      "unit": "GPU-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/dense-discovery/ratings-v22-qwen-scout-d8f50b7e-06f8fabd/SUMMARY.json"
+    },
+    {
+      "job_id": 59183247,
+      "task": "v22-full-prefix-audit-price-v2",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/TRANSITION_V22_FULL_PREFIX_START_RATING_PRICE_v2.json"
+    },
+    {
+      "job_id": 59186342,
+      "task": "v22-full-prefix-audit-first-slice",
+      "unit": "GPU-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/dense-discovery/ratings-v22-fullprefix-v2-6c10499b-1ef8863f/SUMMARY.json"
+    },
+    {
+      "job_id": 59181590,
+      "task": "gptoss-start-preprice-import-failure",
+      "unit": "CPU core-h"
+    },
+    {
+      "job_id": 59181964,
+      "task": "gptoss-start-preprice-v1-invalid-count",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/GPTOSS_START_PILOT_PREPRICE_v1.json"
+    },
+    {
+      "job_id": 59183252,
+      "task": "gptoss-start-preprice-v2-scout-only",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/GPTOSS_START_PILOT_PREPRICE_v2.json"
+    },
+    {
+      "job_id": 59185128,
+      "task": "gptoss-start-preprice-v3-all-prefixes",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/GPTOSS_START_PILOT_PREPRICE_v3.json"
+    },
+    {
+      "job_id": 59186768,
+      "task": "candidate-veto-adapted-first-attempt",
+      "unit": "CPU core-h"
+    },
+    {
+      "job_id": 59186966,
+      "task": "candidate-veto-adapted-second-attempt",
+      "unit": "CPU core-h"
+    },
+    {
+      "job_id": 59187229,
+      "task": "candidate-veto-adapted-exploratory",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/CANDIDATE_VETO_ADAPTED_EXPLORATORY_v1.json"
+    },
+    {
+      "job_id": 59189594,
+      "task": "native-prefix-semantic-veto-price",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/NATIVE_PREFIX_SEMANTIC_VETO_PRICE_v0.json"
+    },
+    {
+      "job_id": 59185125,
+      "task": "micro-blind-rating-price-v1-superseded",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/CAUSAL_MICROSCREEN_BLIND_RATING_PRICE_v1.json"
+    },
+    {
+      "job_id": 59186670,
+      "task": "micro-blind-rating-price-v2-superseded",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/CAUSAL_MICROSCREEN_BLIND_RATING_PRICE_v2.json"
+    },
+    {
+      "job_id": 59187379,
+      "task": "micro-blind-rating-price-v2p1",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/CAUSAL_MICROSCREEN_BLIND_RATING_PRICE_v2.1.json"
+    },
+    {
+      "job_id": 59188622,
+      "task": "micro-blind-rating-price-v2p2",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/CAUSAL_MICROSCREEN_BLIND_RATING_PRICE_v2.2.json"
+    },
+    {
+      "job_id": 59187030,
+      "task": "native-only-replay-v1-table-failure",
+      "unit": "GPU-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/native-only-replay-4001194242cd564b/BINDING.json"
+    },
+    {
+      "job_id": 59189256,
+      "task": "native-only-replay-v2-table-rebuild-failure",
+      "unit": "GPU-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/native-only-replay-3f05cdc9f56c7002/BINDING.json"
+    },
+    {
+      "job_id": 59188107,
+      "task": "micro-blind-rating-normal-v2p1-held",
+      "unit": "GPU-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/micro-screen-semantic-v2p1-27cd70792e1ae110/SUMMARY.json"
+    },
+    {
+      "job_id": 59186394,
+      "task": "r3d-qwen-sidecar-verifier-v1-failed",
+      "unit": "CPU core-h"
+    },
+    {
+      "job_id": 59187091,
+      "task": "r3d-qwen-sidecar-verifier-v2",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/R3D_SIDECAR_VERIFY_QWEN_v2.json"
+    },
+    {
+      "job_id": 59188564,
+      "task": "r3d-qwen-sidecar-guarded-merge",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/R3D_SIDECAR_MERGE_QWEN_v1.json"
+    },
+    {
+      "job_id": 59186772,
+      "task": "r3e-clean-fold-preflight",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/R3E_CLEAN_PREFLIGHT_v1.json"
+    },
+    {
+      "job_id": 59187838,
+      "task": "r3e-clean-b1-cache-path-failure",
+      "unit": "CPU core-h"
+    },
+    {
+      "job_id": 59189035,
+      "task": "r3e-clean-b1-v2",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/resume-v1/r3e-b1-clean-v2/result.json"
+    },
+    {
+      "job_id": 59185118,
+      "task": "x3-cost-timing-only-pilot",
+      "unit": "GPU-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/resume-v1/x3-timing-pilot-v1/results-8f7c67d6b2a06e42/shard-0.status.json"
+    },
+    {
+      "job_id": 59188318,
+      "task": "counterfactual-qualification-cpu-prep",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/COUNTERFACTUAL_QUALIFICATION_MANIFEST_v1.json"
+    },
+    {
+      "job_id": 59189255,
+      "task": "counterfactual-routing-loss-qualification-v2",
+      "unit": "GPU-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/counterfactual-qualification-b7c4c5273ab6fdc7/QUALIFICATION.json"
+    },
+    {
+      "job_id": 59189980,
+      "task": "native-only-replay-v3",
+      "unit": "GPU-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/native-only-replay-4b4eda23ab7747ec/SUMMARY.json"
+    },
+    {
+      "job_id": 59189744,
+      "task": "micro-blind-rating-debug-v2p2",
+      "unit": "GPU-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/micro-screen-semantic-v22-1e56570b050828e3/SUMMARY.json"
+    },
+    {
+      "job_id": 59193843,
+      "task": "native-prefix-semantic-veto-scout-v0",
+      "unit": "GPU-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/dense-discovery/ratings-native-veto-scout-v0-d8f50b7e-8d2b37d2/SUMMARY.json"
+    },
+    {
+      "job_id": 59194320,
+      "task": "approach-boundary-class-proxy-shortlist-v1",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/approach-boundary-proxy-v1/RESULT.json"
+    },
+    {
+      "job_id": 59194916,
+      "task": "x3-cost-timing-only-pilot-v4",
+      "unit": "GPU-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/resume-v1/x3-timing-pilot-v1/results-8f7c67d6b2a06e42-v4/shard-0.status.json"
+    },
+    {
+      "job_id": 59196354,
+      "task": "score-api-calibration-v3",
+      "unit": "GPU-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/score-api-calibration-b4aa1c878c25fe32/QUALIFICATION.json"
+    },
+    {
+      "job_id": 59197189,
+      "task": "r3e-clean-b4-features-smoke-v2",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/resume-v1/r3e-b4-features-v2/FEATURES_FROZEN_B4_smoke.json"
+    },
+    {
+      "job_id": 59197144,
+      "task": "discovery-evidence-snapshot-v2",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/DISCOVERY_EVIDENCE_SNAPSHOT_v2.json"
+    },
+    {
+      "job_id": 59197523,
+      "task": "discovery-evidence-snapshot-v2-recovery",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/DISCOVERY_EVIDENCE_SNAPSHOT_v2.json"
+    },
+    {
+      "job_id": 59197542,
+      "task": "r3e-clean-b4-features-full-v2",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/resume-v1/r3e-b4-features-v2/FEATURES_FROZEN_B4.json"
+    },
+    {
+      "job_id": 59198677,
+      "task": "r3e-clean-b4-cv-smoke-v1",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/resume-v1/r3e-cv-clean-v1/smoke.json"
+    },
+    {
+      "job_id": 59198802,
+      "task": "r3e-clean-b4-cv-full-v1",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/resume-v1/r3e-cv-clean-v1/full.json"
+    },
+    {
+      "job_id": 59199203,
+      "task": "r3e-clean-b4-features-confirm-exclusion-smoke-v3",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/resume-v1/r3e-b4-features-confirm-exclusion-v3/FEATURES_FROZEN_B4_smoke.json"
+    },
+    {
+      "job_id": 59198795,
+      "task": "score-api-calibration-v4-serial",
+      "unit": "GPU-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/score-api-serial-e7554bd7efceb410/QUALIFICATION.json"
+    },
+    {
+      "job_id": 59197280,
+      "task": "native-prefix-semantic-veto-full-v0",
+      "unit": "GPU-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/dense-discovery/ratings-native-veto-full-v0-6c10499b-191f97fe/SUMMARY.json"
+    },
+    {
+      "job_id": 59197533,
+      "task": "causal-batch-invariant-qualification-v1",
+      "unit": "GPU-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/batch-invariant-qual-db182a1debc7465c/SUMMARY.json"
+    },
+    {
+      "job_id": 59198296,
+      "task": "causal-batch-invariant-qualification-audit-v1",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/CAUSAL_BATCH_INVARIANT_QUAL_AUDIT_v1.json"
+    },
+    {
+      "job_id": 59199103,
+      "task": "transition-enrichment-count-price-v0",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/TRANSITION_ENRICHMENT_COUNT_PRICE_v0.json"
+    },
+    {
+      "job_id": 59199796,
+      "task": "r3e-clean-b4-features-confirm-exclusion-full-v3",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/resume-v1/r3e-b4-features-confirm-exclusion-v3/FEATURES_FROZEN_B4.json"
+    },
+    {
+      "job_id": 59199073,
+      "task": "native-prefix-veto-all-fire-cost-audit-v0",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/NATIVE_VETO_ALL_FIRE_BURDEN_v0.json"
+    },
+    {
+      "job_id": 59199245,
+      "task": "full-prefix-reader-agreed-eligible-pool-v0",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/dense-discovery/FULLPREFIX_READER_AGREED_ELIGIBLE_POOL_v0.json"
+    },
+    {
+      "job_id": 59199761,
+      "task": "gptoss-start-parity-pilot-price-v1",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/GPTOSS_START_PILOT_PRICE_v1.json"
+    },
+    {
+      "job_id": 59199929,
+      "task": "gptoss-start-parity-pilot-v1",
+      "unit": "GPU-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/dense-discovery/ratings-gptoss-start-pilot-v1-18a7f804-eda3cc45/RESULTS.json"
+    },
+    {
+      "job_id": 59200002,
+      "task": "causal-micro-serial-engine-qualification-v1",
+      "unit": "GPU-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/micro-serial-qual-68670e1dcdb8f3a2/SUMMARY.json"
+    },
+    {
+      "job_id": 59200254,
+      "task": "causal-micro-serial-engine-qualification-audit-v1",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/CAUSAL_MICRO_SERIAL_QUAL_AUDIT_v1.json"
+    },
+    {
+      "job_id": 59200261,
+      "task": "candidate-veto-prefix-only-cpu-screen-v1",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/CANDIDATE_VETO_FULLPREFIX_DISCOVERY_v1.json"
+    },
+    {
+      "job_id": 59200183,
+      "task": "r3e-postprimary-fixed-exploratory-diagnostic-v1",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/resume-v1/r3e-postprimary-diagnostics-v1/result.json"
+    },
+    {
+      "job_id": 59200275,
+      "task": "measurement-evidence-snapshot-v3",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/MEASUREMENT_EVIDENCE_SNAPSHOT_v3.json"
+    },
+    {
+      "job_id": 59200701,
+      "task": "r3e-clean-b4-cv-confirm-exclusion-smoke-v1",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/resume-v1/r3e-cv-clean-confirm-v1/smoke.json"
+    },
+    {
+      "job_id": 59200800,
+      "task": "r3e-clean-b4-cv-confirm-exclusion-full-v1",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/resume-v1/r3e-cv-clean-confirm-v1/full.json"
+    },
+    {
+      "job_id": 59201047,
+      "task": "r3d-gpt-destination-sidecar-verifier-v2",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/R3D_SIDECAR_VERIFY_GPT_DEST_v2.json"
+    },
+    {
+      "job_id": 59201091,
+      "task": "r3d-gpt-destination-sidecar-guarded-merge-v1",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/R3D_SIDECAR_MERGE_GPT_DEST_v1.json"
+    },
+    {
+      "job_id": 59200963,
+      "task": "approach-supported-expert-rerank-v2-env-failure",
+      "unit": "CPU core-h"
+    },
+    {
+      "job_id": 59201103,
+      "task": "approach-supported-expert-rerank-v2",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/approach-boundary-supported-v2/RESULT.json"
+    },
+    {
+      "job_id": 59201139,
+      "task": "gptoss-expanded-start-panel-price-v2",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/GPTOSS_START_PANEL_PRICE_v2.json"
+    },
+    {
+      "job_id": 59201541,
+      "task": "gptoss-expanded-start-panel-v2",
+      "unit": "GPU-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/dense-discovery/ratings-gptoss-start-panel-v2-9e81a6b6/SUMMARY.json"
+    },
+    {
+      "job_id": 59201455,
+      "task": "within-sentence-prefix-timing-inventory-env-failure",
+      "unit": "CPU core-h"
+    },
+    {
+      "job_id": 59201714,
+      "task": "within-sentence-prefix-timing-inventory-v0",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/WITHIN_SENTENCE_TIMING_INVENTORY_v0.json"
+    },
+    {
+      "job_id": 59201923,
+      "task": "r3e-b4-precision-smoke-v1-fold-failure",
+      "unit": "CPU core-h"
+    },
+    {
+      "job_id": 59202169,
+      "task": "r3e-b4-precision-smoke-v2",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/resume-v1/r3e-b4-precision-v2/smoke.json"
+    },
+    {
+      "job_id": "59202240_0",
+      "task": "r3e-b4-precision-v2-shard-00",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/resume-v1/r3e-b4-precision-v2/shard-00.json"
+    },
+    {
+      "job_id": "59202240_1",
+      "task": "r3e-b4-precision-v2-shard-01",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/resume-v1/r3e-b4-precision-v2/shard-01.json"
+    },
+    {
+      "job_id": "59202240_2",
+      "task": "r3e-b4-precision-v2-shard-02",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/resume-v1/r3e-b4-precision-v2/shard-02.json"
+    },
+    {
+      "job_id": "59202240_3",
+      "task": "r3e-b4-precision-v2-shard-03",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/resume-v1/r3e-b4-precision-v2/shard-03.json"
+    },
+    {
+      "job_id": "59202240_4",
+      "task": "r3e-b4-precision-v2-shard-04",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/resume-v1/r3e-b4-precision-v2/shard-04.json"
+    },
+    {
+      "job_id": "59202240_5",
+      "task": "r3e-b4-precision-v2-shard-05",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/resume-v1/r3e-b4-precision-v2/shard-05.json"
+    },
+    {
+      "job_id": "59202240_6",
+      "task": "r3e-b4-precision-v2-shard-06",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/resume-v1/r3e-b4-precision-v2/shard-06.json"
+    },
+    {
+      "job_id": "59202240_7",
+      "task": "r3e-b4-precision-v2-shard-07",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/resume-v1/r3e-b4-precision-v2/shard-07.json"
+    },
+    {
+      "job_id": "59202240_8",
+      "task": "r3e-b4-precision-v2-shard-08",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/resume-v1/r3e-b4-precision-v2/shard-08.json"
+    },
+    {
+      "job_id": "59202240_9",
+      "task": "r3e-b4-precision-v2-shard-09",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/resume-v1/r3e-b4-precision-v2/shard-09.json"
+    },
+    {
+      "job_id": "59202240_10",
+      "task": "r3e-b4-precision-v2-shard-10",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/resume-v1/r3e-b4-precision-v2/shard-10.json"
+    },
+    {
+      "job_id": "59202240_11",
+      "task": "r3e-b4-precision-v2-shard-11",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/resume-v1/r3e-b4-precision-v2/shard-11.json"
+    },
+    {
+      "job_id": "59202240_12",
+      "task": "r3e-b4-precision-v2-shard-12",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/resume-v1/r3e-b4-precision-v2/shard-12.json"
+    },
+    {
+      "job_id": "59202240_13",
+      "task": "r3e-b4-precision-v2-shard-13",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/resume-v1/r3e-b4-precision-v2/shard-13.json"
+    },
+    {
+      "job_id": "59202240_14",
+      "task": "r3e-b4-precision-v2-shard-14",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/resume-v1/r3e-b4-precision-v2/shard-14.json"
+    },
+    {
+      "job_id": "59202240_15",
+      "task": "r3e-b4-precision-v2-shard-15",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/resume-v1/r3e-b4-precision-v2/shard-15.json"
+    },
+    {
+      "job_id": "59202240_16",
+      "task": "r3e-b4-precision-v2-shard-16",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/resume-v1/r3e-b4-precision-v2/shard-16.json"
+    },
+    {
+      "job_id": "59202240_17",
+      "task": "r3e-b4-precision-v2-shard-17",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/resume-v1/r3e-b4-precision-v2/shard-17.json"
+    },
+    {
+      "job_id": "59202240_18",
+      "task": "r3e-b4-precision-v2-shard-18",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/resume-v1/r3e-b4-precision-v2/shard-18.json"
+    },
+    {
+      "job_id": "59202240_19",
+      "task": "r3e-b4-precision-v2-shard-19",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/resume-v1/r3e-b4-precision-v2/shard-19.json"
+    },
+    {
+      "job_id": 59202682,
+      "task": "r3e-b4-precision-v2-aggregate",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/resume-v1/r3e-b4-precision-v2/summary.json"
+    },
+    {
+      "job_id": 59202685,
+      "task": "within-sentence-start-rating-price-v1",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/WITHIN_SENTENCE_START_RATING_PRICE_v1.json"
+    },
+    {
+      "job_id": 59203153,
+      "task": "causal-batched-neighbor-qualification-v1",
+      "unit": "GPU-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/micro-neighbor-qual-e0c498b65dce4dc7/SUMMARY.json"
+    },
+    {
+      "job_id": 59203204,
+      "task": "causal-batched-neighbor-qualification-audit-v1",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/CAUSAL_BATCHED_NEIGHBOR_QUAL_AUDIT_v1.json"
+    },
+    {
+      "job_id": 59203262,
+      "task": "within-sentence-qwen-audit-v1",
+      "unit": "GPU-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/dense-discovery/ratings-within-sentence-v1-ed8522b7/SUMMARY.json"
+    },
+    {
+      "job_id": 59203268,
+      "task": "within-sentence-qwen-audit-v1-duplicate-cancelled",
+      "unit": "GPU-h"
+    },
+    {
+      "job_id": 59203778,
+      "task": "joint-reader-exact-pool-v1-host-guard-failure",
+      "unit": "CPU core-h"
+    },
+    {
+      "job_id": 59203686,
+      "task": "r3e-b4-precision-v3-aggregate",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/resume-v1/r3e-b4-precision-v3/summary.json"
+    },
+    {
+      "job_id": 59203918,
+      "task": "joint-reader-exact-pool-v1",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/dense-discovery/JOINT_QWEN_NATIVE_EXACT_POOL_v1.json"
+    },
+    {
+      "job_id": 59204242,
+      "task": "eligible-causal-micro-screen-v2",
+      "unit": "GPU-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/eligible-micro-serial-v2-0f9dc13adfcae354/SUMMARY.json"
+    },
+    {
+      "job_id": 59204384,
+      "task": "causal-batched-neighbor-qualification-audit-v2-preflight-failure",
+      "unit": "CPU core-h"
+    },
+    {
+      "job_id": 59204381,
+      "task": "approach-online-gate-discovery-v1",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/APPROACH_ONLINE_GATE_DISCOVERY_v1.json"
+    },
+    {
+      "job_id": 59204465,
+      "task": "x3-native-label-density-price-v1",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/X3_LABEL_DENSITY_PROJECTION_v1.json"
+    },
+    {
+      "job_id": 59204536,
+      "task": "causal-batched-neighbor-qualification-audit-v3",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/CAUSAL_BATCHED_NEIGHBOR_QUAL_AUDIT_v2.json"
+    },
+    {
+      "job_id": 59205653,
+      "task": "eligible-expert-deactivation-screen-v1",
+      "unit": "GPU-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/claude-analysis-2026-09-24/steering-v1/runs/routing-control-v1/eligible-deactivation-serial-v1-86582a4de3c16c0c/SUMMARY.json"
+    },
+    {
+      "job_id": 59206783,
+      "task": "r3d-qwen-sidecar-guarded-merge-v2",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/R3D_SIDECAR_MERGE_QWEN_v2.json"
+    },
+    {
+      "job_id": 59206978,
+      "task": "r3d-gpt-destination-sidecar-guarded-merge-v2",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/R3D_SIDECAR_MERGE_GPT_DEST_v2.json"
+    },
+    {
+      "job_id": 59207468,
+      "task": "r3d-postmerge-inventory-audit-v1-unexpected-predictions-failure",
+      "unit": "CPU core-h"
+    },
+    {
+      "job_id": 59207811,
+      "task": "r3d-postmerge-inventory-audit-v2",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/R3D_MERGED_INVENTORY_AUDIT_v2.json"
+    },
+    {
+      "job_id": 59208033,
+      "task": "r3d-finalization-after-merge-v1",
+      "unit": "CPU core-h",
+      "artifact": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/R3D_FINALIZATION_AFTER_MERGE_v1.json"
+    }
+  ]
+}

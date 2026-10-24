@@ -1,0 +1,41 @@
+{
+  "attention": "FLASH_ATTN",
+  "checkpoint": "Qwen/Qwen3-30B-A3B",
+  "config_files": {
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/cache/hf/hub/models--Qwen--Qwen3-30B-A3B/snapshots/ad44e777bcd18fa416d9da3bd8f70d33ebb85d39/config.json": "2850ddb3bf7aecad20b611e2d44f3077fc8193f4827c93beddd4c02ad63c2297",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/cache/hf/hub/models--Qwen--Qwen3-30B-A3B/snapshots/ad44e777bcd18fa416d9da3bd8f70d33ebb85d39/model.safetensors.index.json": "df0d481ec595c55a0ba58426d517390c6214a566ec4ff1c8fc4bbce9f57b3c24",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/cache/hf/hub/models--Qwen--Qwen3-30B-A3B/snapshots/ad44e777bcd18fa416d9da3bd8f70d33ebb85d39/tokenizer.json": "aeb13307a71acd8fe81861d94ad54ab689df773318809eed3cbe794b4492dae4",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/cache/hf/hub/models--Qwen--Qwen3-30B-A3B/snapshots/ad44e777bcd18fa416d9da3bd8f70d33ebb85d39/tokenizer_config.json": "d5d09f07b48c3086c508b30d1c9114bd1189145b74e982a265350c923acd8101"
+  },
+  "engine_changes": [
+    "single request",
+    "eager",
+    "no prefix cache",
+    "no speculation"
+  ],
+  "expected_routed_layers": 48,
+  "experts": 128,
+  "extra_args": [],
+  "family": "qwen3_moe",
+  "key": "qwen330b",
+  "language_model_only": false,
+  "local_path": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/cache/hf/hub/models--Qwen--Qwen3-30B-A3B/snapshots/ad44e777bcd18fa416d9da3bd8f70d33ebb85d39",
+  "native_context_limit": 40960,
+  "native_k": 8,
+  "reasoning_effort": null,
+  "reasoning_parser": "qwen3",
+  "revision": "ad44e777bcd18fa416d9da3bd8f70d33ebb85d39",
+  "routed_layer_map": "BOUND_BY_WORKER_QUALIFICATION",
+  "sampler": {
+    "min_p": 0.0,
+    "temperature": 0.6,
+    "top_k": 20,
+    "top_p": 0.95
+  },
+  "schema": "verification-model-v3",
+  "sha256": "1a9089b1c6d57729e446e3af7f1783a8281a462241c0306d3336c758c2f7f89d",
+  "shared_paths": "NATIVE_UNCHANGED",
+  "speculation": "DISABLED_FOR_TIMING_QUALIFICATION",
+  "template_kwargs": {},
+  "weight_semantics": "native dispatched weights; do not assume unit mass"
+}

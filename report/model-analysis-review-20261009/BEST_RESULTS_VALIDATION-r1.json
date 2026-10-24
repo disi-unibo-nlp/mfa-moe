@@ -1,0 +1,39 @@
+{
+  "schema": "paper-best-results-validation-v1",
+  "observed_utc": "2026-10-09T17:03:29.217140+00:00",
+  "status": "NUMERIC_AND_PDF_CHECKS_PASS_VISUAL_REVIEW_PENDING",
+  "pages": 135,
+  "build_receipt": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/cl-paper-best-results-20261009-r2/BUILD.json",
+  "build_receipt_sha256": "45ea9451132a32eb12ff347b8f2506c122eea3caa07f4f3733251402e28f169e",
+  "pdf_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/cl-paper-best-results-20261009-r2/output/main.pdf",
+  "pdf_sha256": "1e852ca1eadc18b7d99f2657e90614964352e8c0714eab0bb8d9707e4f8bd48d",
+  "readout_rows_matched_original": 7,
+  "anticipation_rows_matched_original": 22,
+  "selection_cells_matched_original": 105,
+  "all_seven_selection_models": true,
+  "v2_source_bindings_unchanged": 156,
+  "scientific_files_preserved": 35,
+  "operational_files_preserved": 29,
+  "figures_manifest_sha256": "13e3d6190d17bc5fbd9155ae4a50c5200e8ae553f87271dec5e37c2ef369bbf8",
+  "off_page_blocks": [],
+  "undefined_references_or_missing_glyphs": false,
+  "rendered_page_files": {
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/cl-paper-best-results-20261009-r2/visual/page-1.png": "8a55152e33e67989d8cab84aa4d719b64f0e21e618f57167dcaa56a8bdb69893",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/cl-paper-best-results-20261009-r2/visual/page-4.png": "87814895527b76e7532c237cff4e869a2fbff7f662b2bd0caa3fcf99eb62a86f",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/cl-paper-best-results-20261009-r2/visual/page-5.png": "30806a5820b9350a366b132461b7092c07e36a7c22b3ae1bfa9bde63509fd028",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/cl-paper-best-results-20261009-r2/visual/page-7.png": "1b5d204198d7b2978175fe5fccb461da4e22342688aa840d6464e8ff0ee9e497",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/cl-paper-best-results-20261009-r2/visual/page-66.png": "c0238cde473fba78de9da23d8d450e095bdcb1a11e6593efed5af7b8dbb1ea3b",
+    "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/cl-paper-best-results-20261009-r2/visual/page-67.png": "a4366ca46161475d8995e24d2383fc8e465eace6d956dd37d561e13fdb54fd87"
+  },
+  "rendered_pages": [
+    1,
+    4,
+    5,
+    7,
+    66,
+    67
+  ],
+  "new_scientific_computation": false,
+  "scientific_dispatch": "NONE",
+  "script_sha256": "c252e134be6d1a20d2e4c1d64f8f5009882603aa0950809188d4df9ff61c7d00"
+}

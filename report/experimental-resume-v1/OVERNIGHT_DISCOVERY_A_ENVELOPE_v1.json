@@ -1,0 +1,23 @@
+{
+ "schema": "overnight-complete-resource-envelope-v1",
+ "lane": "A",
+ "manifest_sha256": "9b714fe1091f1d16e565bc4edd3321c4aa1559b7bcdadbb56755f8835f190723",
+ "generation_price_sha256": "c30634fea8484ab9daf2b0da692f11d9388d6c9dca5f114ffa8a0adf0613ae63",
+ "generation_gpu_hours": 16.15289835802714,
+ "semantic_measurement": {
+  "rows": 128,
+  "ratings": 256,
+  "max_prompt_tokens_each": 48128,
+  "rating_output_cap": 1024,
+  "jobs_upper_bound": 2,
+  "max_wall_seconds": 7200,
+  "prior_price_sha256": "497b2e8f57646826c3e27d3876b512c93f8ebaf14ef85dc64997a6b84f0ce4d6",
+  "measurement_gpu_hour_ceiling": 7.24,
+  "scope": "Upper bound using full49152-token reader context; exact generated-frame price required before rating. Two readers,25percent repeat work,recovery loads and shutdown included."
+ },
+ "total_generation_plus_semantic_gpu_hours": 23.39289835802714,
+ "authorization": "RESOURCE_AUTHORIZATION_2026-10-02_v2.json; user approved parallel implementation2026-10-04",
+ "dense_labels": "Separately priced secondary stage; no unpriced GPU labeling submission.",
+ "status": "PASS_COMPLETE_GENERATION_AND_SEMANTIC_ENVELOPE",
+ "sha256": "b9a5334ecb10db09629d43970a748cfac02851392b417c8887985344defffbad"
+}

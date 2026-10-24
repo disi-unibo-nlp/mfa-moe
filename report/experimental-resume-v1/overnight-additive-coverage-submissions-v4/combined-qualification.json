@@ -1,0 +1,20 @@
+{
+ "schema": "overnight-submit-receipt-v1",
+ "name": "combined-qualification",
+ "binding": {
+  "amendment_sha256": "1d6f34dde5f7a7406d3aede0b35e5a7d5285dad93688821586724fa006dee32d",
+  "enrollment_sha256": "7190b1dc34f8cc6e9aeac337dc66f993cd91ce139972112333f076887d4cb5ee",
+  "enrollment_job": "59344223",
+  "enrollment_sacct": "59344223|COMPLETED|0:0\n",
+  "submit_code_sha256": "c25f0f1774de9b45e04b595558e0c6b11a42a06e6644b0a32fd70e7853410b4f",
+  "shared_submit_sha256": "0c142175df5db52fdf00a85d0e8dd46099209a76c5161994b4279332d6c84a10"
+ },
+ "arguments": [
+  "--dependency=afterok:59348871",
+  "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/scripts/experimental_resume/combine_overnight_operator_qualification_v4.sbatch"
+ ],
+ "job_id": "59349546",
+ "submission": "59349546",
+ "removed_parent_environment_keys": [],
+ "sha256": "951f574a920abe4c19d6b84cd0de89096b1cbdccfa28045b9887dd784a77fc11"
+}

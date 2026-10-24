@@ -1,0 +1,65 @@
+{
+  "campaign_sha256": "57df4a026a7be4c909ece85ac1ebe3dc47c3f27bb53ffcab88e3aa9d82bfbb3b",
+  "cancelled_unstarted_observers": [
+    {
+      "account": "iscrc_miosr",
+      "allocated_cpus": 0,
+      "card_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/automation/submissions/7afc44fb9955738f350666fb1cc313f8043f5834b09150689649e4f6fb3bd304/CARD.json",
+      "card_sha256": "7afc44fb9955738f350666fb1cc313f8043f5834b09150689649e4f6fb3bd304",
+      "comment": "cv3auto:7afc44fb9955738f350666fb1cc313f8043f5834b09150689649e4f6fb3bd304",
+      "elapsed_seconds": 0,
+      "end": "2026-10-08T02:11:51",
+      "exit_code": "0:0",
+      "job_id": "59662113",
+      "partition": "lrd_all_serial",
+      "start": "None",
+      "state": "CANCELLED",
+      "submission_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/automation/submissions/7afc44fb9955738f350666fb1cc313f8043f5834b09150689649e4f6fb3bd304/SUBMISSION.json",
+      "submission_sha256": "ec94935041d70419e3d835b4cd03978d6c6d978d800ad47dc48e8409582cddda"
+    },
+    {
+      "account": "iscrc_miosr",
+      "allocated_cpus": 0,
+      "card_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/automation/submissions/26ede64a83e47fce68fa11dcacc707a40571e5c9f031ed7e2c914b0295f1f142/CARD.json",
+      "card_sha256": "26ede64a83e47fce68fa11dcacc707a40571e5c9f031ed7e2c914b0295f1f142",
+      "comment": "cv3auto:26ede64a83e47fce68fa11dcacc707a40571e5c9f031ed7e2c914b0295f1f142",
+      "elapsed_seconds": 0,
+      "end": "2026-10-08T02:11:50",
+      "exit_code": "0:0",
+      "job_id": "59662139",
+      "partition": "lrd_all_serial",
+      "start": "None",
+      "state": "CANCELLED",
+      "submission_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/automation/submissions/26ede64a83e47fce68fa11dcacc707a40571e5c9f031ed7e2c914b0295f1f142/SUBMISSION.json",
+      "submission_sha256": "e139ed23090541367638581f80846e947ff48bcead95bdd6c29196be07cf6acf"
+    },
+    {
+      "account": "iscrc_miosr",
+      "allocated_cpus": 0,
+      "card_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/automation/submissions/362c59e260b711b9942fbef976db785345177cc26b1b02e53999c79f0701dfce/CARD.json",
+      "card_sha256": "362c59e260b711b9942fbef976db785345177cc26b1b02e53999c79f0701dfce",
+      "comment": "cv3auto:362c59e260b711b9942fbef976db785345177cc26b1b02e53999c79f0701dfce",
+      "elapsed_seconds": 0,
+      "end": "2026-10-08T02:11:50",
+      "exit_code": "0:0",
+      "job_id": "59662142",
+      "partition": "lrd_all_serial",
+      "start": "None",
+      "state": "CANCELLED",
+      "submission_path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/candidate-verification-v3-20261007-r4/automation/submissions/362c59e260b711b9942fbef976db785345177cc26b1b02e53999c79f0701dfce/SUBMISSION.json",
+      "submission_sha256": "0ed3f2478e18448e95bee46e030c99c72aa98398d59eb3aed534afd4a788e404"
+    }
+  ],
+  "native_science_cancellations": [],
+  "replacement_card_sha256": "aa1d611d79355fb83bb280d600cfdcc410f857481a6e0c0b9b61a5291b71e7c7",
+  "replacement_controller_job_id": "59664350",
+  "replacement_prearm_sha256": "e07e07de3b82e933e77448ccc66ca3a78e23a7de73ae40a6beb699ff818ebc05",
+  "schema": "verification-health-observer-reconciliation-v3",
+  "sha256": "f9e98a4acfa944d238e33116ad44c70dfdde10ab38cfd7fbd29d7b4a2e302222",
+  "targets": [
+    "59662113",
+    "59662139",
+    "59662142"
+  ],
+  "transfer_intent_sha256": "067c5ecda924035d8788027507828bcaa584e4a8591cc6d23f72db84c7bc3cbf"
+}

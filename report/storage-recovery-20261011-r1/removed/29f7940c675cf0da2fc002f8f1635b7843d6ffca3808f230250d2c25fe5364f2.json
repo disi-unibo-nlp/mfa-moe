@@ -1,0 +1,1 @@
+{"accounting": {"elapsed_seconds": 64, "start": "2026-10-08T03:15:00", "state": "COMPLETED"}, "estimated_allocated_bytes": 4096, "job_id": "59675172", "path": "/leonardo_work/IscrC_MIOSR/lmolfett/tools/tmp/t3/c59675172/vllm-cache", "sha256": "43a0e99ca55a9185eb3493dc37fe64437a818c423c7893d0e66b768a0a802e37"}

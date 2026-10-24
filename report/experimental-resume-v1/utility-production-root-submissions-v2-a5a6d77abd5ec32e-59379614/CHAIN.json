@@ -1,0 +1,26 @@
+{
+ "schema": "utility-completion-root-chain-v2",
+ "operational_recovery_sha256": "83f59261f8fdbd244225b989d442f11106a646c0a02de4ca6a314fd5e9242bf0",
+ "config_sha256": "a5a6d77abd5ec32e2ee7cd01462da1dfc75919478dd91c7956e8207a3fbcd4b6",
+ "pilot_operational_recovery_sha256": "383f1a2d5c7d18e09be5a364a5fb285f9a19ab242ad508ae91d48a487b0154b6",
+ "pilot_proposal_sha256": "ce86e4bcaa9c5c4a12f9c9456f118662dccdb57ed355f952cabc9617a83152fa",
+ "pilot_generation_attachment_job": "59379677",
+ "production_follow_job": "59379679",
+ "grading_follow_job": "59379681",
+ "pilot_attachment_dir": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/utility-price-pilot-attachments-v5-ce86e4bcaa9c5c4a-59379614",
+ "production_chain_dir": "/leonardo_work/IscrC_MIOSR/lmolfett/mfa-moe/repo/report/experimental-resume-v1/utility-production-submissions-v1-a5a6d77abd5ec32e",
+ "reader_predecessor": {
+  "accounting": "59379614|PENDING|0:0\n",
+  "active_predecessor": "59379614"
+ },
+ "pilot_predecessor": {
+  "accounting": "59379677|PENDING|0:0\n",
+  "active_predecessor": "59379677"
+ },
+ "production_predecessor": {
+  "accounting": "59379679|PENDING|0:0\n",
+  "active_predecessor": "59379679"
+ },
+ "scope": "Finite operational recovery, native PATH repair and restored exact predecessors. Every production phase retains live saldo, project queued commitments, frozen full pricing and bounded recovery checks. No cached account balance substitutes for a live check.",
+ "sha256": "7456b736ce3c99f28b52c2866e653463a9d38b9dcc9b522178b6f0100dc44fd8"
+}
