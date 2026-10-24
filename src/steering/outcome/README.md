@@ -1,6 +1,6 @@
 # Outcome-selected gentle steering
 
-**Question.** Can we make a reasoning model think less without getting worse, by gently turning
+Question: can we make a reasoning model think less without getting worse, by gently turning
 down a few experts that the model tends to use when it ends up wrong?
 
 The earlier whole-reasoning experiment (`steering.whole`) picked experts by reasoning-step class
@@ -8,28 +8,28 @@ The earlier whole-reasoning experiment (`steering.whole`) picked experts by reas
 experts, and cutting the high-traffic "execution" experts broke the models. This package changes two
 things, following "Beyond the Trace" (`chen2026beyond`):
 
-1. **Which experts.** The ones a model uses more in its *wrong* attempts than in its *right* attempts
-   of the *same* question (campaign-v3 cohort B, 6-8 attempts per AIME/AMC question).
-2. **How strongly.** Their router logit is lowered by a small `delta` (0.4, 0.8 or 1.6). The router
+1. Which experts: the ones a model uses more in its *wrong* attempts than in its *right* attempts
+   of the *same* question (cohort B of the router captures: 6-8 attempts per AIME/AMC question).
+2. How strongly: their router logit is lowered by a small `delta` (0.4, 0.8 or 1.6). The router
    still picks its own top-k, so no expert is forced in or out.
 
-Ledger: feature F-0004, decision D-0003.
+The base releases are the finished whole-reasoning releases in `report/`: `whole-reasoning-20261021-r7` for every model except GPT-OSS (`-r8`), with their top-ups and resumes, and `-r17/analysis-combined` for the final table of native and steered continuations. Ledger: feature F-0004, decision D-0003.
 
 ## Data flow
 
 ```
 cohort-B routing captures ──usage()──> USAGE.npz / USAGE.json        (per attempt: expert use per token)
                                           │
-r7 WHOLE_NOMINATIONS.json ──────────> selection()                  (score, stability, protection, controls)
+base release WHOLE_NOMINATIONS.json ─> selection()                (score, stability, protection, controls)
                                           │
                                           ▼
                           OUTCOME_SELECTION.json  ──>  manifest.outcome_manifest()
                                                        │   target_nudge / random_nudge at each delta
- base releases' native runs (r7/r8 + top-ups) ────────>│   budget rows cut from the native runs
+ base releases' native runs (+ top-ups) ───────────>│   budget rows cut from the native runs
                                                        ▼
                           WHOLE.json manifest ──> steering.whole (prepare, run, extract)
                                                        │
- final whole-reasoning table (r17 continuations) ─────>│
+ final whole-reasoning table of continuations ─────>│
                                                        ▼
                           analysis.analyze() ──> analysis/EFFECTS_OUTCOME.json
 ```
@@ -45,7 +45,7 @@ r7 WHOLE_NOMINATIONS.json ──────────> selection()           
 | `__main__.py` | Command line: `usage`, `select` (preview, writes nothing), `analyze`, `decide`. |
 
 Sealing the release is `steering.release outcome` (it also writes the code snapshot). The jobs are the
-ordinary whole-reasoning ones (`scripts/steering/launch.sh`) plus `python -m steering.outcome analyze`.
+ordinary whole-reasoning ones (`scripts/steering/launch.sh`) plus `python -m steering.outcome analyze --release report/NAME`.
 
 The routing operator itself lives with the other operators. It is
 `steering.operators.score_shift_masked`, applied by `steering.stream`. The
