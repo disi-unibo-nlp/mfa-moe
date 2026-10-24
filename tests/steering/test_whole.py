@@ -421,7 +421,7 @@ class ClosedAnalysisTests(unittest.TestCase):
         self.assertTrue(outcome['answer_present'])
         self.assertEqual(sentences[0]['sentence_text'], 'Reason.')
 
-    def test_all_missing_production_still_exports_six_bounded_primary_contrasts(self):
+    def test_extractions_with_every_production_row_missing_still_export_six_bounded_primary_contrasts(self):
         from steering import whole_effects
         models = ('gpt', 'qwen36')
         manifests, allocation = {}, []
@@ -455,6 +455,10 @@ class ClosedAnalysisTests(unittest.TestCase):
             publish(root/'gpt/extraction/EXTRACTION.json', {
                 'manifest_sha256': manifests['gpt']['sha256'],
                 'failures': [{'uid': 'failed-replay-unit', 'error': 'synthetic replay failure'}]})
+            with self.assertRaisesRegex(ValueError, 'has no qwen36 extraction'):  # a release never extracted is no source
+                whole_effects.combine(root)
+            publish(root/'qwen36/extraction/EXTRACTION.json', {  # extracted, but every production row is missing
+                'manifest_sha256': manifests['qwen36']['sha256'], 'failures': []})
             result = whole_effects.combine(root)
             self.assertTrue((root/'analysis-combined/EFFECTS_WHOLE.json').is_file())
         self.assertEqual(result['extraction_failures']['count'], 1)

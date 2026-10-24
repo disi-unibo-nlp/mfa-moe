@@ -76,6 +76,9 @@ class ComplementManifestTests(unittest.TestCase):
 
     def test_the_combined_table_joins_complement_rows_and_refuses_a_foreign_complement(self):
         whole.complement_manifest(self.root, 'gemma', {'parent': str(self.parent)})
+        for root in (self.parent, self.root):  # both releases extracted their rows (none of them is observed here)
+            publish(root/'gemma/extraction/EXTRACTION.json',
+                    {'manifest_sha256': load(whole.manifest_path('gemma', 'main', root))['sha256']})
         source = {'model': 'gemma', 'dose': 'main', 'root': str(self.parent), 'complements': [str(self.root)]}
         table = whole_effects._source_table(source)
         self.assertEqual(len(table), 3+20)

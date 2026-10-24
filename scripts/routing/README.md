@@ -11,7 +11,7 @@ The CPU analyses of native routing, one launcher each. They read finished captur
 | `dynamics.sh OUT_DIR` | State occupancy, dwell and transitions, and expert nominations, of the seven models, one job per model (a few minutes each). |
 | `efficiency_link.sh` | The efficiency link for all eight models: its table, the published receipt and the link test on the pulsed-steering cells (1 hour). |
 | `lexical.sh OUT_DIR` | Fits the lexical classifier that labels steered continuations. About 2 hours on 4 CPUs. |
-| `lfm.sh` | The LFM2.5 analyses: expert selection and nominations first (`derive`), then the readout (about 1.5 hours) and the dynamics, both after `derive` succeeds. |
+| `lfm.sh OUT_DIR` | The LFM2.5 analyses: expert selection and nominations first (`derive`), then the readout (about 1.5 hours) and the dynamics, both after `derive` succeeds. The readout writes into the new `OUT_DIR` and checks its inputs against the published receipt, which it never rewrites. |
 | `benchmarks.sh OUT_DIR` | Benchmark accuracy tables and the per-model inventory of the generated corpora. |
 
 ```bash

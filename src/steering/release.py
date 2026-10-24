@@ -16,6 +16,7 @@ from datetime import datetime
 from pathlib import Path
 import shutil
 import subprocess
+import time
 from zoneinfo import ZoneInfo
 
 from store import MODELS, REPO, WORK, check_files, file_sha, publish, require, verified
@@ -24,6 +25,14 @@ REPORTS = REPO/'report'
 SNAPSHOTS = WORK/'mfa-moe/releases'
 TEMPLATE = 'whole-reasoning-20261021-r7'  # pins the inputs, the sentence classifier and the nomination reference
 RUN_PATHS = ('src', 'tests/steering', 'tests/routing', 'scripts/slurm', 'scripts/steering')
+
+
+def prior_usage() -> dict:
+    """The billing totals of the earlier whole-reasoning and outcome jobs (scripts/slurm/ledger.sh), as of now."""
+    ledger = str(REPO/'scripts/slurm/ledger.sh')
+    totals = {prefix: subprocess.run([ledger, prefix], capture_output=True, text=True, check=True).stdout.splitlines()[-1]
+              for prefix in ('whole-', 'os-')}
+    return {'ledger_totals': totals, 'snapshot_time': time.time(), 'budget_reset': False}
 
 
 def rome(text: str) -> float:
@@ -117,11 +126,13 @@ def outcome(root: Path, args: argparse.Namespace) -> dict:
     # The selection reads these outside the snapshot: per-attempt usage and the class nominations.
     inputs = {str(path): file_sha(path) for model in models
               for path in (BULK/model/'USAGE.json', BULK/model/'USAGE.npz', REPORTS/TEMPLATE/model/'WHOLE_NOMINATIONS.json')}
+    # The CPU ceiling is the time limits launch.sh gives the tests, the manifests and the analysis (24 core-hours)
+    # plus those of each model's extraction (12).
     return dict(
         kind_file={'models': {m: {**default_spec(m, REPORTS), 'deltas': list(deltas), 'fractions': list(fractions),
                                   'answer_tokens': answer_tokens} for m in models}},
         template=verified(REPORTS/TEMPLATE/'RELEASE.json'), models=models, shards=count,
-        sweep={m: 'main' for m in models}, cutoff=rome(cutoff), cpu_ceiling=60., sources=None, inputs=inputs,
+        sweep={m: 'main' for m in models}, cutoff=rome(cutoff), cpu_ceiling=24.+12.*len(models), sources=None, inputs=inputs,
         scope='tests/steering/outcome plus tests/steering/test_stream_batch.py; the allocated validation runs '
               'both suites in full',
         readme='Nudges a small set of experts chosen by outcome (used more in wrong than right attempts of the same\n'
@@ -169,6 +180,7 @@ def seal(kind: str, name: str, tests: int, args: argparse.Namespace) -> Path:
                             check=True).stdout.strip()
     root.mkdir(mode=0o700)
     try:
+        prior = publish(root/'PRIOR_USAGE.json', prior_usage())
         kind_receipt = publish(root/kind_file, spec['kind_file'])
         validation = publish(root/'LOCAL_VALIDATION.json', {'passed': True, 'tests': tests, 'commit': commit,
                                                              'scope': spec['scope']})
@@ -193,7 +205,7 @@ def seal(kind: str, name: str, tests: int, args: argparse.Namespace) -> Path:
             'nomination_reference': template['nomination_reference'],
             'local_validation_sha256': validation['sha256'], 'resource_plan_sha256': plan['sha256'],
             'new_gpu_hour_ceiling': gpu_ceiling, 'cpu_core_hour_ceiling': spec['cpu_ceiling'], 'engineering_only': False,
-            'template_release_sha256': template['sha256']})
+            'prior_usage': prior, ('parent' if kind == 'relink' else 'template')+'_release_sha256': template['sha256']})
     except BaseException:
         shutil.rmtree(root, ignore_errors=True)  # a failed seal leaves no half-written release
         raise

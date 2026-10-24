@@ -5,8 +5,8 @@ sample's judge inputs.
 trace files, runs the same stratified sampler as the other seven models
 (`labeling.sample_stratified.build_plan`) and writes the sampled sentences with their judge tasks.
 `repair_annotation_inputs` rebuilds the judge tasks of an earlier build with the source-parity
-inputs. They run as `python -m steering.pulse` steps (`lfm-native`, `lfm-materialize`,
-`lfm-repair-contexts`).
+inputs. `materialize` runs as `python -m routing.lfm materialize`, `repair_annotation_inputs` as
+`python -m steering.pulse lfm-repair-contexts`, and `population` feeds `python -m steering.pulse native`.
 """
 from collections import defaultdict
 from pathlib import Path

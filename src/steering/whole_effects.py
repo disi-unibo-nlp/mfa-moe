@@ -184,11 +184,9 @@ def _extracted(root: Path, model: str, value: dict) -> tuple[pd.DataFrame, pd.Da
     """Read one release's extracted outcomes and lexically labelled sentences for one manifest."""
     from routing.lexical import LEXICAL, predict
     folder = root/model/'extraction'
-    if (folder/'EXTRACTION.json').exists():
-        require(verified(folder/'EXTRACTION.json')['manifest_sha256'] == value['sha256'],
-                'whole extraction belongs to another manifest')
-    else:  # its rows stay unknown in the analysis; say so in the job log
-        driver.log({'event': 'whole-no-extraction', 'model': model, 'release': root.name})
+    require((folder/'EXTRACTION.json').exists(), f'{root.name} has no {model} extraction')
+    require(verified(folder/'EXTRACTION.json')['manifest_sha256'] == value['sha256'],
+            'whole extraction belongs to another manifest')
     observed = pd.read_parquet(folder/'outcomes.parquet') if (folder/'outcomes.parquet').exists() else pd.DataFrame()
     sentences = pd.read_parquet(folder/'sentences.parquet') if (folder/'sentences.parquet').exists() else pd.DataFrame()
     if not sentences.empty:
@@ -467,7 +465,7 @@ def arm_summaries(boot, table: pd.DataFrame) -> tuple[list, dict]:
 def bootstrap():
     """The shared benchmark-stratified family bootstrap of every whole-reasoning interval."""
     from steering.pulse_effects import Bootstrap
-    benchmarks = {r['family']: r['benchmark'] for r in load(driver.ROOT/'ALLOCATION.json')['records']}
+    benchmarks = {r['family']: r['benchmark'] for r in load(driver.STUDY/'ALLOCATION.json')['records']}
     return Bootstrap(sorted(benchmarks), benchmarks, draws=DRAWS, seed=SEED)
 
 

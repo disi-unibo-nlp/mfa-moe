@@ -1,6 +1,7 @@
 import ast
 import hashlib
 import json
+import os
 from pathlib import Path
 import tempfile
 from types import SimpleNamespace
@@ -9,7 +10,7 @@ from unittest import mock
 import numpy as np
 from routing import readout_analysis, readout_fit as new
 from routing.readout_analysis import HISTORICAL, code_hashes, family_folds, freeze
-from store import WORK, file_sha
+from store import WORK, file_sha, publish
 
 MODELS = ('gemma', 'glm', 'gpt', 'nemotron', 'qwen330b', 'qwen35', 'qwen36', 'lfm25', 'lfm25-engineering')
 
@@ -73,7 +74,9 @@ class ReadoutTests(unittest.TestCase):
             tmp = Path(tmp)
             (tmp/'first').mkdir()
             with mock.patch.object(readout_analysis, 'HISTORICAL', tmp/'first'):
-                freeze(tmp/'a', 'FROZEN.json', first)  # no first run recorded yet: nothing to compare
+                with self.assertRaisesRegex(ValueError, 'first run'):
+                    freeze(tmp/'a', 'FROZEN.json', first)  # no first run recorded: a hard error
+                freeze(tmp/'a', 'FROZEN.json', first, check_first_run=False)  # only tests may skip the comparison
                 (tmp/'first'/'FROZEN.json').write_text(json.dumps(first))
                 rerun = {**first, 'code': {'/new.py': 'c2'}, 'sha256': 's2'}
                 freeze(tmp/'b', 'FROZEN.json', rerun)
@@ -82,6 +85,27 @@ class ReadoutTests(unittest.TestCase):
                     freeze(tmp/'b', 'FROZEN.json', {**rerun, 'sha256': 's3'})
                 with self.assertRaises(ValueError):
                     freeze(tmp/'c', 'FROZEN.json', {**first, 'inputs': {'/x': 'changed'}})
+
+    def test_the_fits_refuse_an_interactive_shell_but_not_a_batch_job_on_the_serial_partition(self):
+        from routing import anticipation, readout
+        for run in (readout.run, anticipation.run):
+            for environment in ({}, {'SLURM_JOB_ID': '1'}):  # nothing, or the shell salloc starts on a login node
+                with mock.patch.dict(os.environ, environment, clear=True), self.assertRaisesRegex(ValueError, 'batch job'):
+                    run(1, WORK/'tools/tmp/never-created')
+
+    def test_the_lfm_readout_compares_the_inputs_but_not_the_code_with_its_published_receipt(self):
+        from routing import lfm_readout
+        provenance = {'code': {'new.py': 'c2'}, 'inputs_sha256': 'i', 'folds_sha256': 'f', 'seed_index': 7}
+        with tempfile.TemporaryDirectory(dir=WORK/'tools/tmp') as tmp:
+            binding = {'root': tmp, 'config': {'bulk_root': tmp}}
+            lfm_readout.check_published(binding, provenance)  # nothing published yet
+            publish(Path(tmp)/'lfm25/READOUT_RESULTS.json', {'provenance': {**provenance, 'code': {'old.py': 'c1'}}})
+            lfm_readout.check_published(binding, provenance)
+            with self.assertRaisesRegex(ValueError, 'inputs differ'):
+                lfm_readout.check_published(binding, {**provenance, 'folds_sha256': 'changed'})
+            publish(Path(tmp)/'out/READOUT_RESULTS.json', {})
+            with self.assertRaisesRegex(ValueError, 'already holds'):  # the published file is never rewritten
+                lfm_readout.lfm(binding, Path(tmp)/'out')
 
     def test_code_hashes_cover_files_and_the_python_files_of_folders(self):
         with tempfile.TemporaryDirectory(dir=WORK/'tools/tmp') as tmp:

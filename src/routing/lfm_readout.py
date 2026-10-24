@@ -4,7 +4,10 @@ It runs the same fits as the seven-model readout (readout_fit, readout_analysis)
 its 522 readout questions, twice: token identity only, and with the judge's previous/current/next sentence text.
 The population is the one frozen in HISTORICAL/FROZEN.readout.v3.json (the seven-model run's inputs).
 
-    python -m routing.lfm readout      (about 1.5 h on 4 CPUs); result: lfm25/READOUT_RESULTS.json
+    python -m routing.lfm readout --out DIR      (about 1.5 h on 4 CPUs); result: DIR/READOUT_RESULTS.json
+
+DIR must be new. The receipt published in the study folder (lfm25/READOUT_RESULTS.json, which the paper reads) is
+never rewritten: a run must have the same inputs as the ones it records, and only its code hashes may differ.
 """
 from pathlib import Path
 
@@ -18,24 +21,39 @@ from routing.readout_text import hash_counts
 from store import check_files, digest, file_sha, load, publish, require, verified
 
 
-
-def lfm(binding):
+def provenance_of(binding):
+    """What the readout is a function of: the code, the derived sentences, the sampled units and the folds."""
     root, bulk = Path(binding['root']), Path(binding['config']['bulk_root'])
-    target = root/'lfm25/READOUT_RESULTS.json'
     inputs = verified(root/'lfm25/DISCOVERY_INPUTS.json')
     require(file_sha(Path(inputs['sentences'])) == inputs['sentences_sha256'], 'LFM derived sentences changed')
+    return {'code': {name: file_sha(Path(__file__).with_name(name)) for name in
+                     ('lfm_readout.py', 'readout_fit.py', 'readout_analysis.py', 'readout_text.py')},
+            'inputs_sha256': inputs['sha256'], 'sentences_sha256': inputs['sentences_sha256'],
+            'sampled_sentences_sha256': file_sha(bulk/'lfm25/SAMPLED_SENTENCES.json'),
+            'folds_sha256': file_sha(Path(binding['source_campaign'])/'FOLDS.json'), 'seed_index': 7}
+
+
+def check_published(binding, provenance):
+    """A receipt already published in the study folder was fitted on these inputs (its code hashes may differ)."""
+    published = Path(binding['root'])/'lfm25/READOUT_RESULTS.json'
+    if published.exists():
+        inputs = lambda value: {k: v for k, v in value.items() if k != 'code'}
+        require(inputs(verified(published)['provenance']) == inputs(provenance),
+                'the inputs differ from the published LFM readout receipt')
+
+
+def lfm(binding, out):
+    """Fit the LFM2.5 readout into the new folder `out` and return its sealed READOUT_RESULTS.json."""
+    root, bulk = Path(binding['root']), Path(binding['config']['bulk_root'])
+    out = Path(out)
+    target = out/'READOUT_RESULTS.json'
+    require(not target.exists(), f'{out} already holds LFM readout results; use a new --out')
+    inputs = verified(root/'lfm25/DISCOVERY_INPUTS.json')
     folds_path = Path(binding['source_campaign'])/'FOLDS.json'
     sampled_path = bulk/'lfm25/SAMPLED_SENTENCES.json'
-    # Checkpoints and the published result are keyed by code as well as data, so a fix never reuses old fits.
-    provenance = {'code': {name: file_sha(Path(__file__).with_name(name)) for name in
-                           ('lfm_readout.py', 'readout_fit.py', 'readout_analysis.py', 'readout_text.py')},
-                  'inputs_sha256': inputs['sha256'], 'sentences_sha256': inputs['sentences_sha256'],
-                  'sampled_sentences_sha256': file_sha(sampled_path), 'folds_sha256': file_sha(folds_path),
-                  'seed_index': 7}
-    if target.exists():
-        value = verified(target)
-        require(value.get('provenance') == provenance, 'published LFM readout was produced by other code or inputs')
-        return value
+    # The checkpoints are keyed by code as well as data, so a fix never reuses old fits.
+    provenance = provenance_of(binding)
+    check_published(binding, provenance)
     check_files(binding['readout_files'])
     frozen = load(HISTORICAL/'FROZEN.readout.v3.json')
     questions = set(frozen['ids']['gpt'])
@@ -85,14 +103,13 @@ def lfm(binding):
     folds = load(folds_path)
     qf = folds['question_families']
     md.question_family = qf
-    output_root = bulk/'lfm25/readout'
     family = {'sha256':digest([frozen['sha256'],binding['sha256'],provenance])}
     counts = hash_counts(texts)
     results = {}
     from threadpoolctl import threadpool_limits
     for mode in ('token_identity','judge_context'):
         with threadpool_limits(limits=1):
-            results[mode] = historical.analyse(sr,md,counts,mode,4,family,np.asarray([qf[q] for q in groups]), output_root)
+            results[mode] = historical.analyse(sr,md,counts,mode,4,family,np.asarray([qf[q] for q in groups]), out)
     require(all(v['status']=='CLEAN' for v in results.values()),'LFM readout or lexical-null validation failed')
     return publish(target, {'status':'complete','models':{'lfm25':results},'historical_binding':frozen['sha256'],
         'questions':522,'families':len({qf[q] for q in questions}),'lexical_nulls':5,'provenance':provenance,
