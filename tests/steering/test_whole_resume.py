@@ -15,7 +15,7 @@ import numpy as np
 import pandas as pd
 import torch
 
-from steering import pulsed_steering as pulse, whole_reasoning as whole, whole_reasoning_effects as whole_effects
+from steering import pulsed_steering as pulse, whole_reasoning as whole, whole_reasoning_effects
 from store import WORK, digest, file_sha, load, publish
 from steering.stream import Clock, StreamCapture
 
@@ -505,7 +505,7 @@ class ResumeAnalysisJoinTests(unittest.TestCase):
             publish(store.folder(rows[0]['uid'])/'RESULT.json', {'status': 'complete'})
             pulse.checkpoint(store.folder(rows[1]['uid'])/'PARTIAL.json', partial(rows[1], [1, 2]))
             # The parent's extraction skips the interrupted row: it stays missing there.
-            self.assertIsNone(whole_effects._extract_one(rows[1], b={}, model='gpt', tokenizer=None, close=None,
+            self.assertIsNone(whole_reasoning_effects._extract_one(rows[1], b={}, model='gpt', tokenizer=None, close=None,
                                                          store=store, inputs={}))
             for root, row, manifest in ((base, rows[0], planned), (resume, rows[1], follow_up)):
                 (root/'gpt/extraction').mkdir(parents=True)
@@ -514,7 +514,7 @@ class ResumeAnalysisJoinTests(unittest.TestCase):
                                'reasoning_end': 5, 'strict_correct': True, 'finish_reason': 'stop'}]).to_parquet(
                     root/'gpt/extraction/outcomes.parquet')
             source = {'model': 'gpt', 'root': str(base), 'dose': 'half', 'topups': [str(resume)]}
-            table = whole_effects.load_table([source]).set_index('uid')
+            table = whole_reasoning_effects.load_table([source]).set_index('uid')
             self.assertEqual(set(table.outcome_status), {'observed'})
             self.assertEqual(set(table.index), {row['uid'] for row in rows})
             # Observed in both releases would mean the row ran twice: refused.
@@ -522,7 +522,7 @@ class ResumeAnalysisJoinTests(unittest.TestCase):
                            'reasoning_end': 5, 'strict_correct': True, 'finish_reason': 'stop'}]).to_parquet(
                 resume/'gpt/extraction/outcomes.parquet')
             with self.assertRaisesRegex(ValueError, 'duplicate whole extracted UID'):
-                whole_effects.load_table([source])
+                whole_reasoning_effects.load_table([source])
 
 
 if __name__ == '__main__':

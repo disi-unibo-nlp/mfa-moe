@@ -3,7 +3,7 @@
 For each module under src/ and each test, every `import` and `from ... import` that names a repo module (one whose
 first component is a top-level folder or module of src/) must name a module that exists, and every imported name must
 be defined there or be a submodule. So must every attribute read through a module alias (`driver.binding()` after
-`from . import pulse as driver`). Strings that name a repo module (worker extensions, `python -m` commands, mock
+`from steering import pulsed_steering as driver`). Strings that name a repo module (worker extensions, `python -m` commands, mock
 patches) are checked the same way. The name `moe_exp` is not a package of src/ but counts as a repo name, so a
 reference to it fails unless EXEMPT lists it. The modules reachable from ENTRY_POINTS must also cover all of
 src/, so dead code cannot linger.

@@ -14,7 +14,7 @@ The same routing operators serve all three.
 
 | File | What it does |
 | --- | --- |
-| `pulsed_steering.py` | The pulsed design: its manifests, one engine per model shard that admits requests while others finish, and the judge engine (`annotate_rows`) that `routing.transition_pairs` also uses. The engine, the stores and the `--model` handling are shared with the whole-reasoning code. |
+| `pulsed_steering.py` | The pulsed design: its manifests, one engine per model shard that admits requests while others finish, and the judge engine (`annotate_rows`) that `routing.next_sentence_labels` also uses. The engine, the stores and the `--model` handling are shared with the whole-reasoning code. |
 | `lfm25_generation.py` | The GPU stages of LFM2.5 in the steering engine: its native traces (`native`), their judge labels (`annotate`) and the router replay (`replay`). |
 | `pulsed_outcomes.py` | Reads the saved continuations and writes one table of outcomes and one of sentences per model. |
 | `pulsed_effects.py` | The paired effects with bounds for unknown outcomes, the bootstrap, and the efficiency-link test. |

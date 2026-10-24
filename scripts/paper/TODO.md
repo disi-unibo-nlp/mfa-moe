@@ -6,7 +6,7 @@
 - why: Make the manuscript figures directly editable in Overleaf and preserve an auditable checklist of author feedback, leaving final comment resolution to the author.
 - done when: Latest Overleaf revision preserved; all accessible review threads and project chat reconciled into actionable TODOs; all 11 native figure sources and required data compile inside the paper checkout; original PDFs retained byte-for-byte; current source-only manuscript renders inspected; scoped Overleaf delivery verified by remote revision. Inaccessible comments remain explicitly pending.
 - decisions: figures-live-in-overleaf, author-resolves-comments
-- code: src/paper/build_cl_figures.py, src/paper/build_cl_manuscript.py, src/paper/verify_cl_figure_labels.py, src/paper/cl_paths.py, scripts/paper/build.sh
+- code: src/paper/build_cl_figures.py, src/paper/build_cl_manuscript.py, src/paper/verify_cl_figure_labels.py, src/paper/cl_paths.py, scripts/paper/build_paper_pdf.sh
 - [x] Pull the latest Overleaf paper without overwriting incoming author edits; evidence: git pull --ff-only advanced a01bfb6 to b189963cc39d03a373d753590a209a25c308d2ed, changing only main.tex, introduction.tex and setup.tex.
 - [x] Read all author comments and chat, create thread-linked TODOs, and classify feedback with the paper-writer skill; evidence: overleaf-review/COMMENTS.json and TODO_AUDIT.json, 56/56 threads mapped to REVIEW_TODOS.md, zero chat messages, all fixes pending.
 - [x] Record the author's reply-without-resolution instruction; evidence: author-resolves-comments, LOC-044, source-clone PRC-014 lint (254 rules, zero errors), and DELIVERY.json confirming zero comment-state or message writes.

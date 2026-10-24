@@ -1,5 +1,7 @@
 # Routing study v2
 
+The code this note describes is in the git tag `archive/pre-cleanup-20261023`; the current tree no longer holds it.
+
 This extension tests sparse routing at locally qualified opportunities on
 Qwen3.6-35B-A3B-FP8. Every new scientific continuation has a 16,384-token cap;
 substantive transitions within the first 1,024 tokens are a separate endpoint.

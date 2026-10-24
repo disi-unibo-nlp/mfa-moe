@@ -13,7 +13,7 @@ from unittest.mock import patch
 
 import pandas as pd
 
-from steering import pulsed_steering as pulse, whole_reasoning as whole, whole_reasoning_effects as whole_effects
+from steering import pulsed_steering as pulse, whole_reasoning as whole, whole_reasoning_effects
 from store import BENCHMARKS, REPO, WORK, load, publish
 from steering.pulsed_effects import Bootstrap
 from steering.selection import select_pairs
@@ -135,20 +135,20 @@ class DesignAndCoverageTests(unittest.TestCase):
 
     def test_dropped_promote_cells_are_excluded_and_primary_is_unchanged(self):
         table = self.frame()
-        baseline, _ = whole_effects.family_contrasts(table, LINK)
+        baseline, _ = whole_reasoning_effects.family_contrasts(table, LINK)
         drop = (table.model == 'gpt') & (table['class'] == 'Read') & (table.operation == 'promote')
         table.loc[drop, 'nomination_status'] = 'dropped_availability'
         table.loc[drop, 'log_reasoning:lower'] = 0.
         table.loc[drop, 'log_reasoning:upper'] = 20.
-        cells, _ = whole_effects.family_contrasts(table, LINK)
+        cells, _ = whole_reasoning_effects.family_contrasts(table, LINK)
         self.assertFalse(((cells.model == 'gpt') & (cells['class'] == 'Read') & (cells.operation == 'promote')).any())
-        pd.testing.assert_frame_equal(whole_effects.primary_frame(cells), whole_effects.primary_frame(baseline))
+        pd.testing.assert_frame_equal(whole_reasoning_effects.primary_frame(cells), whole_reasoning_effects.primary_frame(baseline))
 
     def test_an_unnominated_efficiency_cell_is_a_design_error(self):
         table = self.frame()
         table.loc[table['class'] == 'Verify', 'nomination_status'] = 'dropped_availability'
         with self.assertRaisesRegex(ValueError, 'efficiency-directed'):
-            whole_effects.family_contrasts(table, LINK)
+            whole_reasoning_effects.family_contrasts(table, LINK)
 
     def test_sentence_coverage_failure_bounds_one_unit_and_keeps_the_other_observed(self):
         with tempfile.TemporaryDirectory(dir=WORK/'tools/tmp') as temporary:
@@ -167,7 +167,7 @@ class DesignAndCoverageTests(unittest.TestCase):
             planned = publish(whole.manifest_path('gpt', 'main', root), {'records': records})
             publish(folder/'EXTRACTION.json', {'manifest_sha256': planned['sha256']})
             with patch('routing.lexical.predict', side_effect=lambda frame, *args, **kwargs: frame):
-                table = whole_effects.load_table([{'model': 'gpt', 'root': str(root), 'dose': 'main'}]).set_index('uid')
+                table = whole_reasoning_effects.load_table([{'model': 'gpt', 'root': str(root), 'dose': 'main'}]).set_index('uid')
         self.assertEqual(table.loc['valid', 'outcome_status'], 'observed')
         self.assertEqual(table.loc['invalid', 'outcome_status'], 'unknown_sentence_coverage')
         self.assertEqual(table.loc['invalid', 'accuracy:lower'], 0.)
@@ -433,10 +433,10 @@ class ReleaseStageTests(unittest.TestCase):
         publish(self.root/'RELEASE.json', {'classifier': {}})
         value = publish(whole.manifest_path('gpt', 'main', self.root), {'records': []})
         with self.assertRaisesRegex(ValueError, 'has no gpt extraction'):
-            whole_effects._extracted(self.root, 'gpt', value)
+            whole_reasoning_effects._extracted(self.root, 'gpt', value)
         publish(self.root/'gpt/extraction/EXTRACTION.json', {'manifest_sha256': 'another'})
         with self.assertRaisesRegex(ValueError, 'another manifest'):
-            whole_effects._extracted(self.root, 'gpt', value)
+            whole_reasoning_effects._extracted(self.root, 'gpt', value)
 
 
 class DoseResponseTests(unittest.TestCase):
@@ -462,7 +462,7 @@ class DoseResponseTests(unittest.TestCase):
     def test_slope_on_log2_strength_with_point_identified_bounds(self):
         cells = pd.concat([self.cells({'main': 3., 'half': 2., 'quarter': 1.}),
                            self.cells({'main': 1., 'half': 1., 'quarter': 1.}, model='qwen36')])
-        result = whole_effects.dose_response(self.bootstrap(), cells)
+        result = whole_reasoning_effects.dose_response(self.bootstrap(), cells)
         contrasts = result['contrasts']
         self.assertAlmostEqual(contrasts['gpt:slope:tokens']['estimate'], 1.)
         self.assertAlmostEqual(contrasts['qwen36:slope:tokens']['estimate'], 0.)
@@ -474,7 +474,7 @@ class DoseResponseTests(unittest.TestCase):
     def test_a_model_missing_a_strength_has_no_slope(self):
         cells = pd.concat([self.cells({'main': 3., 'half': 2., 'quarter': 1.}),
                            self.cells({'half': 1., 'quarter': 1.}, model='glm')])
-        result = whole_effects.dose_response(self.bootstrap(), cells)
+        result = whole_reasoning_effects.dose_response(self.bootstrap(), cells)
         self.assertEqual(result['slope_models'], ['gpt'])
         self.assertNotIn('glm:slope:tokens', result['contrasts'])
         self.assertEqual(result['models_by_dose']['main'], ['gpt'])
@@ -482,8 +482,8 @@ class DoseResponseTests(unittest.TestCase):
     def test_a_model_with_fewer_families_is_summarized_over_its_own(self):
         lfm_families = self.families[:-1]
         cells = pd.concat([self.cells({'main': 1.}), self.cells({'main': 2.}, model='lfm25', families=lfm_families)])
-        frame = whole_effects.primary_frame(cells, dose='main')
-        result = whole_effects.summarize_present(self.bootstrap(), frame, 'test')
+        frame = whole_reasoning_effects.primary_frame(cells, dose='main')
+        result = whole_reasoning_effects.summarize_present(self.bootstrap(), frame, 'test')
         self.assertIn(result['lfm25:tokens']['status'], ('qualified', 'qualified_bounds'))
         self.assertEqual(result['lfm25:tokens']['families'], len(lfm_families))
         self.assertAlmostEqual(result['lfm25:tokens']['estimate'], 2.)
@@ -496,11 +496,11 @@ class DoseResponseTests(unittest.TestCase):
         quarter['dose'] = 'quarter'
         for suffix in ('', ':lower', ':upper'):
             quarter.loc[quarter.arm.str.startswith('target_'), 'log_reasoning'+suffix] = 1.
-        cells, noise = whole_effects.family_contrasts(pd.concat([table, quarter], ignore_index=True), LINK)
+        cells, noise = whole_reasoning_effects.family_contrasts(pd.concat([table, quarter], ignore_index=True), LINK)
         self.assertEqual(len(noise), len(whole.MODELS))
         with self.assertRaisesRegex(ValueError, 'several doses'):
-            whole_effects.primary_frame(cells)
-        frame = whole_effects.primary_frame(cells, 'target_native', 'quarter').iloc[0]
+            whole_reasoning_effects.primary_frame(cells)
+        frame = whole_reasoning_effects.primary_frame(cells, 'target_native', 'quarter').iloc[0]
         self.assertEqual(frame['gpt:tokens'], 1.)
         self.assertEqual(set(cells[cells.dose == 'quarter'].model), {'gpt'})
 
@@ -519,14 +519,14 @@ class DoseResponseTests(unittest.TestCase):
                                'strict_correct': True, 'finish_reason': 'stop'}]).to_parquet(
                     root/'gpt/extraction/outcomes.parquet')
             source = {'model': 'gpt', 'root': str(base), 'dose': 'half', 'topups': [str(topup)]}
-            table = whole_effects.load_table([source]).set_index('uid')
+            table = whole_reasoning_effects.load_table([source]).set_index('uid')
             self.assertEqual(set(table.outcome_status), {'observed'})
             # A row observed in both releases would be run twice: refused.
             pd.DataFrame([{'uid': 'early', 'outcome_status': 'observed', 'reasoning_tokens': 5, 'reasoning_end': 5,
                            'strict_correct': True, 'finish_reason': 'stop'}]).to_parquet(
                 topup/'gpt/extraction/outcomes.parquet')
             with self.assertRaisesRegex(ValueError, 'duplicate whole extracted UID'):
-                whole_effects.load_table([source])
+                whole_reasoning_effects.load_table([source])
 
     def test_combine_reads_base_and_sweep_releases(self):
         allocation = [{'family': family, 'benchmark': benchmark} for family, benchmark in self.families]
@@ -552,10 +552,10 @@ class DoseResponseTests(unittest.TestCase):
             sources = publish(sweep/'SOURCES.json', {'sources': [
                 {'model': 'gpt', 'root': str(base), 'dose': 'main'},
                 {'model': 'gpt', 'root': str(sweep), 'dose': 'quarter'}]})
-            original_load = whole_effects.load
-            with patch.object(whole_effects, 'load', side_effect=lambda path: {'records': allocation}
+            original_load = whole_reasoning_effects.load
+            with patch.object(whole_reasoning_effects, 'load', side_effect=lambda path: {'records': allocation}
                               if Path(path).name == 'ALLOCATION.json' else original_load(path)):
-                result = whole_effects.combine(sweep)
+                result = whole_reasoning_effects.combine(sweep)
             self.assertTrue((sweep/'analysis-combined/EFFECTS_WHOLE.json').is_file())
         self.assertEqual(set(result['primary']), {'gpt:tokens', 'gpt:accuracy', 'pooled:tokens', 'pooled:accuracy'})
         self.assertIn('gpt@quarter:tokens', result['dose_response']['contrasts'])

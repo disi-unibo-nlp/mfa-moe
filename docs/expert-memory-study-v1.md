@@ -1,5 +1,7 @@
 # Seven-model expert memory study v1
 
+The code this note describes is in the git tag `archive/pre-cleanup-20261023`; the current tree no longer holds it.
+
 This is a private research harness for the October 15 accuracy–memory result.
 It does not change, dispatch, cancel or replace the verification v3 campaign.
 The implementation request adopted the numerical defaults in

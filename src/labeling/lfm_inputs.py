@@ -4,7 +4,7 @@ sample's judge inputs.
 `population` lists the native attempts. `materialize` commits the finished native generations as
 trace files, runs the same stratified sampler as the other seven models
 (`labeling.sample_stratified.build_plan`) and writes the sampled sentences with their judge tasks.
-`materialize` runs as `python -m routing.lfm materialize`, and `population` feeds
+`materialize` runs as `python -m routing.lfm25_analyses materialize`, and `population` feeds
 `python -m steering.lfm25_generation native`.
 """
 from collections import defaultdict

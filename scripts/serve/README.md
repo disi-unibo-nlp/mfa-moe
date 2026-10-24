@@ -2,7 +2,7 @@
 
 One script starts the vLLM server of any model: `serve_model.sh HF_MODEL`, for example `serve_model.sh openai/gpt-oss-20b`. You do not run it by hand. A job that needs a model calls `start_server HF_MODEL` from `scripts/slurm/env.sh` (`start_server $JUDGE_MODEL` for the judge), which starts `serve_model.sh` in the background and waits for it. `start_server` also accepts the short key (`gpt`) of a study model; the list of models is `python -m models.roster`.
 
-The flags are not in the script. `src/generation/serve_flags.py` builds them from one table: the server settings of each card profile in `src/generation/model_profiles.py` (the same values every trace records in its contract) and the judge's own settings. `serve_model.sh` runs what `PORT=20123 python -m generation.serve_flags HF_MODEL` prints, one argument per line. `tests/generation/test_serve_flags.py` pins the result against the command lines the eight earlier per-model scripts started, so a change to a flag shows up as a failing test.
+The flags are not in the script. `src/generation/serve_flags.py` builds them from one table: the server settings of each card profile in `src/generation/model_profiles.py` (the same values every trace records in its contract) and the judge's own settings. `serve_model.sh` runs what `PORT=20123 python -m generation.serve_flags HF_MODEL` prints, one argument per line. `tests/generation/test_serve_flags.py` pins the command line of each model and of the judge, so a change to a flag shows up as a failing test.
 
 The flags every server shares: two GPUs with tensor parallelism, bfloat16 weights and KV cache (the A100 has no FP8 KV cache), prefix caching, 8,192 batched tokens, 90 percent of GPU memory, and a local-only address on the job's port.
 

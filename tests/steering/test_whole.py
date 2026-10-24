@@ -408,7 +408,7 @@ class ExecutionGateTests(unittest.TestCase):
 
 class ClosedAnalysisTests(unittest.TestCase):
     def test_completed_whole_output_replays_and_extracts_in_worker_scope(self):
-        from steering import whole_reasoning_effects as whole_effects
+        from steering import whole_reasoning_effects
         text = ('<|channel|>analysis<|message|>Reason.<|end|><|start|>assistant'
                 '<|channel|>final<|message|>2<|return|>')
         tokens = list(range(len(text)))
@@ -427,7 +427,7 @@ class ClosedAnalysisTests(unittest.TestCase):
             with patch('models.token_replay.make_token_replay', return_value=(text, replay)), \
                  patch('generation.scoring.score_completion_detailed',
                        return_value={'is_correct': True, 'model_answer': '2'}):
-                outcome, sentences, failure = whole_effects._extract_one(
+                outcome, sentences, failure = whole_reasoning_effects._extract_one(
                     row, b={'models': {'gpt': {'key': 'gpt'}}}, model='gpt', tokenizer=None,
                     close=[[9000]], store=store, inputs={'family': ([1], [], original)})
         self.assertIsNone(failure)
@@ -437,7 +437,7 @@ class ClosedAnalysisTests(unittest.TestCase):
         self.assertEqual(sentences[0]['sentence_text'], 'Reason.')
 
     def test_extractions_with_every_production_row_missing_still_export_six_bounded_primary_contrasts(self):
-        from steering import whole_reasoning_effects as whole_effects
+        from steering import whole_reasoning_effects
         models = ('gpt', 'qwen36')
         manifests, allocation = {}, []
         for i, benchmark in enumerate(BENCHMARKS):
@@ -457,9 +457,9 @@ class ClosedAnalysisTests(unittest.TestCase):
                                          'class': cls, 'arm': role+'_'+operation, 'operation': operation})
             manifests[model] = {'model': model, 'dose': 'main', 'records': rows,
                                 'scope': 'prompt-and-generated-reasoning'}
-        original_load = whole_effects.load
+        original_load = whole_reasoning_effects.load
         with tempfile.TemporaryDirectory(dir=WORK/'tools/tmp') as temporary, \
-             patch.object(whole_effects, 'load', side_effect=lambda path: {'records': allocation}
+             patch.object(whole_reasoning_effects, 'load', side_effect=lambda path: {'records': allocation}
                           if Path(path).name == 'ALLOCATION.json' else original_load(path)):
             root = Path(temporary)
             for model in models:
@@ -471,10 +471,10 @@ class ClosedAnalysisTests(unittest.TestCase):
                 'manifest_sha256': manifests['gpt']['sha256'],
                 'failures': [{'uid': 'failed-replay-unit', 'error': 'synthetic replay failure'}]})
             with self.assertRaisesRegex(ValueError, 'has no qwen36 extraction'):  # a release never extracted is no source
-                whole_effects.combine(root)
+                whole_reasoning_effects.combine(root)
             publish(root/'qwen36/extraction/EXTRACTION.json', {  # extracted, but every production row is missing
                 'manifest_sha256': manifests['qwen36']['sha256'], 'failures': []})
-            result = whole_effects.combine(root)
+            result = whole_reasoning_effects.combine(root)
             self.assertTrue((root/'analysis-combined/EFFECTS_WHOLE.json').is_file())
         self.assertEqual(result['extraction_failures']['count'], 1)
         self.assertEqual(len(result['primary']), 6)

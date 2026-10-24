@@ -32,7 +32,7 @@ scripts/steering/analyze_pulsed_steering.sh STUDY_DIR /new/folder
 LFM2.5 has no server script. Its GPU stages are `steering.lfm25_generation`, and they run in this order together with the CPU stages of `scripts/routing/`:
 
 1. `sbatch scripts/slurm/run_module_gpu.sbatch steering.lfm25_generation native --shard I/N` generates its traces.
-2. `sbatch scripts/slurm/run_module_cpu.sbatch routing.lfm materialize` picks and prepares the sentences to label (CPU).
+2. `sbatch scripts/slurm/run_module_cpu.sbatch routing.lfm25_analyses materialize --study STUDY_DIR` picks and prepares the sentences to label (CPU).
 3. `sbatch scripts/slurm/run_module_gpu.sbatch steering.lfm25_generation annotate --shard I/N` labels them.
 4. `sbatch scripts/slurm/run_module_gpu.sbatch steering.lfm25_generation replay --shard I/N` records its routers.
 
