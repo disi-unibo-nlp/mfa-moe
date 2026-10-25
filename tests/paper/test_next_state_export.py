@@ -73,15 +73,22 @@ class ExportedFiles(unittest.TestCase):
         lines = (self.data / name).read_text().splitlines()
         return lines[0].split(), [line.split() for line in lines[1:]]
 
-    def test_the_plot_data_has_one_row_per_model_with_a_label_above_each_whisker(self):
+    def test_the_plot_data_has_one_row_per_model_with_a_label_below_each_whisker(self):
         export.next_state_data()
         heading, body = self.table("next_state.dat")
         self.assertEqual(len(body), len(MODELS))
         for row in body:
             values = dict(zip(heading, row))
-            gain, margin = -float(values["gain"]), max(float(values["gainminus"]), float(values["gainplus"]))
-            self.assertEqual(values["gainlabel"], f"{gain:.3f}")
-            self.assertAlmostEqual(float(values["gainlabely"]), gain + margin + export.NEXT_STATE_LABEL_GAP)
+            mean, margin = float(values["gain"]), max(float(values["gainminus"]), float(values["gainplus"]))
+            self.assertEqual(values["gainlabel"], export.signed_label(mean))
+            self.assertAlmostEqual(float(values["gainend"]), mean - margin)
+            self.assertLess(float(values["gainlabely"]), float(values["gainend"]))
+
+    def test_a_label_that_would_touch_its_neighbour_hangs_lower_on_a_leader(self):
+        depths = export.hanging_labels({"a": .05, "b": .06, "c": .2}, {"a": 0, "b": 1, "c": 5})
+        self.assertAlmostEqual(depths["a"], .05 + export.NEXT_STATE_LABEL_GAP)
+        self.assertAlmostEqual(depths["b"], depths["a"] + export.NEXT_STATE_CLEAR)
+        self.assertAlmostEqual(depths["c"], .2 + export.NEXT_STATE_LABEL_GAP)
 
     def test_a_missing_interval_gives_a_bar_without_whisker_and_a_dagger(self):
         results = {}
@@ -156,7 +163,7 @@ class OccupancyLabels(unittest.TestCase):
         self.assertEqual(ends["Explore"][1], "7.0")
 
 
-class VerifierReadsTheTable(unittest.TestCase):
+class ExporterWritesTheTable(unittest.TestCase):
     NAMES = {model: label for label, model in verify.LABELS.items()}
 
     def setUp(self):
@@ -166,41 +173,49 @@ class VerifierReadsTheTable(unittest.TestCase):
         self.data = self.paper / "figures/journal/data"
         self.data.mkdir(parents=True)
         (self.paper / "journal/tables").mkdir(parents=True)
-        with patch.object(export, "DATA", self.data):
-            rows = [export.next_state_row(model, receipts()[model]) for model in MODELS]
-            with (self.data / "next_state.csv").open("w", newline="") as stream:
-                writer = csv.DictWriter(stream, fieldnames=list(rows[0]), lineterminator="\n")
-                writer.writeheader()
-                writer.writerows(rows)
-            export.next_state_data()
+        skeleton = "\\begin{tabular}\n\\midrule\n" + "".join(r"\modelname{x}{%s} & old \\" % self.NAMES[m] + "\n" for m in MODELS) + "\\bottomrule\n"
+        (self.paper / "journal/tables/next_state.tex").write_text(skeleton)
+        for name, value in (("DATA", self.data), ("PAPER", self.paper)):
+            patcher = patch.object(export, name, value)
+            patcher.start()
+            self.addCleanup(patcher.stop)
+        rows = [export.next_state_row(model, receipts()[model]) for model in MODELS]
+        with (self.data / "next_state.csv").open("w", newline="") as stream:
+            writer = csv.DictWriter(stream, fieldnames=list(rows[0]), lineterminator="\n")
+            writer.writeheader()
+            writer.writerows(rows)
+        export.next_state_data()
         self.rows = {row["model"]: row for row in rows}
 
-    def table_text(self):
-        gains = [verify.gains_from(self.rows, prefix) for prefix, _ in verify.NEXT_STATE_COLUMNS]
-        lines = []
-        for model in MODELS:
-            cells = []
-            for values in gains:
-                mark = verify.rank_mark(values[model][0], [v[0] for v in values.values()])
-                mean, minus, plus = verify.signed_deviations(values[model], 5)
-                cells.append("\\%sd{%s}{%s}{%s}" % (mark, mean, minus, plus))
-            row = [r"\modelname{x}{%s}" % self.NAMES[model], verify.thousands(self.rows[model]["questions"]),
-                   verify.thousands(self.rows[model]["pairs"]), *cells]
-            lines.append(" & ".join(row) + r" \\")
-        return "\n".join(lines)
+    def texts(self):
+        return {"next_state.tex": (self.paper / "journal/tables/next_state.tex").read_text()}
 
-    def test_a_table_written_from_the_export_passes_and_a_changed_cell_does_not(self):
-        text = self.table_text()
-        self.assertEqual(verify.verify_next_state(self.paper, {"next_state.tex": text})[0][1], 4 * len(MODELS))
-        changed = text.replace("cid{0.02", "cid{0.03", 1)
+    def test_a_table_written_by_the_exporter_passes_the_verifier_and_a_changed_cell_does_not(self):
+        export.next_state_table()
+        text = self.texts()["next_state.tex"]
+        self.assertEqual(verify.verify_next_state(self.paper, self.texts())[0][1], 4 * len(MODELS))
+        self.assertIn(r"\bestcid{-0.16000}", text)
+        changed = text.replace("cid{-0.02", "cid{-0.03", 1)
         self.assertNotEqual(changed, text)
         with self.assertRaises(verify.TableMismatch):
             verify.verify_next_state(self.paper, {"next_state.tex": changed})
 
     def test_a_swapped_rank_mark_is_refused(self):
-        text = self.table_text()
+        export.next_state_table()
         with self.assertRaises(verify.TableMismatch):
-            verify.verify_next_state(self.paper, {"next_state.tex": text.replace(r"\bestcid", r"\cid", 1)})
+            verify.verify_next_state(self.paper, {"next_state.tex": self.texts()["next_state.tex"].replace(r"\bestcid", r"\cid", 1)})
+
+    def test_a_table_with_another_number_of_model_rows_is_refused(self):
+        path = self.paper / "journal/tables/next_state.tex"
+        path.write_text(path.read_text().replace(r"\modelname{x}{GPT-OSS-20B} & old \\" + "\n", ""))
+        with self.assertRaises(ValueError):
+            export.next_state_table()
+
+    def test_a_second_run_leaves_the_table_as_it_is(self):
+        export.next_state_table()
+        first = self.texts()
+        export.next_state_table()
+        self.assertEqual(first, self.texts())
 
 
 if __name__ == "__main__":

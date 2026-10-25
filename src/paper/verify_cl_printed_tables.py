@@ -22,7 +22,7 @@ import unicodedata
 
 from store import file_sha
 
-ACCEPTED_REVISION = "ae5767bac870055034dfbc39642d83a17bd9a70d"
+ACCEPTED_REVISION = "f432bd8489dcd9f350db2a194f3aa5a29698e8f9"
 AUTHORIZED_REMOVALS = set()  # tables of the accepted revision that the manuscript no longer holds
 CI = re.compile(r"\\(bestcid|secondcid|cid)\{([^}]+)\}\{([^}]+)\}\{([^}]+)\}")
 TABLE = re.compile(r"\\begin\{(table|longtable)\}.*?\\end\{\1\}", re.S)
@@ -60,6 +60,7 @@ def latex_text(text: str) -> str:
         r"\Delta": "∆",
         r"\to": "→",
         r"\uparrow": "↑",
+        r"\downarrow": "↓",
         r"\ ": " ",
     }
     for old, new in replacements.items():

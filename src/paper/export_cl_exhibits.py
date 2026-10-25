@@ -2,9 +2,10 @@
 
 Nothing is fitted, resampled or run here. The bundled copies live in figures/journal/data (readout, selection and
 next-state CSVs, native dynamics, benchmark cells). A plain run turns them into the plotting files readout.dat,
-selection.dat, selection_summary.json, next_state.dat, occupancy.dat and state_transitions_*.dat. The tables of the
-manuscript are edited by hand and are never written here; `verify_cl_tables` checks them against the same copies.
-Before writing it also checks that the native-memory fixtures add up over workers and that every model has 4,647
+selection.dat, selection_summary.json, next_state.dat, occupancy.dat and state_transitions_*.dat, and rewrites the model
+rows of the tables readout, next_state, occupancy and state_transitions from the same copies. Their captions, headers and
+every other table stay as the manuscript has them; `verify_cl_tables` checks all tables against the same copies and that a
+rerun reproduces the manuscript byte for byte. Before writing it also checks that the native-memory fixtures add up over workers and that every model has 4,647
 benchmark attempts. The study is the one store.STUDY names (STUDY_DATA_ROOT).
 
   python -m paper.export_cl_exhibits                 plotting files from the bundled copies
@@ -22,7 +23,7 @@ import json
 import shutil
 
 from paper.cl_models import MODELS, SEVEN_MODELS
-from paper.cl_paths import DATA, REPO, SAVED_REPORTS
+from paper.cl_paths import DATA, PAPER, REPO, SAVED_REPORTS
 from paper.export_routing_results import PAPER_CLASSES
 from store import BENCHMARKS, FAST, STUDY, file_sha, verified
 
@@ -86,7 +87,8 @@ def capture():
                                                    "new_measurement": False}, indent=2) + "\n")
 
 
-NEXT_STATE_LABEL_GAP = .006  # axis units between the top of a whisker and its value label
+NEXT_STATE_LABEL_GAP = .006  # axis units between the end of a whisker and its value label
+NEXT_STATE_CLEAR = .024     # axis units from the top of one label to the top of a label that must clear it
 LFM_ROOT = STUDY / "lfm25"
 LFM_BULK = FAST / STUDY.name / "lfm25"
 
@@ -337,28 +339,49 @@ def selection_data():
 def next_state_data():
     """Next-state cross-entropy change of routing over text, and over the lexical null, with the label of each bar.
 
-    The columns keep the loss sign of the receipts (routing minus baseline, negative when routing helps); the figure
-    plots their negation. A label sits above its whisker: its height and text are written here, not typed.
+    The columns keep the loss sign of the receipts (routing minus baseline, negative when routing helps), and the
+    bars hang from zero. A label sits below the end of its whisker; one that would touch the label of a neighbouring
+    column hangs lower on a gray leader. Label text, height and leader length are written here, not typed.
     """
     rows = {r["model"]: r for r in read_csv("next_state.csv")}
     if set(rows) != set(MODELS):
         raise ValueError("next-state roster mismatch")
-    coords = []
-    for i, model in enumerate(MODELS):
-        r = rows[model]
-        if r["status"] != "CLEAN":
-            raise ValueError("next-state status mismatch")
-        values = []
-        for prefix in ("", "null_"):
+    columns = {}
+    for prefix in ("", "null_"):
+        values = {}
+        for model in MODELS:
+            r = rows[model]
+            if r["status"] != "CLEAN":
+                raise ValueError("next-state status mismatch")
             mean = float(r[prefix + "delta_logloss"])
             low, high = float(r[prefix + "simultaneous_ci7_low"]), float(r[prefix + "simultaneous_ci7_high"])
             if not low <= mean <= high:
                 raise ValueError("next-state interval mismatch")
-            margin = max(mean - low, high - mean)
-            values.extend((mean, mean - low, high - mean, -mean + margin + NEXT_STATE_LABEL_GAP, format(-mean, ".3f")))
-        coords.append((i + 1, *values))
-    dat("next_state.dat", ("x", "gain", "gainminus", "gainplus", "gainlabely", "gainlabel",
-                           "null", "nullminus", "nullplus", "nulllabely", "nulllabel"), coords)
+            values[model] = (mean, mean - low, high - mean, mean - max(mean - low, high - mean))
+        depths = hanging_labels({m: -v[3] for m, v in values.items()}, {m: i for i, m in enumerate(MODELS)})
+        columns[prefix] = [(*values[m][:3], values[m][3], -depths[m], depths[m] + values[m][3] if depths[m] + values[m][3] > NEXT_STATE_LABEL_GAP + 1e-9 else 0.,
+                            signed_label(values[m][0])) for m in MODELS]
+    dat("next_state.dat", ("x", "gain", "gainminus", "gainplus", "gainend", "gainlabely", "gainlead", "gainlabel",
+                           "null", "nullminus", "nullplus", "nullend", "nulllabely", "nulllead", "nulllabel"),
+        [(i + 1, *columns[""][i], *columns["null_"][i]) for i in range(len(MODELS))])
+
+
+def hanging_labels(ends, column):
+    """Depth of the label under each whisker end (a depth below zero): the shallowest first, each at the gap below its
+    end unless a neighbouring column's label is closer than NEXT_STATE_CLEAR, which pushes it below that label."""
+    placed = {}
+    for key in sorted(ends, key=ends.get):
+        depth = ends[key] + NEXT_STATE_LABEL_GAP
+        for other, other_depth in placed.items():
+            if abs(column[other] - column[key]) <= 1 and depth < other_depth + NEXT_STATE_CLEAR - 1e-12:
+                depth = other_depth + NEXT_STATE_CLEAR
+        placed[key] = depth
+    return placed
+
+
+def signed_label(value):
+    """A value label with three decimals and a typeset minus sign."""
+    return ("$-$" if value < 0 else "") + format(abs(value), ".3f")
 
 
 # Panels of the transition summary: column prefix, panel of native_dynamics.json, unit scale and the top of the axis.
@@ -395,7 +418,7 @@ def dynamics_data():
     dynamics = json.loads((DATA / "native_dynamics.json").read_text())
     # Matrix coordinates are copied by named state, never relabeled in place.
     for model in MODELS:
-        matrix, absent = [], []
+        matrix = []
         for y, state in enumerate(PAPER_CLASSES, 1):
             row = [dynamics[model]["results"][state + ":next:" + destination] for destination in PAPER_CLASSES]
             # An undefined estimate stays missing (nan), never zero, and is not summed.
@@ -406,11 +429,7 @@ def dynamics_data():
                 raise ValueError("transition row exceeds one")
             for x, r in enumerate(row, 1):
                 matrix.append((x, y, float("nan") if r["estimate"] is None else r["estimate"], int(r["interval"] is None)))
-                if r["interval"] is None:
-                    absent.append((x + .32, y - .32))
         dat("state_transitions_" + model + ".dat", ("to", "from", "probability", "missing"), matrix)
-        if absent:
-            dat("state_transitions_missing_" + model + ".dat", ("to", "from"), absent)
     summary_data(dynamics)
     order = ("Analyze", "Implement", "Verify", "Monitor", "Read", "Explore", "Plan")
     coords = []
@@ -450,6 +469,104 @@ def occupancy_labels(tops, order):
     return [ends[c] for c in order]
 
 
+TABLE_NAMES = {
+    "gpt": r"\modelname{openai}{GPT-OSS-20B}",
+    "lfm25": r"\modelname{liquid}{LFM2.5-24B-A2B}",
+    "gemma": r"\modelname{gemma}{Gemma-4-26B-A4B}",
+    "nemotron": r"\modelname{nvidia}{Nemotron-3.5 30B-A3B}",
+    "glm": r"\modelname{zhipu}{GLM-4.7-Flash (30B-A3B)}",
+    "qwen330b": r"\modelname{qwen}{Qwen3-30B-A3B}",
+    "qwen35": r"\modelname{qwen}{Qwen3.5-35B-A3B}",
+    "qwen36": r"\modelname{qwen}{Qwen3.6-35B-A3B}",
+}
+STATES = ("Read", "Analyze", "Explore", "Plan", "Implement", "Verify", "Monitor")
+
+
+def cell(mean, low, high, digits, mark="cid", symmetric=False):
+    """A table cell with its mean and the two margins to the interval limits (the larger twice when symmetric)."""
+    minus, plus = mean - low, high - mean
+    if symmetric:
+        minus = plus = max(minus, plus)
+    return "\\%s{%s}{%s}{%s}" % (mark, *(f"{x:.{digits}f}" for x in (mean, minus, plus)))
+
+
+def marked(values, *, lowest=False):
+    """The cell macro of each model: the best and second-best distinct values get bold and underline."""
+    ranks = sorted(set(v[0] for v in values.values()), reverse=not lowest)
+    mark = {ranks[0]: "bestcid"}
+    if len(ranks) > 1:
+        mark[ranks[1]] = "secondcid"
+    return {model: mark.get(v[0], "cid") for model, v in values.items()}
+
+
+def thousands(value):
+    return f"{int(value):,}"
+
+
+def rewrite_rows(name, rows):
+    """Replace the model rows of a table, written in the order of `rows`; everything else stays as it is."""
+    path = PAPER / "journal/tables" / name
+    lines = path.read_text().split("\n")
+    first = next(i for i, line in enumerate(lines) if line.startswith("\\modelname"))
+    last = first + len(rows)
+    if len(rows) != len(MODELS) or not all(line.startswith("\\modelname") for line in lines[first:last]) \
+            or lines[last].startswith("\\modelname"):
+        raise ValueError(name + ": the rows to replace differ from the model rows")
+    lines[first:last] = [" & ".join([TABLE_NAMES[model], *cells]) + " \\\\" for model, cells in rows]
+    text = "\n".join(lines)
+    if text != path.read_text():
+        path.write_text(text)
+
+
+def gain_cells(rows, prefix, *, flip):
+    """(mean, low, high) of each model's gain with its simultaneous limits; `flip` turns a loss change into a reduction."""
+    out = {}
+    for model in MODELS:
+        r = rows[model]
+        mean, low, high = (float(r[prefix + key]) for key in ("delta_logloss", "simultaneous_ci7_low", "simultaneous_ci7_high"))
+        out[model] = (-mean, -high, -low) if flip else (mean, low, high)
+    return out
+
+
+def readout_table():
+    """Rig and alignment gain: reductions of the text baseline's and of the lexical null's loss."""
+    rows = {r["model"]: r for r in read_csv("routing_readout.csv")}
+    columns = [gain_cells(rows, prefix, flip=True) for prefix in ("routing_", "routing_excess_over_lexical_null_")]
+    marks = [marked(c) for c in columns]
+    rewrite_rows("readout.tex", [(m, [thousands(rows[m]["sentences"]), *(cell(*c[m], 5, k[m]) for c, k in zip(columns, marks))])
+                                 for m in MODELS])
+
+
+def next_state_table():
+    """Next-state routing gain and alignment contrast, as the receipts sign them: negative when routing helps."""
+    rows = {r["model"]: r for r in read_csv("next_state.csv")}
+    columns = [gain_cells(rows, prefix, flip=False) for prefix in ("", "null_")]
+    marks = [marked(c, lowest=True) for c in columns]
+    rewrite_rows("next_state.tex", [(m, [thousands(rows[m]["questions"]), thousands(rows[m]["pairs"]),
+                                         *(cell(*c[m], 5, k[m]) for c, k in zip(columns, marks))]) for m in MODELS])
+
+
+def dynamics_cell(panel, key, scale, mark="cid"):
+    """An estimate of the native-dynamics panel with its symmetric margin, or with n/e when it has no interval."""
+    r = panel["results"][key]
+    mean = scale * r["estimate"]
+    if r["interval"] is None:
+        return "$%.2f_{\\mathrm{n/e}}$" % mean
+    low, high = (scale * x for x in r["interval"])
+    return cell(mean, low, high, 2, mark, symmetric=True)
+
+
+def dynamics_tables():
+    """Occupancy of the seven states, and annotation coverage with three transitions and the Verify dwell."""
+    dynamics = json.loads((DATA / "native_dynamics.json").read_text())
+    rewrite_rows("occupancy.tex", [(m, [dynamics_cell(dynamics[m], state + ":occupancy", 100) for state in STATES]) for m in MODELS])
+    cells = (("label_coverage", 100), ("Analyze:next:Implement", 100), ("Implement:next:Verify", 100),
+             ("Verify:next:Verify", 100), ("Verify:observed_dwell_tokens", 1))
+    rewrite_rows("state_transitions.tex",
+                 [(m, [thousands(dynamics[m]["results"]["label_coverage"]["family_support"]),
+                       *(dynamics_cell(dynamics[m], key, scale) for key, scale in cells)]) for m in MODELS])
+
+
 def check_inputs():
     """The seven-model captures each have a native-memory fixture that adds up over workers; every model has 4,647 attempts."""
     fixtures = {r["model"]: r for r in json.loads((DATA / "native_fixtures.json").read_text())}
@@ -478,6 +595,9 @@ def main(capture_existing=False, capture_lfm=False, capture_next=False, capture_
     selection_data()
     next_state_data()
     dynamics_data()
+    readout_table()
+    next_state_table()
+    dynamics_tables()
     print(json.dumps({"models": len(MODELS), "selection_cells": len(MODELS) * 15, "native_dynamics_models": len(MODELS),
                       "next_state_models": len(MODELS), "new_inference": False}))
 
