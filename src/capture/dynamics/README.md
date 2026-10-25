@@ -1,6 +1,6 @@
 # src/capture/dynamics
 
-The reductions that capture applies to every trace: how the routing moves from token to token, and the sentence table that says which tokens belong to which sentence. They are used inside `capture.reduce`; `classes.saved_layout` is also used by `routing.lfm`, `steering.nominations` and the lexical-table builders.
+The reductions that capture applies to every trace: how the routing moves from token to token, and the sentence table that says which tokens belong to which sentence. They are used inside `capture.reduce`; `classes.saved_layout` is also used by `routing.lfm25_analyses`, `routing.labelled_sentence_table` and the lexical-table builder `routing.lexical_data.build_native`.
 
 | File | What it does |
 | --- | --- |

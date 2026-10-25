@@ -1,7 +1,7 @@
 """The GPU stages of LFM2.5 that run in the steering engine: its native traces, its judge labels and its router replay.
 
 LFM2.5 has no server script, so these stages use the engine of steering.pulsed_steering without hooks (native,
-annotate) or the capture backend (replay). They run in this order, between the CPU stages of routing.lfm:
+annotate) or the capture backend (replay). They run in this order, between the CPU stages of routing.lfm25_analyses:
 
   python -m steering.lfm25_generation native --shard I/N     GPU: generate the native population (unhooked engine)
   python -m steering.lfm25_generation annotate --shard I/N   GPU: the judge labels of the sampled sentences

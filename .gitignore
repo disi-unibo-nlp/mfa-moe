@@ -365,11 +365,8 @@ report/
 !sbatch/routing_steering_merge.sbatch
 report/*
 
-# Versioned experimental resume code, protocols, and bounded evidence receipts.
-
 # Local test environments, temporary fixtures, locks, and raw reviewer transcripts.
 .venv-native-finalization-tests/
-scripts/experimental_resume/*.superseded-v3-copy
 
 
 paper/
@@ -486,12 +483,6 @@ paper/6a510c6db0d9b08aa438c142/generated/research_campaign_v3/**/validation/
 !paper/6a510c6db0d9b08aa438c142/archive/20261014-pre-journal/**/*.bib
 !paper/6a510c6db0d9b08aa438c142/archive/20261014-pre-journal/SOURCE_SNAPSHOT.json
 paper/6a510c6db0d9b08aa438c142/.paper-review/
-
-# Approved eight-model final-routing sources, contracts and compact receipts.
-
-# Final-routing operational repair tests and compact registry receipts.
-
-# Outcome-selected gentle steering (F-0004): tests mirror src/moe_exp/outcome_steering.
 
 # Manuscript tooling beside the paper folder: figure sources and data and notes are tracked; build
 # output stays local.

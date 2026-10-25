@@ -9,7 +9,7 @@ re-prefilling prompt + prefix + generated tokens through the same hooks, so the
 pulse is re-applied at its original positions. Nothing is redrawn.
 
 The engine, the stores and the helpers here are also the base of steering.whole_reasoning and of the judge
-engine that routing.transition_pairs uses (annotate_rows). The LFM2.5 GPU stages are in steering.lfm25_generation.
+engine that routing.next_sentence_labels uses (annotate_rows). The LFM2.5 GPU stages are in steering.lfm25_generation.
 The study folder is the one store.STUDY names (STUDY_DATA_ROOT, default report/final-routing-20261015-r1).
 
 Commands (python -m steering.pulsed_steering ...; a model M is a Hugging Face id or a short key):

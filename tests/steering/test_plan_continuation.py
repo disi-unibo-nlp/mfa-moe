@@ -136,7 +136,7 @@ class SubmittedJobsTests(unittest.TestCase):
 
     def test_releases_launched_before_the_module_renames_are_read_too(self):
         with tempfile.TemporaryDirectory(dir=TMP) as temporary:
-            (Path(temporary)/'JOBS.txt').write_text(  # the module was steering.whole then
+            (Path(temporary)/'JOBS.txt').write_text(  # the JOBS.txt of earlier releases names the module steering.whole
                 'whole-run-glm 2 sbatch -J whole-run-glm run_module_gpu.sbatch steering.whole run --release R --model glm --shard 3/27\n'
                 'whole-extract-glm 3 sbatch -J whole-extract-glm run_module_cpu.sbatch steering.whole extract --release R --model glm\n')
             self.assertEqual(continuation.submitted_jobs(Path(temporary)),

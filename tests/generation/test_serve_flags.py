@@ -1,4 +1,4 @@
-"""The `vllm serve` command lines built by generation/serve_flags.py are the ones the eight per-model scripts started."""
+"""The `vllm serve` command line that generation/serve_flags.py builds for each model is pinned flag by flag."""
 import json
 import os
 import subprocess
@@ -13,14 +13,14 @@ from models.roster import HF_IDS, JUDGE_MODEL
 
 SRC = Path(__file__).resolve().parents[2] / "src"
 PORT = "12345"
-# The flags every server shares (the old scripts/serve/args.sh), with the port of this test.
+# The flags every server shares, with the port of this test.
 SHARED = ["--host", "127.0.0.1", "--port", PORT, "--api-key", "local-vllm-key", "--tensor-parallel-size", "2",
           "--dtype", "bfloat16", "--kv-cache-dtype", "bfloat16", "--generation-config", "vllm",
           "--enable-prefix-caching", "--max-num-batched-tokens", "8192", "--gpu-memory-utilization", "0.90"]
 MTP3 = '{"method":"mtp","num_speculative_tokens":3}'
-# (model name, what came before the shared flags, what came after them): the arguments after `vllm serve` in
-# scripts/serve/{gpt,nemotron,qwen35,qwen36,gemma,glm,qwen330b,judge}.sh, as they were before serve_model.sh.
-OLD_SCRIPTS = {
+# (model name, what comes before the shared flags, what comes after them): the arguments after `vllm serve`
+# for each of the seven card models and the judge.
+SERVER_ARGUMENTS = {
     "openai/gpt-oss-20b": (
         ["openai/gpt-oss-20b", "--revision", "6cee5e81ee83917806bbde320786a8fb61efebee"],
         ["--reasoning-parser", "openai_gptoss", "--attention-config", '{"backend":"TRITON_ATTN"}',
@@ -61,14 +61,14 @@ OLD_SCRIPTS = {
 }
 
 
-@pytest.mark.parametrize("model", sorted(OLD_SCRIPTS))
-def test_the_command_line_is_the_one_the_old_script_started(model):
-    before, after = OLD_SCRIPTS[model]
+@pytest.mark.parametrize("model", sorted(SERVER_ARGUMENTS))
+def test_the_command_line_is_the_pinned_one(model):
+    before, after = SERVER_ARGUMENTS[model]
     assert serve_argv(model, PORT) == before + SHARED + after
 
 
 def test_every_study_model_with_a_server_and_the_judge_are_pinned():
-    assert {HF_IDS[key] for key in CARD_PROFILES} | {JUDGE_MODEL} == set(OLD_SCRIPTS)
+    assert {HF_IDS[key] for key in CARD_PROFILES} | {JUDGE_MODEL} == set(SERVER_ARGUMENTS)
 
 
 def test_a_model_can_be_named_by_its_short_key():
@@ -82,7 +82,7 @@ def test_lfm25_has_no_server_and_an_unknown_model_is_refused():
         serve_argv("openai/gpt-oss-120b", PORT)
 
 
-@pytest.mark.parametrize("model", sorted(OLD_SCRIPTS))
+@pytest.mark.parametrize("model", sorted(SERVER_ARGUMENTS))
 def test_the_flags_agree_with_the_recorded_generation_contract(model):
     """What the trace contract records (model_profiles.py) is what the server was started with."""
     argv = serve_argv(model, PORT)

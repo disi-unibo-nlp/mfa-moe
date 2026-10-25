@@ -1,14 +1,13 @@
 # steering: walkthroughs
 
 ## whole-nomination-trace: Whole nomination and an actual control-feasible GPT cell
-- commit: 308969e40638d01287c016aa5d61306f00fc57c4
-- source: report/whole-reasoning-20261020-r3-batched/deterministic/gpt/WHOLE_NOMINATIONS.json (sha256 11e2324f), gpt/WHOLE.json (8b78678e), gpt/WHOLE_HALF.json (99764d19), qwen36/WHOLE.json (83a966ae), NOMINATION_AUDIT.json (215cdfb7), the DP reference CONTROL_FEASIBLE_RD_BOTH_DOSES.json (e3577e2f); every value below comes from a run on 2026-10-24 of the code at this commit over those saved files
-- code: src/steering/selection.py, src/steering/nominations.py, src/steering/whole.py, tests/steering/test_whole.py
+- commit: e63f4d8dc28cc751351c09cdb329d323de567c6b
+- source: report/whole-reasoning-20261020-r3-batched/deterministic/gpt/WHOLE_NOMINATIONS.json (sha256 11e2324f), gpt/WHOLE.json (8b78678e), gpt/WHOLE_HALF.json (99764d19), qwen36/WHOLE.json (83a966ae), NOMINATION_AUDIT.json (215cdfb7), the DP reference CONTROL_FEASIBLE_RD_BOTH_DOSES.json (e3577e2f); every value below comes from a run on 2026-10-25 of the code at this commit over those saved files
+- code: src/steering/selection.py, src/steering/nominations.py, src/steering/whole_reasoning.py, tests/steering/test_whole.py
 
 **Input:** The GPT-OSS-20B Read nomination of the whole-reasoning release for held-out fold 0 (main dose,
 promote), rebuilt from discovery folds 1, 2, 3 and 4 only. No whole-arm outcome is read anywhere in this
-trace. This is the retrace of the walkthrough first written on 2026-10-20 at commit 16cf599, when the code
-was `final_routing.selection` and `study.whole`; the modules are now `steering.selection` and `steering.whole`.
+trace.
 
 ### 1. Global nomination (`nominations.discovery_inputs`, `selection.global_pairs`)
 
@@ -31,7 +30,7 @@ four inner refits that leave one more fold out.
 
 ### 2. Capped ranking (`selection.select_pairs`, no controls)
 
-`whole.dose_counts('gpt', ..., 'main', 'promote')` gives (10, 50). The activation cap is one pair per layer,
+`whole_reasoning.dose_counts('gpt', ..., 'main', 'promote')` gives (10, 50). The activation cap is one pair per layer,
 the deactivation cap is ceil(50/24) = 3. Walking the candidates in order of absolute risk difference, the
 exact-rank deactivation set has total absolute RD 5.992919759516524. The opposite-polarity exclusion (the
 10 negative activations and 50 positive deactivations the other direction would pick) has 60 pairs.
@@ -44,7 +43,7 @@ that layer are [3, 25, 20] and the opposite exclusion there is [4, 13, 28], so e
 That leaves only [9, 26] to serve three targets. The greedy walk charges a new target its own pool slot plus
 one distinct control and skips the target that cannot leave one.
 
-### 4. Match the selected roles (`selection.layer_matched_controls`, called by `whole.cell_actions`)
+### 4. Match the selected roles (`selection.layer_matched_controls`, called by `whole_reasoning.cell_actions`)
 
 | Layer 14, deactivation | Experts |
 |---|---|
@@ -57,11 +56,12 @@ exclusions. Retained absolute RD is 5.933801208792859, a fraction of 0.990135267
 frequency of the steered experts is 0.361816186798991 for the targets and 0.2953428770321593 for the random
 controls. The rebuilt cell equals the cell stored in `gpt/WHOLE.json` (`True`).
 
-### 5. Qualification of the whole release (`whole.cell_actions` for every cell, the comparisons of `whole.audit_nominations`)
+### 5. Qualification of the whole release (`whole_reasoning.cell_actions` for every cell, the comparisons of `whole_reasoning.audit_nominations`)
 
 All cells of the deterministic release were rebuilt from the saved nominations and compared with what the
-release stored. For GPT the nominations themselves were recomputed too; for Qwen3.6 the saved candidate
-lists were used (recomputing them did not finish inside the 550 s wall limit of the first, login-node run).
+release stored (`audit_nominations` itself publishes a receipt, so the run repeated its comparisons without
+writing). For GPT the nominations themselves were recomputed too (step 1); for Qwen3.6 the saved candidate
+lists were used and not recomputed.
 
 | Check | GPT-OSS | Qwen3.6 |
 |---|---|---|
@@ -73,40 +73,40 @@ lists were used (recomputing them did not finish inside the 550 s wall limit of 
 | rows planned = executable, per dose | 3,096 | 2,838 |
 
 The unit tests `tests/steering/test_whole.py` and `tests/steering/test_stream_batch.py` ran in a CPU job
-in the vLLM environment: 33 tests, OK, 14 s. They include the sign-survival, half-availability and
-control-matching tests behind steps 1 to 4.
+in the vLLM environment (Slurm job 62189637, pytest): 33 passed in 125.88 s. They include the sign-survival,
+half-availability and control-matching tests behind steps 1 to 4.
 
 ### Worth noticing
 
-- The new code reproduces every nomination receipt of 2026-10-20 without a difference: 35 GPT records, 210
-  cells and 70 DP matches. The move from `final_routing` and `study` into `steering` changed no result.
+- The code reproduces every nomination receipt of the release without a difference: 35 GPT records, 210
+  cells (110 GPT, 100 Qwen3.6) and 70 DP matches.
 - Control capacity decides the nomination before any outcome. In this cell expert 20 is replaced to keep
   distinct controls, at a cost of 1 percent of the retained RD; the lowest retained fraction over the GPT main promote cells is 0.9426.
 - Targets still sit on more frequently used experts than their controls (0.362 against 0.295), so the
   matching is by quintile, not by value.
-- The release's original allocated qualification (job 61581053, 190 tests) is a Slurm stage of every release
-  (`python -m steering.whole validate`); the CPU-job run above is a spot check of the same code, not a replacement.
+- The release's allocated qualification (job 61581053, 190 tests, `CPU_VALIDATION.json`) is the `validate` stage
+  of every release (`python -m steering.whole_reasoning validate`, the `whole-tests` job of
+  `scripts/steering/submit_release_jobs.sh`); the CPU-job run above is a spot check of the same code, not a replacement.
 
 ## whole-canary-trace: One saved whole-routing canary unit
-- commit: 308969e40638d01287c016aa5d61306f00fc57c4
-- source: report/whole-reasoning-20261020-r3-batched/deterministic/stores/gpt/main/canary/d110fdc51c1f33901e79e28217594b4654f1ae3a69f15a03aee8435067a09618/ (AUDIT.npz, CAPTURE.json, OUTPUT.json, PARTIAL.json, RESULT.json), gpt/WHOLE.json (8b78678e), gpt/CANARY.json, GPT_SOFTWARE_FAILURE.json; native job 61581237; every value below comes from a run on 2026-10-24 of the code at this commit over those saved files
-- code: src/steering/whole.py, src/steering/pulse.py, src/steering/stream.py, src/steering/operators.py, scripts/steering/gpu.sh, tests/steering/test_stream_batch.py
+- commit: e63f4d8dc28cc751351c09cdb329d323de567c6b
+- source: report/whole-reasoning-20261020-r3-batched/deterministic/stores/gpt/main/canary/d110fdc51c1f33901e79e28217594b4654f1ae3a69f15a03aee8435067a09618/ (AUDIT.npz, CAPTURE.json, OUTPUT.json, PARTIAL.json, RESULT.json), gpt/WHOLE.json (8b78678e), gpt/CANARY.json, GPT_SOFTWARE_FAILURE.json; native job 61581237; every value below comes from a run on 2026-10-25 of the code at this commit over those saved files
+- code: src/steering/whole_reasoning.py, src/steering/pulsed_steering.py, src/steering/stream.py, src/steering/operators.py, scripts/slurm/run_module_gpu.sbatch, tests/steering/test_stream_batch.py
 
 **Input:** The saved unit of the actual Minerva family
 60e8b726e6566124e257983eb62d37173a5df88f0c7196d6f76052195338f2ed, fold 4, arm `target_suppress`, class
 Read, from the GPT canary of the whole-reasoning release (job 61581237). Its original prompt has 191 tokens,
 its seed is 2186601647 and its allowance 130,881. The unit is a canary: it never enters a production
-analysis. This is the retrace of the walkthrough first written on 2026-10-20 at commit 16cf599, when the
-modules were `study.whole`, `study.driver`, `study.stream` and `final_routing.operator`.
+analysis.
 
-### 1. Admission (`whole.canary_rows`, `pulse.intervention_builder`, `pulse.Engine.admit`)
+### 1. Admission (`whole_reasoning.canary_rows`, `pulsed_steering.intervention_builder`, `pulsed_steering.Engine.admit`)
 
 `canary_rows` on the saved GPT main manifest picks 8 families (one per benchmark plus two more) and, per
 family, the two native arms and the Verify promote and Read suppress cells: 48 rows, of which 32 steer.
-Today's row for this unit has uid e70dffcb, the saved unit has uid d110fdc5. The only difference is the
-audit flag: the 2026-10-20 canary forced `audit_capture` on every row, today only the 32 production units
-chosen in advance carry it (32 of 3,096). Setting the flag on the manifest row gives uid d110fdc5 and the
-assignment hash 1949593e that `RESULT.json` stores.
+The rebuilt row for this unit has uid e70dffcb, the saved unit has uid d110fdc5. The only difference is the
+audit flag: the saved canary ran with `audit_capture` set on every row, while `canary_rows` keeps the flag
+the manifest row has, and only the 32 production units chosen in advance carry it (32 of 3,096). Setting the
+flag on the manifest row gives uid d110fdc5 and the assignment hash 1949593e that `RESULT.json` stores.
 
 | Row of the unit | Value |
 |---|---|
@@ -117,9 +117,14 @@ assignment hash 1949593e that `RESULT.json` stores.
 | closure marker | token ids [200005, 17196, 200008] = `<|channel|>final<|message|>` |
 
 The builder returns the request that `Engine.admit` registers on both tensor-parallel ranks (fields
-`uid, prompt, prefix, closure, actions, capture_layers, window, whole, prompt_scope, audit_capture`). The
-engine itself needs vLLM and was not run: `PARTIAL.json` on disk records the same seed, `max_tokens`, history 0
-and job 61581237.
+`uid, prompt, prefix, closure, action, actions, capture_layers, window, whole, prompt_scope, audit_capture,
+capture_mode`; `action` and `capture_mode` are None here). The engine itself needs vLLM and was not run on
+the GPU: `PARTIAL.json` on disk records the same seed, `max_tokens`, history 0 and job 61581237. *demo:* `admit`
+driven by a stub engine (a class that only accepts `add_request` and `collective_rpc`) writes a
+`PARTIAL.json` with the same assignment hash 1949593e, seed, `max_tokens` 130,881 and history 0, and sends one
+`stream_add` call. The builder gives the whole allowance only when it gets no limit; `whole_reasoning.run`
+passes a canary the limit `CANARY_TOKENS.get(model, 32768)`, so a canary started from this commit would cap
+this unit at 32,768 tokens. The saved unit ran without that cap.
 
 ### 2. Scope (`stream.Clock.observe`)
 
@@ -134,7 +139,8 @@ generated), and the stored capture says `observed_tokens` 995, `passes` 1, `clos
 For every row the layer applies the dual score override: the removed expert's log-score goes to the row
 minimum minus 0.01, the router takes its own top-4 and renormalizes. The router logits are not kept, only the
 audited top-4 ids and weights, so the operator cannot be re-run on this unit; the operator test
-(`test_dual_matches_extrema_reference_and_preserves_inactive_bits`) passes instead. What the archive shows at
+(`test_dual_matches_extrema_reference_and_preserves_inactive_bits` in `tests/steering/test_whole.py`) passes
+instead. What the archive shows at
 generated position 0 of layer 1:
 
 | | ids | weights |
@@ -164,7 +170,7 @@ The archive holds no prompt rows, so those totals are checked in part. The store
 counters are 739 on every layer; layers without an action (0, 2, 3, 19) store zero active positions. These
 are same-state routing measurements, not effects on correctness or length.
 
-### 5. Release and archive (`Engine.release`, `pulse.compress_audit_capture`)
+### 5. Release and archive (`pulsed_steering.Engine.release`, `pulsed_steering.compress_audit_capture`)
 
 The unit finishes after 805 output tokens with `stop`; `RESULT.json` says `complete`, one segment, no
 stochastic redraw, and binds the raw output hash e53ba782 that `CAPTURE.json` repeats. The audit is a
@@ -174,7 +180,7 @@ which equals `full_capture.sha256_file` in `CAPTURE.json`.
 
 ### Worth noticing
 
-- A saved canary store cannot be matched by rebuilding the 48 rows with today's code: only 1 of the 48 saved
+- A saved canary store cannot be matched by rebuilding the 48 rows with `canary_rows`: only 1 of the 48 saved
   uids is reproduced (a row whose audit flag was already on). With the flag forced on, all 48 are reproduced.
 - The scope is checkable on a CPU: replaying saved tokens through `Clock` gives exactly the 929 rows the
   GPU job counted, with the closure at generated position 738.
@@ -185,19 +191,20 @@ which equals `full_capture.sha256_file` in `CAPTURE.json`.
   later cleanup error (`unknown released request`) hides that first error. Three saved units do not qualify the
   48-row canary, and GPT production was withheld; the failure and every charge remain recorded.
 - The tests of the batched counters (`tests/steering/test_stream_batch.py`, with `test_whole.py`) ran in a
-  CPU job: 33 tests, OK, 14 s. The canary now starts with `sbatch scripts/steering/gpu.sh steering.whole
-  canary --release report/NAME --model gpt`.
+  CPU job (Slurm job 62189637, pytest): 33 passed in 125.88 s. A canary starts with `sbatch
+  scripts/slurm/run_module_gpu.sbatch steering.whole_reasoning canary --release report/NAME --model
+  openai/gpt-oss-20b`; `scripts/steering/submit_release_jobs.sh` queues no canary.
 
 ## outcome-selection-trace: Outcome-selected steering, the GPT-OSS expert set
-- commit: 308969e40638d01287c016aa5d61306f00fc57c4
-- source: report/outcome-steering-20261022-r1 (gpt/OUTCOME_SELECTION.json sha256 6a283ef2, gpt/WHOLE.json, analysis/EFFECTS_OUTCOME.json 9e0f3f73, analysis/DECISION.json), the per-attempt usage /leonardo_scratch/fast/IscrC_MIOSR/lmolfett/mfa-moe/campaign-runs/outcome-steering/gpt/USAGE.{json,npz} (usage sha256 afcca894) and the class nominations of report/whole-reasoning-20261021-r7; every value below comes from a run on 2026-10-24 of the code at this commit on those files
-- code: src/steering/outcome/select.py, src/steering/outcome/manifest.py, src/steering/outcome/decide.py, scripts/steering/outcome_usage.sh, tests/steering/outcome/test_select.py
+- commit: e63f4d8dc28cc751351c09cdb329d323de567c6b
+- source: report/outcome-steering-20261022-r1 (gpt/OUTCOME_SELECTION.json sha256 6a283ef2, gpt/WHOLE.json, analysis/EFFECTS_OUTCOME.json 9e0f3f73, analysis/DECISION.json), the per-attempt usage /leonardo_scratch/fast/IscrC_MIOSR/lmolfett/mfa-moe/campaign-runs/outcome-steering/gpt/USAGE.{json,npz} (usage sha256 afcca894) and the class nominations of report/whole-reasoning-20261021-r7; every value below comes from a run on 2026-10-25 of the code at this commit on those files
+- code: src/steering/outcome/select.py, src/steering/outcome/manifest.py, src/steering/outcome/decide.py, scripts/steering/measure_expert_usage.sh, tests/steering/outcome/test_select.py
 
 **Input:** GPT-OSS-20B in the first wave of the outcome-selected gentle-steering experiment (feature outcome-steering-r1,
 decision gentle-routing-nudge): the experts that its wrong attempts use more than its right attempts of the same question,
-chosen from the 276 cohort-B attempts of 37 AIME and AMC questions. `scripts/steering/outcome_usage.sh`
-(a CPU job running `python -m steering.outcome usage`) made the usage rates; the steps below rebuild the
-selection from them, the rows that use it, and the declared decision.
+chosen from the 276 cohort-B attempts of 37 AIME and AMC questions. `scripts/steering/measure_expert_usage.sh
+REPORTS_DIR OUT_DIR openai/gpt-oss-20b` (a CPU job running `python -m steering.outcome usage`) made the usage
+rates; the steps below rebuild the selection from them, the rows that use it, and the declared decision.
 
 ### 1. Usage per attempt (`select.usage`, read here from its receipt)
 
@@ -205,7 +212,11 @@ Every cohort-B capture is reduced to a rate: the fraction of its reasoning token
 expert). `USAGE.npz` holds `rates` of shape (276, 24, 32), float32; each layer of an attempt sums to 4.0, the
 native top-k. The outcome of each attempt is the re-scored strict correctness: 147 right, 129 wrong, 0 unknown.
 All 37 questions have both a right and a wrong attempt. The usage receipt hash matches the one the selection
-records (afcca894).
+records (afcca894). `usage` writes `MODEL/USAGE.json` and `USAGE.npz` under the `OUT_DIR` it is given and refuses a
+model whose `USAGE.json` is already there, so a measured table is never overwritten; `selection` reads the tables
+under `select.BULK`. Running `measure_expert_usage.sh` into a new folder (job 62189039, 4 CPUs, 32 s) gave the same
+`rates` array, bit for bit, and the same `attempts` list. Its receipt hash differs (18afedf1) only because the
+receipt records `code_sha256`, the hash of `select.py`, which has changed since the saved measurement.
 
 ### 2. Protected experts (`select.protected_pairs`)
 
@@ -243,7 +254,8 @@ questions are in cohort B, giving 14 sets in all. The set without `aime24|aime24
 ### 5. Rows (`manifest.nudge_actions`, `manifest.outcome_manifest`)
 
 Each evaluation family gets a `target_nudge` and a `random_nudge` row at delta 0.4, 0.8 and 1.6, and a length-limit
-`budget` row at 50, 70 and 85 percent of its native reasoning. A nudge is one `score_shift` action per layer. The first
+`budget` row at 50, 70 and 85 percent of its native reasoning: 9 rows per family, 1,161 rows for the 129 families. A
+nudge is one `score_shift` action per layer. The first
 `target_nudge` row of `gpt/WHOLE.json` has delta 0.4, expert set `all` and 12 actions, the first being
 `{layer: 1, shift: [7], delta: 0.4, operator: score_shift}`: expert 7 of layer 1 has 0.4 subtracted from its router
 logit at every prompt and reasoning token, and the router still takes its own top-4 (`operators.score_shift_masked`).
@@ -262,12 +274,13 @@ interval above zero. Applied to the saved `EFFECTS_OUTCOME.json` it finds no qua
 | 1.6 | -0.110 [-0.587, 0.368] | -0.069 [-0.192, 0.053] | -0.039 |
 
 Intervals are the simultaneous 95 percent ones. Native accuracy is 0.736 at a mean of 4,118 reasoning tokens; the target
-nudge at 0.4 gives 0.736 and 4,078 tokens. Tests: `tests/steering/outcome` 40 passed (3.9 s, including the r2 tests).
+nudge at 0.4 gives 0.736 and 4,078 tokens. Tests: `tests/steering/outcome` 41 passed in 9.3 s (including the r2
+tests; `test_select.py` has 8, one of them for the output folder of `usage`).
 
 ### Worth noticing
 
-- The whole selection reruns in 3 s on the CPU because the expensive part, reading 276 captures, is a separate
-  step with its own receipt.
+- The whole selection reruns in 2.4 s on the CPU because the expensive part, reading 276 captures (32 s on 4 CPUs),
+  is a separate step with its own receipt.
 - Every interval includes zero. The 0.4 nudge reproduces native behaviour almost exactly (accuracy 0.736, 4,078
   against 4,118 tokens), and the larger nudges change neither tokens nor accuracy beyond the intervals. The null
   result was recorded under a rule fixed in advance.
