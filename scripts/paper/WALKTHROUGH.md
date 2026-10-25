@@ -92,7 +92,7 @@ comparison, not the figure build; `tests/paper` holds 17 tests in all (0.10 s).
   instead of rendering anything, which is the useful failure.
 
 ## abstract-optimization-trace: Paper optimization, one retained abstract and final build
-- commit: 64144cd
+- commit: a413549
 - source: paper/manuscript-support/build/elm-optimization/sections/abstract/ (baseline.tex, candidate-10.tex, selection-10.json), round-10-judge-mapping.json, round-10-judge-results.jsonl, round-10-judges.jsonl, RUN_STATUS.json, COMPLETENESS.json, ADOPTION.json, TOOLING_SOURCE.json; paper/manuscript-support/build/editorial-closeout/BUILD_FINAL.json, POSTBUILD_METADATA.json, PRINTED_TABLE_READBACK.json; a run on 2026-10-25 of the code at this commit on those saved files and saved ELM responses, with no client and no network call (the checker in step 4 read a clone of the Overleaf checkout at c98ed00, which has the same tree as the checkout's HEAD)
 - code: src/paper/optimize_sections.py, src/paper/verify_cl_printed_tables.py, tests/paper/test_paper_optimization.py
 
@@ -145,9 +145,10 @@ introduction; candidate-08 for the discussion). Humanizer input, diagnosis and t
 
 The accepted optimization is the earlier stage. The later author-directed work moved the manuscript on (editorial
 closeout, then the eight-model next-state, Qwen3.6 and completed-transition exhibits, then the sentence-level audit). The
-final source-round-87 builds 53 pages in two bounded compiler passes (14.94 and 15.29 seconds), exit 0, with references
-converged, no undefined reference, and the offline tectonic compiler `a98aa59a…`. The PDF hashes to
-abb8c1543e875c28366753819e4020ba9ae38df8f9f5ada5542320d64d28a0c5. The PDF named by the earlier closeout receipt
+final source-round-88 builds 53 pages in one bounded compiler pass (17.14 seconds), exit 0, with references
+converged, no undefined reference, and the offline tectonic compiler `a98aa59a…`. Its receipt names the durable
+paper folder, not the worktree that ran the build. The PDF hashes to
+9c2668155b376aa072bb0fdb38f0a28e8e3ff2c4380fb0043f7aa0072effc5e7. The PDF named by the earlier closeout receipt
 (`editorial-closeout/BUILD_FINAL.json`, source-round-74, 55 pages, a368faf7…) is no longer at the shared path
 `build/build/main.pdf`, which each build replaces; it is kept at
 `build/source-round-74/.paper-review/build/main.pdf`.
@@ -155,7 +156,7 @@ abb8c1543e875c28366753819e4020ba9ae38df8f9f5ada5542320d64d28a0c5. The PDF named 
 ### 4. Read back tables (`verify_cl_printed_tables.main`)
 
 The checker reads the final PDF against the source rows of the manuscript revision pinned in `ACCEPTED_REVISION`
-(`19009ba`, the Overleaf commit of this build), by model and condition; no table is authorized to disappear
+(`89234d7`, the Overleaf commit of this build), by model and condition; no table is authorized to disappear
 (`AUTHORIZED_REMOVALS` is empty). With `--build build/BUILD.json` it passes: all 19 tables, 457 rows and 2,669 printed
 cells, including the next-state table with its lowest-is-best marks and the down-arrow headers. The swapped-row negative
 control is rejected in the source and in the PDF. Run on the closeout receipt instead, the same code stops with
