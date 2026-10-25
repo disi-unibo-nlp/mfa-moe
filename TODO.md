@@ -7,6 +7,7 @@
 ### scripts/paper
 
 - author-review-revision: Revise the paper against author review and reference style (active)
+- finish-nonsteering-results: Every non-steering result in the paper, from receipts to prose (active)
 
 ### scripts/routing
 
@@ -26,6 +27,9 @@
 
 - author-resolves-comments: Leave review comment resolution to the author (scripts)
 - figures-live-in-overleaf: Keep native figure sources in Overleaf with original PDF backups (scripts/paper)
+- next-state-receipt-sign: The next-state gain keeps the receipt's sign (scripts/paper)
+- exporter-owns-model-rows: The exporter writes the model rows of four non-steering tables (scripts/paper)
+- added-labels-transitions-only: Next-sentence labels enter the transition estimates only (scripts/paper)
 - bash-holds-slurm: Bash holds Slurm, Python holds the science (scripts/slurm)
 - whole-reasoning-design: Whole-reasoning routing efficiency (scripts/steering)
 - class-conditioned-outcome-design: Class-conditioned outcome steering design (r2) (scripts/steering)

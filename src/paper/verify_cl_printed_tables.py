@@ -22,12 +22,12 @@ import unicodedata
 
 from store import file_sha
 
-ACCEPTED_REVISION = "4c9d7d44ac68bcaed2f1e300f6122a5f4c558b61"
-AUTHORIZED_REMOVALS = {"tab:historical-interventions"}  # tables of the accepted revision that the manuscript no longer holds
+ACCEPTED_REVISION = "19009ba095c45a5c7fb3b2dc5e3726b1c885e000"
+AUTHORIZED_REMOVALS = set()  # tables of the accepted revision that the manuscript no longer holds
 CI = re.compile(r"\\(bestcid|secondcid|cid)\{([^}]+)\}\{([^}]+)\}\{([^}]+)\}")
 TABLE = re.compile(r"\\begin\{(table|longtable)\}.*?\\end\{\1\}", re.S)
 MODEL = re.compile(r"\\(?:modelname|benchmarkmodel)\{[^}]+\}\{([^}]+)\}")
-CONDITION_TABLES = {"tab:selection-folds", "tab:next-state"}
+CONDITION_TABLES = {"tab:selection-folds"}
 
 
 def require(condition: bool, message: str) -> None:
@@ -60,6 +60,7 @@ def latex_text(text: str) -> str:
         r"\Delta": "∆",
         r"\to": "→",
         r"\uparrow": "↑",
+        r"\downarrow": "↓",
         r"\ ": " ",
     }
     for old, new in replacements.items():

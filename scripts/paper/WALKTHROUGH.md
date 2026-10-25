@@ -92,7 +92,7 @@ comparison, not the figure build; `tests/paper` holds 17 tests in all (0.10 s).
   instead of rendering anything, which is the useful failure.
 
 ## abstract-optimization-trace: Paper optimization, one retained abstract and final build
-- commit: e63f4d8dc28cc751351c09cdb329d323de567c6b
+- commit: 64144cd
 - source: paper/manuscript-support/build/elm-optimization/sections/abstract/ (baseline.tex, candidate-10.tex, selection-10.json), round-10-judge-mapping.json, round-10-judge-results.jsonl, round-10-judges.jsonl, RUN_STATUS.json, COMPLETENESS.json, ADOPTION.json, TOOLING_SOURCE.json; paper/manuscript-support/build/editorial-closeout/BUILD_FINAL.json, POSTBUILD_METADATA.json, PRINTED_TABLE_READBACK.json; a run on 2026-10-25 of the code at this commit on those saved files and saved ELM responses, with no client and no network call (the checker in step 4 read a clone of the Overleaf checkout at c98ed00, which has the same tree as the checkout's HEAD)
 - code: src/paper/optimize_sections.py, src/paper/verify_cl_printed_tables.py, tests/paper/test_paper_optimization.py
 
@@ -141,34 +141,35 @@ section (candidate-10 for abstract, related work, method, setup, results and con
 introduction; candidate-08 for the discussion). Humanizer input, diagnosis and the revised source are retained.
 `scores_are_not_scientific_evidence` is true: scores do not establish scientific correctness or author acceptance.
 
-### 3. Build and inspect (`build_cl_manuscript.compile_bounded`, read from `BUILD_FINAL.json`)
+### 3. Build and inspect (`build_cl_manuscript.compile_bounded`, read from `BUILD.json`)
 
-The accepted optimization is the earlier stage. The later author-directed editorial closeout removes both superseded
-historical steering studies, reorders model comparisons by size and repairs prose wrapping. Its final source-round-74
-builds 55 pages in two bounded compiler passes (174.5333115090616 and 72.53676056512631 seconds), exit 0, with
-references converged; no compiled source changed during that build. The PDF on disk still hashes to
-a368faf78ecbf7265bb5a4c70bf06600b0f546892343eb45b5e786ee61b5327f and has 55 pages. The checklist `REVIEW_TODOS.md` was
-refreshed after the build (noncompiled metadata, `POSTBUILD_METADATA.json`), so the snapshot file (ef47d2aa…) no longer
-matches the hash in the build receipt (b138b0e9…); it is the only one of the receipt's 84 source files that differs.
+The accepted optimization is the earlier stage. The later author-directed work moved the manuscript on (editorial
+closeout, then the eight-model next-state, Qwen3.6 and completed-transition exhibits, then the sentence-level audit). The
+final source-round-87 builds 53 pages in two bounded compiler passes (14.94 and 15.29 seconds), exit 0, with references
+converged, no undefined reference, and the offline tectonic compiler `a98aa59a…`. The PDF hashes to
+abb8c1543e875c28366753819e4020ba9ae38df8f9f5ada5542320d64d28a0c5. The PDF named by the earlier closeout receipt
+(`editorial-closeout/BUILD_FINAL.json`, source-round-74, 55 pages, a368faf7…) is no longer at the shared path
+`build/build/main.pdf`, which each build replaces; it is kept at
+`build/source-round-74/.paper-review/build/main.pdf`.
 
 ### 4. Read back tables (`verify_cl_printed_tables.main`)
 
-The checker reads the final PDF against the accepted 4c9d7d4 source rows by model and condition, after the
-author-authorized model ordering and table removal (`tab:historical-interventions`). On the receipt as saved it stops
-with "build snapshot source differs: REVIEW_TODOS.md". With the receipt's hash of `REVIEW_TODOS.md` replaced by the
-refreshed one in a scratch copy (everything else untouched) it passes in 7.2 s: all 19 surviving tables, 453 rows and
-2,641 printed cells, including 2,188 non-label scientific cells. The table section and the source
-verification of the new run equal the saved `PRINTED_TABLE_READBACK.json` exactly. The swapped-row negative
-control is rejected; printed empty cells and unavailable marks are included. The unit tests of the optimizer
-(`tests/paper/test_paper_optimization.py`: counterbalancing, regression veto, tie rule, protected source, truncated and
-placeholder responses) pass, 8 tests in 0.02 s.
+The checker reads the final PDF against the source rows of the manuscript revision pinned in `ACCEPTED_REVISION`
+(`19009ba`, the Overleaf commit of this build), by model and condition; no table is authorized to disappear
+(`AUTHORIZED_REMOVALS` is empty). With `--build build/BUILD.json` it passes: all 19 tables, 457 rows and 2,669 printed
+cells, including the next-state table with its lowest-is-best marks and the down-arrow headers. The swapped-row negative
+control is rejected in the source and in the PDF. Run on the closeout receipt instead, the same code stops with
+"PDF differs from build receipt", as it should, because that receipt names a PDF that no later build kept at its path.
+The unit tests of the optimizer (`tests/paper/test_paper_optimization.py`: counterbalancing, regression veto, tie rule,
+protected source, truncated and placeholder responses) are unchanged and pass with the other paper tests (34 passed with
+`tests/test_imports.py`).
 
 ### Worth noticing
 
 - The optimizer never directly overwrites the manuscript; adoption remains a separate recorded judgment.
 - Selection can be replayed from saved responses alone: the whole round-10 decision follows from two JSON reviews, the
   blind mappings and the baseline text, with no model call.
-- The printed-table check depends on the build snapshot being byte-identical to its receipt; a refreshed checklist is
-  enough to stop it, so the post-build metadata edit has to be declared, as it is in `POSTBUILD_METADATA.json`.
+- The printed-table check binds the PDF to its build receipt: a receipt whose PDF was replaced by a later build is refused, so the
+  accepted revision is re-pinned with each delivered manuscript (a change of table cells needs this; a change of captions does not).
 - Model ordering changes categorical coordinates and presentation, while receipt values and model identities remain fixed.
 - The closeout permits a local Overleaf commit only. Original comments remain open and remote delivery awaits approval.

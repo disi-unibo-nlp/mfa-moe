@@ -1,3 +1,22 @@
+**Non-steering paper results finished — 2026-10-25 (Claude Sonnet 5.5 writer, Codex gpt-6.1-sol reviewer; labels next-state-eight-models, qwen36-full-dynamics, next-sentence-labels, finish-nonsteering-results; working folder `mfa-moe/r/paper-finish`):**
+- next-sentence-labels: GPU run finished within the 200 GPU-h cap. 24 judge shards (3 per model, 2 GPUs each, rule
+  Read,Verify,Plan,Explore,Monitor), jobs 62188584-62188641 all COMPLETED, 813.9 billing hours (about 101.7 GPU-h,
+  `CAP=1600 scripts/slurm/billing_hours_used.sh pairs-`); 332,073 successors judged, 4 unknown (qwen35 2, qwen36 1,
+  qwen330b 1). Receipt `report/final-routing-20261015-r1/driver/TRANSITION_PAIRS.read-verify-plan-explore-monitor.json`.
+  Only the seven transitions out of Plan in LFM2.5 have no interval (one resample has no supported family). Nothing is queued.
+- Exporter: run `python -m paper.export_cl_exhibits` (flags `--capture-next-state`, `--capture-qwen36-panel`,
+  `--capture-pairs VARIANT`) from a worktree with `STUDY_DATA_ROOT` set; it writes the model rows of the readout,
+  next_state, occupancy and state_transitions tables and their figure data. Do NOT run `scripts/paper/export_paper_tables.sh`
+  on the manuscript: its routing and whole-reasoning exporters rewrite the steering tables to the r20 numbers and the display order.
+  The next-state gain keeps the receipt's sign (routing minus text, negative favours routing).
+- Manuscript (Overleaf checkout, 53 pages): commits f432bd8 to 697484b; `verify_cl_tables --self-test`,
+  `verify_cl_printed_tables` (19 tables, 2,669 cells), `verify_cl_figure_labels` and the writing rules (0 violations in 39 files)
+  pass. `ACCEPTED_REVISION` in `src/paper/verify_cl_printed_tables.py` pins the Overleaf commit of the delivered build and moves
+  with each delivery that changes table cells. The paper-writer packet (267 judge items) was judged in-process after the
+  parallel judge subagents hit the account's monthly spend limit (03:10-10:36 the debate drivers could not run): 5 FAIL, all in
+  steering text left as it is (Figure 8 to 9 and Table 5 and 6 captions, saved-prefix wording, Table 5 type size).
+- Left open for the author: the five steering-only findings above and the steering sections as a whole.
+
 **Outcome steering r2 ported into the cleaned layout — 2026-10-24 (Claude, subagent s10-outcome; ledger F-0013, F-0014, D-0006):**
 - Branch `s10/outcome` (from merge/main ac713c4) carries branch `outcome/r2` (head bee5962) in the new layout. Nothing was
   launched or sealed. Old -> new: `moe_exp.outcome_steering.{capture,classes,evidence,attempts,derive,pick}` ->

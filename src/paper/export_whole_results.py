@@ -31,7 +31,7 @@ import re
 
 from paper.cl_models import MODELS, PLOT_LABELS
 from paper.cl_paths import PAPER, REPO
-from paper.export_routing_results import PAPER_CLASSES, DRIVER, TABLE_NAMES, TICKS, cid
+from paper.export_routing_results import PAPER_CLASSES, DRIVER, TABLE_NAMES, TICKS, cid, shown
 from store import file_sha, verified
 
 DEFAULT_EFFECTS = REPO / "report/whole-reasoning-20261021-r20/analysis-combined/EFFECTS_WHOLE.json"  # the final receipt
@@ -815,7 +815,7 @@ def main():
         "receipt": {"path": source, "file_sha256": file_sha(args.effects),
                     "seal_sha256": effects["sha256"], "bootstrap_draws": effects["bootstrap_draws"],
                     "seed": effects["seed"], "models": effects["models"], "base_dose": base},
-        "prereg": {"path": str(link_path.relative_to(REPO)), "seal_sha256": prereg["sha256"]},
+        "prereg": {"path": shown(link_path), "seal_sha256": prereg["sha256"]},
         "units": {"tokens": "percent change in reasoning tokens, 100*expm1(-estimate)",
                   "accuracy": "percentage points, 100*estimate",
                   "mechanism": "percentage points of the generation allowance, 100*estimate",
