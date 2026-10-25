@@ -1,16 +1,16 @@
 # paper: walkthroughs
 
 ## overleaf-figure-build-trace: Native Overleaf figures, one routing preview
-- commit: e63f4d8dc28cc751351c09cdb329d323de567c6b
-- source: Overleaf checkout paper/6a510c6db0d9b08aa438c142 at its local commit c98ed00c46604c256056ff72481db97bd49b6fa4 (the checkout's HEAD e3b6ea3 holds the same tree) (figures/journal/routing.tex, figures/journal/data/routing.dat, journal/style.tex, journal/results.tex); a fresh run on 2026-10-25 of the code at this commit, scripts/paper/build_paper_pdf.sh (paper.build_cl_figures, then paper.build_cl_manuscript) and paper.verify_cl_figure_labels, on an export of that commit (build output in a scratch folder, not in the repository)
+- commit: a413549
+- source: Overleaf checkout paper/6a510c6db0d9b08aa438c142 at its commit 89234d7 (figures/journal/routing.tex, figures/journal/data/routing.dat, journal/style.tex, journal/results.tex); a fresh run on 2026-10-25 of the code at this commit, scripts/paper/build_paper_pdf.sh (paper.build_cl_figures, then paper.build_cl_manuscript) and paper.verify_cl_figure_labels, from a git worktree of this commit whose `paper` link points to the checkout (build output in the checkout's ignored paper/manuscript-support/build)
 - code: src/paper/build_cl_figures.py, src/paper/build_cl_manuscript.py, src/paper/verify_cl_figure_labels.py, src/paper/cl_paths.py, scripts/paper/build_paper_pdf.sh, tests/paper/test_table_order.py
 
 **Input:**
 > figures/journal/routing.tex and figures/journal/data/routing.dat from the active Overleaf paper.
-`cl_paths.py` finds the manuscript relative to the repository root (`store.REPO`, the parent of `src`), and a fresh git
-worktree holds no paper folder. The run therefore used `git archive` of the Overleaf commit above, placed beside a
-`git archive` of `src/` from this commit, and ran `scripts/paper/build_paper_pdf.sh` from that folder as a Slurm CPU
-job (2 CPUs, 2 min 6 s). The paper folder itself was only read.
+`cl_paths.py` takes the paper folder through the `paper` link of the repository root (`store.REPO`, the parent of
+`src`) and resolves it, so a git worktree that links to the checkout reads the one paper folder and its receipts name
+paths that outlive the worktree. The run was `scripts/paper/build_paper_pdf.sh` from such a worktree on the login node
+(offline tectonic, 55.3 s for the figures and 17.1 s for the manuscript). The paper folder itself was only read.
 
 ### 1. Resolve canonical sources (`cl_paths.FIGURES`, `cl_paths.DATA`, `build_cl_figures.build`)
 
@@ -21,23 +21,23 @@ is overlaid. The compiler is the verified offline tectonic (sha256 a98aa59a…),
 |---|---|
 | `figures/journal/routing.tex` | 845ee0bfe798f90b7c31a82e92df52cb38244658db12576472797ea1504903fa |
 | `figures/journal/data/routing.dat` | d12cc4aa14a74b32626e7e371a7cf2dcef432ff21bbe624c55cd3753ca99e6e7 |
-| `journal/style.tex` | 55e886d701f0c2fcc2cb90aa28626bb507513326dc08e31c27a7e4efa0a79a1c |
+| `journal/style.tex` | 0a6a74114e65ffa17b6c3ed68f6471d3ff2eb0706bd55243aac3933be71bf611 |
 
 Since bb9fb04 (where `routing.tex` was fae4827f…) the commit c98ed00 replaced 87 lines of `routing.tex` and 7 lines of
 `routing.dat` (94 insertions and 94 deletions in all).
 
 ### 2. Compile an independent preview (`build_cl_figures.build`)
 
-`build_paper_pdf.sh` builds all 11 figures (57.2 s in all, 2.9 to 10.8 s each), then the manuscript. For each figure the
+`build_paper_pdf.sh` builds all 11 figures (55.3 s in all, 2.8 to 10.1 s each), then the manuscript. For each figure the
 build copies the style and the whole `figures/journal` folder into a fresh snapshot, compiles
 `\input{figures/journal/routing}` as a standalone page with `--only-cached --untrusted`, and requires one page.
 
 | Result | Value |
 |---|---|
-| compile time | 5.5 s (9.1 s and 5.6 s when built alone twice in a fresh folder) |
+| compile time | 5.5 s |
 | page size | 379.77 x 327.44 pt |
-| `routing.pdf` SHA-256 | 8558492561fd9f7b5eea4c7f4fe7815addf8e361ddb7749fc5bc2f0a14e5403a |
-| the same sources built twice more | 7fe99f2d086330bab3ea98b7ac9c2f909402b17947ceee733bccd7a890397eb8, b32526ddae121d1993c4d7fb72f4a1aa9af02ef7d62bf960c015eaa9b7b9c5e7 |
+| `routing.pdf` SHA-256 | d7eccbb241b67058333f674939a0fcd08fecb03b444ca6637fdbf0c7df67e5e5 |
+| the earlier trace, same `routing.tex` and `routing.dat` | 8558492561fd9f7b5eea4c7f4fe7815addf8e361ddb7749fc5bc2f0a14e5403a: another file hash, the same page size |
 | the original PDF in `figures/pdf-backup/routing.pdf` | 4a5515af…, not identical: 97,436 of 1,493,400 pixel bytes differ at 144 dpi |
 
 The PDF header carries a build-specific `/ID`, so the file hash changes with every build; the page size and the
@@ -67,30 +67,28 @@ until the references stop changing.
 
 | Result | Value |
 |---|---|
-| passes (seconds) | 15.4, 14.2, 14.3, 14.4; exit code 0 each; a rerun is no longer needed after the fourth; 58.4 s in all |
-| pages / SHA-256 of `main.pdf` | 55 / 4eb525e36ea6d7105327a6191a7a9c3bd26725fdc54ffe0bf7b97ec211c015de |
-| a second build of the same sources | 1553f8375eb730702185a5e7d5c4d489983830b0037ec92f8908441e861bebc7: the same text and the same 144 dpi pixels on all 55 pages |
+| passes (seconds) | 17.14; exit code 0; a rerun is not needed after the first |
+| pages / SHA-256 of `main.pdf` | 53 / 9c2668155b376aa072bb0fdb38f0a28e8e3ff2c4380fb0043f7aa0072effc5e7 |
 | the routing figure | Figure 8, page 20 |
 | native figure inputs in the compiler log | all 11, once each (`conditioning` to `whole_states`) |
 | `pdf-backup` folder in the build snapshot | absent |
 
 `tests/paper/test_table_order.py` (6 tests, 0.03 s) covers the model display order and the table source
-comparison, not the figure build; `tests/paper` holds 17 tests in all (0.10 s).
+comparison, not the figure build; `tests/paper` holds 37 tests in all (0.58 s).
 
 ### Worth noticing
 
-- A figure takes 3 to 11 s and the whole 55-page manuscript 58 s with the cached offline compiler, so
-  `build_paper_pdf.sh` needs 2 min 1 s on 2 CPUs, in line with the few minutes the script's comment states.
+- A figure takes 3 to 10 s and the whole 53-page manuscript 17 s with the cached offline compiler, so
+  `build_paper_pdf.sh` needs about 75 s, within the few minutes the script's comment states.
 - The PDF backups are history, not a reference for today's figure: the routing figure moved on after them
   and its pixels differ from the backup in 6.5 percent of the render.
 - Two builds of the same sources give different PDF hashes and identical pages, so a receipt should be compared by
   its sources, text and geometry, not by the PDF hash.
 - Editable sources have one canonical place, the Overleaf checkout, shared by Overleaf and the local tools; the
   builds only read it and write below `paper/manuscript-support/build`.
-- The label check ties each printed number to a row of `routing.dat`: 108 numbers, 108 bars, none touching. In a
-  fresh worktree `build_cl_figures routing` stops with "figure source missing for requested figure(s): routing"
-  instead of rendering anything, which is the useful failure.
-
+- The label check ties each printed number to a row of `routing.dat`: 108 numbers, 108 bars, none touching.
+- `paper/` is not tracked, so a git worktree reaches it through a link; `cl_paths` resolves that link, which keeps
+  every path in `BUILD.json` valid after the worktree is removed.
 ## abstract-optimization-trace: Paper optimization, one retained abstract and final build
 - commit: a413549
 - source: paper/manuscript-support/build/elm-optimization/sections/abstract/ (baseline.tex, candidate-10.tex, selection-10.json), round-10-judge-mapping.json, round-10-judge-results.jsonl, round-10-judges.jsonl, RUN_STATUS.json, COMPLETENESS.json, ADOPTION.json, TOOLING_SOURCE.json; paper/manuscript-support/build/editorial-closeout/BUILD_FINAL.json, POSTBUILD_METADATA.json, PRINTED_TABLE_READBACK.json; a run on 2026-10-25 of the code at this commit on those saved files and saved ELM responses, with no client and no network call (the checker in step 4 read a clone of the Overleaf checkout at c98ed00, which has the same tree as the checkout's HEAD)
