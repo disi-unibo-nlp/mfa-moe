@@ -5,8 +5,11 @@ data behind them. Build output, review notes and report sources stay in `paper/m
 """
 from store import HOME, REPO, WORK
 
-PAPER = REPO / "paper/6a510c6db0d9b08aa438c142"
-SUPPORT = REPO / "paper/manuscript-support"
+# `paper/` is not tracked: a git worktree reaches it through a link, and the receipts of a build must name the folder
+# that outlives the worktree, so the link is resolved here.
+PAPER_ROOT = (REPO / "paper").resolve()
+PAPER = PAPER_ROOT / "6a510c6db0d9b08aa438c142"
+SUPPORT = PAPER_ROOT / "manuscript-support"
 FIGURES = PAPER / "figures/journal"   # figure sources, including Overleaf author edits
 DATA = FIGURES / "data"               # coordinates and records behind the figures and tables
 BUILD = SUPPORT / "build"             # manuscript and figure builds, page renders, review records

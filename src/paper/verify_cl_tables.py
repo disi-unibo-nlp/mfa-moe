@@ -3,10 +3,10 @@
 Reads only: no fitting, resampling or inference. Every table cell, found by table, model, condition and metric, must
 equal the cell of the accepted manuscript revision (verify_cl_printed_tables.ACCEPTED_REVISION); the benchmark and routing
 tables are also checked against benchmark_cells.csv and the saved routing estimates, the readout table and figure labels
-against routing_readout.csv, the next-state table against next_state.csv, and the occupancy and transition tables against
-native_dynamics.json. The row order of a table may differ from that revision, its numbers may not. --self-test also shows
+against routing_readout.csv, the next-state table against next_state.csv, the occupancy and transition tables against
+native_dynamics.json, and the three rows of the prefix-probe table of the appendix against the saved grouped-probe summary. The row order of a table may differ from that revision, its numbers may not. --self-test also shows
 that the check rejects swapped rows, changed intervals and wrong rank marks in copies of the tables held in memory, and
-that export_cl_exhibits, run on a temporary copy of the manuscript tables and figure data, leaves every file byte for byte
+that export_cl_exhibits, run on a temporary copy of the manuscript tables, appendix and figure data, leaves every file byte for byte
 as it is. The printed PDF is read back by verify_cl_printed_tables.
 
   python -m paper.verify_cl_tables [--paper PAPER_FOLDER] [--self-test]
@@ -28,7 +28,7 @@ from unittest.mock import patch
 
 from paper import cl_paths
 from paper.cl_models import MODELS as PRESENTATION_MODELS
-from paper.cl_paths import PAPER as DEFAULT_PAPER, REPO
+from paper.cl_paths import PAPER as DEFAULT_PAPER, REPO, SAVED_REPORTS
 from paper.verify_cl_printed_tables import (
     MODEL as TABLE_MODEL, collect_tables, compare_source_tables, latex_text, verify_declared_source)
 from store import verified
@@ -248,6 +248,7 @@ def exporter_reproduces_manuscript(paper):
         root = Path(temporary)
         figures = root / "figures/journal"
         shutil.copytree(paper / "journal/tables", root / "journal/tables")
+        shutil.copyfile(paper / "journal/appendices.tex", root / "journal/appendices.tex")
         shutil.copytree(figure_root(paper) / "data", figures / "data")
 
         def files():
@@ -610,6 +611,44 @@ def verify_dynamics_prose(paper):
              {"rank_scope": "none"})]
 
 
+PROBE_SOURCE = SAVED_REPORTS / "grouped_probe_sources.json"
+PROBE_ROWS = (("gpt", "GPT-OSS"), ("gemma", "Gemma"), ("qwen35", "Qwen"))   # table model and the summary's name, in row order
+PROBE_COLUMNS = (("probe_auroc", "probe", "Probe AUROC"), ("position_auroc", "position", "Position AUROC"),
+                 ("paired_gain", "probe_minus_position", "Paired gain"))
+PROBE_TABLE = re.compile(r"\\label\{tab:prefix-probes\}.*?\\end\{tabular\}", re.S)
+
+
+def verify_probes(paper, appendix=None):
+    """The prefix-probe table against the saved grouped-probe summary: all nine cells with their rank marks, and the F1 of the text."""
+    saved = json.loads(PROBE_SOURCE.read_text())
+    expected = {(model, quantity): saved["models"][name]["macro"][key]["auc"]
+                for model, name in PROBE_ROWS for quantity, key, _ in PROBE_COLUMNS}
+    bundled = {(r["model"], r["quantity"]): r for r in read_csv(figure_root(paper) / "data/probes.csv")}
+    require(set(bundled) == set(expected), "probes.csv roster differs from the saved summary")
+    for key, auc in expected.items():
+        r = bundled[key]
+        require((float(r["estimate"]), float(r["ci95_low"]), float(r["ci95_high"])) == (auc["estimate"], *auc["ci95"]),
+                "/".join(key) + ": probes.csv differs from the saved summary")
+    text = appendix if appendix is not None else (paper / "journal/appendices.tex").read_text()
+    block = PROBE_TABLE.search(text)
+    require(block, "the prefix-probe table is missing")
+    rows = {model: columns for model, columns in model_rows(block[0])}
+    require(set(rows) == {model for model, _ in PROBE_ROWS}, "prefix-probe rows differ")
+    for model, _ in PROBE_ROWS:
+        columns = rows[model]
+        require(len(columns) == 4, model + ": prefix-probe columns differ")
+        for cell, (quantity, _, name) in zip(columns[1:], PROBE_COLUMNS):
+            auc = expected[model, quantity]
+            values = [expected[m, quantity]["estimate"] for m, _ in PROBE_ROWS]
+            mark = "ci" if quantity == "position_auroc" else rank_mark(auc["estimate"], values)
+            check_ci(cell, (auc["estimate"], *auc["ci95"]), 3, model + "/" + name, mark)
+    f1 = {model: saved["models"][name]["macro"]["probe"]["f1"]["estimate"] for model, name in PROBE_ROWS}
+    sentence = "macro binary F1 is %.3f for Qwen3.5, %.3f for GPT-OSS, and %.3f for Gemma" % (f1["qwen35"], f1["gpt"], f1["gemma"])
+    require(sentence in text, "the probe F1 sentence differs from the saved summary: " + sentence)
+    return [("appendices.tex", len(PROBE_ROWS) * len(PROBE_COLUMNS), str(PROBE_SOURCE.relative_to(PROBE_SOURCE.parents[3])),
+             {"rank_scope": "descriptive, within each column across the three encoders; highest is best, position AUROC unranked"})]
+
+
 def verify(paper):
     """Every table cell against the accepted manuscript revision, and the benchmark and routing tables against the saved estimates."""
     result = verify_declared_source(paper)
@@ -619,7 +658,8 @@ def verify(paper):
         {"table": name, "ordered_cells": count, "source": source, **extra}
         for name, count, source, extra in (*verify_routing(paper, texts), *verify_readout(paper, texts), *verify_selection_labels(paper), *verify_next_state(paper, texts),
                                            *verify_dynamics(paper, texts), *verify_occupancy_data(paper),
-                                           *verify_summary_data(paper), *verify_next_state_prose(paper), *verify_dynamics_prose(paper))
+                                           *verify_summary_data(paper), *verify_next_state_prose(paper), *verify_dynamics_prose(paper),
+                                           *verify_probes(paper))
     ]
     style = re.sub(r"\s+", "", (paper / "journal/style.tex").read_text())
     require(r"\fp_compare:nTF{#1>#2}{\pm#1}{\pm#2}" in style, "CI printer does not preserve the maximum original margin")
@@ -666,6 +706,15 @@ def self_test(paper):
             checks.append(name)
         else:
             raise TableMismatch("invalid table passed: " + name)
+    appendix = (paper / "journal/appendices.tex").read_text()
+    changed = PROBE_TABLE.sub(lambda m: re.sub(r"(\\(?:best|second)?cid\{)(\d)", lambda c: c[1] + str((int(c[2]) + 1) % 10), m[0], count=1), appendix, count=1)
+    require(changed != appendix, "self-test mutation did not apply: changed_probe_cell_rejected")
+    try:
+        verify_probes(paper, changed)
+    except TableMismatch:
+        checks.append("changed_probe_cell_rejected")
+    else:
+        raise TableMismatch("invalid table passed: changed_probe_cell_rejected")
     exporter_reproduces_manuscript(paper)
     return {"status": "pass", "checks": ["model_row_swap_rejected", *checks, "export_reproduces_manuscript"],
             "filesystem_writes": False}

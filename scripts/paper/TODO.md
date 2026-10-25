@@ -99,6 +99,8 @@
 - [x] Rewrite Results, Method, Setup, Discussion, appendices and the abstract for the new design; evidence: Overleaf commits f432bd8, 70cc0ab
 - [x] Sentence-level audit against the author's earlier papers; evidence: nine independent reviews, accepted edits in Overleaf 70cc0ab, `check_writing_rules.sh` 0 violations in 39 files
 - [x] Number lineage of the external-annotation, probe, qualification and lexical numbers; result: 79 of 87 match, three corrected (LFM2.5 sampling statement, two probe margins), five exist only in the wiki; evidence: Overleaf 19009ba
-- [ ] paper-writer packet and verify on the built PDF
+- [x] paper-writer packet and verify on the built PDF; result: 267 items, 0 invalid, 5 FAIL all in steering text outside the authorized edit scope (reviewer agreed, Round 3); evidence: r/paper-finish/pw-stage/.paper-review/verdicts.md
+- [x] Prefix-probe rows through the exporter and a saved-source check of their nine cells; result: Qwen3.5 paired-gain upper deviation 0.015; evidence: commit a413549, Overleaf 89234d7, tests/paper/test_probe_export.py
+- [x] Build receipt names the durable paper folder; evidence: BUILD.json of source-round-88, `verify_cl_printed_tables` passes after the worktree is removed
 - [ ] Merge the code branch into main and push both repositories
 

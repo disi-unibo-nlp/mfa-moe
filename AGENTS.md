@@ -9,7 +9,8 @@
   next_state, occupancy and state_transitions tables and their figure data. Do NOT run `scripts/paper/export_paper_tables.sh`
   on the manuscript: its routing and whole-reasoning exporters rewrite the steering tables to the r20 numbers and the display order.
   The next-state gain keeps the receipt's sign (routing minus text, negative favours routing).
-- Manuscript (Overleaf checkout, 53 pages): commits f432bd8 to 697484b; `verify_cl_tables --self-test`,
+- Manuscript (Overleaf checkout, 53 pages): commits f432bd8 to 89234d7 (the three prefix-probe rows are written by
+  `export_cl_exhibits --capture-probes` from the saved grouped-probe summary and checked by `verify_cl_tables`); `verify_cl_tables --self-test`,
   `verify_cl_printed_tables` (19 tables, 2,669 cells), `verify_cl_figure_labels` and the writing rules (0 violations in 39 files)
   pass. `ACCEPTED_REVISION` in `src/paper/verify_cl_printed_tables.py` pins the Overleaf commit of the delivered build and moves
   with each delivery that changes table cells. The paper-writer packet (267 judge items) was judged in-process after the
