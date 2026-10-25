@@ -85,3 +85,20 @@
 | Completed optimization | Eight main sections | 9ff6d88 | 10validrounds each;80generations and160judgments | COMPLETENESS.json |
 | Final native review | Source-round68,58pages | Deliveredsource61 | 236PASS,26N/A,4open,0invalid | NATIVE_REVIEW.json |
 | Overleaf delivery | Project6a510c6db0d9b08aa438c142 | 9ff6d88 | Manuscript 3378cf5 verified;56originalthreadsopen,117messages | MANUSCRIPT_PUSH.json;COMMENT_DELIVERY.json |
+
+## finish-nonsteering-results: Every non-steering result in the paper, from receipts to prose
+- status: active
+- asked: "Finish the paper: every result except the steering ones" (writer and reviewer debate, folder mfa-moe/r/paper-finish, 2026-10-25); labels next-state-eight-models, qwen36-full-dynamics, next-sentence-labels
+- why: The paper shows the next-state result for two models, Qwen3.6 on 509 families and transition cells marked n/e; every non-steering exhibit should cover the eight models from sealed receipts and read as the author writes.
+- done when: Fig. 6, Fig. 7 and Tables 3 to 5 come from the exporter for eight models; every non-steering number matches its receipt; the writing rules report 0 violations; the paper-writer packet and the printed-table readback pass on the built PDF; manuscript and code are pushed.
+- decisions: next-state-receipt-sign, exporter-owns-model-rows, added-labels-transitions-only
+- code: src/paper/export_cl_exhibits.py, src/paper/verify_cl_tables.py, src/paper/verify_cl_printed_tables.py, src/paper/export_whole_results.py, tests/paper/test_next_state_export.py
+- [x] Exporter step and figure and table sources for all eight models (next-state-eight-models); evidence: commits 3113e23, 0887ab3, 8602add; tests/paper/test_next_state_export.py
+- [x] Qwen3.6 panel from the rebuilt receipt, 1,486 families (qwen36-full-dynamics); evidence: `qwen36_panel()` refuses any other family count
+- [x] Completed transitions from the next-sentence labels (next-sentence-labels); result: 101.7 GPU-h of 200, jobs 62188584-62188641; evidence: driver/TRANSITION_PAIRS.read-verify-plan-explore-monitor.json
+- [x] Rewrite Results, Method, Setup, Discussion, appendices and the abstract for the new design; evidence: Overleaf commits f432bd8, 70cc0ab
+- [x] Sentence-level audit against the author's earlier papers; evidence: nine independent reviews, accepted edits in Overleaf 70cc0ab, `check_writing_rules.sh` 0 violations in 39 files
+- [x] Number lineage of the external-annotation, probe, qualification and lexical numbers; result: 79 of 87 match, three corrected (LFM2.5 sampling statement, two probe margins), five exist only in the wiki; evidence: Overleaf 19009ba
+- [ ] paper-writer packet and verify on the built PDF
+- [ ] Merge the code branch into main and push both repositories
+

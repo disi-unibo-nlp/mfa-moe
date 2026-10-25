@@ -601,7 +601,7 @@ def verify_dynamics_prose(paper):
         low, high, values = extremes(state + ":occupancy")
         phrases.append(f"{word} {values[low]:.2f}--{values[high]:.2f}\\%")
     low, high, values = extremes("label_coverage")
-    phrases.append(f"Coverage ranges from {values[low]:.2f}\\% for {SHORT_NAMES[low]} to {values[high]:.2f}\\% for {SHORT_NAMES[high]}")
+    phrases.append(f"cover between {values[low]:.2f}\\% of completion tokens in {SHORT_NAMES[low]} and {values[high]:.2f}\\% in {SHORT_NAMES[high]}")
     for phrase in phrases:
         require(phrase in text, "the dynamics Results omit or misstate: " + phrase)
     require(all(panels[m]["results"]["Verify:next:Verify"]["estimate"] > panels[m]["results"]["Implement:next:Verify"]["estimate"]
