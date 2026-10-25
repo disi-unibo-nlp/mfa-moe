@@ -3,7 +3,8 @@
 Nothing is fitted, resampled or run here. The bundled copies live in figures/journal/data (readout, selection and
 next-state CSVs, native dynamics, benchmark cells). A plain run turns them into the plotting files readout.dat,
 selection.dat, selection_summary.json, next_state.dat, occupancy.dat and state_transitions_*.dat, and rewrites the model
-rows of the tables readout, next_state, occupancy and state_transitions from the same copies. Their captions, headers and
+rows of the tables readout, next_state, occupancy and state_transitions, and the three rows of the prefix-probe table of
+the appendix, from the same copies. Their captions, headers and
 every other table stay as the manuscript has them; `verify_cl_tables` checks all tables against the same copies and that a
 rerun reproduces the manuscript byte for byte. Before writing it also checks that the native-memory fixtures add up over workers and that every model has 4,647
 benchmark attempts. The study is the one store.STUDY names (STUDY_DATA_ROOT).
@@ -15,6 +16,8 @@ benchmark attempts. The study is the one store.STUDY names (STUDY_DATA_ROOT).
                                                      one the study rebuilt on all its question families
   python -m paper.export_cl_exhibits --capture-pairs VARIANT   first replace every native-dynamics panel by the one
                                                      completed with the next-sentence labels of VARIANT
+  python -m paper.export_cl_exhibits --capture-probes   first copy the three encoders' AUROC estimates from the saved
+                                                     grouped-probe summary
   python -m paper.export_cl_exhibits --capture-existing   first copy the seven-model estimates from the saved reports
 """
 import argparse
@@ -284,6 +287,38 @@ def capture_next_state():
     (DATA / "SOURCES.json").write_text(json.dumps(sources, indent=2) + "\n")
 
 
+PROBE_SOURCE = SAVED_REPORTS / "grouped_probe_sources.json"
+PROBE_ENCODERS = (("GPT-OSS", "gpt"), ("Gemma", "gemma"), ("Qwen", "qwen35"))  # the summary's name and the table's model, in row order
+PROBE_QUANTITIES = (("probe", "probe_auroc"), ("position", "position_auroc"), ("probe_minus_position", "paired_gain"))
+PROBE_FIELDS = ("model", "quantity", "estimate", "ci95_low", "ci95_high")
+
+
+def probe_estimates(saved):
+    """The nine macro AUROC estimates (three encoders, three quantities) of the saved grouped-probe summary."""
+    rows = []
+    for name, model in PROBE_ENCODERS:
+        macro = saved["models"][name]["macro"]
+        for key, quantity in PROBE_QUANTITIES:
+            auc = macro[key]["auc"]
+            rows.append({"model": model, "quantity": quantity, "estimate": auc["estimate"],
+                         "ci95_low": auc["ci95"][0], "ci95_high": auc["ci95"][1]})
+    return rows
+
+
+def capture_probes():
+    """Copy the nine probe estimates of the saved grouped-probe summary into probes.csv and name the summary in SOURCES.json."""
+    saved = json.loads(PROBE_SOURCE.read_text())
+    if set(saved["models"]) != {name for name, _ in PROBE_ENCODERS}:
+        raise ValueError("probe encoder roster differs")
+    with (DATA / "probes.csv").open("w", newline="") as stream:
+        writer = csv.DictWriter(stream, fieldnames=PROBE_FIELDS, lineterminator="\n")
+        writer.writeheader()
+        writer.writerows(probe_estimates(saved))
+    sources = json.loads((DATA / "SOURCES.json").read_text())
+    sources["sources"]["probes"] = source(PROBE_SOURCE)
+    (DATA / "SOURCES.json").write_text(json.dumps(sources, indent=2) + "\n")
+
+
 def dat(name, headings, rows):
     (DATA / name).write_text(" ".join(headings) + "\n" + "\n".join(
         " ".join(format(v, ".16g") if isinstance(v, float) else str(v) for v in row)
@@ -546,6 +581,27 @@ def next_state_table():
                                          *(cell(*c[m], 5, k[m]) for c, k in zip(columns, marks))]) for m in MODELS])
 
 
+def probe_table():
+    """The three rows of the prefix-probe table in the appendix: probe and position AUROC and their paired gain."""
+    estimates = {(r["model"], r["quantity"]): (float(r["estimate"]), float(r["ci95_low"]), float(r["ci95_high"]))
+                 for r in read_csv("probes.csv")}
+    by_quantity = {q: {m: estimates[m, q] for _, m in PROBE_ENCODERS} for _, q in PROBE_QUANTITIES}
+    marks = {q: marked(v) if q != "position_auroc" else dict.fromkeys(v, "cid") for q, v in by_quantity.items()}
+    path = PAPER / "journal/appendices.tex"
+    lines = path.read_text().split("\n")
+    start = next(i for i, line in enumerate(lines) if line == "\\label{tab:prefix-probes}")
+    first = next(i for i in range(start, len(lines)) if lines[i].startswith("\\modelname"))
+    if not all(lines[first + k].startswith("\\modelname") for k in range(len(PROBE_ENCODERS))) \
+            or lines[first + len(PROBE_ENCODERS)] != "\\bottomrule":
+        raise ValueError("appendices.tex: the prefix-probe rows differ from the three encoder rows")
+    for k, (_, model) in enumerate(PROBE_ENCODERS):
+        cells = [cell(*by_quantity[q][model], 3, marks[q][model]) for _, q in PROBE_QUANTITIES]
+        lines[first + k] = " & ".join([TABLE_NAMES[model], *cells]) + " \\\\"
+    text = "\n".join(lines)
+    if text != path.read_text():
+        path.write_text(text)
+
+
 def dynamics_cell(panel, key, scale, mark="cid"):
     """An estimate of the native-dynamics panel with its symmetric margin, or with n/e when it has no interval."""
     r = panel["results"][key]
@@ -579,7 +635,8 @@ def check_inputs():
             raise ValueError("benchmark attempt population differs")
 
 
-def main(capture_existing=False, capture_lfm=False, capture_next=False, capture_qwen36=False, pairs_variant=None):
+def main(capture_existing=False, capture_lfm=False, capture_next=False, capture_qwen36=False, pairs_variant=None,
+         capture_probe=False):
     if capture_existing:
         capture()
     if capture_lfm:
@@ -590,6 +647,8 @@ def main(capture_existing=False, capture_lfm=False, capture_next=False, capture_
         capture_pairs(pairs_variant)
     if capture_next:
         capture_next_state()
+    if capture_probe:
+        capture_probes()
     check_inputs()
     readout_data()
     selection_data()
@@ -598,6 +657,7 @@ def main(capture_existing=False, capture_lfm=False, capture_next=False, capture_
     readout_table()
     next_state_table()
     dynamics_tables()
+    probe_table()
     print(json.dumps({"models": len(MODELS), "selection_cells": len(MODELS) * 15, "native_dynamics_models": len(MODELS),
                       "next_state_models": len(MODELS), "new_inference": False}))
 
@@ -611,5 +671,7 @@ if __name__ == "__main__":
                         help="replace Qwen3.6's native-dynamics panel by the one covering all its families")
     parser.add_argument("--capture-pairs", metavar="VARIANT",
                         help="replace every native-dynamics panel by the one completed with the next-sentence labels of VARIANT")
+    parser.add_argument("--capture-probes", action="store_true", help="copy the three encoders' probe AUROC estimates")
     args = parser.parse_args()
-    main(args.capture_existing, args.capture_lfm, args.capture_next_state, args.capture_qwen36_panel, args.capture_pairs)
+    main(args.capture_existing, args.capture_lfm, args.capture_next_state, args.capture_qwen36_panel, args.capture_pairs,
+         args.capture_probes)
